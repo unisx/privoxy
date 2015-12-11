@@ -1,6 +1,6 @@
 #ifndef PARSERS_H_INCLUDED
 #define PARSERS_H_INCLUDED
-#define PARSERS_H_VERSION "$Id: parsers.h,v 1.40 2007/08/11 14:47:26 fabiankeil Exp $"
+#define PARSERS_H_VERSION "$Id: parsers.h,v 1.48 2008/05/30 15:57:23 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.h,v $
@@ -43,6 +43,37 @@
  *
  * Revisions   :
  *    $Log: parsers.h,v $
+ *    Revision 1.48  2008/05/30 15:57:23  fabiankeil
+ *    Remove now-useless reference to debug.
+ *
+ *    Revision 1.47  2008/05/21 20:12:11  fabiankeil
+ *    The whole point of strclean() is to modify the
+ *    first parameter, so don't mark it immutable,
+ *    even though the compiler lets us get away with it.
+ *
+ *    Revision 1.46  2008/05/21 15:47:14  fabiankeil
+ *    Streamline sed()'s prototype and declare
+ *    the header parse and add structures static.
+ *
+ *    Revision 1.45  2008/05/20 20:13:30  fabiankeil
+ *    Factor update_server_headers() out of sed(), ditch the
+ *    first_run hack and make server_patterns_light static.
+ *
+ *    Revision 1.44  2008/05/20 16:05:09  fabiankeil
+ *    Move parsers structure definition from project.h to parsers.h.
+ *
+ *    Revision 1.43  2008/05/10 13:23:38  fabiankeil
+ *    Don't provide get_header() with the whole client state
+ *    structure when it only needs access to csp->iob.
+ *
+ *    Revision 1.42  2008/04/17 14:40:49  fabiankeil
+ *    Provide get_http_time() with the buffer size so it doesn't
+ *    have to blindly assume that the buffer is big enough.
+ *
+ *    Revision 1.41  2008/04/16 16:38:21  fabiankeil
+ *    Don't pass the whole csp structure to flush_socket()
+ *    when it only needs a file descriptor and a buffer.
+ *
  *    Revision 1.40  2007/08/11 14:47:26  fabiankeil
  *    Remove the prototypes for functions that are only
  *    used in parsers.c and thus should be static.
@@ -254,31 +285,27 @@
 extern "C" {
 #endif
 
-extern const struct parsers client_patterns[];
-extern const struct parsers server_patterns[];
-extern const struct parsers server_patterns_light[];
+/* Used for sed()'s second argument. */
+#define FILTER_CLIENT_HEADERS 0
+#define FILTER_SERVER_HEADERS 1
 
-extern const add_header_func_ptr add_client_headers[];
-extern const add_header_func_ptr add_server_headers[];
-
-extern int flush_socket(jb_socket fd, struct client_state *csp);
+extern int flush_socket(jb_socket fd, struct iob *iob);
 extern jb_err add_to_iob(struct client_state *csp, char *buf, int n);
 extern jb_err decompress_iob(struct client_state *csp);
-extern char *get_header(struct client_state *csp);
+extern char *get_header(struct iob *iob);
 extern char *get_header_value(const struct list *header_list, const char *header_name);
-extern jb_err sed(const struct parsers pats[], const add_header_func_ptr more_headers[], struct client_state *csp);
-extern void get_http_time(int time_offset, char *buf);
+extern jb_err sed(struct client_state *csp, int filter_server_headers);
+extern jb_err update_server_headers(struct client_state *csp);
+extern void get_http_time(int time_offset, char *buf, size_t buffer_size);
 extern jb_err get_destination_from_headers(const struct list *headers, struct http_request *http);
 
 #ifdef FEATURE_FORCE_LOAD
-extern int strclean(const char *string, const char *substring);
+extern int strclean(char *string, const char *substring);
 #endif /* def FEATURE_FORCE_LOAD */
 
 /* Revision control strings from this header and associated .c file */
 extern const char parsers_rcs[];
 extern const char parsers_h_rcs[];
-
-extern int debug;
 
 #ifdef __cplusplus
 } /* extern "C" */

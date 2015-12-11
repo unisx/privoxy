@@ -1,4 +1,4 @@
-const char deanimate_rcs[] = "$Id: deanimate.c,v 1.17 2007/08/05 13:42:22 fabiankeil Exp $";
+const char deanimate_rcs[] = "$Id: deanimate.c,v 1.19 2008/05/21 15:29:35 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/deanimate.c,v $
@@ -6,11 +6,10 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.17 2007/08/05 13:42:22 fabian
  * Purpose     :  Declares functions to manipulate binary images on the
  *                fly.  High-level functions include:
  *                  - Deanimation of GIF images
- *                  - Fixup of malformed comment block in JPEG headers
  *                
  *                Functions declared include: gif_deanimate, buf_free,
- *                buf_copy,  buf_getbyte, gif_skip_data_block,
- *                gif_extract_image and jpeg_inspect
+ *                buf_copy,  buf_getbyte, gif_skip_data_block
+ *                and gif_extract_image
  *
  * Copyright   :  Written by and Copyright (C) 2001 - 2004, 2006 by the
  *                SourceForge Privoxy team. http://www.privoxy.org/
@@ -40,6 +39,12 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.17 2007/08/05 13:42:22 fabian
  *
  * Revisions   :
  *    $Log: deanimate.c,v $
+ *    Revision 1.19  2008/05/21 15:29:35  fabiankeil
+ *    Fix gcc43 warnings.
+ *
+ *    Revision 1.18  2008/03/28 15:13:38  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
  *    Revision 1.17  2007/08/05 13:42:22  fabiankeil
  *    #1763173 from Stefan Huehner: declare some more functions static.
  *
@@ -333,7 +338,14 @@ static int gif_extract_image(struct binbuffer *src, struct binbuffer *dst)
     */
    if (c & 0x80)
    {
-      if (buf_copy(src, dst, (size_t) 3 * (1 << ((c & 0x07) + 1))))
+      int map_length = 3 * (1 << ((c & 0x07) + 1));
+      if (map_length <= 0)
+      {
+         log_error(LOG_LEVEL_DEANIMATE,
+            "colormap length = %d (%c)?", map_length, c);
+         return 1;
+      }
+      if (buf_copy(src, dst, (size_t)map_length))
       {
          return 1;
       }           
@@ -412,7 +424,14 @@ int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_im
     */
    if(c & 0x80)
    {
-      if (buf_copy(src, dst, (size_t) 3 * (1 << ((c & 0x07) + 1))))
+      int map_length = 3 * (1 << ((c & 0x07) + 1));
+      if (map_length <= 0)
+      {
+         log_error(LOG_LEVEL_DEANIMATE,
+            "colormap length = %d (%c)?", map_length, c);
+         return 1;
+      }
+      if (buf_copy(src, dst, (size_t)map_length))
       {
          return 1;
       }
@@ -525,113 +544,6 @@ write:
    buf_free(image);
    return 0;
 
-}
-
-
-/*********************************************************************
- * 
- * Function    :  jpeg_inspect
- *
- * Description :  Checks a jpeg image for an invalid length in a 
- *                comment block (0xFFFE0000 or 0xFFFE0001) and
- *                changes it to 0xFFFE0002.  Defensive strategy 
- *                against the exploit:
- *                  Microsoft Security Bulletin MS04-028
- *                  Buffer Overrun in JPEG Processing (GDI+) Could
- *                  Allow Code Execution (833987)
- *
- * Parameters  :
- *          1  :  src = Pointer to the image binbuffer
- *
- * Returns     :  0 on success, or 1 on failure
- *
- *********************************************************************/
-int jpeg_inspect(struct binbuffer *src, struct binbuffer *dst)
-{
-   long i;
-   /*
-    * We process the image using a simple finite state machine, 
-    * searching for byte patterns.
-    */
-   enum { J_INIT, /* The initial state */
-          J_FF,   /* Found byte 0xFF */
-          J_FE,   /* Found bytes 0xFF 0xFE */
-          J_00,   /* Found bytes 0xFF 0xFE 0x00 */
-          J_DA    /*
-                   * Found bytes 0xFF 0xDA; short-circuit to done-ness
-                   * since this signals the beginning end of headers.
-                   */
-        };
-   short state = J_INIT;
-   unsigned char c;
-
-   if (NULL == src || NULL == dst)
-   {
-      return 1;
-   }
-
-   if (buf_copy(src, dst, src->size))
-   {
-      return 1;
-   }
-
-   /* Need to search the jpg for patterns:
-    * 0xFF 0xFE 0x00 0x00
-    * or 
-    * 0xFF 0xFE 0x00 0x01
-    * from beginning until:
-    * 0xFF 0xDA
-    * (or the end of the buffer)
-    * If found, change the pattern to 0xFF 0xFE 0x00 0x02
-    */
-
-   for (i = 0; i < dst->size; i++)
-   {
-      c = dst->buffer[i];
-      switch (state)
-      {
-         case J_INIT:
-            if (c == 0xFF)
-               state = J_FF;
-            break;
-         case J_FF:
-            if (c == 0xDA)
-               state = J_DA; /* End of headers - we're done with this image. */
-            else if (c == 0xFE)
-               state = J_FE;
-            else
-               state = J_INIT;
-            break;
-         case J_FE:
-            if (c == 0x00)
-               state = J_00;
-            else
-               state = J_INIT;
-            break;
-         case J_00:
-            if ((c == 0x00) || (c == 0x01))
-            {
-               dst->buffer[i] = 2; /* Reset comment block size to 2. */
-               log_error(LOG_LEVEL_INFO, "JPEG comment exploit removed.");
-               /* TODO:
-                * I'm unsure if we can have more than one comment block.  Just in case,
-                * we'll scan the rest of the header for more by going back to J_INIT
-                * state.  If there is no possibility of >1 comment block, we could 
-                * short-circuit to done-ness here.
-                */
-               state = J_INIT;
-            }
-            else
-               state = J_INIT;
-            break;
-         default:
-            break;
-      }
-      if (state == J_DA)
-         break;
-   }
-
-   return 0;
 }
 
 

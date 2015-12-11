@@ -1,6 +1,6 @@
 #ifndef ENCODE_H_INCLUDED
 #define ENCODE_H_INCLUDED
-#define ENCODE_H_VERSION "$Id: encode.h,v 1.8 2007/08/18 14:34:27 fabiankeil Exp $"
+#define ENCODE_H_VERSION "$Id: encode.h,v 1.9 2008/05/21 15:38:13 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.h,v $
@@ -35,6 +35,9 @@
  *
  * Revisions   :
  *    $Log: encode.h,v $
+ *    Revision 1.9  2008/05/21 15:38:13  fabiankeil
+ *    Garbage-collect cookie_encode().
+ *
  *    Revision 1.8  2007/08/18 14:34:27  fabiankeil
  *    Make xtoi() extern so it can be used in pcrs.c.
  *
@@ -69,7 +72,6 @@ extern "C" {
 #endif
 
 extern char * html_encode(const char *s);
-extern char * cookie_encode(const char *s);
 extern char * url_encode(const char *s);
 extern char * url_decode(const char *str);
 extern int    xtoi(const char *s);

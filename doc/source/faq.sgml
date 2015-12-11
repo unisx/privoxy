@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.8">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -26,7 +26,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.38 2008/01/19 17:52:39 hal9 Exp $
+ $Id: faq.sgml,v 2.44 2008/06/19 01:41:36 hal9 Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -77,7 +77,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.38 2008/01/19 17:52:39 hal9 Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.44 2008/06/19 01:41:36 hal9 Exp $</pubdate>
 
 <!--
 
@@ -116,7 +116,7 @@ Hal.
 </para>
 ]]>
  <para>
- This FAQ gives quick answers to frequently asked  questions about
+ This FAQ gives quick answers to frequently asked questions about
  <ulink url="http://www.privoxy.org/">Privoxy</ulink>.
  It is not a substitute for the 
  <ulink url="../user-manual/index.html"><citetitle>Privoxy User Manual</citetitle></ulink>.
@@ -180,7 +180,7 @@ me?</title>
  </para>
  <para>
   Much of <application>Privoxy's</application> configuration can be done 
-  with a  <ulink url="http://en.wikipedia.org/wiki/Web_browser">Web browser</ulink>.
+  with a <ulink url="http://en.wikipedia.org/wiki/Web_browser">Web browser</ulink>.
   But there are areas where configuration is done using a 
   <ulink url="http://en.wikipedia.org/wiki/Text_editors">text editor</ulink>
   to edit configuration files. Also note that the web-based action editor
@@ -192,15 +192,13 @@ me?</title>
 <sect2 renderas="sect3" id="proxymoron"><title>What is a <quote>proxy</quote>? How does
 Privoxy work? </title>
  <para>
-  A  <ulink url="http://en.wikipedia.org/wiki/Proxy_server">web proxy</ulink>
-  is a service, based on a software such as
-  <application>Privoxy</application>, that clients (i.e. browsers) can use
-  instead of connecting directly to web servers on the Internet. The
-  clients then ask the proxy to fetch the objects they need (web pages,
-  images, movies etc) on their behalf, and when the proxy has done so, it
-  hands the results back to the client. It is a <quote>go-between</quote>. See
-  the <ulink url="http://en.wikipedia.org/wiki/Proxy_server">Wikipedia proxy
-  definition</ulink> for more.
+  A <ulink url="http://en.wikipedia.org/wiki/Proxy_server">web proxy</ulink>
+  is a service, based on a software such as &my-app;, that clients
+  (i.e. browsers) can use instead of connecting to web servers directly.
+  The clients then ask the proxy to request objects (web pages, images, movies etc)
+  on their behalf and to forward the data to the clients.
+  It is a <quote>go-between</quote>. For details, see
+  <ulink url="http://en.wikipedia.org/wiki/Proxy_server">Wikipedia's proxy definition</ulink>.
  </para>
  <para>
   There are many reasons to use web proxies, such as security (firewalling),
@@ -208,9 +206,9 @@ Privoxy work? </title>
   to accommodate those needs.
  </para>
  <para>
-  <application>Privoxy</application> is a proxy that is primarily focused on privacy
-  protection, ad and junk elimination and freeing the user from restrictions placed on his 
-  activities. Sitting between your browser(s) and the Internet,
+  &my-app; is a proxy that is primarily focused on
+  privacy enhancement, ad and junk elimination and freeing the user from
+  restrictions placed on his activities. Sitting between your browser(s) and the Internet,
   it is in a perfect position to filter outbound personal information that your
   browser is leaking, as well as inbound junk. It uses a variety of techniques to do
   this, all of which are under your complete control via the various configuration
@@ -273,7 +271,7 @@ Junkbuster at all?</title>
 from the old Junkbuster?</title> 
 <para>
  <application>Privoxy</application> picks up where
- <application>Junkbuster</application> left off. All the old features remain.
+ <application>Junkbuster</application> left off.
  The new <application>Privoxy</application> still blocks ads and banners,
  still manages <ulink
  url="http://en.wikipedia.org/wiki/Browser_cookie">cookies</ulink>, and still
@@ -807,9 +805,9 @@ the differences?</title>
 
 <sect2 renderas="sect3" id="getupdates"><title>Where can I get updated Actions Files?</title>
  <para>
-   Based on your feedback and the continuing development, updates of 
-   <filename>default.action</filename> will be
-   made available from   time to time on the <ulink
+  Based on your feedback and the continuing development, updates of 
+  <filename>default.action</filename> will be
+  made available from time to time on the <ulink
   url="http://sourceforge.net/project/showfiles.php?group_id=11118">files section</ulink> of
   our <ulink url="http://sf.net/projects/ijbswa/">project page</ulink>.
  </para>
@@ -818,7 +816,7 @@ the differences?</title>
   If you wish to receive an email notification whenever we release updates of
   <application>Privoxy</application> or the actions file, <ulink
   url="http://lists.sourceforge.net/lists/listinfo/ijbswa-announce/">subscribe
-  to our announce  mailing list</ulink>, ijbswa-announce@lists.sourceforge.net.
+  to our announce mailing list</ulink>, ijbswa-announce@lists.sourceforge.net.
  </para>
 
 </sect2>
@@ -998,7 +996,7 @@ with a browser? Does that not raise security issues?</title>
  but you can disable/enable the various pre-defined filters of the included 
  <filename>default.filter</filename> file with the <ulink
  url="http://config.privoxy.org/show-status">web-based actions file editor</ulink>.
- Note  that the custom actions editor must be explicitly enabled in
+ Note that the custom actions editor must be explicitly enabled in
  the main config file (see <ulink
  url="../user-manual/config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions</ulink>).
 </para>
@@ -1285,7 +1283,7 @@ and thus avoid individual browser configuration?</title>
  method that browsers can use to store data between pages, or between browser
  sessions. Sometimes there is a good reason for this, and the user's life is a
  bit easier as a result. But there is a long history of some websites taking
- advantage of this layer of trust, and using the data they glean from you  and 
+ advantage of this layer of trust, and using the data they glean from you and 
  your browsing habits for their own purposes, and maybe to your potential
  detriment. Such sites are using you and storing their data on your system.
  That is why the privacy conscious watch from whom those cookies come, and why
@@ -1676,7 +1674,7 @@ us help you. Your efforts are not wasted, and we do appreciate them.
 </para>
 <para>
  <application>Privoxy</application> can remove various information about you,
- and allows <emphasis>you</emphasis> more freedom  to decide which sites 
+ and allows <emphasis>you</emphasis> more freedom to decide which sites 
  you can trust, and what details you want to reveal. But it neither 
  hides your IP address, nor can it guarantee that the rest of the system
  behaves correctly. There are several possibilities how a web sites can find
@@ -2096,7 +2094,7 @@ from a webserver? FTP server?</title>
 </para>
 <para>
  <application>Privoxy</application> does not do FTP at all, only HTTP 
- and  HTTPS (SSL) protocols, so please don't try.
+ and HTTPS (SSL) protocols.
 </para>
 </sect2>
 
@@ -2162,7 +2160,7 @@ and related issues?</title>
  activated the <quote><literal>fun</literal></quote> filter which
  is clearly labeled <quote>Text replacements for subversive browsing
  fun!</quote> or you are using an older Privoxy version and have implicitly
- activated it by choosing the  <quote>Adventuresome</quote> profile in the
+ activated it by choosing the <quote>Advanced</quote> profile in the
  web-based editor. Please upgrade.
 </para>
 </sect2>
@@ -2462,8 +2460,8 @@ every time I start IE. What gives?</title>
 </sect2>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect2 id="osxie" renderas="sect3">
-<title>In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+<sect2 id="macosxie" renderas="sect3">
+<title>In Mac OS X, I can't configure Microsoft Internet Explorer to use 
  Privoxy as the HTTP proxy.</title>
  <para>
   Microsoft Internet Explorer (in versions like 5.1) respects system-wide
@@ -2477,16 +2475,19 @@ every time I start IE. What gives?</title>
 </sect2>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect2 renderas="sect3" id="osxuninstall">
-<title>In Mac OSX, I dragged the Privoxy folder to the trash in order to 
- uninstall it.  Now the finder tells me I don't have sufficient privileges to
+<sect2 renderas="sect3" id="macosxuninstall">
+<title>In Mac OS X, I dragged the Privoxy folder to the trash in order to 
+ uninstall it. Now the finder tells me I don't have sufficient privileges to
  empty the trash.</title>
  <para>
+ Note: This ONLY applies to privoxy 3.0.6 and earlier.
+ </para> 
+ <para>
   Just dragging the <application>Privoxy</application> folder to the trash is
-  not enough to delete it.  <application>Privoxy</application> supplies an
+  not enough to delete it. <application>Privoxy</application> supplies an
   <application>uninstall.command</application> file that takes care of
-  these details.  Open the trash, drag the <application>uninstall.command</application>
-  file out of the trash and double-click on it.  You will be prompted for
+  these details. Open the trash, drag the <application>uninstall.command</application>
+  file out of the trash and double-click on it. You will be prompted for
   confirmation and the administration password.
  </para> 
  <para>
@@ -2497,12 +2498,12 @@ every time I start IE. What gives?</title>
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect2 renderas="sect3" id="osximages">
-<title>In Mac OSX Panther (10.3), images often fail to load and/or I
+<sect2 renderas="sect3" id="macosximages">
+<title>In Mac OS X Panther (10.3), images often fail to load and/or I
  experience random delays in page loading. I'm using
  <literal>localhost</literal> as my browser's proxy setting.</title>
  <para>
-  We believe this is due to an IPv6-related bug in OSX, but don't fully
+  We believe this is due to an IPv6-related bug in Mac OS X, but don't fully
   understand the issue yet. In any case, changing the proxy setting to 
   <literal>127.0.0.1</literal> instead of <literal>localhost</literal>
   works around the problem.
@@ -2560,6 +2561,10 @@ Why?</title>
  file. If this file has been changed from the original, try reverting it to
  see if that helps. Make sure whatever name(s) are used for the local system,
  that they resolve both ways.
+</para>
+<para>
+ You should also be able to work around the problem with the
+ <ulink url="../user-manual/config.html#HOSTNAME">hostname option</ulink>.
 </para>
 </sect2>
 
@@ -2667,7 +2672,7 @@ Why?</title>
  is done by the underlying operating system -- not
  <application>Privoxy</application> itself. <application>Privoxy</application>
  merely initiates the process and hands it off, and then later reports
- whatever the outcome was. And tries to give a coherent message if there seems
+ whatever the outcome was and tries to give a coherent message if there seems
  to be a problem. In some cases, this might otherwise be mitigated by the
  browser itself which might try some work-arounds and alternate approaches (e.g
  adding <quote>www.</quote> to the URL).
@@ -2698,10 +2703,13 @@ Why?</title>
  are in the raw HTML source of the page, and the browser just ignores them. But the 
  pattern matching in <application>Privoxy's</application> page filtering
  mechanism is trying to match against absurdly long strings and this becomes
- very CPU-intensive, taking a long, long time to complete. Until a better
- solution comes along, disable filtering on these pages, particularly the
- <literal>js-annoyances</literal> and <literal>unsolicited-popups</literal>
- filters.
+ very CPU-intensive, taking a long, long time to complete.
+</para>
+<para>
+ Until a better solution comes along, disable filtering on these pages,
+ particularly the <literal>js-annoyances</literal> and
+ <literal>unsolicited-popups</literal> filters. If you run into this problem
+ with a recent &my-app; version, please send a problem report.
 </para>
 </sect2>
 
@@ -2713,7 +2721,8 @@ browsing has slowed to a crawl. What gives? </title>
  it does not happen. I would suspect some inadvertent interaction of software
  components such as anti-virus software, spyware protectors, personal
  firewalls or similar components. Try disabling (or uninstalling) these one
- at a time and see if that helps.
+ at a time and see if that helps. Either way, if you are using a
+ recent &my-app; version, please report the problem.
 </para>
 </sect2>
 
@@ -2726,6 +2735,9 @@ browsing has slowed to a crawl. What gives? </title>
  &my-app; can decompress content before filtering, otherwise you may want to enable
 <ulink
  url="../user-manual/actions-file.html#PREVENT-COMPRESSION">prevent-compression</ulink>.
+</para>
+<para>
+ As of &my-app; 3.0.9, zlib support is enabled in the default builds.
 </para>
 </sect2>
 
@@ -2808,6 +2820,32 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.44  2008/06/19 01:41:36  hal9
+Add short note about zlib being enabled in 3.0.9
+
+Revision 2.43  2008/06/14 13:21:25  fabiankeil
+Prepare for the upcoming 3.0.9 beta release.
+
+Revision 2.42  2008/06/07 13:11:15  fabiankeil
+- Note that the "100% cpu problem" is worth
+  reporting if it happens with a recent release.
+- Mention the hostname option as a workaround for
+  the "can't get my own hostname" issue.
+- The profile formerly known as "Adventuresome"
+  is called "Advanced" now.
+- Some white-space fixes.
+
+Revision 2.41  2008/06/06 15:32:09  fabiankeil
+- Minor rewordings.
+- Don't claim that all the old Junkbuster features remain.
+  Some of them have been removed or replaced with better ones.
+
+Revision 2.40  2008/02/22 05:54:27  markm68k
+updates for mac os x
+
+Revision 2.39  2008/02/03 21:37:41  hal9
+Apply patch from Mark: s/OSX/OS X/
+
 Revision 2.38  2008/01/19 17:52:39  hal9
 Re-commit to fix various minor issues for new release.
 
@@ -2920,7 +2958,7 @@ Revision 1.61.2.41  2004/04/05 13:44:05  oes
 Fixed allow-all-cookies alias name; closes SR #929746
 
 Revision 1.61.2.40  2004/01/30 17:00:33  oes
-Added OSX Panther problem
+Added Mac OS X Panther problem
 
 Revision 1.61.2.39  2004/01/29 22:53:08  hal9
 Minor changes for exempting docs of text/plain. Change copyright date.
@@ -3007,28 +3045,28 @@ Revision 1.61.2.15  2002/08/10 11:34:22  oes
 Add disclaimer about probably being out-of-date
 
 Revision 1.61.2.14  2002/08/07 02:53:43  hal9
-Fix some minor markup errors, and move one OSX Q/A to troubleshooting section.
+Fix some minor markup errors, and move one Mac OS X Q/A to troubleshooting section.
 
 Revision 1.61.2.13  2002/08/06 11:55:32  oes
 Added missing close tag
 
 Revision 1.61.2.12  2002/08/06 11:43:46  david__schmidt
-Updated OSX uninstall FAQ... we have an uninstall script now.
+Updated Mac OS X uninstall FAQ... we have an uninstall script now.
 
 Revision 1.61.2.11  2002/08/06 08:54:03  oes
 Style police: Fixed formatting details
 
 Revision 1.61.2.10  2002/08/02 14:00:25  david__schmidt
-Made the OSX removal commands far less dangerous
+Made the Mac OS X removal commands far less dangerous
 
 Revision 1.61.2.9  2002/08/02 13:14:45  oes
-Added warning about sudo rm -r for Mac OSX deinstallation; moved this item to install section
+Added warning about sudo rm -r for Mac OS X deinstallation; moved this item to install section
 
 Revision 1.61.2.8  2002/08/02 02:01:42  david__schmidt
-Add FAQ item for MSIE on OSX HTTP proxy confusion
+Add FAQ item for MSIE on Mac OS X HTTP proxy confusion
 
 Revision 1.61.2.7  2002/08/02 01:46:01  david__schmidt
-Added FAQ item for Mac OSX uninstall woes
+Added FAQ item for Mac OS X uninstall woes
 
 Revision 1.61.2.6  2002/07/30 20:04:56  hal9
 Fix typo: 'schould'.

@@ -1,4 +1,4 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.13 2007/08/18 14:34:27 fabiankeil Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.14 2008/05/21 15:38:13 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
@@ -33,6 +33,9 @@ const char encode_rcs[] = "$Id: encode.c,v 1.13 2007/08/18 14:34:27 fabiankeil E
  *
  * Revisions   :
  *    $Log: encode.c,v $
+ *    Revision 1.14  2008/05/21 15:38:13  fabiankeil
+ *    Garbage-collect cookie_encode().
+ *
  *    Revision 1.13  2007/08/18 14:34:27  fabiankeil
  *    Make xtoi() extern so it can be used in pcrs.c.
  *
@@ -149,36 +152,6 @@ static const char * const html_code_map[256] = {
    NULL, NULL, NULL, NULL, NULL, NULL
 };
 
-/* Maps special characters in a cookie to their equivalent % codes. */
-static const char * const cookie_code_map[256] = {
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, "+",  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, "%2C",NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "%3B",
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL, NULL, NULL
-};
-
 
 /*********************************************************************
  *
@@ -271,62 +244,6 @@ char * html_encode_and_free_original(char *s)
    return result;
 }
 
-
-/*********************************************************************
- *
- * Function    :  cookie_encode
- *
- * Description :  Encodes a string so it can be used in a cookie.
- *                Replaces " ", ",", and ";" with the appropriate
- *                codes.
- *
- * Parameters  :
- *          1  :  s = String to encode.  Null-terminated.
- *
- * Returns     :  Encoded string, newly allocated on the heap. 
- *                Caller is responsible for freeing it with free().
- *                If s is NULL, or on out-of memory, returns NULL.
- *
- *********************************************************************/
-char * cookie_encode(const char *s)
-{
-   char * buf;
-   size_t buf_size;
-
-   if (s == NULL)
-   {
-      return NULL;
-   }
-
-   /* each input char can expand to at most 3 chars */
-   buf_size = (strlen(s) * 3) + 1;
-   buf = (char *) malloc(buf_size);
-
-   if (buf)
-   {
-      char c;
-      char * p = buf;
-      while ( (c = *s++) != '\0')
-      {
-         const char * replace_with = cookie_code_map[(unsigned char) c];
-         if (replace_with != NULL)
-         {
-            const size_t bytes_written = (size_t)(p - buf);
-            assert(bytes_written < buf_size);
-            p += strlcpy(p, replace_with, buf_size - bytes_written);
-         }
-         else
-         {
-            *p++ = c;
-         }
-      }
-
-      *p = '\0';
-   }
-
-   assert(strlen(buf) < buf_size);
-   return(buf);
-}
 
 /*********************************************************************
  *

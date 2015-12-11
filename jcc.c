@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.164 2007/12/16 18:32:46 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.182 2008/06/27 11:13:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -6,7 +6,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.164 2007/12/16 18:32:46 fabiankeil Exp $"
  * Purpose     :  Main file.  Contains main() method, main loop, and
  *                the main connection-handling function.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,74 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.164 2007/12/16 18:32:46 fabiankeil Exp $"
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.182  2008/06/27 11:13:56  fabiankeil
+ *    Fix possible NULL-pointer dereference reported
+ *    by din_a4 in #2003937. Pointy hat to me.
+ *
+ *    Revision 1.181  2008/05/21 15:47:15  fabiankeil
+ *    Streamline sed()'s prototype and declare
+ *    the header parse and add structures static.
+ *
+ *    Revision 1.180  2008/05/21 15:26:32  fabiankeil
+ *    - Mark csp as immutable for send_crunch_response().
+ *    - Fix comment spelling.
+ *
+ *    Revision 1.179  2008/05/20 20:13:32  fabiankeil
+ *    Factor update_server_headers() out of sed(), ditch the
+ *    first_run hack and make server_patterns_light static.
+ *
+ *    Revision 1.178  2008/05/10 13:23:38  fabiankeil
+ *    Don't provide get_header() with the whole client state
+ *    structure when it only needs access to csp->iob.
+ *
+ *    Revision 1.177  2008/05/10 11:51:12  fabiankeil
+ *    Make the "read the rest of the headers" loop a bit more readable.
+ *
+ *    Revision 1.176  2008/05/10 11:37:57  fabiankeil
+ *    - Instead of logging when the IIS5 hack is enabled, log when it fails.
+ *    - Remove useless comment.
+ *
+ *    Revision 1.175  2008/05/09 18:53:59  fabiankeil
+ *    Fix comment grammar.
+ *
+ *    Revision 1.174  2008/05/07 18:05:53  fabiankeil
+ *    Remove the pointless buffer in client_protocol_is_unsupported().
+ *
+ *    Revision 1.173  2008/05/06 15:09:00  fabiankeil
+ *    Least-effort fix for bug #1821930 (reported by Lee):
+ *    If the response doesn't look like HTTP,
+ *    tell the client and log the problem.
+ *
+ *    Revision 1.172  2008/04/16 16:38:21  fabiankeil
+ *    Don't pass the whole csp structure to flush_socket()
+ *    when it only needs a file descriptor and a buffer.
+ *
+ *    Revision 1.171  2008/03/27 18:27:25  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.170  2008/03/06 16:33:46  fabiankeil
+ *    If limit-connect isn't used, don't limit CONNECT requests to port 443.
+ *
+ *    Revision 1.169  2008/03/04 18:30:39  fabiankeil
+ *    Remove the treat-forbidden-connects-like-blocks action. We now
+ *    use the "blocked" page for forbidden CONNECT requests by default.
+ *
+ *    Revision 1.168  2008/03/02 12:25:25  fabiankeil
+ *    Also use shiny new connect_port_is_forbidden() in jcc.c.
+ *
+ *    Revision 1.167  2008/02/23 16:57:12  fabiankeil
+ *    Rename url_actions() to get_url_actions() and let it
+ *    use the standard parameter ordering.
+ *
+ *    Revision 1.166  2008/02/23 16:33:43  fabiankeil
+ *    Let forward_url() use the standard parameter ordering
+ *    and mark its second parameter immutable.
+ *
+ *    Revision 1.165  2008/02/02 19:36:56  fabiankeil
+ *    Remove the "Listening ... for local connections only" log message.
+ *    Whether or not remote connections are able to reach Privoxy is up
+ *    to the operating system.
+ *
  *    Revision 1.164  2007/12/16 18:32:46  fabiankeil
  *    Prevent the log messages for CONNECT requests to unacceptable
  *    ports from printing the limit-connect argument as [null] if
@@ -1024,7 +1092,6 @@ http://www.fabiankeil.de/sourcecode/privoxy/
 #include "filters.h"
 #include "loaders.h"
 #include "parsers.h"
-#include "killpopup.h"
 #include "miscutil.h"
 #include "errlog.h"
 #include "jbsockets.h"
@@ -1057,7 +1124,7 @@ static int client_protocol_is_unsupported(const struct client_state *csp, char *
 static jb_err get_request_destination_elsewhere(struct client_state *csp, struct list *headers);
 static jb_err get_server_headers(struct client_state *csp);
 static const char *crunch_reason(const struct http_response *rsp);
-static void send_crunch_response(struct client_state *csp, struct http_response *rsp);
+static void send_crunch_response(const struct client_state *csp, struct http_response *rsp);
 /*
  * static int request_contains_null_bytes(const struct client_state *csp, char *buf, int len);
  */
@@ -1130,12 +1197,6 @@ static const char CHEADER[] =
    "Connection: close\r\n\r\n"
    "Invalid header received from client.\r\n";
 
-static const char CFORBIDDEN[] =
-   "HTTP/1.0 403 Connection not allowable\r\n"
-   "Proxy-Agent: Privoxy " VERSION "\r\n"
-   "X-Hint: If you read this message interactively, then you know why this happens ,-)\r\n"
-   "Connection: close\r\n\r\n";
-
 static const char FTP_RESPONSE[] =
    "HTTP/1.0 400 Invalid request received from client\r\n"
    "Content-Type: text/plain\r\n"
@@ -1164,6 +1225,14 @@ static const char NO_SERVER_DATA_RESPONSE[] =
    "Connection: close\r\n\r\n"
    "Empty server or forwarder response.\r\n"
    "The connection has been closed but Privoxy didn't receive any data.\r\n";
+
+/* XXX: should be a template */
+static const char INVALID_SERVER_HEADERS_RESPONSE[] =
+   "HTTP/1.0 502 Server or forwarder response invalid\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Bad response. The server or forwarder response doesn't look like HTTP.\r\n";
 
 #if 0
 /* XXX: should be a template */
@@ -1289,8 +1358,6 @@ static void sig_handler(int the_signal)
  *********************************************************************/
 static int client_protocol_is_unsupported(const struct client_state *csp, char *req)
 {
-   char buf[BUFFER_SIZE];
-
    /*
     * If it's a FTP or gopher request, we don't support it.
     *
@@ -1306,21 +1373,26 @@ static int client_protocol_is_unsupported(const struct client_state *csp, char *
     */
    if (!strncmpic(req, "GET ftp://", 10) || !strncmpic(req, "GET gopher://", 13))
    {
+      const char *response = NULL;
+      const char *protocol = NULL;
+
       if (!strncmpic(req, "GET ftp://", 10))
       {
-         strlcpy(buf, FTP_RESPONSE, sizeof(buf));
-         log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as FTP proxy: %s",
-            csp->ip_addr_str, req);
+         response = FTP_RESPONSE;
+         protocol = "FTP";
       }
       else
       {
-         strlcpy(buf, GOPHER_RESPONSE, sizeof(buf));
-         log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as gopher proxy: %s",
-            csp->ip_addr_str, req);
+         response = GOPHER_RESPONSE;
+         protocol = "GOPHER";
       }
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 400 0", csp->ip_addr_str, req);
+      log_error(LOG_LEVEL_ERROR,
+         "%s tried to use Privoxy as %s proxy: %s",
+         csp->ip_addr_str, protocol, req);
+      log_error(LOG_LEVEL_CLF,
+         "%s - - [%T] \"%s\" 400 0", csp->ip_addr_str, req);
       freez(req);
-      write_socket(csp->cfd, buf, strlen(buf));
+      write_socket(csp->cfd, response, strlen(response));
 
       return TRUE;
    }
@@ -1428,7 +1500,7 @@ static jb_err get_server_headers(struct client_state *csp)
    int continue_hack_in_da_house = 0;
    char * header;
 
-   while (((header = get_header(csp)) != NULL) || continue_hack_in_da_house)
+   while (((header = get_header(csp->iob)) != NULL) || continue_hack_in_da_house)
    {
       if (header == NULL)
       {
@@ -1445,7 +1517,7 @@ static jb_err get_server_headers(struct client_state *csp)
       {
          /*
           * It's a bodyless continue response, don't
-          * stop header parsing after reaching it's end.
+          * stop header parsing after reaching its end.
           *
           * As a result Privoxy will concatenate the
           * next response's head and parse and deliver
@@ -1479,7 +1551,6 @@ static jb_err get_server_headers(struct client_state *csp)
          return JB_ERR_PARSE;
       }
 
-      /* Enlist header */
       if (JB_ERR_MEMORY == enlist(csp->headers, header))
       {
          /*
@@ -1572,7 +1643,7 @@ static const char *crunch_reason(const struct http_response *rsp)
  * Returns     :  Nothing.
  *
  *********************************************************************/
-static void send_crunch_response(struct client_state *csp, struct http_response *rsp)
+static void send_crunch_response(const struct client_state *csp, struct http_response *rsp)
 {
       const struct http_request *http = csp->http;
       char status_code[4];
@@ -1855,10 +1926,15 @@ static jb_err change_request_destination(struct client_state *csp)
       log_error(LOG_LEVEL_ERROR, "Couldn't parse rewritten request: %s.",
          jb_err_to_string(err));
    }
-   http->ocmd = strdup(http->cmd); /* XXX: ocmd is a misleading name */
-   if (http->ocmd == NULL)
+   else
    {
-      log_error(LOG_LEVEL_FATAL, "Out of memory copying rewritten HTTP request line");
+      /* XXX: ocmd is a misleading name */
+      http->ocmd = strdup(http->cmd);
+      if (http->ocmd == NULL)
+      {
+         log_error(LOG_LEVEL_FATAL,
+            "Out of memory copying rewritten HTTP request line");
+      }
    }
 
    return err;
@@ -1902,9 +1978,6 @@ static void chat(struct client_state *csp)
    struct http_request *http;
    int len; /* for buffer sizes (and negative error codes) */
    jb_err err;
-#ifdef FEATURE_KILL_POPUPS
-   int block_popups_now = 0; /* bool, 1==currently blocking popups */
-#endif /* def FEATURE_KILL_POPUPS */
 
    /* Function that does the content filtering for the current request */
    filter_function_ptr content_filter = NULL;
@@ -1940,7 +2013,7 @@ static void chat(struct client_state *csp)
          return;
       }
 
-      req = get_header(csp);
+      req = get_header(csp->iob);
 
    } while ((NULL != req) && ('\0' == *req));
 
@@ -2028,8 +2101,20 @@ static void chat(struct client_state *csp)
    init_list(headers);
    for (;;)
    {
-      if ( ( ( p = get_header(csp) ) != NULL) && ( *p == '\0' ) )
+      p = get_header(csp->iob);
+
+      if (p == NULL)
       {
+         /* There are no additional headers to read. */
+         break;
+      }
+
+      if (*p == '\0')
+      {
+         /*
+          * We didn't receive a complete header
+          * line yet, get the rest of it.
+          */
          len = read_socket(csp->cfd, buf, sizeof(buf) - 1);
          if (len <= 0)
          {
@@ -2038,23 +2123,25 @@ static void chat(struct client_state *csp)
             return;
          }
          
-         /*
-          * If there is no memory left for buffering the
-          * request, there is nothing we can do but hang up
-          */
          if (add_to_iob(csp, buf, len))
          {
+            /*
+             * If there is no memory left for buffering the
+             * request, there is nothing we can do but hang up
+             */
             destroy_list(headers);
             return;
          }
-         continue;
       }
-
-      if (p == NULL) break;
-
-      enlist(headers, p);
-      freez(p);
-
+      else
+      {
+         /*
+          * We were able to read a complete
+          * header and can finaly enlist it.
+          */
+         enlist(headers, p);
+         freez(p);
+      }
    }
 
    if (http->host == NULL)
@@ -2090,7 +2177,7 @@ static void chat(struct client_state *csp)
    else
 #endif /* ndef FEATURE_TOGGLE */
    {
-      url_actions(http, csp);
+      get_url_actions(csp, http);
    }
 
    /* 
@@ -2109,7 +2196,7 @@ static void chat(struct client_state *csp)
    list_append_list_unique(csp->headers, headers);
    destroy_list(headers);
 
-   err = sed(client_patterns, add_client_headers, csp);
+   err = sed(csp, FILTER_CLIENT_HEADERS);
    if (JB_ERR_OK != err)
    {
       assert(err == JB_ERR_PARSE);
@@ -2135,7 +2222,8 @@ static void chat(struct client_state *csp)
    }
 
    /* decide how to route the HTTP request */
-   if (NULL == (fwd = forward_url(http, csp)))
+   fwd = forward_url(csp, http);
+   if (NULL == fwd)
    {
       log_error(LOG_LEVEL_FATAL, "gateway spec is NULL!?!?  This can't happen!");
       /* Never get here - LOG_LEVEL_FATAL causes program exit */
@@ -2178,52 +2266,16 @@ static void chat(struct client_state *csp)
     *
     */
 
-   /*
-    * Check if a CONNECT request is allowable:
-    * In the absence of a +limit-connect action, allow only port 443.
-    * If there is an action, allow whatever matches the specificaton.
-    */
-   if(http->ssl)
+   if (http->ssl && connect_port_is_forbidden(csp))
    {
-      if(  ( !(csp->action->flags & ACTION_LIMIT_CONNECT) && csp->http->port != 443)
-           || (csp->action->flags & ACTION_LIMIT_CONNECT
-              && !match_portlist(csp->action->string[ACTION_STRING_LIMIT_CONNECT], csp->http->port)) )
-      {
-         const char *acceptable_connect_ports =
-            csp->action->string[ACTION_STRING_LIMIT_CONNECT] ?
-            csp->action->string[ACTION_STRING_LIMIT_CONNECT] :
-            "443 (implied default)";
-         if (csp->action->flags & ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
-         {
-            /*
-             * The response may confuse some clients,
-             * but makes unblocking easier.
-             *
-             * XXX: It seems to work with all major browsers,
-             * so we should consider returning a body by default someday ... 
-             */
-            log_error(LOG_LEVEL_INFO, "Request from %s marked for blocking. "
-               "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
-               csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
-            csp->action->flags |= ACTION_BLOCK;
-            http->ssl = 0;
-         }
-         else
-         {
-            write_socket(csp->cfd, CFORBIDDEN, strlen(CFORBIDDEN));
-            log_error(LOG_LEVEL_INFO, "Request from %s denied. "
-               "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
-               csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
-            assert(NULL != csp->http->ocmd);
-            log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 403 0", csp->ip_addr_str, csp->http->ocmd);
-
-            list_remove_all(csp->headers);
-            /*
-             * XXX: For consistency we might want to log a crunch message here.
-             */
-            return;
-         }
-      }
+      const char *acceptable_connect_ports =
+         csp->action->string[ACTION_STRING_LIMIT_CONNECT];
+      assert(NULL != acceptable_connect_ports);
+      log_error(LOG_LEVEL_INFO, "Request from %s marked for blocking. "
+         "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
+         csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
+      csp->action->flags |= ACTION_BLOCK;
+      http->ssl = 0;
    }
 
    if (http->ssl == 0)
@@ -2321,7 +2373,7 @@ static void chat(struct client_state *csp)
        */
 
       if (write_socket(csp->sfd, hdr, strlen(hdr))
-       || (flush_socket(csp->sfd, csp) <  0))
+       || (flush_socket(csp->sfd, csp->iob) <  0))
       {
          log_error(LOG_LEVEL_CONNECT, "write header to: %s failed: %E",
                     http->hostport);
@@ -2464,14 +2516,6 @@ static void chat(struct client_state *csp)
           */
          buf[len] = '\0';
 
-#ifdef FEATURE_KILL_POPUPS
-         /* Filter the popups on this read. */
-         if (block_popups_now)
-         {
-            filter_popups(buf, csp);
-         }
-#endif /* def FEATURE_KILL_POPUPS */
-
          /* Normally, this would indicate that we've read
           * as much as the server has sent us and we can
           * close the client connection.  However, Microsoft
@@ -2513,9 +2557,10 @@ static void chat(struct client_state *csp)
                      csp->content_length = (size_t)(csp->iob->eod - csp->iob->cur);
                   }
 
-                  if (JB_ERR_OK != sed(server_patterns_light, NULL, csp))
+                  if (JB_ERR_OK != update_server_headers(csp))
                   {
-                     log_error(LOG_LEVEL_FATAL, "Failed to parse server headers.");
+                     log_error(LOG_LEVEL_FATAL,
+                        "Failed to update server headers. after filtering.");
                   }
 
                   hdr = list_to_text(csp->headers);
@@ -2524,12 +2569,6 @@ static void chat(struct client_state *csp)
                      /* FIXME Should handle error properly */
                      log_error(LOG_LEVEL_FATAL, "Out of memory parsing server header");
                   }
-
-                  /*
-                   * Shouldn't happen because this was the second sed run
-                   * and tags are only created for the first one.
-                   */
-                  assert(!crunch_response_triggered(csp, crunchers_all));
 
                   if (write_socket(csp->cfd, hdr, strlen(hdr))
                    || write_socket(csp->cfd, p != NULL ? p : csp->iob->cur, csp->content_length))
@@ -2551,9 +2590,6 @@ static void chat(struct client_state *csp)
              * This is NOT the body, so
              * Let's pretend the server just sent us a blank line.
              */
-            log_error(LOG_LEVEL_INFO,
-               "Malformerd HTTP headers detected and MS IIS5 hack enabled. "
-               "Expect an invalid response or even no response at all.");
             snprintf(buf, sizeof(buf), "\r\n");
             len = (int)strlen(buf);
 
@@ -2603,7 +2639,7 @@ static void chat(struct client_state *csp)
                   hdrlen = strlen(hdr);
 
                   if (write_socket(csp->cfd, hdr, hdrlen)
-                   || ((flushed = flush_socket(csp->cfd, csp)) < 0)
+                   || ((flushed = flush_socket(csp->cfd, csp->iob)) < 0)
                    || (write_socket(csp->cfd, buf, (size_t)len)))
                   {
                      log_error(LOG_LEVEL_CONNECT, "Flush header and buffers to client failed: %E");
@@ -2666,6 +2702,8 @@ static void chat(struct client_state *csp)
                    * and there isn't anything
                    * we can do about it.
                    */
+                  log_error(LOG_LEVEL_INFO,
+                     "MS IIS5 hack didn't produce valid headers.");
                   break;
                }
                else
@@ -2689,10 +2727,34 @@ static void chat(struct client_state *csp)
                return;
             }
 
-            /* we have now received the entire header.
+            assert(csp->headers->first->str);
+            assert(!http->ssl);
+            if (strncmpic(csp->headers->first->str, "HTTP", 4))
+            {
+               /*
+                * It doesn't look like a HTTP response:
+                * tell the client and log the problem.
+                */
+               if (strlen(csp->headers->first->str) > 30)
+               {
+                  csp->headers->first->str[30] = '\0';
+               }
+               log_error(LOG_LEVEL_ERROR,
+                  "Invalid server or forwarder response. Starts with: %s",
+                  csp->headers->first->str);
+               log_error(LOG_LEVEL_CLF,
+                  "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
+               write_socket(csp->cfd, INVALID_SERVER_HEADERS_RESPONSE,
+                  strlen(INVALID_SERVER_HEADERS_RESPONSE));
+               free_http_request(http);
+               return;
+            }
+
+            /*
+             * We have now received the entire server header,
              * filter it and send the result to the client
              */
-            if (JB_ERR_OK != sed(server_patterns, add_server_headers, csp))
+            if (JB_ERR_OK != sed(csp, FILTER_SERVER_HEADERS))
             {
                log_error(LOG_LEVEL_FATAL, "Failed to parse server headers.");
             }
@@ -2718,20 +2780,6 @@ static void chat(struct client_state *csp)
 
             if (!http->ssl) /* We talk plaintext */
             {
-
-#ifdef FEATURE_KILL_POPUPS
-               /* Start blocking popups if appropriate. */
-               if ((csp->content_type & CT_TEXT) &&               /* It's a text / * MIME-Type */
-                   (csp->action->flags & ACTION_NO_POPUPS) != 0)  /* Policy allows */
-               {
-                  block_popups_now = 1;
-                  /*
-                   * Filter the part of the body that came in the same read
-                   * as the last headers:
-                   */
-                  filter_popups(csp->iob->cur, csp);
-               }
-#endif /* def FEATURE_KILL_POPUPS */
                content_filter = get_filter_function(csp);
             }
             /*
@@ -2745,7 +2793,7 @@ static void chat(struct client_state *csp)
                 */
 
                if (write_socket(csp->cfd, hdr, strlen(hdr))
-                || ((len = flush_socket(csp->cfd, csp)) < 0))
+                || ((len = flush_socket(csp->cfd, csp->iob)) < 0))
                {
                   log_error(LOG_LEVEL_CONNECT, "write header to client failed: %E");
 
@@ -2772,6 +2820,8 @@ static void chat(struct client_state *csp)
              */
             if (ms_iis5_hack)
             {
+               log_error(LOG_LEVEL_INFO,
+                  "Closed server connection detected with MS IIS5 hack enabled.");
                break;
             }
          }
@@ -3002,7 +3052,7 @@ int main(int argc, const char *argv[])
     * Parse the command line arguments
     *
     * XXX: simply printing usage information in case of
-    * invalid arguments isn't particular user friendly.
+    * invalid arguments isn't particularly user friendly.
     */
    while (++argc_pos < argc)
    {
@@ -3408,16 +3458,7 @@ static jb_socket bind_port_helper(struct configuration_spec * config)
    int result;
    jb_socket bfd;
 
-   if ( (config->haddr != NULL)
-     && (config->haddr[0] == '1')
-     && (config->haddr[1] == '2')
-     && (config->haddr[2] == '7')
-     && (config->haddr[3] == '.') )
-   {
-      log_error(LOG_LEVEL_INFO, "Listening on port %d for local connections only",
-                config->hport);
-   }
-   else if (config->haddr == NULL)
+   if (config->haddr == NULL)
    {
       log_error(LOG_LEVEL_INFO, "Listening on port %d on all IP addresses",
                 config->hport);

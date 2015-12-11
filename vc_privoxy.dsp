@@ -224,14 +224,6 @@ SOURCE=.\jcc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\killpopup.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\killpopup.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\loadcfg.c
 # End Source File
 # Begin Source File

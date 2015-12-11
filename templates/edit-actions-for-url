@@ -6,7 +6,7 @@
 #                particular section in an actions file.
 # 
 #
-# Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+# Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
 #                Privoxy team. http://www.privoxy.org/
 #
 #                Original Author: Copyright (C) 2001 Jonathan Foster
@@ -32,6 +32,28 @@
 #
 # Revisions   :
 #    $Log: edit-actions-for-url,v $
+#    Revision 1.54  2008/03/29 12:14:27  fabiankeil
+#    Remove send-wafer and send-vanilla-wafer actions.
+#
+#    Revision 1.53  2008/03/28 15:13:45  fabiankeil
+#    Remove inspect-jpegs action.
+#
+#    Revision 1.52  2008/03/15 14:52:36  fabiankeil
+#    Add CGI editor support for the "disable all filters of this type"
+#    directives "-client-header-filter", "-server-header-filter",
+#    "-client-header-tagger" and "-server-header-tagger".
+#
+#    Revision 1.51  2008/03/07 16:46:49  fabiankeil
+#    Reword limit-connect{} entry.
+#
+#    Revision 1.50  2008/03/04 18:30:44  fabiankeil
+#    Remove the treat-forbidden-connects-like-blocks action. We now
+#    use the "blocked" page for forbidden CONNECT requests by default.
+#
+#    Revision 1.49  2008/03/01 14:00:47  fabiankeil
+#    Let the block action take the reason for the block
+#    as argument and show it on the "blocked" page.
+#
 #    Revision 1.48  2007/12/11 21:18:55  fabiankeil
 #    Make forward-override accessible through the CGI editor.
 #
@@ -425,18 +447,6 @@ function show_limit_connect_opts(tf)
     target.style.display = (tf ? "" : "none");
 }
 
-function show_send_wafer_opts(tf)
-{
-    if (document.getElementById) {
-        target = document.getElementById("send_wafer_opts");
-    } else if (document.all) {
-        target = document.send_wafer_opts;
-    } else {
-        return;
-    }
-    target.style.display = (tf ? "" : "none");
-}
-
 //-->
 </script>
 </head>
@@ -535,10 +545,41 @@ function show_send_wafer_opts(tf)
       <td class="action"><a href="@user-manual@@actions-help-prefix@BLOCK">block</a></td>
       <td>Block the request.</td>
     </tr>
-
+    <tr class="bg1" align="left" valign="top" id="block_opts">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1">&nbsp;</td>
+      <td class="noc1">&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>Block reason to tell the user:<br>
+        <input type="text" name="block_mode" size="40" value="@block-param@">
+      </td>
+    </tr>
+    <tr class="bg1" align="left" valign="top">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="client_header_filter_all" id="client_header_filter_all_n" value="N" @client-header-filter-all-n@ ></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="client_header_filter_all" id="client_header_filter_all_x" value="X" @client-header-filter-all-x@ ></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@CLIENT-HEADER-FILTER">client-header-filter</a> *</td>
+      <td>Filter the client headers.
+        You can use the radio buttons on this line to disable
+        all client-header filters applied by previous rules, and/or
+        you can enable or disable the filters individually below.</td>
+    </tr>
 @client-header-filter-params@
+    <tr class="bg1" align="left" valign="top">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="client_header_tagger_all" id="client_header_tagger_all_n" value="N" @client-header-tagger-all-n@ ></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="client_header_tagger_all" id="client_header_tagger_all_x" value="X" @client-header-tagger-all-x@ ></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@CLIENT-HEADER-TAGGER">client-header-tagger</a> *</td>
+      <td>Create tags based on the client headers.
+        You can use the radio buttons on this line to disable
+        all client-header taggers applied by previous rules, and/or
+        you can enable or disable the taggers individually below.</td>
+    </tr>
 @client-header-tagger-params@
-
    <tr class="bg1" align="left" valign="top">
       <td class="en1" align="center" valign="middle"><input type="radio"
         name="content_type_overwrite" value="Y" @content-type-overwrite-y@
@@ -1092,33 +1133,6 @@ function show_send_wafer_opts(tf)
     </tr>
     <tr class="bg1" align="left" valign="top">
       <td class="en1" align="center" valign="middle"><input type="radio"
-        name="inspect_jpegs" value="Y" @inspect-jpegs-y@
-        ></td>
-      <td class="dis1" align="center" valign="middle"><input type="radio"
-        name="inspect_jpegs" value="N" @inspect-jpegs-n@
-        ></td>
-      <td class="noc1" align="center" valign="middle"><input type="radio"
-        name="inspect_jpegs" value="X" @inspect-jpegs-x@
-        ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@INSPECT-JPEGS">inspect-jpegs</a></td>
-      <td>Checks jpeg images for malicious content.</td>
-    </tr>
-    <tr class="bg1" align="left" valign="top">
-      <td class="en1" align="center" valign="middle"><input type="radio"
-        name="kill_popups" value="Y" @kill-popups-y@
-        ></td>
-      <td class="dis1" align="center" valign="middle"><input type="radio"
-        name="kill_popups" value="N" @kill-popups-n@
-        ></td>
-      <td class="noc1" align="center" valign="middle"><input type="radio"
-        name="kill_popups" value="X" @kill-popups-x@
-        ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@KILL-POPUPS">kill-popups</a></td>
-      <td>Filter the website through a built-in filter to disable many JavaScript
-        pop-up windows. Not recommended.</td>
-    </tr>
-    <tr class="bg1" align="left" valign="top">
-      <td class="en1" align="center" valign="middle"><input type="radio"
         name="limit_connect" id="limit_connect_y" value="Y" @limit-connect-y@
         onclick="show_limit_connect_opts(true)"></td>
       <td class="dis1" align="center" valign="middle"><input type="radio"
@@ -1128,15 +1142,15 @@ function show_send_wafer_opts(tf)
         name="limit_connect" value="X" @limit-connect-x@
         onclick="show_limit_connect_opts(false)"></td>
       <td class="action"><a href="@user-manual@@actions-help-prefix@LIMIT-CONNECT">limit-connect</a></td>
-      <td>Specify which ports are allowed for SSL (HTTP CONNECT) access.
-        Note that this allows arbitrary tunnelling.</td>
+      <td>Limit which ports are allowed in HTTP CONNECT requests. These requests are
+        used to tunnel SSL and other protocols through HTTP proxies.</td>
     </tr>
     <tr class="bg1" align="left" valign="top" id="limit_connect_opts">
       <td class="en1">&nbsp;</td>
       <td class="dis1">&nbsp;</td>
       <td class="noc1">&nbsp;</td>
       <td>&nbsp;</td>
-      <td>Legal SSL ports (comma separated, ranges allowed):<br>
+      <td>Legal ports (comma separated, ranges allowed):<br>
         <input type="text" name="limit_connect_mode" size="40"
         value="@limit-connect-param@"></td>
     </tr>
@@ -1218,44 +1232,31 @@ function show_send_wafer_opts(tf)
     </tr>
 
     <tr class="bg1" align="left" valign="top">
-      <td class="en1" align="center" valign="middle"><input type="radio"
-        name="send_vanilla_wafer" value="Y" @send-vanilla-wafer-y@
-        ></td>
-      <td class="dis1" align="center" valign="middle"><input type="radio"
-        name="send_vanilla_wafer" value="N" @send-vanilla-wafer-n@
-        ></td>
-      <td class="noc1" align="center" valign="middle"><input type="radio"
-        name="send_vanilla_wafer" value="X" @send-vanilla-wafer-x@
-        ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@SEND-VANILLA-WAFER">send-vanilla-wafer</a></td>
-      <td>Adds a special wafer (standard cookie) to all your requests. Not recommended.</td>
-    </tr>
-    <tr class="bg1" align="left" valign="top">
-      <td class="en1" align="center" valign="middle"><input type="radio"
-        name="send_wafer" id="send_wafer_y" value="Y" @send-wafer-y@
-        onclick="show_send_wafer_opts(true)"></td>
-      <td class="dis1" align="center" valign="middle"><input type="radio"
-        name="send_wafer" id="send_wafer_n" value="N" @send-wafer-n@
-        onclick="show_send_wafer_opts(false)"></td>
-      <td class="noc1" align="center" valign="middle"><input type="radio"
-        name="send_wafer" id="send_wafer_x" value="X" @send-wafer-x@
-        onclick="show_send_wafer_opts(false)"></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@SEND-WAFER">send-wafer</a></td>
-      <td>Adds user-specified cookies.</td>
-    </tr>
-    <tr class="bg1" align="left" valign="top" id="send_wafer_opts">
       <td class="en1">&nbsp;</td>
-      <td class="dis1">&nbsp;</td>
-      <td class="noc1">&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>Editing the settings for this option, or turning
-        it on if it was off, is not yet supported using this web-based
-        editor.</td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="server_header_filter_all" id="server_header_filter_all_n" value="N" @server-header-filter-all-n@ ></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="server_header_filter_all" id="server_header_filter_all_x" value="X" @server-header-filter-all-x@ ></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@SERVER-HEADER-FILTER">server-header-filter</a> *</td>
+      <td>Filter the server headers.
+        You can use the radio buttons on this line to disable
+        all server-header filters applied by previous rules, and/or
+        you can enable or disable the filters individually below.</td>
     </tr>
-
 @server-header-filter-params@
+    <tr class="bg1" align="left" valign="top">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="server_header_tagger_all" id="server_header_tagger_all_n" value="N" @server-header-tagger-all-n@ ></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="server_header_tagger_all" id="server_header_tagger_all_x" value="X" @server-header-tagger-all-x@ ></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@SERVER-HEADER-TAGGER">server-header-tagger</a> *</td>
+      <td>Create tags based on the server headers.
+        You can use the radio buttons on this line to disable
+        all server-header taggers applied by previous rules, and/or
+        you can enable or disable the taggers individually below.</td>
+    </tr>
 @server-header-tagger-params@
-
     <tr class="bg1" align="left" valign="top">
       <td class="en1" align="center" valign="middle"><input type="radio"
         name="session_cookies_only" value="Y" @session-cookies-only-y@
@@ -1311,23 +1312,6 @@ function show_send_wafer_opts(tf)
         the browser to this image URL:</label><br>
         <input type="text" name="set_image_blocker_param" id="set_image_blocker_param"
         size="40" value="@set-image-blocker-param@"></td>
-    </tr>
-   <tr class="bg1" align="left" valign="top">
-      <td class="en1" align="center" valign="middle"><input type="radio"
-        name="treat_forbidden_connects_like_blocks" value="Y" @treat-forbidden-connects-like-blocks-y@
-        ></td>
-      <td class="dis1" align="center" valign="middle"><input type="radio"
-        name="treat_forbidden_connects_like_blocks" value="N" @treat-forbidden-connects-like-blocks-n@
-        ></td>
-      <td class="noc1" align="center" valign="middle"><input type="radio"
-        name="treat_forbidden_connects_like_blocks" value="X" @treat-forbidden-connects-like-blocks-x@
-        ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS">treat-forbidden-connects-like-blocks</a></td>
-      <td>
-       Answer forbidden Connect requests with the usual block message.
-       Makes unblocking easier, but the <q>go there anyway</q> link will not work
-       as expected.
-     </td>
     </tr>
   </table>
 

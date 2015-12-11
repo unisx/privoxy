@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.8">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.16 2008/01/19 15:03:05 hal9 Exp $
+ $Id: readme.sgml,v 2.19 2008/06/21 13:43:06 fabiankeil Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -127,6 +127,23 @@
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
+<!--
+<para>
+ Privoxy is in development mode for the time being. Some of the current cvs
+ sources may not be well tested, and/or well documented. Current cvs is
+ suggested only for developers and adventuresome users. If you find any
+ problems, please report them on the appropriate SourceForge tracker, or the
+ developer's mailing list: ijbswa-developers@lists.sourceforge.net. Your help
+ will be appreciated!
+</para>
+-->
+<para>
+ June 2008, Privoxy 3.0.9 beta is released. There are no major new
+ features, but many improvements and refinements. As usual there are changes
+ that affect the configuration. See the "ChangeLog", and the "What's New"
+ section and the "Upgrader's Notes" in the User Manual for details and
+ specifics.
+</para>
 <para>
  NEWS! January 2008, Privoxy 3.0.8 stable is released. This is a significant
  upgrade with many new and enhanced features, and many bugs fixed. All Privoxy
@@ -255,7 +272,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.16 2008/01/19 15:03:05 hal9 Exp $ -->
+<!--  $Id: readme.sgml,v 2.19 2008/06/21 13:43:06 fabiankeil Exp $ -->
 <!-- </para> -->
 
 </article>

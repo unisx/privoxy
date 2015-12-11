@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.54 2008/01/20 14:30:59 fabiankeil Exp $
+# $Id: privoxy-rh.spec,v 1.58 2008/06/19 01:52:17 hal9 Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -35,9 +35,9 @@
 
 Name: privoxy
 # ATTENTION
-# Version and release should be updated acordingly on configure.in and
+# Version and release should be updated accordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.6
+Version: 3.0.9
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -70,7 +70,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=8
+VERSION_POINT=9
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -250,7 +250,7 @@ fi
 %files
 %defattr(0644,root,root,0755)
 %doc README AUTHORS ChangeLog LICENSE 
-%doc doc/text/developer-manual.txt doc/text/user-manual.txt doc/text/faq.txt
+#%doc doc/text/developer-manual.txt doc/text/user-manual.txt doc/text/faq.txt
 %doc doc/webserver/developer-manual
 %doc doc/webserver/user-manual
 %doc doc/webserver/faq
@@ -276,6 +276,7 @@ fi
 %config(noreplace) %{privoxyconf}/user.action
 %config %{privoxyconf}/default.action
 %config %{privoxyconf}/default.filter
+%config %{privoxyconf}/regression-tests.action
 %config(noreplace) %{privoxyconf}/user.filter
 %config(noreplace) %{privoxyconf}/trust
 
@@ -292,6 +293,7 @@ fi
 %config %{privoxyconf}/templates/cgi-style.css
 %config %{privoxyconf}/templates/connect-failed
 %config %{privoxyconf}/templates/default
+%config %{privoxyconf}/templates/forwarding-failed
 %config %{privoxyconf}/templates/edit-actions-add-url-form
 %config %{privoxyconf}/templates/edit-actions-for-url
 %config %{privoxyconf}/templates/edit-actions-for-url-filter
@@ -314,6 +316,7 @@ fi
 %config %{privoxyconf}/templates/toggle
 %config %{privoxyconf}/templates/toggle-mini
 %config %{privoxyconf}/templates/untrusted
+%config %{privoxyconf}/templates/url-info-osd.xml
 
 # Attention, new defattr change here !
 %defattr(0644,root,root,0755)
@@ -324,6 +327,9 @@ fi
 %{_mandir}/man1/%{name}.*
 
 %changelog
+* Sat Jun 18 2008 Hal Burgiss <hal@foobox.net>
+- Remove reference to txt docs.
+
 * Sat Oct 18 2006 Hal Burgiss <hal@foobox.net>
 - Bump version to 3.0.6
 
@@ -760,6 +766,21 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.58  2008/06/19 01:52:17  hal9
+# Remove txt docs from spec file.
+#
+# Revision 1.57  2008/05/30 15:06:42  fabiankeil
+# - Add %config directive for url-info-osd.xml.
+#   As usual, this hasn't been tested.
+# - Fix comment typo.
+#
+# Revision 1.56  2008/03/16 14:17:25  fabiankeil
+# Add %config lines for regression-tests.action and forwarding-failed.
+# This might or might not help with #1915185, reported by Bernardo Bacic.
+#
+# Revision 1.55  2008/03/02 17:36:43  fabiankeil
+# Set version to 3.0.9.
+#
 # Revision 1.54  2008/01/20 14:30:59  fabiankeil
 # Set version to 3.0.8.
 #

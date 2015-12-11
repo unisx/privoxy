@@ -27,6 +27,27 @@
 #
 # Revisions   :
 #    $Log: show-url-info,v $
+#    Revision 1.27  2008/05/26 17:30:58  fabiankeil
+#    Provide an OpenSearch Description to access the
+#    show-url-info page through "search engine plugins".
+#
+#    Revision 1.26  2008/05/05 10:03:06  fabiankeil
+#    If the provided URL isn't valid, don't show the
+#    cgi-editor-is-disabled and filters-might-be-ineffective
+#    sections.
+#
+#    Revision 1.25  2008/04/26 10:34:18  fabiankeil
+#    If zlib support is unavailable and there are content filters active
+#    but the prevent-compression action is disabled, include a warning
+#    on the show-url-info page that compression might prevent filtering.
+#
+#    Revision 1.24  2008/02/10 17:26:52  fabiankeil
+#    Reduce superfluous white space by not marking
+#    up the final results list as paragraph.
+#
+#    Revision 1.23  2008/02/01 06:04:31  fabiankeil
+#    If edit buttons on the show-url-info CGI page are hidden, explain why.
+#
 #    Revision 1.22  2007/12/08 14:29:06  fabiankeil
 #    Use CSS to let the URL and pattern input fields scale with
 #    the browser width and try to prevent vertical scroll bars
@@ -147,6 +168,7 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
   <link rel="shortcut icon" href="@default-cgi@favicon.ico" type="image/x-icon">
+  <link rel="search" type="application/opensearchdescription+xml" title="Privoxy URL Info" href="/url-info-osd.xml">
 </head>
 
 <body>
@@ -218,13 +240,37 @@
 <!-- if-valid-url-end@ -->
         <h2>Matches for <a href="@url@">@url@</a>:</h2>
         @matches@
+<!-- @if-valid-url-start -->
+<!-- @if-cgi-editor-is-disabled-start -->
+        <p>
+          The CGI editor is currently disabled, thus no edit buttons are shown.<br>
+          Please have a look at the
+           <a href="@user-manual@config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions documentation</a>
+          to learn how to enable it and what the risks are.
+        </p>
+<!--  if-cgi-editor-is-disabled-end@ -->
+<!-- @if-valid-url-end -->
       </td>
     </tr>
 <!-- @if-valid-url-start -->
+<!-- @if-filters-might-be-ineffective-start -->
+    <tr>
+      <td class="warning">
+        <h2>Warning:</h2>
+        <p>
+          This Privoxy version has been build without zlib support,
+          <strong>content filters will not work if the server sends compressed content.</strong>
+          Consider enabling the <a title="prevent-compression documentation"
+           href="@user-manual@actions-file.html#PREVENT-COMPRESSION">prevent-compression</a>
+          action for this URL or rebuild Privoxy with zlib support.
+        </p>
+      </td>
+    </tr>
+<!-- if-filters-might-be-ineffective-end@ -->
     <tr>
       <td class="box">
         <h2>Final results:</h2>
-        <p><b>@final@</b></p>
+        <b>@final@</b>
       </td>
     </tr>
 <!-- if-valid-url-end@ -->

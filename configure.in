@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.109 2008/01/20 14:07:09 fabiankeil Exp $
+dnl $Id: configure.in,v 1.118 2008/06/27 12:50:44 fabiankeil Exp $
 dnl 
-dnl Written by and Copyright (C) 2001 - 2007 the SourceForge
+dnl Written by and Copyright (C) 2001-2008 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
@@ -28,6 +28,39 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.118  2008/06/27 12:50:44  fabiankeil
+dnl Here's looking at you, Gentoo Linux: Show a warning if
+dnl --disable-pthread is used even though pthreads are available.
+dnl
+dnl Revision 1.117  2008/06/14 12:47:30  fabiankeil
+dnl Set CODE_STATUS to beta.
+dnl
+dnl Revision 1.116  2008/06/08 11:55:09  fabiankeil
+dnl - Show a warning if the soon-to-be-removed static PCRE code is used.
+dnl - Hide the "using built-in static pcrs" message. With dynamic linking
+dnl   against PCRS disabled, the message isn't particularly useful.
+dnl
+dnl Revision 1.115  2008/05/25 15:50:14  fabiankeil
+dnl Try to use zlib by default, but just show a warning if it's
+dnl unavailable. Remove --enable-zlib, add  --disable-zlib.
+dnl
+dnl Revision 1.114  2008/04/06 15:18:33  fabiankeil
+dnl Oh well, rename the --enable-pcre-host-patterns option to
+dnl --enable-extended-host-patterns as it's not really PCRE syntax.
+dnl
+dnl Revision 1.113  2008/04/06 14:54:26  fabiankeil
+dnl Use PCRE syntax in host patterns when configured
+dnl with --enable-pcre-host-patterns.
+dnl
+dnl Revision 1.112  2008/03/27 18:27:22  fabiankeil
+dnl Remove kill-popups action.
+dnl
+dnl Revision 1.111  2008/02/03 14:40:47  fabiankeil
+dnl Remove unused OSX_DARWIN macro. Reported by Mark Miller in #1852529.
+dnl
+dnl Revision 1.110  2008/01/26 10:52:13  fabiankeil
+dnl Change version to 3.0.9 UNRELEASED.
+dnl
 dnl Revision 1.109  2008/01/20 14:07:09  fabiankeil
 dnl Set CODE_STATUS to stable.
 dnl
@@ -508,7 +541,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.109 $)
+AC_REVISION($Revision: 1.118 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -554,8 +587,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=8
-CODE_STATUS="stable"
+VERSION_POINT=9
+CODE_STATUS="beta"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
@@ -896,6 +929,10 @@ AC_ARG_ENABLE(pthread,
 [  --disable-pthread               Don't use POSIX threads (pthreads)],
 [if test $enableval = no; then
   # Disable pthreads
+  if test $have_pthread = yes; then
+     AC_MSG_WARN([pthreads seem to be available but you are using --disable-pthread.]) 
+     AC_MSG_WARN([This is almost always a mistake and can render Privoxy unacceptable slow.])
+  fi
   have_pthread=no
 fi])
 
@@ -1113,7 +1150,7 @@ dnl Mac OSX specific
 dnl =================================================================
     
 case "$host" in
-*-apple-darwin*) SPECIAL_CFLAGS="-Dunix -DOSX_DARWIN"
+*-apple-darwin*) SPECIAL_CFLAGS="-Dunix"
 ;;  
 esac
 
@@ -1243,12 +1280,6 @@ AC_ARG_ENABLE(fast-redirects,
   AC_DEFINE(FEATURE_FAST_REDIRECTS)
 fi], AC_DEFINE(FEATURE_FAST_REDIRECTS))
 
-AC_ARG_ENABLE(killpopup,
-[  --disable-killpopup             Never block popups],
-[if test $enableval = yes; then
-  AC_DEFINE(FEATURE_KILL_POPUPS)
-fi],AC_DEFINE(FEATURE_KILL_POPUPS))
-
 AC_ARG_ENABLE(stats,
 [  --disable-stats                 Don't keep statistics],
 [if test $enableval = yes; then
@@ -1313,6 +1344,12 @@ AC_ARG_ENABLE(graceful-termination,
   AC_DEFINE(FEATURE_GRACEFUL_TERMINATION)
 fi])
 
+AC_ARG_ENABLE(extended-host-patterns,
+[  --enable-extended-host-patterns Allow extended regular expressions in host patterns.],
+[if test $enableval = yes; then
+  AC_DEFINE(FEATURE_EXTENDED_HOST_PATTERNS)
+fi])
+
 dnl pcre/pcrs is needed for CGI anyway, so
 dnl the choice is only between static and
 dnl dynamic:
@@ -1335,17 +1372,19 @@ dnl This check is incomplete. For mingw32 zlib is found
 dnl by configure, but not necessarily by the compiler.
 dnl ====================================================
 AC_ARG_ENABLE(zlib,
-[  --enable-zlib                   Use an external zlib library to allow decompressing
-                                  data on the fly.],
+[  --disable-zlib                  Don't use zlib to decompress data before filtering.],
 [enableval2=$enableval],
-[enableval2=no])
+[enableval2=yes])
 if test $enableval2 = yes; then
-  AC_CHECK_LIB(z, zlibVersion, , [
-    AC_MSG_ERROR([Unable to find a copy of zlib. The zlib library
-is necessary to enable compresion support. ])
-  ]) 
-  AC_DEFINE(FEATURE_ZLIB,1,
-    [ Define to 1 to use compression through the zlib library. ])
+  AC_CHECK_LIB(z, zlibVersion, [have_zlib="yes"], [have_zlib="no"])
+  if test $have_zlib = "yes"; then
+    LIBS="$LIBS -lz"
+    AC_DEFINE(FEATURE_ZLIB,1,[Define to 1 to use compression through the zlib library.])
+  else
+   AC_MSG_WARN([No zlib found.
+   Privoxy will not be able to filter compressed content.
+   This may become a fatal error in the future.])
+  fi  
 fi
 
 
@@ -1359,7 +1398,8 @@ if test $have_pcre = "yes"; then
   STATIC_PCRE_ONLY=#
   LIBS="$LIBS -lpcre -lpcreposix"
 else
-  echo "using built-in static pcre"
+  AC_MSG_WARN([You are using the static PCRE code which is scheduled for removal, for details see: 
+    https://sourceforge.net/mailarchive/message.php?msg_id=20080511195555.2dc6cfdc%40fabiankeil.de])
   pcre_dyn=no
   AC_DEFINE(STATIC_PCRE)
   STATIC_PCRE_ONLY=
@@ -1378,7 +1418,7 @@ dnl  echo "using libpcrs"
 dnl  STATIC_PCRS_ONLY=#
 dnl  LIBS="$LIBS -lpcrs"
 dnl else
-  echo "using built-in static pcrs"
+dnl  echo "using built-in static pcrs"
   AC_DEFINE(STATIC_PCRS)
   STATIC_PCRS_ONLY=
 dnl fi

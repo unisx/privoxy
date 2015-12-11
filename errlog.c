@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.63 2007/12/15 19:49:32 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.71 2008/06/28 17:17:15 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -33,6 +33,37 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.63 2007/12/15 19:49:32 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.71  2008/06/28 17:17:15  fabiankeil
+ *    Remove another stray semicolon.
+ *
+ *    Revision 1.70  2008/06/28 17:10:29  fabiankeil
+ *    Remove stray semicolon in get_log_timestamp().
+ *    Reported by Jochen Voss in #2005221.
+ *
+ *    Revision 1.69  2008/05/30 15:55:25  fabiankeil
+ *    Declare variable "debug" static and complain about its name.
+ *
+ *    Revision 1.68  2008/04/27 16:50:46  fabiankeil
+ *    Remove an incorrect assertion. The value of debug may change if
+ *    the configuration is reloaded in another thread. While we could
+ *    cache the initial value, the assertion doesn't seem worth it.
+ *
+ *    Revision 1.67  2008/03/27 18:27:23  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.66  2008/01/31 15:38:14  fabiankeil
+ *    - Make the logfp assertion more strict. As of 1.63, the "||" could
+ *      have been an "&&", which means we can use two separate assertions
+ *      and skip on of them on Windows.
+ *    - Break a long commit message line in two.
+ *
+ *    Revision 1.65  2008/01/31 14:44:33  fabiankeil
+ *    Use (a != b) instead of !(a == b) so the sanity check looks less insane.
+ *
+ *    Revision 1.64  2008/01/21 18:56:46  david__schmidt
+ *    Swap #def from negative to positive, re-joined it so it didn't
+ *    span an assertion (compilation failure on OS/2)
+ *
  *    Revision 1.63  2007/12/15 19:49:32  fabiankeil
  *    Stop overloading logfile to control the mingw32 log window as well.
  *    It's no longer necessary now that we disable all debug lines by default
@@ -380,8 +411,8 @@ const char errlog_h_rcs[] = ERRLOG_H_VERSION;
 /* where to log (default: stderr) */
 static FILE *logfp = NULL;
 
-/* logging detail level.  */
-int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);  
+/* logging detail level. XXX: stupid name. */
+static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);  
 
 /* static functions */
 static void fatal_error(const char * error_message);
@@ -703,7 +734,7 @@ static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
 #endif
 
    length = strftime(buffer, buffer_size, "%b %d %H:%M:%S", &tm_now);
-   if (length > 0);
+   if (length > 0)
    {
       msecs_length = snprintf(buffer+length, buffer_size - length, ".%.3ld", msecs);               
    }
@@ -774,7 +805,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
 
    length = strftime(buffer, buffer_size, "%d/%b/%Y:%H:%M:%S ", tm_now);
 
-   if (length > 0);
+   if (length > 0)
    {
       tz_length = snprintf(buffer+length, buffer_size-length,
                      "%+03d%02d", mins / 60, abs(mins) % 60);
@@ -849,11 +880,6 @@ static inline const char *get_log_level_string(int loglevel)
       case LOG_LEVEL_DEANIMATE:
          log_level_string = "Gif-Deanimate";
          break;
-#ifdef FEATURE_KILL_POPUPS
-      case LOG_LEVEL_POPUPS:
-         log_level_string = "Kill-Popups";
-         break;
-#endif /* def FEATURE_KILL_POPUPS */
       case LOG_LEVEL_CGI:
          log_level_string = "CGI";
          break;
@@ -1134,9 +1160,9 @@ void log_error(int loglevel, const char *fmt, ...)
    length += strlcpy(outbuf + length, "\n", log_buffer_size - length);
 
    /* Some sanity checks */
-   if (!(length < log_buffer_size)
-    || !(outbuf[log_buffer_size-1] == '\0')
-    || !(outbuf[log_buffer_size] == '\0')
+   if ((length >= log_buffer_size)
+    || (outbuf[log_buffer_size-1] != '\0')
+    || (outbuf[log_buffer_size] != '\0')
       )
    {
       /* Repeat as assertions */
@@ -1155,11 +1181,13 @@ void log_error(int loglevel, const char *fmt, ...)
       loglevel = LOG_LEVEL_FATAL;
    }
 
-   assert(
 #ifndef _WIN32
-          (NULL != logfp) ||
+   /*
+    * On Windows this is acceptable in case
+    * we are logging to the GUI window only.
+    */
+   assert(NULL != logfp);
 #endif
-          (loglevel & debug));
 
    if (loglevel == LOG_LEVEL_FATAL)
    {

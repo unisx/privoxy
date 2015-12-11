@@ -1,7 +1,85 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Since 3.0.7 ***
+*** Version 3.0.9 Beta ***
+
+- Added SOCKS5 support (with address resolution done by
+  the SOCKS5 server). Patch provided by Eric M. Hopper.
+- The "blocked" CGI pages include a block reason that was
+  provided as argument to the last-applying block action.
+- If enable-edit-actions is disabled (the default since 3.0.7 beta)
+  the show-status page hides the edit buttons and explains why.
+  Previously the user would get the "this feature has been disabled"
+  message after using the edit button.
+- Forbidden CONNECT requests are treated like blocks by default.
+  The now-pointless treat-forbidden-connects-like-blocks action
+  has been removed.
+- Not enabling limit-connect now allows CONNECT requests to all ports.
+  In previous versions it would only allow CONNECT requests to port 443.
+  Use +limit-connect{443} if you think you need the old default behaviour.
+- The CGI editor gets turned off after three edit requests with invalid
+  file modification timestamps. This makes life harder for attackers
+  who can leverage browser bugs to send fake Referers and intend to
+  brute-force edit URLs.
+- Action settings for multiple patterns in the same section are
+  shared in memory. As a result these sections take up less space
+  (and are loaded slightly faster). Problem reported by Franz Schwartau.
+- Linear white space in HTTP headers will be normalized to single
+  spaces before parsing the header's content, headers split across
+  multiple lines get merged first. This should prevent problems like:
+   * letting the session-cookies-only action slip
+     some Cookies through unmodified,
+   * only suppressing the first line of a header,
+     thus creating an invalid one, and
+   * to incorrectly block headers with valid timestamps
+     that weren't properly recognized.
+  Headers that could trigger these problems are unlikely to appear
+  in "normal" web traffic, but could be intentionally generated to
+  fool some of Privoxy's header parsers.
+- Host information is gathered outside the main thread so it's less
+  likely to delay other incoming connections if the host is misconfigured.
+- New config option "hostname" to use a hostname other than
+  the one returned by the operating system. Useful to speed-up responses
+  for CGI requests on misconfigured systems. Requested by Max Khon.
+- The CGI editor supports the "disable all filters of this type"
+  directives "-client-header-filter", "-server-header-filter",
+  "-client-header-tagger" and "-server-header-tagger".
+- Fixed false-positives with the link-by-url filter and URLs that
+  contain the pattern "/jump/".
+- The less-download-windows filter no longer messes
+  "Content-Type: application/x-shockwave-flash" headers up.
+- In the show-url-info page's "Final results" section active and
+  inactive actions are listed separately. Patch provided by Lee.
+- The GNUmakefile supports the DESTDIR variable. Patch for
+  the install target submitted by Radoslaw Zielinski.
+- Embedding the content of configuration files in the show-status
+  page is significantly faster now. For a largish action file (1 MB)
+  a speedup of about 2450 times has been measured. This is mostly
+  interesting if you are using large action files or regularly use
+  Privoxy-Regression-Test while running Privoxy through Valgrind,
+  for stock configuration files it doesn't really matter.
+- If zlib support is unavailable and there are content
+  filters active but the prevent-compression action is disabled,
+  the show-url-info page includes a warning that compression
+  might prevent filtering.
+- The show-url-info page provides an OpenSearch Description that
+  allows to access the page through browser search plugins.
+- Custom client-header filters that rewrite the request line
+  incorrectly no longer cause Privoxy to crash. Reported by din_a4.
+- The obsolete kill-popups action has been removed as the
+  PCRS-based popup filters can do the same and are slightly
+  less unreliable.
+- The inspect-jpegs action has been removed.
+- The send-wafer and send-vanilla-wafer actions have been removed.
+  They weren't particular useful and their behaviour could be emulated
+  with add-header anyway.
+- Privoxy-Regression-Test has been significantly improved.
+- Most sections in the default.action file contain tests for
+  Privoxy-Regression-Test to verify that they are working as intended.
+- Parts of Privoxy have been refactored to increase maintainability.
+- Building with zlib (if available) is done by default.
+
+*** Version 3.0.8 ***
 
 - Fixed a small memory leak when listen-address only specifies the port.
 - The source tar balls now include Privoxy-Regression-Test which
@@ -25,8 +103,6 @@ ChangeLog for Privoxy
   don't exist.
 - Treat the non-standard Request-Range headers like standard range
   headers and suppress them if content filtering is enabled.
-- Fix build on OS/2 and other platforms that are neither
-  Windows nor Unix based.
 - Prevent the log messages for CONNECT requests to unacceptable
   ports from printing the limit-connect argument as [null] if
   limit-connect hasn't been explicitly enabled.
@@ -173,7 +249,8 @@ ChangeLog for Privoxy
   Earlier Privoxy versions would buffer and then forward the content
   unmodified which caused some browsers to simply show empty pages.
 - Fix double free in cgi_edit_actions_list(). Reported by Venustech AD-LAB.
-- The code to add X-Forwarded-For headers has been removed.
+- The code to add X-Forwarded-For headers when the hide-forwarded-for-headers
+  action isn't being used has been removed.
 - Fixed trustfile feature which previously didn't work without FEATURE_TOGGLE.
   Reported by Lee.
 - Minor code clean-ups, filter and action file updates.
@@ -511,7 +588,7 @@ being a mix of "U.S. English", "U.K. English" and "Irish English".
 
 
 ----------------------------------------------------------------------
-Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
                Privoxy team. http://www.privoxy.org/
 
                Based on the Internet Junkbuster originally written

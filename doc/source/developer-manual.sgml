@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.8">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -23,7 +23,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.16 2008/01/19 17:52:38 hal9 Exp $
+ $Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -50,7 +50,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.16 2008/01/19 17:52:38 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -121,8 +121,8 @@ Hal.
     <para>
      <application>Privoxy</application>, as an heir to
      <application>Junkbuster</application>, is a Free Software project 
-     and the code is licensed under the GPL. As such,
-     <application>Privoxy</application> development is potentially open
+     and the code is licensed under the GNU General Public License version 2.
+     As such, <application>Privoxy</application> development is potentially open
      to anyone who has the time, knowledge, and desire to contribute
      in any capacity. Our goals are simply to continue the mission,
      to improve <application>Privoxy</application>, and
@@ -1833,7 +1833,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.16 2008/01/19 17:52:38 hal9 Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -1894,7 +1894,7 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.16 2008/01/19 17:52:38 hal9 Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -2678,11 +2678,11 @@ at sourceforge. Three simple steps:
       </para>
     </sect3>
 
-    <sect3 id="newrelease-macosx"><title>Mac OSX</title>
+    <sect3 id="newrelease-macosx"><title>Mac OS X</title>
       <para>
 	First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
-        packages" above). Then get the Mac OSX setup module:
+        packages" above). Then get the Mac OS X setup module:
 	</para>
 	<para>
 	<programlisting>
@@ -2864,7 +2864,9 @@ at sourceforge. Three simple steps:
      Or use the <command>make</command> targets as described above.
     </para>
     <para>
-     Once this done go to <ulink url="http://sourceforge.net/project/admin/editpackages.php?group_id=11118">http://sourceforge.net/project/admin/editpackages.php?group_id=11118</ulink>, 
+     Once this done go to <ulink
+      url="https://sourceforge.net/project/admin/editpackages.php?group_id=11118"
+      >https://sourceforge.net/project/admin/editpackages.php?group_id=11118</ulink>, 
      making sure you are logged in. Find your target platform in the 
      second column, and click <literal>Add Release</literal>. You will 
      then need to create a new release for your package, using the format 
@@ -3026,6 +3028,18 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.20  2008/06/14 13:21:24  fabiankeil
+  Prepare for the upcoming 3.0.9 beta release.
+
+  Revision 2.19  2008/05/12 11:13:33  fabiankeil
+  Clarify that Privoxy is licensed under GPL version 2.
+
+  Revision 2.18  2008/02/04 12:14:06  fabiankeil
+  Change "Edit Packages" URL to use https.
+
+  Revision 2.17  2008/02/03 21:37:41  hal9
+  Apply patch from Mark: s/OSX/OS X/
+
   Revision 2.16  2008/01/19 17:52:38  hal9
   Re-commit to fix various minor issues for new release.
 
@@ -3202,7 +3216,7 @@ at sourceforge. Three simple steps:
   More boilerplate text for use across multiple docs.
 
   Revision 1.20  2002/04/04 03:28:27  david__schmidt
-  Add Mac OSX section
+  Add Mac OS X section
 
   Revision 1.19  2002/04/03 15:09:42  david__schmidt
   Add OS/2 build section

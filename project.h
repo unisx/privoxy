@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.101 2007/12/07 18:29:23 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.116 2008/05/20 16:05:02 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -10,7 +10,7 @@
  *                project.  Does not define any variables or functions
  *                (though it does declare some macros).
  *
- * Copyright   :  Written by and Copyright (C) 2001 - 2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -37,6 +37,57 @@
  *
  * Revisions   :
  *    $Log: project.h,v $
+ *    Revision 1.116  2008/05/20 16:05:02  fabiankeil
+ *    Move parsers structure definition from project.h to parsers.h.
+ *
+ *    Revision 1.115  2008/05/19 16:57:20  fabiankeil
+ *    Declare all members of the parsers structure immutable.
+ *
+ *    Revision 1.114  2008/04/11 16:35:39  fabiankeil
+ *    Oops, I forgot to shorten the URL_SPEC_INITIALIZER in my last commit.
+ *
+ *    Revision 1.113  2008/04/10 14:41:04  fabiankeil
+ *    Ditch url_spec's path member now that it's no longer used.
+ *
+ *    Revision 1.112  2008/04/06 15:18:34  fabiankeil
+ *    Oh well, rename the --enable-pcre-host-patterns option to
+ *    --enable-extended-host-patterns as it's not really PCRE syntax.
+ *
+ *    Revision 1.111  2008/04/06 14:54:26  fabiankeil
+ *    Use PCRE syntax in host patterns when configured
+ *    with --enable-pcre-host-patterns.
+ *
+ *    Revision 1.110  2008/03/29 12:13:46  fabiankeil
+ *    Remove send-wafer and send-vanilla-wafer actions.
+ *
+ *    Revision 1.109  2008/03/28 15:13:41  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
+ *    Revision 1.108  2008/03/27 18:27:36  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.107  2008/03/26 18:07:08  fabiankeil
+ *    Add hostname directive. Closes PR#1918189.
+ *
+ *    Revision 1.106  2008/03/24 11:21:03  fabiankeil
+ *    Share the action settings for multiple patterns in the same
+ *    section so we waste less memory for gigantic block lists
+ *    (and load them slightly faster). Reported by Franz Schwartau.
+ *
+ *    Revision 1.105  2008/03/21 11:16:27  fabiankeil
+ *    Garbage-collect csp->my_ip_addr_str and csp->my_hostname.
+ *
+ *    Revision 1.104  2008/03/04 18:30:40  fabiankeil
+ *    Remove the treat-forbidden-connects-like-blocks action. We now
+ *    use the "blocked" page for forbidden CONNECT requests by default.
+ *
+ *    Revision 1.103  2008/03/01 14:00:45  fabiankeil
+ *    Let the block action take the reason for the block
+ *    as argument and show it on the "blocked" page.
+ *
+ *    Revision 1.102  2008/02/03 13:46:14  fabiankeil
+ *    Add SOCKS5 support. Patch #1862863 by Eric M. Hopper with minor changes.
+ *
  *    Revision 1.101  2007/12/07 18:29:23  fabiankeil
  *    Remove now-obsolete csp member x_forwarded.
  *
@@ -902,14 +953,17 @@ struct url_spec
        Used for debugging or display only.  */
    char  *spec;
 
+#ifdef FEATURE_EXTENDED_HOST_PATTERNS
+   regex_t *host_regex;/**< Regex for host matching                          */
+#else
    char  *dbuffer;     /**< Buffer with '\0'-delimited domain name, or NULL to match all hosts. */
    char **dvec;        /**< List of pointers to the strings in dbuffer.       */
    int    dcount;      /**< How many parts to this domain? (length of dvec)   */
    int    unanchored;  /**< Bitmap - flags are ANCHOR_LEFT and ANCHOR_RIGHT.  */
+#endif /* defined FEATURE_EXTENDED_HOST_PATTERNS */
 
    char  *port_list;   /**< List of acceptable ports, or NULL to match all ports */
 
-   char  *path;        /**< The source for the regex.                         */
    regex_t *preg;      /**< Regex for matching path part                      */
    regex_t *tag_regex; /**< Regex for matching tags                           */
 };
@@ -917,7 +971,11 @@ struct url_spec
 /**
  * If you declare a static url_spec, this is the value to initialize it to zero.
  */
-#define URL_SPEC_INITIALIZER { NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL }
+#ifndef FEATURE_EXTENDED_HOST_PATTERNS
+#define URL_SPEC_INITIALIZER { NULL, NULL, NULL, 0, 0, NULL, NULL, NULL }
+#else
+#define URL_SPEC_INITIALIZER { NULL, NULL, NULL, NULL, NULL }
+#endif /* def FEATURE_EXTENDED_HOST_PATTERNS */
 
 /**
  * Constant for host part matching in URLs.  If set, indicates that the start of
@@ -968,7 +1026,6 @@ struct iob
 #define CT_TEXT    0x0001U /**< Suitable for pcrs filtering. */
 #define CT_GIF     0x0002U /**< Suitable for GIF filtering.  */
 #define CT_TABOO   0x0004U /**< DO NOT filter, irrespective of other flags. */
-#define CT_JPEG    0x0008U /**< Suitable for JPEG filtering.  */
 
 /* Although these are not, strictly speaking, content types
  * (they are content encodings), it is simple to handle them
@@ -1022,14 +1079,14 @@ struct iob
 #define ACTION_NO_COOKIE_READ                        0x00001000UL
 /** Action bitmap: Block setting cookies. */
 #define ACTION_NO_COOKIE_SET                         0x00002000UL
-/** Action bitmap: Filter out popups. */
-#define ACTION_NO_POPUPS                             0x00004000UL
-/** Action bitmap: Send a vanilla wafer. */
-#define ACTION_VANILLA_WAFER                         0x00008000UL
+/** Action bitmap: Override the forward settings in the config file */
+#define ACTION_FORWARD_OVERRIDE                      0x00004000UL
+/** Action bitmap: Block as empty document */
+#define  ACTION_HANDLE_AS_EMPTY_DOCUMENT             0x00008000UL
 /** Action bitmap: Limit CONNECT requests to safe ports. */
 #define ACTION_LIMIT_CONNECT                         0x00010000UL
-/** Action bitmap: Inspect if it's a JPEG. */
-#define ACTION_JPEG_INSPECT                          0x00020000UL
+/** Action bitmap: Redirect request. */
+#define  ACTION_REDIRECT                             0x00020000UL
 /** Action bitmap: Crunch or modify "if-modified-since" header. */
 #define ACTION_HIDE_IF_MODIFIED_SINCE                0x00040000UL
 /** Action bitmap: Overwrite Content-Type header. */
@@ -1048,14 +1105,6 @@ struct iob
 #define ACTION_OVERWRITE_LAST_MODIFIED               0x02000000UL
 /** Action bitmap: Replace or block Accept-Language header */
 #define ACTION_HIDE_ACCEPT_LANGUAGE                  0x04000000UL
-/** Action bitmap: Block as empty document */
-#define  ACTION_HANDLE_AS_EMPTY_DOCUMENT             0x08000000UL
-/** Action bitmap: Redirect request. */
-#define  ACTION_REDIRECT                             0x10000000UL
-/** Action bitmap: Answer blocked Connects verbosely */
-#define ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS  0x20000000UL
-/** Action bitmap: Override the forward settings in the config file */
-#define ACTION_FORWARD_OVERRIDE                      0x40000000UL
 
 
 /** Action string index: How to deanimate GIFs */
@@ -1090,8 +1139,10 @@ struct iob
 #define ACTION_STRING_FAST_REDIRECTS       14
 /** Action string index: Overriding forward rule. */
 #define ACTION_STRING_FORWARD_OVERRIDE     15
+/** Action string index: Reason for the block. */
+#define ACTION_STRING_BLOCK                16
 /** Number of string actions. */
-#define ACTION_STRING_COUNT                16
+#define ACTION_STRING_COUNT                17
 
 
 /* To make the ugly hack in sed easier to understand */
@@ -1100,20 +1151,18 @@ struct iob
 
 /** Index into current_action_spec::multi[] for headers to add. */
 #define ACTION_MULTI_ADD_HEADER              0
-/** Index into current_action_spec::multi[] for headers to add. */
-#define ACTION_MULTI_WAFER                   1
 /** Index into current_action_spec::multi[] for content filters to apply. */
-#define ACTION_MULTI_FILTER                  2
+#define ACTION_MULTI_FILTER                  1
 /** Index into current_action_spec::multi[] for server-header filters to apply. */
-#define ACTION_MULTI_SERVER_HEADER_FILTER    3
+#define ACTION_MULTI_SERVER_HEADER_FILTER    2
 /** Index into current_action_spec::multi[] for client-header filters to apply. */
-#define ACTION_MULTI_CLIENT_HEADER_FILTER    4
+#define ACTION_MULTI_CLIENT_HEADER_FILTER    3
 /** Index into current_action_spec::multi[] for client-header tags to apply. */
-#define ACTION_MULTI_CLIENT_HEADER_TAGGER    5
+#define ACTION_MULTI_CLIENT_HEADER_TAGGER    4
 /** Index into current_action_spec::multi[] for server-header tags to apply. */
-#define ACTION_MULTI_SERVER_HEADER_TAGGER    6
+#define ACTION_MULTI_SERVER_HEADER_TAGGER    5
 /** Number of multi-string actions. */
-#define ACTION_MULTI_COUNT                   7
+#define ACTION_MULTI_COUNT                   6
 
 
 /**
@@ -1168,18 +1217,22 @@ struct action_spec
 
 
 /**
- * This structure is used to store the actions list.
+ * This structure is used to store action files.
  *
- * It contains a URL pattern, and the chages to the actions.
- * It is a linked list.
+ * It contains an URL or tag pattern, and the changes to
+ * the actions. It's a linked list and should only be
+ * free'd through unload_actions_file() unless there's
+ * only a single entry.
  */
 struct url_actions
 {
-   struct url_spec url[1];        /**< URL pattern. */
+   struct url_spec url[1];     /**< The URL or tag pattern. */
 
-   struct action_spec action[1];  /**< Actions. */
+   struct action_spec *action; /**< Action settings that might be shared with
+                                    the list entry before or after the current
+                                    one and can't be free'd willy nilly. */
 
-   struct url_actions * next;     /**< Next action in file, or NULL. */
+   struct url_actions *next;   /**< Next action section in file, or NULL. */
 };
 
 
@@ -1300,14 +1353,6 @@ struct client_state
        As a number. */
    long  ip_addr_long;
 
-   /** Our IP address. I.e. the IP address that the client used to reach us,
-       as a string. */
-   char *my_ip_addr_str;
-
-   /** Our hostname. I.e. the reverse DNS of the IP address that the client
-       used to reach us, as a string. */
-   char *my_hostname;
-
    /** The URL that was requested */
    struct http_request http[1];
 
@@ -1366,22 +1411,6 @@ typedef jb_err (*add_header_func_ptr)(struct client_state *);
  * A function to process a header
  */
 typedef jb_err (*parser_func_ptr    )(struct client_state *, char **);
-
-
-/**
- * List of functions to run on a list of headers
- */
-struct parsers
-{
-   /** The header prefix to match */
-   char   *str;
-   
-   /** The length of the prefix to match */
-   size_t len;
-   
-   /** The function to apply to this line */
-   parser_func_ptr parser;
-};
 
 
 /**
@@ -1474,6 +1503,7 @@ struct block_spec
 #define SOCKS_NONE    0    /**< Don't use a SOCKS server               */
 #define SOCKS_4      40    /**< original SOCKS 4 protocol              */
 #define SOCKS_4A     41    /**< as modified for hosts w/o external DNS */
+#define SOCKS_5      50    /**< as modified for hosts w/o external DNS */
 
 
 /**
@@ -1484,7 +1514,7 @@ struct forward_spec
    /** URL pattern that this forward_spec is for. */
    struct url_spec url[1];
 
-   /** Connection type.  Must be SOCKS_NONE, SOCKS_4, or SOCKS_4A. */
+   /** Connection type.  Must be SOCKS_NONE, SOCKS_4, SOCKS_4A or SOCKS_5. */
    int   type;
 
    /** SOCKS server hostname.  Only valid if "type" is SOCKS_4 or SOCKS_4A. */
@@ -1651,6 +1681,9 @@ struct configuration_spec
 
    /** The short names of the pcre filter files. */
    const char *re_filterfile_short[MAX_AF_FILES];
+
+   /** The hostname to show on CGI pages, or NULL to use the real one. */
+   const char *hostname;
 
 #ifdef FEATURE_COOKIE_JAR
 

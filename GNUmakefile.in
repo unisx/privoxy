@@ -1,8 +1,8 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.158 2007/12/11 21:29:25 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.173 2008/06/18 18:28:42 fabiankeil Exp $
 #
-# Written by and Copyright (C) 2001 - 2007 the SourceForge
+# Written by and Copyright (C) 2001 - 2008 the SourceForge
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
@@ -55,6 +55,7 @@ SNAPVERSION   = $(RPM_VERSION)-$(shell date "+%Y%m%d")
 USER         = @USER@
 GROUP	   = @GROUP@
 
+datarootdir  = @datarootdir@
 prefix       = @prefix@
 exec_prefix  = @exec_prefix@
 CONF_BASE    = @sysconfdir@
@@ -174,18 +175,16 @@ CONFIG_FILES = $(CONFIGS) \
 		`find templates/ -type f | grep -v "CVS" | grep -v "\.\#" | grep -v ".*~" | grep -v ".cvsignore" | grep -v "TAGS"`
 
 DOC_FILES = AUTHORS LICENSE README ChangeLog INSTALL \
-		`find doc/text/ -type f | grep -v "CVS" | grep -v "\.\#" | grep -v ".*~" | grep -v ".cvsignore" | grep -v "TAGS"` \
 		`find doc/webserver/ -name "*.html" | grep -v "\(webserver\|team\)\/index\.html"` \
 		`find doc/webserver/ -name "*.css"` \
-                privoxy.1 \
-		doc/pdf/*.pdf
+                privoxy.1
 
 #############################################################################
 # Filenames and libraries
 #############################################################################
 
 C_SRC  = actions.c cgi.c cgiedit.c cgisimple.c deanimate.c encode.c \
-         errlog.c filters.c gateway.c jbsockets.c jcc.c killpopup.c \
+         errlog.c filters.c gateway.c jbsockets.c jcc.c \
          list.c loadcfg.c loaders.c miscutil.c parsers.c ssplit.c \
          urlmatch.c
 
@@ -452,7 +451,7 @@ redhat-upload: check-release
 	ncftpput -u anonymous -p ijbswa-developers@lists.sourceforge.net upload.sourceforge.net /incoming $(RPM_BASE)/RPMS/*/privoxy-$(RPM_VERSION)-$(RPM_PACKAGEV).*.rpm
 	@$(ECHO) -------------------------------------------------------
 	@$(ECHO) Now goto
-	@$(ECHO) http://sourceforge.net/project/admin/editpackages.php?group_id=11118
+	@$(ECHO) https://sourceforge.net/project/admin/editpackages.php?group_id=11118
 	@$(ECHO) ... and release the files.
 	@$(ECHO) -------------------------------------------------------
      # w3m http://sourceforge.net/project/admin/editpackages.php?group_id=11118
@@ -492,7 +491,7 @@ suse-upload: check-release
 	ncftpput -u anonymous -p ijbswa-developers@lists.sourceforge.net upload.sourceforge.net /incoming $(RPM_BASE)/RPMS/*/privoxy-suse-$(RPM_VERSION)-$(RPM_PACKAGEV).*.rpm
 	@$(ECHO) -------------------------------------------------------
 	@$(ECHO) Now goto
-	@$(ECHO) http://sourceforge.net/project/admin/editpackages.php?group_id=11118
+	@$(ECHO) https://sourceforge.net/project/admin/editpackages.php?group_id=11118
 	@$(ECHO) ... and release the files.
 	@$(ECHO) -------------------------------------------------------
 
@@ -547,7 +546,7 @@ gen-upload:
 	ncftpput -u anonymous -p ijbswa-developers@lists.sourceforge.net upload.sourceforge.net /incoming ../privoxy-$(TARGET_OS)-$(VERSION)-$(CODE_STATUS)-src.tar.gz
 	@$(ECHO) -------------------------------------------------------
 	@$(ECHO) Now goto
-	@$(ECHO) http://sourceforge.net/project/admin/editpackages.php?group_id=11118
+	@$(ECHO) https://sourceforge.net/project/admin/editpackages.php?group_id=11118
 	@$(ECHO) ... and release the files.
 	@$(ECHO) -------------------------------------------------------
 
@@ -628,7 +627,7 @@ tarball-dist: dist-check clean clobber
 
 	for i in `find . -type f -a -not \( -path "*/CVS*" -o -name ".*" \
 	-o -path "*/debian/*" -o -path "*/actions/*" -o -name "*.php" -o \
-	-name "PACKAGERS" -o -path "*/pdf/*" \)`; do \
+	-name "PACKAGERS" \)`; do \
 	   files="$$files privoxy-$(VERSION)-$(CODE_STATUS)/$$i"; \
 	done &&  \
 	cd .. && $(TAR) -cvhf privoxy-$(VERSION)-$(CODE_STATUS)-src.tar $$files ; \
@@ -643,7 +642,7 @@ tarball-upload:
 	ncftpput -u anonymous -p ijbswa-developers@lists.sourceforge.net upload.sourceforge.net /incoming ../privoxy-$(VERSION)-$(CODE_STATUS)-src.tar.gz
 	@$(ECHO) -------------------------------------------------------
 	@$(ECHO) Now goto
-	@$(ECHO) http://sourceforge.net/project/admin/editpackages.php?group_id=11118
+	@$(ECHO) https://sourceforge.net/project/admin/editpackages.php?group_id=11118
 	@$(ECHO) ... and release the files.
 	@$(ECHO) -------------------------------------------------------
 
@@ -654,7 +653,7 @@ tarball-clean:
 #
 # Documentation
 #
-# converts doc/source/*.sgml into html, text, pdf and man pages
+# converts doc/source/*.sgml into html and man pages
 #
 #############################################################################
 
@@ -662,29 +661,26 @@ tarball-clean:
 dok-devel: 
 	$(RM) doc/webserver/developer-manual/*.html
 	$(RM) -r doc/source/developer-manual
-	mkdir -p doc/text doc/source/developer-manual
+	mkdir -p doc/source/developer-manual
 	cd doc/source/developer-manual && $(DB) ../developer-manual.sgml && cd .. && cp developer-manual/*.html ../webserver/developer-manual/
-	cd doc/source && $(DB) -V nochunks developer-manual.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/developer-manual.txt && $(RM) -r tmp.html developer-manual
 
 # user manual
 dok-user: 
 	$(RM) doc/webserver/user-manual/*.html
 	$(RM) -r doc/source/user-manual/
-	mkdir -p doc/text doc/source/user-manual
+	mkdir -p doc/source/user-manual
 	cd doc/source/user-manual && $(DB) -iuser-man ../user-manual.sgml && cd .. && cp user-manual/*.html ../webserver/user-manual/
-	@#FIXME: temp fix so same stylesheet gets in more than one place so it works \
-	@# for all doc set-ups, including the 'user manual' config option in local \
-	@#system where it MUST be in same directory as html.
+	# FIXME: temp fix so same stylesheet gets in more than one place so it works
+	# for all doc set-ups, including the 'user manual' config option in local
+	# system where it MUST be in same directory as html.
 	$(PERL) -pi.bak -e 's/<\/head/\n<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"p_doc.css\">\n<\/head/i' doc/webserver/user-manual/*html
-	cd doc/source && $(DB) -iuser-man -V nochunks user-manual.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/user-manual.txt && $(RM) -r tmp.html user-manual
 
 # faq
 dok-faq: 
 	$(RM) doc/webserver/faq/*.html
 	$(RM) -r doc/source/faq
-	mkdir -p doc/text doc/source/faq
+	mkdir -p doc/source/faq
 	cd doc/source/faq && $(DB) ../faq.sgml && cd .. && cp faq/*.html ../webserver/faq/
-	cd doc/source && $(DB) -V nochunks faq.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/faq.txt && $(RM) -r tmp.html faq
 
 # man page, one variation. Try to use the next target, just 'make man'. 
 dok-man: 
@@ -743,7 +739,7 @@ dok-readme: dok-release
 dok-webserver: 
 	cd doc/source/webserver && $(DB)-notoc -ip-homepage -V nochunks index.sgml > ../../webserver/index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
-     s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps consumers reduce unwanted junk email and protect their privacy from direct marketing companies.\"><\/HEAD/;\
+	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
 	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
 	s/\.\d\. //;\
 	s/__copy/&copy;/'\
@@ -753,7 +749,7 @@ dok-webserver:
 dok-index: 
 	cd doc/source/webserver && $(DB)-notoc -ip-index -V nochunks index.sgml > ../../webserver/privoxy-index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
-     s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps consumers reduce unwanted junk email and protect their privacy from direct marketing companies.\"><\/HEAD/;\
+	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
 	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
 	s/\.\d\. //;\
 	s/__copy/&copy;/' \
@@ -801,39 +797,6 @@ else
 	$(RM) -r doc/source/*bak doc/source/*/*bak
 endif
 
-# Generate single page html. Used only for creating pdf docs (ATM).
-# Currently using: See http://www.easysw.com/htmldoc/pdf-o-matic.php.
-# If using this generator, remember U-M has a couple of graphics in 
-# a parallel directory.
-#
-dok-shtml: dok-release 
-	mkdir -p doc/source/temp # this directory not in cvs
-	cd doc/source && $(DB) -iuser-man -V nochunks user-manual.sgml > temp/privoxy-user-manual.html
-	cd doc/source && $(DB) -V nochunks developer-manual.sgml > temp/privoxy-developer-manual.html
-	cd doc/source && $(DB) -V nochunks faq.sgml > temp/privoxy-faq.html
-# one could use html2ps and ps2pdf. well, that does not work. htmlps produces incorrect output.
-
-# Make pdf docs from single page html. Requires htmldoc, see
-# (http://www.easysw.com/htmldoc/). Note: 1.8.20 has a TOC bug.
-# PDF docs are uploaded to webserver as zip archive.
-dok-pdf: dok-shtml
-	@$(ECHO) -n "starting htmldoc version: ";
-	if htmldoc --version ; then : ; \
-	   else $(ECHO) "WARNING: could not get htmldoc version" ; fi
-	cd utils/ldp_print && $(RM) *html *bak *jpg *tmp *pdf *zip
-	cp -f doc/source/temp/*html doc/webserver/user-manual/*jpg utils/ldp_print
-	cd utils/ldp_print ;\
-	$(PERL) -pi.bak -e 's/\.\.\/images\///; s/(<\/?)SUB/$$1small/i;\
-	                    s/\.\.\/user-manual\/index\.html/privoxy-user-manual.pdf/;\
-					s/\.\.\/developer-manual\/index\.html/privoxy-developer-manual.pdf/;\
-					s/\.\.\/faq\/index\.html/privoxy-faq.pdf/' *.html ;\
-	for i in developer-manual user-manual faq; do \
-		./ldp_print privoxy-$$i.html ;\
-		$(ECHO) DONE: privoxy-$$i.pdf ;\
-	done ;\
-	$(MV) *.pdf  ../../doc/pdf ;\
-	$(RM) -r *html *bak *jpg *pdf *zip ../../doc/source/temp
-
 # Create release announcement in text and html, with short and long versions.
 # This is a standalone target, and must be invoked directly.
 # announce: dok-release
@@ -849,30 +812,11 @@ dok-pdf: dok-shtml
 # NOTE: This will require some hand editing. The new file is outputted 
 # as config.new so that problem sections can be compared to previous
 # version. This is hardcored to w3m for html/text conversion. Also, 
-# requires the shell util 'fmt'. 2007-11-14: note the perl below dies 
-# with perl 5.8.8. The same code pasted into a free standing script, 
-# without the makefile-isms, works fine.
+# requires the shell util 'fmt'.
 config-file: dok-release
 	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
-	w3m -dump __tmp.html |fmt -w 70 > ../../config.new && $(RM) -r __tmp.*
-	$(PERL)  -pi.bak -e 's/^1\. \@\@TITLE\@\@/     /i;\
-	         /^\d\.\d\.\s+/ && tr/[a-z]/[A-Z]/;\
-	           my $$hit_header;\
-	           $$header_len=0 unless $$hit_header;\
-	           if ($$hit_header) {\
-	              print "#  ";\
-	              for ($$i=1; $$i < $$header_len; $$i++) {print "=";}\
-	              print "\n";\
-	           };\
-	           my $$hit_header;\
-	           $$hit_header=0;\
-	           $$hit_header=1 if m/^(\d\.)(\d\.)(\d\.)?\s/ && s/^(\d\.)//;\
-	           $$header_len = length($$_);\
-			 s/^/#  /;  /^#  #{12,}/ && s/^#  #/####/;\
-	           s/^.*$$// if $$hit_option;\
-	           $$hit_option=0;\
-	           s/^\n//;  s/^#\s*-{20,}//; s/ *$$//;\
-	           $$hit_option=1 if s/^#\s+@@//;'   config.new
+	env -u LANG w3m -dump __tmp.html | fmt -w 70 > ../../config.new && $(RM) -r __tmp.*
+	$(PERL) -i.bak utils/prepare-configfile.pl config.new
 
 	$(RM) *.bak
 	@$(ECHO)  "****************************************************"
@@ -884,7 +828,7 @@ config-file: dok-release
 	@$(ECHO)  "probably got hammered."
 	@$(ECHO)  "****************************************************"
 
-# config file, alternate verison using lynx (perl stuff unfinished). Lynx
+# config file, alternate version using lynx (perl stuff unfinished). Lynx
 # does not do so good a job.
 config-file-alt: 
 	cd doc/source && $(ECHO) -e ".h2 JUSTIFY\\nJUSTIFY:FALSE" > __tmp.lynx_cfg &&\
@@ -911,11 +855,6 @@ webserver: tidy
 	@cd doc/webserver; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
           $(TAR) c $$upload | ssh ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
-
-	@$(ECHO) Uploading pdf
-	@cd doc/pdf;\
-          zip privoxy-pdf-docs *.pdf  ;\
-		scp -q privoxy-pdf-docs.zip ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/pdf
 
 	@$(ECHO) Fixing permissions
 	@ssh ijbswa.sourceforge.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
@@ -946,7 +885,7 @@ dok-put:
 
 dok-get:
 	cd /tmp ;\
-	$(WGET) http://privoxy.org/docs/$(DOC_FILE) ;\
+	$(WGET) http://www.privoxy.org/docs/$(DOC_FILE) ;\
 	$(TAR) -zxvf $(DOC_FILE)
 
 
@@ -955,22 +894,21 @@ dok-get:
 #############################################################################
 
 actions.@OBJEXT@:   actions.c   actions.h   config.h $(PROJECT_H_DEPS) errlog.h jcc.h list.h loaders.h miscutil.h actionlist.h ssplit.h
-cgi.@OBJEXT@:       cgi.c       cgi.h       config.h $(PROJECT_H_DEPS) cgiedit.h cgisimple.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
+cgi.@OBJEXT@:       cgi.c       cgi.h       config.h $(PROJECT_H_DEPS) cgiedit.h cgisimple.h jbsockets.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
 cgiedit.@OBJEXT@:   cgiedit.c   cgiedit.h   config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actionlist.h actions.h errlog.h miscutil.h
-cgisimple.@OBJEXT@: cgisimple.c cgisimple.h config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
+cgisimple.@OBJEXT@: cgisimple.c cgisimple.h config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h urlmatch.h
 deanimate.@OBJEXT@: deanimate.c deanimate.h config.h $(PROJECT_H_DEPS)
 encode.@OBJEXT@:    encode.c    encode.h    config.h
 errlog.@OBJEXT@:    errlog.c    errlog.h    config.h $(PROJECT_H_DEPS) @WIN_ONLY@w32log.h
-filters.@OBJEXT@:   filters.c   filters.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h gateway.h jbsockets.h jcc.h loadcfg.h parsers.h ssplit.h cgi.h deanimate.h @WIN_ONLY@win32.h 
+filters.@OBJEXT@:   filters.c   filters.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h gateway.h jbsockets.h jcc.h loadcfg.h parsers.h ssplit.h cgi.h deanimate.h urlmatch.h @WIN_ONLY@win32.h 
 gateway.@OBJEXT@:   gateway.c   gateway.h   config.h $(PROJECT_H_DEPS) errlog.h jbsockets.h jcc.h loadcfg.h
 jbsockets.@OBJEXT@: jbsockets.c jbsockets.h config.h $(PROJECT_H_DEPS) filters.h
-jcc.@OBJEXT@:       jcc.c       jcc.h       config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h killpopup.h loadcfg.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h w32svrapi.h cgi.h
-killpopup.@OBJEXT@: killpopup.c killpopup.h config.h $(PROJECT_H_DEPS) jcc.h loadcfg.h
+jcc.@OBJEXT@:       jcc.c       jcc.h       config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h loadcfg.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h w32svrapi.h cgi.h
 list.@OBJEXT@:      list.c      list.h      config.h $(PROJECT_H_DEPS) list.h miscutil.h
-loadcfg.@OBJEXT@:   loadcfg.c   loadcfg.h   config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h jcc.h killpopup.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h
+loadcfg.@OBJEXT@:   loadcfg.c   loadcfg.h   config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h jcc.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h
 loaders.@OBJEXT@:   loaders.c   loaders.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h filters.h gateway.h jcc.h loadcfg.h miscutil.h parsers.h ssplit.h
 miscutil.@OBJEXT@:  miscutil.c  miscutil.h  config.h
-parsers.@OBJEXT@:   parsers.c   parsers.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h filters.h jbsockets.h jcc.h loadcfg.h loaders.h miscutil.h ssplit.h
+parsers.@OBJEXT@:   parsers.c   parsers.h   config.h $(PROJECT_H_DEPS) errlog.h filters.h jbsockets.h jcc.h loadcfg.h loaders.h miscutil.h ssplit.h
 ssplit.@OBJEXT@:    ssplit.c    ssplit.h    config.h miscutil.h
 urlmatch.@OBJEXT@:  urlmatch.c  urlmatch.h  config.h $(PROJECT_H_DEPS) errlog.h miscutil.h ssplit.h
 
@@ -1023,7 +961,7 @@ clean:
 
 tidy:
 	$(RM) `find . -name "*~"`
-#	$(RM) `find . -name "#*#"` # what is this for??
+	$(RM) `find . -name "#*#"` # Emacs backup files
 	$(RM) `find . -name ".\#*"`
 
 clobber: tidy
@@ -1095,14 +1033,15 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 
 	@$(ECHO) "Creating directories, and preparing $(PROGRAM_V) installation"
 	$(CHMOD) $(DIR_MODE) $(MKDIR)
-	@$(MKDIR) $(SBIN_DEST) $(prefix) $(CONF_DEST) $(CONF_DEST)/templates $(SHARE_DEST) \
-		$(LOG_DEST) $(PID_DEST)
+	@$(MKDIR) $(DESTDIR)$(SBIN_DEST) $(DESTDIR)$(prefix) $(DESTDIR)$(CONF_DEST) \
+		$(DESTDIR)$(CONF_DEST)/templates $(DESTDIR)$(SHARE_DEST) \
+		$(DESTDIR)$(LOG_DEST) $(DESTDIR)$(PID_DEST)
 	@# Install the executable binary, strip if invoked as install-strip
 	@test -n "$(STRIP)" &&\
 	$(ECHO) Installing $(PROGRAM) stripped executable to $(SBIN_DEST) ||\
-	$(ECHO) Installing $(PROGRAM) executable to $(SBIN_DEST)
-	$(INSTALL) $(INSTALL_P) $(STRIP) $(PROGRAM) $(SBIN_DEST)
-     
+	$(ECHO) Installing $(PROGRAM) executable to $(DESTDIR)$(SBIN_DEST)
+	$(INSTALL) $(INSTALL_P) $(STRIP) $(PROGRAM) $(DESTDIR)$(SBIN_DEST)
+
 	@# Install the DOCS and man page. install-sh only does one file at a time.
 	@# FIXME: only handles jpegs.
 	-@if [ $(check_doc) = 0 ]; then \
@@ -1110,30 +1049,30 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	else \
 		DOC=$(prefix)/doc/privoxy ;\
 	fi;\
-	$(MKDIR) $$DOC $$DOC/user-manual $$DOC/faq $$DOC/developer-manual \
-	     $$DOC/man-page $$DOC/images $(MAN_DEST) ;\
+	$(MKDIR) $(DESTDIR)$$DOC $(DESTDIR)$$DOC/user-manual $(DESTDIR)$$DOC/faq $(DESTDIR)$$DOC/developer-manual \
+	     $(DESTDIR)$$DOC/man-page $(DESTDIR)$$DOC/images $(DESTDIR)$(MAN_DEST) ;\
 	if [ -d "$(DOK_WEB)" ]; then \
-		$(ECHO) Installing FAQ, Manual, and other docs to $$DOC;\
+		$(ECHO) Installing FAQ, Manual, and other docs to $(DESTDIR)$$DOC;\
           for i in user-manual developer-manual faq; do \
                for ii in $(DOK_WEB)/$$i/*html; do \
-                    $(INSTALL) $(INSTALL_T) $$ii $$DOC/$$i;\
+                    $(INSTALL) $(INSTALL_T) $$ii $(DESTDIR)$$DOC/$$i;\
                done ;\
           done ;\
 		for i in $(DOK_WEB)/user-manual/*jpg; do \
-               $(INSTALL) $(INSTALL_T) $$i $$DOC/user-manual;\
+               $(INSTALL) $(INSTALL_T) $$i $(DESTDIR)$$DOC/user-manual;\
           done ;\
-		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/man-page/*html $$DOC/man-page;\
-		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/privoxy-index.html $$DOC/index.html;\
-		$(INSTALL) $(INSTALL_T) AUTHORS $$DOC;\
-		$(INSTALL) $(INSTALL_T) LICENSE $$DOC;\
-		$(INSTALL) $(INSTALL_T) README $$DOC;\
-		$(INSTALL) $(INSTALL_T) ChangeLog $$DOC;\
-		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $$DOC;\
-		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $$DOC/user-manual;\
+		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/man-page/*html $(DESTDIR)$$DOC/man-page;\
+		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/privoxy-index.html $(DESTDIR)$$DOC/index.html;\
+		$(INSTALL) $(INSTALL_T) AUTHORS $(DESTDIR)$$DOC;\
+		$(INSTALL) $(INSTALL_T) LICENSE $(DESTDIR)$$DOC;\
+		$(INSTALL) $(INSTALL_T) README $(DESTDIR)$$DOC;\
+		$(INSTALL) $(INSTALL_T) ChangeLog $(DESTDIR)$$DOC;\
+		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $(DESTDIR)$$DOC;\
+		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $(DESTDIR)$$DOC/user-manual;\
 	fi
 	@# Not all platforms support gzipped man pages.
-	@$(ECHO) Installing man page to $(MAN_DEST)/privoxy.1
-	-$(INSTALL) $(INSTALL_T) privoxy.1  $(MAN_DEST)/privoxy.1
+	@$(ECHO) Installing man page to $(DESTDIR)$(MAN_DEST)/privoxy.1
+	-$(INSTALL) $(INSTALL_T) privoxy.1  $(DESTDIR)$(MAN_DEST)/privoxy.1
 
 	@# Change the config file default directories according to the configured ones
 	@$(ECHO) Rewriting config for this installation
@@ -1154,9 +1093,9 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	@# Install the config support files. Test for root install, and abort 
 	@# if there is no privoxy user, and no other user was enabled during 
 	@# configure. Later, install init script if appropriate.
-	@$(ECHO) Installing templates to $(CONF_DEST)/templates
+	@$(ECHO) Installing templates to $(DESTDIR)$(CONF_DEST)/templates
 	@for i in `find templates -type f`; do \
-		$(INSTALL) $(INSTALL_T) $$i $(CONF_DEST)/templates ;\
+		$(INSTALL) $(INSTALL_T) $$i $(DESTDIR)$(CONF_DEST)/templates ;\
 	done
 
 	@# FIXME: group/user validation is overly convoluted.
@@ -1194,36 +1133,36 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 		fi ;\
 		INSTALL_CONF="$(INSTALL_R)" ;\
 	fi ;\
-	$(ECHO) Installing configuration files to $(CONF_DEST);\
+	$(ECHO) Installing configuration files to $(DESTDIR)$(CONF_DEST);\
 	for i in $(CONFIGS); do \
 		if [ "$$i" = "default.action" ] || [ "$$i" = "default.filter" ] || [ "$$i" = "standard.action" ]; then \
-			$(RM) $(CONF_DEST)/$$i ;\
+			$(RM) $(DESTDIR)$(CONF_DEST)/$$i ;\
 			$(ECHO) Installing fresh $$i;\
-			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST) || exit 1;\
+			$(INSTALL) $$INSTALL_CONF $$i $(DESTDIR)$(CONF_DEST) || exit 1;\
 		elif [ -s "$(CONF_DEST)/$$i" ]; then \
 			$(ECHO) Installing $$i as $$i.new ;\
-			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST)/$$i.new || exit 1;\
+			$(INSTALL) $$INSTALL_CONF $$i $(DESTDIR)$(CONF_DEST)/$$i.new || exit 1;\
 			NEW=1;\
 		else \
-			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST) || exit 1;\
+			$(INSTALL) $$INSTALL_CONF $$i $(DESTDIR)$(CONF_DEST) || exit 1;\
 		fi ;\
 	done ;\
 	if [ -n "$$NEW" ]; then \
-		$(CHMOD) $(RWD_MODE) $(CONF_DEST)/*.new || exit 1 ;\
+		$(CHMOD) $(RWD_MODE) $(DESTDIR)$(CONF_DEST)/*.new || exit 1 ;\
 		$(ECHO) "Warning: Older config files are preserved. Check new versions for changes!" ;\
 	fi ;\
-	[ ! -f $(LOG_DEST)/logfile ] && $(ECHO) Creating logfiles in $(LOG_DEST) || \
-		$(ECHO) Checking logfiles in $(LOG_DEST) ;\
-		$(TOUCH) $(LOG_DEST)/logfile $(LOG_DEST)/jarfile || exit 1 ;\
+	[ ! -f $(DESTDIR)$(LOG_DEST)/logfile ] && $(ECHO) Creating logfiles in $(DESTDIR)$(LOG_DEST) || \
+		$(ECHO) Checking logfiles in $(DESTDIR)$(LOG_DEST) ;\
+		$(TOUCH) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || exit 1 ;\
 	if [ x$$USER != x ]; then \
-		$(CHOWN) $$USER $(LOG_DEST)/logfile $(LOG_DEST)/jarfile || \
+		$(CHOWN) $$USER $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || \
 		$(ECHO) "** WARNING ** current install user different from configured user. Logging may fail!!" ;\
 	fi ;\
 	if [ x$$GROUP_T != x ]; then \
-		$(CHGRP) $$GROUP_T $(LOG_DEST)/logfile $(LOG_DEST)/jarfile || \
+		$(CHGRP) $$GROUP_T $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || \
 		$(ECHO) "** WARNING ** current install user different from configured user. Logging may fail!!" ;\
 	fi ;\
-	$(CHMOD) $(RWD_MODE) $(LOG_DEST)/logfile $(LOG_DEST)/jarfile || exit 1 ;\
+	$(CHMOD) $(RWD_MODE) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || exit 1 ;\
 	if [ "$(prefix)" = "/usr/local" ] || [ "$(prefix)" = "/usr" ]; then \
 		if [ -f /etc/slackware-version ] && [ -d /etc/rc.d/ ] && [ -w /etc/rc.d/ ] ; then \
                $(SED) 's+%PROGRAM%+$(PROGRAM)+' slackware/rc.privoxy.orig | \
@@ -1231,7 +1170,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
                $(SED) 's+%CONF_DEST%+$(CONF_DEST)+' | \
                $(SED) 's+%USER%+$(USER)+' | \
                $(SED) 's+%GROUP%+$(GROUP_T)+' >slackware/rc.privoxy ;\
-			$(INSTALL) $(INSTALL_P) slackware/rc.privoxy /etc/rc.d/ ;\
+			$(INSTALL) $(INSTALL_P) slackware/rc.privoxy $(DESTDIR)/etc/rc.d/ ;\
                $(ECHO) "Installing for Slackware." ;\
                $(ECHO) "Dont forget to add the rc.privoxy to rc.local if you want it started at every boot" ;\
 		elif [ -f /etc/redhat-release ] && [ -d /etc/rc.d/init.d/ ] && [ -w /etc/rc.d/init.d/ ] ; then \
@@ -1239,14 +1178,14 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 			$(SED) 's,^PRIVOXY_BIN=.*,PRIVOXY_BIN="/usr/local/sbin/$(PROGRAM)",' privoxy.init |\
 			$(SED) 's,^PRIVOXY_CONF=.*,PRIVOXY_CONF="$(CONF_DEST)/config",' |\
 			$(SED) "s,^PRIVOXY_USER=.*,PRIVOXY_USER=$$USER," > init.tmp ;\
-			$(INSTALL) $(INSTALL_P) init.tmp /etc/rc.d/init.d/privoxy && $(RM) init.tmp;\
-			$(MKDIR) /etc/logrotate.d/ ;\
-			$(ECHO) "Installing logrotate script to /etc/logrotate.d/" ;\
-			$(INSTALL) -m 0644 privoxy.logrotate /etc/logrotate.d/privoxy ;\
-		elif [ -d /etc/init.d ] && [ -w /etc/init.d ] ; then \
-			$(ECHO) "Installing generic init script to /etc/init.d/privoxy" ;\
+			$(INSTALL) $(INSTALL_P) init.tmp $(DESTDIR)/etc/rc.d/init.d/privoxy && $(RM) init.tmp;\
+			$(MKDIR) $(DESTDIR)/etc/logrotate.d/ ;\
+			$(ECHO) "Installing logrotate script to $(DESTDIR)/etc/logrotate.d/" ;\
+			$(INSTALL) -m 0644 privoxy.logrotate $(DESTDIR)/etc/logrotate.d/privoxy ;\
+		elif [ -d $(DESTDIR)/etc/init.d ] && [ -w $(DESTDIR)/etc/init.d ] ; then \
+			$(ECHO) "Installing generic init script to $(DESTDIR)/etc/init.d/privoxy" ;\
 			$(ECHO) "Please check that the PATHs are correct, and edit if needed." ;\
-			$(INSTALL) $(INSTALL_P) privoxy-generic.init /etc/init.d/privoxy ;\
+			$(INSTALL) $(INSTALL_P) privoxy-generic.init $(DESTDIR)/etc/init.d/privoxy ;\
 		fi ;\
 	else \
 		$(ECHO) "No init script installed, install it manually if needed" ;\
@@ -1254,96 +1193,100 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	$(RM) config.base config.tmp
 	@# mmmmm, good.
 	@$(ECHO) "$(PROGRAM_V) installation succeeded!"
-	@$(ECHO) "The Privoxy configuration files have been installed in $(CONF_DEST)"
+	@$(ECHO) "The Privoxy configuration files have been installed in $(DESTDIR)$(CONF_DEST)"
 
 # rmdir is used as a precaution since it will not remove non-empty
 # directories. RH init script creates lock file and pid file.
 uninstall: CONF_DEST LOG_DEST PID_DEST check_doc
 	@$(ECHO) Starting Privoxy uninstallation
 	@# KILL privoxy if running
-	-@if [ -f /etc/redhat-release ] && [ -x /etc/rc.d/init.d/privoxy ]; then \
-		/etc/rc.d/init.d/privoxy stop >/dev/null 2>/dev/null ;\
+	@# XXX: the chkconfig line may need a DESTDIR prefix.
+	-@if [ -f $(DESTDIR)/etc/redhat-release ] && [ -x $(DESTDIR)/etc/rc.d/init.d/privoxy ]; then \
+		$(DESTDIR)/etc/rc.d/init.d/privoxy stop >/dev/null 2>/dev/null ;\
 		chkconfig --del $(PROGRAM) 2>/dev/null;\
 	fi
-	-@test -f $(PID_DEST)/privoxy.pid && $(ECHO) Stopping $(PROGRAM) &&\
-         $(KILL) `$(CAT) $(PID_DEST)/privoxy.pid` || :
-	-@test -f /var/run/privoxy.pid && $(ECHO) Stopping $(PROGRAM) &&\
-          $(KILL) `$(CAT) /var/run/privoxy.pid ` || :
+	-@test -f $(DESTDIR)$(PID_DEST)/privoxy.pid && $(ECHO) Stopping $(PROGRAM) &&\
+         $(KILL) `$(CAT) $(DESTDIR)$(PID_DEST)/privoxy.pid` || :
+	-@test -f $(DESTDIR)/var/run/privoxy.pid && $(ECHO) Stopping $(PROGRAM) &&\
+          $(KILL) `$(CAT) $(DESTDIR)/var/run/privoxy.pid ` || :
 
 	@# Program binary
 	@$(ECHO) Removing $(PROGRAM) binary
-	$(RM) $(SBIN_DEST)/$(PROGRAM) $(SBIN_DEST)/$(PROGRAM)~
+	$(RM) $(DESTDIR)$(SBIN_DEST)/$(PROGRAM) $(SBIN_DEST)/$(PROGRAM)~
 
 	@# config files and dir, and maybe old install backups
-	-@if [ -d $(CONF_DEST) ]; then \
-		$(ECHO) Saving $(PROGRAM) config files to /tmp/$(PROGRAM)-save ;\
-		$(MKDIR) /tmp/$(PROGRAM)-save ;\
-		cd $(CONF_DEST) ;\
-		for i in $(CONFIGS); do \
-			[ -f $$i ] && $(CP) $$i /tmp/$(PROGRAM)-save ;\
+	-@if [ -d $(DESTDIR)$(CONF_DEST) ]; then \
+		$(ECHO) Saving $(PROGRAM) config files to $(DESTDIR)/tmp/$(PROGRAM)-save ;\
+		$(MKDIR) $(DESTDIR)/tmp/$(PROGRAM)-save ;\
+		cd $(DESTDIR)$(CONF_DEST) ;\
+		for i in $(DESTDIR)$(CONFIGS); do \
+			[ -f $$i ] && $(CP) $$i $(DESTDIR)/tmp/$(PROGRAM)-save ;\
 		done ;\
 	fi
 	@$(ECHO) Removing $(PROGRAM) config files
-	-@for i in $(CONFIGS); do \
+	-@for i in $(DESTDIR)$(CONFIGS); do \
 		test -f $(CONF_DEST)/$$i && $(ECHO) Removing $$i ;\
-		$(RM) $(CONF_DEST)/$$i $(CONF_DEST)/$$i~ $(CONF_DEST)/$$i.new ;\
+		$(RM) $(DESTDIR)$(CONF_DEST)/$$i $(DESTDIR)$(CONF_DEST)/$$i~ $(DESTDIR)$(CONF_DEST)/$$i.new ;\
 	done
-	-@test -d $(CONF_DEST)/templates && $(RM) -r $(CONF_DEST)/templates &&\
-	$(ECHO) "Removing $(CONF_DEST)/templates/*"
+	-@test -d $(DESTDIR)$(CONF_DEST)/templates && $(RM) -r $(DESTDIR)$(CONF_DEST)/templates &&\
+	$(ECHO) "Removing $(DESTDIR)$(CONF_DEST)/templates/*"
 
 	@# man page and docs
 	@$(ECHO) Removing $(PROGRAM) docs
-	-$(RM) $(MAN_DEST)/privoxy.1*
-	-$(RM) -r $(DOC_DEST) || $(RM) -r $(prefix)/doc/privoxy
+	-$(RM) $(DESTDIR)$(MAN_DEST)/privoxy.1*
+	-$(RM) -r $(DESTDIR)$(DOC_DEST) || $(RM) -r $(DESTDIR)$(prefix)/doc/privoxy
 
 	@# Log and jarfile and pidfile
 	@$(ECHO) Removing $(PROGRAM) logs
-	-$(RM) $(LOG_DEST)/logfile $(PID_DEST)/privoxy.pid $(LOG_DEST)/jarfile
+	-$(RM) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(PID_DEST)/privoxy.pid $(DESTDIR)$(LOG_DEST)/jarfile
 
 	@# Final clean up of unused directories. Special handling of CONF and LOG
      # destinations.
 	@$(ECHO) Removing $(PROGRAM) directories
-	@for i in $(LOG_DEST) $(CONF_DEST); do \
+	@for i in $(DESTDIR)$(LOG_DEST) $(DESTDIR)$(CONF_DEST); do \
 		if test -d $$i; then \
 			$(ECHO) Removing $$i ;\
 			$(RMDIR) $$i || $(ECHO) "$$i is not empty, not removed" ;\
 		fi;\
 	done
 	@if [  ! "$(prefix)" = "/usr/local" ] ;then \
-		for i in $(MAN_DEST) $(MAN_DIR) $(SHARE_DEST)/doc $(SHARE_DEST) $(SBIN_DEST); do \
+		for i in $(DESTDIR)$(MAN_DEST) $(DESTDIR)$(MAN_DIR) $(DESTDIR)$(SHARE_DEST)/doc \
+                         $(DESTDIR)$(SHARE_DEST) $(DESTDIR)$(SBIN_DEST); do \
 			if test -d $$i; then \
 				$(ECHO) Removing $$i ;\
 				$(RMDIR) $$i || $(ECHO) "$$i is not empty, not removed" ;\
 			fi;\
 		done;\
-		if test $(LOG_DEST) != /var/log/privoxy && test -d $(prefix)/var/log; then \
-			$(ECHO) Removing $(prefix)/var/log ;\
-			$(RMDIR) $(prefix)/var/log || $(ECHO) "$(prefix)/var/log is not empty, not removed";\
+		if test $(LOG_DEST) != /var/log/privoxy && test -d $(DESTDIR)$(prefix)/var/log; then \
+			$(ECHO) Removing $(DESTDIR)$(prefix)/var/log ;\
+			$(RMDIR) $(DESTDIR)$(prefix)/var/log || $(ECHO) "$(DESTDIR)$(prefix)/var/log is not empty, not removed";\
 		fi ;\
-		if test $(PID_DEST) != /var/run && test -d $(prefix)/var/run; then \
-			$(ECHO) Removing $(prefix)/var/run ;\
-			$(RMDIR) $(prefix)/var/run || $(ECHO) "$(prefix)/var/run is not empty, not removed";\
+		if test $(PID_DEST) != /var/run && test -d $(DESTDIR)$(prefix)/var/run; then \
+			$(ECHO) Removing $(DESTDIR)$(prefix)/var/run ;\
+			$(RMDIR) $(DESTDIR)$(prefix)/var/run || $(ECHO) "$(DESTDIR)$(prefix)/var/run is not empty, not removed";\
 		fi ;\
-		if test $(prefix)/var != /var && test -d $(prefix)/var; then \
-			$(ECHO) Removing $(prefix)/var ;\
-			$(RMDIR) $(prefix)/var || $(ECHO) "$(prefix)/var is not empty, not removed" ;\
+		if test $(prefix)/var != /var && test -d $(DESTDIR)$(prefix)/var; then \
+			$(ECHO) Removing $(DESTDIR)$(prefix)/var ;\
+			$(RMDIR) $(DESTDIR)$(prefix)/var || $(ECHO) "$(DESTDIR)$(prefix)/var is not empty, not removed" ;\
 		fi ;\
-		if test $(prefix) != / && test $(prefix) != /usr && test -d $(prefix); then \
-			$(ECHO) Removing $(prefix) ;\
-			$(ECHO) Removing installation directory $(prefix) ;\
-			$(RMDIR) $(prefix) || $(ECHO) "$(prefix) is not empty, not removed" ;\
+		if test $(prefix) != / && test $(prefix) != /usr && test -d $(DESTDIR)$(prefix); then \
+			$(ECHO) Removing $(DESTDIR)$(prefix) ;\
+			$(ECHO) Removing installation directory $(DESTDIR)$(prefix) ;\
+			$(RMDIR) $(DESTDIR)$(prefix) || $(ECHO) "$(DESTDIR)$(prefix) is not empty, not removed" ;\
 		fi;\
 	fi
 
 	@# init scripts and logrotate
 	@if [ "$(prefix)" = "/usr/local" ] || [ "$(prefix)" = "/usr" ]; then \
 		$(ECHO) Removing $(PROGRAM) init script ;\
-		if [ -f /etc/slackware-version ] && [ -d /etc/rc.d/ ]  && [ -w /etc/rc.d/ ] ; then \
-			$(RM) /etc/rc.d/rc.privoxy ;\
-		elif [ -f /etc/redhat-release ] && [ -d /etc/rc.d/init.d/ ]  && [ -w /etc/rc.d/init.d/ ] ; then \
-			$(RM) /etc/rc.d/init.d/privoxy /etc/logrotate.d/privoxy;\
-		elif [ -d /etc/init.d ] && [ -w /etc/init.d ] ; then \
-			$(RM) /etc/init.d/privoxy ;\
+		if [ -f $(DESTDIR)/etc/slackware-version ] && \
+	                [ -d $(DESTDIR)/etc/rc.d/ ]  && [ -w $(DESTDIR)/etc/rc.d/ ] ; then \
+			$(RM) $(DESTDIR)/etc/rc.d/rc.privoxy ;\
+		elif [ -f $(DESTDIR)/etc/redhat-release ] && [ -d $(DESTDIR)/etc/rc.d/init.d/ ] \
+                       && [ -w $(DESTDIR)/etc/rc.d/init.d/ ] ; then \
+			$(RM) $(DESTDIR)/etc/rc.d/init.d/privoxy $(DESTDIR)/etc/logrotate.d/privoxy;\
+		elif [ -d $(DESTDIR)/etc/init.d ] && [ -w $(DESTDIR)/etc/init.d ] ; then \
+			$(RM) $(DESTDIR)/etc/init.d/privoxy ;\
 		else \
 			$(ECHO) "Unable to remove privoxy init script, not installed or permission denied" ;\
 		fi ;\
@@ -1351,11 +1294,13 @@ uninstall: CONF_DEST LOG_DEST PID_DEST check_doc
 	@$(ECHO) Privoxy uninstalled, bye
 
 coffee:
-	 @perl -e 'print pack "C*", (31,139,8,8,153,63,226,60,2,3,99,111,102,102,101,101,0,109,143,205,13,192,32,8,133,\
-                  239,78,241,110,234,1,28,160,171,152,208,53,26,117,247,22,165,73,137,125,9,1,62,126,2,128,169,5,243,143,\
-                  13,139,49,164,65,100,149,152,102,73,141,88,73,178,116,205,100,69,253,36,102,81,49,83,236,19,225,171,131,\
-                  214,172,163,73,4,168,123,115,71,126,247,122,94,128,178,227,95,154,12,86,215,122,197,249,146,187,54,220,125,\
-                  193,51,228,11,1,0,0);'|zcat
+	 @perl	-e 'print pack "C*", (31,139,8,8,153,63,226,60,2,3,99,111,102,102,101,'	 \
+		-e '101,0,109,143,205,13,192,32,8,133,239,78,241,110,234,1,28,160,171,'  \
+		-e '152,208,53,26,117,247,22,165,73,137,125,9,1,62,126,2,128,169,5,243,' \
+		-e '143,13,139,49,164,65,100,149,152,102,73,141,88,73,178,116,205,100,'  \
+		-e '69,253,36,102,81,49,83,236,19,225,171,131,214,172,163,73,4,168,123,' \
+		-e '115,71,126,247,122,94,128,178,227,95,154,12,86,215,122,197,249,146,' \
+		-e '187,54,220,125,193,51,228,11,1,0,0);' | zcat
 
 #############################################################################
 
@@ -1364,6 +1309,64 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.173  2008/06/18 18:28:42  fabiankeil
+# Remove PDF-related stuff.
+#
+# Revision 1.172  2008/06/17 16:16:08  fabiankeil
+# - Stop building text files nobody cares about.
+# - Update copyright year.
+#
+# Revision 1.171  2008/06/13 15:24:57  fabiankeil
+# Move previously inline'd Perl code for the config-file target
+# into a separate file, have it work with older perl releases,
+# clean it up a bit and fix the "underlining" code.
+#
+# Revision 1.170  2008/06/12 16:38:50  fabiankeil
+# Add third-level domain to URL in dok-get target.
+#
+# Revision 1.169  2008/06/09 17:28:31  fabiankeil
+# - Recommend https for releasing files.
+# - Fix a warning about datarootdir being ignored.
+#
+# Revision 1.168  2008/05/23 18:03:12  fabiankeil
+# - Shorten meta description inserted in dok-webserver
+#   and dok-index target.
+# - In config-file target, unset LANG for w3m as we
+#   might otherwise end up with multi-byte characters.
+#
+# Revision 1.167  2008/05/23 14:39:09  fabiankeil
+# Silence dok-user complaint about @# not being found.
+#
+# Revision 1.166  2008/05/23 14:04:57  fabiankeil
+# - Get config-file target working with more recent Perl
+#   versions. The generated file is still messed up, though.
+# - Fix comment typo.
+#
+# Revision 1.165  2008/05/22 16:57:23  fabiankeil
+# Fix coffee machine.
+#
+# Revision 1.164  2008/05/22 10:26:26  fabiankeil
+# - Remove parsers.@OBJEXT@'s dependency on encode.h.
+# - Include Emacs backup files in tidy target again.
+#
+# Revision 1.163  2008/05/04 18:01:53  fabiankeil
+# Dependency fixes: cgisimple.c and filters.c depend on urlmatch.h.
+#
+# Revision 1.162  2008/03/30 13:31:42  fabiankeil
+# Add DESTDIR support for the uninstall target.
+#
+# Revision 1.161  2008/03/30 13:19:13  fabiankeil
+# Add DESTDIR support for the install target. Closes PR#1910612.
+# Patch by Radoslaw Zielinski with minor modifications.
+#
+# Revision 1.160  2008/03/27 18:27:19  fabiankeil
+# Remove kill-popups action.
+#
+# Revision 1.159  2008/03/21 11:13:53  fabiankeil
+# Only gather host information if it's actually needed.
+# Also move the code out of accept_connection() so it's less likely
+# to delay other incoming connections if the host is misconfigured.
+#
 # Revision 1.158  2007/12/11 21:29:25  fabiankeil
 # Fix dependency list for cgiedit.c.
 #

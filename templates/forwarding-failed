@@ -125,7 +125,7 @@
              <a  title="Repeat the request"
               href="@protocol@@hostport@@path@"><b>@protocol@@hostport@@path@</b></a>
              through <b>@gateway@</b>:
-            <br><strong>@error-message@</strong></p>
+            <strong>@error-message@</strong></p>
           </p>
           <p>Just <a title="Repeat the request" href="@protocol@@hostport@@path@">try again</a> to
              see if this is a temporary problem, or check your <a title="Privoxy's show-status page"

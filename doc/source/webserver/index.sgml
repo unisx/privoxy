@@ -5,8 +5,8 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.4">
-<!entity p-status "BETA">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -20,9 +20,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 2.4 2006/08/28 01:08:57 hal9 Exp $
+ $Id: index.sgml,v 2.5 2008/06/18 17:42:13 fabiankeil Exp $
 
- Copyright (C) 2001 - 2006 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001 - 2008 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  ========================================================================
@@ -90,7 +90,7 @@
  <itemizedlist>
   <listitem>
    <para>
-    <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">Download recent releases</ulink>
+    <ulink url="https://sourceforge.net/project/showfiles.php?group_id=11118">Download recent releases</ulink>
    </para>
   </listitem>
  <!-- 
@@ -128,13 +128,6 @@
     <ulink url="developer-manual/index.html">Developer Manual</ulink>
    </para>
   </listitem>
-<![%p-homepage;[
-<!-- not included for local index page -->
-  <listitem>
-   <para>
-    <ulink url="pdf/privoxy-pdf-docs.zip">The above docs as PDF in Zip archive</ulink>
-   </para>
-  </listitem> ]]>
   <listitem>
    <para>
     <ulink url="man-page/privoxy-man-page.html">Classic Man Page</ulink>
@@ -229,7 +222,7 @@
 <!-- GNUMakefile is inserting this now -->
 <para>
  <subscript>
-  Copyright __copy 2001 - 2006 by Privoxy Developers
+  Copyright __copy 2001 - 2008 by Privoxy Developers
  </subscript>
 </para>
 
@@ -256,6 +249,11 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 2.5  2008/06/18 17:42:13  fabiankeil
+ - Remove link to soon-to-be-removed PDFs.
+ - Use https for the download URL.
+ - Update copyright year.
+
  Revision 2.4  2006/08/28 01:08:57  hal9
  Remove reference to defunct nightly cvs tarballs.
 

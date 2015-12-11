@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.8 User Manual"
+TITLE="Privoxy 3.0.9 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.8 User Manual</TH
+>Privoxy 3.0.9 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -262,7 +262,7 @@ CLASS="FILENAME"
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2176"
+NAME="AEN2191"
 ></A
 ><P
 ><B
@@ -420,7 +420,7 @@ TITLE="C4"><THEAD
 ><TD
 >no</TD
 ><TD
->no</TD
+>yes</TD
 ><TD
 >yes</TD
 ></TR
@@ -531,7 +531,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2275"
+NAME="AEN2290"
 >8.1. Finding the Right Mix</A
 ></H2
 ><P
@@ -566,7 +566,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2282"
+NAME="AEN2297"
 >8.2. How to Edit</A
 ></H2
 ><P
@@ -680,7 +680,7 @@ CLASS="LITERAL"
 >handle-as-image</TT
 >  +<TT
 CLASS="LITERAL"
->block</TT
+>block{Banner ads.}</TT
 > }
   # Block these as if they were images. Send no block page.
    banners.example.com
@@ -772,16 +772,16 @@ CLASS="EMPHASIS"
 ><P
 > The pattern matching syntax is different for the domain and path parts of
  the URL. The domain part uses a simple globbing type matching technique, 
- while the path part uses a more flexible 
+ while the path part uses more flexible 
  <A
 HREF="http://en.wikipedia.org/wiki/Regular_expressions"
 TARGET="_top"
 ><SPAN
 CLASS="QUOTE"
 >"Regular
-  Expressions (PCRE)"</SPAN
+  Expressions"</SPAN
 ></A
-> based syntax.</P
+> (POSIX 1003.2).</P
 ><P
 ></P
 ><DIV
@@ -896,7 +896,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2373"
+NAME="AEN2388"
 >8.4.1. The Domain Pattern</A
 ></H3
 ><P
@@ -1136,49 +1136,37 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2449"
+NAME="AEN2464"
 >8.4.2. The Path Pattern</A
 ></H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> uses Perl compatible (PCRE)
+> uses <SPAN
+CLASS="QUOTE"
+>"modern"</SPAN
+> POSIX 1003.2
   <A
 HREF="http://en.wikipedia.org/wiki/Regular_expressions"
 TARGET="_top"
 ><SPAN
 CLASS="QUOTE"
 >"Regular
-  Expression"</SPAN
+  Expressions"</SPAN
 ></A
-> based syntax 
- (through the <A
-HREF="http://www.pcre.org/"
-TARGET="_top"
->PCRE</A
-> library) for
- matching the path portion (after the slash), and is thus more flexible.</P
+> for matching the path portion (after the slash),
+  and is thus more flexible.</P
 ><P
 > There is an <A
 HREF="appendix.html#REGEX"
 >Appendix</A
 > with a brief quick-start into regular
- expressions, and full (very technical) documentation on PCRE regex syntax is available on-line
- at <A
-HREF="http://www.pcre.org/man.txt"
-TARGET="_top"
->http://www.pcre.org/man.txt</A
->.
- You might also find the Perl man page on regular expressions (<TT
+ expressions, you also might want to have a look at your operating system's documentation
+ on regular expressions (try <TT
 CLASS="LITERAL"
->man perlre</TT
->)
- useful, which is available on-line at <A
-HREF="http://perldoc.perl.org/perlre.html"
-TARGET="_top"
->http://perldoc.perl.org/perlre.html</A
->.</P
+>man re_format</TT
+>).</P
 ><P
 > Note that the path pattern is automatically left-anchored at the <SPAN
 CLASS="QUOTE"
@@ -1567,7 +1555,7 @@ CLASS="REPLACEABLE"
 >  
    Example: <TT
 CLASS="LITERAL"
->+block</TT
+>+handle-as-image</TT
 >
   </P
 ></LI
@@ -1891,13 +1879,13 @@ HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
 >Type:</DT
 ><DD
 ><P
->Boolean.</P
+>Parameterized.</P
 ></DD
 ><DT
 >Parameter:</DT
 ><DD
 ><P
->N/A</P
+>A block reason that should be given to the user.</P
 ></DD
 ><DT
 >Notes:</DT
@@ -1910,27 +1898,10 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"BLOCKED"</SPAN
 > page
-    for requests to blocked pages. This page contains links to find out why the request
-    was blocked, and a click-through to the blocked content (the latter only if compiled with the
-    force feature enabled). The <SPAN
-CLASS="QUOTE"
->"BLOCKED"</SPAN
-> page adapts to the available
-    screen space -- it displays full-blown if space allows, or miniaturized and text-only
-    if loaded into a small frame or window. If you are using <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->
-    right now, you can take a look at the 
-    <A
-HREF="http://ads.bannerserver.example.com/nasty-ads/sponsor.html"
-TARGET="_top"
-><SPAN
-CLASS="QUOTE"
->"BLOCKED"</SPAN
->
-    page</A
->.
+    for requests to blocked pages. This page contains the block reason given as
+    parameter, a link to find out why the block action applies, and a click-through
+    to the blocked content (the latter only if the force feature is available and
+    enabled).
    </P
 ><P
 > 
@@ -2000,18 +1971,18 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->{+block}      
+>{+block{No nasty stuff for you.}}
 # Block and replace with "blocked" page
  .nasty-stuff.example.com
 
-{+block +handle-as-image} 
+{+block{Doubleclick banners.} +handle-as-image} 
 # Block and replace with image
  .ad.doubleclick.net
  .ads.r.us/banners/
 
-{+block +handle-as-empty-document} 
+{+block{Layered ads.} +handle-as-empty-document} 
 # Block and then ignore
- adserver.exampleclick.net/.*\.js$</PRE
+ adserver.example.net/.*\.js$</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2108,8 +2079,9 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->{+client-header-filter{hide-tor-exit-notation}}
-.exit/
+># Hide Tor exit notation in Host and Referer Headers
+{+client-header-filter{hide-tor-exit-notation}}
+/
     </PRE
 ></TD
 ></TR
@@ -2197,6 +2169,25 @@ CLASS="SCREEN"
 ># Tag every request with the User-Agent header
 {+client-header-tagger{user-agent}}
 /
+
+# Tagging itself doesn't change the action
+# settings, sections with TAG patterns do:
+#
+# If it's a download agent, use a different forwarding proxy,
+# show the real User-Agent and make sure resume works.
+{+forward-override{forward-socks5 10.0.0.2:2222 .} \
+ -hide-if-modified-since      \
+ -overwrite-last-modified     \
+ -hide-user-agent             \
+ -filter                      \
+ -deanimate-gifs              \
+}
+TAG:^User-Agent: NetBSD-ftp/
+TAG:^User-Agent: Novell ZYPP Installer
+TAG:^User-Agent: RPM APT-HTTP/
+TAG:^User-Agent: fetch libfetch/
+TAG:^User-Agent: Ubuntu APT-HTTP/
+TAG:^User-Agent: MPlayer/
     </PRE
 ></TD
 ></TR
@@ -3583,7 +3574,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{js-annoyances}       # Get rid of particularly annoying JavaScript abuse</PRE
+>+filter{js-annoyances}       # Get rid of particularly annoying JavaScript abuse.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3602,7 +3593,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{js-events}           # Kill all JS event bindings (Radically destructive! Only for extra nasty sites)</PRE
+>+filter{js-events}           # Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3621,7 +3612,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{html-annoyances}     # Get rid of particularly annoying HTML abuse</PRE
+>+filter{html-annoyances}     # Get rid of particularly annoying HTML abuse.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3640,7 +3631,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{content-cookies}     # Kill cookies that come in the HTML or JS content</PRE
+>+filter{content-cookies}     # Kill cookies that come in the HTML or JS content.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3659,7 +3650,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups)</PRE
+>+filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups).</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3716,7 +3707,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{img-reorder}         # Reorder attributes in &#60;img&#62; tags to make the banners-by-* filters more effective</PRE
+>+filter{img-reorder}         # Reorder attributes in &#60;img&#62; tags to make the banners-by-* filters more effective.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3735,7 +3726,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{banners-by-size}     # Kill banners by size</PRE
+>+filter{banners-by-size}     # Kill banners by size.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3754,7 +3745,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{banners-by-link}     # Kill banners by their links to known clicktrackers</PRE
+>+filter{banners-by-link}     # Kill banners by their links to known clicktrackers.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3773,7 +3764,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking)</PRE
+>+filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking).</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3792,7 +3783,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{tiny-textforms}      # Extend those tiny textareas up to 40x80 and kill the hard wrap</PRE
+>+filter{tiny-textforms}      # Extend those tiny textareas up to 40x80 and kill the hard wrap.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3811,7 +3802,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{jumping-windows}     # Prevent windows from resizing and moving themselves</PRE
+>+filter{jumping-windows}     # Prevent windows from resizing and moving themselves.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3830,7 +3821,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{frameset-borders}    # Give frames a border and make them resizeable</PRE
+>+filter{frameset-borders}    # Give frames a border and make them resizable.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3849,7 +3840,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{demoronizer}         # Fix MS's non-standard use of standard charsets</PRE
+>+filter{demoronizer}         # Fix MS's non-standard use of standard charsets.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3868,7 +3859,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{shockwave-flash}     # Kill embedded Shockwave Flash objects</PRE
+>+filter{shockwave-flash}     # Kill embedded Shockwave Flash objects.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3887,7 +3878,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{quicktime-kioskmode} # Make Quicktime movies savable</PRE
+>+filter{quicktime-kioskmode} # Make Quicktime movies saveable.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3925,7 +3916,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{crude-parental}      # Crude parental filtering (demo only)</PRE
+>+filter{crude-parental}      # Crude parental filtering. Note that this filter doesn't work reliably.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3944,7 +3935,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{ie-exploits}         # Disable a known Internet Explorer bug exploits</PRE
+>+filter{ie-exploits}         # Disable some known Internet Explorer bug exploits.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3963,83 +3954,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{site-specifics}      # Custom filters for specific site related problems</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-><P
->    <A
-NAME="FILTER-GOOGLE"
-></A
->
-    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+filter{google}              # Removes text ads and other Google specific improvements</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-><P
->    <A
-NAME="FILTER-YAHOO"
-></A
->
-    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+filter{yahoo}               # Removes text ads and other Yahoo specific improvements</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-><P
->    <A
-NAME="FILTER-MSN"
-></A
->
-    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+filter{msn}                 # Removes text ads and other MSN specific improvements</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-><P
->    <A
-NAME="FILTER-BLOGSPOT"
-></A
->
-    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+filter{blogspot}            # Cleans up Blogspot blogs</PRE
+>+filter{site-specifics}      # Cure for site-specific problems. Don't apply generally!</PRE
 ></TD
 ></TR
 ></TABLE
@@ -4058,7 +3973,83 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{no-ping}             # Removes non-standard ping attributes from anchor and area tags</PRE
+>+filter{no-ping}             # Removes non-standard ping attributes in &#60;a&#62; and &#60;area&#62; tags.</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    <A
+NAME="FILTER-GOOGLE"
+></A
+>
+    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+filter{google}              # CSS-based block for Google text ads. Also removes a width limitation and the toolbar advertisement.</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    <A
+NAME="FILTER-YAHOO"
+></A
+>
+    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+filter{yahoo}               # CSS-based block for Yahoo text ads. Also removes a width limitation.</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    <A
+NAME="FILTER-MSN"
+></A
+>
+    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+filter{msn}                 # CSS-based block for MSN text ads. Also removes tracking URLs and a width limitation.</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    <A
+NAME="FILTER-BLOGSPOT"
+></A
+>
+    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+filter{blogspot}            # Cleans up some Blogspot blogs. Read the fine print before using this.</PRE
 ></TD
 ></TR
 ></TABLE
@@ -4267,7 +4258,11 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"forward-socks4"</SPAN
 >
-      to use a socks4 connection  (with local DNS resolution) instead.
+      to use a socks4 connection  (with local DNS resolution) instead, use <SPAN
+CLASS="QUOTE"
+>"forward-socks5"</SPAN
+>
+      for socks5 connections (with remote DNS resolution).
      </P
 ></LI
 ><LI
@@ -4284,7 +4279,11 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"forward-socks4"</SPAN
 > to use a socks4 connection
-      (with local DNS resolution) instead.
+      (with local DNS resolution) instead, use <SPAN
+CLASS="QUOTE"
+>"forward-socks5"</SPAN
+>
+      for socks5 connections (with remote DNS resolution).
      </P
 ></LI
 ></UL
@@ -4293,7 +4292,7 @@ CLASS="QUOTE"
 >Notes:</DT
 ><DD
 ><P
->    This action takes parameters similar to the 
+>    This action takes parameters similar to the
     <A
 HREF="config.html#FORWARDING"
 >forward</A
@@ -4495,7 +4494,7 @@ WIDTH="90%"
 CLASS="SCREEN"
 ># Block all documents on example.org that end with ".js",
 # but send an empty document instead of the usual HTML message. 
-{+block +handle-as-empty-document}
+{+block{Blocked JavaScript} +handle-as-empty-document}
 example.org/.*\.js$
      </PRE
 ></TD
@@ -4629,11 +4628,8 @@ CLASS="SCREEN"
 # These don't look like images, but they're banners and should be
 # blocked as images:
 #
-{+block +handle-as-image}
-some.nasty-banner-server.com/junk.cgi\?output=trash
-
-# Banner source! Who cares if they also have non-image content?
-ad.doubleclick.net </PRE
+{+block{Nasty banners.} +handle-as-image}
+nasty-banner-server.example.com/junk.cgi\?output=trash</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5514,261 +5510,8 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="INSPECT-JPEGS"
->8.5.26. inspect-jpegs</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->Try to protect against a MS buffer over-run in JPEG processing</P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    Protect against a known exploit
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Boolean.</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->    N/A
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    See Microsoft Security Bulletin MS04-028. JPEG images are one of the most 
-    common image types found across the Internet. The exploit as described can 
-    allow execution of code on the target system, giving an attacker access 
-    to the system in question by merely planting an altered JPEG image, which 
-    would have no obvious indications of what lurks inside. This action
-    tries to prevent this exploit if delivered through unencrypted HTTP.
-   </P
-><P
->    Note that the exploit mentioned is several years old
-    and it's unlikely that your client is still vulnerable
-    against it. This action may be removed in one of the
-    next releases.
-   </P
-></DD
-><DT
->Example usage:</DT
-><DD
-><P
-><TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+inspect-jpegs</PRE
-></TD
-></TR
-></TABLE
-></P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
-NAME="KILL-POPUPS"
->8.5.27. kill-popups<A
-NAME="KILL-POPUP"
-></A
-></A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->Eliminate those annoying pop-up windows (deprecated)</P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    While loading the document, replace JavaScript code that opens
-    pop-up windows with (syntactically neutral) dummy code on the fly.
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Boolean.</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->    N/A
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    This action is basically a built-in, hardwired special-purpose filter
-    action, but there are important differences: For <TT
-CLASS="LITERAL"
->kill-popups</TT
->,
-    the document need not be buffered, so it can be incrementally rendered while
-    downloading. But <TT
-CLASS="LITERAL"
->kill-popups</TT
-> doesn't catch as many pop-ups as
-    <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER-ALL-POPUPS"
->filter{<TT
-CLASS="REPLACEABLE"
-><I
->all-popups</I
-></TT
->}</A
-></TT
->
-    does and is not as smart as <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER-UNSOLICITED-POPUPS"
->filter{<TT
-CLASS="REPLACEABLE"
-><I
->unsolicited-popups</I
-></TT
->}</A
->
-    </TT
->is.
-   </P
-><P
->    Think of it as a fast and efficient replacement for a filter that you
-    can use if you don't want any filtering at all. Note that it doesn't make
-    sense to combine it with any <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER"
->filter</A
-></TT
-> action,
-    since as soon as one <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER"
->filter</A
-></TT
-> applies,
-    the whole document needs to be buffered anyway, which destroys the advantage of
-    the <TT
-CLASS="LITERAL"
->kill-popups</TT
-> action over its filter equivalent.
-   </P
-><P
->    Killing all pop-ups unconditionally is problematic. Many shops and banks rely on
-    pop-ups to display forms, shopping carts etc, and the <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER-UNSOLICITED-POPUPS"
->filter{<TT
-CLASS="REPLACEABLE"
-><I
->unsolicited-popups</I
-></TT
->}</A
->
-    </TT
-> does a better job of catching only the unwanted ones.
-   </P
-><P
->    If the only kind of pop-ups that you want to kill are exit consoles (those
-    <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->really nasty</I
-></SPAN
-> windows that appear when you close an other
-    one), you might want to use
-    <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER"
->filter</A
->{<TT
-CLASS="REPLACEABLE"
-><I
->js-annoyances</I
-></TT
->}</TT
->
-    instead. 
-   </P
-><P
->    This action is most appropriate for browsers that don't have any controls 
-    for unwanted pop-ups. Not recommended for general usage.
-   </P
-><P
->    This action doesn't work very reliable and may be removed in future releases.
-   </P
-></DD
-><DT
->Example usage:</DT
-><DD
-><P
-><TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+kill-popups</PRE
-></TD
-></TR
-></TABLE
-></P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
 NAME="LIMIT-CONNECT"
->8.5.28. limit-connect</A
+>8.5.26. limit-connect</A
 ></H4
 ><P
 ></P
@@ -5816,13 +5559,12 @@ CLASS="LITERAL"
     <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> only allows HTTP CONNECT
-    requests to port 443 (the standard, secure HTTPS port). Use 
-    <TT
+> allows HTTP CONNECT requests to all
+    ports. Use <TT
 CLASS="LITERAL"
 >limit-connect</TT
-> if more fine-grained control is desired
-    for some or all destinations.
+> if fine-grained control
+    is desired for some or all destinations.
    </P
 ><P
 >    The CONNECT methods exists in HTTP to allow access to secure websites
@@ -5844,15 +5586,6 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >'s
    filters. By specifying an invalid port range you can disable HTTPS entirely.
-   If you plan to disable SSL by default, consider enabling 
-   <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
->treat-forbidden-connects-like-blocks</A
-></TT
->
-   as well, to be able to quickly create exceptions.
   </P
 ></DD
 ><DT
@@ -5867,7 +5600,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+limit-connect{443}                   # This is the default and need not be specified.
+>+limit-connect{443}                   # Port 443 is OK.
 +limit-connect{80,443}                # Ports 80 and 443 are OK.
 +limit-connect{-3, 7, 20-100, 500-}   # Ports less than 3, 7, 20 to 100 and above 500 are OK.
 +limit-connect{-}                     # All ports are OK
@@ -5887,7 +5620,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="PREVENT-COMPRESSION"
->8.5.29. prevent-compression</A
+>8.5.27. prevent-compression</A
 ></H4
 ><P
 ></P
@@ -5939,21 +5672,15 @@ CLASS="LITERAL"
 HREF="actions-file.html#FILTER"
 >filter</A
 ></TT
->, <TT
+> and
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#DEANIMATE-GIFS"
 >deanimate-gifs</A
 ></TT
 >
-    and <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#KILL-POPUPS"
->kill-popups</A
-></TT
-> actions need
-    access to the uncompressed data.
+    actions need access to the uncompressed data.
    </P
 ><P
 >    When compiled with zlib support (available since <SPAN
@@ -6035,7 +5762,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="OVERWRITE-LAST-MODIFIED"
->8.5.30. overwrite-last-modified</A
+>8.5.28. overwrite-last-modified</A
 ></H4
 ><P
 ></P
@@ -6199,7 +5926,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="REDIRECT"
->8.5.31. redirect</A
+>8.5.29. redirect</A
 ></H4
 ><P
 ></P
@@ -6267,6 +5994,13 @@ HREF="actions-file.html#FAST-REDIRECTS"
     and be aware that using your own redirects might make it
     possible to fingerprint your requests.
    </P
+><P
+>    In case of problems with your redirects, or simply to watch
+    them working, enable <A
+HREF="config.html#DEBUG"
+>debug 128</A
+>.
+   </P
 ></DD
 ><DT
 >Example usages:</DT
@@ -6296,167 +6030,20 @@ CLASS="APPLICATION"
 # (Note the $ at the end of the URL pattern to make sure
 # the request for the rewritten URL isn't redirected as well)
 {+redirect{s@$@&#38;mode=expanded@}}
-undeadly.org/cgi\?action=article&#38;sid=\d*$</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
-NAME="SEND-VANILLA-WAFER"
->8.5.32. send-vanilla-wafer</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->    Feed log analysis scripts with useless data.
-   </P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    Sends a cookie with each request stating that you do not accept any copyright
-    on cookies sent to you, and asking the site operator not to track you.
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Boolean.</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->    N/A
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    The vanilla wafer is a (relatively) unique header and could conceivably be used to track you.
-   </P
-><P
->    This action is rarely used and not enabled in the default configuration.
-   </P
-></DD
-><DT
->Example usage:</DT
-><DD
-><P
->     <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+send-vanilla-wafer</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
-NAME="SEND-WAFER"
->8.5.33. send-wafer</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->    Send custom cookies or feed log analysis scripts with even more useless data.
-   </P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    Sends a custom, user-defined cookie with each request.
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Multi-value.</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->    A string of the form <SPAN
-CLASS="QUOTE"
->"<TT
-CLASS="REPLACEABLE"
-><I
->name</I
-></TT
->=<TT
-CLASS="REPLACEABLE"
-><I
->value</I
-></TT
->"</SPAN
->.
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    Being multi-valued, multiple instances of this action can apply to the same request,
-    resulting in multiple cookies being sent.
-   </P
-><P
->    This action is rarely used and not enabled in the default configuration.
-   </P
-></DD
-><DT
->Example usage (section):</DT
-><DD
-><P
->    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->{+send-wafer{UsingPrivoxy=true}}
-my-internal-testing-server.void</PRE
+undeadly.org/cgi\?action=article&#38;sid=\d*$
+
+# Redirect Google search requests to MSN
+{+redirect{s@^http://[^/]*/search\?q=([^&#38;]*).*@http://search.msn.com/results.aspx?q=$1@}}
+.google.com/search
+
+# Redirect MSN search requests to Yahoo
+{+redirect{s@^http://[^/]*/results\.aspx\?q=([^&#38;]*).*@http://search.yahoo.com/search?p=$1@}}
+search.msn.com//results\.aspx\?q=
+
+# Redirect remote requests for this manual
+# to the local version delivered by Privoxy
+{+redirect{s@^http://www@http://config@}}
+www.privoxy.org/user-manual/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -6472,7 +6059,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SERVER-HEADER-FILTER"
->8.5.34. server-header-filter</A
+>8.5.30. server-header-filter</A
 ></H4
 ><P
 ></P
@@ -6566,7 +6153,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SERVER-HEADER-TAGGER"
->8.5.35. server-header-tagger</A
+>8.5.31. server-header-tagger</A
 ></H4
 ><P
 ></P
@@ -6666,7 +6253,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SESSION-COOKIES-ONLY"
->8.5.36. session-cookies-only</A
+>8.5.32. session-cookies-only</A
 ></H4
 ><P
 ></P
@@ -6834,7 +6421,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SET-IMAGE-BLOCKER"
->8.5.37. set-image-blocker</A
+>8.5.33. set-image-blocker</A
 ></H4
 ><P
 ></P
@@ -7089,121 +6676,11 @@ CLASS="SCREEN"
 ></DIV
 ><DIV
 CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
-NAME="TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
->8.5.38. treat-forbidden-connects-like-blocks</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->Block forbidden connects with an easy to find error message.</P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    If this action is enabled, <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> no longer
-    makes a difference between forbidden connects and ordinary blocks. 
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Boolean</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->N/A</P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    By default <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> answers
-    <A
-HREF="actions-file.html#LIMIT-CONNECT"
->forbidden <SPAN
-CLASS="QUOTE"
->"Connect"</SPAN
-> requests</A
->
-    with a short error message inside the headers. If the browser doesn't display
-    headers (most don't), you just see an empty page.
-   </P
-><P
->    With this action enabled, <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> displays
-    the message that is used for ordinary blocks instead. If you decide
-    to make an exception for the page in question, you can do so by
-    following the <SPAN
-CLASS="QUOTE"
->"See why"</SPAN
-> link.
-   </P
-><P
->    For <SPAN
-CLASS="QUOTE"
->"Connect"</SPAN
-> requests the clients tell
-    <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> which host they are interested
-    in, but not which document they plan to get later. As a result, the
-    <SPAN
-CLASS="QUOTE"
->"Go there anyway"</SPAN
-> wouldn't work and is therefore suppressed.
-   </P
-></DD
-><DT
->Example usage:</DT
-><DD
-><P
->    <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+treat-forbidden-connects-like-blocks</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4261"
->8.5.39. Summary</A
+NAME="AEN4087"
+>8.5.34. Summary</A
 ></H3
 ><P
 > Note that many of these actions have the potential to cause a page to
@@ -7362,7 +6839,7 @@ HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 >
- +block-as-image      = +block +handle-as-image
+ +block-as-image      = +block{Blocked image.} +handle-as-image
  allow-all-cookies   = -crunch-all-cookies -<A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
@@ -7387,9 +6864,6 @@ HREF="actions-file.html#FAST-REDIRECTS"
 HREF="actions-file.html#HIDE-REFERER"
 >hide-referrer</A
 > -<A
-HREF="actions-file.html#KILL-POPUPS"
->kill-popups</A
-> -<A
 HREF="actions-file.html#PREVENT-COMPRESSION"
 >prevent-compression</A
 >
@@ -7397,9 +6871,6 @@ HREF="actions-file.html#PREVENT-COMPRESSION"
  shop        = -crunch-all-cookies -<A
 HREF="actions-file.html#FILTER-ALL-POPUPS"
 >filter{all-popups}</A
-> -<A
-HREF="actions-file.html#KILL-POPUPS"
->kill-popups</A
 >
 
  # Short names for other aliases, for really lazy people ;-)
@@ -7445,7 +6916,7 @@ CLASS="SCREEN"
 
  # These shops require pop-ups:
  #
- {-kill-popups -filter{all-popups} -filter{unsolicited-popups}}
+ {-filter{all-popups} -filter{unsolicited-popups}}
   .dabs.com
   .overclockers.co.uk</PRE
 ></TD
@@ -7507,7 +6978,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4326"
+NAME="AEN4150"
 >8.7.1. default.action</A
 ></H3
 ><P
@@ -7590,7 +7061,7 @@ HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 >
- +block-as-image      = +block +handle-as-image
+ +block-as-image      = +block{Blocked image.} +handle-as-image
  mercy-for-cookies   = -crunch-all-cookies -<A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
@@ -7614,16 +7085,10 @@ HREF="actions-file.html#FAST-REDIRECTS"
 > -<A
 HREF="actions-file.html#HIDE-REFERER"
 >hide-referrer</A
-> -<A
-HREF="actions-file.html#KILL-POPUPS"
->kill-popups</A
 >
  shop        = -crunch-all-cookies -<A
 HREF="actions-file.html#FILTER-ALL-POPUPS"
 >filter{all-popups}</A
-> -<A
-HREF="actions-file.html#KILL-POPUPS"
->kill-popups</A
 ></PRE
 ></TD
 ></TR
@@ -8007,7 +7472,7 @@ CLASS="SCREEN"
 ##########################################################################
 { <A
 HREF="actions-file.html#BLOCK"
->+block</A
+>+block{Banner ads.}</A
 > }
 
 # Generic patterns:
@@ -8228,7 +7693,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4462"
+NAME="AEN4284"
 >8.7.2. user.action</A
 ></H3
 ><P
@@ -8312,14 +7777,14 @@ CLASS="SCREEN"
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only
- allow-popups       = -filter{all-popups} -kill-popups
-+block-as-image     = +block +handle-as-image
+ allow-popups       = -filter{all-popups}
++block-as-image     = +block{Blocked as image.} +handle-as-image
 -block-as-image     = -block
 
 # These aliases define combinations of actions that are useful for
 # certain types of sites:
 #
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referrer -kill-popups
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referrer
 shop        = -crunch-all-cookies allow-popups
 
 # Allow ads for selected useful free sites:
@@ -8431,7 +7896,7 @@ CLASS="QUOTE"
  and pasted the URL below while removing the leading http://, into a 
  <TT
 CLASS="LITERAL"
->{ +block }</TT
+>{ +block{} }</TT
 > section. Note that <TT
 CLASS="LITERAL"
 >{ +handle-as-image
@@ -8454,7 +7919,7 @@ CLASS="SCREEN"
 >{ +<A
 HREF="actions-file.html#BLOCK"
 >block</A
-> }
+>{Nasty ads.} }
  www.example.com/nasty-ads/sponsor\.gif
  another.example.net/more/junk/here/</PRE
 ></TD

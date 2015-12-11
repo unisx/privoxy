@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.98 2008/01/04 17:43:45 fabiankeil Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.108 2008/05/21 15:35:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -10,10 +10,10 @@ const char filters_rcs[] = "$Id: filters.c,v 1.98 2008/01/04 17:43:45 fabiankeil
  *                   `filter_popups', `forward_url', 'redirect_url',
  *                   `ij_untrusted_url', `intercept_url', `pcrs_filter_respose',
  *                   `ijb_send_banner', `trust_url', `gif_deanimate_response',
- *                   `jpeg_inspect_response', `execute_single_pcrs_command',
- *                   `rewrite_url', `get_last_url'
+ *                   `execute_single_pcrs_command', `rewrite_url',
+ *                   `get_last_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001, 2004-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001, 2004-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -40,6 +40,43 @@ const char filters_rcs[] = "$Id: filters.c,v 1.98 2008/01/04 17:43:45 fabiankeil
  *
  * Revisions   :
  *    $Log: filters.c,v $
+ *    Revision 1.108  2008/05/21 15:35:08  fabiankeil
+ *    - Mark csp as immutable for block_acl().
+ *    - Remove an obsolete complaint about filter_popups().
+ *
+ *    Revision 1.107  2008/05/04 17:52:56  fabiankeil
+ *    Adjust parse_http_url() call to new prototype.
+ *
+ *    Revision 1.106  2008/05/03 16:40:44  fabiankeil
+ *    Change content_filters_enabled()'s parameter from
+ *    csp->action to action so it can be also used in the
+ *    CGI code. Don't bother checking if there are filters
+ *    loaded, as that's somewhat besides the point.
+ *
+ *    Revision 1.105  2008/03/28 15:13:39  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
+ *    Revision 1.104  2008/03/27 18:27:24  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.103  2008/03/06 16:33:45  fabiankeil
+ *    If limit-connect isn't used, don't limit CONNECT requests to port 443.
+ *
+ *    Revision 1.102  2008/03/01 14:00:44  fabiankeil
+ *    Let the block action take the reason for the block
+ *    as argument and show it on the "blocked" page.
+ *
+ *    Revision 1.101  2008/02/23 16:57:12  fabiankeil
+ *    Rename url_actions() to get_url_actions() and let it
+ *    use the standard parameter ordering.
+ *
+ *    Revision 1.100  2008/02/23 16:33:43  fabiankeil
+ *    Let forward_url() use the standard parameter ordering
+ *    and mark its second parameter immutable.
+ *
+ *    Revision 1.99  2008/02/03 13:57:58  fabiankeil
+ *    Add SOCKS5 support for forward-override{}.
+ *
  *    Revision 1.98  2008/01/04 17:43:45  fabiankeil
  *    Improve the warning messages that get logged if the action files
  *    "enable" filters but no filters of that type have been loaded.
@@ -673,7 +710,7 @@ static jb_err prepare_for_filtering(struct client_state *csp);
  * Returns     : 0 = FALSE (don't block) and 1 = TRUE (do block)
  *
  *********************************************************************/
-int block_acl(struct access_control_addr *dst, struct client_state *csp)
+int block_acl(const struct access_control_addr *dst, const struct client_state *csp)
 {
    struct access_control_list *acl = csp->config->acl;
 
@@ -809,6 +846,28 @@ int acl_addr(const char *aspec, struct access_control_addr *aca)
 
 }
 #endif /* def FEATURE_ACL */
+
+
+/*********************************************************************
+ *
+ * Function    :  connect_port_is_forbidden
+ *
+ * Description :  Check to see if CONNECT requests to the destination
+ *                port of this request are forbidden. The check is
+ *                independend of the actual request method.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  True if yes, false otherwise.
+ *
+ *********************************************************************/
+int connect_port_is_forbidden(const struct client_state *csp)
+{
+   return ((csp->action->flags & ACTION_LIMIT_CONNECT) &&
+     !match_portlist(csp->action->string[ACTION_STRING_LIMIT_CONNECT],
+        csp->http->port));
+}
 
 
 /*********************************************************************
@@ -1043,7 +1102,20 @@ struct http_response *block_url(struct client_state *csp)
       if (!err) err = map(exports, "hostport", 1, html_encode(csp->http->hostport), 0);
       if (!err) err = map(exports, "path", 1, html_encode(csp->http->path), 0);
       if (!err) err = map(exports, "path-ue", 1, url_encode(csp->http->path), 0);
-
+      if (!err)
+      {
+         const char *block_reason;
+         if (csp->action->string[ACTION_STRING_BLOCK] != NULL)
+         {
+            block_reason = csp->action->string[ACTION_STRING_BLOCK];
+         }
+         else
+         {
+            assert(connect_port_is_forbidden(csp));
+            block_reason = "Forbidden CONNECT port.";
+         }
+         err = map(exports, "block-reason", 1, html_encode(block_reason), 0);
+      }
       if (err)
       {
          free_map(exports);
@@ -1676,7 +1748,7 @@ int is_untrusted_url(const struct client_state *csp)
    /*
     * If not, do we maybe trust its referrer?
     */
-   err = parse_http_url(referer, rhttp, csp);
+   err = parse_http_url(referer, rhttp, REQUIRE_PROTOCOL);
    if (err)
    {
       return 1;
@@ -2006,78 +2078,10 @@ static char *gif_deanimate_response(struct client_state *csp)
 
 /*********************************************************************
  *
- * Function    :  jpeg_inspect_response
- *
- * Description :  
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *
- * Returns     :  a pointer to the (newly allocated) modified buffer
- *                or NULL in case something went wrong.
- *
- *********************************************************************/
-static char *jpeg_inspect_response(struct client_state *csp)
-{
-   struct binbuffer  *in = NULL;
-   struct binbuffer *out = NULL;
-   char *p = NULL;
-   size_t size;
-
-   size = (size_t)(csp->iob->eod - csp->iob->cur);
-
-   if (NULL == (in =  (struct binbuffer *)zalloc(sizeof *in )))
-   {
-      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg no mem 1)");
-      return NULL;
-   }
-
-   if (NULL == (out = (struct binbuffer *)zalloc(sizeof *out)))
-   {
-      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg no mem 2)");
-      return NULL;
-   }
-
-   in->buffer = csp->iob->cur;
-   in->size = size;
-
-   /*
-    * Calling jpeg_inspect has the side-effect of creating and 
-    * modifying the image buffer of "out" directly.
-    */
-   if (jpeg_inspect(in, out))
-   {
-      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg parsing)");
-      freez(in);
-      buf_free(out);
-      return(NULL);
-
-   }
-   else
-   {
-      csp->content_length = out->offset;
-      csp->flags |= CSP_FLAG_MODIFIED;
-      p = out->buffer;
-      freez(in);
-      freez(out);
-      return(p);
-   }
-
-}
-
-
-/*********************************************************************
- *
  * Function    :  get_filter_function
  *
  * Description :  Decides which content filter function has
  *                to be applied (if any).
- *
- *                XXX: Doesn't handle filter_popups()
- *                because of the different prototype. Probably
- *                we should ditch filter_popups() anyway, it's
- *                even less reliable than popup blocking based
- *                on pcrs filters.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -2136,11 +2140,6 @@ filter_function_ptr get_filter_function(struct client_state *csp)
             (csp->action->flags & ACTION_DEANIMATE))
    {
       filter_function = gif_deanimate_response;
-   }
-   else if ((csp->content_type & CT_JPEG)  &&
-            (csp->action->flags & ACTION_JPEG_INSPECT))
-   {
-      filter_function = jpeg_inspect_response;
    }
 
    return filter_function;
@@ -2337,19 +2336,18 @@ char *execute_content_filter(struct client_state *csp, filter_function_ptr conte
 
 /*********************************************************************
  *
- * Function    :  url_actions
+ * Function    :  get_url_actions
  *
  * Description :  Gets the actions for this URL.
  *
  * Parameters  :
- *          1  :  http = http_request request for blocked URLs
- *          2  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  http = http_request request for blocked URLs
  *
  * Returns     :  N/A
  *
  *********************************************************************/
-void url_actions(struct http_request *http,
-                 struct client_state *csp)
+void get_url_actions(struct client_state *csp, struct http_request *http)
 {
    struct file_list *fl;
    struct url_actions *b;
@@ -2431,7 +2429,7 @@ void apply_url_actions(struct current_action_spec *action,
  *                Invalid syntax is fatal.
  *
  *********************************************************************/
-static const struct forward_spec *get_forward_override_settings(struct client_state *csp)
+const static struct forward_spec *get_forward_override_settings(struct client_state *csp)
 {
    const char *forward_override_line = csp->action->string[ACTION_STRING_FORWARD_OVERRIDE];
    char forward_settings[BUFFER_SIZE];
@@ -2491,6 +2489,11 @@ static const struct forward_spec *get_forward_override_settings(struct client_st
       else if (!strcasecmp(vec[0], "forward-socks4a"))
       {
          fwd->type = SOCKS_4A;
+         socks_proxy = vec[1];
+      }
+      else if (!strcasecmp(vec[0], "forward-socks5"))
+      {
+         fwd->type = SOCKS_5;
          socks_proxy = vec[1];
       }
 
@@ -2553,17 +2556,15 @@ static const struct forward_spec *get_forward_override_settings(struct client_st
  *
  * Description :  Should we forward this to another proxy?
  *
- *                XXX: Should be changed to make use of csp->fwd.
- *
  * Parameters  :
- *          1  :  http = http_request request for current URL
- *          2  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  http = http_request request for current URL
  *
  * Returns     :  Pointer to forwarding information.
  *
  *********************************************************************/
-const struct forward_spec * forward_url(struct http_request *http,
-                                        struct client_state *csp)
+const struct forward_spec *forward_url(struct client_state *csp,
+                                       const struct http_request *http)
 {
    static const struct forward_spec fwd_default[1] = { FORWARD_SPEC_INITIALIZER };
    struct forward_spec *fwd = csp->config->forward;
@@ -2669,16 +2670,15 @@ struct http_response *direct_response(struct client_state *csp)
  *                enabled for the current request.
  *
  * Parameters  :  
- *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  action = Action spec to check.
  *
  * Returns     :  TRUE for yes, FALSE otherwise
  *
  *********************************************************************/
-inline int content_filters_enabled(const struct client_state *csp)
+int content_filters_enabled(const struct current_action_spec *action)
 {
-   return (((csp->rlist != NULL) &&
-      (!list_is_empty(csp->action->multi[ACTION_MULTI_FILTER]))) ||
-      (csp->action->flags & (ACTION_DEANIMATE|ACTION_JPEG_INSPECT|ACTION_NO_POPUPS)));
+   return ((action->flags & ACTION_DEANIMATE) ||
+      !list_is_empty(action->multi[ACTION_MULTI_FILTER]));
 }
 
 /*

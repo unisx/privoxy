@@ -1,4 +1,4 @@
-# $Id: privoxy-suse.spec,v 1.28 2008/01/20 14:30:59 fabiankeil Exp $
+# $Id: privoxy-suse.spec,v 1.29 2008/03/02 17:36:43 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -36,7 +36,7 @@ Summary:      Privoxy - privacy enhancing proxy
 Vendor:       Privoxy.Org
 Name:         privoxy-suse
 Distribution: defineme
-Version: 3.0.8
+Version: 3.0.9
 Release: 1
 # Needs makefile change: Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}-%{status}-src.tar.gz
 Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}.tar.gz
@@ -355,6 +355,9 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 - new package: version 2.0
 
 # $Log: privoxy-suse.spec,v $
+# Revision 1.29  2008/03/02 17:36:43  fabiankeil
+# Set version to 3.0.9.
+#
 # Revision 1.28  2008/01/20 14:30:59  fabiankeil
 # Set version to 3.0.8.
 #

@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "PRIVOXY" "1" "19 January 2008" "Privoxy 3.0.8" ""
+.TH "PRIVOXY" "1" "18 June 2008" "Privoxy 3.0.9 beta" ""
 .SH NAME
 privoxy \- Privacy Enhancing Proxy
 .SH SYNOPSIS
@@ -145,7 +145,7 @@ configuration might look like:
 
  # Fragile sites should have the minimum changes
  fragile     = -block -deanimate-gifs -fast-redirects -filter \\
-               -hide-referer -prevent-cookies -kill-popups
+               -hide-referer -prevent-cookies
 
  ## Turn some actions on ################################
  ## NOTE: Actions are off by default, unless explictily turned on 
@@ -258,6 +258,9 @@ config file changes by \fBSIGHUP\fR -- it will detect them
 automatically. 
 .SH "NOTES"
 .PP
+This is a beta version of \fBPrivoxy\fR. Not 
+all features are well tested.
+.PP
 Please see the \fIUser Manual\fR on how to contact the
 developers, for feature requests, reporting problems, and other questions.
 .SH "SEE ALSO"
@@ -313,6 +316,7 @@ the \fBPrivoxy\fR developer manual.
  David Schmidt, developer
  
  Hal Burgiss
+ Mark Miller
  Gerry Murphy
  Roland Rosenfeld
  Jörg Strohmayer
@@ -329,17 +333,14 @@ License\fR.
 .PP
 \fBPrivoxy\fR is free software; you can
 redistribute it and/or modify it under the terms of the 
-\fIGNU General Public
-License\fR, version 2, as published by the Free Software Foundation.
+\fIGNU General Public License\fR, version 2,
+as published by the Free Software Foundation.
 .PP
 This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the 
-\fIGNU General Public License\fR for
-more details, which is available from the Free Software Foundation, Inc, 
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+FITNESS FOR A PARTICULAR PURPOSE.  See the  \fIGNU General Public License\fR for details.
 .PP
-You should have received a copy of the  \fIGNU General Public License\fR
+You should have received a copy of the \fIGNU GPL\fR
 along with this program; if not, write to the  Free Software
 Foundation, Inc. 51 Franklin Street, Fifth Floor
 Boston, MA 02110-1301

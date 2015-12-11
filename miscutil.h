@@ -1,6 +1,6 @@
 #ifndef MISCUTIL_H_INCLUDED
 #define MISCUTIL_H_INCLUDED
-#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.29 2007/09/09 18:20:20 fabiankeil Exp $"
+#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.30 2008/04/17 14:53:31 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.h,v $
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: miscutil.h,v $
+ *    Revision 1.30  2008/04/17 14:53:31  fabiankeil
+ *    Move simplematch() into urlmatch.c as it's only
+ *    used to match (old-school) domain patterns.
+ *
  *    Revision 1.29  2007/09/09 18:20:20  fabiankeil
  *    Turn privoxy_strlcpy() into a function and try to work with
  *    b0rked snprintf() implementations too. Reported by icmp30.
@@ -207,8 +211,6 @@ extern jb_err string_join  (char **target_string,       char *text_to_append);
 
 extern char *string_toupper(const char *string);
 extern char *chomp(char *string);
-extern int simplematch(char *pattern, char *text);
-
 extern char *bindup(const char *string, size_t len);
 
 extern char *make_path(const char * dir, const char * file);

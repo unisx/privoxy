@@ -1,6 +1,6 @@
 #ifndef CGISIMPLE_H_INCLUDED
 #define CGISIMPLE_H_INCLUDED
-#define CGISIMPLE_H_VERSION "$Id: cgisimple.h,v 1.15 2007/01/23 15:51:17 fabiankeil Exp $"
+#define CGISIMPLE_H_VERSION "$Id: cgisimple.h,v 1.16 2008/05/26 17:30:55 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.h,v $
@@ -38,6 +38,10 @@
  *
  * Revisions   :
  *    $Log: cgisimple.h,v $
+ *    Revision 1.16  2008/05/26 17:30:55  fabiankeil
+ *    Provide an OpenSearch Description to access the
+ *    show-url-info page through "search engine plugins".
+ *
  *    Revision 1.15  2007/01/23 15:51:17  fabiankeil
  *    Add favicon delivery functions.
  *
@@ -150,6 +154,9 @@ extern jb_err cgi_send_default_favicon (struct client_state *csp,
 extern jb_err cgi_send_stylesheet(struct client_state *csp,
                                   struct http_response *rsp,
                                   const struct map *parameters);
+extern jb_err cgi_send_url_info_osd(struct client_state *csp,
+                                    struct http_response *rsp,
+                                    const struct map *parameters);
 extern jb_err cgi_send_user_manual(struct client_state *csp,
                                    struct http_response *rsp,
                                    const struct map *parameters);

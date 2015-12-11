@@ -12,7 +12,7 @@
  *                    DEFINE_ACTION_BOOL()
  *                    DEFINE_ACTION_ALIAS
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -39,6 +39,23 @@
  *
  * Revisions   :
  *    $Log: actionlist.h,v $
+ *    Revision 1.33  2008/03/29 12:13:45  fabiankeil
+ *    Remove send-wafer and send-vanilla-wafer actions.
+ *
+ *    Revision 1.32  2008/03/28 15:13:42  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
+ *    Revision 1.31  2008/03/27 18:27:20  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.30  2008/03/04 18:30:34  fabiankeil
+ *    Remove the treat-forbidden-connects-like-blocks action. We now
+ *    use the "blocked" page for forbidden CONNECT requests by default.
+ *
+ *    Revision 1.29  2008/03/01 14:00:43  fabiankeil
+ *    Let the block action take the reason for the block
+ *    as argument and show it on the "blocked" page.
+ *
  *    Revision 1.28  2007/12/11 21:08:29  fabiankeil
  *    Let the CGI editor suggest a forward-override
  *    parameter whose syntax is actually valid.
@@ -170,7 +187,8 @@
 #endif /* ndef DEFINE_CGI_PARAM_RADIO */
 
 DEFINE_ACTION_MULTI      ("add-header",                 ACTION_MULTI_ADD_HEADER)
-DEFINE_ACTION_BOOL       ("block",                      ACTION_BLOCK)
+DEFINE_ACTION_STRING     ("block",                      ACTION_BLOCK, ACTION_STRING_BLOCK)
+DEFINE_CGI_PARAM_NO_RADIO("block",                      ACTION_BLOCK, ACTION_STRING_BLOCK, "No reason specified.")
 DEFINE_ACTION_MULTI      ("client-header-filter",       ACTION_MULTI_CLIENT_HEADER_FILTER)
 DEFINE_ACTION_MULTI      ("client-header-tagger",       ACTION_MULTI_CLIENT_HEADER_TAGGER)
 DEFINE_ACTION_STRING     ("content-type-overwrite",     ACTION_CONTENT_TYPE_OVERWRITE, ACTION_STRING_CONTENT_TYPE)
@@ -216,8 +234,6 @@ DEFINE_CGI_PARAM_RADIO   ("hide-referrer",              ACTION_HIDE_REFERER,    
 DEFINE_CGI_PARAM_CUSTOM  ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER,       "http://www.privoxy.org/")
 DEFINE_ACTION_STRING     ("hide-user-agent",            ACTION_HIDE_USER_AGENT, ACTION_STRING_USER_AGENT)
 DEFINE_CGI_PARAM_NO_RADIO("hide-user-agent",            ACTION_HIDE_USER_AGENT, ACTION_STRING_USER_AGENT,    "Privoxy " VERSION)
-DEFINE_ACTION_BOOL       ("inspect-jpegs",              ACTION_JPEG_INSPECT)
-DEFINE_ACTION_BOOL       ("kill-popups",                ACTION_NO_POPUPS)
 DEFINE_ACTION_STRING     ("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT)
 DEFINE_CGI_PARAM_NO_RADIO("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT,  "443")
 DEFINE_ACTION_STRING     ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED)
@@ -227,8 +243,6 @@ DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MO
 DEFINE_ACTION_BOOL       ("prevent-compression",        ACTION_NO_COMPRESSION)
 DEFINE_ACTION_STRING     ("redirect",                   ACTION_REDIRECT,        ACTION_STRING_REDIRECT)
 DEFINE_CGI_PARAM_NO_RADIO("redirect",                   ACTION_REDIRECT,        ACTION_STRING_REDIRECT,  "http://localhost/")
-DEFINE_ACTION_BOOL       ("send-vanilla-wafer",         ACTION_VANILLA_WAFER)
-DEFINE_ACTION_MULTI      ("send-wafer",                 ACTION_MULTI_WAFER)
 DEFINE_ACTION_MULTI      ("server-header-filter",       ACTION_MULTI_SERVER_HEADER_FILTER)
 DEFINE_ACTION_MULTI      ("server-header-tagger",       ACTION_MULTI_SERVER_HEADER_TAGGER)
 DEFINE_ACTION_BOOL       ("session-cookies-only",       ACTION_NO_COOKIE_KEEP)
@@ -236,15 +250,12 @@ DEFINE_ACTION_STRING     ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "pattern", 1)
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "blank", 0)
 DEFINE_CGI_PARAM_CUSTOM  ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER,  CGI_PREFIX "send-banner?type=pattern")
-DEFINE_ACTION_BOOL       ("treat-forbidden-connects-like-blocks",   ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
-
 
 #if DEFINE_ACTION_ALIAS
 
 /* 
  * Alternative spellings
  */
-DEFINE_ACTION_BOOL       ("kill-popup",      ACTION_NO_POPUPS)
 DEFINE_ACTION_STRING     ("hide-referer",   ACTION_HIDE_REFERER,    ACTION_STRING_REFERER)
 DEFINE_ACTION_BOOL       ("prevent-keeping-cookies", ACTION_NO_COOKIE_KEEP)
 
@@ -270,9 +281,6 @@ DEFINE_ACTION_BOOL       ("no-compression",          ACTION_NO_COMPRESSION)
 DEFINE_ACTION_BOOL       ("no-cookies-keep",         ACTION_NO_COOKIE_KEEP)
 DEFINE_ACTION_BOOL       ("no-cookies-read",         ACTION_NO_COOKIE_READ)
 DEFINE_ACTION_BOOL       ("no-cookies-set",          ACTION_NO_COOKIE_SET)
-DEFINE_ACTION_BOOL       ("no-popups",               ACTION_NO_POPUPS)
-DEFINE_ACTION_BOOL       ("vanilla-wafer",           ACTION_VANILLA_WAFER)
-DEFINE_ACTION_MULTI      ("wafer",                   ACTION_MULTI_WAFER)
 #endif /* if DEFINE_ACTION_ALIAS */
 
 #undef DEFINE_ACTION_MULTI

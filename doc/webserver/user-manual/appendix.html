@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.8 User Manual"
+TITLE="Privoxy 3.0.9 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="See Also"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.8 User Manual</TH
+>Privoxy 3.0.9 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -748,7 +748,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN5347"
+NAME="AEN5170"
 >14.2. Privoxy's Internal Pages</A
 ></H2
 ><P
@@ -794,7 +794,7 @@ CLASS="APPLICATION"
    Privoxy main page: 
   </P
 ><A
-NAME="AEN5361"
+NAME="AEN5184"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -827,7 +827,7 @@ CLASS="APPLICATION"
     editing of actions files:
   </P
 ><A
-NAME="AEN5369"
+NAME="AEN5192"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -847,7 +847,7 @@ TARGET="_top"
     Show the source code version numbers:
   </P
 ><A
-NAME="AEN5374"
+NAME="AEN5197"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -867,7 +867,7 @@ TARGET="_top"
    Show the browser's request headers:
   </P
 ><A
-NAME="AEN5379"
+NAME="AEN5202"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -887,7 +887,7 @@ TARGET="_top"
    Show which actions apply to a URL and why:
   </P
 ><A
-NAME="AEN5384"
+NAME="AEN5207"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -919,7 +919,7 @@ CLASS="QUOTE"
    place:
   </P
 ><A
-NAME="AEN5392"
+NAME="AEN5215"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -936,7 +936,7 @@ TARGET="_top"
 >   Short cuts. Turn off, then on: 
   </P
 ><A
-NAME="AEN5396"
+NAME="AEN5219"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -950,7 +950,7 @@ TARGET="_top"
    </P
 ></BLOCKQUOTE
 ><A
-NAME="AEN5399"
+NAME="AEN5222"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -1021,7 +1021,7 @@ CLASS="QUOTE"
 ><LI
 ><P
 >    <A
-HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&set=enabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
+HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&#38;set=enabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
 TARGET="_top"
 >Privoxy - Enable</A
 >
@@ -1030,7 +1030,7 @@ TARGET="_top"
 ><LI
 ><P
 >    <A
-HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&set=disabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
+HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&#38;set=disabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
 TARGET="_top"
 >Privoxy - Disable</A
 >
@@ -1039,7 +1039,7 @@ TARGET="_top"
 ><LI
 ><P
 >    <A
-HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&set=toggle','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
+HREF="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&#38;set=toggle','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
 TARGET="_top"
 >Privoxy - Toggle Privoxy</A
 > (Toggles between enabled and disabled)
@@ -1232,19 +1232,6 @@ CLASS="QUOTE"
 ></A
 >
    actions.
-  </P
-></LI
-><LI
-><P
->   If the <A
-HREF="actions-file.html#KILL-POPUPS"
-><SPAN
-CLASS="QUOTE"
->"+kill-popups"</SPAN
-></A
->
-   action applies, and it is an HTML or JavaScript document, the popup-code in the
-   response is filtered on-the-fly as it is received.
   </P
 ></LI
 ><LI
@@ -1696,19 +1683,14 @@ CLASS="SCREEN"
  -hide-if-modified-since
  +hide-referrer {forge}
  -hide-user-agent
- -inspect-jpegs
- -kill-popups
  -limit-connect
  -overwrite-last-modified
  -prevent-compression
  -redirect
- -send-vanilla-wafer
- -send-wafer
  -server-header-filter{xml-to-html}
  -server-header-filter{html-to-xml} 
  -session-cookies-only
- +set-image-blocker {pattern}
- -treat-forbidden-connects-like-blocks </PRE
+ +set-image-blocker {pattern} </PRE
 ></TD
 ></TR
 ></TABLE
@@ -1741,13 +1723,13 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; { +block }
+>&#13; { +block{Domains starts with "ad"} }
   ad*.
 
- { +block }
+ { +block{Domain contains "ad"} }
   .ad.
 
- { +block +handle-as-image }
+ { +block{Doubleclick banner server} +handle-as-image }
   .[a-vx-z]*.doubleclick.net</PRE
 ></TD
 ></TR
@@ -1757,11 +1739,11 @@ CLASS="SCREEN"
 > We'll just show the interesting part here - the explicit matches. It is 
  matched three different times. Two <SPAN
 CLASS="QUOTE"
->"+block"</SPAN
+>"+block{}"</SPAN
 > sections, 
  and a <SPAN
 CLASS="QUOTE"
->"+block +handle-as-image"</SPAN
+>"+block{} +handle-as-image"</SPAN
 >,
  which is the expanded form of one of our aliases that had been defined as: 
  <SPAN
@@ -1789,7 +1771,7 @@ CLASS="QUOTE"
 HREF="actions-file.html#BLOCK"
 ><SPAN
 CLASS="QUOTE"
->"+block"</SPAN
+>"+block{}"</SPAN
 ></A
 >
  <SPAN
@@ -1886,21 +1868,16 @@ CLASS="GUIBUTTON"
   +hide-from-header{block} 
   +hide-referer{forge} 
   -hide-user-agent 
-  -inspect-jpegs
-  -kill-popups 
   -overwrite-last-modified
   +prevent-compression 
   -redirect
-  -send-vanilla-wafer 
-  -send-wafer
   -server-header-filter{xml-to-html}
   -server-header-filter{html-to-xml} 
   +session-cookies-only 
-  +set-image-blocker{blank} 
-  -treat-forbidden-connects-like-blocks }
+  +set-image-blocker{blank} }
    /
 
- { +block +handle-as-image }
+ { +block{Path contains "ads".} +handle-as-image }
   /ads</PRE
 ></TD
 ></TR
@@ -1980,7 +1957,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; { +block +handle-as-image }
+>&#13; { +block{Path starts with "ads".} +handle-as-image }
  /ads</PRE
 ></TD
 ></TR

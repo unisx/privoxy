@@ -37,6 +37,9 @@
  *
  * Revisions   :
  *    $Log: vc_config_winthreads.h,v $
+ *    Revision 1.6  2008/03/27 18:27:39  fabiankeil
+ *    Remove kill-popups action.
+ *
  *    Revision 1.5  2006/07/18 14:48:47  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -313,11 +316,6 @@
  * about which "Accept:" header to send.
  */
 #define FEATURE_IMAGE_DETECT_MSIE 1
-
-/*
- * Kills JavaScript popups - window.open, onunload, etc.
- */
-#define FEATURE_KILL_POPUPS 1
 
 /*
  * Use PNG instead of GIF for built-in images

@@ -1,6 +1,6 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.19 2007/10/14 14:12:41 fabiankeil Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.20 2008/03/27 18:27:23 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
@@ -35,6 +35,9 @@
  *
  * Revisions   :
  *    $Log: errlog.h,v $
+ *    Revision 1.20  2008/03/27 18:27:23  fabiankeil
+ *    Remove kill-popups action.
+ *
  *    Revision 1.19  2007/10/14 14:12:41  fabiankeil
  *    When in daemon mode, close stderr after the configuration file has been
  *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
@@ -168,12 +171,7 @@ extern "C" {
 #define LOG_LEVEL_RE_FILTER  0x0040
 #define LOG_LEVEL_REDIRECTS  0x0080
 #define LOG_LEVEL_DEANIMATE  0x0100
-
 #define LOG_LEVEL_CLF        0x0200 /* Common Log File format */
-#ifdef FEATURE_KILL_POPUPS
-#define LOG_LEVEL_POPUPS     0x0400 /* Kill Popups */
-#endif /* def FEATURE_KILL_POPUPS */
-
 #define LOG_LEVEL_CGI        0x0800 /* CGI / templates */
 
 /* Following are always on: */

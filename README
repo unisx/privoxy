@@ -32,8 +32,9 @@
  *
  *********************************************************************/
 
-This README is included with Privoxy 3.0.8. See http://www.privoxy.org/ for
-more information. The current code maturity level is "stable".
+This README is included with the development version of Privoxy 3.0.9. See
+http://www.privoxy.org/ for more information. The current code maturity level
+is "beta", but seems stable to us :).
 
 -------------------------------------------------------------------------------
 
@@ -49,6 +50,11 @@ Privoxy is based on Internet Junkbuster (tm).
 -------------------------------------------------------------------------------
 
 1. IMPORTANT CHANGES
+
+June 2008, Privoxy 3.0.9 beta is released. There are no major new features, but
+many improvements and refinements. As usual there are changes that affect the
+configuration. See the "ChangeLog", and the "What's New" section and the
+"Upgrader's Notes" in the User Manual for details and specifics.
 
 NEWS! January 2008, Privoxy 3.0.8 stable is released. This is a significant
 upgrade with many new and enhanced features, and many bugs fixed. All Privoxy
@@ -115,16 +121,22 @@ try it with FTP or other protocols for the simple reason it does not work.
 The actions list can be configured via the web interface accessed via http://
 p.p/, as well other options.
 
+All configuration files are subject to unannounced changes during the
+development process.
+
 -------------------------------------------------------------------------------
 
 5. DOCUMENTATION
 
-There should be documentation in the 'doc' subdirectory. In particular, see the
-User Manual there, the FAQ, and those interested in Privoxy development, should
-look at developer-manual.
+There should be documentation in the 'doc' subdirectory, but it may not be
+completed at this point. In particular, see the User Manual there, the FAQ, and
+those interested in Privoxy development, should look at developer-manual.
 
-The source and configuration files are all well commented. The main
-configuration files are: 'config', 'default.action', and 'default.filter'.
+The most up to date source of information on the current development version,
+may still be either comments in the source code, or the included configuration
+files. The source and configuration files are all well commented. The main
+configuration files are: 'config', 'default.action', and 'default.filter' in
+the top-level source directory.
 
 Included documentation may vary according to platform and packager. All
 documentation is posted on http://www.privoxy.org, in case you don't have it,
@@ -147,6 +159,9 @@ http://sourceforge.net/tracker/?group_id=11118&atid=211118
 
 All users are of course welcome to discuss their issues on the users mailing
 list, where the developers also hang around.
+
+Please don't sent private support requests to individual Privoxy developers,
+either use the mailing lists or the support trackers.
 
 Note that the Privoxy mailing lists are moderated. Posts from unsubscribed
 addresses have to be accepted manually by a moderator. This may cause a delay

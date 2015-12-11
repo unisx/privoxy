@@ -1,8 +1,9 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.2 2008/01/20 15:07:15 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.13 2008/07/03 11:10:43 fabiankeil Exp $
 #############################################################################
 #
-# This is a configuration file for Privoxy-Regression-Test.
+# This is a configuration file for Privoxy-Regression-Test
+# (included in the source tarball's tools directory).
 #
 # After referencing it in your Privoxy configuration both Privoxy and
 # Privoxy-Regression-Test should be good to go.
@@ -26,7 +27,12 @@
 #############################################################################
 
 {{settings}}
-for-privoxy-version=3.0.7
+for-privoxy-version=3.0.9
+
+# Some dependencies Privoxy-Regression-Test should know about:
+#
+# Level 9 needs  = config line user-manual\s+/
+# Level 12 needs = config line enable-edit-actions\s+1
 
 #######################################################
 # Enable taggers to activate the tests on demand
@@ -40,8 +46,9 @@ for-privoxy-version=3.0.7
 }
 config.privoxy.org/
 p.p/
+127.0.0.1/
 
-{-hide-user-agent +limit-connect{80,443}}
+{-hide-user-agent}
 TAG:^User-Agent: Privoxy-Regression-Test
 
 #######################################################
@@ -51,7 +58,7 @@ TAG:^User-Agent: Privoxy-Regression-Test
 # Set Header    = Accept-Language: de-de
 # Expect Header = Accept-Language: en-gb
 {+hide-accept-language{en-gb}}
-TAG:^hideaccept-language\{en-gb\}$
+TAG:^hide-accept-language\{en-gb\}$
 
 # Set Header    = Accept-Language: de-de
 # Expect Header = REMOVAL
@@ -160,6 +167,9 @@ TAG:^add-header\{X-Custom-Header: yes, please\}$
 #
 # Set Header    = Host: p.p
 # Expect Header = NO CHANGE
+#
+# Set Header    = Referer: http://config.privoxy.org.ad356ef8e87a89e6c898b74500d58607ac691178.exit/foo/baaz.html
+# Expect Header = Referer: http://config.privoxy.org/foo/baaz.html
 
 {+client-header-filter{hide-tor-exit-notation} -hide-referer}
 TAG:^client-header-filter\{hide-tor-exit-notation\}$
@@ -358,30 +368,6 @@ TAG:^hide-from-header\{siebenzwerge@example.org\}$
 TAG:^prevent-compression$
 
 #######################################################
-# Test send-wafer.
-#######################################################
-
-# Set Header    = X-Does-Not-Matter: Foo bar
-# Expect Header = Cookie: Tracking+me+is+easy+due+to+my+stupid+wafer+cookie
-{\
- +send-wafer{Tracking me is easy due to my stupid wafer cookie}\
- -send-vanilla-wafer \
-}
-TAG:^send-wafer\{Tracking me is easy due to my stupid wafer cookie\}$
-
-#######################################################
-# Test send-vanilla-wafer.
-#######################################################
-
-# Set Header    = X-Does-Not-Matter: Foo bar
-# Expect Header = Cookie: NOTICE=TO_WHOM_IT_MAY_CONCERN_Do_not_send_me_any_copyrighted_information_other_than_the_document_that_I_am_requesting_or_any_of_its_necessary_components._In_particular_do_not_send_me_any_cookies_that_are_subject_to_a_claim_of_copyright_by_anybody._Take_notice_that_I_refuse_to_be_bound_by_any_license_condition_(copyright_or_otherwise)_applying_to_any_cookie._
-{\
- +send-vanilla-wafer \
- -send-wafer \
-}
-TAG:^send-vanilla-wafer$
-
-#######################################################
 # Test content filters which could cause problems with
 # range requests.
 #######################################################
@@ -395,8 +381,6 @@ TAG:^send-vanilla-wafer$
 {\
  +deanimate-gifs{last} \
  -filter \
- -inspect-jpegs \
- -kill-popups \
 }
 TAG:^deanimate-gifs\{last\}$
 
@@ -409,40 +393,10 @@ TAG:^deanimate-gifs\{last\}$
 {\
  -deanimate-gifs \
  +filter{banners-by-size} \
- -inspect-jpegs \
- -kill-popups \
 }
 TAG:^filter\{banners-by-size\}$
 
 # Set Header    = Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = If-Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = Request-Range: bytes=1234-5678
-# Expect Header = REMOVAL
-{\
- -deanimate-gifs \
- -filter \
- +inspect-jpegs \
- -kill-popups \
-}
-TAG:^filter\{banners-by-size\}$
-
-# Set Header    = Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = If-Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = Request-Range: bytes=1234-5678
-# Expect Header = REMOVAL
-{\
- -deanimate-gifs \
- -filter \
- -inspect-jpegs \
- +kill-popups \
-}
-TAG:^kill-popups$
-
-# Set Header    = Range: bytes=1234-5678
 # Expect Header = NO CHANGE
 # Set Header    = If-Range: bytes=1234-5678
 # Expect Header = NO CHANGE
@@ -451,8 +405,6 @@ TAG:^kill-popups$
 {\
  -deanimate-gifs \
  -filter \
- -inspect-jpegs \
- -kill-popups \
 }
 TAG:^no-content-filter$
 
@@ -489,7 +441,7 @@ TAG:^Keep-Alive header removal$
 {}
 TAG:^Proxy-Connection removal$
 
-# Set Header = proxy-connection: keep-alive
+# Set Header = Proxy-Connection: keep-alive
 # Expect Header = REMOVAL
 {}
 TAG:^Proxy-Connection removal$
@@ -526,12 +478,27 @@ TAG:^Max-Forwards header without TRACE method$
 # Fetch Test = http://p.p/die
 # Expect Status Code = 404
 # Fetch Test = http://p.p/show-status
+# Fetch Test = http://config.privoxy.org/show-status?file=actions&index=0
+# Fetch Test = http://config.privoxy.org/show-status?file=filter&index=0
+# XXX: for the invalid ones we probably shouldn't return status code 200.
+# Fetch Test = http://config.privoxy.org/show-status?file=actions&index=100
+# Fetch Test = http://config.privoxy.org/show-status?file=actions&index=NaN
+# Fetch Test = http://config.privoxy.org/show-status?file=actions
+# Fetch Test = http://config.privoxy.org/show-status?file=filter&index=100
+# Fetch Test = http://config.privoxy.org/show-status?file=filter&index=NaN
+# Fetch Test = http://config.privoxy.org/show-status?file=filter
+# Fetch Test = http://config.privoxy.org/show-status?file=invalid
+# Fetch Test = http://config.privoxy.org/show-status?file=trust
 # Fetch Test = http://p.p/show-version
 # Fetch Test = http://p.p/show-request
 # Fetch Test = http://p.p/show-url-info
 # Fetch Test = http://p.p/show-url-info?url=www.privoxy.org%2F
 # Fetch Test = http://p.p/show-url-info?url=http:%2F%2Fwww.privoxy.org%2F
+# Fetch Test = http://p.p/show-url-info?url=HTTp:%2F%2Fwww.privoxy.org%2F
 # Fetch Test = http://p.p/show-url-info?url=https:%2F%2Fwww.privoxy.org%2F
+# Fetch Test = http://p.p/show-url-info?url=HtTps:%2F%2Fwww.privoxy.org%2F
+# Fetch Test = http://p.p/show-url-info?url=ftp:%2F%2Fwww.privoxy.org%2F
+# Fetch Test = http://p.p/show-url-info?url=FTp:%2F%2Fwww.privoxy.org%2F
 # Fetch Test = http://p.p/show-url-info?url=
 # Fetch Test = http://p.p/show-url-info?url=%2F
 # Fetch Test = http://p.p/toggle
@@ -563,6 +530,8 @@ TAG:^Max-Forwards header without TRACE method$
 # Fetch Test = http://p.p/send-banner
 # Fetch Test = http://p.p/send-stylesheet
 # Fetch Test = http://p.p/t
+# Fetch Test = http://p.p/url-info-osd.xml
+
 # Trusted CGI Request = http://p.p/edit-actions
 # Expect Status Code = 302
 # Level = 12 # Depends on the CGI editor being enabled
@@ -642,6 +611,8 @@ TAG:^Max-Forwards header without TRACE method$
 
 # Method Test = OPTIONS
 # Method Test = GET
+# Method Test = get
+# Method Test = gEt
 # Method Test = HEAD
 # Method Test = POST
 # Method Test = PUT
@@ -679,7 +650,7 @@ TAG:^Max-Forwards header without TRACE method$
 # Method Test = PRIVOXY-REGRESSION-TEST-IN-THE-HOUSE
 # Expect Status Code = 400
 
-{+block}
+{+block{Forbidden Port. You are not supposed to see this.}}
 config.privoxy.org:1-/
 p.p:1-/
 
@@ -687,3 +658,71 @@ p.p:1-/
 config.privoxy.org:3,79-81/
 p.p:3,22,79-81/
 
+# Fetch Test = http://oh-dear-this-hostname-is-so-very-long-that-it-can-not-possibly-be-forwarded-through-socks5-as-a-result-we-therefore-expect-privoxy-to-return-an-error-response-instead-of-forwarding-the-request-because-as-already-mentioned-this-host-is-really-very-long.example
+# Expect Status Code = 503
+{+forward-override{forward-socks5 127.0.0.1:12345 .}}
+oh-dear-this-hostname-is-so-very-long-that-it-can-not-possibly-be-forwarded-through-socks5-as-a-result-we-therefore-expect-privoxy-to-return-an-error-response-instead-of-forwarding-the-request-because-as-already-mentioned-this-host-is-really-very-long.example/
+
+# Fetch Test = http://oh-dear-this-hostname-is-short-enough-but-there-is-no-socks-server-listening.example
+# Expect Status Code = 503
+{+forward-override{forward-socks5 127.0.0.1:12345 .}}
+oh-dear-this-hostname-is-short-enough-but-there-is-no-socks-server-listening.example
+
+# This one currently triggers the same error condition as the
+# test above (socks5 server unreachable), but once Privoxy
+# starts to properly reject invalid ports it should become useful.
+
+# Fetch Test = http://invalid-forward5-gateway-port.example
+# Expect Status Code = 503
+{+forward-override{forward-socks5 127.0.0.1:-1 127.0.0.1:12345}}
+invalid-forward5-gateway-port.example
+
+# Fetch Test = http://forward5-null-gateway-host.example
+# Expect Status Code = 503
+{+forward-override{forward-socks5 :12345 127.0.0.1:12345}}
+forward5-null-gateway-host.example
+
+# Fetch Test = http://www.forbidden-connect.example:444/
+# Method = CONNECT
+# Expect Status Code = 403
+{+limit-connect{443}}
+www.forbidden-connect.example/
+
+# Fetch Test = http://www.blocked-request.example/blocked-request
+# Expect Status Code = 403
+{+block{This request failed to make it to the target destination which means the test succeeded.}}
+www.blocked-request.example/blocked-request
+
+# Fetch Test = http://www.blocked-request.example/blocked-request-with-no-reason-specified
+# Expect Status Code = 403
+{+block}
+www.blocked-request.example/blocked-request-with-no-reason-specified
+
+# Just in case there is no white-space fuzzer in the house ...
+#
+# Set Header = X-LWS-Test: no superfluous white space here
+# Expect Header = NO CHANGE
+# Set Header = X-LWS-Test:  superfluous   white space  in  the   house
+# Expect Header = X-LWS-Test: superfluous white space in the house
+# Set Header = X-LWS-Test   :  superfluous   white   space   in   the    house
+# Expect Header = X-LWS-Test: superfluous white space in the house
+# Set Header = X-LWS-Test:  :superfluous white space in the house
+# Expect Header = X-LWS-Test: :superfluous white space in the house
+# Set Header = X-LWS-Test: :no superfluous white space here
+# Expect Header = NO CHANGE
+# Set Header = X-LWS-Test:	superfluous 		white 			tabs in the house
+# Expect Header = X-LWS-Test: superfluous white tabs in the house
+# Set Header = X-LWS-Test	:	superfluous 		white 			tabs in the house
+# Expect Header = X-LWS-Test: superfluous white tabs in the house
+# Set Header = X-LWS-Test: "leave  quoted  lws alone"
+# Expect Header = X-LWS-Test: "leave  quoted  lws alone"
+# Set Header = X-LWS-Test:  "leave  quoted  lws alone"  thxbye
+# Expect Header = X-LWS-Test: "leave  quoted  lws alone" thxbye
+# Set Header = X-LWS-Test: " Do I Look like	quoted  text? Me    thinks  not.
+# Expect Header = X-LWS-Test: " Do I Look like quoted text? Me thinks not.
+# Set Header = X-LWS-Test: "This  is  quoted" this  is  not "but   this  is  again"
+# Expect Header = X-LWS-Test: "This  is  quoted" this is not "but   this  is  again"
+# Set Header = X-LWS-Test:  "This  is  quoted" this   is  not "this  is  "  but  "  this again   is  not
+# Expect Header = X-LWS-Test: "This  is  quoted" this is not "this  is  " but " this again is not
+{}
+TAG:^LWS Tests$

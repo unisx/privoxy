@@ -1,4 +1,4 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.58 2007/11/28 17:57:01 fabiankeil Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.61 2008/03/24 18:12:52 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.c,v $
@@ -15,7 +15,7 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.58 2007/11/28 17:57:01 fabiankeil
  *
  *                Stick to the short names in this file for consistency.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -42,6 +42,17 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.58 2007/11/28 17:57:01 fabiankeil
  *
  * Revisions   :
  *    $Log: cgiedit.c,v $
+ *    Revision 1.61  2008/03/24 18:12:52  fabiankeil
+ *    Use sizeof() more often.
+ *
+ *    Revision 1.60  2008/03/15 14:52:35  fabiankeil
+ *    Add CGI editor support for the "disable all filters of this type"
+ *    directives "-client-header-filter", "-server-header-filter",
+ *    "-client-header-tagger" and "-server-header-tagger".
+ *
+ *    Revision 1.59  2008/03/08 16:25:56  fabiankeil
+ *    After three file modification time mismatches, turn the CGI editor off.
+ *
  *    Revision 1.58  2007/11/28 17:57:01  fabiankeil
  *    Fix double free in cgi_edit_actions_list().
  *    Reported by adlab in BR#1840145.
@@ -499,6 +510,11 @@ struct file_line
 /** This file_line is in a {{description}} block. */
 #define FILE_LINE_DESCRIPTION_ENTRY    10
 
+/*
+ * Number of file modification time mismatches
+ * before the CGI editor gets turned off.
+ */
+#define ACCEPTABLE_TIMESTAMP_MISMATCHES 3
 
 /**
  * A configuration file, in a format that can be edited and written back to
@@ -537,6 +553,11 @@ struct filter_type_info
                                       For example "content-filter-params" */
    const char *type;             /**< Name of the filter type,
                                       for example "server-header-filter". */
+   /* XXX: check if these two can be combined. */
+   const char *disable_all_option; /**< Name of the catch-all radio option that has
+                                        to be checked or unchecked for this filter type. */
+   const char *disable_all_param;  /**< Name of the parameter that causes all filters of
+                                        this type to be disabled. */
    const char *abbr_type;        /**< Abbreviation of the filter type, usually the
                                       first or second character capitalized */
    const char *anchor;           /**< Anchor for the User Manual link,
@@ -549,26 +570,31 @@ static const struct filter_type_info filter_type_info[] =
    {
       ACTION_MULTI_FILTER,
       "content-filter-params", "filter",
+      "filter-all", "filter_all",
       "F", "FILTER"
    },
    {
       ACTION_MULTI_CLIENT_HEADER_FILTER,
       "client-header-filter-params", "client-header-filter",
+      "client-header-filter-all", "client_header_filter_all",
       "C", "CLIENT-HEADER-FILTER"
    },
    {
       ACTION_MULTI_SERVER_HEADER_FILTER,
       "server-header-filter-params", "server-header-filter",
+      "server-header-filter-all", "server_header_filter_all",
       "S", "SERVER-HEADER-FILTER"
    },
    {
       ACTION_MULTI_CLIENT_HEADER_TAGGER,
       "client-header-tagger-params", "client-header-tagger",
+      "client-header-tagger-all", "client_header_tagger_all",
       "L", "CLIENT-HEADER-TAGGER"
    },
    {
       ACTION_MULTI_SERVER_HEADER_TAGGER,
       "server-header-tagger-params", "server-header-tagger",
+      "server-header-tagger-all", "server_header_tagger_all",
       "E", "SERVER-HEADER-TAGGER"
    },
 };
@@ -671,7 +697,7 @@ static char *section_target(const unsigned sectionid)
 {
    char buf[30];
 
-   snprintf(buf, 30, "#l%d", sectionid);
+   snprintf(buf, sizeof(buf), "#l%d", sectionid);
    return(strdup(buf));
 
 }
@@ -1221,8 +1247,8 @@ jb_err edit_write_file(struct editable_file * file)
 
    /* Correct file->version_str */
    freez(file->version_str);
-   snprintf(version_buf, 22, "%u", file->version);
-   version_buf[21] = '\0';
+   snprintf(version_buf, sizeof(version_buf), "%u", file->version);
+   version_buf[sizeof(version_buf)-1] = '\0';
    file->version_str = strdup(version_buf);
    if (version_buf == NULL)
    {
@@ -1955,8 +1981,8 @@ jb_err edit_read_file(struct client_state *csp,
 
    /* Correct file->version_str */
    freez(file->version_str);
-   snprintf(version_buf, 22, "%u", file->version);
-   version_buf[21] = '\0';
+   snprintf(version_buf, sizeof(version_buf), "%u", file->version);
+   version_buf[sizeof(version_buf)-1] = '\0';
    file->version_str = strdup(version_buf);
    if (version_buf == NULL)
    {
@@ -2014,6 +2040,7 @@ jb_err edit_read_actions_file(struct client_state *csp,
 {
    jb_err err;
    struct editable_file *file;
+   static int acceptable_failures = ACCEPTABLE_TIMESTAMP_MISMATCHES - 1;
 
    assert(csp);
    assert(parameters);
@@ -2031,7 +2058,24 @@ jb_err edit_read_actions_file(struct client_state *csp,
       }
       else if (err == JB_ERR_MODIFIED)
       {
+         assert(require_version);
          err = cgi_error_modified(csp, rsp, lookup(parameters, "f"));
+         log_error(LOG_LEVEL_ERROR,
+            "Blocking CGI edit request due to modification time mismatch.");
+         if (acceptable_failures > 0)
+         {
+            log_error(LOG_LEVEL_INFO,
+               "The CGI editor will be turned off after another %d mismatche(s).",
+               acceptable_failures);
+            acceptable_failures--;
+         }
+         else
+         {
+            log_error(LOG_LEVEL_INFO,
+               "Timestamp mismatch limit reached, turning CGI editor off. "
+               "Reload the configuration file to reenable it.");
+            csp->config->feature_flags &= ~RUNTIME_FEATURE_CGI_EDIT_ACTIONS;
+         }
       }
       if (err == JB_ERR_OK)
       {
@@ -2763,9 +2807,9 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
        */
       if (!err) err = map_conditional(exports, "all-urls-present", 1);
 
-      snprintf(buf, 150, "%d", line_number);
+      snprintf(buf, sizeof(buf), "%d", line_number);
       if (!err) err = map(exports, "all-urls-s", 1, buf, 1);
-      snprintf(buf, 150, "%d", line_number + 2);
+      snprintf(buf, sizeof(buf), "%d", line_number + 2);
       if (!err) err = map(exports, "all-urls-s-next", 1, buf, 1);
       if (!err) err = map(exports, "all-urls-actions", 1,
                           actions_to_html(csp, cur_line->data.action), 0);
@@ -2876,7 +2920,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
          return JB_ERR_MEMORY;
       }
 
-      snprintf(buf, 150, "%d", line_number);
+      snprintf(buf, sizeof(buf), "%d", line_number);
       err = map(section_exports, "s", 1, buf, 1);
       if (!err) err = map(section_exports, "actions", 1,
                           actions_to_html(csp, cur_line->data.action), 0);
@@ -2896,7 +2940,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
       if (prev_section_line_number != ((unsigned)(-1)))
       {
          /* Not last section */
-         snprintf(buf, 150, "%d", prev_section_line_number);
+         snprintf(buf, sizeof(buf), "%d", prev_section_line_number);
          if (!err) err = map(section_exports, "s-prev", 1, buf, 1);
          if (!err) err = map_block_keep(section_exports, "s-prev-exists");
       }
@@ -2950,10 +2994,10 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
             return JB_ERR_MEMORY;
          }
 
-         snprintf(buf, 150, "%d", line_number);
+         snprintf(buf, sizeof(buf), "%d", line_number);
          err = map(url_exports, "p", 1, buf, 1);
 
-         snprintf(buf, 150, "%d", url_1_2);
+         snprintf(buf, sizeof(buf), "%d", url_1_2);
          if (!err) err = map(url_exports, "url-1-2", 1, buf, 1);
 
          if (!err) err = map(url_exports, "url-html", 1,
@@ -3016,7 +3060,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
 
       /* Could also do section-specific exports here, but it wouldn't be as fast */
 
-      snprintf(buf, 150, "%d", line_number);
+      snprintf(buf, sizeof(buf), "%d", line_number);
       if (!err) err = map(section_exports, "s-next", 1, buf, 1);
 
       if ( (cur_line != NULL)
@@ -3338,8 +3382,14 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
       }
    }
 
-   if (!err) err = map_radio(exports, "filter-all", "nx",
-      (cur_line->data.action->multi_remove_all[ACTION_MULTI_FILTER] ? 'n' : 'x'));
+   /* Check or uncheck the "disable all of this type" radio buttons. */
+   for (i = 0; i < MAX_FILTER_TYPES; i++)
+   {
+      const int a = filter_type_info[i].multi_action_index;
+      const int disable_all = cur_line->data.action->multi_remove_all[a];
+      if (err) break;
+      err = map_radio(exports, filter_type_info[i].disable_all_option, "nx", (disable_all ? 'n' : 'x'));
+   }
 
    edit_free_file(file);
 
@@ -3387,8 +3437,8 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
    char target[1024];
    jb_err err;
    int filter_identifier;
+   int i;
    const char * action_set_name;
-   char ch;
    struct file_list * fl;
    struct url_actions * b;
 
@@ -3438,7 +3488,7 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
             {
                if (!strncmp(b->url->spec, "standard.", 9) && !strcmp(b->url->spec + 9, action_set_name))
                {
-                  copy_action(cur_line->data.action, b->action); 
+                  copy_action(cur_line->data.action, b->action);
                   goto found;
                }
             }
@@ -3454,23 +3504,29 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
       err = actions_from_radio(parameters, cur_line->data.action);
    }
 
-   if(err)
+   if (err)
    {
       /* Out of memory */
       edit_free_file(file);
       return err;
    }
 
-   ch = get_char_param(parameters, "filter_all");
-   if (ch == 'N')
+   /* Check the "disable all of this type" parameters. */
+   for (i = 0; i < MAX_FILTER_TYPES; i++)
    {
-      list_remove_all(cur_line->data.action->multi_add[ACTION_MULTI_FILTER]);
-      list_remove_all(cur_line->data.action->multi_remove[ACTION_MULTI_FILTER]);
-      cur_line->data.action->multi_remove_all[ACTION_MULTI_FILTER] = 1;
-   }
-   else if (ch == 'X')
-   {
-      cur_line->data.action->multi_remove_all[ACTION_MULTI_FILTER] = 0;
+      const int multi_action_index = filter_type_info[i].multi_action_index;
+      const char ch = get_char_param(parameters, filter_type_info[i].disable_all_param);
+
+      if (ch == 'N')
+      {
+         list_remove_all(cur_line->data.action->multi_add[multi_action_index]);
+         list_remove_all(cur_line->data.action->multi_remove[multi_action_index]);
+         cur_line->data.action->multi_remove_all[multi_action_index] = 1;
+      }
+      else if (ch == 'X')
+      {
+         cur_line->data.action->multi_remove_all[multi_action_index] = 0;
+      }
    }
 
    for (filter_identifier = 0; !err; filter_identifier++)

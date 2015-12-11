@@ -1,6 +1,6 @@
-#        Sample Configuration File for Privoxy v3.0.8
+#        Sample Configuration File for Privoxy v3.0.9
 #
-#  $Id: config,v 1.63 2008/01/17 01:43:22 hal9 Exp $
+#  $Id: config,v 1.65 2008/06/13 15:41:42 fabiankeil Exp $
 #
 #  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
 #
@@ -70,6 +70,7 @@
 #
 #
 #  1. LOCAL SET-UP DOCUMENTATION
+#  ==============================
 #
 #  If you intend to operate Privoxy for more users than just yourself,
 #  it might be a good idea to let them know how to reach you, what
@@ -78,6 +79,7 @@
 #
 #
 #  1.1. user-manual
+#  =================
 #
 #  Specifies:
 #
@@ -132,6 +134,7 @@
 #
 #
 #  1.2. trust-info-url
+#  ====================
 #
 #  Specifies:
 #
@@ -168,6 +171,7 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  1.3. admin-address
+#  ===================
 #
 #  Specifies:
 #
@@ -196,6 +200,7 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  1.4. proxy-info-url
+#  ====================
 #
 #  Specifies:
 #
@@ -227,6 +232,7 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  2. CONFIGURATION AND LOG FILE LOCATIONS
+#  ========================================
 #
 #  Privoxy can (and normally does) use a number of other files for
 #  additional configuration, help and logging. This section of the
@@ -239,6 +245,7 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  2.1. confdir
+#  =============
 #
 #  Specifies:
 #
@@ -264,6 +271,7 @@ confdir .
 #
 #
 #  2.2. templdir
+#  ==============
 #
 #  Specifies:
 #
@@ -293,6 +301,7 @@ confdir .
 #
 #
 #  2.3. logdir
+#  ============
 #
 #  Specifies:
 #
@@ -319,6 +328,7 @@ logdir .
 #
 #
 #  2.4. actionsfile
+#  =================
 #
 #  Specifies:
 #
@@ -366,6 +376,7 @@ actionsfile user.action      # User customizations
 #
 #
 #  2.5. filterfile
+#  ================
 #
 #  Specifies:
 #
@@ -410,6 +421,7 @@ filterfile default.filter
 #
 #
 #  2.6. logfile
+#  =============
 #
 #  Specifies:
 #
@@ -437,12 +449,13 @@ filterfile default.filter
 #      an ad you think it should block) and it can help you to monitor
 #      what your browser is doing.
 #
-#      Depending on the debug options below, the logfile may be a privacy
-#      risk if third parties can get access to it. As most users will never
-#      look at it, Privoxy 3.0.7 and later only log fatal errors by default.
+#      Depending on the debug options below, the logfile may be a
+#      privacy risk if third parties can get access to it. As most
+#      users will never look at it, Privoxy 3.0.7 and later only log
+#      fatal errors by default.
 #
-#      For most troubleshooting purposes, you will have to change that, please
-#      refer to the debugging section for details.
+#      For most troubleshooting purposes, you will have to change that,
+#      please refer to the debugging section for details.
 #
 #      Your logfile will grow indefinitely, and you will probably
 #      want to periodically remove it. On Unix systems, you can do
@@ -456,6 +469,7 @@ logfile logfile
 #
 #
 #  2.7. jarfile
+#  =============
 #
 #  Specifies:
 #
@@ -488,6 +502,7 @@ logfile logfile
 #
 #
 #  2.8. trustfile
+#  ===============
 #
 #  Specifies:
 #
@@ -544,6 +559,7 @@ logfile logfile
 #
 #
 #  3. DEBUGGING
+#  =============
 #
 #  These options are mainly useful when tracing a problem. Note that
 #  you might also want to invoke Privoxy with the --no-daemon command
@@ -552,6 +568,7 @@ logfile logfile
 #
 #
 #  3.1. debug
+#  ===========
 #
 #  Specifies:
 #
@@ -563,7 +580,7 @@ logfile logfile
 #
 #  Default value:
 #
-#       0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)
+#      0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)
 #
 #  Effect if unset:
 #
@@ -574,18 +591,18 @@ logfile logfile
 #      The available debug levels are:
 #
 #        debug         1 # log each request destination (and the crunch reason if Privoxy intercepted the request)
-#        debug         2 # show each connection status 
-#        debug         4 # show I/O status 
-#        debug         8 # show header parsing 
-#        debug        16 # log all data written to the network into the logfile 
-#        debug        32 # debug force feature 
-#        debug        64 # debug regular expression filters 
-#        debug       128 # debug redirects 
-#        debug       256 # debug GIF de-animation 
-#        debug       512 # Common Log Format 
-#        debug      1024 # debug kill pop-ups 
-#        debug      2048 # CGI user interface 
-#        debug      4096 # Startup banner and warnings.  
+#        debug         2 # show each connection status
+#        debug         4 # show I/O status
+#        debug         8 # show header parsing
+#        debug        16 # log all data written to the network into the logfile
+#        debug        32 # debug force feature
+#        debug        64 # debug regular expression filters
+#        debug       128 # debug redirects
+#        debug       256 # debug GIF de-animation
+#        debug       512 # Common Log Format
+#        debug      1024 # Unused
+#        debug      2048 # CGI user interface
+#        debug      4096 # Startup banner and warnings.
 #        debug      8192 # Non-fatal errors
 #
 #
@@ -593,35 +610,37 @@ logfile logfile
 #      use multiple debug lines.
 #
 #      A debug level of 1 is informative because it will show you each
-#      request as it happens. 1, 4096 and 8192 are recommended so that you
-#      will notice when things go wrong. The other levels are probably only
-#      of interest if you are hunting down a specific problem. They can
-#      produce a hell of an output (especially 16).
+#      request as it happens. 1, 4096 and 8192 are recommended so that
+#      you will notice when things go wrong. The other levels are
+#      probably only of interest if you are hunting down a specific
+#      problem. They can produce a hell of an output (especially 16).
 #
-#      Privoxy used to ship with the debug levels recommended above enabled
-#      by default, but due to privacy concerns 3.0.7 and later are
-#      configured to only log fatal errors.
-# 
-#      If you are used to the more verbose settings, simply enable the debug
-#      lines below again.
+#      Privoxy used to ship with the debug levels recommended above
+#      enabled by default, but due to privacy concerns 3.0.7 and later
+#      are configured to only log fatal errors.
+#
+#      If you are used to the more verbose settings, simply enable
+#      the debug lines below again.
 #
 #      If you want to use pure CLF (Common Log Format), you should set
-#      debug 512 ONLY and not enable anything else.
+#      "debug 512" ONLY and not enable anything else.
 #
 #      Privoxy has a hard-coded limit for the length of log messages. If
 #      it's reached, messages are logged truncated and marked with
 #      "... [too long, truncated]".
 #
-#      Please don't file any support requests without trying to reproduce
-#      the problem with increased debug level first. Once you read the log
-#      messages, you may even be able to solve the problem on your own.
+#      Please don't file any support requests without trying to
+#      reproduce the problem with increased debug level first. Once
+#      you read the log messages, you may even be able to solve the
+#      problem on your own.
 #
-#debug   1    # log each request destination (and the crunch reason if Privoxy intercepted the request)
+#debug      1 # log each request destination (and the crunch reason if Privoxy intercepted the request)
 #debug   4096 # Startup banner and warnings
 #debug   8192 # Non-fatal errors
 #
 #
 #  3.2. single-threaded
+#  =====================
 #
 #  Specifies:
 #
@@ -648,7 +667,43 @@ logfile logfile
 #single-threaded
 #
 #
+#  3.3. hostname
+#  ==============
+#
+#  Specifies:
+#
+#      The hostname shown on the CGI pages.
+#
+#  Type of value:
+#
+#      Text
+#
+#  Default value:
+#
+#      Unset
+#
+#  Effect if unset:
+#
+#      The hostname provided by the operating system is used.
+#
+#  Notes:
+#
+#      On some misconfigured systems resolving the hostname fails or
+#      takes too much time and slows Privoxy down. Setting a fixed
+#      hostname works around the problem.
+#
+#      In other circumstances it might be desirable to show a hostname
+#      other than the one returned by the operating system. For example
+#      if the system has several different hostnames and you don't
+#      want to use the first one.
+#
+#      Note that Privoxy does not validate the specified hostname value.
+#
+#hostname hostname.example.org
+#
+#
 #  4. ACCESS CONTROL AND SECURITY
+#  ===============================
 #
 #  This section of the config file controls the security-relevant
 #  aspects of Privoxy's configuration.
@@ -656,6 +711,7 @@ logfile logfile
 #
 #
 #  4.1. listen-address
+#  ====================
 #
 #  Specifies:
 #
@@ -708,6 +764,7 @@ listen-address  127.0.0.1:8118
 #
 #
 #  4.2. toggle
+#  ============
 #
 #  Specifies:
 #
@@ -739,6 +796,7 @@ toggle  1
 #
 #
 #  4.3. enable-remote-toggle
+#  ==========================
 #
 #  Specifies:
 #
@@ -780,6 +838,7 @@ enable-remote-toggle  0
 #
 #
 #  4.4. enable-remote-http-toggle
+#  ===============================
 #
 #  Specifies:
 #
@@ -818,6 +877,7 @@ enable-remote-http-toggle  0
 #
 #
 #  4.5. enable-edit-actions
+#  =========================
 #
 #  Specifies:
 #
@@ -858,6 +918,7 @@ enable-edit-actions 0
 #
 #
 #  4.6. enforce-blocks
+#  ====================
 #
 #  Specifies:
 #
@@ -906,6 +967,7 @@ enforce-blocks 0
 #
 #
 #  4.7. ACLs: permit-access and deny-access
+#  =========================================
 #
 #  Specifies:
 #
@@ -990,6 +1052,7 @@ enforce-blocks 0
 #
 #
 #  4.8. buffer-limit
+#  ==================
 #
 #  Specifies:
 #
@@ -1025,6 +1088,7 @@ buffer-limit 4096
 #
 #
 #  5. FORWARDING
+#  ==============
 #
 #  This feature allows routing of HTTP requests through a chain of
 #  multiple proxies.
@@ -1047,6 +1111,7 @@ buffer-limit 4096
 #
 #
 #  5.1. forward
+#  =============
 #
 #  Specifies:
 #
@@ -1097,7 +1162,8 @@ buffer-limit 4096
 #
 #
 #
-#  5.2. forward-socks4 and forward-socks4a
+#  5.2. forward-socks4, forward-socks4a and forward-socks5
+#  ========================================================
 #
 #  Specifies:
 #
@@ -1113,7 +1179,7 @@ buffer-limit 4096
 #      denote "all URLs".  http_parent and socks_proxy are IP addresses
 #      in dotted decimal notation or valid DNS names (http_parent may
 #      be "." to denote "no HTTP forwarding"), and the optional port
-#      parameters are TCP ports, i.e. integer values from 1 to 64535
+#      parameters are TCP ports, i.e. integer values from 1 to 65535
 #
 #  Default value:
 #
@@ -1132,6 +1198,9 @@ buffer-limit 4096
 #      is that in the SOCKS 4A protocol, the DNS resolution of the
 #      target hostname happens on the SOCKS server, while in SOCKS 4
 #      it happens locally.
+#
+#      With forward-socks5 the DNS resolution will happen on the remote
+#      server as well.
 #
 #      If http_parent is ".", then requests are not forwarded to another
 #      HTTP proxy but are made (HTTP-wise) directly to the web servers,
@@ -1185,6 +1254,7 @@ buffer-limit 4096
 #
 #
 #  5.3. forwarded-connect-retries
+#  ===============================
 #
 #  Specifies:
 #
@@ -1231,6 +1301,7 @@ forwarded-connect-retries  0
 #
 #
 #  5.4. accept-intercepted-requests
+#  =================================
 #
 #  Specifies:
 #
@@ -1269,6 +1340,7 @@ accept-intercepted-requests 0
 #
 #
 #  5.5. allow-cgi-request-crunching
+#  =================================
 #
 #  Specifies:
 #
@@ -1306,6 +1378,7 @@ allow-cgi-request-crunching 0
 #
 #
 #  5.6. split-large-forms
+#  =======================
 #
 #  Specifies:
 #
@@ -1347,21 +1420,22 @@ split-large-forms 0
 #
 #
 #  6. WINDOWS GUI OPTIONS
+#  =======================
 #
 #  Privoxy has a number of options specific to the Windows GUI
 #  interface:
 #
-
+#
 #  If "activity-animation" is set to 1, the Privoxy icon will animate
 #  when "Privoxy" is active. To turn off, set to 0.
 #
 #activity-animation   1
-
+#
 #  If "log-messages" is set to 1, Privoxy will log messages to the
 #  console window:
 #
 #log-messages   1
-
+#
 #  If "log-buffer-size" is set to 1, the size of the log buffer,
 #  i.e. the amount of memory used for the log messages displayed in
 #  the console window, will be limited to "log-max-lines" (see below).
@@ -1370,36 +1444,36 @@ split-large-forms 0
 #  infinitely and eat up all your memory!
 #
 #log-buffer-size 1
-
+#
 #  log-max-lines is the maximum number of lines held in the log
 #  buffer. See above.
 #
 #log-max-lines 200
-
+#
 #  If "log-highlight-messages" is set to 1, Privoxy will highlight
 #  portions of the log messages with a bold-faced font:
 #
 #log-highlight-messages 1
-
+#
 #  The font used in the console window:
 #
 #log-font-name Comic Sans MS
-
+#
 #  Font size used in the console window:
 #
 #log-font-size 8
-
+#
 #  "show-on-task-bar" controls whether or not Privoxy will appear as
 #  a button on the Task bar when minimized:
 #
 #show-on-task-bar 0
-
+#
 #  If "close-button-minimizes" is set to 1, the Windows close button
 #  will minimize Privoxy instead of closing the program (close with
 #  the exit option on the File menu).
 #
 #close-button-minimizes 1
-
+#
 #  The "hide-console" option is specific to the MS-Win console version
 #  of Privoxy.  If this option is used, Privoxy will disconnect from
 #  and hide the command console.

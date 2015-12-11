@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.71 2007/12/23 15:24:56 fabiankeil Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.77 2008/05/26 16:13:22 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -8,7 +8,7 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.71 2007/12/23 15:24:56 fabiankeil
  *                routine to load the configuration and the global
  *                variables it writes to.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,26 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.71 2007/12/23 15:24:56 fabiankeil
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.77  2008/05/26 16:13:22  fabiankeil
+ *    Reuse directive_hash and don't hash the same directive twice.
+ *
+ *    Revision 1.76  2008/05/10 09:03:16  fabiankeil
+ *    - Merge three string_append() calls.
+ *    - Remove useless assertion.
+ *
+ *    Revision 1.75  2008/03/30 14:52:05  fabiankeil
+ *    Rename load_actions_file() and load_re_filterfile()
+ *    as they load multiple files "now".
+ *
+ *    Revision 1.74  2008/03/26 18:07:07  fabiankeil
+ *    Add hostname directive. Closes PR#1918189.
+ *
+ *    Revision 1.73  2008/02/16 16:54:51  fabiankeil
+ *    Fix typo.
+ *
+ *    Revision 1.72  2008/02/03 13:46:15  fabiankeil
+ *    Add SOCKS5 support. Patch #1862863 by Eric M. Hopper with minor changes.
+ *
  *    Revision 1.71  2007/12/23 15:24:56  fabiankeil
  *    Reword "unrecognized directive" warning, use better
  *    mark up and add a <br>. Fixes parts of #1856559.
@@ -535,7 +555,9 @@ static struct file_list *current_configfile = NULL;
 #define hash_forward                        2029845ul /* "forward" */
 #define hash_forward_socks4              3963965521ul /* "forward-socks4" */
 #define hash_forward_socks4a             2639958518ul /* "forward-socks4a" */
+#define hash_forward_socks5              3963965522ul /* "forward-socks5" */
 #define hash_forwarded_connect_retries    101465292ul /* "forwarded-connect-retries" */
+#define hash_hostname                      10308071ul /* "hostname" */
 #define hash_jarfile                        2046641ul /* "jarfile" */
 #define hash_listen_address              1255650842ul /* "listen-address" */
 #define hash_logdir                          422889ul /* "logdir" */
@@ -617,6 +639,7 @@ static void unload_configfile (void * data)
    freez(config->confdir);
    freez(config->logdir);
    freez(config->templdir);
+   freez(config->hostname);
 
    freez(config->haddr);
    freez(config->logfile);
@@ -774,6 +797,7 @@ struct configuration_spec * load_config(void)
       struct forward_spec *cur_fwd;
       int vec_count;
       char *vec[3];
+      unsigned long directive_hash;
 
       strlcpy(tmp, buf, sizeof(tmp));
 
@@ -813,8 +837,8 @@ struct configuration_spec * load_config(void)
       /* Save the argument for show-proxy-args */
       savearg(cmd, arg, config);
 
-
-      switch( hash_string( cmd ) )
+      directive_hash = hash_string(cmd);
+      switch (directive_hash)
       {
 /* *************************************************************************
  * actionsfile actions-file-name
@@ -1203,6 +1227,7 @@ struct configuration_spec * load_config(void)
  * forward-socks4a url-pattern socks-proxy[:port] (.|http-proxy[:port])
  * *************************************************************************/
          case hash_forward_socks4a:
+         case hash_forward_socks5:
             vec_count = ssplit(arg, " \t", vec, SZ(vec), 1, 1);
 
             if (vec_count != 3)
@@ -1224,7 +1249,14 @@ struct configuration_spec * load_config(void)
                continue;
             }
 
-            cur_fwd->type = SOCKS_4A;
+            if (directive_hash == hash_forward_socks4a)
+            {
+               cur_fwd->type = SOCKS_4A;
+            }
+            else
+            {
+               cur_fwd->type = SOCKS_5;
+            }
 
             /* Save the URL pattern */
             if (create_url_spec(cur_fwd->url, vec[0]))
@@ -1282,6 +1314,18 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_forwarded_connect_retries :
             config->forwarded_connect_retries = atoi(arg);
+            continue;
+
+/* *************************************************************************
+ * hostname hostname-to-show-on-cgi-pages
+ * *************************************************************************/
+         case hash_hostname :
+            freez(config->hostname);
+            config->hostname = strdup(arg);
+            if (NULL == config->hostname)
+            {
+               log_error(LOG_LEVEL_FATAL, "Out of memory saving hostname.");
+            }
             continue;
 
 /* *************************************************************************
@@ -1613,7 +1657,7 @@ struct configuration_spec * load_config(void)
              * to LOG_LEVEL_FATAL.
              */
             log_error(LOG_LEVEL_ERROR, "Ignoring unrecognized directive '%s' (%luul) in line %lu "
-                  "in configuration file (%s).",  buf, hash_string(cmd), linenum, configfile);
+                  "in configuration file (%s).",  buf, directive_hash, linenum, configfile);
             string_append(&config->proxy_args,
                " <strong class='warning'>Warning: ignored unrecognized directive above.</strong><br>");
             continue;
@@ -1648,12 +1692,12 @@ struct configuration_spec * load_config(void)
 
    if (config->actions_file[0])
    {
-      add_loader(load_actions_file, config);
+      add_loader(load_action_files, config);
    }
 
-   if (config->re_filterfile)
+   if (config->re_filterfile[0])
    {
-      add_loader(load_re_filterfile, config);
+      add_loader(load_re_filterfiles, config);
    }
 
 #ifdef FEATURE_TRUST
@@ -1808,12 +1852,11 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
    char * s;
 
    assert(command);
-   assert(*command);
    assert(argument);
 
    /*
     * Add config option name embedded in
-    * link to it's section in the user-manual
+    * link to its section in the user-manual
     */
    buf = strdup("\n<a href=\"");
    if (!strncmpic(config->usermanual, "file://", 7) ||
@@ -1823,9 +1866,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
    }
    else
    {
-      string_append(&buf, "http://");
-      string_append(&buf, CGI_SITE_2_HOST);
-      string_append(&buf, "/user-manual/");
+      string_append(&buf, "http://" CGI_SITE_2_HOST "/user-manual/");
    }
    string_append(&buf, CONFIG_HELP_PREFIX);
    string_join  (&buf, string_toupper(command));

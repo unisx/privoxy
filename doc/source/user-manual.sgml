@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.8">
-<!entity p-status "stable">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -33,7 +33,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.55 2008/01/19 21:26:37 hal9 Exp $
+ $Id: user-manual.sgml,v 2.79 2008/06/27 18:00:53 markm68k Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -59,7 +59,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.55 2008/01/19 21:26:37 hal9 Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.79 2008/06/27 18:00:53 markm68k Exp $</pubdate>
 
 <!--
 
@@ -298,32 +298,24 @@ How to install the binary packages depends on your operating system:
 </sect3>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-mac"><title>Mac OSX</title>
+<sect3 id="installation-mac"><title>Mac OS X</title>
 <para>
- Unzip the downloaded file (you can either double-click on the file
- from the finder, or from the desktop if you downloaded it there).
- Then, double-click on the package installer icon named
- <literal>Privoxy.pkg</literal>
- and follow the installation process.
- <application>Privoxy</application> will be installed in the folder
- <literal>/Library/Privoxy</literal>.
- It will start automatically whenever you start up.  To prevent it from
- starting automatically, remove or rename the folder
+ Unzip the downloaded file (you can either double-click on the zip file
+ icon from the Finder, or from the desktop if you downloaded it there).
+ Then, double-click on the package installer icon and follow the
+ installation process.
+</para>
+<para>
+ The privoxy service will automatically start after a successful
+ installation (in addition to every time your computer starts up).  To
+ prevent the privoxy service from automatically starting when your
+ computer starts up, remove or rename the folder named
  <literal>/Library/StartupItems/Privoxy</literal>. 
 </para>
 <para>
- To start Privoxy by hand, double-click on 
- <literal>StartPrivoxy.command</literal> in the
- <literal>/Library/Privoxy</literal> folder.
- Or, type this command in the Terminal:
-</para>
-<para>
-  <screen>
-  /Library/Privoxy/StartPrivoxy.command
-  </screen>
-</para>
-<para>
- You will be prompted for the administrator password.
+ To manually start or stop the privoxy service, use the Privoxy Utility
+ for Mac OS X.  This application controls the privoxy service (e.g.
+ starting and stopping the service as well as uninstalling the software).
 </para>
 </sect3>
 
@@ -444,153 +436,178 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- There are many improvements and new features since <application>Privoxy 3.0.6</application>, the last stable release:
+ There are many improvements and new features since <application>Privoxy 3.0.8</application>, the last stable release:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    Two new actions <link
-          linkend="server-header-tagger">server-header-tagger</link>
-          and <link
-          linkend="client-header-tagger">client-header-tagger</link>
-          that can be used to create arbitrary <quote>tags</quote>
-          based on client and server headers.
-          These <quote>tags</quote> can then subsequently be used
-          to control the other actions used for the current request,
-          greatly increasing &my-app;'s flexibility and selectivity. See <link
-          linkend="tag-pattern">tag patterns</link> for more information on tags.
-   </para>
-  </listitem>
-
-  <listitem>
-   <para>
-    Header filtering is done with dedicated header filters now. As a result
-    the actions <quote>filter-client-headers</quote> and <quote>filter-server-headers</quote>
-    that were introduced with <application>Privoxy 3.0.5</application> to apply
-    content filters to the headers have been removed.
-    See the new actions <link
-          linkend="server-header-filter">server-header-filter</link>
-          and <link
-          linkend="client-header-filter">client-header-filter</link> for details.
+    Added SOCKS5 support (with address resolution done by
+    the SOCKS5 server). Patch provided by Eric M. Hopper.
    </para>
   </listitem>
   <listitem>
    <para>
-     There are four new options for the main <filename>config</filename> file:
+    The "blocked" CGI pages include a block reason that was
+    provided as argument to the last-applying block action.
    </para>
-
-     <itemizedlist>
-       <listitem>
-        <para>
-          <link
-          linkend="allow-cgi-request-crunching">allow-cgi-request-crunching</link>
-          which allows requests for Privoxy's internal CGI pages to be
-          blocked, redirected or (un)trusted like ordinary requests.
-        </para>
-       </listitem>
-       <listitem>
-        <para>
-          <link
-          linkend="split-large-forms">split-large-forms</link>
-          that will work around a browser bug that caused IE6 and IE7 to
-          ignore the Submit button on the Privoxy's edit-actions-for-url CGI
-          page.
-          </para>
-       </listitem>
-       <listitem>
-        <para>
-          <link
-          linkend="accept-intercepted-requests">accept-intercepted-requests</link>
-          which allows to combine Privoxy with any packet filter to create an
-          intercepting proxy for HTTP/1.1 requests (and for HTTP/1.0 requests
-          with Host header set). This means clients can be forced to use
-          &my-app; even if their proxy settings are configured differently.
-         </para>
-       </listitem>
-       <listitem>
-        <para>
-          <link
-          linkend="templdir">templdir</link>
-          to designate an alternate location for &my-app;'s 
-          locally customized CGI templates so that
-          these are not overwritten during upgrades.         
-        </para>
-       </listitem>
-       </itemizedlist>
-    </listitem>
-
+  </listitem>
   <listitem>
    <para>
-   A new command line option <literal>--pre-chroot-nslookup hostname</literal> to
-   initialize the resolver library before chroot'ing. On some systems this
-   reduces the number of files that must be copied into the chroot tree.
-   (Patch provided by Stephen Gildea)
+    If enable-edit-actions is disabled (the default since 3.0.7 beta)
+    the show-status page hides the edit buttons and explains why.
+    Previously the user would get the "this feature has been disabled"
+    message after using the edit button.
    </para>
   </listitem>
-
   <listitem>
    <para>
-     The <link
-          linkend="forward-override">forward-override</link> action 
-     allows changing of the forwarding settings through the actions files.
-     Combined with tags, this allows to choose the forwarder based on
-     client headers like the <literal>User-Agent</literal>, or the request origin.
-  </para>
+    Forbidden CONNECT requests are treated like blocks by default.
+    The now-pointless treat-forbidden-connects-like-blocks action
+    has been removed.
+   </para>
   </listitem>
-
   <listitem>
    <para>
-     The  <link
-          linkend="redirect">redirect</link> action can now use regular
-          expression substitutions against the original URL.
+    Not enabling limit-connect now allows CONNECT requests to all ports.
+    In previous versions it would only allow CONNECT requests to port 443.
+    Use +limit-connect{443} if you think you need the old default behaviour.
    </para>
   </listitem>
-
   <listitem>
    <para>
-     <application>zlib</application> support is now available as a compile
-     time option to filter compressed content. Patch provided by Wil Mahan.
+    The CGI editor gets turned off after three edit requests with invalid
+    file modification timestamps. This makes life harder for attackers
+    who can leverage browser bugs to send fake Referers and intend to
+    brute-force edit URLs.
    </para>
   </listitem>
-    <listitem>
-    <para>
-     Improve various filters, and add new ones.
-   </para>
-  </listitem>
-
-
   <listitem>
    <para>
-    Include support for RFC 3253 so that <filename>Subversion</filename> works
-    with &my-app;. Patch provided by Petr Kadlec.
+    Action settings for multiple patterns in the same section are
+    shared in memory. As a result these sections take up less space
+    (and are loaded slightly faster). Problem reported by Franz Schwartau.
    </para>
   </listitem>
-
   <listitem>
    <para>
-     Logging can be completely turned off by not specifying a logfile directive.
+    Linear white space in HTTP headers will be normalized to single
+    spaces before parsing the header's content, headers split across
+    multiple lines get merged first.
    </para>
   </listitem>
-
-
   <listitem>
    <para>
-     A number of improvements to Privoxy's internal CGI pages, including the
-     use of favicons for error and control pages.
+    Host information is gathered outside the main thread so it's less
+    likely to delay other incoming connections if the host is misconfigured.
    </para>
   </listitem>
-
   <listitem>
    <para>
-     Many bugfixes, memory leaks addressed, code improvements, and logging 
-     improvements.
+    New config option "hostname" to use a hostname other than
+    the one returned by the operating system. Useful to speed-up responses
+    for CGI requests on misconfigured systems. Requested by Max Khon.
    </para>
   </listitem>
-
+  <listitem>
+   <para>
+    The CGI editor supports the "disable all filters of this type"
+    directives "-client-header-filter", "-server-header-filter",
+    "-client-header-tagger" and "-server-header-tagger".
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed false-positives with the link-by-url filter and URLs that
+    contain the pattern "/jump/".
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The less-download-windows filter no longer messes
+    "Content-Type: application/x-shockwave-flash" headers up.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    In the show-url-info page's "Final results" section active and
+    inactive actions are listed separately. Patch provided by Lee.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The GNUmakefile supports the DESTDIR variable. Patch for
+    the install target submitted by Radoslaw Zielinski.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Embedding the content of configuration files in the show-status
+    page is significantly faster now. For a largish action file (1 MB)
+    a speedup of about 2450 times has been measured. This is mostly
+    interesting if you are using large action files or regularly use
+    Privoxy-Regression-Test while running Privoxy through Valgrind,
+    for stock configuration files it doesn't really matter.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    If zlib support is unavailable and there are content
+    filters active but the prevent-compression action is disabled,
+    the show-url-info page includes a warning that compression
+    might prevent filtering.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The show-url-info page provides an OpenSearch Description that
+    allows to access the page through browser search plugins.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The obsolete kill-popups action has been removed as the
+    PCRS-based popup filters can do the same and are slightly
+    less unreliable.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The inspect-jpegs action has been removed.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The send-wafer and send-vanilla-wafer actions have been removed.
+    They weren't particular useful and their behaviour could be emulated
+    with add-header anyway.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Regression-Test has been significantly improved.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Most sections in the default.action file contain tests for
+    Privoxy-Regression-Test to verify that they are working as intended.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Parts of Privoxy have been refactored to increase maintainability.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Building with zlib (if available) is done by default.
+   </para>
+  </listitem>
  </itemizedlist>
 </para>
+
 <para>
  For a more detailed list of changes please have a look at the ChangeLog.
 </para>
@@ -1349,21 +1366,34 @@ Example Unix startup command:
 </sect2>
 
 <sect2 id="start-macosx">
-<title>Mac OSX</title>
+<title>Mac OS X</title>
 <para>
- During installation, <application>Privoxy</application> is configured to
- start automatically when the system restarts.  To start &my-app; manually,
- double-click on the <literal>StartPrivoxy.command</literal> icon in the
- <literal>/Library/Privoxy</literal> folder.  Or, type this command
- in the Terminal:
+  After downloading the privoxy software, unzip the downloaded file by
+  double-clicking on the zip file icon.  Then, double-click on the
+  installer package icon and follow the installation process.
 </para>
 <para>
-  <screen>
-  /Library/Privoxy/StartPrivoxy.command
-  </screen>
+  The privoxy service will automatically start after a successful
+  installation.  In addition, the privoxy service will automatically
+  start every time your computer starts up.
 </para>
 <para>
- You will be prompted for the administrator password.
+  To prevent the privoxy service from automatically starting when your
+  computer starts up, remove or rename the folder named
+  /Library/StartupItems/Privoxy.
+</para>
+<para>
+  A simple application named Privoxy Utility has been created which
+  enables administrators to easily start and stop the privoxy service.
+</para>
+<para>
+  In addition, the Privoxy Utility presents a simple way for
+  administrators to edit the various privoxy config files.  A method
+  to uninstall the software is also available.
+</para>
+<para>
+  An administrator username and password must be supplied in order for
+  the Privoxy Utility to perform any of the tasks.
 </para>
 </sect2>
 
@@ -1436,11 +1466,9 @@ must find a better place for this paragraph
 
 <para>
  Another feature where you will probably want to define exceptions for trusted
- sites is the popup-killing (through the <ulink
- url="actions-file.html#KILL-POPUPS"><quote>+kill-popups</quote></ulink> and
- <ulink
- url="actions-file.html#FILTER-POPUPS"><quote>+filter{popups}</quote></ulink>
- actions), because your favorite shopping, banking, or leisure site may need
+ sites is the popup-killing (through  <ulink
+ url="actions-file.html#FILTER-POPUPS"><quote>+filter{popups}</quote></ulink>),
+ because your favorite shopping, banking, or leisure site may need
  popups (explained below). 
 </para>
 
@@ -1936,7 +1964,7 @@ for details.
     </para>
     <para>
      The default profiles, and their associated actions, as pre-defined in
-     <filename>standard.action</filename> are<!-- different than this table which is out of date -->:
+     <filename>standard.action</filename> are:
     </para>
     <para>
     <table frame=all><title>Default Configurations</title>
@@ -2051,7 +2079,7 @@ for details.
     <row>
       <entry>Image tag reordering</entry>
       <entry>no</entry>
-      <entry>no</entry>
+      <entry>yes</entry>
       <entry>yes</entry>
     </row>
 
@@ -2188,7 +2216,7 @@ for details.
 
  <para>
  <screen>
-  { +<literal>handle-as-image</literal>  +<literal>block</literal> }
+  { +<literal>handle-as-image</literal>  +<literal>block{Banner ads.}</literal> }
   # Block these as if they were images. Send no block page.
    banners.example.com
    media.example.com/.*banners
@@ -2230,9 +2258,9 @@ for details.
 <para>
  The pattern matching syntax is different for the domain and path parts of
  the URL. The domain part uses a simple globbing type matching technique, 
- while the path part uses a more flexible 
+ while the path part uses more flexible 
  <ulink url="http://en.wikipedia.org/wiki/Regular_expressions"><quote>Regular
-  Expressions (PCRE)</quote></ulink> based syntax.
+  Expressions</quote></ulink> (POSIX 1003.2).
 </para>
 
 <variablelist>
@@ -2411,20 +2439,16 @@ for details.
 <sect3><title>The Path Pattern</title>
 
 <para>
- <application>Privoxy</application> uses Perl compatible (PCRE)
+ <application>Privoxy</application> uses <quote>modern</quote> POSIX 1003.2
   <ulink url="http://en.wikipedia.org/wiki/Regular_expressions"><quote>Regular
-  Expression</quote></ulink> based syntax 
- (through the <ulink url="http://www.pcre.org/">PCRE</ulink> library) for
- matching the path portion (after the slash), and is thus more flexible.
+  Expressions</quote></ulink> for matching the path portion (after the slash),
+  and is thus more flexible.
 </para>
 
 <para>
  There is an <link linkend="regex">Appendix</link> with a brief quick-start into regular
- expressions, and full (very technical) documentation on PCRE regex syntax is available on-line
- at <ulink url="http://www.pcre.org/man.txt">http://www.pcre.org/man.txt</ulink>.
- You might also find the Perl man page on regular expressions (<literal>man perlre</literal>)
- useful, which is available on-line at <ulink
- url="http://perldoc.perl.org/perlre.html">http://perldoc.perl.org/perlre.html</ulink>.
+ expressions, you also might want to have a look at your operating system's documentation
+ on regular expressions (try <literal>man re_format</literal>).
 </para>
 
 <para>
@@ -2618,7 +2642,7 @@ for details.
   -<replaceable class="function">name</replaceable>        # disable action <replaceable class="parameter">name</replaceable></screen>
   </para>
   <para>  
-   Example: <literal>+block</literal>
+   Example: <literal>+handle-as-image</literal>
   </para>
  </listitem>
 
@@ -2801,14 +2825,14 @@ for details.
   <term>Type:</term>
   <!-- boolean, parameterized, Multi-value -->
   <listitem>
-   <para>Boolean.</para>
+   <para>Parameterized.</para>
   </listitem>
  </varlistentry>
 
  <varlistentry>
   <term>Parameter:</term>
   <listitem>
-   <para>N/A</para>
+   <para>A block reason that should be given to the user.</para>
   </listitem>
  </varlistentry>
  
@@ -2817,14 +2841,10 @@ for details.
   <listitem>
    <para>
     <application>Privoxy</application> sends a special <quote>BLOCKED</quote> page
-    for requests to blocked pages. This page contains links to find out why the request
-    was blocked, and a click-through to the blocked content (the latter only if compiled with the
-    force feature enabled). The <quote>BLOCKED</quote> page adapts to the available
-    screen space -- it displays full-blown if space allows, or miniaturized and text-only
-    if loaded into a small frame or window. If you are using <application>Privoxy</application>
-    right now, you can take a look at the 
-    <ulink url="http://ads.bannerserver.example.com/nasty-ads/sponsor.html"><quote>BLOCKED</quote>
-    page</ulink>.
+    for requests to blocked pages. This page contains the block reason given as
+    parameter, a link to find out why the block action applies, and a click-through
+    to the blocked content (the latter only if the force feature is available and
+    enabled).
    </para>
    <para> 
     A very important exception occurs if <emphasis>both</emphasis> 
@@ -2854,18 +2874,18 @@ for details.
   <term>Example usage (section):</term>
   <listitem>
     <para>
-     <screen>{+block}      
+     <screen>{+block{No nasty stuff for you.}}
 # Block and replace with "blocked" page
  .nasty-stuff.example.com
 
-{+block +handle-as-image} 
+{+block{Doubleclick banners.} +handle-as-image} 
 # Block and replace with image
  .ad.doubleclick.net
  .ads.r.us/banners/
 
-{+block +handle-as-empty-document} 
+{+block{Layered ads.} +handle-as-empty-document} 
 # Block and then ignore
- adserver.exampleclick.net/.*\.js$</screen>
+ adserver.example.net/.*\.js$</screen>
     </para>
   </listitem>
  </varlistentry>
@@ -2949,8 +2969,9 @@ for details.
   <listitem>
     <para>
      <screen>
+# Hide Tor exit notation in Host and Referer Headers
 {+client-header-filter{hide-tor-exit-notation}}
-.exit/
+/
     </screen>
     </para>
   </listitem>
@@ -3026,6 +3047,25 @@ for details.
 # Tag every request with the User-Agent header
 {+client-header-tagger{user-agent}}
 /
+
+# Tagging itself doesn't change the action
+# settings, sections with TAG patterns do:
+#
+# If it's a download agent, use a different forwarding proxy,
+# show the real User-Agent and make sure resume works.
+{+forward-override{forward-socks5 10.0.0.2:2222 .} \
+ -hide-if-modified-since      \
+ -overwrite-last-modified     \
+ -hide-user-agent             \
+ -filter                      \
+ -deanimate-gifs              \
+}
+TAG:^User-Agent: NetBSD-ftp/
+TAG:^User-Agent: Novell ZYPP Installer
+TAG:^User-Agent: RPM APT-HTTP/
+TAG:^User-Agent: fetch libfetch/
+TAG:^User-Agent: Ubuntu APT-HTTP/
+TAG:^User-Agent: MPlayer/
     </screen>
     </para>
   </listitem>
@@ -3922,23 +3962,23 @@ problem-host.example.com</screen>
   <listitem>
    <para>
     <anchor id="filter-js-annoyances">
-    <screen>+filter{js-annoyances}       # Get rid of particularly annoying JavaScript abuse</screen>
+    <screen>+filter{js-annoyances}       # Get rid of particularly annoying JavaScript abuse.</screen>
    </para>
    <para>
     <anchor id="filter-js-events">
-    <screen>+filter{js-events}           # Kill all JS event bindings (Radically destructive! Only for extra nasty sites)</screen>
+    <screen>+filter{js-events}           # Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).</screen>
    </para>
    <para>
     <anchor id="filter-html-annoyances">
-    <screen>+filter{html-annoyances}     # Get rid of particularly annoying HTML abuse</screen>
+    <screen>+filter{html-annoyances}     # Get rid of particularly annoying HTML abuse.</screen>
    </para>
    <para>
     <anchor id="filter-content-cookies">
-    <screen>+filter{content-cookies}     # Kill cookies that come in the HTML or JS content</screen>
+    <screen>+filter{content-cookies}     # Kill cookies that come in the HTML or JS content.</screen>
    </para>
    <para>
     <anchor id="filter-refresh-tags">
-    <screen>+filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups)</screen>
+    <screen>+filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups).</screen>
    </para>
    <para>
     <anchor id="filter-unsolicited-popups">
@@ -3950,43 +3990,43 @@ problem-host.example.com</screen>
    </para>
    <para>
     <anchor id="filter-img-reorder">
-    <screen>+filter{img-reorder}         # Reorder attributes in &lt;img&gt; tags to make the banners-by-* filters more effective</screen>
+    <screen>+filter{img-reorder}         # Reorder attributes in &lt;img&gt; tags to make the banners-by-* filters more effective.</screen>
    </para>
    <para>
     <anchor id="filter-banners-by-size">
-    <screen>+filter{banners-by-size}     # Kill banners by size</screen>
+    <screen>+filter{banners-by-size}     # Kill banners by size.</screen>
    </para>
    <para>
     <anchor id="filter-banners-by-link">
-    <screen>+filter{banners-by-link}     # Kill banners by their links to known clicktrackers</screen>
+    <screen>+filter{banners-by-link}     # Kill banners by their links to known clicktrackers.</screen>
    </para>
    <para>
     <anchor id="filter-webbugs">
-    <screen>+filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking)</screen>
+    <screen>+filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking).</screen>
    </para>
    <para>
     <anchor id="filter-tiny-textforms">
-    <screen>+filter{tiny-textforms}      # Extend those tiny textareas up to 40x80 and kill the hard wrap</screen>
+    <screen>+filter{tiny-textforms}      # Extend those tiny textareas up to 40x80 and kill the hard wrap.</screen>
    </para>
    <para>
     <anchor id="filter-jumping-windows">
-    <screen>+filter{jumping-windows}     # Prevent windows from resizing and moving themselves</screen>
+    <screen>+filter{jumping-windows}     # Prevent windows from resizing and moving themselves.</screen>
    </para>
    <para>
     <anchor id="filter-frameset-borders">
-    <screen>+filter{frameset-borders}    # Give frames a border and make them resizeable</screen>
+    <screen>+filter{frameset-borders}    # Give frames a border and make them resizable.</screen>
    </para>
    <para>
     <anchor id="filter-demoronizer">
-    <screen>+filter{demoronizer}         # Fix MS's non-standard use of standard charsets</screen>
+    <screen>+filter{demoronizer}         # Fix MS's non-standard use of standard charsets.</screen>
    </para>
    <para>
     <anchor id="filter-shockwave-flash">
-    <screen>+filter{shockwave-flash}     # Kill embedded Shockwave Flash objects</screen>
+    <screen>+filter{shockwave-flash}     # Kill embedded Shockwave Flash objects.</screen>
    </para>
    <para>
     <anchor id="filter-quicktime-kioskmode">
-    <screen>+filter{quicktime-kioskmode} # Make Quicktime movies savable</screen>
+    <screen>+filter{quicktime-kioskmode} # Make Quicktime movies saveable.</screen>
    </para>
    <para>
     <anchor id="filter-fun">
@@ -3994,35 +4034,35 @@ problem-host.example.com</screen>
    </para>
    <para>
     <anchor id="filter-crude-parental">
-    <screen>+filter{crude-parental}      # Crude parental filtering (demo only)</screen>
+    <screen>+filter{crude-parental}      # Crude parental filtering. Note that this filter doesn't work reliably.</screen>
    </para>
    <para>
     <anchor id="filter-ie-exploits">
-    <screen>+filter{ie-exploits}         # Disable a known Internet Explorer bug exploits</screen>
+    <screen>+filter{ie-exploits}         # Disable some known Internet Explorer bug exploits.</screen>
    </para>
    <para>
     <anchor id="filter-site-specifics">
-    <screen>+filter{site-specifics}      # Custom filters for specific site related problems</screen>
-   </para>
-   <para>
-    <anchor id="filter-google">
-    <screen>+filter{google}              # Removes text ads and other Google specific improvements</screen>
-   </para>
-   <para>
-    <anchor id="filter-yahoo">
-    <screen>+filter{yahoo}               # Removes text ads and other Yahoo specific improvements</screen>
-   </para>
-   <para>
-    <anchor id="filter-msn">
-    <screen>+filter{msn}                 # Removes text ads and other MSN specific improvements</screen>
-   </para>
-   <para>
-    <anchor id="filter-blogspot">
-    <screen>+filter{blogspot}            # Cleans up Blogspot blogs</screen>
+    <screen>+filter{site-specifics}      # Cure for site-specific problems. Don't apply generally!</screen>
    </para>
    <para>
     <anchor id="filter-no-ping">
-    <screen>+filter{no-ping}             # Removes non-standard ping attributes from anchor and area tags</screen>
+    <screen>+filter{no-ping}             # Removes non-standard ping attributes in &lt;a&gt; and &lt;area&gt; tags.</screen>
+   </para>
+   <para>
+    <anchor id="filter-google">
+    <screen>+filter{google}              # CSS-based block for Google text ads. Also removes a width limitation and the toolbar advertisement.</screen>
+   </para>
+   <para>
+    <anchor id="filter-yahoo">
+    <screen>+filter{yahoo}               # CSS-based block for Yahoo text ads. Also removes a width limitation.</screen>
+   </para>
+   <para>
+    <anchor id="filter-msn">
+    <screen>+filter{msn}                 # CSS-based block for MSN text ads. Also removes tracking URLs and a width limitation.</screen>
+   </para>
+   <para>
+    <anchor id="filter-blogspot">
+    <screen>+filter{blogspot}            # Cleans up some Blogspot blogs. Read the fine print before using this.</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -4151,7 +4191,8 @@ new action
      <para>
       <quote>forward-socks4a 127.0.0.1:9050 .</quote> to use the socks4a proxy listening at
       127.0.0.1 port 9050. Replace <quote>forward-socks4a</quote> with <quote>forward-socks4</quote>
-      to use a socks4 connection  (with local DNS resolution) instead.
+      to use a socks4 connection  (with local DNS resolution) instead, use <quote>forward-socks5</quote>
+      for socks5 connections (with remote DNS resolution).
      </para>
     </listitem>
     <listitem>
@@ -4159,7 +4200,8 @@ new action
       <quote>forward-socks4a 127.0.0.1:9050 proxy.example.org:8000</quote> to use the socks4a proxy
       listening at 127.0.0.1 port 9050 to reach the HTTP proxy listening at proxy.example.org port 8000.
       Replace <quote>forward-socks4a</quote> with <quote>forward-socks4</quote> to use a socks4 connection
-      (with local DNS resolution) instead.
+      (with local DNS resolution) instead, use <quote>forward-socks5</quote>
+      for socks5 connections (with remote DNS resolution).
      </para>
     </listitem>
    </itemizedlist>
@@ -4170,7 +4212,7 @@ new action
   <term>Notes:</term>
   <listitem>
    <para>
-    This action takes parameters similar to the <!-- I hope this link actual works -->
+    This action takes parameters similar to the
     <link linkend="forwarding">forward</link> directives in the configuration
     file, but without the URL pattern. It can be used as replacement, but normally it's only
     used in cases where matching based on the request URL isn't sufficient.
@@ -4288,7 +4330,7 @@ new action
    <para>
      <screen># Block all documents on example.org that end with ".js",
 # but send an empty document instead of the usual HTML message. 
-{+block +handle-as-empty-document}
+{+block{Blocked JavaScript} +handle-as-empty-document}
 example.org/.*\.js$
      </screen>
    </para>
@@ -4375,11 +4417,8 @@ example.org/.*\.js$
 # These don't look like images, but they're banners and should be
 # blocked as images:
 #
-{+block +handle-as-image}
-some.nasty-banner-server.com/junk.cgi\?output=trash
-
-# Banner source! Who cares if they also have non-image content?
-ad.doubleclick.net 
+{+block{Nasty banners.} +handle-as-image}
+nasty-banner-server.example.com/junk.cgi\?output=trash
 </screen>
    </para>
   </listitem>
@@ -4972,169 +5011,6 @@ new action
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="inspect-jpegs">
-<title>inspect-jpegs</title>
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>Try to protect against a MS buffer over-run in JPEG processing</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    Protect against a known exploit
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    See Microsoft Security Bulletin MS04-028. JPEG images are one of the most 
-    common image types found across the Internet. The exploit as described can 
-    allow execution of code on the target system, giving an attacker access 
-    to the system in question by merely planting an altered JPEG image, which 
-    would have no obvious indications of what lurks inside. This action
-    tries to prevent this exploit if delivered through unencrypted HTTP.
-   </para>
-   <para>
-    Note that the exploit mentioned is several years old
-    and it's unlikely that your client is still vulnerable
-    against it. This action may be removed in one of the
-    next releases.
-   </para>
-  
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage:</term>
-  <listitem>
-   <para><screen>+inspect-jpegs</screen></para>
-  </listitem>
- </varlistentry>
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="kill-popups">
-<title>kill-popups<anchor id="kill-popup"></title>
-
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>Eliminate those annoying pop-up windows (deprecated)</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    While loading the document, replace JavaScript code that opens
-    pop-up windows with (syntactically neutral) dummy code on the fly.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    This action is basically a built-in, hardwired special-purpose filter
-    action, but there are important differences: For <literal>kill-popups</literal>,
-    the document need not be buffered, so it can be incrementally rendered while
-    downloading. But <literal>kill-popups</literal> doesn't catch as many pop-ups as
-    <literal><link
-    linkend="FILTER-ALL-POPUPS">filter{<replaceable>all-popups</replaceable>}</link></literal>
-    does and is not as smart as <literal><link
-    linkend="FILTER-UNSOLICITED-POPUPS">filter{<replaceable>unsolicited-popups</replaceable>}</link>
-    </literal>is.
-   </para>
-   <para>
-    Think of it as a fast and efficient replacement for a filter that you
-    can use if you don't want any filtering at all. Note that it doesn't make
-    sense to combine it with any <literal><link linkend="filter">filter</link></literal> action,
-    since as soon as one <literal><link linkend="filter">filter</link></literal> applies,
-    the whole document needs to be buffered anyway, which destroys the advantage of
-    the <literal>kill-popups</literal> action over its filter equivalent.
-   </para>
-   <para>
-    Killing all pop-ups unconditionally is problematic. Many shops and banks rely on
-    pop-ups to display forms, shopping carts etc, and the <literal><link
-    linkend="FILTER-UNSOLICITED-POPUPS">filter{<replaceable>unsolicited-popups</replaceable>}</link>
-    </literal> does a better job of catching only the unwanted ones.
-   </para>
-   <para>
-    If the only kind of pop-ups that you want to kill are exit consoles (those
-    <emphasis>really nasty</emphasis> windows that appear when you close an other
-    one), you might want to use
-    <literal><link
-    linkend="filter">filter</link>{<replaceable>js-annoyances</replaceable>}</literal>
-    instead. 
-   </para>
-   <para>
-    This action is most appropriate for browsers that don't have any controls 
-    for unwanted pop-ups. Not recommended for general usage.
-   </para>
-   <para>
-    This action doesn't work very reliable and may be removed in future releases.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage:</term>
-  <listitem>
-   <para><screen>+kill-popups</screen></para>
-  </listitem>
- </varlistentry>
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="limit-connect">
 <title>limit-connect</title>
 
@@ -5178,10 +5054,9 @@ new action
   <listitem>
    <para>
     By default, i.e. if no <literal>limit-connect</literal> action applies,
-    <application>Privoxy</application> only allows HTTP CONNECT
-    requests to port 443 (the standard, secure HTTPS port). Use 
-    <literal>limit-connect</literal> if more fine-grained control is desired
-    for some or all destinations.
+    <application>Privoxy</application> allows HTTP CONNECT requests to all
+    ports. Use <literal>limit-connect</literal> if fine-grained control
+    is desired for some or all destinations.
    </para>
    <para>
     The CONNECT methods exists in HTTP to allow access to secure websites
@@ -5194,9 +5069,6 @@ new action
    <application>Privoxy</application> relays HTTPS traffic without seeing
    the decoded content. Websites can leverage this limitation to circumvent &my-app;'s
    filters. By specifying an invalid port range you can disable HTTPS entirely.
-   If you plan to disable SSL by default, consider enabling 
-   <literal><link linkend="treat-forbidden-connects-like-blocks ">treat-forbidden-connects-like-blocks</link></literal>
-   as well, to be able to quickly create exceptions.
   </para>
   </listitem>
  </varlistentry>
@@ -5208,7 +5080,7 @@ new action
    <!-- I probably have the wrong font setup, bollocks. -->
    <!-- Apparently the emphasis tag uses a proportional font no matter what -->
     <para>
-     <screen>+limit-connect{443}                   # This is the default and need not be specified.
+     <screen>+limit-connect{443}                   # Port 443 is OK.
 +limit-connect{80,443}                # Ports 80 and 443 are OK.
 +limit-connect{-3, 7, 20-100, 500-}   # Ports less than 3, 7, 20 to 100 and above 500 are OK.
 +limit-connect{-}                     # All ports are OK
@@ -5266,9 +5138,9 @@ new action
    <para>
     More and more websites send their content compressed by default, which
     is generally a good idea and saves bandwidth. But the <literal><link
-    linkend="filter">filter</link></literal>, <literal><link linkend="deanimate-gifs">deanimate-gifs</link></literal>
-    and <literal><link linkend="kill-popups">kill-popups</link></literal> actions need
-    access to the uncompressed data.
+    linkend="filter">filter</link></literal> and
+    <literal><link linkend="deanimate-gifs">deanimate-gifs</link></literal>
+    actions need access to the uncompressed data.
    </para>
    <para>
     When compiled with zlib support (available since &my-app; 3.0.7), content that should be
@@ -5487,6 +5359,10 @@ new action
     and be aware that using your own redirects might make it
     possible to fingerprint your requests.
    </para>
+   <para>
+    In case of problems with your redirects, or simply to watch
+    them working, enable <link linkend="DEBUG">debug 128</link>.
+   </para>
   </listitem>
  </varlistentry>
 
@@ -5507,143 +5383,24 @@ new action
 # (Note the $ at the end of the URL pattern to make sure
 # the request for the rewritten URL isn't redirected as well)
 {+redirect{s@$@&amp;mode=expanded@}}
-undeadly.org/cgi\?action=article&amp;sid=\d*$</screen>
+undeadly.org/cgi\?action=article&amp;sid=\d*$
+
+# Redirect Google search requests to MSN
+{+redirect{s@^http://[^/]*/search\?q=([^&amp;]*).*@http://search.msn.com/results.aspx?q=$1@}}
+.google.com/search
+
+# Redirect MSN search requests to Yahoo
+{+redirect{s@^http://[^/]*/results\.aspx\?q=([^&amp;]*).*@http://search.yahoo.com/search?p=$1@}}
+search.msn.com//results\.aspx\?q=
+
+# Redirect remote requests for this manual
+# to the local version delivered by Privoxy
+{+redirect{s@^http://www@http://config@}}
+www.privoxy.org/user-manual/</screen>
    </para>
   </listitem>
  </varlistentry>
 
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="send-vanilla-wafer">
-<title>send-vanilla-wafer</title>
-
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>
-    Feed log analysis scripts with useless data.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    Sends a cookie with each request stating that you do not accept any copyright
-    on cookies sent to you, and asking the site operator not to track you.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    The vanilla wafer is a (relatively) unique header and could conceivably be used to track you.
-   </para>
-   <para>
-    This action is rarely used and not enabled in the default configuration.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage:</term>
-  <listitem>
-   <para>
-     <screen>+send-vanilla-wafer</screen>
-   </para>
-  </listitem>
- </varlistentry>
-
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="send-wafer">
-<title>send-wafer</title>
-
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>
-    Send custom cookies or feed log analysis scripts with even more useless data.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    Sends a custom, user-defined cookie with each request.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Multi-value.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    A string of the form <quote><replaceable class="option">name</replaceable>=<replaceable
-    class="parameter">value</replaceable></quote>.
-   </para>
-  </listitem>
- </varlistentry>
- 
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    Being multi-valued, multiple instances of this action can apply to the same request,
-    resulting in multiple cookies being sent.
-   </para>
-   <para>
-    This action is rarely used and not enabled in the default configuration.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Example usage (section):</term>
-  <listitem>
-   <para>
-    <screen>{+send-wafer{UsingPrivoxy=true}}
-my-internal-testing-server.void</screen>
-   </para>
-  </listitem>
- </varlistentry>
 </variablelist>
 </sect3>
 
@@ -6022,81 +5779,6 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="treat-forbidden-connects-like-blocks">
-<title>treat-forbidden-connects-like-blocks</title>
-<!--
-new action
--->
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>Block forbidden connects with an easy to find error message.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    If this action is enabled, <application>Privoxy</application> no longer
-    makes a difference between forbidden connects and ordinary blocks. 
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>N/A</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    By default <application>Privoxy</application> answers
-    <link linkend="limit-connect">forbidden <quote>Connect</quote> requests</link>
-    with a short error message inside the headers. If the browser doesn't display
-    headers (most don't), you just see an empty page.
-   </para>
-   <para>
-    With this action enabled, <application>Privoxy</application> displays
-    the message that is used for ordinary blocks instead. If you decide
-    to make an exception for the page in question, you can do so by
-    following the <quote>See why</quote> link.
-   </para>
-   <para>
-    For <quote>Connect</quote> requests the clients tell
-    <application>Privoxy</application> which host they are interested
-    in, but not which document they plan to get later. As a result, the
-    <quote>Go there anyway</quote> wouldn't work and is therefore suppressed.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage:</term>
-  <listitem>
-   <para>
-    <screen>+treat-forbidden-connects-like-blocks</screen>
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3>
 <title>Summary</title>
 <para>
@@ -6170,15 +5852,15 @@ new action
  #
  +crunch-all-cookies = +<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> +<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
  -crunch-all-cookies = -<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> -<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
- +block-as-image      = +block +handle-as-image
+ +block-as-image      = +block{Blocked image.} +handle-as-image
  allow-all-cookies   = -crunch-all-cookies -<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link>
 
  # These aliases define combinations of actions
  # that are useful for certain types of sites:
  #
- fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link> -<link linkend="KILL-POPUPS">kill-popups</link> -<link linkend="PREVENT-COMPRESSION">prevent-compression</link>
+ fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link> -<link linkend="PREVENT-COMPRESSION">prevent-compression</link>
 
- shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link> -<link linkend="KILL-POPUPS">kill-popups</link>
+ shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link>
 
  # Short names for other aliases, for really lazy people ;-)
  #
@@ -6213,7 +5895,7 @@ new action
 
  # These shops require pop-ups:
  #
- {-kill-popups -filter{all-popups} -filter{unsolicited-popups}}
+ {-filter{all-popups} -filter{unsolicited-popups}}
   .dabs.com
   .overclockers.co.uk</screen>
 </para>
@@ -6284,14 +5966,14 @@ that also explains why and how aliases are used:
  #
  +crunch-all-cookies = +<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> +<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
  -crunch-all-cookies = -<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> -<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
- +block-as-image      = +block +handle-as-image
+ +block-as-image      = +block{Blocked image.} +handle-as-image
  mercy-for-cookies   = -crunch-all-cookies -<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link>
 
  # These aliases define combinations of actions
  # that are useful for certain types of sites:
  #
- fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link> -<link linkend="KILL-POPUPS">kill-popups</link>
- shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link> -<link linkend="KILL-POPUPS">kill-popups</link></screen>
+ fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link>
+ shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link></screen>
 </para>
 
 <para>
@@ -6404,8 +6086,7 @@ mail.google.com</screen>
  now. <ulink url="http://www.mozilla.org/">Mozilla</ulink> users, who
  can turn on smart handling of unwanted pop-ups in their browsers, can
  safely choose
- -<literal><link linkend="FILTER-ALL-POPUPS">filter{popups}</link></literal> (and
- -<literal><link linkend="KILL-POPUPS">kill-popups</link></literal>) above
+ -<literal><link linkend="FILTER-ALL-POPUPS">filter{popups}</link></literal> above
  and hence don't need this section. Anyway, disabling an already disabled
  action doesn't hurt, so we'll define our exceptions regardless of what was
  chosen in the defaults section:
@@ -6415,7 +6096,7 @@ mail.google.com</screen>
  <screen>
 # These sites require pop-ups too :( 
 #
-{ -<link linkend="KILL-POPUPS">kill-popups</link> -<link linkend="FILTER-ALL-POPUPS">filter{popups}</link> }
+{ -<link linkend="FILTER-ALL-POPUPS">filter{popups}</link> }
 .dabs.com
 .overclockers.co.uk
 .deutsche-bank-24.de</screen>
@@ -6518,7 +6199,7 @@ bs*.gsanet.com
 ##########################################################################
 # Block these fine banners:
 ##########################################################################
-{ <link linkend="BLOCK">+block</link> }
+{ <link linkend="BLOCK">+block{Banner ads.}</link> }
 
 # Generic patterns:
 # 
@@ -6664,14 +6345,14 @@ wiki.
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only
- allow-popups       = -filter{all-popups} -kill-popups
-+block-as-image     = +block +handle-as-image
+ allow-popups       = -filter{all-popups}
++block-as-image     = +block{Blocked as image.} +handle-as-image
 -block-as-image     = -block
 
 # These aliases define combinations of actions that are useful for
 # certain types of sites:
 #
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referrer -kill-popups
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referrer
 shop        = -crunch-all-cookies allow-popups
 
 # Allow ads for selected useful free sites:
@@ -6735,7 +6416,7 @@ stupid-server.example.com/</screen>
  seen an ad on your favourite page on example.com that you want to get rid of.
  You have right-clicked the image, selected <quote>copy image location</quote>
  and pasted the URL below while removing the leading http://, into a 
- <literal>{ +block }</literal> section. Note that <literal>{ +handle-as-image
+ <literal>{ +block{} }</literal> section. Note that <literal>{ +handle-as-image
  }</literal> need not be specified, since all URLs ending in
  <literal>.gif</literal> will be tagged as images by the general rules as set
  in default.action anyway:
@@ -6743,7 +6424,7 @@ stupid-server.example.com/</screen>
 
 <para>
  <screen>
-{ +<link linkend="BLOCK">block</link> }
+{ +<link linkend="BLOCK">block</link>{Nasty ads.} }
  www.example.com/nasty-ads/sponsor\.gif
  another.example.net/more/junk/here/</screen>
 </para>
@@ -8366,13 +8047,6 @@ Requests</title>
  </listitem> 
  <listitem>
   <para>
-   If the <link linkend="KILL-POPUPS"><quote>+kill-popups</quote></link>
-   action applies, and it is an HTML or JavaScript document, the popup-code in the
-   response is filtered on-the-fly as it is received.
-  </para>
- </listitem> 
- <listitem>
-  <para>
    If any <link linkend="FILTER"><quote>+filter</quote></link> action
    or <link
    linkend="DEANIMATE-GIFS"><quote>+deanimate-gifs</quote></link>
@@ -8624,19 +8298,14 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -hide-if-modified-since
  +hide-referrer {forge}
  -hide-user-agent
- -inspect-jpegs
- -kill-popups
  -limit-connect
  -overwrite-last-modified
  -prevent-compression
  -redirect
- -send-vanilla-wafer
- -send-wafer
  -server-header-filter{xml-to-html}
  -server-header-filter{html-to-xml} 
  -session-cookies-only
- +set-image-blocker {pattern}
- -treat-forbidden-connects-like-blocks </screen>
+ +set-image-blocker {pattern} </screen>
 </para>
 
 <para>
@@ -8653,21 +8322,21 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 <para>
  <screen>
 
- { +block }
+ { +block{Domains starts with "ad"} }
   ad*.
 
- { +block }
+ { +block{Domain contains "ad"} }
   .ad.
 
- { +block +handle-as-image }
+ { +block{Doubleclick banner server} +handle-as-image }
   .[a-vx-z]*.doubleclick.net
 </screen>
 </para>
 
 <para>
  We'll just show the interesting part here - the explicit matches. It is 
- matched three different times. Two <quote>+block</quote> sections, 
- and a <quote>+block +handle-as-image</quote>,
+ matched three different times. Two <quote>+block{}</quote> sections, 
+ and a <quote>+block{} +handle-as-image</quote>,
  which is the expanded form of one of our aliases that had been defined as: 
  <quote>+block-as-image</quote>. (<link
  linkend="ALIASES"><quote>Aliases</quote></link> are defined in
@@ -8682,7 +8351,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  though ;-) Note that if you want an ad or obnoxious 
  URL to be invisible, it should be defined as <quote>ad.doubleclick.net</quote>
  is done here -- as both a <link
- linkend="BLOCK"><quote>+block</quote></link>
+ linkend="BLOCK"><quote>+block{}</quote></link>
  <emphasis>and</emphasis> an 
  <link linkend="HANDLE-AS-IMAGE"><quote>+handle-as-image</quote></link>.
  The custom alias <quote><literal>+block-as-image</literal></quote> just
@@ -8748,21 +8417,16 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   +hide-from-header{block} 
   +hide-referer{forge} 
   -hide-user-agent 
-  -inspect-jpegs
-  -kill-popups 
   -overwrite-last-modified
   +prevent-compression 
   -redirect
-  -send-vanilla-wafer 
-  -send-wafer
   -server-header-filter{xml-to-html}
   -server-header-filter{html-to-xml} 
   +session-cookies-only 
-  +set-image-blocker{blank} 
-  -treat-forbidden-connects-like-blocks }
+  +set-image-blocker{blank} }
    /
 
- { +block +handle-as-image }
+ { +block{Path contains "ads".} +handle-as-image }
   /ads
 </screen>
 </para>
@@ -8804,7 +8468,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 <para>
  <screen>
 
- { +block +handle-as-image }
+ { +block{Path starts with "ads".} +handle-as-image }
  /ads
 </screen>
 </para>
@@ -8920,6 +8584,85 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.79  2008/06/27 18:00:53  markm68k
+ remove outdated startup information for mac os x
+
+ Revision 2.78  2008/06/21 17:03:03  fabiankeil
+ Fix typo.
+
+ Revision 2.77  2008/06/14 13:45:22  fabiankeil
+ Re-add a colon I unintentionally removed a few revisions ago.
+
+ Revision 2.76  2008/06/14 13:21:28  fabiankeil
+ Prepare for the upcoming 3.0.9 beta release.
+
+ Revision 2.75  2008/06/13 16:06:48  fabiankeil
+ Update the "What's New in this Release" section with
+ the ChangeLog entries changelog2doc.pl could handle.
+
+ Revision 2.74  2008/05/26 15:55:46  fabiankeil
+ - Update "default profiles" table.
+ - Add some more pcrs redirect examples and note that
+   enabling debug 128 helps to get redirects working.
+
+ Revision 2.73  2008/05/23 14:43:18  fabiankeil
+ Remove previously out-commented block that caused syntax problems.
+
+ Revision 2.72  2008/05/12 10:26:14  fabiankeil
+ Synchronize content filter descriptions with the ones in default.filter.
+
+ Revision 2.71  2008/04/10 17:37:16  fabiankeil
+ Actually we use "modern" POSIX 1003.2 regular
+ expressions in path patterns, not PCRE.
+
+ Revision 2.70  2008/04/10 15:59:12  fabiankeil
+ Add another section to the client-header-tagger example that shows
+ how to actually change the action settings once the tag is created.
+
+ Revision 2.69  2008/03/29 12:14:25  fabiankeil
+ Remove send-wafer and send-vanilla-wafer actions.
+
+ Revision 2.68  2008/03/28 15:13:43  fabiankeil
+ Remove inspect-jpegs action.
+
+ Revision 2.67  2008/03/27 18:31:21  fabiankeil
+ Remove kill-popups action.
+
+ Revision 2.66  2008/03/06 16:33:47  fabiankeil
+ If limit-connect isn't used, don't limit CONNECT requests to port 443.
+
+ Revision 2.65  2008/03/04 18:30:40  fabiankeil
+ Remove the treat-forbidden-connects-like-blocks action. We now
+ use the "blocked" page for forbidden CONNECT requests by default.
+
+ Revision 2.64  2008/03/01 14:10:28  fabiankeil
+ Use new block syntax. Still needs some polishing.
+
+ Revision 2.63  2008/02/22 05:50:37  markm68k
+ fix merge problem
+
+ Revision 2.62  2008/02/11 11:52:23  hal9
+ Fix entity ... s/&/&amp;
+
+ Revision 2.61  2008/02/11 03:41:47  markm68k
+ more updates for mac os x
+
+ Revision 2.60  2008/02/11 03:40:25  markm68k
+ more updates for mac os x
+
+ Revision 2.59  2008/02/11 00:52:34  markm68k
+ reflect new changes for mac os x
+
+ Revision 2.58  2008/02/03 21:37:40  hal9
+ Apply patch from Mark: s/OSX/OS X/
+
+ Revision 2.57  2008/02/03 19:10:14  fabiankeil
+ Mention forward-socks5.
+
+ Revision 2.56  2008/01/31 19:11:35  fabiankeil
+ Let the +client-header-filter{hide-tor-exit-notation} example apply
+ to all requests as "tainted" Referers aren't limited to exit TLDs.
+
  Revision 2.55  2008/01/19 21:26:37  hal9
  Add IE7 to configuration section per Gerry.
 
@@ -9187,7 +8930,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  Spell checked (only one typo this time!).
 
  Revision 1.123.2.16  2002/08/09 19:20:54  david__schmidt
- Update to Mac OSX startup script name
+ Update to Mac OS X startup script name
 
  Revision 1.123.2.15  2002/08/07 17:32:11  oes
  Converted some internal links from ulink to link for PDF creation; no content changed
@@ -9212,7 +8955,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 
  Revision 1.123.2.9  2002/07/11 03:40:28  david__schmidt
 
- Updated Mac OSX sections due to installation location change
+ Updated Mac OS X sections due to installation location change
 
  Revision 1.123.2.8  2002/06/09 16:36:32  hal9
  Clarifications on filtering and MIME. Hardcode 'latest release' in index.html.
@@ -9232,7 +8975,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  Ooops missed something from David.
 
  Revision 1.123.2.3  2002/05/27 03:23:17  hal9
- Fix FIXMEs for OS2 and OSX startup. Fix Redhat typos (should be Red Hat).
+ Fix FIXMEs for OS2 and Mac OS X startup. Fix Redhat typos (should be Red Hat).
  That's a wrap, I think.
 
  Revision 1.123.2.2  2002/05/26 19:02:09  hal9
@@ -9367,7 +9110,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  Add AmigaOS install stuff.
 
  Revision 1.87  2002/04/23 02:53:15  david__schmidt
- Updated OSX installation section
+ Updated Mac OS X installation section
  Added a few English tweaks here an there
 
  Revision 1.86  2002/04/21 01:46:32  hal9

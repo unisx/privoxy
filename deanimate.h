@@ -1,6 +1,6 @@
 #ifndef DEANIMATE_H_INCLUDED
 #define DEANIMATE_H_INCLUDED
-#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.11 2007/01/12 15:41:00 fabiankeil Exp $"
+#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.12 2008/03/28 15:13:39 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/deanimate.h,v $
@@ -8,10 +8,8 @@
  * Purpose     :  Declares functions to manipulate binary images on the
  *                fly.  High-level functions include:
  *                  - Deanimation of GIF images
- *                  - Fixup of malformed comment block in JPEG headers
  *                
- *                Functions declared include: gif_deanimate, buf_free,
- *                jpeg_inspect
+ *                Functions declared include: gif_deanimate and buf_free.
  *                
  *
  * Copyright   :  Written by and Copyright (C) 2001 - 2004 by the the
@@ -44,6 +42,9 @@
  *
  * Revisions   :
  *    $Log: deanimate.h,v $
+ *    Revision 1.12  2008/03/28 15:13:39  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
  *    Revision 1.11  2007/01/12 15:41:00  fabiankeil
  *    Remove some white space at EOL.
  *
@@ -104,7 +105,6 @@ struct binbuffer
  * Function prototypes
  */
 extern int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_image);
-extern int jpeg_inspect(struct binbuffer *src, struct binbuffer *dst);
 extern void buf_free(struct binbuffer *buf);
 
 /* 

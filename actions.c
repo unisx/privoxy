@@ -1,4 +1,4 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.40 2007/05/21 10:26:50 fabiankeil Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.53 2008/05/26 16:04:04 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.c,v $
@@ -6,7 +6,7 @@ const char actions_rcs[] = "$Id: actions.c,v 1.40 2007/05/21 10:26:50 fabiankeil
  * Purpose     :  Declares functions to work with actions files
  *                Functions declared include: FIXME
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,54 @@ const char actions_rcs[] = "$Id: actions.c,v 1.40 2007/05/21 10:26:50 fabiankeil
  *
  * Revisions   :
  *    $Log: actions.c,v $
+ *    Revision 1.53  2008/05/26 16:04:04  fabiankeil
+ *    s@memorey@memory@
+ *
+ *    Revision 1.52  2008/04/27 16:26:59  fabiankeil
+ *    White space fix for the last commit.
+ *
+ *    Revision 1.51  2008/04/27 16:20:19  fabiankeil
+ *    Complain about every block action without reason found.
+ *
+ *    Revision 1.50  2008/03/30 14:52:00  fabiankeil
+ *    Rename load_actions_file() and load_re_filterfile()
+ *    as they load multiple files "now".
+ *
+ *    Revision 1.49  2008/03/29 12:13:45  fabiankeil
+ *    Remove send-wafer and send-vanilla-wafer actions.
+ *
+ *    Revision 1.48  2008/03/28 18:17:14  fabiankeil
+ *    In action_used_to_be_valid(), loop through an array of formerly
+ *    valid actions instead of using an OR-chain of strcmpic() calls.
+ *
+ *    Revision 1.47  2008/03/28 15:13:37  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
+ *    Revision 1.46  2008/03/27 18:27:20  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.45  2008/03/24 11:21:02  fabiankeil
+ *    Share the action settings for multiple patterns in the same
+ *    section so we waste less memory for gigantic block lists
+ *    (and load them slightly faster). Reported by Franz Schwartau.
+ *
+ *    Revision 1.44  2008/03/04 18:30:34  fabiankeil
+ *    Remove the treat-forbidden-connects-like-blocks action. We now
+ *    use the "blocked" page for forbidden CONNECT requests by default.
+ *
+ *    Revision 1.43  2008/03/01 14:00:43  fabiankeil
+ *    Let the block action take the reason for the block
+ *    as argument and show it on the "blocked" page.
+ *
+ *    Revision 1.42  2008/02/09 15:15:38  fabiankeil
+ *    List active and inactive actions in the show-url-info's
+ *    "Final results" section separately. Patch submitted by Lee
+ *    in #1830056, modified to list active actions first.
+ *
+ *    Revision 1.41  2008/01/28 20:17:40  fabiankeil
+ *    - Mark some parameters as immutable.
+ *    - Hide update_action_bits_for_all_tags() while it's unused.
+ *
  *    Revision 1.40  2007/05/21 10:26:50  fabiankeil
  *    - Use strlcpy() instead of strcpy().
  *    - Provide a reason why loading the actions
@@ -449,6 +497,24 @@ jb_err copy_action (struct action_spec *dest,
    return err;
 }
 
+/*********************************************************************
+ *
+ * Function    :  free_action_spec
+ *
+ * Description :  Frees an action_spec and the memory used by it.
+ *
+ * Parameters  :
+ *          1  :  src = Source to free.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+void free_action_spec(struct action_spec *src)
+{
+   free_action(src);
+   freez(src);
+}
+
 
 /*********************************************************************
  *
@@ -593,6 +659,42 @@ jb_err get_action_token(char **line, char **name, char **value)
    return JB_ERR_OK;
 }
 
+/*********************************************************************
+ *
+ * Function    :  action_used_to_be_valid
+ *
+ * Description :  Checks if unrecognized actions were valid in earlier
+ *                releases.
+ *
+ * Parameters  :
+ *          1  :  action = The string containing the action to check.
+ *
+ * Returns     :  True if yes, otherwise false.
+ *
+ *********************************************************************/
+static int action_used_to_be_valid(const char *action)
+{
+   static const char *formerly_valid_actions[] = {
+      "inspect-jpegs",
+      "kill-popups",
+      "send-vanilla-wafer",
+      "send-wafer",
+      "treat-forbidden-connects-like-blocks",
+      "vanilla-wafer",
+      "wafer"
+   };
+   int i;
+
+   for (i = 0; i < SZ(formerly_valid_actions); i++)
+   {
+      if (0 == strcmpic(action, formerly_valid_actions[i]))
+      {
+         return TRUE;
+      }
+   }
+
+   return FALSE;
+}
 
 /*********************************************************************
  *
@@ -660,7 +762,21 @@ jb_err get_actions(char *line,
 
                   if ((value == NULL) || (*value == '\0'))
                   {
-                     return JB_ERR_PARSE;
+                     if (0 != strcmpic(action->name, "block"))
+                     {
+                        /*
+                         * XXX: Temporary backwards compatibility hack.
+                         * XXX: should include line number.
+                         */
+                        value = "No reason specified.";
+                        log_error(LOG_LEVEL_ERROR,
+                           "block action without reason found. This may "
+                           "become a fatal error in future versions.");
+                     }
+                     else
+                     {
+                        return JB_ERR_PARSE;
+                     }
                   }
                   /* FIXME: should validate option string here */
                   freez (cur_action->string[action->index]);
@@ -753,6 +869,11 @@ jb_err get_actions(char *line,
             {
                /* Found it */
                merge_actions(cur_action, alias->action);
+            }
+            else if ((2 < strlen(option)) && action_used_to_be_valid(option+1))
+            {
+               log_error(LOG_LEVEL_ERROR, "Action '%s' is no longer valid "
+                  "in this Privoxy release. Ignored.", option+1);
             }
             else
             {
@@ -885,7 +1006,7 @@ jb_err merge_current_action (struct current_action_spec *dest,
    return err;
 }
 
-
+#if 0
 /*********************************************************************
  *
  * Function    :  update_action_bits_for_all_tags
@@ -914,7 +1035,7 @@ int update_action_bits_for_all_tags(struct client_state *csp)
 
    return updated;
 }
-
+#endif
 
 /*********************************************************************
  *
@@ -967,7 +1088,7 @@ int update_action_bits_for_tag(struct client_state *csp, const char *tag)
             if (merge_current_action(csp->action, b->action))
             {
                log_error(LOG_LEVEL_ERROR,
-                  "Out of memorey while changing action bits");
+                  "Out of memory while changing action bits");
             }
             /* and signal the change. */
             updated = 1;
@@ -1066,11 +1187,19 @@ void unload_actions_file(void *file_data)
    {
       next = cur->next;
       free_url_spec(cur->url);
-      free_action(cur->action);
+      if ((next == NULL) || (next->action != cur->action))
+      {
+         /*
+          * As the action settings might be shared,
+          * we can only free them if the current
+          * url pattern is the last one, or if the
+          * next one is using different settings.
+          */
+         free_action_spec(cur->action);
+      }
       freez(cur);
       cur = next;
    }
-
 }
 
 
@@ -1102,7 +1231,7 @@ void free_alias_list(struct action_alias *alias_list)
 
 /*********************************************************************
  *
- * Function    :  load_actions_file
+ * Function    :  load_action_files
  *
  * Description :  Read and parse all the action files and add to files
  *                list.
@@ -1113,7 +1242,7 @@ void free_alias_list(struct action_alias *alias_list)
  * Returns     :  0 => Ok, everything else is an error.
  *
  *********************************************************************/
-int load_actions_file(struct client_state *csp)
+int load_action_files(struct client_state *csp)
 {
    int i;
    int result;
@@ -1335,8 +1464,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             {
                if (!cur_action_used)
                {
-                  free_action(cur_action);
-                  free(cur_action);
+                  free_action_spec(cur_action);
                }
                cur_action = NULL;
             }
@@ -1525,8 +1653,8 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             return 1; /* never get here */
          }
 
-         /* Save flags */
-         copy_action (perm->action, cur_action);
+         perm->action = cur_action;
+         cur_action_used = 1;
 
          /* Save the URL pattern */
          if (create_url_spec(perm->url, buf))
@@ -1564,9 +1692,10 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
 
    fclose(fp);
 
-   free_action(cur_action);
-   freez(cur_action);
-
+   if (!cur_action_used)
+   {
+      free_action_spec(cur_action);
+   }
    free_alias_list(alias_list);
 
    /* the old one is now obsolete */
@@ -1601,7 +1730,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
  *                NULL on out-of-memory error.
  *
  *********************************************************************/
-char * actions_to_text(struct action_spec *action)
+char * actions_to_text(const struct action_spec *action)
 {
    unsigned mask = action->mask;
    unsigned add  = action->add;
@@ -1689,8 +1818,8 @@ char * actions_to_text(struct action_spec *action)
  *                NULL on out-of-memory error.
  *
  *********************************************************************/
-char * actions_to_html(struct client_state *csp,
-                       struct action_spec *action)
+char * actions_to_html(const struct client_state *csp,
+                       const struct action_spec *action)
 {
    unsigned mask = action->mask;
    unsigned add  = action->add;
@@ -1795,56 +1924,58 @@ char * actions_to_html(struct client_state *csp,
  *                NULL on out-of-memory error.
  *
  *********************************************************************/
-char *current_action_to_html(struct client_state *csp,
-                             struct current_action_spec *action)
+char *current_action_to_html(const struct client_state *csp,
+                             const struct current_action_spec *action)
 {
    unsigned long flags  = action->flags;
-   char * result = strdup("");
    struct list_entry * lst;
+   char *result   = strdup("");
+   char *active   = strdup("");
+   char *inactive = strdup("");
 
 #define DEFINE_ACTION_BOOL(__name, __bit)  \
    if (flags & __bit)                      \
    {                                       \
-      string_append(&result, "\n<br>+");   \
-      string_join(&result, add_help_link(__name, csp->config)); \
+      string_append(&active, "\n<br>+");   \
+      string_join(&active, add_help_link(__name, csp->config)); \
    }                                       \
    else                                    \
    {                                       \
-      string_append(&result, "\n<br>-");   \
-      string_join(&result, add_help_link(__name, csp->config)); \
+      string_append(&inactive, "\n<br>-"); \
+      string_join(&inactive, add_help_link(__name, csp->config)); \
    }
 
 #define DEFINE_ACTION_STRING(__name, __bit, __index)   \
    if (flags & __bit)                                  \
    {                                                   \
-      string_append(&result, "\n<br>+");               \
-      string_join(&result, add_help_link(__name, csp->config)); \
-      string_append(&result, "{");                     \
-      string_join(&result, html_encode(action->string[__index])); \
-      string_append(&result, "}");                     \
+      string_append(&active, "\n<br>+");               \
+      string_join(&active, add_help_link(__name, csp->config)); \
+      string_append(&active, "{");                     \
+      string_join(&active, html_encode(action->string[__index])); \
+      string_append(&active, "}");                     \
    }                                                   \
    else                                                \
    {                                                   \
-      string_append(&result, "\n<br>-");               \
-      string_join(&result, add_help_link(__name, csp->config)); \
+      string_append(&inactive, "\n<br>-");             \
+      string_join(&inactive, add_help_link(__name, csp->config)); \
    }
 
 #define DEFINE_ACTION_MULTI(__name, __index)           \
    lst = action->multi[__index]->first;                \
    if (lst == NULL)                                    \
    {                                                   \
-      string_append(&result, "\n<br>-");              \
-      string_join(&result, add_help_link(__name, csp->config)); \
+      string_append(&inactive, "\n<br>-");             \
+      string_join(&inactive, add_help_link(__name, csp->config)); \
    }                                                   \
    else                                                \
    {                                                   \
       while (lst)                                      \
       {                                                \
-         string_append(&result, "\n<br>+");            \
-         string_join(&result, add_help_link(__name, csp->config)); \
-         string_append(&result, "{");                  \
-         string_join(&result, html_encode(lst->str));  \
-         string_append(&result, "}");                  \
+         string_append(&active, "\n<br>+");            \
+         string_join(&active, add_help_link(__name, csp->config)); \
+         string_append(&active, "{");                  \
+         string_join(&active, html_encode(lst->str));  \
+         string_append(&active, "}");                  \
          lst = lst->next;                              \
       }                                                \
    }
@@ -1858,5 +1989,16 @@ char *current_action_to_html(struct client_state *csp,
 #undef DEFINE_ACTION_BOOL
 #undef DEFINE_ACTION_ALIAS
 
+   if (active != NULL)
+   {
+      string_append(&result, active);
+      freez(active);
+   }
+   string_append(&result, "\n<br>");
+   if (inactive != NULL)
+   {
+      string_append(&result, inactive);
+      freez(inactive);
+   }
    return result;
 }

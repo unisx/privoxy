@@ -146,10 +146,15 @@
   {
      document.write('\
    <p class="small" align="center"> \
-    <a href="@default-cgi@" target="_blank">Privoxy</a> blocked <b>@protocol@@hostport@@path@</b>. \
-    <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" target="_blank">See why</a> \
+    Request blocked by <a href="@default-cgi@" target="_blank">Privoxy</a>: @block-reason@ \
+    <br>See <a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" \
+     target="_blank">why this block applies</a> \
     <!-- @if-force-support-start --> \
-    or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>. \
+    or <a href="http://@hostport@@force-prefix@@path@">go \
+    <!-- if-force-support-end@ --> \
+    to <b>@protocol@@hostport@@path@</b> \
+    <!-- @if-force-support-start --> \
+    anyway</a>. \
     <!-- if-force-support-end@ --> \
    </p> \
    ');
@@ -189,8 +194,10 @@
       <td class="box" colspan="2"> \
         <h2>Request for blocked URL</h2> \
         <p>Your request for <b>@protocol@@hostport@@path@</b> was blocked. \
-          <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@">See why</a> \
-    <!-- @if-force-support-start --> \
+         <br>Block reason: @block-reason@ \
+         <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" \
+         target="_blank">See why this block applies</a> \
+<!-- @if-force-support-start --> \
           or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>. \
 <!-- if-force-support-end@ --> \
         </p> \
@@ -263,10 +270,15 @@
 
   <noscript>
    <p class="small" align="center">
-    <a href="@default-cgi@" target="_blank">Privoxy</a> blocked <b>@protocol@@hostport@@path@</b>.
-    <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" target="_blank">See why</a>
+    Request blocked by <a href="@default-cgi@" target="_blank">Privoxy</a>: @block-reason@
+    <br>See <a href="@default-cgi@show-url-info?url=@hostport@@path-ue@"
+     target="_blank">why this block applies</a>
     <!-- @if-force-support-start -->
-    or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>.
+    or <a href="http://@hostport@@force-prefix@@path@">go
+    <!-- if-force-support-end@ -->
+    to <b>@protocol@@hostport@@path@</b>
+    <!-- @if-force-support-start -->
+    anyway</a>.
     <!-- if-force-support-end@ -->
    </p>
   </noscript>

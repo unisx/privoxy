@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.60 2007/10/27 13:12:13 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.86 2008/06/28 14:19:05 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -9,7 +9,7 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.60 2007/10/27 13:12:13 fabian
  *                Functions declared include:
  * 
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -36,6 +36,103 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.60 2007/10/27 13:12:13 fabian
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.86  2008/06/28 14:19:05  fabiankeil
+ *    Protocol detection is done case-insensitive, fix assertion
+ *    to do the same. Yay for Privoxy-Regression-Test and zzuf.
+ *
+ *    Revision 1.85  2008/05/26 17:30:55  fabiankeil
+ *    Provide an OpenSearch Description to access the
+ *    show-url-info page through "search engine plugins".
+ *
+ *    Revision 1.84  2008/05/26 16:16:55  fabiankeil
+ *    Spell error correctly.
+ *
+ *    Revision 1.83  2008/05/12 14:51:30  fabiankeil
+ *    Don't complain about an invalid URL if show-url-info is requested
+ *    without parameters. Regression introduced in 1.81 by yours truly.
+ *
+ *    Revision 1.82  2008/05/10 20:01:47  fabiankeil
+ *    Fix an assertion that could erroneously
+ *    trigger in case of memory shortage.
+ *
+ *    Revision 1.81  2008/05/05 09:54:39  fabiankeil
+ *    In cgi_show_url_info(), make sure ftp URLs are
+ *    declared invalid. Also simplify the code that adds
+ *    "http://" if no protocol has been specified.
+ *
+ *    Revision 1.80  2008/05/04 16:18:32  fabiankeil
+ *    Provide parse_http_url() with a third parameter to specify
+ *    whether or not URLs without protocol are acceptable.
+ *
+ *    Revision 1.79  2008/05/04 13:30:56  fabiankeil
+ *    Streamline parse_http_url()'s prototype.
+ *
+ *    Revision 1.78  2008/05/03 16:50:11  fabiankeil
+ *    Leverage content_filters_enabled() in cgi_show_url_info().
+ *
+ *    Revision 1.77  2008/05/02 09:47:48  fabiankeil
+ *    In cgi_show_url_info, pass an initialized http structure
+ *    to parse_http_url() as that will be required soonish and
+ *    assert that https URLs are recognized correctly.
+ *
+ *    Revision 1.76  2008/04/28 09:13:30  fabiankeil
+ *    In load_file(), remember the error reason and fclose()
+ *    and return later on instead of right away.
+ *
+ *    Revision 1.75  2008/04/27 13:52:52  fabiankeil
+ *    Move CGI file loading code into load_file() and
+ *    add checks for unexpected errors.
+ *
+ *    Revision 1.74  2008/04/26 15:50:56  fabiankeil
+ *    Fix macro name in cgi_show_file() error path.
+ *
+ *    Revision 1.73  2008/04/26 12:21:55  fabiankeil
+ *    Forget about JB_ERR_PARSE. JB_ERR_CGI_PARAMS to the rescue.
+ *
+ *    Revision 1.72  2008/04/26 10:34:15  fabiankeil
+ *    If zlib support is unavailable and there are content filters active
+ *    but the prevent-compression action is disabled, include a warning
+ *    on the show-url-info page that compression might prevent filtering.
+ *
+ *    Revision 1.71  2008/04/25 13:33:56  fabiankeil
+ *    - Factor cgi_show_file() out of cgi_show_status().
+ *    - Adjust cgi_show_status()'s parameter description to match reality.
+ *
+ *    Revision 1.70  2008/04/24 16:12:38  fabiankeil
+ *    In cgi_show_status(), load the requested file at once.
+ *    Using string_join() for every line really doesn't scale.
+ *
+ *    Revision 1.69  2008/04/17 14:40:48  fabiankeil
+ *    Provide get_http_time() with the buffer size so it doesn't
+ *    have to blindly assume that the buffer is big enough.
+ *
+ *    Revision 1.68  2008/03/27 18:27:21  fabiankeil
+ *    Remove kill-popups action.
+ *
+ *    Revision 1.67  2008/03/27 17:00:05  fabiankeil
+ *    Turn the favicon blobs into locals.
+ *
+ *    Revision 1.66  2008/02/23 16:57:12  fabiankeil
+ *    Rename url_actions() to get_url_actions() and let it
+ *    use the standard parameter ordering.
+ *
+ *    Revision 1.65  2008/02/23 16:33:43  fabiankeil
+ *    Let forward_url() use the standard parameter ordering
+ *    and mark its second parameter immutable.
+ *
+ *    Revision 1.64  2008/02/03 13:56:07  fabiankeil
+ *    Add SOCKS5 support for show-url-info CGI page.
+ *
+ *    Revision 1.63  2008/02/01 06:04:31  fabiankeil
+ *    If edit buttons on the show-url-info CGI page are hidden, explain why.
+ *
+ *    Revision 1.62  2008/02/01 05:52:40  fabiankeil
+ *    Hide edit buttons on the show-url-info CGI page if enable-edit-action
+ *    is disabled. Patch by Lee with additional white space adjustments.
+ *
+ *    Revision 1.61  2008/01/26 11:13:25  fabiankeil
+ *    If enable-edit-actions is disabled, hide the edit buttons and explain why.
+ *
  *    Revision 1.60  2007/10/27 13:12:13  fabiankeil
  *    Finish 1.49 and check write access before
  *    showing edit buttons on show-url-info page.
@@ -359,45 +456,12 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.60 2007/10/27 13:12:13 fabian
 
 const char cgisimple_h_rcs[] = CGISIMPLE_H_VERSION;
 
-
 static char *show_rcs(void);
 static jb_err show_defines(struct map *exports);
-
-/*
- * 16x16 ico blobs for favicon delivery functions.
- */
-const char default_favicon_data[] =
-   "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
-   "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
-   "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
-   "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
-   "\000\000\377\377\377\000\377\000\052\000\017\360\000\000\077"
-   "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
-   "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
-   "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
-   "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
-   "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-   "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
-   "\017\000\000";
-const char error_favicon_data[] =
-   "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
-   "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
-   "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
-   "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
-   "\000\000\377\377\377\000\000\000\377\000\017\360\000\000\077"
-   "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
-   "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
-   "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
-   "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
-   "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-   "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
-   "\017\000\000";
-const size_t default_favicon_length  = sizeof(default_favicon_data) - 1;
-const size_t error_favicon_length  = sizeof(error_favicon_data) - 1;
+static jb_err cgi_show_file(struct client_state *csp,
+                            struct http_response *rsp,
+                            const struct map *parameters);
+static jb_err load_file(const char *filename, char **buffer, size_t *length);
 
 /*********************************************************************
  *
@@ -781,8 +845,25 @@ jb_err cgi_send_default_favicon(struct client_state *csp,
                                 struct http_response *rsp,
                                 const struct map *parameters)
 {
-   rsp->body = bindup(default_favicon_data, default_favicon_length);
-   rsp->content_length = default_favicon_length;
+   static const char default_favicon_data[] =
+      "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
+      "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
+      "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
+      "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
+      "\000\000\377\377\377\000\377\000\052\000\017\360\000\000\077"
+      "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
+      "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
+      "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
+      "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
+      "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
+      "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+      "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+      "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
+      "\017\000\000";
+   static const size_t favicon_length = sizeof(default_favicon_data) - 1;
+
+   rsp->body = bindup(default_favicon_data, favicon_length);
+   rsp->content_length = favicon_length;
 
    if (rsp->body == NULL)
    {
@@ -822,8 +903,25 @@ jb_err cgi_send_error_favicon(struct client_state *csp,
                               struct http_response *rsp,
                               const struct map *parameters)
 {
-   rsp->body = bindup(error_favicon_data, error_favicon_length);
-   rsp->content_length = error_favicon_length;
+   static const char error_favicon_data[] =
+      "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
+      "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
+      "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
+      "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
+      "\000\000\377\377\377\000\000\000\377\000\017\360\000\000\077"
+      "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
+      "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
+      "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
+      "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
+      "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
+      "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+      "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+      "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
+      "\017\000\000";
+   static const size_t favicon_length = sizeof(error_favicon_data) - 1;
+
+   rsp->body = bindup(error_favicon_data, favicon_length);
+   rsp->content_length = favicon_length;
 
    if (rsp->body == NULL)
    {
@@ -891,6 +989,49 @@ jb_err cgi_send_stylesheet(struct client_state *csp,
    return JB_ERR_OK;
 
 }
+
+
+/*********************************************************************
+ *
+ * Function    :  cgi_send_url_info_osd
+ *
+ * Description :  CGI function that sends the OpenSearch Description
+ *                template for the show-url-info page. It allows to
+ *                access the page through "search engine plugins".
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *          3  :  parameters = map of cgi parameters
+ *
+ * CGI Parameters : None
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+jb_err cgi_send_url_info_osd(struct client_state *csp,
+                               struct http_response *rsp,
+                               const struct map *parameters)
+{
+   jb_err err = JB_ERR_MEMORY;
+   struct map *exports = default_exports(csp, NULL);
+
+   if (NULL != exports)
+   {
+      err = template_fill_for_cgi(csp, "url-info-osd.xml", exports, rsp);
+      if (JB_ERR_OK == err)
+      {
+         err = enlist(rsp->headers,
+            "Content-Type: application/opensearchdescription+xml");
+      }
+   }
+
+   return err;
+
+}
+
+
 /*********************************************************************
  *
  * Function    :  cgi_send_user_manual
@@ -916,7 +1057,6 @@ jb_err cgi_send_user_manual(struct client_state *csp,
 {
    const char * filename;
    char *full_path;
-   FILE *fp;
    jb_err err = JB_ERR_OK;
    size_t length;
 
@@ -947,40 +1087,18 @@ jb_err cgi_send_user_manual(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   /* Open user-manual file */
-   if (NULL == (fp = fopen(full_path, "rb")))
+   err = load_file(full_path, &rsp->body, &rsp->content_length);
+   if (JB_ERR_OK != err)
    {
-      log_error(LOG_LEVEL_ERROR, "Cannot open user-manual file %s: %E", full_path);
-      err = cgi_error_no_template(csp, rsp, full_path);
-      free(full_path);
+      assert((JB_ERR_FILE == err) || (JB_ERR_MEMORY == err));
+      if (JB_ERR_FILE == err)
+      {
+         err = cgi_error_no_template(csp, rsp, full_path);
+      }
+      freez(full_path);
       return err;
    }
-
-   /* Get file length */
-   fseek(fp, 0, SEEK_END);
-   length = (size_t)ftell(fp);
-   fseek(fp, 0, SEEK_SET);
-
-   /* Allocate memory and load the file directly into the body */
-   rsp->body = (char *)zalloc(length+1);
-   if (!rsp->body)
-   {
-      fclose(fp);
-      free(full_path);
-      return JB_ERR_MEMORY;
-   }
-   if (!fread(rsp->body, length, 1, fp))
-   {
-      /*
-       * May happen if the file size changes between fseek() and fread().
-       * If it does, we just log it and serve what we got.
-       */
-      log_error(LOG_LEVEL_ERROR, "Couldn't completely read user-manual file %s.", full_path);
-   }
-   fclose(fp);
-   free(full_path);
-
-   rsp->content_length = length;
+   freez(full_path);
 
    /* Guess correct Content-Type based on the filename's ending */
    if (filename)
@@ -1050,7 +1168,7 @@ jb_err cgi_show_version(struct client_state *csp,
    return template_fill_for_cgi(csp, "show-version", exports, rsp);
 }
 
- 
+
 /*********************************************************************
  *
  * Function    :  cgi_show_status
@@ -1066,7 +1184,7 @@ jb_err cgi_show_version(struct client_state *csp,
  * CGI Parameters :
  *        file :  Which file to show.  Only first letter is checked,
  *                valid values are:
- *                - "p"ermissions (actions) file
+ *                - "a"ction file
  *                - "r"egex
  *                - "t"rust
  *                Default is to show menu and other information.
@@ -1083,10 +1201,7 @@ jb_err cgi_show_status(struct client_state *csp,
    unsigned i;
    int j;
 
-   FILE * fp;
    char buf[BUFFER_SIZE];
-   const char * filename = NULL;
-   char * file_description = NULL;
 #ifdef FEATURE_STATISTICS
    float perc_rej;   /* Percentage of http requests rejected */
    int local_urls_read;
@@ -1100,74 +1215,14 @@ jb_err cgi_show_status(struct client_state *csp,
    assert(rsp);
    assert(parameters);
 
+   if ('\0' != *(lookup(parameters, "file")))
+   {
+      return cgi_show_file(csp, rsp, parameters);
+   }
+
    if (NULL == (exports = default_exports(csp, "show-status")))
    {
       return JB_ERR_MEMORY;
-   }
-
-   switch (*(lookup(parameters, "file")))
-   {
-   case 'a':
-      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->actions_list[i])
-      {
-         filename = csp->actions_list[i]->filename;
-         file_description = "Actions File";
-      }
-      break;
-
-   case 'f':
-      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->rlist[i])
-      {
-         filename = csp->rlist[i]->filename;
-         file_description = "Filter File";
-      }
-      break;
-
-#ifdef FEATURE_TRUST
-   case 't':
-      if (csp->tlist)
-      {
-         filename = csp->tlist->filename;
-         file_description = "Trust File";
-      }
-      break;
-#endif /* def FEATURE_TRUST */
-   }
-
-   if (NULL != filename)
-   {
-      if ( map(exports, "file-description", 1, file_description, 1)
-        || map(exports, "filepath", 1, html_encode(filename), 0) )
-      {
-         free_map(exports);
-         return JB_ERR_MEMORY;
-      }
-
-      if ((fp = fopen(filename, "r")) == NULL)
-      {
-         if (map(exports, "content", 1, "<h1>ERROR OPENING FILE!</h1>", 1))
-         {
-            free_map(exports);
-            return JB_ERR_MEMORY;
-         }
-      }
-      else
-      {
-         s = strdup("");
-         while ((s != NULL) && fgets(buf, sizeof(buf), fp))
-         {
-            string_join  (&s, html_encode(buf));
-         }
-         fclose(fp);
-
-         if (map(exports, "contents", 1, s, 0))
-         {
-            free_map(exports);
-            return JB_ERR_MEMORY;
-         }
-      }
-
-      return template_fill_for_cgi(csp, "show-status-file", exports, rsp);
    }
 
    s = strdup("");
@@ -1244,7 +1299,9 @@ jb_err cgi_show_status(struct client_state *csp,
          if (!err) err = string_append(&s, buf);
 
 #ifdef FEATURE_CGI_EDIT_ACTIONS
-         if (NULL == strstr(csp->actions_list[i]->filename, "standard.action") && NULL != csp->config->actions_file_short[i])
+         if ((csp->config->feature_flags & RUNTIME_FEATURE_CGI_EDIT_ACTIONS)
+            && (NULL == strstr(csp->actions_list[i]->filename, "standard.action"))
+            && (NULL != csp->config->actions_file_short[i]))
          {
 #ifdef HAVE_ACCESS
             if (access(csp->config->actions_file[i], W_OK) == 0)
@@ -1314,6 +1371,13 @@ jb_err cgi_show_status(struct client_state *csp,
 #else
    if (!err) err = map_block_killer(exports, "trust-support");
 #endif /* ndef FEATURE_TRUST */
+
+#ifdef FEATURE_CGI_EDIT_ACTIONS
+   if (!err && (csp->config->feature_flags & RUNTIME_FEATURE_CGI_EDIT_ACTIONS))
+   {
+      err = map_block_killer(exports, "cgi-editor-is-disabled");
+   }
+#endif /* ndef CGI_EDIT_ACTIONS */
 
    if (err)
    {
@@ -1408,22 +1472,16 @@ jb_err cgi_show_url_info(struct client_state *csp,
          url_param[0] = '\0';
       }
    }
-   else if (url_param[0] != '\0')
+   else if ((url_param[0] != '\0') && (NULL == strstr(url_param, "://")))
    {
-      /*
-       * Unknown prefix - assume http://
-       */
-      const size_t url_param_prefixed_size = 7 + 1 + strlen(url_param);
-      char * url_param_prefixed = malloc(url_param_prefixed_size);
-      if (NULL == url_param_prefixed)
+      /* No prefix - assume http:// */
+      char *url_param_prefixed = strdup("http://");
+
+      if (JB_ERR_OK != string_join(&url_param_prefixed, url_param))
       {
-         free(url_param);
          free_map(exports);
          return JB_ERR_MEMORY;
       }
-      strlcpy(url_param_prefixed, "http://", url_param_prefixed_size);
-      strlcat(url_param_prefixed, url_param, url_param_prefixed_size);
-      free(url_param);
       url_param = url_param_prefixed;
    }
 
@@ -1482,7 +1540,9 @@ jb_err cgi_show_url_info(struct client_state *csp,
          return JB_ERR_MEMORY;
       }
 
-      err = parse_http_url(url_param, url_to_query, csp);
+      memset(url_to_query, '\0', sizeof(url_to_query));
+      err = parse_http_url(url_param, url_to_query, REQUIRE_PROTOCOL);
+      assert((err != JB_ERR_OK) || (url_to_query->ssl == !strncmpic(url_param, "https://", 8)));
 
       free(url_param);
 
@@ -1547,20 +1607,24 @@ jb_err cgi_show_url_info(struct client_state *csp,
                string_append(&matches, buf);
                string_append(&matches, "View</a>");
 #ifdef FEATURE_CGI_EDIT_ACTIONS
-#ifdef HAVE_ACCESS
-               if (access(csp->config->actions_file[i], W_OK) == 0)
+               if (csp->config->feature_flags & RUNTIME_FEATURE_CGI_EDIT_ACTIONS)
                {
-#endif /* def HAVE_ACCESS */
-                  snprintf(buf, sizeof(buf), " <a class=\"cmd\" href=\"/edit-actions-list?f=%d\">", i);
-                  string_append(&matches, buf);
-                  string_append(&matches, "Edit</a>");
 #ifdef HAVE_ACCESS
-               }
-               else
-               {
-                  string_append(&matches, " <strong>No write access.</strong>");
-               }
+                  if (access(csp->config->actions_file[i], W_OK) == 0)
+                  {
 #endif /* def HAVE_ACCESS */
+                     snprintf(buf, sizeof(buf),
+                        " <a class=\"cmd\" href=\"/edit-actions-list?f=%d\">", i);
+                     string_append(&matches, buf);
+                     string_append(&matches, "Edit</a>");
+#ifdef HAVE_ACCESS
+                  }
+                  else
+                  {
+                     string_append(&matches, " <strong>No write access.</strong>");
+                  }
+#endif /* def HAVE_ACCESS */
+               }
 #endif /* FEATURE_CGI_EDIT_ACTIONS */
 
                string_append(&matches, "</th></tr>\n");
@@ -1610,7 +1674,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
        * but luckily it's no longer required later on anyway.
        */
       free_current_action(csp->action);
-      url_actions(url_to_query, csp);
+      get_url_actions(csp, url_to_query);
 
       /*
        * Fill in forwarding settings.
@@ -1626,7 +1690,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
        * display the proxy port and an eventual second forwarder.
        */
       {
-         const struct forward_spec * fwd = forward_url(url_to_query, csp);
+         const struct forward_spec *fwd = forward_url(csp, url_to_query);
 
          if ((fwd->gateway_host == NULL) && (fwd->forward_host == NULL))
          {
@@ -1641,8 +1705,24 @@ jb_err cgi_show_url_info(struct client_state *csp,
 
             if (fwd->gateway_host != NULL)
             {
-               if (!err) err = map(exports, "socks-type", 1, (fwd->type == SOCKS_4) ?
-                                  "socks4" : "socks4a", 1);
+               char *socks_type = NULL;
+
+               switch (fwd->type)
+               {
+                  case SOCKS_4:
+                     socks_type = "socks4";
+                     break;
+                  case SOCKS_4A:
+                     socks_type = "socks4a";
+                     break;
+                  case SOCKS_5:
+                     socks_type = "socks5";
+                     break;
+                  default:
+                     log_error(LOG_LEVEL_FATAL, "Unknown socks type: %d.", fwd->type);
+               }
+
+               if (!err) err = map(exports, "socks-type", 1, socks_type, 1);
                if (!err) err = map(exports, "gateway-host", 1, fwd->gateway_host, 1);
                snprintf(port, sizeof(port), "%d", fwd->gateway_port);
                if (!err) err = map(exports, "gateway-port", 1, port, 1);
@@ -1674,7 +1754,27 @@ jb_err cgi_show_url_info(struct client_state *csp,
          return JB_ERR_MEMORY;
       }
 
-      if (map(exports, "matches", 1, matches , 0))
+#ifdef FEATURE_CGI_EDIT_ACTIONS
+      if ((csp->config->feature_flags & RUNTIME_FEATURE_CGI_EDIT_ACTIONS))
+      {
+         err = map_block_killer(exports, "cgi-editor-is-disabled");
+      }
+#endif /* FEATURE_CGI_EDIT_ACTIONS */
+
+      /*
+       * If zlib support is available, if no content filters
+       * are enabled or if the prevent-compression action is enabled,
+       * suppress the "compression could prevent filtering" warning.
+       */
+#ifndef FEATURE_ZLIB
+      if (!content_filters_enabled(action) ||
+         (action->flags & ACTION_NO_COMPRESSION))
+#endif
+      {
+         if (!err) err = map_block_killer(exports, "filters-might-be-ineffective");
+      }
+
+      if (err || map(exports, "matches", 1, matches , 0))
       {
          free_current_action(action);
          free_map(exports);
@@ -1737,7 +1837,7 @@ jb_err cgi_robots_txt(struct client_state *csp,
 
    rsp->is_static = 1;
 
-   get_http_time(7 * 24 * 60 * 60, buf); /* 7 days into future */
+   get_http_time(7 * 24 * 60 * 60, buf, sizeof(buf)); /* 7 days into future */
    if (!err) err = enlist_unique_header(rsp->headers, "Expires", buf);
 
    return (err ? JB_ERR_MEMORY : JB_ERR_OK);
@@ -1811,12 +1911,6 @@ static jb_err show_defines(struct map *exports)
 #else /* ifndef FEATURE_IMAGE_DETECT_MSIE */
    if (!err) err = map_conditional(exports, "FEATURE_IMAGE_DETECT_MSIE", 0);
 #endif /* ndef FEATURE_IMAGE_DETECT_MSIE */
-
-#ifdef FEATURE_KILL_POPUPS
-   if (!err) err = map_conditional(exports, "FEATURE_KILL_POPUPS", 1);
-#else /* ifndef FEATURE_KILL_POPUPS */
-   if (!err) err = map_conditional(exports, "FEATURE_KILL_POPUPS", 0);
-#endif /* ndef FEATURE_KILL_POPUPS */
 
 #ifdef FEATURE_NO_GIFS
    if (!err) err = map_conditional(exports, "FEATURE_NO_GIFS", 1);
@@ -1930,10 +2024,6 @@ static char *show_rcs(void)
    SHOW_RCS(jbsockets_rcs)
    SHOW_RCS(jcc_h_rcs)
    SHOW_RCS(jcc_rcs)
-#ifdef FEATURE_KILL_POPUPS
-   SHOW_RCS(killpopup_h_rcs)
-   SHOW_RCS(killpopup_rcs)
-#endif /* def FEATURE_KILL_POPUPS */
    SHOW_RCS(list_h_rcs)
    SHOW_RCS(list_rcs)
    SHOW_RCS(loadcfg_h_rcs)
@@ -1966,6 +2056,198 @@ static char *show_rcs(void)
 #undef SHOW_RCS
 
    return result;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  cgi_show_file
+ *
+ * Description :  CGI function that shows the content of a
+ *                configuration file.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *          3  :  parameters = map of cgi parameters
+ *
+ * CGI Parameters :
+ *        file :  Which file to show.  Only first letter is checked,
+ *                valid values are:
+ *                - "a"ction file
+ *                - "r"egex
+ *                - "t"rust
+ *                Default is to show menu and other information.
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+static jb_err cgi_show_file(struct client_state *csp,
+                            struct http_response *rsp,
+                            const struct map *parameters)
+{
+   unsigned i;
+   const char * filename = NULL;
+   char * file_description = NULL;
+
+   assert(csp);
+   assert(rsp);
+   assert(parameters);
+
+   switch (*(lookup(parameters, "file")))
+   {
+   case 'a':
+      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->actions_list[i])
+      {
+         filename = csp->actions_list[i]->filename;
+         file_description = "Actions File";
+      }
+      break;
+
+   case 'f':
+      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->rlist[i])
+      {
+         filename = csp->rlist[i]->filename;
+         file_description = "Filter File";
+      }
+      break;
+
+#ifdef FEATURE_TRUST
+   case 't':
+      if (csp->tlist)
+      {
+         filename = csp->tlist->filename;
+         file_description = "Trust File";
+      }
+      break;
+#endif /* def FEATURE_TRUST */
+   }
+
+   if (NULL != filename)
+   {
+      struct map *exports;
+      char *s;
+      jb_err err;
+      size_t length;
+
+      exports = default_exports(csp, "show-status");
+      if (NULL == exports)
+      {
+         return JB_ERR_MEMORY;
+      }
+
+      if ( map(exports, "file-description", 1, file_description, 1)
+        || map(exports, "filepath", 1, html_encode(filename), 0) )
+      {
+         free_map(exports);
+         return JB_ERR_MEMORY;
+      }
+
+      err = load_file(filename, &s, &length);
+      if (JB_ERR_OK != err)
+      {
+         if (map(exports, "contents", 1, "<h1>ERROR OPENING FILE!</h1>", 1))
+         {
+            free_map(exports);
+            return JB_ERR_MEMORY;
+         }
+      }
+      else
+      {
+         s = html_encode_and_free_original(s);
+         if (NULL == s)
+         {
+            return JB_ERR_MEMORY;
+         }
+
+         if (map(exports, "contents", 1, s, 0))
+         {
+            free_map(exports);
+            return JB_ERR_MEMORY;
+         }
+      }
+
+      return template_fill_for_cgi(csp, "show-status-file", exports, rsp);
+   }
+
+   return JB_ERR_CGI_PARAMS;
+}
+
+ 
+/*********************************************************************
+ *
+ * Function    :  load_file
+ *
+ * Description :  Loads a file into a buffer.
+ *
+ * Parameters  :
+ *          1  :  filename = Name of the file to be loaded.
+ *          2  :  buffer   = Used to return the file's content.
+ *          3  :  length   = Used to return the size of the file.
+ *
+ * Returns     :  JB_ERR_OK in case of success,
+ *                JB_ERR_FILE in case of ordinary file loading errors
+ *                            (fseek() and ftell() errors are fatal)
+ *                JB_ERR_MEMORY in case of out-of-memory.
+ *
+ *********************************************************************/
+static jb_err load_file(const char *filename, char **buffer, size_t *length)
+{
+   FILE *fp;
+   int ret;
+   jb_err err = JB_ERR_OK;
+
+   fp = fopen(filename, "rb");
+   if (NULL == fp)
+   {
+      return JB_ERR_FILE;
+   }
+
+   /* Get file length */
+   if (fseek(fp, 0, SEEK_END))
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Unexpected error while fseek()ing to the end of %s: %E",
+         filename);
+   }
+   ret = ftell(fp);
+   if (-1 == ret)
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Unexpected ftell() error while loading %s: %E",
+         filename);
+   }
+   *length = (size_t)ret;
+
+   /* Go back to the beginning. */
+   if (fseek(fp, 0, SEEK_SET))
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Unexpected error while fseek()ing to the beginning of %s: %E",
+         filename);
+   }
+
+   *buffer = (char *)zalloc(*length + 1);
+   if (NULL == *buffer)
+   {
+      err = JB_ERR_MEMORY;
+   }
+   else if (!fread(*buffer, *length, 1, fp))
+   {
+      /*
+       * May happen if the file size changes between fseek() and
+       * fread(). If it does, we just log it and serve what we got.
+       */
+      log_error(LOG_LEVEL_ERROR,
+         "Couldn't completely read file %s.", filename);
+      err = JB_ERR_FILE;
+   }
+
+   fclose(fp);
+
+   return err;
 
 }
 

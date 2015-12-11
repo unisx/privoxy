@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: newfeatures.sgml,v 2.8 2008/01/17 01:49:51 hal9 Exp $
+ $Id: newfeatures.sgml,v 2.9 2008/01/22 17:34:54 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://privoxy.org/
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -78,14 +78,6 @@
   </para>
  </listitem> 
 
-<!--
-Commenting out, per Fabian not believing its fully accurate.
- <listitem>
-  <para>
-   HTTP/1.1 compliant (but not all optional 1.1 features are supported).
-  </para>
- </listitem> 
--->
  <listitem>
   <para>
    Support for Perl Compatible Regular Expressions in the configuration files, and 
@@ -144,7 +136,7 @@ Commenting out, per Fabian not believing its fully accurate.
 
  <listitem>
   <para>
-   Many smaller new features added, limitations and bugs removed, and security holes fixed.
+   Many smaller new features added, limitations and bugs removed.
   </para>
 </listitem> 
 

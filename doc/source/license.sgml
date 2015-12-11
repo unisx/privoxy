@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: license.sgml,v 2.5 2006/09/22 01:27:55 hal9 Exp $
+ $Id: license.sgml,v 2.6 2008/05/23 15:09:48 fabiankeil Exp $
 
-  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
   See LICENSE.
  
  ======================================================================
@@ -28,41 +28,20 @@
 <para>
  <application>Privoxy</application> is free software; you can
  redistribute it and/or modify it under the terms of the 
- <citetitle>GNU General Public
-<!--
- <informalfigure pgwide="1" float="1">
-    <mediaobject>
-       <imageobject>
-          <imagedata scale="300" width="300" scalefit="1" fileref="../gnu.jpg" format="jpg">
-       </imageobject>
-       <textobject>
-          <phrase>GNU's Pet GNU</phrase>
-       </textobject>
-    </mediaobject>
- </informalfigure>
- or better:
- <inlinegraphic depth="1" scale="300" align="left" fileref="../gnu.jpg"></inlinegraphic> 
--->
- License</citetitle>, version 2, as published by the Free Software Foundation.
+ <citetitle>GNU General Public License</citetitle>, version 2,
+ as published by the Free Software Foundation.
 </para>
 
 <para>
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- FITNESS FOR A PARTICULAR PURPOSE.  See the 
- <citetitle>GNU General Public License</citetitle> for
-<!--
-<figure pgwide="0"><title>The Pythagorean Theorum Illustrated</title>
-</figure>
---> 
- more details, which is available from the Free Software Foundation, Inc, 
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
+ FITNESS FOR A PARTICULAR PURPOSE.  See the <ulink
+ url="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">
+ <citetitle>GNU General Public License</citetitle></ulink> for details.
 </para>
 
 <para>
- You should have received a copy of the <ulink
- url="http://www.gnu.org/copyleft/gpl.html">
- <citetitle>GNU General Public License</citetitle></ulink>
+ You should have received a copy of the <citetitle>GNU GPL</citetitle>
  along with this program; if not, write to the <address> Free Software
  Foundation, Inc. <street>51 Franklin Street, Fifth Floor</street>
  <city>Boston</city>, <state>MA</state> <postcode>02110-1301</postcode>

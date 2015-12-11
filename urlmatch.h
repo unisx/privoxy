@@ -1,6 +1,6 @@
 #ifndef URLMATCH_H_INCLUDED
 #define URLMATCH_H_INCLUDED
-#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.8 2007/09/02 15:31:20 fabiankeil Exp $"
+#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.12 2008/05/04 16:18:32 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.h,v $
@@ -35,6 +35,22 @@
  *
  * Revisions   :
  *    $Log: urlmatch.h,v $
+ *    Revision 1.12  2008/05/04 16:18:32  fabiankeil
+ *    Provide parse_http_url() with a third parameter to specify
+ *    whether or not URLs without protocol are acceptable.
+ *
+ *    Revision 1.11  2008/05/04 13:30:55  fabiankeil
+ *    Streamline parse_http_url()'s prototype.
+ *
+ *    Revision 1.10  2008/04/14 18:11:21  fabiankeil
+ *    The compiler might not notice it, but the buffer passed to
+ *    create_url_spec() is modified later on and thus shouldn't
+ *    be declared immutable.
+ *
+ *    Revision 1.9  2008/04/08 16:07:39  fabiankeil
+ *    Make it harder to mistake url_match()'s
+ *    second parameter for an url_spec.
+ *
  *    Revision 1.8  2007/09/02 15:31:20  fabiankeil
  *    Move match_portlist() from filter.c to urlmatch.c.
  *    It's used for url matching, not for filtering.
@@ -88,14 +104,15 @@ extern jb_err init_domain_components(struct http_request *http);
 extern jb_err parse_http_request(const char *req,
                                  struct http_request *http,
                                  const struct client_state *csp);
-extern jb_err parse_http_url(const char * url,
+extern jb_err parse_http_url(const char *url,
                              struct http_request *http,
-                             const struct client_state *csp);
+                             int require_protocol);
+#define REQUIRE_PROTOCOL 1
 
 extern int url_match(const struct url_spec *pattern,
-                     const struct http_request *url);
+                     const struct http_request *http);
 
-extern jb_err create_url_spec(struct url_spec * url, const char * buf);
+extern jb_err create_url_spec(struct url_spec *url, char *buf);
 extern void free_url_spec(struct url_spec *url);
 extern int match_portlist(const char *portlist, int port);
 

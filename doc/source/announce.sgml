@@ -5,10 +5,10 @@
 <!entity contacting SYSTEM "../contacting.sgml">
 <!entity history SYSTEM "../history.sgml">
 <!entity newfeatures SYSTEM "../newfeatures.sgml">
-<!entity p-version "3.0.8">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.9">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-supp-userman "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
@@ -19,9 +19,9 @@
 
  Purpose     :  Announcement text
                 
- $Id: announce.sgml,v 2.7 2008/01/19 15:03:05 hal9 Exp $
+ $Id: announce.sgml,v 2.8 2008/06/14 13:09:39 fabiankeil Exp $
 
- Copyright (C) 2001-2006 Privoxy Developers http://www.privoxy.org
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -60,9 +60,10 @@
 </para>
 
 <para>
- This is a significant release with many new features, including a number of
- new actions, and as well as many enhancements and numerous bugs done away
- with. See 
+ This is a beta release with minor improvements and bug fixes.
+ The most prominent new feature is SOCKS5 support. As an example for
+ refinements, block messages can now include a message with the intention
+ behind the block. See: 
  <ulink url="http://www.privoxy.org/user-manual/whatsnew.html">http://www.privoxy.org/user-manual/whatsnew.html</ulink>
  for details.
 </para>
@@ -98,7 +99,7 @@
 
 <para> 
  <literallayout>Download location: 
-   <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">http://sourceforge.net/project/showfiles.php?group_id=11118</ulink>
+   <ulink url="https://sourceforge.net/project/showfiles.php?group_id=11118">https://sourceforge.net/project/showfiles.php?group_id=11118</ulink>
  </literallayout>
 </para>
 

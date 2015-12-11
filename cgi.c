@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.100 2007/10/17 18:40:53 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.108 2008/05/26 17:30:53 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -11,7 +11,7 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.100 2007/10/17 18:40:53 fabiankeil Exp $"
  *                Functions declared include:
  * 
  *
- * Copyright   :  Written by and Copyright (C) 2001-2004, 2006-2007
+ * Copyright   :  Written by and Copyright (C) 2001-2004, 2006-2008
  *                the SourceForge Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -38,6 +38,36 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.100 2007/10/17 18:40:53 fabiankeil Exp $"
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.108  2008/05/26 17:30:53  fabiankeil
+ *    Provide an OpenSearch Description to access the
+ *    show-url-info page through "search engine plugins".
+ *
+ *    Revision 1.107  2008/05/26 16:23:19  fabiankeil
+ *    - Fix spelling in template-not-found message.
+ *    - Declare referrer_is_safe()'s alternative_prefix[] static.
+ *
+ *    Revision 1.106  2008/05/21 15:24:38  fabiankeil
+ *    Mark csp as immutable for a bunch of functions.
+ *
+ *    Revision 1.105  2008/04/17 14:40:47  fabiankeil
+ *    Provide get_http_time() with the buffer size so it doesn't
+ *    have to blindly assume that the buffer is big enough.
+ *
+ *    Revision 1.104  2008/03/26 18:07:06  fabiankeil
+ *    Add hostname directive. Closes PR#1918189.
+ *
+ *    Revision 1.103  2008/03/21 11:13:57  fabiankeil
+ *    Only gather host information if it's actually needed.
+ *    Also move the code out of accept_connection() so it's less likely
+ *    to delay other incoming connections if the host is misconfigured.
+ *
+ *    Revision 1.102  2008/02/23 16:33:43  fabiankeil
+ *    Let forward_url() use the standard parameter ordering
+ *    and mark its second parameter immutable.
+ *
+ *    Revision 1.101  2008/02/03 15:45:06  fabiankeil
+ *    Add SOCKS5 support for "Forwarding failure" CGI page.
+ *
  *    Revision 1.100  2007/10/17 18:40:53  fabiankeil
  *    - Send CGI pages as HTTP/1.1 unless the client asked for HTTP/1.0.
  *    - White space fix.
@@ -605,6 +635,7 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.100 2007/10/17 18:40:53 fabiankeil Exp $"
 #include "filters.h"
 #include "miscutil.h"
 #include "cgisimple.h"
+#include "jbsockets.h"
 #ifdef FEATURE_CGI_EDIT_ACTIONS
 #include "cgiedit.h"
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
@@ -745,6 +776,9 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
    { "t",
          cgi_transparent_image, 
          NULL, TRUE /* Send a transparent image (short name) */ },
+   { "url-info-osd.xml",
+         cgi_send_url_info_osd, 
+         NULL, TRUE /* Send templates/url-info-osd.xml */ },
    { "user-manual",
           cgi_send_user_manual,
           NULL, TRUE /* Send user-manual */ },
@@ -943,7 +977,7 @@ static char *grep_cgi_referrer(const struct client_state *csp)
 static int referrer_is_safe(const struct client_state *csp)
 {
    char *referrer;
-   const char alternative_prefix[] = "http://" CGI_SITE_1_HOST "/";
+   static const char alternative_prefix[] = "http://" CGI_SITE_1_HOST "/";
 
    referrer = grep_cgi_referrer(csp);
 
@@ -1432,7 +1466,8 @@ struct http_response *error_response(struct client_state *csp,
    }
    else if (!strcmp(templatename, "forwarding-failed"))
    {
-      const struct forward_spec * fwd = forward_url(csp->http, csp);
+      const struct forward_spec *fwd = forward_url(csp, csp->http);
+      char *socks_type = NULL;
       if (fwd == NULL)
       {
          log_error(LOG_LEVEL_FATAL, "gateway spec is NULL. This shouldn't happen!");
@@ -1458,8 +1493,27 @@ struct http_response *error_response(struct client_state *csp,
          csp->error_message = strdup("Failure reason missing. Check the log file for details.");
       }
       if (!err) err = map(exports, "gateway", 1, fwd->gateway_host, 1);
-      if (!err) err = map(exports, "forwarding-type", 1, (fwd->type == SOCKS_4) ?
-                         "socks4-" : "socks4a-", 1);
+
+      /*
+       * XXX: this is almost the same code as in cgi_show_url_info()
+       * and thus should be factored out and shared.
+       */
+      switch (fwd->type)
+      {
+         case SOCKS_4:
+            socks_type = "socks4-";
+            break;
+         case SOCKS_4A:
+            socks_type = "socks4a-";
+            break;
+         case SOCKS_5:
+            socks_type = "socks5-";
+            break;
+         default:
+            log_error(LOG_LEVEL_FATAL, "Unknown socks type: %d.", fwd->type);
+      }
+
+      if (!err) err = map(exports, "forwarding-type", 1, socks_type, 1);
       if (!err) err = map(exports, "error-message", 1, html_encode(csp->error_message), 0);
 
       if (!err) rsp->status = strdup("503 Forwarding failure");
@@ -1515,7 +1569,7 @@ struct http_response *error_response(struct client_state *csp,
  *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
-jb_err cgi_error_disabled(struct client_state *csp,
+jb_err cgi_error_disabled(const struct client_state *csp,
                           struct http_response *rsp)
 {
    struct map *exports;
@@ -1618,7 +1672,7 @@ struct http_response *cgi_error_memory(void)
  *                JB_ERR_MEMORY on out-of-memory error.  
  *
  *********************************************************************/
-jb_err cgi_error_no_template(struct client_state *csp,
+jb_err cgi_error_no_template(const struct client_state *csp,
                              struct http_response *rsp,
                              const char *template_name)
 {
@@ -1635,7 +1689,7 @@ jb_err cgi_error_no_template(struct client_state *csp,
       "<p>Privoxy encountered an error while processing your request:</p>\r\n"
       "<p><b>Could not load template file <code>";
    static const char body_suffix[] =
-      "</code> or one of it's included components.</b></p>\r\n"
+      "</code> or one of its included components.</b></p>\r\n"
       "<p>Please contact your proxy administrator.</p>\r\n"
       "<p>If you are the proxy administrator, please put the required file(s)"
       "in the <code><i>(confdir)</i>/templates</code> directory.  The "
@@ -1705,7 +1759,7 @@ jb_err cgi_error_no_template(struct client_state *csp,
  *                JB_ERR_MEMORY on out-of-memory error.  
  *
  *********************************************************************/
-jb_err cgi_error_unknown(struct client_state *csp,
+jb_err cgi_error_unknown(const struct client_state *csp,
                          struct http_response *rsp,
                          jb_err error_to_report)
 {
@@ -1784,7 +1838,7 @@ jb_err cgi_error_unknown(struct client_state *csp,
  *                JB_ERR_MEMORY on out-of-memory error.  
  *
  *********************************************************************/
-jb_err cgi_error_bad_param(struct client_state *csp,
+jb_err cgi_error_bad_param(const struct client_state *csp,
                            struct http_response *rsp)
 {
    struct map *exports;
@@ -1896,19 +1950,18 @@ char *add_help_link(const char *item,
  *                HTTP header - e.g.:
  *                "Sun, 06 Nov 1994 08:49:37 GMT"
  *
- *                XXX: Should probably get a third parameter for
- *                the buffer size.
- *
  * Parameters  :  
  *          1  :  time_offset = Time returned will be current time
  *                              plus this number of seconds.
- *          2  :  buf = Destination for result.  Must be long enough
- *                      to hold 29 characters plus a trailing zero.
+ *          2  :  buf = Destination for result.
+ *          3  :  buffer_size = Size of the buffer above. Must be big
+ *                              enough to hold 29 characters plus a
+ *                              trailing zero.
  *
  * Returns     :  N/A
  *
  *********************************************************************/
-void get_http_time(int time_offset, char *buf)
+void get_http_time(int time_offset, char *buf, size_t buffer_size)
 {
    static const char day_names[7][4] =
       { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
@@ -1929,6 +1982,7 @@ void get_http_time(int time_offset, char *buf)
 #endif
 
    assert(buf);
+   assert(buffer_size > 29);
 
    time(&current_time); /* get current time */
 
@@ -1948,7 +2002,7 @@ void get_http_time(int time_offset, char *buf)
    }
 
    /* Format: "Sun, 06 Nov 1994 08:49:37 GMT" */
-   snprintf(buf, 30,
+   snprintf(buf, buffer_size,
       "%s, %02d %s %4d %02d:%02d:%02d GMT",
       day_names[t->tm_wday],
       t->tm_mday,
@@ -2060,7 +2114,7 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
 
       if (!err)
       {
-         get_http_time(0, buf);
+         get_http_time(0, buf, sizeof(buf));
          err = enlist_unique_header(rsp->headers, "Date", buf);
       }
 
@@ -2069,13 +2123,13 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
 
       if (!err)
       {
-         get_http_time(10 * 60, buf); /* 10 * 60sec = 10 minutes */
+         get_http_time(10 * 60, buf, sizeof(buf)); /* 10 * 60sec = 10 minutes */
          err = enlist_unique_header(rsp->headers, "Expires", buf);
       }
    }
    else if (!strncmpic(rsp->status, "302", 3))
    {
-      get_http_time(0, buf);
+      get_http_time(0, buf, sizeof(buf));
       if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
    }
    else
@@ -2101,7 +2155,7 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
        */
       if (!err) err = enlist_unique_header(rsp->headers, "Cache-Control", "no-cache");
 
-      get_http_time(0, buf);
+      get_http_time(0, buf, sizeof(buf));
       if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
       if (!strncmpic(rsp->status, "403", 3)
        || !strncmpic(rsp->status, "404", 3)
@@ -2209,7 +2263,7 @@ void free_http_response(struct http_response *rsp)
  *                JB_ERR_FILE if the template file cannot be read
  *
  *********************************************************************/
-jb_err template_load(struct client_state *csp, char **template_ptr, 
+jb_err template_load(const struct client_state *csp, char **template_ptr, 
                      const char *templatename, int recursive)
 {
    jb_err err;
@@ -2488,7 +2542,7 @@ jb_err template_fill(char **template_ptr, const struct map *exports)
  *                JB_ERR_MEMORY on out-of-memory error
  *
  *********************************************************************/
-jb_err template_fill_for_cgi(struct client_state *csp,
+jb_err template_fill_for_cgi(const struct client_state *csp,
                              const char *templatename,
                              struct map *exports,
                              struct http_response *rsp)
@@ -2538,6 +2592,8 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    jb_err err;
    struct map * exports;
    int local_help_exists = 0;
+   char *ip_address = NULL;
+   char *hostname = NULL;
 
    assert(csp);
 
@@ -2547,9 +2603,21 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
       return NULL;
    }
 
+   if (csp->config->hostname)
+   {
+      get_host_information(csp->cfd, &ip_address, NULL);
+      hostname = strdup(csp->config->hostname);
+   }
+   else
+   {
+      get_host_information(csp->cfd, &ip_address, &hostname);
+   }
+
    err = map(exports, "version", 1, html_encode(VERSION), 0);
-   if (!err) err = map(exports, "my-ip-address", 1, html_encode(csp->my_ip_addr_str ? csp->my_ip_addr_str : "unknown"), 0);
-   if (!err) err = map(exports, "my-hostname",   1, html_encode(csp->my_hostname ? csp->my_hostname : "unknown"), 0);
+   if (!err) err = map(exports, "my-ip-address", 1, html_encode(ip_address ? ip_address : "unknown"), 0);
+   freez(ip_address);
+   if (!err) err = map(exports, "my-hostname",   1, html_encode(hostname ? hostname : "unknown"), 0);
+   freez(hostname);
    if (!err) err = map(exports, "homepage",      1, html_encode(HOME_PAGE_URL), 0);
    if (!err) err = map(exports, "default-cgi",   1, html_encode(CGI_PREFIX), 0);
    if (!err) err = map(exports, "menu",          1, make_menu(caller, csp->config->feature_flags), 0);

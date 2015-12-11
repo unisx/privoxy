@@ -1,6 +1,6 @@
 #ifndef ACTIONS_H_INCLUDED
 #define ACTIONS_H_INCLUDED
-#define ACTIONS_H_VERSION "$Id: actions.h,v 1.16 2007/04/17 18:21:45 fabiankeil Exp $"
+#define ACTIONS_H_VERSION "$Id: actions.h,v 1.18 2008/03/30 14:52:00 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.h,v $
@@ -35,6 +35,14 @@
  *
  * Revisions   :
  *    $Log: actions.h,v $
+ *    Revision 1.18  2008/03/30 14:52:00  fabiankeil
+ *    Rename load_actions_file() and load_re_filterfile()
+ *    as they load multiple files "now".
+ *
+ *    Revision 1.17  2008/01/28 20:17:40  fabiankeil
+ *    - Mark some parameters as immutable.
+ *    - Hide update_action_bits_for_all_tags() while it's unused.
+ *
  *    Revision 1.16  2007/04/17 18:21:45  fabiankeil
  *    Split update_action_bits() into
  *    update_action_bits_for_all_tags()
@@ -136,23 +144,25 @@ extern void init_action(struct action_spec *dest);
 extern void free_action(struct action_spec *src);
 extern jb_err merge_actions (struct action_spec *dest, 
                              const struct action_spec *src);
+#if 0
 extern int update_action_bits_for_all_tags(struct client_state *csp);
+#endif
 extern int update_action_bits_for_tag(struct client_state *csp, const char *tag);
 extern jb_err copy_action (struct action_spec *dest, 
                            const struct action_spec *src);
-extern char * actions_to_text     (struct action_spec *action);
-extern char * actions_to_html     (struct client_state *csp,
-                                   struct action_spec *action);
+extern char * actions_to_text     (const struct action_spec *action);
+extern char * actions_to_html     (const struct client_state *csp,
+                                   const struct action_spec *action);
 extern void init_current_action     (struct current_action_spec *dest);
 extern void free_current_action     (struct current_action_spec *src);
 extern jb_err merge_current_action  (struct current_action_spec *dest, 
                                      const struct action_spec *src);
-extern char * current_action_to_html(struct client_state *csp,
-                                     struct current_action_spec *action);
+extern char * current_action_to_html(const struct client_state *csp,
+                                     const struct current_action_spec *action);
 
 extern jb_err get_action_token(char **line, char **name, char **value);
 extern void unload_actions_file(void *file_data);
-extern int load_actions_file(struct client_state *csp);
+extern int load_action_files(struct client_state *csp);
 
 #ifdef FEATURE_GRACEFUL_TERMINATION
 void unload_current_actions_file(void);

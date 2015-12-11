@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.8 User Manual"
+TITLE="Privoxy 3.0.9 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.8 User Manual</TH
+>Privoxy 3.0.9 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -84,7 +84,7 @@ NAME="WHATSNEW"
 ><P
 > There are many improvements and new features since <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.6</SPAN
+>Privoxy 3.0.8</SPAN
 >, the last stable release:</P
 ><P
 > <P
@@ -92,195 +92,166 @@ CLASS="APPLICATION"
 ><UL
 ><LI
 ><P
->    Two new actions <A
-HREF="actions-file.html#SERVER-HEADER-TAGGER"
->server-header-tagger</A
->
-          and <A
-HREF="actions-file.html#CLIENT-HEADER-TAGGER"
->client-header-tagger</A
->
-          that can be used to create arbitrary <SPAN
-CLASS="QUOTE"
->"tags"</SPAN
->
-          based on client and server headers.
-          These <SPAN
-CLASS="QUOTE"
->"tags"</SPAN
-> can then subsequently be used
-          to control the other actions used for the current request,
-          greatly increasing <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->'s flexibility and selectivity. See <A
-HREF="actions-file.html#TAG-PATTERN"
->tag patterns</A
-> for more information on tags.
+>    Added SOCKS5 support (with address resolution done by
+    the SOCKS5 server). Patch provided by Eric M. Hopper.
    </P
 ></LI
 ><LI
 ><P
->    Header filtering is done with dedicated header filters now. As a result
-    the actions <SPAN
-CLASS="QUOTE"
->"filter-client-headers"</SPAN
-> and <SPAN
-CLASS="QUOTE"
->"filter-server-headers"</SPAN
->
-    that were introduced with <SPAN
-CLASS="APPLICATION"
->Privoxy 3.0.5</SPAN
-> to apply
-    content filters to the headers have been removed.
-    See the new actions <A
-HREF="actions-file.html#SERVER-HEADER-FILTER"
->server-header-filter</A
->
-          and <A
-HREF="actions-file.html#CLIENT-HEADER-FILTER"
->client-header-filter</A
-> for details.
+>    The "blocked" CGI pages include a block reason that was
+    provided as argument to the last-applying block action.
    </P
 ></LI
 ><LI
 ><P
->     There are four new options for the main <TT
-CLASS="FILENAME"
->config</TT
-> file:
-   </P
-><P
-></P
-><UL
-><LI
-><P
->          <A
-HREF="config.html#ALLOW-CGI-REQUEST-CRUNCHING"
->allow-cgi-request-crunching</A
->
-          which allows requests for Privoxy's internal CGI pages to be
-          blocked, redirected or (un)trusted like ordinary requests.
-        </P
-></LI
-><LI
-><P
->          <A
-HREF="config.html#SPLIT-LARGE-FORMS"
->split-large-forms</A
->
-          that will work around a browser bug that caused IE6 and IE7 to
-          ignore the Submit button on the Privoxy's edit-actions-for-url CGI
-          page.
-          </P
-></LI
-><LI
-><P
->          <A
-HREF="config.html#ACCEPT-INTERCEPTED-REQUESTS"
->accept-intercepted-requests</A
->
-          which allows to combine Privoxy with any packet filter to create an
-          intercepting proxy for HTTP/1.1 requests (and for HTTP/1.0 requests
-          with Host header set). This means clients can be forced to use
-          <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> even if their proxy settings are configured differently.
-         </P
-></LI
-><LI
-><P
->          <A
-HREF="config.html#TEMPLDIR"
->templdir</A
->
-          to designate an alternate location for <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->'s 
-          locally customized CGI templates so that
-          these are not overwritten during upgrades.         
-        </P
-></LI
-></UL
-></LI
-><LI
-><P
->   A new command line option <TT
-CLASS="LITERAL"
->--pre-chroot-nslookup hostname</TT
-> to
-   initialize the resolver library before chroot'ing. On some systems this
-   reduces the number of files that must be copied into the chroot tree.
-   (Patch provided by Stephen Gildea)
+>    If enable-edit-actions is disabled (the default since 3.0.7 beta)
+    the show-status page hides the edit buttons and explains why.
+    Previously the user would get the "this feature has been disabled"
+    message after using the edit button.
    </P
 ></LI
 ><LI
 ><P
->     The <A
-HREF="actions-file.html#FORWARD-OVERRIDE"
->forward-override</A
-> action 
-     allows changing of the forwarding settings through the actions files.
-     Combined with tags, this allows to choose the forwarder based on
-     client headers like the <TT
-CLASS="LITERAL"
->User-Agent</TT
->, or the request origin.
-  </P
-></LI
-><LI
-><P
->     The  <A
-HREF="actions-file.html#REDIRECT"
->redirect</A
-> action can now use regular
-          expression substitutions against the original URL.
+>    Forbidden CONNECT requests are treated like blocks by default.
+    The now-pointless treat-forbidden-connects-like-blocks action
+    has been removed.
    </P
 ></LI
 ><LI
 ><P
->     <SPAN
-CLASS="APPLICATION"
->zlib</SPAN
-> support is now available as a compile
-     time option to filter compressed content. Patch provided by Wil Mahan.
+>    Not enabling limit-connect now allows CONNECT requests to all ports.
+    In previous versions it would only allow CONNECT requests to port 443.
+    Use +limit-connect{443} if you think you need the old default behaviour.
    </P
 ></LI
 ><LI
 ><P
->     Improve various filters, and add new ones.
+>    The CGI editor gets turned off after three edit requests with invalid
+    file modification timestamps. This makes life harder for attackers
+    who can leverage browser bugs to send fake Referers and intend to
+    brute-force edit URLs.
    </P
 ></LI
 ><LI
 ><P
->    Include support for RFC 3253 so that <TT
-CLASS="FILENAME"
->Subversion</TT
-> works
-    with <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->. Patch provided by Petr Kadlec.
+>    Action settings for multiple patterns in the same section are
+    shared in memory. As a result these sections take up less space
+    (and are loaded slightly faster). Problem reported by Franz Schwartau.
    </P
 ></LI
 ><LI
 ><P
->     Logging can be completely turned off by not specifying a logfile directive.
+>    Linear white space in HTTP headers will be normalized to single
+    spaces before parsing the header's content, headers split across
+    multiple lines get merged first.
    </P
 ></LI
 ><LI
 ><P
->     A number of improvements to Privoxy's internal CGI pages, including the
-     use of favicons for error and control pages.
+>    Host information is gathered outside the main thread so it's less
+    likely to delay other incoming connections if the host is misconfigured.
    </P
 ></LI
 ><LI
 ><P
->     Many bugfixes, memory leaks addressed, code improvements, and logging 
-     improvements.
+>    New config option "hostname" to use a hostname other than
+    the one returned by the operating system. Useful to speed-up responses
+    for CGI requests on misconfigured systems. Requested by Max Khon.
+   </P
+></LI
+><LI
+><P
+>    The CGI editor supports the "disable all filters of this type"
+    directives "-client-header-filter", "-server-header-filter",
+    "-client-header-tagger" and "-server-header-tagger".
+   </P
+></LI
+><LI
+><P
+>    Fixed false-positives with the link-by-url filter and URLs that
+    contain the pattern "/jump/".
+   </P
+></LI
+><LI
+><P
+>    The less-download-windows filter no longer messes
+    "Content-Type: application/x-shockwave-flash" headers up.
+   </P
+></LI
+><LI
+><P
+>    In the show-url-info page's "Final results" section active and
+    inactive actions are listed separately. Patch provided by Lee.
+   </P
+></LI
+><LI
+><P
+>    The GNUmakefile supports the DESTDIR variable. Patch for
+    the install target submitted by Radoslaw Zielinski.
+   </P
+></LI
+><LI
+><P
+>    Embedding the content of configuration files in the show-status
+    page is significantly faster now. For a largish action file (1 MB)
+    a speedup of about 2450 times has been measured. This is mostly
+    interesting if you are using large action files or regularly use
+    Privoxy-Regression-Test while running Privoxy through Valgrind,
+    for stock configuration files it doesn't really matter.
+   </P
+></LI
+><LI
+><P
+>    If zlib support is unavailable and there are content
+    filters active but the prevent-compression action is disabled,
+    the show-url-info page includes a warning that compression
+    might prevent filtering.
+   </P
+></LI
+><LI
+><P
+>    The show-url-info page provides an OpenSearch Description that
+    allows to access the page through browser search plugins.
+   </P
+></LI
+><LI
+><P
+>    The obsolete kill-popups action has been removed as the
+    PCRS-based popup filters can do the same and are slightly
+    less unreliable.
+   </P
+></LI
+><LI
+><P
+>    The inspect-jpegs action has been removed.
+   </P
+></LI
+><LI
+><P
+>    The send-wafer and send-vanilla-wafer actions have been removed.
+    They weren't particular useful and their behaviour could be emulated
+    with add-header anyway.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Regression-Test has been significantly improved.
+   </P
+></LI
+><LI
+><P
+>    Most sections in the default.action file contain tests for
+    Privoxy-Regression-Test to verify that they are working as intended.
+   </P
+></LI
+><LI
+><P
+>    Parts of Privoxy have been refactored to increase maintainability.
+   </P
+></LI
+><LI
+><P
+>    Building with zlib (if available) is done by default.
    </P
 ></LI
 ></UL

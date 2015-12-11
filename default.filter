@@ -2,11 +2,11 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.55 2007/12/31 19:53:59 fabiankeil Exp $
+#  $Id: default.filter,v 1.63 2008/06/27 12:53:41 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
-#  Copyright   :  Written by and Copyright (C) 2001 - 2007 the
+#  Copyright   :  Written by and Copyright (C) 2001-2008 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 # We value your feedback. However, to provide you with the best support,
@@ -293,7 +293,7 @@ s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:\
   adclick                             # See www.dn.se \
 | advert                              # see dict.leo.org \
 | atwola\.com/(?:link|redir)          # see www.cnn.com \
-| /jump/                              # redirs for doublecklick.net ads \
+| doubleclick\.net/jump/              # redirs for doublecklick.net ads \
 | counter                             # common \
 | (?<!&type=)tracker                  # (&type=tracker is used in sf's project statistics) \
 | adlog\.pl                           # see sf.net \
@@ -446,7 +446,7 @@ s/(M|m)edien(?![^<]*>)/$1&auml;dchen/Ug
 #                 Pages are "blocked" based on keyword matching.
 #
 #################################################################################
-FILTER: crude-parental Crude parental filtering. Note that this filter doesn't work reliable.
+FILTER: crude-parental Crude parental filtering. Note that this filter doesn't work reliably.
 
 # (Note: Middlesex, Sussex and Essex are counties in the UK, not rude words)
 # (Note #2: Is 'sex' a rude word?!)
@@ -597,8 +597,8 @@ s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
  \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
- \#ks-ypn-ads, .ad, \#ygrp-vital {display: none !important;}\n\
- \#yschpri, \#yschweb, \#pri, \#web {width: 100% !important; max-width: 100% !important;}\n\
+ \#ks-ypn-ads, .ad, \#east, \#ygrp-vital {display: none !important;}\n\
+ \#yschpri, \#yschweb, \#pri, \#web, \#main {width: 100% !important; max-width: 100% !important;}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
 </style>\n$0@
 
@@ -612,7 +612,7 @@ FILTER: msn CSS-based block for MSN text ads. Also removes tracking URLs and a w
 
 s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's msn filter. */\n\
- .msn_ads, \#at, \#ar {display: none !important;}\n\
+ .msn_ads, \#at, \#ar, .mktmsg {display: none !important;}\n\
  \#results, .flank, .results_area_flank, .results_area_stroke,\n\
  \#results_area, .SearchSection, .not, .sc_rslth1\n\
 .content, \#sw_foot, \#bf, \#sw_content, \#sidebar, \#pag\n\
@@ -727,7 +727,7 @@ s@^((?:Referer|Host):\s*(?:https?://)?[^/]*)\.[^\./]*?\.exit@$1@i
 SERVER-HEADER-FILTER: less-download-windows Prevent annoying download windows for content types the browser can handle itself.
 
 s@^Content-Disposition:.*filename=(["']?).*\.(png|gif|jpe?g|diff?|d?patch|c|h|pl|shar)\1.*$@@i
-s@^(Content-Type:)\s*(?:message/(?:news|rfc822)|text/x-.*|application/x-sh)\s*@$1 text/plain@i
+s@^(Content-Type:)\s*(?:message/(?:news|rfc822)|text/x-.*|application/x-sh(?:\s|$))\s*@$1 text/plain@i
 
 #################################################################################
 #
@@ -737,7 +737,7 @@ s@^(Content-Type:)\s*(?:message/(?:news|rfc822)|text/x-.*|application/x-sh)\s*@$
 #################################################################################
 CLIENT-HEADER-TAGGER: image-requests Tags detected image requests as "IMAGE-REQUEST".
 
-s@Accept:\s*image/.*@IMAGE-REQUEST@i
+s@^Accept:\s*image/.*@IMAGE-REQUEST@i
 
 #################################################################################
 #
@@ -747,7 +747,7 @@ s@Accept:\s*image/.*@IMAGE-REQUEST@i
 #################################################################################
 CLIENT-HEADER-TAGGER: css-requests Tags detected CSS requests as "CSS-REQUEST".
 
-s@Accept:\s*text/css.*@CSS-REQUEST@i
+s@^Accept:\s*text/css.*@CSS-REQUEST@i
 
 #################################################################################
 #
@@ -796,12 +796,12 @@ s@^User-Agent:.*@$0@i
 
 #################################################################################
 #
-# content-type: Tags the request with the content type declarded by the server.
+# content-type: Tags the request with the content type declared by the server.
 #
 #################################################################################
-SERVER-HEADER-TAGGER: content-type Tags the request with the content type declarded by the server.
+SERVER-HEADER-TAGGER: content-type Tags the request with the content type declared by the server.
 
-s@^Content-Type:\s*([^;]*).*@$1@i
+s@^Content-Type:\s*([^;]+).*@$1@i
 
 #################################################################################
 #
@@ -830,6 +830,36 @@ s@^X-Privoxy-Control:.*@@i
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.63  2008/06/27 12:53:41  fabiankeil
+#     Make sure the taggers css-requests and image-requests
+#     only match at the beginning of the header.
+#
+#     Revision 1.62  2008/06/21 17:02:03  fabiankeil
+#     Fix typo.
+#
+#     Revision 1.61  2008/05/21 18:44:43  fabiankeil
+#     - Let the content-type tagger ignore headers without value.
+#     - Remove a few unused lines at the end of the file.
+#
+#     Revision 1.60  2008/04/26 10:36:41  fabiankeil
+#     Let the msn filter hide another class.
+#
+#     Revision 1.59  2008/04/23 16:18:18  fabiankeil
+#     s@declarded@declared@
+#
+#     Revision 1.58  2008/02/02 15:27:19  fabiankeil
+#     Yet another yahoo update to get the width limitation removal working again.
+#
+#     Revision 1.57  2008/01/26 15:45:39  fabiankeil
+#     Don't let the less-download-windows filter mess up
+#     "Content-Type: application/x-shockwave-flash" headers.
+#
+#     Revision 1.56  2008/01/25 19:12:40  fabiankeil
+#     - Add yet another new yahoo ad id.
+#     - Don't let the first banners-by-link job punish URLs for merely
+#       containing the pattern "/jump/" when it should really look for
+#       "doubleclick\.net/jump/".
+#
 #     Revision 1.55  2007/12/31 19:53:59  fabiankeil
 #     Let the msn filter remove the width limitation again.
 #
@@ -1212,7 +1242,3 @@ s@^X-Privoxy-Control:.*@@i
 #     Revision 1.6  2001/06/09 14:01:57  swa
 #     header. cosmetics. default: no messing ala microsuck.
 #
-#
-# 
-
-

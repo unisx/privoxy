@@ -1,6 +1,6 @@
 #ifndef FILTERS_H_INCLUDED
 #define FILTERS_H_INCLUDED
-#define FILTERS_H_VERSION "$Id: filters.h,v 1.31 2007/10/19 16:53:28 fabiankeil Exp $"
+#define FILTERS_H_VERSION "$Id: filters.h,v 1.36 2008/05/21 15:35:08 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.h,v $
@@ -39,6 +39,27 @@
  *
  * Revisions   :
  *    $Log: filters.h,v $
+ *    Revision 1.36  2008/05/21 15:35:08  fabiankeil
+ *    - Mark csp as immutable for block_acl().
+ *    - Remove an obsolete complaint about filter_popups().
+ *
+ *    Revision 1.35  2008/05/03 16:40:45  fabiankeil
+ *    Change content_filters_enabled()'s parameter from
+ *    csp->action to action so it can be also used in the
+ *    CGI code. Don't bother checking if there are filters
+ *    loaded, as that's somewhat besides the point.
+ *
+ *    Revision 1.34  2008/03/02 12:25:25  fabiankeil
+ *    Also use shiny new connect_port_is_forbidden() in jcc.c.
+ *
+ *    Revision 1.33  2008/02/23 16:57:12  fabiankeil
+ *    Rename url_actions() to get_url_actions() and let it
+ *    use the standard parameter ordering.
+ *
+ *    Revision 1.32  2008/02/23 16:33:43  fabiankeil
+ *    Let forward_url() use the standard parameter ordering
+ *    and mark its second parameter immutable.
+ *
  *    Revision 1.31  2007/10/19 16:53:28  fabiankeil
  *    Add helper function to check if any content filters are enabled.
  *
@@ -275,7 +296,7 @@ struct url_spec;
  * ACL checking
  */
 #ifdef FEATURE_ACL
-extern int block_acl(struct access_control_addr *dst, struct client_state *csp);
+extern int block_acl(const struct access_control_addr *dst, const struct client_state *csp);
 extern int acl_addr(const char *aspec, struct access_control_addr *aca);
 #endif /* def FEATURE_ACL */
 
@@ -297,19 +318,21 @@ extern int is_untrusted_url(const struct client_state *csp);
 #ifdef FEATURE_IMAGE_BLOCKING
 extern int is_imageurl(const struct client_state *csp);
 #endif /* def FEATURE_IMAGE_BLOCKING */
+extern int connect_port_is_forbidden(const struct client_state *csp);
 
 /*
  * Determining applicable actions
  */
-extern void url_actions(struct http_request *http, 
-                        struct client_state *csp);
+extern void get_url_actions(struct client_state *csp,
+                            struct http_request *http);
 extern void apply_url_actions(struct current_action_spec *action, 
                               struct http_request *http, 
                               struct url_actions *b);
 /*
  * Determining parent proxies
  */
-extern const struct forward_spec *forward_url(struct http_request *http, struct client_state *csp);
+extern const struct forward_spec *forward_url(struct client_state *csp,
+                                              const struct http_request *http);
 
 /*
  * Content modification
@@ -325,12 +348,12 @@ extern char *get_last_url(char *subject, const char *redirect_mode);
 
 extern pcrs_job *compile_dynamic_pcrs_job_list(const struct client_state *csp, const struct re_filterfile_spec *b);
 
-extern inline int content_filters_enabled(const struct client_state *csp);
+extern int content_filters_enabled(const struct current_action_spec *action);
 
 /*
  * Handling Max-Forwards:
  */
-extern struct http_response *direct_response( struct client_state *csp);
+extern struct http_response *direct_response(struct client_state *csp);
 
 
 /*

@@ -12,7 +12,7 @@ PRIVOXY_BIN="%SBIN_DEST%/$PRIVOXY_PRG"
 PRIVOXY_CONF="%CONF_DEST%/config"
 PRIVOXY_USER="%USER%"
 PRIVOXY_GROUP="%GROUP%"
-PRIVOXY_PID="/var/run/$PRIVOXY_PRG"/$PRIVOXY_PRG.pid
+PRIVOXY_PID="/var/run/$PRIVOXY_PRG.pid"
 
 declare -i check
 check=(`/bin/ps -e|/bin/grep $PRIVOXY_PRG|/usr/bin/wc -l`)

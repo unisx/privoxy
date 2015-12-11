@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/user.action,v $
 # 
-#  $Id: user.action,v 1.7 2006/10/04 00:37:05 hal9 Exp $
+#  $Id: user.action,v 1.9 2008/03/27 18:27:37 fabiankeil Exp $
 #
 #  Purpose     :  User-maintained actions file, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -28,31 +28,41 @@
 {{alias}}
 #############################################################################
 #
-# Aliases must be defined before they are used and are local to the
-# actions file that they are defined in, you can't use the ones from
-# default.action, unless you repeat them here:
-
+# You can define a short form for a list of permissions - e.g., instead
+# of "-crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects",
+# you can just write "shop". This is called an alias.
+#
+# Currently, an alias can contain any character except space, tab, '=', '{'
+# or '}'.
+# But please use only 'a'-'z', '0'-'9', '+', and '-'.
+#
+# Alias names are not case sensitive.
+#
+# Aliases beginning with '+' or '-' may be used for system action names 
+# in future releases - so try to avoid alias names like this.  (e.g. 
+# "+crunch-all-cookies" below is not a good name)
+#
+# Aliases must be defined before they are used.
 # 
-# These aliases just save typing later, and the alias names should 
-# be self explanatory.
+# These aliases just save typing later:
 #
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only -filter{content-cookies}
- allow-popups       = -filter{all-popups} -kill-popups -filter{unsolicited-popups}
-+block-as-image     = +block +handle-as-image
+ allow-popups       = -filter{all-popups} -filter{unsolicited-popups}
++block-as-image     = +block{Blocked image request.} +handle-as-image
 -block-as-image     = -block
 
-# These aliases define combinations of actions that are useful for
-# certain types of sites:
+# These aliases define combinations of actions
+# that are useful for certain types of sites:
 #
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups -prevent-compression
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -prevent-compression
 shop        = -crunch-all-cookies allow-popups
 
 # Your favourite blend of filters:
 #
 myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{all-popups}\
-              +filter{webbugs} +filter{banners-by-size} +filter{fun}
+              +filter{webbugs} +filter{banners-by-size}
 
 # Allow ads for selected useful free sites:
 #
@@ -82,7 +92,7 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 # windows, but you have chosen to kill popups uncoditionally by default.
 # This will allow it for your-example-bank.com:
 #
-{ -filter{all-popups} -kill-popups }
+{ -filter{all-popups} }
 .banking.example.com
 
 # Some hosts and some file types you may not want to filter for
@@ -105,12 +115,12 @@ stupid-server.example.com/
 # Example of a simple "block" action. Say you've seen an ad on your
 # favourite page on example.com that you want to get rid of. You have
 # right-clicked the image, selected "copy image location" and pasted
-# the URL below while removing the leading http://, into a { +block }
+# the URL below while removing the leading http://, into a { +block{reason} }
 # section. Note that { +handle-as-image } need not be specified, since
 # all URLs ending in .gif will be tagged as images by the general rules
 # as set in default.action anyway:
 #
-{ +block }
+{ +block{Nasty ads.} }
 www.example.com/nasty-ads/sponsor.gif
 
 # The URLs of dynamically generated banners, especially from large banner

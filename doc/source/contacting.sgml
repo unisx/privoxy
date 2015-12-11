@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: contacting.sgml,v 2.13 2008/01/17 01:49:51 hal9 Exp $
+ $Id: contacting.sgml,v 2.14 2008/04/26 11:38:51 fabiankeil Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -45,6 +45,11 @@
  All users are of course welcome to discuss their issues on the <ulink
  url="http://lists.sourceforge.net/lists/listinfo/ijbswa-users">users
  mailing list</ulink>, where the developers also hang around.
+</para>
+
+<para>
+ Please don't sent private support requests to individual Privoxy
+ developers, either use the mailing lists or the support trackers.
 </para>
 
 <para>

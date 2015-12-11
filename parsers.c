@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.121 2008/01/05 21:37:03 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.137 2008/05/30 15:50:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -17,7 +17,7 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.121 2008/01/05 21:37:03 fabiankei
  *                   `client_if_none_match', `get_destination_from_headers',
  *                   `parse_header_time', `decompress_iob' and `server_set_cookie'.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -44,6 +44,67 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.121 2008/01/05 21:37:03 fabiankei
  *
  * Revisions   :
  *    $Log: parsers.c,v $
+ *    Revision 1.137  2008/05/30 15:50:08  fabiankeil
+ *    Remove questionable micro-optimizations
+ *    whose usefulness has never been measured.
+ *
+ *    Revision 1.136  2008/05/26 16:02:24  fabiankeil
+ *    s@Insufficent@Insufficient@
+ *
+ *    Revision 1.135  2008/05/21 20:12:10  fabiankeil
+ *    The whole point of strclean() is to modify the
+ *    first parameter, so don't mark it immutable,
+ *    even though the compiler lets us get away with it.
+ *
+ *    Revision 1.134  2008/05/21 19:27:25  fabiankeil
+ *    As the wafer actions are gone, we can stop including encode.h.
+ *
+ *    Revision 1.133  2008/05/21 15:50:47  fabiankeil
+ *    Ditch cast from (char **) to (char **).
+ *
+ *    Revision 1.132  2008/05/21 15:47:14  fabiankeil
+ *    Streamline sed()'s prototype and declare
+ *    the header parse and add structures static.
+ *
+ *    Revision 1.131  2008/05/20 20:13:30  fabiankeil
+ *    Factor update_server_headers() out of sed(), ditch the
+ *    first_run hack and make server_patterns_light static.
+ *
+ *    Revision 1.130  2008/05/19 17:18:04  fabiankeil
+ *    Wrap memmove() calls in string_move()
+ *    to document the purpose in one place.
+ *
+ *    Revision 1.129  2008/05/17 14:02:07  fabiankeil
+ *    Normalize linear header white space.
+ *
+ *    Revision 1.128  2008/05/16 16:39:03  fabiankeil
+ *    If a header is split across multiple lines,
+ *    merge them to a single line before parsing them.
+ *
+ *    Revision 1.127  2008/05/10 13:23:38  fabiankeil
+ *    Don't provide get_header() with the whole client state
+ *    structure when it only needs access to csp->iob.
+ *
+ *    Revision 1.126  2008/05/03 16:40:45  fabiankeil
+ *    Change content_filters_enabled()'s parameter from
+ *    csp->action to action so it can be also used in the
+ *    CGI code. Don't bother checking if there are filters
+ *    loaded, as that's somewhat besides the point.
+ *
+ *    Revision 1.125  2008/04/17 14:40:49  fabiankeil
+ *    Provide get_http_time() with the buffer size so it doesn't
+ *    have to blindly assume that the buffer is big enough.
+ *
+ *    Revision 1.124  2008/04/16 16:38:21  fabiankeil
+ *    Don't pass the whole csp structure to flush_socket()
+ *    when it only needs a file descriptor and a buffer.
+ *
+ *    Revision 1.123  2008/03/29 12:13:46  fabiankeil
+ *    Remove send-wafer and send-vanilla-wafer actions.
+ *
+ *    Revision 1.122  2008/03/28 15:13:39  fabiankeil
+ *    Remove inspect-jpegs action.
+ *
  *    Revision 1.121  2008/01/05 21:37:03  fabiankeil
  *    Let client_range() also handle Request-Range headers
  *    which apparently are still supported by many servers.
@@ -790,7 +851,6 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.121 2008/01/05 21:37:03 fabiankei
 #endif /* def FEATURE_PTHREAD */
 #include "list.h"
 #include "parsers.h"
-#include "encode.h"
 #include "ssplit.h"
 #include "errlog.h"
 #include "jbsockets.h"
@@ -818,6 +878,7 @@ const char parsers_h_rcs[] = PARSERS_H_VERSION;
 #define ijb_isupper(__X) isupper((int)(unsigned char)(__X))
 #define ijb_tolower(__X) tolower((int)(unsigned char)(__X))
 
+static char *get_header_line(struct iob *iob);
 static jb_err scan_headers(struct client_state *csp);
 static jb_err header_tagger(struct client_state *csp, char *header);
 static jb_err parse_header_time(const char *header_time, time_t *result);
@@ -853,7 +914,6 @@ static jb_err server_last_modified      (struct client_state *csp, char **header
 static jb_err server_content_disposition(struct client_state *csp, char **header);
 
 static jb_err client_host_adder       (struct client_state *csp);
-static jb_err client_cookie_adder     (struct client_state *csp);
 static jb_err client_xtra_adder       (struct client_state *csp);
 static jb_err connection_close_adder  (struct client_state *csp); 
 
@@ -862,7 +922,22 @@ static jb_err create_fake_referrer(char **header, const char *fake_referrer);
 static jb_err handle_conditional_hide_referrer_parameter(char **header,
    const char *host, const int parameter_conditional_block);
 
-const struct parsers client_patterns[] = {
+/*
+ * List of functions to run on a list of headers.
+ */
+struct parsers
+{
+   /** The header prefix to match */
+   const char *str;
+   
+   /** The length of the prefix to match */
+   const size_t len;
+   
+   /** The function to apply to this line */
+   const parser_func_ptr parser;
+};
+
+static const struct parsers client_patterns[] = {
    { "referer:",                  8,   client_referrer },
    { "user-agent:",              11,   client_uagent },
    { "ua-",                       3,   client_ua },
@@ -888,7 +963,7 @@ const struct parsers client_patterns[] = {
    { NULL,                        0,   NULL }
 };
 
-const struct parsers server_patterns[] = {
+static const struct parsers server_patterns[] = {
    { "HTTP/",                     5, server_http },
    { "set-cookie:",              11, server_set_cookie },
    { "connection:",              11, connection },
@@ -904,38 +979,18 @@ const struct parsers server_patterns[] = {
    { NULL, 0, NULL }
 };
 
-const struct parsers server_patterns_light[] = {
-   { "Content-Length:",          15, server_content_length },
-   { "Transfer-Encoding:",       18, server_transfer_coding },
-#ifdef FEATURE_ZLIB
-   { "Content-Encoding:",        17, server_content_encoding },
-#endif /* def FEATURE_ZLIB */
-   { NULL, 0, NULL }
-};
-
-const add_header_func_ptr add_client_headers[] = {
+static const add_header_func_ptr add_client_headers[] = {
    client_host_adder,
-   client_cookie_adder,
    client_xtra_adder,
    /* Temporarily disabled:    client_accept_encoding_adder, */
    connection_close_adder,
    NULL
 };
 
-const add_header_func_ptr add_server_headers[] = {
+static const add_header_func_ptr add_server_headers[] = {
    connection_close_adder,
    NULL
 };
-
-/* The vanilla wafer. */
-static const char VANILLA_WAFER[] =
-   "NOTICE=TO_WHOM_IT_MAY_CONCERN_"
-   "Do_not_send_me_any_copyrighted_information_other_than_the_"
-   "document_that_I_am_requesting_or_any_of_its_necessary_components._"
-   "In_particular_do_not_send_me_any_cookies_that_"
-   "are_subject_to_a_claim_of_copyright_by_anybody._"
-   "Take_notice_that_I_refuse_to_be_bound_by_any_license_condition_"
-   "(copyright_or_otherwise)_applying_to_any_cookie._";
 
 /*********************************************************************
  *
@@ -945,7 +1000,7 @@ static const char VANILLA_WAFER[] =
  *
  * Parameters  :
  *          1  :  fd = file descriptor of the socket to read
- *          2  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  iob = The I/O buffer to flush, usually csp->iob.
  *
  * Returns     :  On success, the number of bytes written are returned (zero
  *                indicates nothing was written).  On error, -1 is returned,
@@ -955,9 +1010,8 @@ static const char VANILLA_WAFER[] =
  *                file, the results are not portable.
  *
  *********************************************************************/
-int flush_socket(jb_socket fd, struct client_state *csp)
+int flush_socket(jb_socket fd, struct iob *iob)
 {
-   struct iob *iob = csp->iob;
    int len = iob->eod - iob->cur;
 
    if (len <= 0)
@@ -1427,12 +1481,109 @@ jb_err decompress_iob(struct client_state *csp)
 
 /*********************************************************************
  *
+ * Function    :  string_move
+ *
+ * Description :  memmove wrapper to move the last part of a string
+ *                towards the beginning, overwriting the part in
+ *                the middle. strlcpy() can't be used here as the
+ *                strings overlap.
+ *
+ * Parameters  :
+ *          1  :  dst = Destination to overwrite
+ *          2  :  src = Source to move.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void string_move(char *dst, char *src)
+{
+   assert(dst < src);
+
+   /* +1 to copy the terminating nul as well. */
+   memmove(dst, src, strlen(src)+1);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  normalize_lws
+ *
+ * Description :  Reduces unquoted linear white space in headers
+ *                to a single space in accordance with RFC 2616 2.2.
+ *                This simplifies parsing and filtering later on.
+ *
+ *                XXX: Remove log messages before
+ *                     the next stable release?
+ *
+ * Parameters  :
+ *          1  :  header = A header with linear white space to reduce.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void normalize_lws(char *header)
+{
+   char *p = header;
+
+   while (*p != '\0')
+   {
+      if (ijb_isspace(*p) && ijb_isspace(*(p+1)))
+      {
+         char *q = p+1;
+
+         while (ijb_isspace(*q))
+         {
+            q++;
+         }
+         log_error(LOG_LEVEL_HEADER, "Reducing white space in '%s'", header);
+         string_move(p+1, q);
+      }
+
+      if (*p == '\t')
+      {
+         log_error(LOG_LEVEL_HEADER,
+            "Converting tab to space in '%s'", header);
+         *p = ' ';
+      }
+      else if (*p == '"')
+      {
+         char *end_of_token = strstr(p+1, "\"");
+
+         if (NULL != end_of_token)
+         {
+            /* Don't mess with quoted text. */
+            p = end_of_token;
+         }
+         else
+         {
+            log_error(LOG_LEVEL_HEADER,
+               "Ignoring single quote in '%s'", header);
+         }
+      }
+      p++;
+   }
+
+   p = strchr(header, ':');
+   if ((p != NULL) && (p != header) && ijb_isspace(*(p-1)))
+   {
+      /*
+       * There's still space before the colon.
+       * We don't want it.
+       */
+      string_move(p-1, p);
+   }
+}
+
+
+/*********************************************************************
+ *
  * Function    :  get_header
  *
  * Description :  This (odd) routine will parse the csp->iob
+ *                to get the next complete header.
  *
  * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  iob = The I/O buffer to parse, usually csp->iob.
  *
  * Returns     :  Any one of the following:
  *
@@ -1442,11 +1593,82 @@ jb_err decompress_iob(struct client_state *csp)
  *          a complete header line.
  *
  *********************************************************************/
-char *get_header(struct client_state *csp)
+char *get_header(struct iob *iob)
 {
-   struct iob *iob;
+   char *header;
+
+   header = get_header_line(iob);
+
+   if ((header == NULL) || (*header == '\0'))
+   {
+      /*
+       * No complete header read yet, tell the client.
+       */
+      return header;
+   }
+
+   while ((iob->cur[0] == ' ') || (iob->cur[0] == '\t'))
+   {
+      /*
+       * Header spans multiple lines, append the next one.
+       */
+      char *continued_header;
+      
+      continued_header = get_header_line(iob);
+      if ((continued_header == NULL) || (*continued_header == '\0'))
+      {
+         /*
+          * No complete header read yet, return what we got.
+          * XXX: Should "unread" header instead.
+          */
+         log_error(LOG_LEVEL_INFO,
+            "Failed to read a multi-line header properly: '%s'",
+            header);
+         break;
+      }
+
+      if (JB_ERR_OK != string_join(&header, continued_header))
+      {
+         log_error(LOG_LEVEL_FATAL,
+            "Out of memory while appending multiple headers.");
+      }
+      else
+      {
+         /* XXX: remove before next stable release. */
+         log_error(LOG_LEVEL_HEADER,
+            "Merged multiple header lines to: '%s'",
+            header);
+      }
+   }
+
+   normalize_lws(header);
+
+   return header;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_header_line
+ *
+ * Description :  This (odd) routine will parse the csp->iob
+ *                to get the next header line.
+ *
+ * Parameters  :
+ *          1  :  iob = The I/O buffer to parse, usually csp->iob.
+ *
+ * Returns     :  Any one of the following:
+ *
+ * 1) a pointer to a dynamically allocated string that contains a header line
+ * 2) NULL  indicating that the end of the header was reached
+ * 3) ""    indicating that the end of the iob was reached before finding
+ *          a complete header line.
+ *
+ *********************************************************************/
+static char *get_header_line(struct iob *iob)
+{
    char *p, *q, *ret;
-   iob = csp->iob;
 
    if ((iob->cur == NULL)
       || ((p = strchr(iob->cur, '\n')) == NULL))
@@ -1460,7 +1682,7 @@ char *get_header(struct client_state *csp)
    if (ret == NULL)
    {
       /* FIXME No way to handle error properly */
-      log_error(LOG_LEVEL_FATAL, "Out of memory in get_header()");
+      log_error(LOG_LEVEL_FATAL, "Out of memory in get_header_line()");
    }
 
    iob->cur = p+1;
@@ -1571,79 +1793,106 @@ static jb_err scan_headers(struct client_state *csp)
  *                As a side effect it frees the space used by the original
  *                header lines.
  *
- *                XXX: should be split to remove the first_run hack.
- *
  * Parameters  :
- *          1  :  pats = list of patterns to match against headers
- *          2  :  more_headers = list of functions to add more
- *                headers (client or server)
- *          3  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  filter_server_headers = Boolean to switch between
+ *                                        server and header filtering.
  *
  * Returns     :  JB_ERR_OK in case off success, or
  *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
-jb_err sed(const struct parsers pats[],
-           const add_header_func_ptr more_headers[],
-           struct client_state *csp)
+jb_err sed(struct client_state *csp, int filter_server_headers)
 {
+   /* XXX: use more descriptive names. */
    struct list_entry *p;
    const struct parsers *v;
    const add_header_func_ptr *f;
    jb_err err = JB_ERR_OK;
-   int first_run;
 
-   /*
-    * If filtering is enabled, sed is run twice,
-    * but most of the work needs to be done only once.
-    */
-   first_run = (more_headers != NULL ) ? 1 : 0;
-
-   if (first_run) /* Parse and print */
+   if (filter_server_headers)
    {
-      scan_headers(csp);
+      v = server_patterns;
+      f = add_server_headers;
+   }
+   else
+   {
+      v = client_patterns;
+      f = add_client_headers;
+   }
 
-      for (v = pats; (err == JB_ERR_OK) && (v->str != NULL) ; v++)
+   scan_headers(csp);
+
+   while ((err == JB_ERR_OK) && (v->str != NULL))
+   {
+      for (p = csp->headers->first; (err == JB_ERR_OK) && (p != NULL); p = p->next)
       {
-         for (p = csp->headers->first; (err == JB_ERR_OK) && (p != NULL) ; p = p->next)
+         /* Header crunch()ed in previous run? -> ignore */
+         if (p->str == NULL) continue;
+
+         /* Does the current parser handle this header? */
+         if ((strncmpic(p->str, v->str, v->len) == 0) ||
+             (v->len == CHECK_EVERY_HEADER_REMAINING))
+         {
+            err = v->parser(csp, &(p->str));
+         }
+      }
+      v++;
+   }
+
+   /* place additional headers on the csp->headers list */
+   while ((err == JB_ERR_OK) && (*f))
+   {
+      err = (*f)(csp);
+      f++;
+   }
+
+   return err;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  update_server_headers
+ *
+ * Description :  Updates server headers after the body has been modified.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  JB_ERR_OK in case off success, or
+ *                JB_ERR_MEMORY on out-of-memory error.
+ *
+ *********************************************************************/
+jb_err update_server_headers(struct client_state *csp)
+{
+   jb_err err = JB_ERR_OK;
+
+   static const struct parsers server_patterns_light[] = {
+      { "Content-Length:",    15, server_content_length },
+      { "Transfer-Encoding:", 18, server_transfer_coding },
+#ifdef FEATURE_ZLIB
+      { "Content-Encoding:",  17, server_content_encoding },
+#endif /* def FEATURE_ZLIB */
+      { NULL, 0, NULL }
+   };
+
+   if (strncmpic(csp->http->cmd, "HEAD", 4))
+   {
+      const struct parsers *v;
+      struct list_entry *p;
+
+      for (v = server_patterns_light; (err == JB_ERR_OK) && (v->str != NULL); v++)
+      {
+         for (p = csp->headers->first; (err == JB_ERR_OK) && (p != NULL); p = p->next)
          {
             /* Header crunch()ed in previous run? -> ignore */
             if (p->str == NULL) continue;
 
             /* Does the current parser handle this header? */
-            if ((strncmpic(p->str, v->str, v->len) == 0) || (v->len == CHECK_EVERY_HEADER_REMAINING))
+            if (strncmpic(p->str, v->str, v->len) == 0)
             {
                err = v->parser(csp, (char **)&(p->str));
-            }
-         }
-      }
-      /* place any additional headers on the csp->headers list */
-      for (f = more_headers; (err == JB_ERR_OK) && (*f) ; f++)
-      {
-         err = (*f)(csp);
-      }
-   }
-   else /* Parse only */
-   {
-      /*
-       * The second run is only needed if the body was modified
-       * and the content-lenght has changed.
-       */
-      if (strncmpic(csp->http->cmd, "HEAD", 4))
-      {
-         /*XXX: Code duplication */
-         for (v = pats; (err == JB_ERR_OK) && (v->str != NULL) ; v++)
-         {
-            for (p = csp->headers->first; (err == JB_ERR_OK) && (p != NULL) ; p = p->next)
-            {
-               /* Header crunch()ed in previous run? -> ignore */
-               if (p->str == NULL) continue;
-
-               /* Does the current parser handle this header? */
-               if (strncmpic(p->str, v->str, v->len) == 0)
-               {
-                  err = v->parser(csp, (char **)&(p->str));
-               }
             }
          }
       }
@@ -1651,7 +1900,6 @@ jb_err sed(const struct parsers pats[],
 
    return err;
 }
-
 
 
 /*********************************************************************
@@ -2212,10 +2460,6 @@ static jb_err server_content_type(struct client_state *csp, char **header)
       {
          csp->content_type |= CT_GIF;
       }
-      else if (strstr(*header, "image/jpeg"))
-      {
-         csp->content_type |= CT_JPEG;
-      }
    }
 
    /*
@@ -2593,14 +2837,14 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
       /*
        * Setting Last-Modified Header to now.
        */
-      get_http_time(0, buf);
+      get_http_time(0, buf, sizeof(buf));
       freez(*header);
       *header = strdup("Last-Modified: ");
       string_append(header, buf);   
 
       if (*header == NULL)
       {
-         log_error(LOG_LEVEL_HEADER, "Insufficent memory. Last-Modified header got lost, boohoo.");  
+         log_error(LOG_LEVEL_HEADER, "Insufficient memory. Last-Modified header got lost, boohoo.");  
       }
       else
       {
@@ -2659,21 +2903,19 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
 
             if (*header == NULL)
             {
-               log_error(LOG_LEVEL_ERROR, "Insufficent memory, header crunched without replacement.");
+               log_error(LOG_LEVEL_ERROR, "Insufficient memory, header crunched without replacement.");
                return JB_ERR_MEMORY;  
             }
 
-            if (LOG_LEVEL_HEADER & debug) /* Save cycles if the user isn't interested. */
-            {
-               days    = rtime / (3600 * 24);
-               hours   = rtime / 3600 % 24;
-               minutes = rtime / 60 % 60;
-               seconds = rtime % 60;            
+            days    = rtime / (3600 * 24);
+            hours   = rtime / 3600 % 24;
+            minutes = rtime / 60 % 60;
+            seconds = rtime % 60;
 
-               log_error(LOG_LEVEL_HEADER, "Randomized:  %s (added %d da%s %d hou%s %d minut%s %d second%s",
-                  *header, days, (days == 1) ? "y" : "ys", hours, (hours == 1) ? "r" : "rs",
-                  minutes, (minutes == 1) ? "e" : "es", seconds, (seconds == 1) ? ")" : "s)");
-            }
+            log_error(LOG_LEVEL_HEADER,
+               "Randomized:  %s (added %d da%s %d hou%s %d minut%s %d second%s",
+               *header, days, (days == 1) ? "y" : "ys", hours, (hours == 1) ? "r" : "rs",
+               minutes, (minutes == 1) ? "e" : "es", seconds, (seconds == 1) ? ")" : "s)");
          }
          else
          {
@@ -2895,7 +3137,7 @@ static jb_err client_accept_language(struct client_state *csp, char **header)
       if (*header == NULL)
       {
          log_error(LOG_LEVEL_ERROR,
-            "Insufficent memory. Accept-Language header crunched without replacement.");  
+            "Insufficient memory. Accept-Language header crunched without replacement.");  
       }
       else
       {
@@ -3358,20 +3600,19 @@ static jb_err client_if_modified_since(struct client_state *csp, char **header)
 
             if (*header == NULL)
             {
-               log_error(LOG_LEVEL_HEADER, "Insufficent memory, header crunched without replacement.");
+               log_error(LOG_LEVEL_HEADER, "Insufficient memory, header crunched without replacement.");
                return JB_ERR_MEMORY;  
             }
 
-            if (LOG_LEVEL_HEADER & debug) /* Save cycles if the user isn't interested. */
-            {
-               hours   = rtime / 3600;
-               minutes = rtime / 60 % 60;
-               seconds = rtime % 60;            
+            hours   = rtime / 3600;
+            minutes = rtime / 60 % 60;
+            seconds = rtime % 60;
 
-               log_error(LOG_LEVEL_HEADER, "Randomized:  %s (%s %d hou%s %d minut%s %d second%s",
-                  *header, (negative) ? "subtracted" : "added", hours, (hours == 1) ? "r" : "rs",
-                  minutes, (minutes == 1) ? "e" : "es", seconds, (seconds == 1) ? ")" : "s)");
-            }
+            log_error(LOG_LEVEL_HEADER,
+               "Randomized:  %s (%s %d hou%s %d minut%s %d second%s",
+               *header, (negative) ? "subtracted" : "added", hours,
+               (hours == 1) ? "r" : "rs", minutes, (minutes == 1) ? "e" : "es",
+               seconds, (seconds == 1) ? ")" : "s)");
          }
       }
    }
@@ -3478,7 +3719,7 @@ jb_err client_x_filter(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err client_range(struct client_state *csp, char **header)
 {
-   if (content_filters_enabled(csp))
+   if (content_filters_enabled(csp->action))
    {
       log_error(LOG_LEVEL_HEADER, "Content filtering is enabled."
          " Crunching: \'%s\' to prevent range-mismatch problems.", *header);
@@ -3539,69 +3780,6 @@ static jb_err client_host_adder(struct client_state *csp)
    err = enlist_unique_header(csp->headers, "Host", p);
    return err;
 
-}
-
-
-/*********************************************************************
- *
- * Function    :  client_cookie_adder
- *
- * Description :  Used in the add_client_headers list to add "wafers".
- *                Called from `sed'.
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *
- * Returns     :  JB_ERR_OK on success, or
- *                JB_ERR_MEMORY on out-of-memory error.
- *
- *********************************************************************/
-jb_err client_cookie_adder(struct client_state *csp)
-{
-   char *tmp;
-   struct list_entry *wafer;
-   struct list_entry *wafer_list;
-   jb_err err;
-
-   /*
-    * If the user has not supplied any wafers, and the user has not
-    * told us to suppress the vanilla wafer, then send the vanilla wafer.
-    */
-   if ((0 != (csp->action->flags & ACTION_VANILLA_WAFER))
-      && list_is_empty(csp->action->multi[ACTION_MULTI_WAFER]))
-   {
-      enlist(csp->action->multi[ACTION_MULTI_WAFER], VANILLA_WAFER);
-   }
-
-   wafer_list = csp->action->multi[ACTION_MULTI_WAFER]->first;
-
-   if (NULL == wafer_list)
-   {
-      /* Nothing to do */
-      return JB_ERR_OK;
-   }
-
-   tmp = strdup("Cookie: ");
-
-   for (wafer = wafer_list; (NULL != tmp) && (NULL != wafer); wafer = wafer->next)
-   {
-      if (wafer != wafer_list)
-      {
-         /* As this isn't the first wafer, we need a delimiter. */
-         string_append(&tmp, "; ");
-      }
-      string_join(&tmp, cookie_encode(wafer->str));
-   }
-
-   if (tmp == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
-
-   log_error(LOG_LEVEL_HEADER, "addh: %s", tmp);
-   err = enlist(csp->headers, tmp);
-   free(tmp);
-   return err;
 }
 
 
@@ -3886,7 +4064,7 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
                 */
                log_error(LOG_LEVEL_ERROR,
                   "Can't parse \'%s\', send by %s. Unsupported time format?", cur_tag, csp->http->url);
-               memmove(cur_tag, next_tag, strlen(next_tag) + 1);
+               string_move(cur_tag, next_tag);
                changed = 1;
             }
             else
@@ -3937,12 +4115,8 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
                   /*
                    * Still valid, delete expiration date by copying
                    * the rest of the string over it.
-                   *
-                   * (Note that we cannot just use "strcpy(cur_tag, next_tag)",
-                   * since the behaviour of strcpy is undefined for overlapping
-                   * strings.)
                    */
-                  memmove(cur_tag, next_tag, strlen(next_tag) + 1);
+                  string_move(cur_tag, next_tag);
 
                   /* That changed the header, need to issue a log message */
                   changed = 1;
@@ -3989,7 +4163,7 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
  * Returns     :  Number of eliminations
  *
  *********************************************************************/
-int strclean(const char *string, const char *substring)
+int strclean(char *string, const char *substring)
 {
    int hits = 0;
    size_t len;

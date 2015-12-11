@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.8 User Manual"
+TITLE="Privoxy 3.0.9 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Introduction"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.8 User Manual</TH
+>Privoxy 3.0.9 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -129,7 +129,7 @@ NAME="INSTALLATION-PACK-RPM"
 ><P
 > RPMs can be installed with <TT
 CLASS="LITERAL"
->rpm -Uvh privoxy-3.0.8-1.rpm</TT
+>rpm -Uvh privoxy-3.0.9-1.rpm</TT
 >,
  and will use <TT
 CLASS="FILENAME"
@@ -160,7 +160,7 @@ CLASS="COMMAND"
 > If you have problems with failed dependencies, try rebuilding the SRC RPM: 
  <TT
 CLASS="LITERAL"
->rpm --rebuild privoxy-3.0.8-1.src.rpm</TT
+>rpm --rebuild privoxy-3.0.9-1.src.rpm</TT
 >. This 
  will use your locally installed libraries and RPM version. </P
 ><P
@@ -367,59 +367,26 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-MAC"
->2.1.6. Mac OSX</A
+>2.1.6. Mac OS X</A
 ></H3
 ><P
-> Unzip the downloaded file (you can either double-click on the file
- from the finder, or from the desktop if you downloaded it there).
- Then, double-click on the package installer icon named
- <TT
-CLASS="LITERAL"
->Privoxy.pkg</TT
->
- and follow the installation process.
- <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> will be installed in the folder
- <TT
-CLASS="LITERAL"
->/Library/Privoxy</TT
->.
- It will start automatically whenever you start up.  To prevent it from
- starting automatically, remove or rename the folder
+> Unzip the downloaded file (you can either double-click on the zip file
+ icon from the Finder, or from the desktop if you downloaded it there).
+ Then, double-click on the package installer icon and follow the
+ installation process.</P
+><P
+> The privoxy service will automatically start after a successful
+ installation (in addition to every time your computer starts up).  To
+ prevent the privoxy service from automatically starting when your
+ computer starts up, remove or rename the folder named
  <TT
 CLASS="LITERAL"
 >/Library/StartupItems/Privoxy</TT
 >. </P
 ><P
-> To start Privoxy by hand, double-click on 
- <TT
-CLASS="LITERAL"
->StartPrivoxy.command</TT
-> in the
- <TT
-CLASS="LITERAL"
->/Library/Privoxy</TT
-> folder.
- Or, type this command in the Terminal:</P
-><P
->  <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="100%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->  /Library/Privoxy/StartPrivoxy.command
-  </PRE
-></TD
-></TR
-></TABLE
-></P
-><P
-> You will be prompted for the administrator password.</P
+> To manually start or stop the privoxy service, use the Privoxy Utility
+ for Mac OS X.  This application controls the privoxy service (e.g.
+ starting and stopping the service as well as uninstalling the software).</P
 ></DIV
 ><DIV
 CLASS="SECT3"
@@ -511,7 +478,7 @@ CLASS="FILENAME"
 >, the 
  documentation is in <TT
 CLASS="FILENAME"
->/usr/share/doc/privoxy-3.0.8</TT
+>/usr/share/doc/privoxy-3.0.9</TT
 >
  and the Log directory is in <TT
 CLASS="FILENAME"
@@ -534,7 +501,7 @@ CLASS="APPLICATION"
 > sources
  is to download the source tarball from our 
  <A
-HREF="http://sourceforge.net/project/showfiles.php?group_id=11118&package_id=10571"
+HREF="http://sourceforge.net/project/showfiles.php?group_id=11118&#38;package_id=10571"
 TARGET="_top"
 >project download
  page</A
@@ -580,8 +547,8 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-> tar xzvf privoxy-3.0.8-src* [.tgz or .tar.gz]
- cd privoxy-3.0.8</PRE
+> tar xzvf privoxy-3.0.9-beta-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.9-beta</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1006,7 +973,7 @@ NAME="INSTALLATION-KEEPUPDATED"
 HREF="actions-file.html"
 >actions file</A
 > (as a <A
-HREF="http://sourceforge.net/project/showfiles.php?group_id=11118&release_id=103670"
+HREF="http://sourceforge.net/project/showfiles.php?group_id=11118&#38;release_id=103670"
 TARGET="_top"
 >separate
  package</A
