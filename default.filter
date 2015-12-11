@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.77 2010/02/05 21:41:31 fabiankeil Exp $
+#  $Id: default.filter,v 1.79 2010/09/03 17:40:07 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -177,15 +177,15 @@ s|<meta\s+http-equiv=['"]?set-cookie.*>|<!-- ZappedCookie -->|igU
 
 #################################################################################
 #
-# refresh-tags: Kill automatic refresh tags (for dial-on-demand setups).
+# refresh-tags: Kill automatic refresh tags if refresh time is larger than 9 seconds.
 #
 #################################################################################
-FILTER: refresh-tags Kill automatic refresh tags (for dial-on-demand setups).
+FILTER: refresh-tags Kill automatic refresh tags if refresh time is larger than 9 seconds.
 
 # Note: Only deactivates refreshes with more than 9 seconds delay to
 #       preserve monster-stupid but common redirections via meta tags.
 #
-s/<meta\s+http-equiv\s*=\s*(['"]?)refresh\1\s+content\s*=\s*(['"]?)\d{2,}\s*(;\s*url\s*=\s*([^>\2]*))?\2/<link rev="x-refresh" href="$4"/iU
+s@<meta\s+http-equiv\s*=\s*(['"]?)refresh\1\s+content\s*=\s*(['"]?)\d{2,}\s*(;(?:\s*url\s*=\s*)?([^>\2]*))?\2@<link rev="x-refresh" href="$4"@ig
 
 
 #################################################################################
@@ -763,6 +763,34 @@ s@^Accept:\s*image/.*@IMAGE-REQUEST@i
 CLIENT-HEADER-TAGGER: css-requests Tags detected CSS requests as "CSS-REQUEST".
 
 s@^Accept:\s*text/css.*@CSS-REQUEST@i
+
+#################################################################################
+#
+# range-requests: Tags range requests as "RANGE-REQUEST".
+#
+#                 By default Privoxy removes Range headers for requests to
+#                 ressources that will be filtered to make sure the filters
+#                 get the whole picture. Otherwise Range requests could be
+#                 intentionally used to circumvent filters or, less likely,
+#                 filtering a partial response may damage it because it matched
+#                 a pattern that the ressource as a whole wouldn't.
+#
+#                 Range requests can be useful and save bandwidth so instead
+#                 of removing Range headers for requests to ressources that
+#                 will be filtered, you may prefer to simply disable filtering
+#                 for those requests.
+#
+#                 That's what this tagger is all about. After enabling it,
+#                 you can disable filtering for range requests using the following
+#                 action section:
+#
+#                 {-filter -deanimate-gifs}
+#                 TAG:^RANGE-REQUEST
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: range-requests Tags range requests as "RANGE-REQUEST".
+
+s@^Range:.*@RANGE-REQUEST@i
 
 #################################################################################
 #

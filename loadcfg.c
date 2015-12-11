@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.109 2010/01/10 13:53:48 ler762 Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.111 2010/08/14 23:28:52 ler762 Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -247,11 +247,6 @@ static void unload_configfile (void * data)
    freez(config->trustfile);
    list_remove_all(config->trust_info);
 #endif /* def FEATURE_TRUST */
-
-   for (i = 0; i < MAX_AF_FILES; i++)
-   {
-      freez(config->re_filterfile[i]);
-   }
 
    freez(config);
 }
@@ -1484,8 +1479,9 @@ struct configuration_spec * load_config(void)
 #if defined(_WIN32) && !defined (_WIN_CONSOLE)
 
    g_default_actions_file = config->actions_file[1]; /* FIXME Hope this is default.action */
-   g_user_actions_file = config->actions_file[2]; /* FIXME Hope this is user.action */
-   g_re_filterfile    = config->re_filterfile[0]; /* FIXME Hope this is default.filter */
+   g_user_actions_file  = config->actions_file[2];  /* FIXME Hope this is user.action */
+   g_default_filterfile = config->re_filterfile[0]; /* FIXME Hope this is default.filter */
+   g_user_filterfile    = config->re_filterfile[1]; /* FIXME Hope this is user.filter */
 
 #ifdef FEATURE_TRUST
    g_trustfile        = config->trustfile;

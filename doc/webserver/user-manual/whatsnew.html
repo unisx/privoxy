@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.16 User Manual"
+TITLE="Privoxy 3.0.17 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.16 User Manual</TH
+>Privoxy 3.0.17 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -84,432 +84,535 @@ NAME="WHATSNEW"
 ><P
 > <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.16</SPAN
+>Privoxy 3.0.17</SPAN
 > is a stable release.
- The changes since 3.0.15 beta are:</P
+ The changes since 3.0.16 stable are:</P
 ><P
 > <P
 ></P
 ><UL
 ><LI
 ><P
->    Added the config file option handle-as-empty-doc-returns-ok to
-    work around Firefox bug #492459, which causes Firefox to hang
-    if JavaScripts are blocked in certain situations. The option is
-    enabled in the default config file.
+>    Fixed last-chunk-detection for responses where the content was small
+    enough to be read with the body, causing Privoxy to wait for the
+    end of the content until the server closed the connection or the
+    request timed out. Reported by "Karsten" in #3028326.
    </P
 ></LI
 ><LI
 ><P
->    Added the config file option default-server-timeout to control the
-    assumed default server timeout. Since Privoxy no longer returns
-    an error message for connection resets on reused client connections,
-    assuming larger server timeout values appears to actually work
-    pretty well as long as connections aren't shared.
+>    Responses with status code 204 weren't properly detected as body-less
+    like RFC2616 mandates. Like the previous bug, this caused Privoxy to
+    wait for the end of the content until the server closed the connection
+    or the request timed out. Fixes #3022042 and #3025553, reported by a
+    user with no visible name. Most likely also fixes a bunch of other
+    AJAX-related problem reports that got closed in the past due to
+    insufficient information and lack of feedback.
    </P
 ></LI
 ><LI
 ><P
->    Added optional support for FreeBSD's accf_http(9). Use the
-    configure option --enable-accept-filter to enable it.
+>    Fixed an ACL bug that made it impossible to build a blacklist.
+    Usually the ACL directives are used in a whitelist, which worked
+    as expected, but blacklisting is still useful for public proxies
+    where one only needs to deny known abusers access.
    </P
 ></LI
 ><LI
 ><P
->    Added fancier Privoxy icons for win32. Contributed by Jeff H.
+>    Added LOG_LEVEL_RECEIVED to log the not-yet-parsed data read from the
+    network. This should make debugging various parsing issues a lot easier.
    </P
 ></LI
 ><LI
 ><P
->    In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
+>    The IPv6 code is enabled by default on Windows versions that support it.
+    Patch submitted by oCameLo in #2942729.
    </P
 ></LI
 ><LI
 ><P
->    Resolve localhost using whatever address family the operating
-    system feels like. Previous betas would try to use IPv4 as this
-    is what most users expect, but this didn't work reliably on
-    GNU/Linux systems.
+>    In mingw32 versions, the user.filter file is reachable through the
+    GUI, just like default.filter is. Feature request 3040263.
    </P
 ></LI
 ><LI
 ><P
->    In the action lists on CGI pages, actions and their parameters are
-    no longer separated with a space. The action file parser doesn't
-    actually allow this and will throw an invalid syntax error if actions
-    and parameters in the action files are separated. Not adding the
-    spaces means copy and pasting CGI output into the action files works.
+>    Added the configure option --enable-large-file-support to set a few
+    defines that are required by platforms like GNU/Linux to support files
+    larger then 2GB. Mainly interesting for users without proper logfile
+    management.
    </P
 ></LI
 ><LI
 ><P
->    The default keep-alive timeout has been reduced to 5 seconds to work
-    around hangs in clients that treat the proxy like any other host and
-    stop allowing any new connections if the "maximum number of
-    connections per host" is reached.
+>    Logging with "debug 16" no longer stops at the first nul byte which is
+    pretty useless. Non-printable characters are replaced with their hex value
+    so the result can't span multiple lines making parsing them harder then
+    necessary.
    </P
 ></LI
 ><LI
 ><P
->    Several webbug URLs that look like they are leading to images are now
-    blocked as image instead of empty documents. Doing the latter causes
-    WebKit-based clients to show a "missing image" icon which may mess up
-    the layout.
+>    Privoxy logs when reading an action, filter or trust file.
    </P
 ></LI
 ><LI
 ><P
->    The no-such-domain template is used for DNS resolution
-    problems with FEATURE_IPV6_SUPPORT enabled. Previously the
-    connect-failed template was used. Reported by 'zebul666'.
+>    Fixed incorrect regression test markup which caused a test in
+    3.0.16 to fail while Privoxy itself was working correctly.
+    While Privoxy accepts hide-referer, too, the action name is actually
+    hide-referrer which is also the name used one the final results page,
+    where the test expected the alias.
    </P
 ></LI
 ><LI
 ><P
->    Accepts quoted expiration dates even though RFC 2109 10.1.2
-    doesn't seem to allow them. Reported anonymously.
-   </P
+>    CGI interface improvements:
+    <P
+></P
+><UL
+><LI
+><P
+>      In finish_http_response(), continue to add the 'Connection: close'
+      header if the client connection will not be kept alive.
+      Anonymously pointed out in #2987454.
+     </P
 ></LI
 ><LI
 ><P
->    Don't try to forget connections if connection sharing is disabled.
-    This wasn't a real problem but caused an unnecessary log message.
-   </P
+>      Apostrophes in block messages no longer cause parse errors
+      when the blocked page is viewed with JavaScript enabled.
+      Reported by dg1727 in #3062296.
+     </P
 ></LI
 ><LI
 ><P
->    The still undocumented --enable-extended-host-patterns configure
-    option has a better description.
-   </P
+>      Fix a bunch of anchors that used underscores instead of dashes.
+     </P
 ></LI
 ><LI
 ><P
->    Fixed an error message that would claim a write to the server
-    failed when actually writing to the client failed.
-   </P
+>      Allow to keep the client connection alive after crunching the previous request.
+      Already opened server connections can be kept alive, too.
+     </P
 ></LI
 ><LI
 ><P
->    Log the crunch reason before trying to write to the client.
-    The log is easier to read that way.
-   </P
+>      In cgi_show_url_info(), don't forget to prefix URLs that only contain
+      http:// or https:// in the path. Fixes #2975765 reported by Adam Piggott.
+     </P
 ></LI
 ><LI
 ><P
->    Several log messages about client connections also mention
-    the socket number.
-   </P
-></LI
-><LI
-><P
->    handle-as-empty-document no longer depends on the image blocking
-    code being enabled.
-   </P
-></LI
-><LI
-><P
->    Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
-   </P
-></LI
-><LI
-><P
->    uagen, a Firefox User-Agent generator for Privoxy and Mozilla
-    browsers has been imported and is available in the tarball's
-    tools directory.
-   </P
-></LI
-><LI
-><P
->    The scripts in the tools directory treat unknown parameters
-    as fatal errors.
-   </P
+>      Show the 404 CGI page if cgi_send_user_manual() is called while
+      local user manual delivery is disabled.
+     </P
 ></LI
 ></UL
-></P
+>
+   </P
+></LI
+><LI
 ><P
-> If you missed the previous three beta versions, you may also be
- interested in the additional changes since 3.0.12, the
- last stable release:</P
-><P
-> <P
+>    Action file improvements:
+    <P
 ></P
 ><UL
 ><LI
 ><P
->    Added IPv6 support. Thanks to Petr Pisar who not only provided
-    the initial patch but also helped a lot with the integration.
+>      Enable user.filter by default. Suggested by David White in #3001830.
+     </P
+></LI
+><LI
+><P
+>      Block .sitestat.com/. Reported by johnd16 in #3002725.
+     </P
+></LI
+><LI
+><P
+>      Block .atemda.com/. Reported by johnd16 in #3002723.
+     </P
+></LI
+><LI
+><P
+>      Block js.adlink.net/. Reported by johnd16 in #3002720.
+     </P
+></LI
+><LI
+><P
+>      Block .analytics.yahoo.com/. Reported by johnd16 in #3002713.
+     </P
+></LI
+><LI
+><P
+>      Block sb.scorecardresearch.com, too. Reported by dg1727 in #2992652.
+     </P
+></LI
+><LI
+><P
+>      Fix problems noticed on Yahoo mail and news pages.
+     </P
+></LI
+><LI
+><P
+>      Remove the too broad yahoo section, only keeping the
+      fast-redirects exception as discussed on ijbswa-devel@.
+     </P
+></LI
+><LI
+><P
+>      Don't block adesklets.sourceforge.net. Reported in #2974204.
+     </P
+></LI
+><LI
+><P
+>      Block chartbeat ping tracking. Reported in #2975895.
+     </P
+></LI
+><LI
+><P
+>      Tag CSS and image requests with cautious and medium settings, too.
+     </P
+></LI
+><LI
+><P
+>      Don't handle view.atdmt.com as image. It's used for click-throughs
+      so users should be able to "go there anyway".
+      Reported by Adam Piggott in #2975927.
+     </P
+></LI
+><LI
+><P
+>      Also let the refresh-tags filter remove invalid refresh tags where
+      the 'url=' part is missing. Anonymously reported in #2986382.
+      While at it, update the description to mention the fact that only
+      refresh tags with refresh times above 9 seconds are covered.
+     </P
+></LI
+><LI
+><P
+>      javascript needs to be blocked with +handle-as-empty-document to
+      work around Firefox bug 492459.  So move .js blockers from
+      +block{Might be a web-bug.} -handle-as-empty-document to
+      +block{Might be a web-bug.} +handle-as-empty-document.
+     </P
+></LI
+><LI
+><P
+>      ijbswa-Feature Requests-3006719 - Block 160x578 Banners.
+     </P
+></LI
+><LI
+><P
+>      Block another omniture tracking domain.
+     </P
+></LI
+><LI
+><P
+>      Added a range-requests tagger.
+     </P
+></LI
+><LI
+><P
+>      Added two sections to get Flickr's Ajax interface working with
+      default pre-settings. If you change the configuration to block
+      cookies by default, you'll need additional exceptions.
+      Reported by Mathias Homann in #3101419 and by Patrick on ijbswa-users@.
+     </P
+></LI
+></UL
+>
    </P
 ></LI
 ><LI
 ><P
->    Added client-side keep-alive support.
+>    Documentation improvements:
+    <P
+></P
+><UL
+><LI
+><P
+>      Explicitly mention how to match all URLs.
+     </P
+></LI
+><LI
+><P
+>      Consistently recommend socks5 in the Tor FAQ entry and mention
+      its advantage compared to socks4a. Reported by David in #2960129.
+     </P
+></LI
+><LI
+><P
+>      Slightly improve the explanation of why filtering may appear
+      slower than it is.
+     </P
+></LI
+><LI
+><P
+>      Grammar fixes for the ACL section.
+     </P
+></LI
+><LI
+><P
+>      Fixed a link to the 'intercepting' entry and add another one.
+     </P
+></LI
+><LI
+><P
+>      Rename the 'Other' section to 'Mailing Lists' and reword it
+      to make it clear that nobody is forced to use the trackers
+     </P
+></LI
+><LI
+><P
+>      Note that 'anonymously' posting on the trackers may not always
+      be possible.
+     </P
+></LI
+><LI
+><P
+>      Suggest to enable debug 32768 when suspecting parsing problems.
+     </P
+></LI
+></UL
+>
    </P
 ></LI
 ><LI
 ><P
->    The connection sharing code is only used if the connection-sharing
-    option is enabled.
+>    Privoxy-Log-Parser improvements:
+    <P
+></P
+><UL
+><LI
+><P
+>      Gather statistics for ressources, methods, and HTTP versions
+      used by the client.
+     </P
+></LI
+><LI
+><P
+>      Also gather statistics for blocked and redirected requests.
+     </P
+></LI
+><LI
+><P
+>      Provide the percentage of keep-alive offers the client accepted.
+     </P
+></LI
+><LI
+><P
+>      Add a --url-statistics-threshold option.
+     </P
+></LI
+><LI
+><P
+>      Add a --host-statistics-threshold option to also gather
+      statistics about how many request where made per host.
+     </P
+></LI
+><LI
+><P
+>      Fix a bug in handle_loglevel_header() where a 'scan: ' got lost.
+     </P
+></LI
+><LI
+><P
+>      Add a --shorten-thread-ids option to replace the thread id with
+      a decimal number.
+     </P
+></LI
+><LI
+><P
+>      Accept and ignore: Looks like we got the last chunk together
+      with the server headers. We better stop reading.
+     </P
+></LI
+><LI
+><P
+>      Accept and ignore: Continue hack in da house.
+     </P
+></LI
+><LI
+><P
+>      Accept and higlight: Rejecting connection from 10.0.0.2.
+      Maximum number of connections reached.
+     </P
+></LI
+><LI
+><P
+>      Accept and highlight: Loading actions file: /usr/local/etc/privoxy/default.action
+     </P
+></LI
+><LI
+><P
+>      Accept and highlight: Loading filter file: /usr/local/etc/privoxy/default.filter
+     </P
+></LI
+><LI
+><P
+>      Accept and highlight: Killed all-caps Host header line: HOST: bestproxydb.com
+     </P
+></LI
+><LI
+><P
+>      Accept and highlight: Reducing expected bytes to 0. Marking
+      the server socket tainted after throwing 4 bytes away.
+     </P
+></LI
+><LI
+><P
+>      Accept: Merged multiple header lines to: 'X-FORWARDED-PROTO: http X-HOST: 127.0.0.1'
+     </P
+></LI
+></UL
+>
    </P
 ></LI
 ><LI
 ><P
->    The latency is taken into account when evaluating whether or not to
-    reuse a connection. This should significantly reduce the number of
-    connections problems several users reported.
+>    Code cleanups:
+    <P
+></P
+><UL
+><LI
+><P
+>      Remove the next member from the client_state struct. Only the main
+      thread needs access to all client states so give it its own struct.
+     </P
+></LI
+><LI
+><P
+>      Garbage-collect request_contains_null_bytes().
+     </P
+></LI
+><LI
+><P
+>      Ditch redundant code in unload_configfile().
+     </P
+></LI
+><LI
+><P
+>      Ditch LogGetURLUnderCursor() which doesn't seem to be used anywhere.
+     </P
+></LI
+><LI
+><P
+>      In write_socket(), remove the write-only variable write_len in
+      an ifdef __OS2__ block. Spotted by cppcheck.
+     </P
+></LI
+><LI
+><P
+>      In connect_to(), don't declare the variable 'flags' on OS/2 where
+      it isn't used. Spotted by cppcheck.
+     </P
+></LI
+><LI
+><P
+>      Limit the scope of various variables. Spotted by cppcheck.
+     </P
+></LI
+><LI
+><P
+>      In add_to_iob(), turn an interestingly looking for loop into a
+      boring while loop.
+     </P
+></LI
+><LI
+><P
+>      Code cleanup in preparation for external filters.
+     </P
+></LI
+><LI
+><P
+>      In listen_loop(), mention the socket on which we accepted the
+      connection, not just the source IP address.
+     </P
+></LI
+><LI
+><P
+>      In write_socket(), also log the socket we're writing to.
+     </P
+></LI
+><LI
+><P
+>      In log_error(), assert that escaped characters get logged
+      completely or not at all.
+     </P
+></LI
+><LI
+><P
+>      In log_error(), assert that ival and sval have reasonable values.
+      There's no reason not to abort() if they don't.
+     </P
+></LI
+><LI
+><P
+>      Remove an incorrect cgi_error_unknown() call in a
+      cannnot-happen-situation in send_crunch_response().
+     </P
+></LI
+><LI
+><P
+>      Clean up white-space in http_response definition and
+      move the crunch_reason to the beginning.
+     </P
+></LI
+><LI
+><P
+>      Turn http_response.reason into an enum and rename it
+      to http_response.crunch_reason.
+     </P
+></LI
+><LI
+><P
+>      Silence a 'gcc (Debian 4.3.2-1.1) 4.3.2' warning on i686 GNU/Linux.
+     </P
+></LI
+><LI
+><P
+>      Fix white-space in a log message in remove_chunked_transfer_coding().
+      While at it, add a note that the message doesn't seem to
+      be entirely correct and should be improved later on.
+     </P
+></LI
+></UL
+>
    </P
 ></LI
 ><LI
 ><P
->    The max-client-connections option has been added to restrict
-    the number of client connections below a value enforced by
-    the operating system.
-   </P
+>    GNUmakefile improvements:
+    <P
+></P
+><UL
+><LI
+><P
+>      Use $(SSH) instead of ssh, so one only needs to specify a username once.
+     </P
 ></LI
 ><LI
 ><P
->    If the server doesn't specify how long the connection stays alive,
-    Privoxy errs on the safe side of caution and assumes it's only a second.
-   </P
+>      Removed references to the action feedback thingy that hasn't been
+      working for years.
+     </P
 ></LI
 ><LI
 ><P
->    Setting keep-alive-timeout to 0 disables keep-alive support. Previously
-    Privoxy would claim to allow persistence but not reuse the connection.
-   </P
+>      Consistently use shell.sourceforge.net instead of shell.sf.net so
+      one doesn't need to check server fingerprints twice.
+     </P
 ></LI
 ><LI
 ><P
->    Pipelined requests are less likely to be mistaken for the request
-    body of the previous request. Note that Privoxy still has no real
-    pipeline support and will either serialize pipelined requests or
-    drop them in which case the client has to resent them.
-   </P
+>      Removed GNUisms in the webserver and webactions targets so they
+      work with standard tar.
+     </P
 ></LI
-><LI
-><P
->    Fixed a crash on some Windows versions when header randomization
-    is enabled and the date couldn't be parsed.
-   </P
-></LI
-><LI
-><P
->    Privoxy's keep-alive timeout for the current connection is reduced
-    to the one specified in the client's Keep-Alive header.
-   </P
-></LI
-><LI
-><P
->    For HTTP/1.1 requests, Privoxy implies keep-alive support by not
-    setting any Connection header instead of using 'Connection: keep-alive'.
-   </P
-></LI
-><LI
-><P
->    If the socket isn't reusable, Privoxy doesn't temporarily waste
-    a socket slot to remember the connection.
-   </P
-></LI
-><LI
-><P
->    If keep-alive support is disabled but compiled in, the client's
-    Keep-Alive header is removed.
-   </P
-></LI
-><LI
-><P
->    Fixed a bug on mingw32 where downloading large files failed if
-    keep-alive support was enabled.
-   </P
-></LI
-><LI
-><P
->    Fixed a bug that (at least theoretically) could cause log
-    timestamps to be occasionally off by about a second.
-   </P
-></LI
-><LI
-><P
->    The configure script respects the $PATH variable when searching
-    for groups and id.
-   </P
-></LI
-><LI
-><P
->    Compressed content with extra fields couldn't be decompressed
-    and would get passed to the client unfiltered. This problem
-    has only be detected through statical analysis with clang as
-    nobody seems to be using extra fields anyway.
-   </P
-></LI
-><LI
-><P
->    If the server resets the Connection after sending only the headers
-    Privoxy forwards what it got to the client. Previously Privoxy
-    would deliver an error message instead.
-   </P
-></LI
-><LI
-><P
->    Error messages in case of connection timeouts use the right
-    HTTP status code.
-   </P
-></LI
-><LI
-><P
->    If spawning a child to handle a request fails, the client
-    gets an error message and Privoxy continues to listen for
-    new requests right away.
-   </P
-></LI
-><LI
-><P
->    The error messages in case of server-connection timeouts or
-    prematurely closed server connections are now template-based.
-   </P
-></LI
-><LI
-><P
->    If zlib support isn't compiled in, Privoxy no longer tries to
-    filter compressed content unless explicitly asked to do so.
-   </P
-></LI
-><LI
-><P
->    In case of connections that are denied based on ACL directives,
-    the memory used for the client IP is no longer leaked.
-   </P
-></LI
-><LI
-><P
->    Fixed another small memory leak if the client request times out
-    while waiting for client headers other than the request line.
-   </P
-></LI
-><LI
-><P
->    The client socket is kept open until the server socket has
-    been marked as unused. This should increase the chances that
-    the still-open connection will be reused for the client's next
-    request to the same destination. Note that this only matters
-    if connection-sharing is enabled.
-   </P
-></LI
-><LI
-><P
->    A TODO list has been added to the source tarball to give potential
-    volunteers a better idea of what the current goals are. Donations
-    are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
-   </P
-></LI
-><LI
-><P
->    In case of missing server data, no error message is send to the
-    client if the request arrived on a reused connection. The client
-    is then supposed to silently retry the request without bothering
-    the user. This should significantly reduce the frequency of the
-    "No server or forwarder data received" error message many users
-    reported.
-   </P
-></LI
-><LI
-><P
->    More reliable detection of prematurely closed client sockets
-    with keep-alive enabled.
-   </P
-></LI
-><LI
-><P
->    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
-    FEATURE_CONNECTION_SHARING and now available on
-    all platforms.
-   </P
-></LI
-><LI
-><P
->    Improved handling of POST requests on reused connections.
-    Should fix problems with stalled connections after submitting
-    form data with some browser configurations.
-   </P
-></LI
-><LI
-><P
->    Fixed various latency calculation issues.
-   </P
-></LI
-><LI
-><P
->    Allows the client to pass NTLM authentication requests to a
-    forwarding proxy. This was already assumed and hinted to work
-    in 3.0.13 beta but actually didn't. Now it's confirmed to work
-    with IE, Firefox and Chrome.
-    Thanks to Francois Botha and Wan-Teh Chang
-   </P
-></LI
-><LI
-><P
->    Fixed a calculation problem if receiving the server headers
-    takes more than two reads, that could cause Privoxy to terminate
-    the connection prematurely. Reported by Oliver.
-   </P
-></LI
-><LI
-><P
->    Compiles again on platforms such as OpenBSD and systems
-    using earlier glibc version that don't support AI_ADDRCONFIG.
-    Anonymously submitted in #2872591.
-   </P
-></LI
-><LI
-><P
->    A bunch of MS VC project files and Suse and Redhat RPM spec
-    files have been removed as they were no longer maintained for
-    quite some time.
-   </P
-></LI
-><LI
-><P
->    Overly long action lines are properly rejected with a proper
-    error message. Previously they would be either rejected as
-    invalid or cause a core dump through abort().
-   </P
-></LI
-><LI
-><P
->    Already timed-out connections are no longer temporarily remembered.
-    They weren't reused anyway, but wasted a socket slot.
-   </P
-></LI
-><LI
-><P
->    len refers to the number of bytes actually read which might
-    differ from the ones received. Adjust log messages accordingly.
-   </P
-></LI
-><LI
-><P
->    The optional JavaScript on the CGI page uses encodeURIComponent()
-    instead of escape() which doesn't encode all characters that matter.
-    Anonymously reported in #2832722.
-   </P
-></LI
-><LI
-><P
->    Fix gcc45 warnings in decompress_iob().
-   </P
-></LI
-><LI
-><P
->    Various log message improvements.
-   </P
-></LI
-><LI
-><P
->    Privoxy-Regression-Test supports redirect tests.
-   </P
-></LI
-><LI
-><P
->    Privoxy-Log-Parser can gather some connection statistics.
+></UL
+>
    </P
 ></LI
 ></UL

@@ -660,7 +660,7 @@ CLASS="LITERAL"
 >
  action</A
 > in one of the actions files. Content filtering is automatically
- disabled for inappropriate MIME types, but if you now better than Privoxy
+ disabled for inappropriate MIME types, but if you know better than Privoxy
  what should or should not be filtered you can filter any content you like.</P
 ><P
 > Filters should
@@ -1006,15 +1006,15 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OTHERPROXY"
->3.17. How can I make Privoxy work with other 
-proxies like Squid or Tor?</A
+>3.17. How can I make Privoxy work with other proxies?</A
 ></H3
 ><P
 > This can be done and is often useful to combine the benefits of
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with those of a another proxy.
+> with those of a another proxy,
+ for example to cache content.
  See the <A
 HREF="../user-manual/config.html#FORWARDING"
 TARGET="_top"
@@ -1025,11 +1025,12 @@ HREF="../user-manual/index.html"
 TARGET="_top"
 >User Manual</A
 > which
- describes how to do this, and the <A
+ describes how to do this. If you intend to use Privoxy with Tor,
+ please also have a look at
+ <A
 HREF="misc.html#TOR"
-> How do I use Privoxy together with 
- Tor</A
-> section below.</P
+>How do I use Privoxy together with Tor</A
+>.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -1045,7 +1046,11 @@ and thus avoid individual browser configuration?</A
  of proxies known as <SPAN
 CLASS="QUOTE"
 >"intercepting"</SPAN
-> proxies (see below).</P
+> proxies
+ (<A
+HREF="configuration.html#INTERCEPTING"
+>see below</A
+>).</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -1077,8 +1082,7 @@ CLASS="QUOTE"
 >"intercepting proxy"</SPAN
 >. If you are one of them,
  please read the <A
-HREF="#intercepting"
-TARGET="_top"
+HREF="configuration.html#INTERCEPTING"
 >next entry</A
 >.</P
 ></DIV

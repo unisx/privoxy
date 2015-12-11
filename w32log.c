@@ -1,4 +1,4 @@
-const char w32log_rcs[] = "$Id: w32log.c,v 1.36 2009/11/08 18:09:52 ler762 Exp $";
+const char w32log_rcs[] = "$Id: w32log.c,v 1.38 2010/08/14 23:28:52 ler762 Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32log.c,v $
@@ -135,7 +135,8 @@ int g_nFontSize = DEFAULT_LOG_FONT_SIZE;
 
 const char * g_default_actions_file = NULL;
 const char * g_user_actions_file = NULL;
-const char * g_re_filterfile = NULL;
+const char * g_default_filterfile = NULL;
+const char * g_user_filterfile = NULL;
 #ifdef FEATURE_TRUST
 const char * g_trustfile = NULL;
 #endif /* def FEATURE_TRUST */
@@ -346,67 +347,6 @@ void LogDestroyPatternMatchingBuffers(void)
    {
       regfree(&patterns_to_highlight[i].buffer);
    }
-}
-
-
-/*********************************************************************
- *
- * Function    :  LogGetURLUnderCursor
- *
- * Description :  Returns the URL from under the cursor (remember to free it!).
- *
- * Parameters  :  None
- *
- * Returns     :  NULL or a pointer to an URL string.
- *
- *********************************************************************/
-char *LogGetURLUnderCursor(void)
-{
-   char *szResult = NULL;
-   regex_t re;
-   POINT ptCursor;
-   POINTL ptl;
-   DWORD nPos;
-   DWORD nWordStart = 0;
-   DWORD nWordEnd = 0;
-
-   regcomp(&re, RE_URL, REG_ICASE);
-
-   /* Get the position of the cursor over the text window */
-   GetCursorPos(&ptCursor);
-   ScreenToClient(g_hwndLogBox, &ptCursor);
-   ptl.x = ptCursor.x;
-   ptl.y = ptCursor.y;
-
-   /* Search backwards and fowards to obtain the word that is highlighted */
-   nPos = LOWORD(SendMessage(g_hwndLogBox, EM_CHARFROMPOS, 0, (LPARAM) &ptl));
-   nWordStart = SendMessage(g_hwndLogBox, EM_FINDWORDBREAK, WB_LEFT, nPos);
-   nWordEnd = SendMessage(g_hwndLogBox, EM_FINDWORDBREAK, WB_RIGHTBREAK, nPos);
-
-   /* Compare the string to the pattern */
-   if (nWordEnd > nWordStart)
-   {
-      TEXTRANGE range;
-      regmatch_t match;
-
-      range.chrg.cpMin = nWordStart;
-      range.chrg.cpMax = nWordEnd;
-      range.lpstrText = (LPSTR)zalloc(nWordEnd - nWordStart + 1);
-      SendMessage(g_hwndLogBox, EM_GETTEXTRANGE, 0, (LPARAM) &range);
-
-      if (regexec(&re, range.lpstrText, 1, &match, 0) == 0)
-      {
-         szResult = range.lpstrText;
-      }
-      else
-      {
-         free(range.lpstrText);
-      }
-
-      regfree(&re);
-   }
-   return szResult;
-
 }
 
 
@@ -1031,8 +971,12 @@ void OnLogCommand(int nCommand)
          EditFile(g_user_actions_file);
          break;
 
-      case ID_TOOLS_EDITFILTERS:
-         EditFile(g_re_filterfile);
+      case ID_TOOLS_EDITDEFAULTFILTERS:
+         EditFile(g_default_filterfile);
+         break;
+
+      case ID_TOOLS_EDITUSERFILTERS:
+         EditFile(g_user_filterfile);
          break;
 
 #ifdef FEATURE_TRUST
@@ -1087,7 +1031,8 @@ void OnLogInitMenu(HMENU hmenu)
    /* Only enable editors if there is a file to edit */
    EnableMenuItem(hmenu, ID_TOOLS_EDITDEFAULTACTIONS, MF_BYCOMMAND | (g_default_actions_file ? MF_ENABLED : MF_GRAYED));
    EnableMenuItem(hmenu, ID_TOOLS_EDITUSERACTIONS, MF_BYCOMMAND | (g_user_actions_file ? MF_ENABLED : MF_GRAYED));
-   EnableMenuItem(hmenu, ID_TOOLS_EDITFILTERS, MF_BYCOMMAND | (g_re_filterfile ? MF_ENABLED : MF_GRAYED));
+   EnableMenuItem(hmenu, ID_TOOLS_EDITDEFAULTFILTERS, MF_BYCOMMAND | (g_default_filterfile ? MF_ENABLED : MF_GRAYED));
+   EnableMenuItem(hmenu, ID_TOOLS_EDITUSERFILTERS, MF_BYCOMMAND | (g_user_filterfile ? MF_ENABLED : MF_GRAYED));
 #ifdef FEATURE_TRUST
    EnableMenuItem(hmenu, ID_TOOLS_EDITTRUST, MF_BYCOMMAND | (g_trustfile ? MF_ENABLED : MF_GRAYED));
 #endif /* def FEATURE_TRUST */

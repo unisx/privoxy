@@ -321,8 +321,10 @@
             <tr>
               <td><code>STATIC_PCRE</code></td>
               <td>@if-STATIC_PCRE-then@ Yes @else-not-STATIC_PCRE@ No @endif-STATIC_PCRE@</td>
-              <td>Use the supplied statically-linked PCRE library.  This is set automatically
-               by <code>./configure</code> if you do not have the libpcre installed.</td>
+              <td>Use the supplied statically-linked PCRE library. This is set automatically
+               by <code>./configure</code> if you do not have the libpcre installed.
+               Dynamically linking to an external libpcre is recommended as the internal
+               one is outdated and lacks various features and bug-fixes you may be interested in.</td>
             </tr>
             <tr>
               <td><code>STATIC_PCRS</code></td>

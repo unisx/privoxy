@@ -1,6 +1,6 @@
-#        Sample Configuration File for Privoxy v3.0.16
+#        Sample Configuration File for Privoxy v3.0.17
 #
-#  $Id: config,v 1.89 2010/02/15 16:47:12 fabiankeil Exp $
+#  $Id: config,v 1.93 2010/11/13 12:48:18 fabiankeil Exp $
 #
 #  Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
 #
@@ -113,7 +113,6 @@
 #
 #        user-manual  /usr/share/doc/privoxy/user-manual
 #
-#
 #      The User Manual is then available to anyone with
 #      access to Privoxy, by following the built-in URL:
 #      http://config.privoxy.org/user-manual/ (or the shortcut:
@@ -123,7 +122,6 @@
 #      accessed from a remote server, as:
 #
 #        user-manual  http://example.com/privoxy/user-manual/
-#
 #
 #      WARNING!!!
 #
@@ -416,7 +414,7 @@ actionsfile user.action      # User customizations
 #      separate file, such as user.filter.
 #
 filterfile default.filter
-#filterfile user.filter      # User customizations
+filterfile user.filter      # User customizations
 #
 #
 #  2.6. logfile
@@ -560,7 +558,7 @@ logfile logfile
 #        debug         2 # show each connection status
 #        debug         4 # show I/O status
 #        debug         8 # show header parsing
-#        debug        16 # log all data written to the network into the logfile
+#        debug        16 # log all data written to the network
 #        debug        32 # debug force feature
 #        debug        64 # debug regular expression filters
 #        debug       128 # debug redirects
@@ -570,6 +568,7 @@ logfile logfile
 #        debug      2048 # CGI user interface
 #        debug      4096 # Startup banner and warnings.
 #        debug      8192 # Non-fatal errors
+#        debug     32768 # log all data read from the network
 #
 #
 #      To select multiple debug levels, you can either add them or
@@ -728,12 +727,10 @@ logfile logfile
 #
 #        listen-address  192.168.0.1:8118
 #
-#
 #      Suppose you are running Privoxy on an IPv6-capable machine and
 #      you want it to listen on the IPv6 address of the loopback device:
 #
 #        listen-address [::1]:8118
-#
 #
 listen-address  127.0.0.1:8118
 #
@@ -1007,10 +1004,10 @@ enforce-blocks 0
 #      names. If a DNS name resolves to multiple IP addresses, only
 #      the first one is used.
 #
-#      Some systems allows IPv4 client to connect to IPv6 server
-#      socket. Then the client's IPv4 address will be translated by
+#      Some systems allow IPv4 clients to connect to IPv6 server
+#      sockets. Then the client's IPv4 address will be translated by the
 #      system into IPv6 address space with special prefix ::ffff:0:0/96
-#      (so called IPv4 mapped IPv6 address).  Privoxy can handle it
+#      (so called IPv4 mapped IPv6 address). Privoxy can handle it
 #      and maps such ACL addresses automatically.
 #
 #      Denying access to particular sites by ACL may have undesired
@@ -1274,7 +1271,6 @@ buffer-limit 4096
 #      that look like this:
 #
 #       forward           localhost/     .
-#
 #
 #
 #
@@ -1556,6 +1552,7 @@ keep-alive-timeout 5
 #      default-server-timeout 60
 #
 #default-server-timeout 60
+#
 #
 #  6.6. connection-sharing
 #  ========================

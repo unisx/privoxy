@@ -1,6 +1,6 @@
 #ifndef W32LOG_H_INCLUDED
 #define W32LOG_H_INCLUDED
-#define W32LOG_H_VERSION "$Id: w32log.h,v 1.14 2009/05/16 13:27:20 fabiankeil Exp $"
+#define W32LOG_H_VERSION "$Id: w32log.h,v 1.15 2010/08/14 23:28:52 ler762 Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32log.h,v $
@@ -73,7 +73,8 @@ extern int g_nFontSize;
 
 extern const char * g_default_actions_file;
 extern const char * g_user_actions_file;
-extern const char * g_re_filterfile;
+extern const char * g_default_filterfile;
+extern const char * g_user_filterfile;
 #ifdef FEATURE_TRUST
 extern const char * g_trustfile;
 #endif /* def FEATURE_TRUST */

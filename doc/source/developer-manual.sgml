@@ -8,7 +8,7 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.16">
+<!entity p-version "3.0.17">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -24,7 +24,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.33 2010/02/13 17:38:27 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.34 2010/11/06 12:55:48 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -51,7 +51,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.33 2010/02/13 17:38:27 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.34 2010/11/06 12:55:48 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -3005,6 +3005,9 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.34  2010/11/06 12:55:48  fabiankeil
+  Set p-version to 3.0.17
+
   Revision 2.33  2010/02/13 17:38:27  fabiankeil
   Update entities for 3.0.16 stable.
 

@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.207 2010/02/09 16:18:53 fabiankeil Exp $
+#  $Id: default.action.master,v 1.227 2010/11/06 10:47:59 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -563,6 +563,8 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #
 { \
 +change-x-forwarded-for{block} \
++client-header-tagger{css-requests} \
++client-header-tagger{image-requests} \
 +hide-from-header{block} \
 +set-image-blocker{pattern} \
 }
@@ -574,6 +576,8 @@ standard.Cautious
 #
 { \
 +change-x-forwarded-for{block} \
++client-header-tagger{css-requests} \
++client-header-tagger{image-requests} \
 +deanimate-gifs{last} \
 +filter{refresh-tags} \
 +filter{img-reorder} \
@@ -677,6 +681,7 @@ metrics.
 # Generic unblockers by host:
 #############################################################################
 {-block}
+# Sticky Actions = -block
 adsl.
 ad[udmw]*.
 adbl*.
@@ -693,6 +698,9 @@ adventure*.
 .*[epu]ad*.
 county*.
 countr*.
+#MASTER# REMARKS: We still like tor
+# URL = http://metrics.torproject.org/consensus-graphs.html
+metrics.torproject.org/
 
 #############################################################################
 # Generic block patterns by path:
@@ -914,10 +922,11 @@ static.lycos-europe.net
 #MASTER# BLOCK-REFERRER: http://hitta.se
 # Blocked URL = http://82.99.18.195/media.1/112/9460/146016/150x175_Hitta_FV_Feb08.gif
 82.99.18.195
-#MASTER# REMARKS: Actionsfile feedback item #1888197  2008-02-06
-#MASTER# REMARKS: Have a "go there anyway" link for clk.atdmt.com
+#MASTER# REMARKS: Actionsfile feedback item #1888197 and #2975927.
+#MASTER# REMARKS: Have a "go there anyway" link for clk.atdmt.com and view.atdmt.com.
 #MASTER# BLOCK-REFERRER: http://www.networkworld.com/resourcelibrary/?tid=4&type=special%20report
 # Blocked URL = http://clk.atdmt.com/
+# Blocked URL = http://view.atdmt.com/action/mrtiwy_FY10Office2010BetaHomeandBiz1_1
 .atdmt.com/
 #MASTER# REMARKS: Actionsfile feedback item #2723873 2009-04-01
 #MASTER# BLOCK-REFERRER: http://www.news.software.coop/paralysed-perl-package-problem/602/
@@ -932,7 +941,16 @@ bcc.co.uk/
 # Blocked URL = http://fusion.adtoma.com:80/125AFFE801/1DC59C7801.swf
 # Blocked URL = http://fusion.adtoma.com/1254D5CC01/1E43C76801.jpg
 fusion.adtoma.com/
-
+#MASTER# Remark: Actionsfile feedback item #2975895 2010-03-24
+# Blocked URL = http://ping.chartbeat.net/ping?h=uservoice.com&p=%2Fsuggestions%2Fping-chartbeat-net-sucks&u=3
+.chartbeat.net/(.*/)?ping\?
+# Blocked URL = http://s.atemda.com/Admeta.js
+# Blocked URL = http://atemda.com/ClickThrough.ashx?pId=9616&mId=14484&tId=634102151426089505&opS=1&admetac=mR3sJ3%2b9yleq%2bHowITh0hw%3d%3d
+#MASTER# BLOCK-REFERRER: http://www.startpagina.nl
+.atemda.com/
+#MASTER# Remark: 2o7.net and omtrdc.net are domains used by Omniture
+# Blocked URL = http://ciscosystemsinc.tt.omtrdc.net/m2/ciscosystemsinc/mbox/standard?mboxHost=www.cisco.com&mboxSession=12
+.omtrdc.net/
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -997,6 +1015,37 @@ stats.reinvigorate.net/
 .quantserve.com
 # Blocked URL = http://media.adrevolver.com/adrevolver/trace?sip=123&cpy=123
 media.adrevolver.com/
+#MASTER# REMARKS: Actionsfile feedback item #2975895 2010-03-24
+# Blocked URL = http://static.chartbeat.com/js/chartbeat.js
+.chartbeat.com/(.*/)?chartbeat\.js$
+# Blocked URL = http://js.adlink.net/js?lang=de&s=duesseldorf-international.de&z=home&d=1274103403564
+#MASTER# BLOCK-REFERRER: http://www.duesseldorf-international.de/
+js.adlink.net/
+# Blocked URL = nl.sitestat.com/rdw/rdw/s?www.nl.voertuigeigenaar.voertuigeigenaar&ns__t=1274099350343
+#MASTER# BLOCK-REFERRER: http://www.rdw.nl/nl/voertuigeigenaar/
+.sitestat.com/
+#MASTER# BLOCK-REFERRER: http://www.chip.de/artikel/c_artikelunterseite_10423683.html
+# Blocked URL = http://pagead.googlesyndication.example.com/foo/bar/baz.js
+pagead*.googlesyndication./.*\.js
+#MASTER# BLOCK-REFERRER: http://www.pcmag.com/ 11/22/06 per SF Tracker # 1601148
+/js/slider\.js
+#MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 SF tracker
+scripts.chitika.net/.*\.js
+#MASTER# BLOCK-REFERRER: via Yahoo groups
+#MASTER# REMARKS: Actionsfile tracker 1645513 2007-01-26
+.adinterax.com/.*\.js
+#MASTER# BLOCK-REFERRER: http://dictionary.reference.com/search?q=privacy&db=*
+#MASTER# REMARKS: Actionsfile tracker 1650798 2007-02-02
+# Blocked URL = http://partner.googleadservices.com/gampad/google_service.js
+# Blocked URL = http://partner.googleadservices.com/gampad/google_ads.js
+# Blocked URL = http://partner.googleadservices.com/gampad/slotdata.js?callback=_GA_googleAdData.setAdSlotAttributes&client=ca-gam-lexico
+.googleadservices.com/gampad/.*\.js
+# Blocked URL = http://richmedia.yimg.com/js/123/personnals_banners/PER_happy_sara1_4_425x600/ad.js?q=123
+/.*/ad\.js\?
+# Blocked URL = http://i.cmpnet.com/shared/omniture/s_code_remote.js
+#MASTER# BLOCK-REFERRER: http://www.informationweek.de/
+/.*omniture.*\.js
+
 
 {+block{Might be a web-bug.} -handle-as-empty-document +handle-as-image}
 #MASTER# BLOCK-REFERRER: http://versiontracker.com and many others. 10/20/06
@@ -1025,33 +1074,25 @@ stats./c?rc/.*/uc.gif
 /(.*/)?(clear|blank|(trans_?|1x)?1).gif\?.
 #MASTER# BLOCK-REFERRER: http://actorstheatre.org 11/02/06
 stats./.*\.gif\?
+# Blocked URL = http://ad.yieldmanager.com/pixel?id=123456&t=2
+.yieldmanager.com/pixel\?
+# Blocked URL = http://a.analytics.yahoo.com/p.pl?a=1000226660965&js=no
+# Blocked URL = http://s.analytics.yahoo.com/fpc.pl?a=1000461640983&v=4.43&enc=utf-8&f=http%3A//www.zoover.nl/nederland/limburg/maasbracht/weer%23tabs&b=Het%20Weer%20in%20Maasbracht.%20Bekijk%20Weersverwachting%20van%20Maasbracht%20%7C%20Zoover%23tabs&flv=WIN%2010%2C0%2C45%2C2&d=Mon%2C%2017%20May%202010%2014%3A09%3A26%20UTC&n=-2&g=nl&h=Y&j=1440x900&k=32&l=true&ittidx=0&fpc=uP04C7j4%7ClaDQjglKaa%7Cfses1000461640983%3D%7CkbSSgv6Jaa%7CuP04C7j4%7Cfvis1000461640983%3DZj1odHRwJTNBLy93d3cuem9vdmVyLm5sLyZiPVpvb3ZlciUyMCU3QyUyMFZha2FudGllYmVvb3JkZWxpbmdlbiUyMHZvb3IlMjBlbiUyMGRvb3IlMjByZWl6aWdlcnM%3D%7C8sHTYo10oM%7C8sHTYo10oM%7C8sHTYo10oM%7CT%7C8sHTYo10oM%7C8sHTYo10oM
+.analytics.yahoo.com
 
 #----------------------------------------------------------------------------
 # JavaScripts and Texts for ad and popup generation
 #----------------------------------------------------------------------------
-#MASTER# BLOCK-REFERRER: http://www.chip.de/artikel/c_artikelunterseite_10423683.html
-# Blocked URL = http://pagead.googlesyndication.example.com/foo/bar/baz.js
-pagead*.googlesyndication./.*\.js
 #MASTER# REMARKS: broadening scope from a.tfag.de/js.ng/ 10/23/06
 # Blocked URL = http://a.tfag.de/js.ng/
 /js\.ng/
 #MASTER# BLOCK-REFERRER: http://www.britannica.com/ 10/23/06
 /popunder
-#MASTER# BLOCK-REFERRER: http://www.pcmag.com/ 11/22/06 per SF Tracker # 1601148
-/js/slider\.js
 #MASTER# BLOCK-REFERRER: http://www.earthcore.com/ feedback item #1605385 12/14/06
 /t\.php\?cat=.*&kw=.*&sc=
-#MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 SF tracker
-scripts.chitika.net/.*\.js
 #MASTER# REMARKS: Actionsfile tracker #1674363 2007-03-05, text ads
 #MASTER# BLOCK-REFERRER: http://www.securityfocus.com/archive/1/461489/30/0/threaded
 jlinks.industrybrains.com/
-#MASTER# BLOCK-REFERRER: via Yahoo groups
-#MASTER# REMARKS: Actionsfile tracker 1645513 2007-01-26
-.adinterax.com/.*\.js
-#MASTER# BLOCK-REFERRER: http://dictionary.reference.com/search?q=privacy&db=*
-#MASTER# REMARKS: Actionsfile tracker 1650798 2007-02-02
-.googleadservices.com/gampad/.*\.js
 #MASTER# BLOCK-REFERRER: http://www.linuxworld.com/news/2007/061307-brian-aker-interview.html
 #MASTER# REMARKS: Actionsfile feedback item #1736794 2007-06-13
 js.adsonar.
@@ -1061,11 +1102,6 @@ js.adsonar.
 bwp.
 # Blocked URL = http://us.mc123.mail.yahoo.com/mc/stampNonJs
 .yahoo.com/mc/stampNonJs
-# Blocked URL = http://richmedia.yimg.com/js/123/personnals_banners/PER_happy_sara1_4_425x600/ad.js?q=123
-/.*/ad\.js\?
-# Blocked URL = http://i.cmpnet.com/shared/omniture/s_code_remote.js
-#MASTER# BLOCK-REFERRER: http://www.informationweek.de/
-/.*omniture.*\.js
 
 
 #############################################################################
@@ -1127,15 +1163,20 @@ bwp.
 #.yimg.com/a/.*/flash/
 #MASTER# REMARKS: The above replaced with below. Actions file tracker #1645616 2007-01-27
 .yimg.com/.*\.yimg\.com/a/
+#MASTER# REMARKS: Yahoo doesn't always have ".yimg.com/a/" in the URL for ads now 2010-02-28
+#MASTER# BLOCK-REFERRER: various yahoo pages
+# Blocked URL = http://l.yimg.com/a/a/1-/flash/promotions/l3/intl/100214/300x250mfeyap.jpg
+# Blocked URL = http://l.yimg.com/a/a/1-/flash/promotions/l3/intl/100219/300x250mfeya.gif
+.yimg.com/.*/flash/promotions/.*\.(gif|jpg)$
 bs*.gsanet.com
 bs*.einets.com
 .qkimg.net
 #MASTER# BLOCK-REFERRER: http://salon.com/ 10/19/06
 #MASTER# BLOCK-REFERRER: http://maps.yahoo.com/
 #MASTER# REMARKS: Banner farms; just exclude their corp. info
-#MASTER# REMARKS: and have a "go there anyway" link for clk.atdmt.com
-#MASTER# REMARKS:   (Actionsfile feedback item #1888197)
-[abd-vx-z]*.atdmt.com/
+#MASTER# REMARKS: and have a "go there anyway" link for clk.atdmt.com and view.atdmt.com
+#MASTER# REMARKS:   (Actionsfile feedback item #1888197 and #2975927)
+[abd-ux-z]*.atdmt.com/
 #MASTER# BLOCK-REFERRER: http://www.exactaudiocopy.de/ 09/11/06
 #MASTER# BLOCK-REFERRER: http://stanford.facebook.com/home.php
 # URL = http://www.fastclick.net/
@@ -1256,6 +1297,11 @@ img.directtrack.com
 /tradedoubler/.*\.swf
 # Blocked URL = http://hstse.tradedoubler.com/file/142609/440x220.swf
 hstse.tradedoubler.com/.*\.swf
+# Blocked URL = http://www.zdnetasia.com/2007/techguide/network/sponsor/i/logmein_mpu_whitepaper.gif
+# Blocked URL = http://www.zdnetasia.com/2007/techguide/network/sponsor/sidebar.gif
+www.zdnetasia.com/.*/sponsor/.*\.gif$
+# Blocked URL = http://pagead2.googlesyndication.com/pagead/imgad?id=CPjtipDs9taquQEQoAEYwgQyCIvo2PNnQywb
+.googlesyndication.com/.*/imgad\?
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1351,6 +1397,8 @@ track.webtrekk.de/
 #MASTER# BLOCK-REFERER: https://sourceforge.net/
 # URL = http://b.scorecardresearch.com/p2?c1=2&c2=6035546&c3=&c4=&c5=&c6=&c15=&cj=1
 b.scorecardresearch.com/
+# URL = https://sb.scorecardresearch.com/
+sb.scorecardresearch.com/
 
 #----------------------------------------------------------------------------
 # Specific counters (see above for generic patterns)
@@ -1722,7 +1770,18 @@ www.peereboom.us/adsuck/
 #MASTER# REMARKS: Ebay enlarge picture function doesn't work.
 # URL = http://include.ebaystatic.com/v4js/en_GB/e637i/SYS-LIGER_Omniture_e637i10177164_5_en_GB.js
 include.ebaystatic.com/.*omniture.*\.js
-
+#MASTER# REMARKS: Allow Yahoo news and mail javascipt pages
+# URL = http://l.yimg.com/d/combo?news/p/common/generic/news/p/common/generic/popular-searches-min-12622.js&news/p/common/generic/ads-min-11050.js&news/p/common/generic/foundation/popup-min-12622.js
+.yimg.com/d/combo\?
+#MASTER# REMARKS: Page formatting problems when .css files are blocked
+# URL = http://www.networkworld.com/includes/styles/adstyles.css
+# URL = http://www.sj.se/common/css/pop.css
+# URL = http://l.yimg.com/d/combo?news/p/common/generic/ads-min-24248.css&news/p/common/generic/widgets-min-10270.css
+# URL = http://news.zdnet.com/css/z/ads/hs.css
+/.*\.css$
+#MASTER# REMARKS:Actionsfile feedback item #2974204 2010-03-21
+# URL = http://adesklets.sourceforge.net/
+adesklets.sourceforge.net/
 
 
 #############################################################################
@@ -1745,17 +1804,6 @@ images.apple.com
 .update.microsoft.com
 #MASTER# REMARKS: Various reports 09/16/06. This site also requires pop-ups.
 mail.google.*
-
-#----------------------------------------------------------------------------
-# Semi-fragile, allow for blocks.
-#----------------------------------------------------------------------------
-{-crunch-all-cookies -filter -fast-redirects -hide-referer}
-# Sticky Actions = -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer
-# URL = http://adserver.yahoo.com/
-#MASTER# REMARKS: This is much too broad for my taste. It forces me to add
-#MASTER# REMARKS: a special yahoo section in my user.action file, just to
-#MASTER# REMARKS: confirm my defaults in default.action. fk 2007-01-19
-.yahoo.com
 
 #----------------------------------------------------------------------------
 # Shopping and banking sites - allow cookies and pop-ups
@@ -1825,14 +1873,13 @@ www.ukc.ac.uk/cgi-bin/wac\.cgi\?
 .speedfind.de
 #MASTER# PROBLEM-URL: http://www.nytimes.com/
 .nytimes.com
-#MASTER# REMARKS: Yahoo logout URL after first redirect. fk 2007-01-19
-#MASTER# REMARKS: Logout fails if we fast-redirect to the URL after "done=".
-#MASTER# REMARKS: Reported in support request #1635354.
+#MASTER# REMARKS: Disable fast-redirects for all of yahoo.com/.
+#MASTER# REMARKS: Apparently we can't keep up with maintaining more precise exceptions.
 # URL = http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
-.yahoo.com/.*done=http
+#MASTER# REMARKS: Reported in support request #1635354.
+# URL = http://us.rd.yahoo.com/reg/login1/lisu/login/uk/ym/*http://edit.europe.yahoo.com/c onfig/login?.tries=1&.src=ym&.md5=&.hash=&.js=1&.last=&...kP=Y&.done=http://mail .yahoo.com&.pd=ym_ver=0&c=&login=XXX&passwd=XXX&.persistent =&.hash=1&.md5=1.yahoo.com/
 #MASTER# REMARKS: Reported in support request #1802365.
-# URL = http://us.rd.yahoo.com/reg/login1/lisu/login/uk/ym/*http://edit.europe.yahoo.com/c onfig/login?.tries=1&.src=ym&.md5=&.hash=&.js=1&.last=&...kP=Y&.done=http://mail .yahoo.com&.pd=ym_ver=0&c=&login=XXX&passwd=XXX&.persistent =&.hash=1&.md5=1
-.rd.yahoo.com/reg/login1/
+.yahoo.com/
 # URL = http://validator.w3.org/check
 .w3.org
 #MASTER# PROBLEM-URL: http://www.ask.com/
@@ -2268,6 +2315,24 @@ config.privoxy.org/
 # Redirected URL = http://us.ard.yahoo.com/SIG=AAAAAAAAA/M=NNNNNN.NNNNNNN.NNNNNNN.NNNNNNN/D=mail/S=NNNNNNNNN:HEADR/Y=YAHOO/EXP=NNNNNNNNNN/A=NNNNNNN/R=N/SIG=AAAAAAAAA/*http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
 # Redirect Destination = http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
 .yahoo./.*http://login.yahoo.com/config/login.*http://
+
+#MASTER# REMARKS: The next two sections are to get flickr's Ajax interface working
+#MASTER# REMARKS: with default pre-settings. For more aggressive defaults they additionally
+#MASTER# REMARKS: need -crunch-incoming-cookies and -crunch-outgoing-cookies.
+#MASTER# REMARKS: They work with +session-cookies-only, though.
+{-block -filter}
+#MASTER# PROBLEM-URL: http://www.flickr.com/
+# Sticky Actions = -block -filter
+# URL = http://l.yimg.com/g/combo/1?event-custom/event-custom-min.js&event/event-min.js&j/.H-.K.A.vNKEa&j/.CP-.U-.DE.A.vKEJz&j/.J_.BR_.CA.A.vKYkg&j/.J_.DB.A.vPpBT&j/popup-login.A.vR53Z&dump/dump-min.js&datatype/datatype-xml-min.js&substitute/substitute-min.js&json/json-min.js&queue-promote/queue-promote-min.js&io/io-min.js&j/.J_.DS.A.vQa28&j/.FW-.FX-.GH.A.vP3XB&j/grease.A.vRktP&j/.CC.A.vNiA6&j/.C-.BL.A.vPPj2&j/.CE-.K.A.vNy32&attribute/attribute-base-min.js&base/base-min.js&anim/anim-min.js&cookie/cookie-min.js&j/.B-.C-.F.A.vQ7SZ&j/urls.A.vQtXp&j/.B-.BY.A.vQCXP&j/.H-.BY.A.vQXXx&j/.DS-value-conversions.A.vQpRt&j/.G-.BD.A.vNHSH&event/event-synthetic-min.js&j/.G-.BO.A.vNwR4&j/.CV-.CH.A.vPFSZ&j/.X-.W-.C-.F.A.vKPQa&j/.X-.W-.D.A.vQXXx&j/.Q-.BX-.K.A.vR1kt&j/.DL.A.vLPjD&j/.CF.A.vNC24&j/.CX-.CY.A.vP8ND&event-simulate/event-simulate-min.js&node/node-event-simulate-min.js&j/.B-.T-.CI-.C-.F.A.vPJPF&j/.CM/.BA_2.5.1-.D.A.vPzui&j/bo-.S-.C-.F.A.vNwWe&j/bo-.S-.D.A.vR6Hx&j/.BZ-.D.A.vNstB&j/.B-.L-.C-.F.A.vNxPX&j/.B-.L-.BH.A.vMdVB&j/.CN-.DD.A.vLjJ2&j/.B-.O-.C-.F.A.vPpcK&j/.BM.A.vKPmz&j/.B-.O.A.vQyHg&j/.B-.H-.BB-.C-.F.A.vQvrB&j/.CW-.CU.A.vQ7Rg&j/.Y-.C-.F.A.vNqGa&j/.Y.A.vLKiT&j/.B-.M-.C-.F.A.vQxDc&j/.U-.CG.A.vQ5Tt&j/.B-.M.A.vQXXx&j/.B-.Q-.BQ.A.vQvTt&j/.B-.N-.C-.F.A.vQaRp&j/.CL.A.vN4N6&j/.B-.CL-.BW.A.vPwkx&j/.DR-.DG.A.vMLJr&j/.B-.BE-.C-.F.A.vPHP4&j/.B-.BE-.D.A.vQLQH&j/.BV.A.vm3Uz&j/.Z-.DK-.D.A.vLQEe&j/.Z-.DJ-.BJ.A.vLQEe&j/.B-.I-.C-.F.A.vPKTK&stylesheet/stylesheet-min.js&j/.B-.I.A.vQvDF&j/.CM-.DO.A.vPboD&j/.B-.D.A.vRbv8&j/.B-.H-.BB.A.vQuhn&j/.B-.N.A.vR6Cn&j/.B-.L-.CZ.A.vQmzP&j/.B-.T-.CI.A.vQXXx&j/.B-.I-.CQ-.BK-.C-.F.A.vNwZF&j/.B-.I-.CQ-.BK.A.vLWQR&j/.B-.R-.C-.F.A.vPfwi&j/.B-.R.A.vRhND&j/.DN-.BB-.D-.C-.F.A.vQXZg&j/.DN-.BB-.D.A.vRcXB&j/.BF_.D-.C-.F.A.vPGYM&j/.BF_.D.A.vQxJn&plugin/plugin-min.js&cache/cache-min.js&j/.CB-.C-.F.A.vNwWe&j/.CB-.D.A.vQS6T
+.yimg.com/g/combo/1\?event-custom/
+
+{-block -filter{content-cookies}}
+#MASTER# PROBLEM-URL: http://www.flickr.com/
+{-filter{content-cookies}}
+# Sticky Actions = -block
+# URL = http://www.flickr.com/
+.flickr.com/
+
 
 #----------------------------------------------------------------------------
 # Sections that modify the action settings based on tags.

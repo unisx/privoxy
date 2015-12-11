@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.126 2010/01/10 13:53:43 ler762 Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.137 2010/11/13 11:09:54 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -13,7 +13,7 @@ const char filters_rcs[] = "$Id: filters.c,v 1.126 2010/01/10 13:53:43 ler762 Ex
  *                   `execute_single_pcrs_command', `rewrite_url',
  *                   `get_last_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001, 2004-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -49,11 +49,6 @@ const char filters_rcs[] = "$Id: filters.c,v 1.126 2010/01/10 13:53:43 ler762 Ex
 #include <ctype.h>
 #include <string.h>
 #include <assert.h>
-
-#ifdef HAVE_RFC2553
-#include <netdb.h>
-#include <sys/socket.h>
-#endif /* def HAVE_RFC2553 */
 
 #ifndef _WIN32
 #ifndef __OS2__
@@ -98,6 +93,8 @@ const char filters_h_rcs[] = FILTERS_H_VERSION;
  */
 #define ijb_isdigit(__X) isdigit((int)(unsigned char)(__X))
 
+typedef char *(*filter_function_ptr)();
+static filter_function_ptr get_filter_function(const struct client_state *csp);
 static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size);
 static jb_err prepare_for_filtering(struct client_state *csp);
 
@@ -291,6 +288,10 @@ int block_acl(const struct access_control_addr *dst, const struct client_state *
             if (acl->action == ACL_PERMIT)
             {
                return(0);
+            }
+            else
+            {
+               return(1);
             }
          }
          else if (
@@ -599,7 +600,6 @@ struct http_response *block_url(struct client_state *csp)
       {
          log_error(LOG_LEVEL_ERROR, "handle-as-empty-document overruled by handle-as-image.");
       }
-#if 1 /* Two alternative strategies, use this one for now: */
 
       /* and handle accordingly: */
       if ((p == NULL) || (0 == strcmpic(p, "pattern")))
@@ -624,7 +624,6 @@ struct http_response *block_url(struct client_state *csp)
             return cgi_error_memory();
          }
       }
-
       else if (0 == strcmpic(p, "blank"))
       {
          rsp->status = strdup("403 Request blocked by Privoxy");
@@ -647,7 +646,6 @@ struct http_response *block_url(struct client_state *csp)
             return cgi_error_memory();
          }
       }
-
       else
       {
          rsp->status = strdup("302 Local Redirect from Privoxy");
@@ -664,30 +662,6 @@ struct http_response *block_url(struct client_state *csp)
          }
       }
 
-#else /* Following code is disabled for now */
-
-      /* and handle accordingly: */
-      if ((p == NULL) || (0 == strcmpic(p, "pattern")))
-      {
-         p = CGI_PREFIX "send-banner?type=pattern";
-      }
-      else if (0 == strcmpic(p, "blank"))
-      {
-         p = CGI_PREFIX "send-banner?type=blank";
-      }
-      rsp->status = strdup("302 Local Redirect from Privoxy");
-      if (rsp->status == NULL)
-      {
-         free_http_response(rsp);
-         return cgi_error_memory();
-      }
-
-      if (enlist_unique_header(rsp->headers, "Location", p))
-      {
-         free_http_response(rsp);
-         return cgi_error_memory();
-      }
-#endif /* Preceeding code is disabled for now */
    }
    else
 #endif /* def FEATURE_IMAGE_BLOCKING */
@@ -822,7 +796,7 @@ struct http_response *block_url(struct client_state *csp)
          return cgi_error_memory();
       }
    }
-   rsp->reason = RSP_REASON_BLOCKED;
+   rsp->crunch_reason = BLOCKED;
 
    return finish_http_response(csp, rsp);
 
@@ -982,7 +956,7 @@ struct http_response *trust_url(struct client_state *csp)
       free_http_response(rsp);
       return cgi_error_memory();
    }
-   rsp->reason = RSP_REASON_UNTRUSTED;
+   rsp->crunch_reason = UNTRUSTED;
 
    return finish_http_response(csp, rsp);
 }
@@ -1322,7 +1296,7 @@ struct http_response *redirect_url(struct client_state *csp)
             free_http_response(rsp);
             return cgi_error_memory();
          }
-         rsp->reason = RSP_REASON_REDIRECTED;
+         rsp->crunch_reason = REDIRECTED;
          freez(new_url);
 
          return finish_http_response(csp, rsp);
@@ -1537,7 +1511,8 @@ int is_untrusted_url(const struct client_state *csp)
  *********************************************************************/
 static char *pcrs_filter_response(struct client_state *csp)
 {
-   int hits=0;
+   int hits = 0;
+   int i;
    size_t size, prev_size;
 
    char *old = NULL;
@@ -1548,8 +1523,6 @@ static char *pcrs_filter_response(struct client_state *csp)
    struct re_filterfile_spec *b;
    struct list_entry *filtername;
 
-   int i, found_filters = 0;
-
    /* 
     * Sanity first
     */
@@ -1558,23 +1531,7 @@ static char *pcrs_filter_response(struct client_state *csp)
       return(NULL);
    }
 
-   /*
-    * Need to check the set of re_filterfiles...
-    */
-   for (i = 0; i < MAX_AF_FILES; i++)
-   {
-      fl = csp->rlist[i];
-      if (NULL != fl)
-      {
-         if (NULL != fl->f)
-         {
-           found_filters = 1;
-           break;
-         }
-      }
-   }
-
-   if (0 == found_filters)
+   if (filters_available(csp) == FALSE)
    {
       log_error(LOG_LEVEL_ERROR, "Inconsistent configuration: "
          "content filtering enabled, but no content filters available.");
@@ -1782,47 +1739,9 @@ static char *gif_deanimate_response(struct client_state *csp)
  *                NULL if no content filter is active
  *
  *********************************************************************/
-filter_function_ptr get_filter_function(struct client_state *csp)
+static filter_function_ptr get_filter_function(const struct client_state *csp)
 {
    filter_function_ptr filter_function = NULL;
-
-   if ((csp->content_type & CT_TABOO)
-      && !(csp->action->flags & ACTION_FORCE_TEXT_MODE))
-   {
-      return NULL;
-   }
-
-   /*
-    * Are we enabling text mode by force?
-    */
-   if (csp->action->flags & ACTION_FORCE_TEXT_MODE)
-   {
-      /*
-       * Do we really have to?
-       */
-      if (csp->content_type & CT_TEXT)
-      {
-         log_error(LOG_LEVEL_HEADER, "Text mode is already enabled.");   
-      }
-      else
-      {
-         csp->content_type |= CT_TEXT;
-         log_error(LOG_LEVEL_HEADER, "Text mode enabled by force. Take cover!");   
-      }
-   }
-
-   if (!(csp->content_type & CT_DECLARED))
-   {
-      /*
-       * The server didn't bother to declare a MIME-Type.
-       * Assume it's text that can be filtered.
-       *
-       * This also regulary happens with 304 responses,
-       * therefore logging anything here would cause
-       * too much noise.
-       */
-      csp->content_type |= CT_TEXT;
-   }
 
    /*
     * Choose the applying filter function based on
@@ -1886,8 +1805,14 @@ static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size)
 
       if ((newsize += chunksize) >= *size)
       {
+         /*
+          * XXX: The message is a bit confusing. Isn't the real problem that
+          *      the specified chunk size is greater than the number of bytes
+          *      left in the buffer? This probably means the connection got
+          *      closed prematurely. To be investigated after 3.0.17 is out.
+          */
          log_error(LOG_LEVEL_ERROR,
-            "Chunk size %d exceeds buffer size %d in  \"chunked\" transfer coding",
+            "Chunk size %d exceeds buffer size %d in \"chunked\" transfer coding",
             chunksize, *size);
          return JB_ERR_PARSE;
       }
@@ -1991,20 +1916,23 @@ static jb_err prepare_for_filtering(struct client_state *csp)
 
 /*********************************************************************
  *
- * Function    :  execute_content_filter
+ * Function    :  execute_content_filters
  *
  * Description :  Executes a given content filter.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  content_filter = The filter function to execute
  *
  * Returns     :  Pointer to the modified buffer, or
  *                NULL if filtering failed or wasn't necessary.
  *
  *********************************************************************/
-char *execute_content_filter(struct client_state *csp, filter_function_ptr content_filter)
+char *execute_content_filters(struct client_state *csp)
 {
+   filter_function_ptr content_filter;
+
+   assert(content_filters_enabled(csp->action));
+
    if (0 == csp->iob->eod - csp->iob->cur)
    {
       /*
@@ -2029,6 +1957,8 @@ char *execute_content_filter(struct client_state *csp, filter_function_ptr conte
        */
       return NULL;
    }
+
+   content_filter = get_filter_function(csp);
 
    return ((*content_filter)(csp));
 }
@@ -2334,7 +2264,7 @@ struct http_response *direct_response(struct client_state *csp)
                }
 
                rsp->is_static = 1;
-               rsp->reason = RSP_REASON_UNSUPPORTED;
+               rsp->crunch_reason = UNSUPPORTED;
 
                return(finish_http_response(csp, rsp));
             }
@@ -2342,6 +2272,81 @@ struct http_response *direct_response(struct client_state *csp)
       }
    }
    return NULL;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  content_requires_filtering
+ *
+ * Description :  Checks whether there are any content filters
+ *                enabled for the current request and if they
+ *                can actually be applied..
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  TRUE for yes, FALSE otherwise
+ *
+ *********************************************************************/
+int content_requires_filtering(struct client_state *csp)
+{
+   if ((csp->content_type & CT_TABOO)
+      && !(csp->action->flags & ACTION_FORCE_TEXT_MODE))
+   {
+      return FALSE;
+   }
+
+   /*
+    * Are we enabling text mode by force?
+    */
+   if (csp->action->flags & ACTION_FORCE_TEXT_MODE)
+   {
+      /*
+       * Do we really have to?
+       */
+      if (csp->content_type & CT_TEXT)
+      {
+         log_error(LOG_LEVEL_HEADER, "Text mode is already enabled.");
+      }
+      else
+      {
+         csp->content_type |= CT_TEXT;
+         log_error(LOG_LEVEL_HEADER, "Text mode enabled by force. Take cover!");
+      }
+   }
+
+   if (!(csp->content_type & CT_DECLARED))
+   {
+      /*
+       * The server didn't bother to declare a MIME-Type.
+       * Assume it's text that can be filtered.
+       *
+       * This also regulary happens with 304 responses,
+       * therefore logging anything here would cause
+       * too much noise.
+       */
+      csp->content_type |= CT_TEXT;
+   }
+
+   /*
+    * Choose the applying filter function based on
+    * the content type and action settings.
+    */
+   if ((csp->content_type & CT_TEXT) &&
+       (csp->rlist != NULL) &&
+       (!list_is_empty(csp->action->multi[ACTION_MULTI_FILTER])))
+   {
+      return TRUE;
+   }
+   else if ((csp->content_type & CT_GIF)  &&
+            (csp->action->flags & ACTION_DEANIMATE))
+   {
+      return TRUE;
+   }
+
+   return FALSE;
+
 }
 
 
@@ -2363,6 +2368,34 @@ int content_filters_enabled(const struct current_action_spec *action)
    return ((action->flags & ACTION_DEANIMATE) ||
       !list_is_empty(action->multi[ACTION_MULTI_FILTER]));
 }
+
+
+/*********************************************************************
+ *
+ * Function    :  filters_available
+ *
+ * Description :  Checks whether there are any filters available.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  TRUE for yes, FALSE otherwise.
+ *
+ *********************************************************************/
+int filters_available(const struct client_state *csp)
+{
+   int i;
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      const struct file_list *fl = csp->rlist[i];
+      if ((NULL != fl) && (NULL != fl->f))
+      {
+         return TRUE;
+      }
+   }
+   return FALSE;
+}
+
 
 /*
   Local Variables:

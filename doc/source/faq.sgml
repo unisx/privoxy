@@ -8,7 +8,7 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.16">
+<!entity p-version "3.0.17">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.69 2010/02/13 17:38:27 fabiankeil Exp $
+ $Id: faq.sgml,v 2.75 2010/11/13 10:08:00 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -78,7 +78,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.69 2010/02/13 17:38:27 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.75 2010/11/13 10:08:00 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -978,7 +978,7 @@ with a browser? Does that not raise security issues?</title>
  <ulink
  url="../user-manual/actions-file.html#FILTER"><literal>filter</literal>
  action</ulink> in one of the actions files. Content filtering is automatically
- disabled for inappropriate MIME types, but if you now better than Privoxy
+ disabled for inappropriate MIME types, but if you know better than Privoxy
  what should or should not be filtered you can filter any content you like.
 </para>
 <para>
@@ -1165,17 +1165,17 @@ on Win2K/NT/XP?</title>
 
 
 <sect2 renderas="sect3" id="otherproxy">
-<title>How can I make Privoxy work with other 
-proxies like Squid or Tor?</title>
+<title>How can I make Privoxy work with other proxies?</title>
 <para>
  This can be done and is often useful to combine the benefits of
- <application>Privoxy</application> with those of a another proxy.
+ <application>Privoxy</application> with those of a another proxy,
+ for example to cache content.
  See the <ulink
  url="../user-manual/config.html#FORWARDING">forwarding chapter</ulink>
  in the <ulink url="../user-manual/index.html">User Manual</ulink> which
- describes how to do this, and the <link linkend="TOR">
- How do I use Privoxy together with 
- Tor</link> section below.
+ describes how to do this. If you intend to use Privoxy with Tor,
+ please also have a look at
+ <link linkend="TOR">How do I use Privoxy together with Tor</link>.
 </para>
 </sect2>
 
@@ -1185,7 +1185,8 @@ and thus avoid individual browser configuration?</title>
 
 <para>
  No, its more complicated than that. This only works with special kinds 
- of proxies known as <quote>intercepting</quote> proxies (see below).
+ of proxies known as <quote>intercepting</quote> proxies
+ (<link linkend="INTERCEPTING">see below</link>).
 </para>
 
 </sect2>
@@ -1202,7 +1203,7 @@ and thus avoid individual browser configuration?</title>
 <para>
  However, some people say <quote>transparent proxy</quote> when they
  mean <quote>intercepting proxy</quote>. If you are one of them,
- please read the <ulink url="#intercepting">next entry</ulink>.
+ please read the <link linkend="INTERCEPTING">next entry</link>.
 </para>
 
 </sect2>
@@ -1763,8 +1764,10 @@ us help you. Your efforts are not wasted, and we do appreciate them.
  are working, it is time to connect them. As far as <application>Privoxy</application>
  is concerned, <application>Tor</application> is just another proxy that can be reached
  by socks4 or socks4a. Most likely you are interested in <application>Tor</application>
- to increase your anonymity level, therefore you should use socks4a, to make sure DNS requests are
- done through <application>Tor</application> and thus invisible to your local network.
+ to increase your anonymity level, therefore you should use socks5, to make sure DNS
+ requests are done through <application>Tor</application> and thus invisible to your
+ local network. Using socks4a would work too, but with socks5 you get more precise error
+ messages.
 </para>
 
 <![%p-newstuff;[
@@ -2966,6 +2969,28 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.75  2010/11/13 10:08:00  fabiankeil
+Fix a link to the 'intercepting' entry and add another one
+
+Revision 2.74  2010/11/13 10:07:46  fabiankeil
+Remove the product names in the 'otherproxy' entry's title.
+
+I'm tired of getting the 'otherproxy' entry as first hit
+when searching the index for the Tor FAQ.
+
+Revision 2.73  2010/11/06 12:55:48  fabiankeil
+Set p-version to 3.0.17
+
+Revision 2.72  2010/02/27 12:13:17  fabiankeil
+Fix spelling.
+
+Revision 2.71  2010/02/27 12:12:13  fabiankeil
+Consistently recommending socks5 in the Tor entry and mention its advantage compared to socks4a.
+Reported by David in #2960129.
+
+Revision 2.70  2010/02/20 18:08:31  ler762
+fix typo
+
 Revision 2.69  2010/02/13 17:38:27  fabiankeil
 Update entities for 3.0.16 stable.
 

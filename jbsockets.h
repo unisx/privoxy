@@ -1,6 +1,6 @@
 #ifndef JBSOCKETS_H_INCLUDED
 #define JBSOCKETS_H_INCLUDED
-#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.16 2009/05/16 13:27:20 fabiankeil Exp $"
+#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.17 2010/04/23 11:53:48 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.h,v $
@@ -62,7 +62,7 @@ extern void get_host_information(jb_socket afd, char **ip_address, char **hostna
 
 extern unsigned long resolve_hostname_to_ip(const char *host);
 
-extern int socket_is_still_usable(jb_socket sfd);
+extern int socket_is_still_alive(jb_socket sfd);
 
 /* Revision control strings from this header and associated .c file */
 extern const char jbsockets_rcs[];

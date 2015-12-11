@@ -1,4 +1,4 @@
-$Id: TODO,v 1.17 2010/02/09 16:21:46 fabiankeil Exp $
+$Id: TODO,v 1.26 2010/11/06 11:58:16 fabiankeil Exp $
 
 Some Privoxy related task, not ordered in any way.
 
@@ -44,7 +44,8 @@ Some Privoxy related task, not ordered in any way.
 13) Use zlib to compress content before sending it to
     the client. Measure if it makes a difference.
 
-14) Log and filter POST parameters.
+14) Log and filter POST parameters. They can now be logged with
+    the noisy debug 32768, but are still not filtered.
 
 15) If trusted CGI pages are requested without trusted referrer,
     set the status code to 403 instead of 200.
@@ -97,12 +98,13 @@ Some Privoxy related task, not ordered in any way.
 39) Verify loadcfg.c jarfile reloading and friends.
     /* XXX: Does disabling this actually work? */
 
-40) Fix core dumping in daemon mode.
+40) Fix core dumping in daemon mode. Introduce a cwd config option?
 
 41) Change documentation framework to one that works cross-platform.
     Evaluate WML.
 
-42) Add DTrace hooks.
+42) Add DTrace hooks. Now that FreeBSD has userland DTrace
+    support there's no longer any reason not to.
 
 43) Write a tool to check URL patterns against URLs in the log file.
     This could be included in Privoxy-Regression-Test.
@@ -137,7 +139,8 @@ Some Privoxy related task, not ordered in any way.
     http://coad.measurement-factory.com/details.html#pricing
 
 57) Allow piping into external programs to allow more powerful
-    filters and policy decisions.
+    filters and policy decisions. Incomplete support available
+    in Fabian's popen branch.
 
 58) Move more template strings from the code into the actual templates.
 
@@ -188,3 +191,15 @@ Some Privoxy related task, not ordered in any way.
     If you care about this, feel free to submit patches.
 
 77) Allow to configure the IP address used in outgoing connections.
+
+78) Allow to optionally use pcre's DFA algorithm.
+
+79) Evaluate pcre alternatives.
+
+80) Change FEATURE_EXTENDED_HOST_PATTERNS to support both
+    extended and vanilla host patterns at the same time.
+
+81) Merge Fabian's unlimited-config-lines branch.
+
+82) Detect if the system time goes back in time let the user
+    know if it caused any connections to get closed.

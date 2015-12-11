@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.72 2010/02/15 15:14:10 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.79 2010/07/26 11:30:09 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -8,7 +8,7 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.72 2010/02/15 15:14:10 fabian
  *                OS-independent.  Contains #ifdefs to make this work
  *                on many platforms.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -146,9 +146,9 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    jb_socket fd;
    fd_set wfds;
    struct timeval tv[1];
-#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA)
+#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__)
    int   flags;
-#endif /* !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) */
+#endif
    int connect_failed;
 
 #ifdef FEATURE_ACL
@@ -344,9 +344,9 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    unsigned int addr;
    fd_set wfds;
    struct timeval tv[1];
-#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA)
+#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__)
    int   flags;
-#endif /* !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) */
+#endif
 
 #ifdef FEATURE_ACL
    struct access_control_addr dst[1];
@@ -498,7 +498,7 @@ int write_socket(jb_socket fd, const char *buf, size_t len)
       return 1;
    }
 
-   log_error(LOG_LEVEL_LOG, "%N", len, buf);
+   log_error(LOG_LEVEL_WRITING, "to socket %d: %N", fd, len, buf);
 
 #if defined(_WIN32)
    return (send(fd, buf, (int)len, 0) != (int)len);
@@ -511,7 +511,7 @@ int write_socket(jb_socket fd, const char *buf, size_t len)
     */
 #define SOCKET_SEND_MAX 65000
    {
-      int write_len = 0, send_len, send_rc = 0, i = 0;
+      int send_len, send_rc = 0, i = 0;
       while ((i < len) && (send_rc != -1))
       {
          if ((i + SOCKET_SEND_MAX) > len)
@@ -559,18 +559,27 @@ int write_socket(jb_socket fd, const char *buf, size_t len)
  *********************************************************************/
 int read_socket(jb_socket fd, char *buf, int len)
 {
+   int ret;
+
    if (len <= 0)
    {
       return(0);
    }
 
 #if defined(_WIN32)
-   return(recv(fd, buf, len, 0));
+   ret = recv(fd, buf, len, 0);
 #elif defined(__BEOS__) || defined(AMIGA) || defined(__OS2__)
-   return(recv(fd, buf, (size_t)len, 0));
+   ret = recv(fd, buf, (size_t)len, 0);
 #else
-   return((int)read(fd, buf, (size_t)len));
+   ret = (int)read(fd, buf, (size_t)len);
 #endif
+
+   if (ret > 0)
+   {
+      log_error(LOG_LEVEL_RECEIVED, "from socket %d: %N", fd, ret, buf);
+   }
+
+   return ret;
 }
 
 
@@ -1103,7 +1112,6 @@ unsigned long resolve_hostname_to_ip(const char *host)
 {
    struct sockaddr_in inaddr;
    struct hostent *hostp;
-   unsigned int dns_retries = 0;
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS) || defined(HAVE_GETHOSTBYNAME_R_5_ARGS) || defined(HAVE_GETHOSTBYNAME_R_3_ARGS)
    struct hostent result;
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS) || defined(HAVE_GETHOSTBYNAME_R_5_ARGS)
@@ -1123,6 +1131,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
 
    if ((inaddr.sin_addr.s_addr = inet_addr(host)) == -1)
    {
+      unsigned int dns_retries = 0;
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS)
       while (gethostbyname_r(host, &result, hbuf,
                 HOSTENT_BUFFER_SIZE, &hostp, &thd_err)
@@ -1209,9 +1218,9 @@ unsigned long resolve_hostname_to_ip(const char *host)
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /*********************************************************************
  *
- * Function    :  socket_is_still_usable
+ * Function    :  socket_is_still_alive
  *
- * Description :  Decides whether or not an open socket is still usable.
+ * Description :  Figures out whether or not a socket is still alive.
  *
  * Parameters  :
  *          1  :  sfd = The socket to check.
@@ -1219,7 +1228,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
  * Returns     :  TRUE for yes, otherwise FALSE.
  *
  *********************************************************************/
-int socket_is_still_usable(jb_socket sfd)
+int socket_is_still_alive(jb_socket sfd)
 {
    char buf[10];
    int no_data_waiting;

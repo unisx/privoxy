@@ -8,7 +8,7 @@
 #
 # http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
 #
-# $Id: privoxy-log-parser.pl,v 1.78 2010/02/13 15:25:38 fabiankeil Exp $
+# $Id: privoxy-log-parser.pl,v 1.105 2010/11/13 20:37:39 fabiankeil Exp $
 #
 # TODO:
 #       - LOG_LEVEL_CGI, LOG_LEVEL_ERROR, LOG_LEVEL_WRITE content highlighting
@@ -23,8 +23,9 @@
 #       - Handle incomplete input without Perl warning about undefined variables.
 #       - Use generic highlighting function that takes a regex and the
 #         hash key as input.
+#       - Add --compress and --decompress options.
 #
-# Copyright (c) 2007-2009 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2010 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -44,7 +45,7 @@ use warnings;
 use Getopt::Long;
 
 use constant {
-    PRIVOXY_LOG_PARSER_VERSION => '0.6',
+    PRIVOXY_LOG_PARSER_VERSION => '0.7',
     # Feel free to mess with these ...
     DEFAULT_BACKGROUND => 'black',  # Choose registered colour (like 'black')
     DEFAULT_TEXT_COLOUR => 'white', # Choose registered colour (like 'black')
@@ -56,9 +57,12 @@ use constant {
     CLI_OPTION_NO_EMBEDDED_CSS => 0,
     CLI_OPTION_NO_MSECS => 0,
     CLI_OPTION_NO_SYNTAX_HIGHLIGHTING => 0,
+    CLI_OPTION_SHORTEN_THREAD_IDS => 0,
     CLI_OPTION_SHOW_INEFFECTIVE_FILTERS => 0,
     CLI_OPTION_ACCEPT_UNKNOWN_MESSAGES => 0,
     CLI_OPTION_STATISTICS => 0,
+    CLI_OPTION_URL_STATISTICS_THRESHOLD => 0,
+    CLI_OPTION_HOST_STATISTICS_THRESHOLD => 0,
 
     SUPPRESS_SUCCEEDED_FILTER_ADDITIONS => 1,
     SHOW_SCAN_INTRO => 0,
@@ -105,6 +109,7 @@ my $header_highlight_regex = '';
 
 my $html_output_mode;
 my $no_msecs_mode; # XXX: should probably be removed
+my $shorten_thread_ids;
 my $line_end;
 
 sub prepare_our_stuff () {
@@ -132,6 +137,7 @@ sub prepare_our_stuff () {
         'Gif-Deanimate' => 'blue',
         Force           => 'red',
         Writing         => 'light_green',
+        Received        => 'yellow',
         # ----------------------
         URL                  => 'yellow',
         path                 => 'brown',
@@ -172,6 +178,7 @@ sub prepare_our_stuff () {
         'action-bits-update' => 'light_red',
         'configuration-line' => 'red',
         'content-type'       => 'yellow',
+        'HOST'               => HEADER_DEFAULT_COLOUR,
     );
 
     %h_colours = %h;
@@ -801,19 +808,14 @@ sub handle_loglevel_header ($) {
                 update_header_highlight_regex($header);
             }
 
-        } elsif ($c =~ m/^scan: ((\w+) (.+) (HTTP\/\d\.\d))/) {
+        } elsif ($c =~ m/^(scan: )(\w+ .+ HTTP\/\d\.\d)/) {
 
-            # Client request line
-            # Save for statistics (XXX: Not implemented yet)
-            $req{$t}{'method'} = $2;
-            $req{$t}{'destination'} = $3;
-            $req{$t}{'http-version'} = $4;
-
-            $c = highlight_request_line($1);
+            # scan: GET http://p.p/ HTTP/1.1
+            $c = $1 . highlight_request_line($2);
 
         } elsif ($c =~ m/^(scan: )((?:HTTP\/\d\.\d|ICY) (\d+) (.*))/) {
 
-            # Server response line
+            # scan: HTTP/1.1 200 OK
             $req{$t}{'response_line'} = $2;
             $req{$t}{'status_code'} = $3;
             $req{$t}{'status_message'} = $4;
@@ -908,6 +910,8 @@ sub handle_loglevel_header ($) {
           or $c =~ m/^Appended client IP address to/
           or $c =~ m/^Removing 'Connection: close' to imply keep-alive./
           or $c =~ m/^keep-alive support is disabled/
+          or $c =~ m/^Continue hack in da house/
+          or $c =~ m/^Merged multiple header lines to:/
             )
     {
         # XXX: Some of these may need highlighting
@@ -953,6 +957,8 @@ sub handle_loglevel_header ($) {
         # Appended client IP address to X-Forwarded-For: 10.0.0.2, 10.0.0.1
         # Removing 'Connection: close' to imply keep-alive.
         # keep-alive support is disabled. Crunching: Keep-Alive: 300.
+        # Continue hack in da house.
+        # Merged multiple header lines to: 'X-FORWARDED-PROTO: http X-HOST: 127.0.0.1'
 
     } elsif ($c =~ m/^scanning headers for:/) {
 
@@ -1004,6 +1010,12 @@ sub handle_loglevel_header ($) {
 
        $c =~ s@(?<= from )(\d+)@$h{'Number'}$1$h{'Standard'}@;
        $c =~ s@(?<= to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Killed all-caps Host header line: HOST:/) {
+
+       # Killed all-caps Host header line: HOST: bestproxydb.com
+       $c = highlight_matched_host($c, '(?<=HOST: )[^\s]+');
+       $c = highlight_matched_pattern($c, 'HOST', 'HOST');
 
     } else {
 
@@ -1548,10 +1560,11 @@ sub handle_loglevel_connect ($) {
         $c =~ s@(?<=Received )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=expecting )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
-    } elsif ($c =~ m/^Connection from/) {
+    } elsif ($c =~ m/^(Rejecting c|C)onnection from/) {
 
         # Connection from 81.163.28.218 dropped due to ACL
-        $c =~ s@(?<=^Connection from )((?:\d+\.?){4})@$h{'Number'}$1$h{'Standard'}@;
+        # Rejecting connection from 178.63.152.227. Maximum number of connections reached.
+        $c =~ s@(?<=onnection from )((?:\d+\.?){3}\d+)@$h{'Number'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^(?:Reusing|Closing) server socket \d./ or
              $c =~ m/^No additional client request/) {
@@ -1617,12 +1630,18 @@ sub handle_loglevel_connect ($) {
         $c =~ s@(?<=set to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=reading )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
+    } elsif ($c =~ m/^Reducing expected bytes to /) {
+
+        # Reducing expected bytes to 0. Marking the server socket tainted after throwing 4 bytes away.
+        $c =~ s@(?<=bytes to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=after throwing )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
     } elsif ($c =~ m/^Waiting for up to /) {
 
         # Waiting for up to 4999 bytes from the client.
         $c =~ s@(?<=up to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
-    } elsif ($c =~ m/^Looks like we rea/ or
+    } elsif ($c =~ m/^Looks like we / or
              $c =~ m/^Unsetting keep-alive flag/ or
              $c =~ m/^No connections to wait/ or
              $c =~ m/^Complete client request received/ or
@@ -1637,6 +1656,8 @@ sub handle_loglevel_connect ($) {
         # Looks like we reached the end of the last chunk. We better stop reading.
         # Looks like we read the end of the last chunk together with the server \
         #  headers. We better stop reading.
+        # Looks like we got the last chunk together with the server headers. \
+        #  We better stop reading.
         # Unsetting keep-alive flag.
         # No connections to wait for left.
         # Client request arrived in time or the client closed the connection.
@@ -1686,6 +1707,12 @@ sub handle_loglevel_info ($) {
         # loading configuration file '/usr/local/etc/privoxy/config':
         # Reloading configuration file '/usr/local/etc/privoxy/config'
         $c =~ s@(?<=loading configuration file \')([^\']*)@$h{'file'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Loading (actions|filter) file: /) {
+
+        # Loading actions file: /usr/local/etc/privoxy/default.action
+        # Loading filter file: /usr/local/etc/privoxy/default.filter
+        $c =~ s@(?<= file: )(.*)$@$h{'file'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^exiting by signal/) {
 
@@ -1850,6 +1877,15 @@ sub gather_loglevel_crunch_stats ($$) {
 
     $stats{requests}++;
     $stats{crunches}++;
+
+    if ($c =~ m/^Redirected:/) {
+        # Redirected: http://www.example.org/http://p.p/
+        $stats{'fast-redirections'}++;
+
+    } elsif ($c =~ m/^Blocked:/) {
+        # Blocked: blogger.googleusercontent.com:443
+        $stats{'blocked'}++;
+    }
 }
 
 
@@ -1917,6 +1953,18 @@ sub gather_loglevel_header_stats ($$) {
         # A HTTP/1.1 response without Connection header implies keep-alive.
         # Keeping the server header 'Connection: keep-alive' around.
         $stats{'server-keep-alive'}++;
+
+    } elsif ($c =~ m/^scan: ((\w+) (.+) (HTTP\/\d\.\d))/) {
+
+        # scan: HTTP/1.1 200 OK
+        $stats{'method'}{$2}++;
+        $stats{'ressource'}{$3}++;
+        $stats{'http-version'}{$4}++;
+
+    } elsif ($c =~ m/^scan: Host: ([^\s]+)/) {
+
+        # scan: Host: p.p
+        $stats{'hosts'}{$1}++;
     }
 }
 
@@ -1929,6 +1977,10 @@ sub init_stats () {
         'empty-responses' => 0,
         'empty-responses-on-new-connections' => 0,
         'empty-responses-on-reused-connections' => 0,
+        'fast-redirections' => 0,
+        'blocked' => 0,
+        'reused-connections' => 0,
+        'server-keep-alive' => 0,
         );
 }
 
@@ -1942,6 +1994,7 @@ sub get_percentage ($$) {
 sub print_stats () {
 
     our %stats;
+    our %cli_options;
     my $new_connections = $stats{requests} - $stats{crunches} - $stats{'reused-connections'};
     my $outgoing_requests = $stats{requests} - $stats{crunches};
 
@@ -1953,6 +2006,10 @@ sub print_stats () {
     print "Client requests total: " . $stats{requests} . "\n";
     print "Crunches: " . $stats{crunches} . " (" .
         get_percentage($stats{requests}, $stats{crunches}) . ")\n";
+    print "Blocks: " . $stats{'blocked'} . " (" .
+        get_percentage($stats{requests}, $stats{'blocked'}) . ")\n";
+    print "Fast redirections: " . $stats{'fast-redirections'} . " (" .
+        get_percentage($stats{requests}, $stats{'fast-redirections'}) . ")\n";
     print "Outgoing requests: " . $outgoing_requests . " (" .
         get_percentage($stats{requests}, $outgoing_requests) . ")\n";
     print "Server keep-alive offers: " . $stats{'server-keep-alive'} . " (" .
@@ -1960,7 +2017,9 @@ sub print_stats () {
     print "New outgoing connections: " . $new_connections . " (" .
         get_percentage($stats{requests}, $new_connections) . ")\n";
     print "Reused connections: " . $stats{'reused-connections'} . " (" .
-        get_percentage($stats{requests}, $stats{'reused-connections'}) . ")\n";
+        get_percentage($stats{requests}, $stats{'reused-connections'}) .
+        "; server offers accepted: " .
+        get_percentage($stats{'server-keep-alive'}, $stats{'reused-connections'}) . ")\n";
     print "Empty responses: " . $stats{'empty-responses'} . " (" .
         get_percentage($stats{requests}, $stats{'empty-responses'}) . ")\n";
     print "Empty responses on new connections: "
@@ -1971,6 +2030,45 @@ sub print_stats () {
         $stats{'empty-responses-on-reused-connections'} . " (" .
         get_percentage($stats{requests}, $stats{'empty-responses-on-reused-connections'}) .
         ")\n";
+
+    if ($stats{method} eq 0) {
+        print "No response lines parsed yet yet.\n";
+        return;
+    }
+    print "Method distribution:\n";
+    foreach my $method (sort {$stats{'method'}{$b} <=> $stats{'method'}{$a}} keys %{$stats{'method'}}) {
+        printf "%8d : %-8s\n", $stats{'method'}{$method}, $method;
+    }
+    print "Client HTTP versions:\n";
+    foreach my $http_version (sort {$stats{'http-version'}{$b} <=> $stats{'http-version'}{$a}} keys %{$stats{'http-version'}}) {
+        printf "%d : %s\n",  $stats{'http-version'}{$http_version}, $http_version;
+    }
+
+    if ($cli_options{'url-statistics-threshold'} == 0) {
+        print "URL statistics are disabled. Increase --url-statistics-threshold to enable them.\n";
+    } else {
+        print "Requested URLs:\n";
+        foreach my $ressource (sort {$stats{'ressource'}{$b} <=> $stats{'ressource'}{$a}} keys %{$stats{'ressource'}}) {
+            if ($stats{'ressource'}{$ressource} < $cli_options{'url-statistics-threshold'}) {
+                print "Skipped statistics for URLs below the treshold.\n";
+                last;
+            }
+            printf "%d : %s\n", $stats{'ressource'}{$ressource}, $ressource;
+        }
+    }
+
+    if ($cli_options{'host-statistics-threshold'} == 0) {
+        print "Host statistics are disabled. Increase --host-statistics-threshold to enable them.\n";
+    } else {
+        print "Requested Hosts:\n";
+        foreach my $host (sort {$stats{'hosts'}{$b} <=> $stats{'hosts'}{$a}} keys %{$stats{'hosts'}}) {
+            if ($stats{'hosts'}{$host} < $cli_options{'host-statistics-threshold'}) {
+                print "Skipped statistics for Hosts below the treshold.\n";
+                last;
+            }
+            printf "%d : %s\n", $stats{'hosts'}{$host}, $host;
+        }
+    }
 }
 
 
@@ -2025,6 +2123,20 @@ sub print_non_clf_message ($) {
         . $line_end;
 }
 
+sub shorten_thread_id ($) {
+
+    my $thread_id = shift;
+
+    our %short_thread_ids;
+    our $max_threadid;
+
+    unless (defined $short_thread_ids{$thread_id}) {
+        $short_thread_ids{$thread_id} = sprintf "%.3d", $max_threadid++;
+    }
+
+    return $short_thread_ids{$thread_id}
+}
+
 sub parse_loop () {
 
     my ($day, $time_stamp, $thread, $log_level, $content, $c, $msecs);
@@ -2050,13 +2162,14 @@ sub parse_loop () {
         'Error'             => \&handle_loglevel_error,
         'Fatal error'       => \&handle_loglevel_ignore,
         'Writing'           => \&handle_loglevel_ignore,
+        'Received'          => \&handle_loglevel_ignore,
         'Unknown log level' => \&handle_loglevel_ignore,
     );
 
     while (<>) {
 
         if (m/^(\w{3} \d{2}) (\d\d:\d\d:\d\d)\.?(\d+)? (?:Privoxy\()?([^\)\s]*)[\)]? ([\w -]*): (.*?)\r?$/) {
-            $thread = $t = $4;
+            $thread = $t = ($shorten_thread_ids) ? shorten_thread_id($4) : $4;
             $req{$t}{'day'} = $day = $1;
             $req{$t}{'time-stamp'} = $time_stamp = $2;
             $req{$t}{'msecs'} = $msecs = $3 ? $3 : 0; # Only the cool kids have micro second resolution;
@@ -2140,6 +2253,7 @@ sub stats_loop () {
          'Error'             => \&gather_loglevel_error_stats,
          'Fatal error'       => \&handle_loglevel_ignore,
          'Writing'           => \&handle_loglevel_ignore,
+         'Received'          => \&handle_loglevel_ignore,
          'Unknown log level' => \&handle_loglevel_ignore
     );
 
@@ -2172,7 +2286,7 @@ sub VersionMessage {
     my $version_message;
 
     $version_message .= 'Privoxy-Log-Parser ' . PRIVOXY_LOG_PARSER_VERSION  . "\n";
-    $version_message .= 'Copyright (C) 2007-2009 Fabian Keil <fk@fabiankeil.de>' . "\n";
+    $version_message .= 'Copyright (C) 2007-2010 Fabian Keil <fk@fabiankeil.de>' . "\n";
     $version_message .= 'http://www.fabiankeil.de/sourcecode/privoxy-log-parser/' . "\n";
 
     print $version_message;
@@ -2186,9 +2300,12 @@ sub get_cli_options () {
         'no-syntax-highlighting'   => CLI_OPTION_NO_SYNTAX_HIGHLIGHTING,
         'no-embedded-css'          => CLI_OPTION_NO_EMBEDDED_CSS,
         'no-msecs'                 => CLI_OPTION_NO_MSECS,
+        'shorten-thread-ids'       => CLI_OPTION_SHORTEN_THREAD_IDS,
         'show-ineffective-filters' => CLI_OPTION_SHOW_INEFFECTIVE_FILTERS,
         'accept-unknown-messages'  => CLI_OPTION_ACCEPT_UNKNOWN_MESSAGES,
         'statistics'               => CLI_OPTION_STATISTICS,
+        'url-statistics-threshold' => CLI_OPTION_URL_STATISTICS_THRESHOLD,
+        'host-statistics-threshold'=> CLI_OPTION_HOST_STATISTICS_THRESHOLD,
     );
 
     GetOptions (
@@ -2197,15 +2314,19 @@ sub get_cli_options () {
         'no-syntax-highlighting'   => \$cli_options{'no-syntax-highlighting'},
         'no-embedded-css'          => \$cli_options{'no-embedded-css'},
         'no-msecs'                 => \$cli_options{'no-msecs'},
+        'shorten-thread-ids'       => \$cli_options{'shorten-thread-ids'},
         'show-ineffective-filters' => \$cli_options{'show-ineffective-filters'},
         'accept-unknown-messages'  => \$cli_options{'accept-unknown-messages'},
         'statistics'               => \$cli_options{'statistics'},
+        'url-statistics-threshold=s'=> \$cli_options{'url-statistics-threshold'},
+        'host-statistics-threshold=s'=> \$cli_options{'host-statistics-threshold'},
         'version'                  => sub { VersionMessage && exit(0) },
         'help'                     => \&help,
    ) or exit(1);
 
    $html_output_mode = cli_option_is_set('html-output');
    $no_msecs_mode = cli_option_is_set('no-msecs');
+   $shorten_thread_ids = cli_option_is_set('shorten-thread-ids');
    $line_end = get_line_end();
 }
 
@@ -2219,12 +2340,15 @@ sub help () {
 
 Options and their default values if they have any:
     [--accept-unknown-messages]
+    [--host-statistics-threshold $cli_options{'host-statistics-threshold'}]
     [--html-output]
     [--no-embedded-css]
     [--no-msecs]
     [--no-syntax-highlighting]
+    [--shorten-thread-ids]
     [--show-ineffective-filters]
     [--statistics]
+    [--url-statistics-threshold $cli_options{'url-statistics-threshold'}]
     [--title $cli_options{'title'}]
     [--version]
 see "perldoc $0" for more information
@@ -2262,8 +2386,9 @@ B<privoxy-log-parser> - A parser and syntax-highlighter for Privoxy log messages
 =head1 SYNOPSIS
 
 B<privoxy-log-parser> [B<--accept-unknown-messages>] [B<--html-output>]
-[B<--no-msecs>] [B<--no-syntax-higlighting>] [B<--show-ineffective-filters>]
-[B<--version>]
+[B<--no-msecs>] [B<--no-syntax-higlighting>] [B<--statistics>]
+[B<--shorten-thread-ids>] [B<--show-ineffective-filters>]
+[B<--url-statistics-threshold>] [B<--version>]
 
 =head1 DESCRIPTION
 
@@ -2290,6 +2415,10 @@ will hide the "filter foo caused 0 hits" message.
 [B<--accept-unknown-messages>] Don't print warnings in case of unknown messages,
 just don't highlight them.
 
+[B<--host-statistics-threshold>] Only show the request count for a host
+if it's above or equal to the given threshold. If the threshold is 0, host
+statistics are disabled.
+
 [B<--html-output>] Use HTML and CSS for the syntax highlighting. If this option is
 omitted, ANSI escape sequences are used unless B<--no-syntax-highlighting> is active.
 This option is only intended to make embedding log excerpts in web pages easier.
@@ -2302,6 +2431,10 @@ the filtered output is piped into less in which case the ANSI control
 codes don't work, or if the terminal itself doesn't support the control
 codes.
 
+[B<--shorten-thread-ids>] Shorten the thread ids to a three-digit decimal number.
+Note that the mapping from thread ids to shortened ids is created at run-time
+and thus varies with the input.
+
 [B<--show-ineffective-filters>] Don't suppress log lines for filters
 that didn't modify the content.
 
@@ -2309,6 +2442,10 @@ that didn't modify the content.
 log messages. This is an experimental feature, if the results look wrong
 they very well might be. Also note that the results are pretty much guaranteed
 to be incorrect if Privoxy and Privoxy-Log-Parser aren't in sync.
+
+[B<--url-statistics-threshold>] Only show the request count for a ressource
+if it's above or equal to the given threshold. If the threshold is 0, URL
+statistics are disabled.
 
 [B<--version>] Print version and exit.
 

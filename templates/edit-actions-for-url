@@ -417,7 +417,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="content_type_overwrite" value="X" @content-type-overwrite-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@CONTENT_TYPE_OVERWRITE">content-type-overwrite</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@CONTENT-TYPE-OVERWRITE">content-type-overwrite</a></td>
       <td>Replace Content-Type header. By default it only applies to
 	 text documents, but if you know what you're doing you
 	 can enable force-text-mode to modify binary content types as well.</td>
@@ -463,7 +463,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="crunch_if_none_match" value="X" @crunch-if-none-match-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@CRUNCH_IF_NONE_MATCH">crunch-if-none-match</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@CRUNCH-IF-NONE-MATCH">crunch-if-none-match</a></td>
       <td>Remove If-None-Match header. Useful for filter testing
          and to make sure the header can't be used to track your visits.</td>
     </tr>
@@ -650,7 +650,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="force_text_mode" value="X" @force-text-mode-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@FORCE_TEXT_MODE">force-text-mode</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@FORCE-TEXT-MODE">force-text-mode</a></td>
       <td>
        Enable filtering on documents whose Content-Type wasn't recognized as text.
        Do think twice, nothing is alright.
@@ -694,7 +694,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="handle_as_empty_document" value="X" @handle-as-empty-document-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@HANDLE_AS_EMPTY_DOCUMENT">handle-as-empty-document</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@HANDLE-AS-EMPTY-DOCUMENT">handle-as-empty-document</a></td>
       <td>
        Block with an <em>empty</em> document instead of an Image or HTML message.
        The <em>empty</em> document contains only a space and can safely be parsed
@@ -825,7 +825,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="hide_if_modified_since" value="X" @hide-if-modified-since-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@HIDE_IF_MODIFIED_SINCE">hide-if-modified-since</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@HIDE-IF-MODIFIED-SINCE">hide-if-modified-since</a></td>
       <td>Remove or randomize the If-Modified-Since header.</td>
     </tr>
     <tr class="bg1" align="left" valign="top" id="hide_if-modifed-since_opts">
@@ -977,7 +977,7 @@ function show_limit_connect_opts(tf)
       <td class="noc1" align="center" valign="middle"><input type="radio"
         name="overwrite_last_modified" value="X" @overwrite-last-modified-x@
         ></td>
-      <td class="action"><a href="@user-manual@@actions-help-prefix@OVERWRITE_LAST_MODIFIED">overwrite-last-modified</a></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@OVERWRITE-LAST-MODIFIED">overwrite-last-modified</a></td>
       <td>Remove or randomize the Last-Modified header.</td>
     </tr>
     <tr class="bg1" align="left" valign="top" id="overwrite_last_modified_opts">

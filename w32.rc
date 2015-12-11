@@ -141,7 +141,8 @@ BEGIN
             MENUITEM "&Main Configuration",           ID_TOOLS_EDITCONFIG
             MENUITEM "&Default Actions",              ID_TOOLS_EDITDEFAULTACTIONS
             MENUITEM "&User Actions",                 ID_TOOLS_EDITUSERACTIONS
-            MENUITEM "&Filters",                      ID_TOOLS_EDITFILTERS
+            MENUITEM "Default &Filters",              ID_TOOLS_EDITDEFAULTFILTERS
+            MENUITEM "U&ser Filters",                 ID_TOOLS_EDITUSERFILTERS
 #ifdef FEATURE_TRUST
             MENUITEM "&Trust list",                   ID_TOOLS_EDITTRUST
 #endif /* def FEATURE_TRUST */
@@ -182,7 +183,8 @@ BEGIN
         MENUITEM "Edit Main &Configuration",      ID_TOOLS_EDITCONFIG
         MENUITEM "Edit &Default Actions",         ID_TOOLS_EDITDEFAULTACTIONS
         MENUITEM "Edit &User Actions",            ID_TOOLS_EDITUSERACTIONS
-        MENUITEM "Edit &Filters",                 ID_TOOLS_EDITFILTERS
+        MENUITEM "Edit Default &Filters",         ID_TOOLS_EDITDEFAULTFILTERS
+        MENUITEM "Edit U&ser Filters",            ID_TOOLS_EDITUSERFILTERS
 #ifdef FEATURE_TRUST
         MENUITEM "Edit &Trust list",              ID_TOOLS_EDITTRUST
 #endif /* def FEATURE_TRUST */

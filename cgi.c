@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.126 2009/10/29 16:53:56 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.129 2010/05/24 11:38:22 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -553,7 +553,7 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
          if (!err)
          {
             /* It worked */
-            rsp->reason = RSP_REASON_CGI_CALL;
+            rsp->crunch_reason = CGI_CALL;
             return finish_http_response(csp, rsp);
          }
          else
@@ -876,7 +876,7 @@ struct http_response *error_response(struct client_state *csp,
    if (!strcmp(templatename, "no-such-domain"))
    {
       rsp->status = strdup("404 No such domain");
-      rsp->reason = RSP_REASON_NO_SUCH_DOMAIN;
+      rsp->crunch_reason = NO_SUCH_DOMAIN;
    }
    else if (!strcmp(templatename, "forwarding-failed"))
    {
@@ -938,22 +938,22 @@ struct http_response *error_response(struct client_state *csp,
       }
 
       rsp->status = strdup("503 Forwarding failure");
-      rsp->reason = RSP_REASON_FORWARDING_FAILED;
+      rsp->crunch_reason = FORWARDING_FAILED;
    }
    else if (!strcmp(templatename, "connect-failed"))
    {
       rsp->status = strdup("503 Connect failed");
-      rsp->reason = RSP_REASON_CONNECT_FAILED;
+      rsp->crunch_reason = CONNECT_FAILED;
    }
    else if (!strcmp(templatename, "connection-timeout"))
    {
       rsp->status = strdup("504 Connection timeout");
-      rsp->reason = RSP_REASON_CONNECTION_TIMEOUT;
+      rsp->crunch_reason = CONNECTION_TIMEOUT;
    }
    else if (!strcmp(templatename, "no-server-data"))
    {
       rsp->status = strdup("502 No data received from server or forwarder");
-      rsp->reason = RSP_REASON_NO_SERVER_DATA;
+      rsp->crunch_reason = NO_SERVER_DATA;
    }
 
    if (rsp->status == NULL)
@@ -1053,7 +1053,7 @@ void cgi_init_error_messages(void)
       strlen(cgi_error_memory_response->head);
    cgi_error_memory_response->content_length =
       strlen(cgi_error_memory_response->body);
-   cgi_error_memory_response->reason = RSP_REASON_OUT_OF_MEMORY;
+   cgi_error_memory_response->crunch_reason = OUT_OF_MEMORY;
 }
 
 
@@ -1224,7 +1224,7 @@ jb_err cgi_error_unknown(const struct client_state *csp,
    rsp->content_length = 0;
    rsp->head_length = 0;
    rsp->is_static = 0;
-   rsp->reason = RSP_REASON_INTERNAL_ERROR;
+   rsp->crunch_reason = INTERNAL_ERROR;
 
    snprintf(errnumbuf, sizeof(errnumbuf), "%d", error_to_report);
 
@@ -1636,13 +1636,10 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
       if (!err) err = enlist_unique_header(rsp->headers, "Pragma", "no-cache");
    }
 
-   /*
-    * Quoting RFC 2616:
-    *
-    * HTTP/1.1 applications that do not support persistent connections MUST
-    * include the "close" connection option in every message.
-    */
-   if (!err) err = enlist_unique_header(rsp->headers, "Connection", "close");
+   if (!err && !(csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
+   {
+      err = enlist_unique_header(rsp->headers, "Connection", "close");
+   }
 
    /* 
     * Write the head

@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.210 2009/12/25 11:39:26 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.214 2010/06/13 12:26:32 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -318,7 +318,7 @@ long flush_socket(jb_socket fd, struct iob *iob)
 jb_err add_to_iob(struct client_state *csp, char *buf, long n)
 {
    struct iob *iob = csp->iob;
-   size_t used, offset, need, want;
+   size_t used, offset, need;
    char *p;
 
    if (n <= 0) return JB_ERR_OK;
@@ -341,7 +341,12 @@ jb_err add_to_iob(struct client_state *csp, char *buf, long n)
 
    if (need > iob->size)
    {
-      for (want = csp->iob->size ? csp->iob->size : 512; want <= need;) want *= 2;
+      size_t want = csp->iob->size ? csp->iob->size : 512;
+
+      while (want <= need)
+      {
+         want *= 2;
+      }
       
       if (want <= csp->config->buffer_limit && NULL != (p = (char *)realloc(iob->buf, want)))
       {
@@ -1209,7 +1214,6 @@ static jb_err header_tagger(struct client_state *csp, char *header)
    struct re_filterfile_spec *b;
    struct list_entry *tag_name;
 
-   int found_filters = 0;
    const size_t header_length = strlen(header);
 
    if (csp->flags & CSP_FLAG_CLIENT_HEADER_PARSING_DONE)
@@ -1223,21 +1227,7 @@ static jb_err header_tagger(struct client_state *csp, char *header)
       multi_action_index = ACTION_MULTI_CLIENT_HEADER_TAGGER;
    }
 
-   /* Check if there are any filters */
-   for (i = 0; i < MAX_AF_FILES; i++)
-   {
-      fl = csp->rlist[i];
-      if (NULL != fl)
-      {
-         if (NULL != fl->f)
-         {
-           found_filters = 1;
-           break;
-         }
-      }
-   }
-
-   if (0 == found_filters)
+   if (filters_available(csp) == FALSE)
    {
       log_error(LOG_LEVEL_ERROR, "Inconsistent configuration: "
          "tagging enabled, but no taggers available.");
@@ -1420,7 +1410,7 @@ static jb_err filter_header(struct client_state *csp, char **header)
    struct re_filterfile_spec *b;
    struct list_entry *filtername;
 
-   int i, found_filters = 0;
+   int i;
    int wanted_filter_type;
    int multi_action_index;
 
@@ -1440,23 +1430,7 @@ static jb_err filter_header(struct client_state *csp, char **header)
       multi_action_index = ACTION_MULTI_CLIENT_HEADER_FILTER;
    }
 
-   /*
-    * Need to check the set of re_filterfiles...
-    */
-   for (i = 0; i < MAX_AF_FILES; i++)
-   {
-      fl = csp->rlist[i];
-      if (NULL != fl)
-      {
-         if (NULL != fl->f)
-         {
-           found_filters = 1;
-           break;
-         }
-      }
-   }
-
-   if (0 == found_filters)
+   if (filters_available(csp) == FALSE)
    {
       log_error(LOG_LEVEL_ERROR, "Inconsistent configuration: "
          "header filtering enabled, but no matching filters available.");
@@ -2427,7 +2401,6 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
 #endif
    struct tm *timeptr = NULL;
    time_t now, last_modified;                  
-   long int days, hours, minutes, seconds;
    
    /*
     * Are we messing with the Last-Modified header?
@@ -2493,6 +2466,7 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
          long int rtime = (long int)difftime(now, last_modified);
          if (rtime)
          {
+            long int days, hours, minutes, seconds;
             const int negative_delta = (rtime < 0);
 
             if (negative_delta)
@@ -3179,7 +3153,6 @@ static jb_err client_if_modified_since(struct client_state *csp, char **header)
    struct tm *timeptr = NULL;
    time_t tm = 0;                  
    const char *newval;
-   long int hours, minutes, seconds;
    char * endptr;
    
    if ( 0 == strcmpic(*header, "If-Modified-Since: Wed, 08 Jun 1955 12:00:00 GMT"))
@@ -3214,6 +3187,7 @@ static jb_err client_if_modified_since(struct client_state *csp, char **header)
          }
          else
          {
+            long int hours, minutes, seconds;
             long int rtime = strtol(newval, &endptr, 0);
             const int negative_range = (rtime < 0);
 

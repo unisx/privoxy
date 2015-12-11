@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.16 User Manual"
+TITLE="Privoxy 3.0.17 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.16 User Manual</TH
+>Privoxy 3.0.17 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -233,7 +233,7 @@ CLASS="FILENAME"
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2497"
+NAME="AEN2534"
 ></A
 ><P
 ><B
@@ -501,7 +501,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2596"
+NAME="AEN2633"
 >8.1. Finding the Right Mix</A
 ></H2
 ><P
@@ -536,7 +536,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2603"
+NAME="AEN2640"
 >8.2. How to Edit</A
 ></H2
 ><P
@@ -864,6 +864,17 @@ CLASS="EMPHASIS"
 ><DT
 ><TT
 CLASS="LITERAL"
+>/</TT
+></DT
+><DD
+><P
+>    Matches any URL because there's no requirement for either the
+    domain or the path to match anything.
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
 >:8000/</TT
 ></DT
 ><DD
@@ -907,7 +918,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2710"
+NAME="AEN2752"
 >8.4.1. The Domain Pattern</A
 ></H3
 ><P
@@ -1147,7 +1158,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2786"
+NAME="AEN2828"
 >8.4.2. The Path Pattern</A
 ></H3
 ><P
@@ -3533,9 +3544,10 @@ CLASS="EMPHASIS"
 ><P
 >    Filtering requires buffering the page content, which may appear to
     slow down page rendering since nothing is displayed until all content has
-    passed the filters. (It does not really take longer, but seems that way
-    since the page is not incrementally displayed.) This effect will be more
-    noticeable on slower connections.
+    passed the filters. (The total time until the page is completely rendered
+    doesn't change much, but it may be perceived as slower since the page is
+    not incrementally displayed.)
+    This effect will be more noticeable on slower connections.
    </P
 ><P
 >   <SPAN
@@ -6718,7 +6730,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4418"
+NAME="AEN4460"
 >8.5.34. Summary</A
 ></H3
 ><P
@@ -7020,7 +7032,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4482"
+NAME="AEN4524"
 >8.7.1. match-all.action</A
 ></H3
 ><P
@@ -7118,7 +7130,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4504"
+NAME="AEN4546"
 >8.7.2. default.action</A
 ></H3
 ><P
@@ -7719,7 +7731,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4617"
+NAME="AEN4659"
 >8.7.3. user.action</A
 ></H3
 ><P

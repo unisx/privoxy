@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.28 2010/01/03 12:37:14 fabiankeil Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.29 2010/07/21 14:35:09 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
@@ -50,7 +50,7 @@ extern int urls_read;
 extern int urls_rejected;
 #endif /*def FEATURE_STATISTICS*/
 
-extern struct client_state clients[1];
+extern struct client_states clients[1];
 extern struct file_list    files[1];
 
 #ifdef unix

@@ -1,6 +1,6 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.23 2009/05/16 13:27:20 fabiankeil Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.26 2010/07/26 11:30:09 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
@@ -47,7 +47,7 @@ extern "C" {
 #define LOG_LEVEL_CONNECT    0x0002
 #define LOG_LEVEL_IO         0x0004
 #define LOG_LEVEL_HEADER     0x0008
-#define LOG_LEVEL_LOG        0x0010
+#define LOG_LEVEL_WRITING    0x0010
 #ifdef FEATURE_FORCE_LOAD
 #define LOG_LEVEL_FORCE      0x0020
 #endif /* def FEATURE_FORCE_LOAD */
@@ -57,6 +57,7 @@ extern "C" {
 #define LOG_LEVEL_CLF        0x0200 /* Common Log File format */
 #define LOG_LEVEL_CRUNCH     0x0400
 #define LOG_LEVEL_CGI        0x0800 /* CGI / templates */
+#define LOG_LEVEL_RECEIVED   0x8000
 
 /* Following are always on: */
 #define LOG_LEVEL_INFO    0x1000
@@ -69,7 +70,7 @@ extern void disable_logging(void);
 extern void init_log_module(void);
 extern void show_version(const char *prog_name);
 extern void log_error(int loglevel, const char *fmt, ...);
-extern const char *jb_err_to_string(int error);
+extern const char *jb_err_to_string(int jb_error);
 
 /* Revision control strings from this header and associated .c file */
 extern const char errlog_rcs[];

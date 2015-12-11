@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.100 2010/01/03 12:37:14 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.110 2010/07/26 12:11:51 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -6,7 +6,7 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.100 2010/01/03 12:37:14 fabiankeil 
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -38,6 +38,7 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.100 2010/01/03 12:37:14 fabiankeil 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "config.h"
 #include "miscutil.h"
@@ -316,7 +317,7 @@ void init_error_log(const char *prog_name, const char *logfname)
        * Currently we reopen it every time the config file
        * has been reloaded, but actually we only have to
        * reopen it if the file name changed or if the
-       * configuration reloas was caused by a SIGHUP.
+       * configuration reload was caused by a SIGHUP.
        */
       log_error(LOG_LEVEL_INFO, "Failed to reopen logfile: \'%s\'. "
          "Retrying after closing the old file descriptor first. If that "
@@ -571,8 +572,11 @@ static inline const char *get_log_level_string(int loglevel)
       case LOG_LEVEL_CONNECT:
          log_level_string = "Connect";
          break;
-      case LOG_LEVEL_LOG:
+      case LOG_LEVEL_WRITING:
          log_level_string = "Writing";
+         break;
+      case LOG_LEVEL_RECEIVED:
+         log_level_string = "Received";
          break;
       case LOG_LEVEL_HEADER:
          log_level_string = "Header";
@@ -788,45 +792,36 @@ void log_error(int loglevel, const char *fmt, ...)
             break;
          case 'N':
             /*
-             * Non-standard: Print a counted unterminated string.
+             * Non-standard: Print a counted unterminated string,
+             * replacing unprintable bytes with their hex value.
              * Takes 2 parameters: int length, const char * string.
              */
             ival = va_arg(ap, int);
+            assert(ival >= 0);
             sval = va_arg(ap, char *);
-            if (sval == NULL)
+            assert(sval != NULL);
+
+            while ((ival-- > 0) && (length < log_buffer_size - 6))
             {
-               format_string = "[null]";
-            }
-            else if (ival <= 0)
-            {
-               if (0 == ival)
+               if (isprint((int)*sval) && (*sval != '\\'))
                {
-                  /* That's ok (but stupid) */
-                  tempbuf[0] = '\0';
+                  outbuf[length++] = *sval;
+                  outbuf[length] = '\0';
                }
                else
                {
-                  /*
-                   * That's not ok (and even more stupid)
-                   */
-                  assert(ival >= 0);
-                  format_string = "[counted string lenght < 0]";
+                  int ret = snprintf(outbuf + length,
+                     log_buffer_size - length - 2, "\\x%.2x", (unsigned char)*sval);
+                  assert(ret == 4);
+                  length += 4;
                }
+               sval++;
             }
-            else if ((size_t)ival >= sizeof(tempbuf))
-            {
-               /*
-                * String is too long, copy as much as possible.
-                * It will be further truncated later.
-                */
-               memcpy(tempbuf, sval, sizeof(tempbuf)-1);
-               tempbuf[sizeof(tempbuf)-1] = '\0';
-            }
-            else
-            {
-               memcpy(tempbuf, sval, (size_t) ival);
-               tempbuf[ival] = '\0';
-            }
+            /*
+             * XXX: In case of printable characters at the end of
+             *      the %N string, we're not using the whole buffer.
+             */
+            format_string = (length < log_buffer_size - 6) ? "" : "[too long]";
             break;
          case 'E':
             /* Non-standard: Print error code from errno */
@@ -865,14 +860,14 @@ void log_error(int loglevel, const char *fmt, ...)
             snprintf(tempbuf, sizeof(tempbuf), "Bad format string: \"%s\"", fmt);
             loglevel = LOG_LEVEL_FATAL;
             break;
-      } /* switch( p ) */
+      }
 
       assert(length < log_buffer_size);
       length += strlcpy(outbuf + length, format_string, log_buffer_size - length);
 
       if (length >= log_buffer_size-2)
       {
-         static char warning[] = "... [too long, truncated]";
+         static const char warning[] = "... [too long, truncated]";
 
          length = log_buffer_size - sizeof(warning) - 1;
          length += strlcpy(outbuf + length, warning, log_buffer_size - length);
@@ -880,7 +875,7 @@ void log_error(int loglevel, const char *fmt, ...)
 
          break;
       }
-   } /* for( p ... ) */
+   }
 
    /* done with var. args */
    va_end(ap);
@@ -950,14 +945,14 @@ void log_error(int loglevel, const char *fmt, ...)
  *                visible to all files that include errlog.h.
  *
  * Parameters  :
- *          1  :  error = a valid jb_err code
+ *          1  :  jb_error = a valid jb_err code
  *
  * Returns     :  A string with the jb_err translation
  *
  *********************************************************************/
-const char *jb_err_to_string(int error)
+const char *jb_err_to_string(int jb_error)
 {
-   switch (error)
+   switch (jb_error)
    {
       case JB_ERR_OK:
          return "Success, no error";

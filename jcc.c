@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.312 2010/01/24 15:36:08 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.331 2010/11/06 11:48:32 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -6,7 +6,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.312 2010/01/24 15:36:08 fabiankeil Exp $"
  * Purpose     :  Main file.  Contains main() method, main loop, and
  *                the main connection-handling function.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -120,7 +120,7 @@ const char jcc_h_rcs[] = JCC_H_VERSION;
 const char project_h_rcs[] = PROJECT_H_VERSION;
 
 int daemon_mode = 1;
-struct client_state  clients[1];
+struct client_states clients[1];
 struct file_list     files[1];
 
 #ifdef FEATURE_STATISTICS
@@ -243,16 +243,6 @@ static const char INVALID_SERVER_HEADERS_RESPONSE[] =
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Bad response. The server or forwarder response doesn't look like HTTP.\r\n";
-
-#if 0
-/* XXX: should be a template */
-static const char NULL_BYTE_RESPONSE[] =
-   "HTTP/1.0 400 Bad request received from client\r\n"
-   "Proxy-Agent: Privoxy " VERSION "\r\n"
-   "Content-Type: text/plain\r\n"
-   "Connection: close\r\n\r\n"
-   "Bad request. Null byte(s) before end of request.\r\n";
-#endif
 
 /* XXX: should be a template */
 static const char MESSED_UP_REQUEST_RESPONSE[] =
@@ -625,39 +615,39 @@ static const char *crunch_reason(const struct http_response *rsp)
       return "Internal error while searching for crunch reason";
    }
 
-   switch (rsp->reason)
+   switch (rsp->crunch_reason)
    {
-      case RSP_REASON_UNSUPPORTED:
+      case UNSUPPORTED:
          reason = "Unsupported HTTP feature";
          break;
-      case RSP_REASON_BLOCKED:
+      case BLOCKED:
          reason = "Blocked";
          break;
-      case RSP_REASON_UNTRUSTED:
+      case UNTRUSTED:
          reason = "Untrusted";
          break;
-      case RSP_REASON_REDIRECTED:
+      case REDIRECTED:
          reason = "Redirected";
          break;
-      case RSP_REASON_CGI_CALL:
+      case CGI_CALL:
          reason = "CGI Call";
          break;
-      case RSP_REASON_NO_SUCH_DOMAIN:
+      case NO_SUCH_DOMAIN:
          reason = "DNS failure";
          break;
-      case RSP_REASON_FORWARDING_FAILED:
+      case FORWARDING_FAILED:
          reason = "Forwarding failed";
          break;
-      case RSP_REASON_CONNECT_FAILED:
+      case CONNECT_FAILED:
          reason = "Connection failure";
          break;
-      case RSP_REASON_OUT_OF_MEMORY:
+      case OUT_OF_MEMORY:
          reason = "Out of memory (may mask other reasons)";
          break;
-      case RSP_REASON_CONNECTION_TIMEOUT:
+      case CONNECTION_TIMEOUT:
          reason = "Connection timeout";
          break;
-      case RSP_REASON_NO_SERVER_DATA:
+      case NO_SERVER_DATA:
          reason = "No server data received";
          break;
       default:
@@ -694,24 +684,12 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
 
       if (rsp == NULL)
       {
-         /*
-          * Not supposed to happen. If it does
-          * anyway, treat it as an unknown error.
-          */
-         cgi_error_unknown(csp, rsp, RSP_REASON_INTERNAL_ERROR);
-         /* return code doesn't matter */
-      }
-
-      if (rsp == NULL)
-      {
-         /* If rsp is still NULL, we have serious internal problems. */
-         log_error(LOG_LEVEL_FATAL,
-            "NULL response in send_crunch_response and cgi_error_unknown failed as well.");
+         log_error(LOG_LEVEL_FATAL, "NULL response in send_crunch_response.");
       }
 
       /*
        * Extract the status code from the actual head
-       * that was send to the client. It is the only
+       * that will be send to the client. It is the only
        * way to get it right for all requests, including
        * the fixed ones for out-of-memory problems.
        *
@@ -748,68 +726,6 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
 }
 
 
-#if 0
-/*********************************************************************
- *
- * Function    :  request_contains_null_bytes
- *
- * Description :  Checks for NULL bytes in the request and sends
- *                an error message to the client if any were found.
- *
- *                XXX: currently not used, see comment in chat().
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  buf = Data from the client's request to check.
- *          3  :  len = The data length.
- *
- * Returns     :  TRUE if the request contained one or more NULL bytes, or
- *                FALSE otherwise.
- *
- *********************************************************************/
-static int request_contains_null_bytes(const struct client_state *csp, char *buf, int len)
-{
-   size_t c_len; /* Request lenght when treated as C string */
-
-   c_len = strlen(buf);
-
-   if (c_len < len)
-   {
-      /*
-       * Null byte(s) found. Log the request,
-       * return an error response and hang up.
-       */
-      size_t tmp_len = c_len;
-
-      do
-      {
-        /*
-         * Replace NULL byte(s) with '°' characters
-         * so the request can be logged as string.
-         * XXX: Is there a better replacement character?
-         */
-         buf[tmp_len]='°';
-         tmp_len += strlen(buf+tmp_len);
-      } while (tmp_len < len);
-
-      log_error(LOG_LEVEL_ERROR, "%s\'s request contains at least one NULL byte "
-         "(length=%d, strlen=%u).", csp->ip_addr_str, len, c_len);
-      log_error(LOG_LEVEL_HEADER, 
-         "Offending request data with NULL bytes turned into \'°\' characters: %s", buf);
-
-      write_socket(csp->cfd, NULL_BYTE_RESPONSE, strlen(NULL_BYTE_RESPONSE));
-
-      /* XXX: Log correct size */
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"Invalid request\" 400 0", csp->ip_addr_str);
-
-      return TRUE;
-   }
-
-   return FALSE;
-}
-#endif
-
-
 /*********************************************************************
  *
  * Function    :  crunch_response_triggered
@@ -840,6 +756,7 @@ static int crunch_response_triggered(struct client_state *csp, const struct crun
    {
       /* Deliver, log and free the interception response. */
       send_crunch_response(csp, rsp);
+      csp->flags |= CSP_FLAG_CRUNCHED;
       return TRUE;
    }
 
@@ -859,6 +776,7 @@ static int crunch_response_triggered(struct client_state *csp, const struct crun
          {
             /* Deliver, log and free the interception response. */
             send_crunch_response(csp, rsp);
+            csp->flags |= CSP_FLAG_CRUNCHED;
 #ifdef FEATURE_STATISTICS
             if (c->flags & CF_COUNT_AS_REJECT)
             {
@@ -1014,7 +932,7 @@ static int server_response_is_complete(struct client_state *csp,
       content_length_known = TRUE;
    }
 
-   if (csp->http->status == 304)
+   if (csp->http->status == 204 || csp->http->status == 304)
    {
       /*
        * Expect no body. XXX: incomplete "list" of status codes?
@@ -1567,11 +1485,16 @@ static jb_err parse_client_request(struct client_state *csp)
  *
  * Function    :  chat
  *
- * Description :  Once a connection to the client has been accepted,
+ * Description :  Once a connection from the client has been accepted,
  *                this function is called (via serve()) to handle the
- *                main business of the communication.  When this
- *                function returns, the caller must close the client
- *                socket handle.
+ *                main business of the communication.  This function
+ *                returns after dealing with a single request. It can
+ *                be called multiple times witht the same client socket
+ *                if the client is keeping the connection alive.
+ *
+ *                The decision whether or not a client connection will
+ *                be kept alive is up to the caller which also must
+ *                close the client socket when done.
  *
  *                FIXME: chat is nearly thousand lines long.
  *                Ridiculous.
@@ -1598,9 +1521,7 @@ static void chat(struct client_state *csp)
    const struct forward_spec *fwd;
    struct http_request *http;
    long len = 0; /* for buffer sizes (and negative error codes) */
-
-   /* Function that does the content filtering for the current request */
-   filter_function_ptr content_filter = NULL;
+   int buffer_and_filter_content = 0;
 
    /* Skeleton for HTTP response, if we should intercept the request */
    struct http_response *rsp;
@@ -1692,12 +1613,8 @@ static void chat(struct client_state *csp)
    if (crunch_response_triggered(csp, crunchers_all))
    {
       /*
-       * Yes. The client got the crunch response
-       * and we are done here after cleaning up.
+       * Yes. The client got the crunch response and we're done here.
        */
-      /* XXX: why list_remove_all()? */
-      list_remove_all(csp->headers);
-
       return;
    }
 
@@ -1717,7 +1634,7 @@ static void chat(struct client_state *csp)
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    if ((csp->server_connection.sfd != JB_INVALID_SOCKET)
-      && socket_is_still_usable(csp->server_connection.sfd)
+      && socket_is_still_alive(csp->server_connection.sfd)
       && connection_destination_matches(&csp->server_connection, http, fwd))
    {
       log_error(LOG_LEVEL_CONNECT,
@@ -1870,9 +1787,14 @@ static void chat(struct client_state *csp)
          && ((csp->iob->eod - csp->iob->cur) >= 5)
          && !memcmp(csp->iob->eod-5, "0\r\n\r\n", 5))
       {
+         /*
+          * XXX: This check should be obsolete now,
+          *      but let's wait a while to be sure.
+          */
          log_error(LOG_LEVEL_CONNECT,
-            "Looks like we read the last chunk together with "
-            "the server headers. We better stop reading.");
+            "Looks like we got the last chunk together with "
+            "the server headers but didn't detect it earlier. "
+            "We better stop reading.");
          byte_count = (unsigned long long)(csp->iob->eod - csp->iob->cur);
          csp->expected_content_length = byte_count;
          csp->flags |= CSP_FLAG_CONTENT_LENGTH_SET;
@@ -2021,7 +1943,7 @@ static void chat(struct client_state *csp)
       if (FD_ISSET(csp->server_connection.sfd, &rfds))
       {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-         if (!socket_is_still_usable(csp->cfd))
+         if (!socket_is_still_alive(csp->cfd))
          {
 #ifdef _WIN32
             log_error(LOG_LEVEL_CONNECT,
@@ -2125,11 +2047,11 @@ static void chat(struct client_state *csp)
                 * now is the time to apply content modification
                 * and send the result to the client.
                 */
-               if (content_filter)
+               if (buffer_and_filter_content)
                {
-                  p = execute_content_filter(csp, content_filter);
+                  p = execute_content_filters(csp);
                   /*
-                   * If the content filter fails, use the original
+                   * If content filtering fails, use the original
                    * buffer and length.
                    * (see p != NULL ? p : csp->iob->cur below)
                    */
@@ -2191,7 +2113,7 @@ static void chat(struct client_state *csp)
           */
          if (server_body || http->ssl)
          {
-            if (content_filter)
+            if (buffer_and_filter_content)
             {
                /*
                 * If there is no memory left for buffering the content, or the buffer limit
@@ -2239,7 +2161,7 @@ static void chat(struct client_state *csp)
                    */
                   byte_count = (unsigned long long)flushed;
                   freez(hdr);
-                  content_filter = NULL;
+                  buffer_and_filter_content = 0;
                   server_body = 1;
                }
             }
@@ -2375,6 +2297,19 @@ static void chat(struct client_state *csp)
                log_error(LOG_LEVEL_FATAL, "Out of memory parsing server header");
             }
 
+            if ((csp->flags & CSP_FLAG_CHUNKED)
+               && !(csp->flags & CSP_FLAG_CONTENT_LENGTH_SET)
+               && ((csp->iob->eod - csp->iob->cur) >= 5)
+               && !memcmp(csp->iob->eod-5, "0\r\n\r\n", 5))
+            {
+               log_error(LOG_LEVEL_CONNECT,
+                  "Looks like we got the last chunk together with "
+                  "the server headers. We better stop reading.");
+               byte_count = (unsigned long long)(csp->iob->eod - csp->iob->cur);
+               csp->expected_content_length = byte_count;
+               csp->flags |= CSP_FLAG_CONTENT_LENGTH_SET;
+            }
+
             csp->server_connection.response_received = time(NULL);
 
             if (crunch_response_triggered(csp, crunchers_light))
@@ -2393,12 +2328,12 @@ static void chat(struct client_state *csp)
 
             if (!http->ssl) /* We talk plaintext */
             {
-               content_filter = get_filter_function(csp);
+               buffer_and_filter_content = content_requires_filtering(csp);
             }
             /*
              * Only write if we're not buffering for content modification
              */
-            if (!content_filter)
+            if (!buffer_and_filter_content)
             {
                /*
                 * Write the server's (modified) header to
@@ -2477,6 +2412,46 @@ static void chat(struct client_state *csp)
 }
 
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+/*********************************************************************
+ *
+ * Function    :  prepare_csp_for_next_request
+ *
+ * Description :  Put the csp in a mostly vergin state.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void prepare_csp_for_next_request(struct client_state *csp)
+{
+   csp->content_type = 0;
+   csp->content_length = 0;
+   csp->expected_content_length = 0;
+   csp->expected_client_content_length = 0;
+   list_remove_all(csp->headers);
+   freez(csp->iob->buf);
+   memset(csp->iob, 0, sizeof(csp->iob));
+   freez(csp->error_message);
+   free_http_request(csp->http);
+   destroy_list(csp->headers);
+   destroy_list(csp->tags);
+   free_current_action(csp->action);
+   if (NULL != csp->fwd)
+   {
+      unload_forward_spec(csp->fwd);
+      csp->fwd = NULL;
+   }
+   /* XXX: Store per-connection flags someplace else. */
+   csp->flags &= CSP_FLAG_TOGGLED_ON;
+   csp->flags |= CSP_FLAG_ACTIVE;
+   csp->flags |= CSP_FLAG_REUSED_CLIENT_CONNECTION;
+}
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+
 /*********************************************************************
  *
  * Function    :  serve
@@ -2509,71 +2484,64 @@ static void serve(struct client_state *csp)
 
       chat(csp);
 
+      /*
+       * If the request has been crunched,
+       * the calculated latency is zero.
+       */
       latency = (unsigned)(csp->server_connection.response_received -
          csp->server_connection.request_sent) / 2;
 
       continue_chatting = (csp->config->feature_flags
          & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
-         && (csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
-         && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
-         && (csp->cfd != JB_INVALID_SOCKET)
-         && (csp->server_connection.sfd != JB_INVALID_SOCKET)
-         && socket_is_still_usable(csp->server_connection.sfd);
+         && (((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
+               && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
+            || (csp->flags & CSP_FLAG_CRUNCHED))
+         && (csp->cfd != JB_INVALID_SOCKET);
 
-      if (continue_chatting)
+      if (continue_chatting && !(csp->flags & CSP_FLAG_CRUNCHED))
       {
-         if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
+         continue_chatting = (csp->server_connection.sfd != JB_INVALID_SOCKET)
+            && socket_is_still_alive(csp->server_connection.sfd);
+         if (continue_chatting)
          {
-            csp->server_connection.keep_alive_timeout = csp->config->default_server_timeout;
-            log_error(LOG_LEVEL_CONNECT,
-               "The server didn't specify how long the connection will stay open. "
-               "Assumed timeout is: %u.", csp->server_connection.keep_alive_timeout);
+            if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
+            {
+               csp->server_connection.keep_alive_timeout = csp->config->default_server_timeout;
+               log_error(LOG_LEVEL_CONNECT,
+                  "The server didn't specify how long the connection will stay open. "
+                  "Assumed timeout is: %u.", csp->server_connection.keep_alive_timeout);
+            }
+            continue_chatting = (latency < csp->server_connection.keep_alive_timeout);
          }
-         continue_chatting = (latency < csp->server_connection.keep_alive_timeout);
       }
 
       if (continue_chatting)
       {
          unsigned int client_timeout;
 
-         client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
-
-         log_error(LOG_LEVEL_CONNECT,
-            "Waiting for the next client request on socket %d. "
-            "Keeping the server socket %d to %s open.",
-            csp->cfd, csp->server_connection.sfd, csp->server_connection.host);
+         if (csp->server_connection.sfd != JB_INVALID_SOCKET)
+         {
+            client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
+            log_error(LOG_LEVEL_CONNECT,
+               "Waiting for the next client request on socket %d. "
+               "Keeping the server socket %d to %s open.",
+               csp->cfd, csp->server_connection.sfd, csp->server_connection.host);
+         }
+         else
+         {
+            client_timeout = 1; /* XXX: Use something else here? */
+            log_error(LOG_LEVEL_CONNECT,
+               "Waiting for the next client request on socket %d. "
+               "No server socket to keep open.", csp->cfd);
+         }
          if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
             && data_is_available(csp->cfd, (int)client_timeout)
-            && socket_is_still_usable(csp->cfd))
+            && socket_is_still_alive(csp->cfd))
          {
             log_error(LOG_LEVEL_CONNECT, "Client request arrived in "
                "time or the client closed the connection on socket %d.",
                 csp->cfd);
-            /*
-             * Get the csp in a mostly vergin state again.
-             * XXX: Should be done elsewhere.
-             */
-            csp->content_type = 0;
-            csp->content_length = 0;
-            csp->expected_content_length = 0;
-            csp->expected_client_content_length = 0;
-            list_remove_all(csp->headers);
-            freez(csp->iob->buf);
-            memset(csp->iob, 0, sizeof(csp->iob));
-            freez(csp->error_message);
-            free_http_request(csp->http);
-            destroy_list(csp->headers);
-            destroy_list(csp->tags);
-            free_current_action(csp->action);
-            if (NULL != csp->fwd)
-            {
-               unload_forward_spec(csp->fwd);
-               csp->fwd = NULL;
-            }
-
-            /* XXX: Store per-connection flags someplace else. */
-            csp->flags = CSP_FLAG_ACTIVE |
-               (csp->flags & CSP_FLAG_TOGGLED_ON) | CSP_FLAG_REUSED_CLIENT_CONNECTION;
+            prepare_csp_for_next_request(csp);
          }
          else
          {
@@ -2582,11 +2550,11 @@ static void serve(struct client_state *csp)
                 csp->cfd);
 #ifdef FEATURE_CONNECTION_SHARING
             if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
-               && (socket_is_still_usable(csp->server_connection.sfd)))
+               && (socket_is_still_alive(csp->server_connection.sfd)))
             {
                time_t time_open = time(NULL) - csp->server_connection.timestamp;
 
-               if (csp->server_connection.keep_alive_timeout < time_open + latency)
+               if (csp->server_connection.keep_alive_timeout < time_open - (time_t)latency)
                {
                   break;
                }
@@ -3117,13 +3085,10 @@ int main(int argc, char **argv)
     */
 #if defined(unix)
 {
-   pid_t pid = 0;
-
    if (daemon_mode)
    {
       int fd;
-
-      pid  = fork();
+      pid_t pid = fork();
 
       if ( pid < 0 ) /* error */
       {
@@ -3392,6 +3357,7 @@ void w32_service_listen_loop(void *p)
  *********************************************************************/
 static void listen_loop(void)
 {
+   struct client_states *csp_list = NULL;
    struct client_state *csp = NULL;
    jb_socket bfd;
    struct configuration_spec *config;
@@ -3441,11 +3407,14 @@ static void listen_loop(void)
       }
 #endif
 
-      if ( NULL == (csp = (struct client_state *) zalloc(sizeof(*csp))) )
+      csp_list = (struct client_states *)zalloc(sizeof(*csp_list));
+      if (NULL == csp_list)
       {
-         log_error(LOG_LEVEL_FATAL, "malloc(%d) for csp failed: %E", sizeof(*csp));
+         log_error(LOG_LEVEL_FATAL,
+            "malloc(%d) for csp_list failed: %E", sizeof(*csp_list));
          continue;
       }
+      csp = &csp_list->csp;
 
       csp->flags |= CSP_FLAG_ACTIVE;
       csp->server_connection.sfd = JB_INVALID_SOCKET;
@@ -3484,12 +3453,14 @@ static void listen_loop(void)
             exit(1);
          }
 #endif
-         freez(csp);
+         freez(csp_list);
          continue;
       }
       else
       {
-         log_error(LOG_LEVEL_CONNECT, "accepted connection from %s", csp->ip_addr_str);
+         log_error(LOG_LEVEL_CONNECT,
+            "accepted connection from %s on socket %d",
+            csp->ip_addr_str, csp->cfd);
       }
 
 #ifdef FEATURE_TOGGLE
@@ -3511,7 +3482,7 @@ static void listen_loop(void)
          log_error(LOG_LEVEL_CONNECT, "Connection from %s dropped due to ACL", csp->ip_addr_str);
          close_socket(csp->cfd);
          freez(csp->ip_addr_str);
-         freez(csp);
+         freez(csp_list);
          continue;
       }
 #endif /* def FEATURE_ACL */
@@ -3526,13 +3497,13 @@ static void listen_loop(void)
             strlen(TOO_MANY_CONNECTIONS_RESPONSE));
          close_socket(csp->cfd);
          freez(csp->ip_addr_str);
-         freez(csp);
+         freez(csp_list);
          continue;
       }
 
       /* add it to the list of clients */
-      csp->next = clients->next;
-      clients->next = csp;
+      csp_list->next = clients->next;
+      clients->next = csp_list;
 
       if (config->multi_threaded)
       {

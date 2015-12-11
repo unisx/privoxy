@@ -11,7 +11,7 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.16">
+<!entity p-version "3.0.17">
 <!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
 <!entity % p-not-stable "IGNORE">
@@ -34,7 +34,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.123 2010/02/19 16:00:38 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.129 2010/11/13 20:17:11 fabiankeil Exp $
 
  Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -60,7 +60,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.123 2010/02/19 16:00:38 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.129 2010/11/13 20:17:11 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -437,435 +437,512 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- <application>Privoxy 3.0.16</application> is a stable release.
- The changes since 3.0.15 beta are:
+ <application>Privoxy 3.0.17</application> is a stable release.
+ The changes since 3.0.16 stable are:
 </para>
 
 <para>
  <itemizedlist>
-  <listitem>
+    <listitem>
    <para>
-    Added the config file option handle-as-empty-doc-returns-ok to
-    work around Firefox bug #492459, which causes Firefox to hang
-    if JavaScripts are blocked in certain situations. The option is
-    enabled in the default config file.
+    Fixed last-chunk-detection for responses where the content was small
+    enough to be read with the body, causing Privoxy to wait for the
+    end of the content until the server closed the connection or the
+    request timed out. Reported by "Karsten" in #3028326.
    </para>
   </listitem>
   <listitem>
    <para>
-    Added the config file option default-server-timeout to control the
-    assumed default server timeout. Since Privoxy no longer returns
-    an error message for connection resets on reused client connections,
-    assuming larger server timeout values appears to actually work
-    pretty well as long as connections aren't shared.
+    Responses with status code 204 weren't properly detected as body-less
+    like RFC2616 mandates. Like the previous bug, this caused Privoxy to
+    wait for the end of the content until the server closed the connection
+    or the request timed out. Fixes #3022042 and #3025553, reported by a
+    user with no visible name. Most likely also fixes a bunch of other
+    AJAX-related problem reports that got closed in the past due to
+    insufficient information and lack of feedback.
    </para>
   </listitem>
   <listitem>
    <para>
-    Added optional support for FreeBSD's accf_http(9). Use the
-    configure option --enable-accept-filter to enable it.
+    Fixed an ACL bug that made it impossible to build a blacklist.
+    Usually the ACL directives are used in a whitelist, which worked
+    as expected, but blacklisting is still useful for public proxies
+    where one only needs to deny known abusers access.
    </para>
   </listitem>
   <listitem>
    <para>
-    Added fancier Privoxy icons for win32. Contributed by Jeff H.
+    Added LOG_LEVEL_RECEIVED to log the not-yet-parsed data read from the
+    network. This should make debugging various parsing issues a lot easier.
    </para>
   </listitem>
   <listitem>
    <para>
-    In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
+    The IPv6 code is enabled by default on Windows versions that support it.
+    Patch submitted by oCameLo in #2942729.
    </para>
   </listitem>
   <listitem>
    <para>
-    Resolve localhost using whatever address family the operating
-    system feels like. Previous betas would try to use IPv4 as this
-    is what most users expect, but this didn't work reliably on
-    GNU/Linux systems.
+    In mingw32 versions, the user.filter file is reachable through the
+    GUI, just like default.filter is. Feature request 3040263.
    </para>
   </listitem>
   <listitem>
    <para>
-    In the action lists on CGI pages, actions and their parameters are
-    no longer separated with a space. The action file parser doesn't
-    actually allow this and will throw an invalid syntax error if actions
-    and parameters in the action files are separated. Not adding the
-    spaces means copy and pasting CGI output into the action files works.
+    Added the configure option --enable-large-file-support to set a few
+    defines that are required by platforms like GNU/Linux to support files
+    larger then 2GB. Mainly interesting for users without proper logfile
+    management.
    </para>
   </listitem>
   <listitem>
    <para>
-    The default keep-alive timeout has been reduced to 5 seconds to work
-    around hangs in clients that treat the proxy like any other host and
-    stop allowing any new connections if the "maximum number of
-    connections per host" is reached.
+    Logging with "debug 16" no longer stops at the first nul byte which is
+    pretty useless. Non-printable characters are replaced with their hex value
+    so the result can't span multiple lines making parsing them harder then
+    necessary.
    </para>
   </listitem>
   <listitem>
    <para>
-    Several webbug URLs that look like they are leading to images are now
-    blocked as image instead of empty documents. Doing the latter causes
-    WebKit-based clients to show a "missing image" icon which may mess up
-    the layout.
+    Privoxy logs when reading an action, filter or trust file.
    </para>
   </listitem>
   <listitem>
    <para>
-    The no-such-domain template is used for DNS resolution
-    problems with FEATURE_IPV6_SUPPORT enabled. Previously the
-    connect-failed template was used. Reported by 'zebul666'.
+    Fixed incorrect regression test markup which caused a test in
+    3.0.16 to fail while Privoxy itself was working correctly.
+    While Privoxy accepts hide-referer, too, the action name is actually
+    hide-referrer which is also the name used one the final results page,
+    where the test expected the alias.
    </para>
   </listitem>
   <listitem>
    <para>
-    Accepts quoted expiration dates even though RFC 2109 10.1.2
-    doesn't seem to allow them. Reported anonymously.
+    CGI interface improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      In finish_http_response(), continue to add the 'Connection: close'
+      header if the client connection will not be kept alive.
+      Anonymously pointed out in #2987454.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Apostrophes in block messages no longer cause parse errors
+      when the blocked page is viewed with JavaScript enabled.
+      Reported by dg1727 in #3062296.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix a bunch of anchors that used underscores instead of dashes.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Allow to keep the client connection alive after crunching the previous request.
+      Already opened server connections can be kept alive, too.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In cgi_show_url_info(), don't forget to prefix URLs that only contain
+      http:// or https:// in the path. Fixes #2975765 reported by Adam Piggott.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Show the 404 CGI page if cgi_send_user_manual() is called while
+      local user manual delivery is disabled.
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
   <listitem>
    <para>
-    Don't try to forget connections if connection sharing is disabled.
-    This wasn't a real problem but caused an unnecessary log message.
+    Action file improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Enable user.filter by default. Suggested by David White in #3001830.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block .sitestat.com/. Reported by johnd16 in #3002725.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block .atemda.com/. Reported by johnd16 in #3002723.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block js.adlink.net/. Reported by johnd16 in #3002720.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block .analytics.yahoo.com/. Reported by johnd16 in #3002713.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block sb.scorecardresearch.com, too. Reported by dg1727 in #2992652.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix problems noticed on Yahoo mail and news pages.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Remove the too broad yahoo section, only keeping the
+      fast-redirects exception as discussed on ijbswa-devel@.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Don't block adesklets.sourceforge.net. Reported in #2974204.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block chartbeat ping tracking. Reported in #2975895.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Tag CSS and image requests with cautious and medium settings, too.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Don't handle view.atdmt.com as image. It's used for click-throughs
+      so users should be able to "go there anyway".
+      Reported by Adam Piggott in #2975927.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Also let the refresh-tags filter remove invalid refresh tags where
+      the 'url=' part is missing. Anonymously reported in #2986382.
+      While at it, update the description to mention the fact that only
+      refresh tags with refresh times above 9 seconds are covered.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      javascript needs to be blocked with +handle-as-empty-document to
+      work around Firefox bug 492459.  So move .js blockers from
+      +block{Might be a web-bug.} -handle-as-empty-document to
+      +block{Might be a web-bug.} +handle-as-empty-document.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      ijbswa-Feature Requests-3006719 - Block 160x578 Banners.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block another omniture tracking domain.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Added a range-requests tagger.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Added two sections to get Flickr's Ajax interface working with
+      default pre-settings. If you change the configuration to block
+      cookies by default, you'll need additional exceptions.
+      Reported by Mathias Homann in #3101419 and by Patrick on ijbswa-users@.
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
   <listitem>
    <para>
-    The still undocumented --enable-extended-host-patterns configure
-    option has a better description.
+    Documentation improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Explicitly mention how to match all URLs.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Consistently recommend socks5 in the Tor FAQ entry and mention
+      its advantage compared to socks4a. Reported by David in #2960129.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Slightly improve the explanation of why filtering may appear
+      slower than it is.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Grammar fixes for the ACL section.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fixed a link to the 'intercepting' entry and add another one.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Rename the 'Other' section to 'Mailing Lists' and reword it
+      to make it clear that nobody is forced to use the trackers
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Note that 'anonymously' posting on the trackers may not always
+      be possible.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Suggest to enable debug 32768 when suspecting parsing problems.
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed an error message that would claim a write to the server
-    failed when actually writing to the client failed.
+    Privoxy-Log-Parser improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Gather statistics for ressources, methods, and HTTP versions
+      used by the client.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Also gather statistics for blocked and redirected requests.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Provide the percentage of keep-alive offers the client accepted.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add a --url-statistics-threshold option.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add a --host-statistics-threshold option to also gather
+      statistics about how many request where made per host.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix a bug in handle_loglevel_header() where a 'scan: ' got lost.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add a --shorten-thread-ids option to replace the thread id with
+      a decimal number.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and ignore: Looks like we got the last chunk together
+      with the server headers. We better stop reading.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and ignore: Continue hack in da house.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and higlight: Rejecting connection from 10.0.0.2.
+      Maximum number of connections reached.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and highlight: Loading actions file: /usr/local/etc/privoxy/default.action
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and highlight: Loading filter file: /usr/local/etc/privoxy/default.filter
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and highlight: Killed all-caps Host header line: HOST: bestproxydb.com
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept and highlight: Reducing expected bytes to 0. Marking
+      the server socket tainted after throwing 4 bytes away.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Accept: Merged multiple header lines to: 'X-FORWARDED-PROTO: http X-HOST: 127.0.0.1'
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
   <listitem>
    <para>
-    Log the crunch reason before trying to write to the client.
-    The log is easier to read that way.
+    Code cleanups:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Remove the next member from the client_state struct. Only the main
+      thread needs access to all client states so give it its own struct.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Garbage-collect request_contains_null_bytes().
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Ditch redundant code in unload_configfile().
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Ditch LogGetURLUnderCursor() which doesn't seem to be used anywhere.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In write_socket(), remove the write-only variable write_len in
+      an ifdef __OS2__ block. Spotted by cppcheck.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In connect_to(), don't declare the variable 'flags' on OS/2 where
+      it isn't used. Spotted by cppcheck.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Limit the scope of various variables. Spotted by cppcheck.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In add_to_iob(), turn an interestingly looking for loop into a
+      boring while loop.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Code cleanup in preparation for external filters.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In listen_loop(), mention the socket on which we accepted the
+      connection, not just the source IP address.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In write_socket(), also log the socket we're writing to.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In log_error(), assert that escaped characters get logged
+      completely or not at all.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In log_error(), assert that ival and sval have reasonable values.
+      There's no reason not to abort() if they don't.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Remove an incorrect cgi_error_unknown() call in a
+      cannnot-happen-situation in send_crunch_response().
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Clean up white-space in http_response definition and
+      move the crunch_reason to the beginning.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Turn http_response.reason into an enum and rename it
+      to http_response.crunch_reason.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Silence a 'gcc (Debian 4.3.2-1.1) 4.3.2' warning on i686 GNU/Linux.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix white-space in a log message in remove_chunked_transfer_coding().
+      While at it, add a note that the message doesn't seem to
+      be entirely correct and should be improved later on.
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
   <listitem>
    <para>
-    Several log messages about client connections also mention
-    the socket number.
+    GNUmakefile improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Use $(SSH) instead of ssh, so one only needs to specify a username once.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Removed references to the action feedback thingy that hasn't been
+      working for years.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Consistently use shell.sourceforge.net instead of shell.sf.net so
+      one doesn't need to check server fingerprints twice.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Removed GNUisms in the webserver and webactions targets so they
+      work with standard tar.
+     </para>
+    </itemizedlist>
    </para>
   </listitem>
-  <listitem>
-   <para>
-    handle-as-empty-document no longer depends on the image blocking
-    code being enabled.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    uagen, a Firefox User-Agent generator for Privoxy and Mozilla
-    browsers has been imported and is available in the tarball's
-    tools directory.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The scripts in the tools directory treat unknown parameters
-    as fatal errors.
-   </para>
-  </listitem>
- </itemizedlist>
-</para>
-
-<para>
- If you missed the previous three beta versions, you may also be
- interested in the additional changes since 3.0.12, the
- last stable release:
-</para>
-
-<para>
- <itemizedlist>
-  <listitem>
-   <para>
-    Added IPv6 support. Thanks to Petr Pisar who not only provided
-    the initial patch but also helped a lot with the integration.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Added client-side keep-alive support.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The connection sharing code is only used if the connection-sharing
-    option is enabled.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The latency is taken into account when evaluating whether or not to
-    reuse a connection. This should significantly reduce the number of
-    connections problems several users reported.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The max-client-connections option has been added to restrict
-    the number of client connections below a value enforced by
-    the operating system.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If the server doesn't specify how long the connection stays alive,
-    Privoxy errs on the safe side of caution and assumes it's only a second.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Setting keep-alive-timeout to 0 disables keep-alive support. Previously
-    Privoxy would claim to allow persistence but not reuse the connection.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Pipelined requests are less likely to be mistaken for the request
-    body of the previous request. Note that Privoxy still has no real
-    pipeline support and will either serialize pipelined requests or
-    drop them in which case the client has to resent them.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed a crash on some Windows versions when header randomization
-    is enabled and the date couldn't be parsed.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Privoxy's keep-alive timeout for the current connection is reduced
-    to the one specified in the client's Keep-Alive header.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    For HTTP/1.1 requests, Privoxy implies keep-alive support by not
-    setting any Connection header instead of using 'Connection: keep-alive'.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If the socket isn't reusable, Privoxy doesn't temporarily waste
-    a socket slot to remember the connection.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If keep-alive support is disabled but compiled in, the client's
-    Keep-Alive header is removed.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed a bug on mingw32 where downloading large files failed if
-    keep-alive support was enabled.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed a bug that (at least theoretically) could cause log
-    timestamps to be occasionally off by about a second.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The configure script respects the $PATH variable when searching
-    for groups and id.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Compressed content with extra fields couldn't be decompressed
-    and would get passed to the client unfiltered. This problem
-    has only be detected through statical analysis with clang as
-    nobody seems to be using extra fields anyway.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If the server resets the Connection after sending only the headers
-    Privoxy forwards what it got to the client. Previously Privoxy
-    would deliver an error message instead.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Error messages in case of connection timeouts use the right
-    HTTP status code.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If spawning a child to handle a request fails, the client
-    gets an error message and Privoxy continues to listen for
-    new requests right away.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The error messages in case of server-connection timeouts or
-    prematurely closed server connections are now template-based.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    If zlib support isn't compiled in, Privoxy no longer tries to
-    filter compressed content unless explicitly asked to do so.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    In case of connections that are denied based on ACL directives,
-    the memory used for the client IP is no longer leaked.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed another small memory leak if the client request times out
-    while waiting for client headers other than the request line.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The client socket is kept open until the server socket has
-    been marked as unused. This should increase the chances that
-    the still-open connection will be reused for the client's next
-    request to the same destination. Note that this only matters
-    if connection-sharing is enabled.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    A TODO list has been added to the source tarball to give potential
-    volunteers a better idea of what the current goals are. Donations
-    are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    In case of missing server data, no error message is send to the
-    client if the request arrived on a reused connection. The client
-    is then supposed to silently retry the request without bothering
-    the user. This should significantly reduce the frequency of the
-    "No server or forwarder data received" error message many users
-    reported.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    More reliable detection of prematurely closed client sockets
-    with keep-alive enabled.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
-    FEATURE_CONNECTION_SHARING and now available on
-    all platforms.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Improved handling of POST requests on reused connections.
-    Should fix problems with stalled connections after submitting
-    form data with some browser configurations.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed various latency calculation issues.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Allows the client to pass NTLM authentication requests to a
-    forwarding proxy. This was already assumed and hinted to work
-    in 3.0.13 beta but actually didn't. Now it's confirmed to work
-    with IE, Firefox and Chrome.
-    Thanks to Francois Botha and Wan-Teh Chang
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fixed a calculation problem if receiving the server headers
-    takes more than two reads, that could cause Privoxy to terminate
-    the connection prematurely. Reported by Oliver.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Compiles again on platforms such as OpenBSD and systems
-    using earlier glibc version that don't support AI_ADDRCONFIG.
-    Anonymously submitted in #2872591.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    A bunch of MS VC project files and Suse and Redhat RPM spec
-    files have been removed as they were no longer maintained for
-    quite some time.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Overly long action lines are properly rejected with a proper
-    error message. Previously they would be either rejected as
-    invalid or cause a core dump through abort().
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Already timed-out connections are no longer temporarily remembered.
-    They weren't reused anyway, but wasted a socket slot.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    len refers to the number of bytes actually read which might
-    differ from the ones received. Adjust log messages accordingly.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The optional JavaScript on the CGI page uses encodeURIComponent()
-    instead of escape() which doesn't encode all characters that matter.
-    Anonymously reported in #2832722.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Fix gcc45 warnings in decompress_iob().
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Various log message improvements.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Privoxy-Regression-Test supports redirect tests.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Privoxy-Log-Parser can gather some connection statistics.
-   </para>
-  </listitem>
-
  </itemizedlist>
 </para>
 
@@ -2562,6 +2639,15 @@ for details.
   </listitem>
  </varlistentry>
  <varlistentry>
+  <term><literal>/</literal></term>
+  <listitem>
+   <para>
+    Matches any URL because there's no requirement for either the
+    domain or the path to match anything.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
   <term><literal>:8000/</literal></term>
   <listitem>
    <para>
@@ -4233,9 +4319,10 @@ problem-host.example.com</screen>
    <para>
     Filtering requires buffering the page content, which may appear to
     slow down page rendering since nothing is displayed until all content has
-    passed the filters. (It does not really take longer, but seems that way
-    since the page is not incrementally displayed.) This effect will be more
-    noticeable on slower connections.
+    passed the filters. (The total time until the page is completely rendered
+    doesn't change much, but it may be perceived as slower since the page is
+    not incrementally displayed.)
+    This effect will be more noticeable on slower connections.
    </para>
    <para>
    <quote>Rolling your own</quote>
@@ -8824,6 +8911,24 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.129  2010/11/13 20:17:11  fabiankeil
+ Merge ChangeLog updates
+
+ Revision 2.128  2010/11/10 22:00:13  fabiankeil
+ Update the first paragraph of the 'What's New' section.
+
+ Revision 2.127  2010/11/10 21:48:54  fabiankeil
+ Update the "What's New" section.
+
+ Revision 2.126  2010/11/06 12:55:48  fabiankeil
+ Set p-version to 3.0.17
+
+ Revision 2.125  2010/09/03 17:39:37  fabiankeil
+ Slightly improve the explanation of why filtering may appear slower than it is.
+
+ Revision 2.124  2010/05/01 18:21:30  fabiankeil
+ Explicitly mention how to match any URL.
+
  Revision 2.123  2010/02/19 16:00:38  fabiankeil
  Even more fixes.
 

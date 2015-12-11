@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.16 User Manual"
+TITLE="Privoxy 3.0.17 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.16 User Manual</TH
+>Privoxy 3.0.17 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -1380,7 +1380,7 @@ CLASS="APPLICATION"
   debug     2 # show each connection status
   debug     4 # show I/O status
   debug     8 # show header parsing
-  debug    16 # log all data written to the network into the logfile
+  debug    16 # log all data written to the network
   debug    32 # debug force feature
   debug    64 # debug regular expression filters
   debug   128 # debug redirects
@@ -1392,7 +1392,8 @@ CLASS="APPLICATION"
 > didn't let through, and the reason why.
   debug  2048 # CGI user interface
   debug  4096 # Startup banner and warnings.
-  debug  8192 # Non-fatal errors</PRE
+  debug  8192 # Non-fatal errors
+  debug 32768 # log all data read from the network</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2527,8 +2528,8 @@ CLASS="QUOTE"
     IP addresses, only the first one is used.
    </P
 ><P
->     Some systems allows IPv4 client to connect to IPv6 server socket.
-     Then the client's IPv4 address will be translated by system into
+>     Some systems allow IPv4 clients to connect to IPv6 server sockets.
+     Then the client's IPv4 address will be translated by the system into
      IPv6 address space with special prefix ::ffff:0:0/96 (so called IPv4
      mapped IPv6 address). <SPAN
 CLASS="APPLICATION"

@@ -1,6 +1,6 @@
 #ifndef FILTERS_H_INCLUDED
 #define FILTERS_H_INCLUDED
-#define FILTERS_H_VERSION "$Id: filters.h,v 1.37 2009/05/16 13:27:20 fabiankeil Exp $"
+#define FILTERS_H_VERSION "$Id: filters.h,v 1.41 2010/09/14 07:16:07 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.h,v $
@@ -12,7 +12,7 @@
  *                   `ij_untrusted_url', `intercept_url', `re_process_buffer',
  *                   `show_proxy_args', and `trust_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001, 2004 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -101,18 +101,16 @@ extern const struct forward_spec *forward_url(struct client_state *csp,
 /*
  * Content modification
  */
-
-typedef char *(*filter_function_ptr)();
-extern char *execute_content_filter(struct client_state *csp, filter_function_ptr content_filter);
-
-extern filter_function_ptr get_filter_function(struct client_state *csp);
+extern char *execute_content_filters(struct client_state *csp);
 extern char *execute_single_pcrs_command(char *subject, const char *pcrs_command, int *hits);
 extern char *rewrite_url(char *old_url, const char *pcrs_command);
 extern char *get_last_url(char *subject, const char *redirect_mode);
 
 extern pcrs_job *compile_dynamic_pcrs_job_list(const struct client_state *csp, const struct re_filterfile_spec *b);
 
+extern int content_requires_filtering(struct client_state *csp);
 extern int content_filters_enabled(const struct current_action_spec *action);
+extern int filters_available(const struct client_state *csp);
 
 /*
  * Handling Max-Forwards:

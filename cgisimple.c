@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.96 2009/12/16 08:36:39 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.99 2010/03/28 18:02:22 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -9,7 +9,7 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.96 2009/12/16 08:36:39 fabian
  *                Functions declared include:
  * 
  *
- * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -690,6 +690,13 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    assert(rsp);
    assert(parameters);
 
+   if (0 == strncmpic(csp->config->usermanual, "http://", 7))
+   {
+      log_error(LOG_LEVEL_CGI, "Request for local user-manual "
+         "received while user-manual delivery is disabled.");
+      return cgi_error_404(csp, rsp, parameters);
+   }
+
    if (!parameters->first)
    {
       /* requested http://p.p/user-manual (without trailing slash) */
@@ -1071,7 +1078,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
     * 1) "http://" or "https://" prefix present and followed by URL - OK
     * 2) Only the "http://" or "https://" part is present, no URL - change
     *    to empty string so it will be detected later as "no URL".
-    * 3) Parameter specified but doesn't contain "http(s?)://" - add a
+    * 3) Parameter specified but doesn't start with "http(s?)://" - add a
     *    "http://" prefix.
     * 4) Parameter not specified or is empty string - let this fall through
     *    for now, next block of code will handle it.
@@ -1098,9 +1105,14 @@ jb_err cgi_show_url_info(struct client_state *csp,
          url_param[0] = '\0';
       }
    }
-   else if ((url_param[0] != '\0') && (NULL == strstr(url_param, "://")))
+   else if ((url_param[0] != '\0')
+      && ((NULL == strstr(url_param, "://")
+            || (strstr(url_param, "://") > strstr(url_param, "/")))))
    {
-      /* No prefix - assume http:// */
+      /*
+       * No prefix or at least no prefix before
+       * the first slash - assume http://
+       */
       char *url_param_prefixed = strdup("http://");
 
       if (JB_ERR_OK != string_join(&url_param_prefixed, url_param))

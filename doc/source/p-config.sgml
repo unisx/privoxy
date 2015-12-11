@@ -3,7 +3,7 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.62 2010/02/15 15:07:56 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.66 2010/11/08 17:54:21 fabiankeil Exp $
 
  Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -97,7 +97,7 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.62 2010/02/15 15:07:56 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.66 2010/11/08 17:54:21 fabiankeil Exp $
 </para>
 <para>
 Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
@@ -796,7 +796,7 @@ actionsfile
 </variablelist>
 
 <![%config-file;[<literallayout>@@filterfile default.filter</literallayout>]]>
-<![%config-file;[<literallayout>@@#filterfile user.filter      # User customizations</literallayout>]]>
+<![%config-file;[<literallayout>@@filterfile user.filter      # User customizations</literallayout>]]>
 </sect3>
 
 
@@ -1009,7 +1009,7 @@ actionsfile
   debug     2 # show each connection status
   debug     4 # show I/O status
   debug     8 # show header parsing
-  debug    16 # log all data written to the network into the logfile
+  debug    16 # log all data written to the network
   debug    32 # debug force feature
   debug    64 # debug regular expression filters
   debug   128 # debug redirects
@@ -1019,6 +1019,7 @@ actionsfile
   debug  2048 # CGI user interface
   debug  4096 # Startup banner and warnings.
   debug  8192 # Non-fatal errors
+  debug 32768 # log all data read from the network
 </programlisting>
    </para>
    <para>
@@ -1710,8 +1711,8 @@ ACLs: permit-access and deny-access</title>
     IP addresses, only the first one is used.
    </para>
    <para>
-     Some systems allows IPv4 client to connect to IPv6 server socket.
-     Then the client's IPv4 address will be translated by system into
+     Some systems allow IPv4 clients to connect to IPv6 server sockets.
+     Then the client's IPv4 address will be translated by the system into
      IPv6 address space with special prefix ::ffff:0:0/96 (so called IPv4
      mapped IPv6 address). <application>Privoxy</application> can handle it
      and maps such ACL addresses automatically.
