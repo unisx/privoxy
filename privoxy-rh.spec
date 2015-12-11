@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.65 2009/06/11 12:16:02 fabiankeil Exp $
+# $Id: privoxy-rh.spec,v 1.66 2009/07/23 15:16:16 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated accordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.13
+Version: 3.0.14
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -70,7 +70,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=13
+VERSION_POINT=14
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -767,6 +767,9 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.66  2009/07/23 15:16:16  fabiankeil
+# Bump version for 3.0.14 beta.
+#
 # Revision 1.65  2009/06/11 12:16:02  fabiankeil
 # Add recently added cgi templates.
 #

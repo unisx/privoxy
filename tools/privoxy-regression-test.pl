@@ -7,7 +7,7 @@
 # A regression test "framework" for Privoxy. For documentation see:
 # perldoc privoxy-regression-test.pl
 #
-# $Id: privoxy-regression-test.pl,v 1.48 2009/06/10 16:38:08 fabiankeil Exp $
+# $Id: privoxy-regression-test.pl,v 1.51 2009/06/15 20:47:49 fabiankeil Exp $
 #
 # Wish list:
 #
@@ -225,7 +225,7 @@ sub tokenize ($) {
     s@&amp;@&@g;
 
     # Tokenize
-    if (/^\#\s*([^=:#]*?)\s*[=]\s*([^#]+)$/) {
+    if (/^\#\s*([^=:#]*?)\s*[=]\s*([^#]+)(?:#.*)?$/) {
 
         $token = $1;
         $value = $2;
@@ -601,7 +601,10 @@ sub dependency_unsatisfied ($) {
             }
         }
 
-    } elsif (defined ($dependencies{$level}{'feature status'})) {
+    }
+
+    if (defined ($dependencies{$level}{'feature status'})
+        and not defined $dependency_problem) {
 
         my $dependency = $dependencies{$level}{'feature status'};
         my ($feature, $status) = $dependency =~ /([^\s]*)\s+(Yes|No)/;
@@ -923,7 +926,7 @@ sub check_header_result ($$) {
 
         } else {
 
-            $header = "'No matching header'" unless defined $header; # XXX: No header detected to be precise
+            $header = "No matching header" unless defined $header; # XXX: No header detected to be precise
             l(LL_VERBOSE_FAILURE,
               "Ooops. Got: '" . $header . "' while expecting: '" . $expect_header . "'");
         }

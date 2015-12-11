@@ -8,8 +8,8 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.13">
-<!entity p-status "beta">
+<!entity p-version "3.0.14">
+<!entity p-status "BETA">
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.62 2009/06/12 14:30:58 fabiankeil Exp $
+ $Id: faq.sgml,v 2.65 2009/07/18 16:24:39 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -78,7 +78,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.62 2009/06/12 14:30:58 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.65 2009/07/18 16:24:39 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -537,7 +537,7 @@ warranty? Registration?</title>
  please have a look at
  <ulink url="http://www.spi-inc.org/donations">SPI's donation page</ulink>
  to see what the options are.
-<para>
+</para>
 </sect3>
 
 </sect2>
@@ -808,23 +808,8 @@ way to do this?</title>
 <title>There are several different <quote>actions</quote> files. What are
 the differences?</title>
 <para>
- Three actions files 
- are being included by the developers, to be used for 
- different purposes: These are 
- <filename>default.action</filename>, the <quote>main</quote> actions file
- which is actively maintained by the <application>Privoxy</application>
- developers and typically sets the default policies, <filename>user.action</filename>,
- where users are encouraged to make their private customizations.
- Please see <ulink url="../user-manual/actions-file.html">the actions chapter</ulink>
- in the <ulink url="../user-manual/index.html">User Manual</ulink> for a more
- detailed explanation.
-</para>
-
-<para>
- Earlier versions included three different versions of the 
- <filename>default.action</filename> file. The new scheme allows for 
- greater flexibility of local configuration, and for browser based 
- selection of pre-defined <quote>aggressiveness</quote> levels.
+ Please have a look at the <ulink url="../user-manual/actions-file.html">the actions chapter</ulink>
+ in the <ulink url="../user-manual/index.html">User Manual</ulink> for a detailed explanation.
 </para>
 
 </sect2>
@@ -2945,6 +2930,15 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.65  2009/07/18 16:24:39  fabiankeil
+Bump entities for 3.0.14 beta.
+
+Revision 2.64  2009/07/18 12:18:52  fabiankeil
+Don't describe the action files in the FAQ when we can simply link to the description in the User Manual.
+
+Revision 2.63  2009/06/15 15:08:03  fabiankeil
+Patch #2806626 from Frédéric Crozat to fix a closing tag.
+
 Revision 2.62  2009/06/12 14:30:58  fabiankeil
 Update entities for 3.0.13 beta.
 

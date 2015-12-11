@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.178 2009/05/25 21:27:19 fabiankeil Exp $
+#  $Id: default.action.master,v 1.184 2009/07/21 14:19:57 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -641,6 +641,16 @@ standard.Advanced
 /.*\.(js|php|css|.?html?)
 
 #############################################################################
+# These belong to multimedia files of which Firefox occasionally only
+# requests parts. #2816708
+#############################################################################
+{-filter -deanimate-gifs}
+# Sticky Actions = -filter -deanimate-gifs
+# URL = http://www.example.org/foo/bar.ogg
+# URL = http://www.example.net/bar.ogv
+/.*\.og[gv]$
+
+#############################################################################
 # Generic block patterns by host:
 #############################################################################
 {+block{Host matches generic block pattern.}}
@@ -708,6 +718,8 @@ countr*.
 /.*(lo|thre|he|d|gr|l|ro|re|squ|class(ified)?)ads
 /.*account
 support./(.*/)?track
+# URL = http://repo.or.cz/r/vlc.git/objects/ad/1d316efd83157217fdf9b5d417dddca54bbf41
+/.*\.git/objects/
 
 #############################################################################
 # Exceptions for academia and non-profits
@@ -748,6 +760,10 @@ support./(.*/)?track
 landing.trafficz.com/
 # Blocked URL = http://www.searchnut.com/?domain=www.inetcat.org
 .searchnut.com/\?domain
+#MASTER# REMARKS: Verizon should know better
+#MASTER# BLOCK-REFERRER: http://www.qwetyhjkl.com
+# Blocked URL = http://wwwz.websearch.verizon.net/search?qo=www.qwetyhjkl.com
+wwwz.websearch.verizon.net/search\?qo=
 
 {+block{Site-specific block pattern matches.}}
 #MASTER# BLOCK-REFERRER: http://www.brooksbrothers.com/ 10/18/06
@@ -1028,6 +1044,9 @@ bwp.
 .yahoo.com/mc/stampNonJs
 # Blocked URL = http://richmedia.yimg.com/js/123/personnals_banners/PER_happy_sara1_4_425x600/ad.js?q=123
 /.*/ad\.js\?
+# Blocked URL = http://i.cmpnet.com/shared/omniture/s_code_remote.js
+#MASTER# BLOCK-REFERRER: http://www.informationweek.de/
+/.*omniture.*\.js
 
 
 #############################################################################
@@ -1814,6 +1833,8 @@ view.samurajdata.se/ps\.php\?url=
 .landsend.de/
 # URL = http://www.youtube.com/swf/l.swf?swf=http%3A//s.ytimg.com/yt/swf/cps-vfl68942.swf&video_id=2cpd6rHIfyA&rel=1&showsearch=1&eurl=&iurl=http%3A//i3.ytimg.com/vi/2cpd6rHIfyA/hqdefault.jpg&sk=5E3I2RCcOLknk1qyI_JgVVnb8FKwgpHzC&use_get_video_info=1&load_modules=1&fs=1&hl=en
 .youtube.com/swf/.*swf=
+# URL = http://redbot.org/?uri=http%3A//apache.org/
+.redbot.org/
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode or other automatically parsed content
@@ -1972,9 +1993,6 @@ javabog.dk/ijk/
 #MASTER# REMARKS: This section NOT checked 10/18/06 HB
 #MASTER# REMARKS: These are movie clips, linked from http://us.imdb.com
 .totaleclips.com
-#MASTER# REMARKS: Link to download page breaks
-# URL = http://www.mandrakelinux.com/en/ftp.php3
-.mandrakelinux.com/en/ftp.php3
 #MASTER# REMARKS: Actions Tracker 1313157
 # URL = http://validator.w3.org/check?uri=referer
 validator.w3.org/check\?uri=referer

@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.122 2009/06/08 16:48:09 fabiankeil Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.123 2009/06/19 15:50:53 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -13,7 +13,7 @@ const char filters_rcs[] = "$Id: filters.c,v 1.122 2009/06/08 16:48:09 fabiankei
  *                   `execute_single_pcrs_command', `rewrite_url',
  *                   `get_last_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001, 2004-2008 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001, 2004-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -119,8 +119,9 @@ static jb_err prepare_for_filtering(struct client_state *csp);
  * Returns     :  0 = no errror; -1 otherwise.
  *
  *********************************************************************/
-int sockaddr_storage_to_ip(const struct sockaddr_storage *addr, uint8_t **ip,
-      unsigned int *len, in_port_t **port)
+static int sockaddr_storage_to_ip(const struct sockaddr_storage *addr,
+                                  uint8_t **ip, unsigned int *len,
+                                  in_port_t **port)
 {
    if (NULL == addr)
    {
@@ -183,9 +184,9 @@ int sockaddr_storage_to_ip(const struct sockaddr_storage *addr, uint8_t **ip,
  * Returns     :  0 = doesn't match; 1 = does match
  *
  *********************************************************************/
-int match_sockaddr(const struct sockaddr_storage *network,
-      const struct sockaddr_storage *netmask,
-      const struct sockaddr_storage *address)
+static int match_sockaddr(const struct sockaddr_storage *network,
+                          const struct sockaddr_storage *netmask,
+                          const struct sockaddr_storage *address)
 {
    uint8_t *network_addr, *netmask_addr, *address_addr;
    unsigned int addr_len;

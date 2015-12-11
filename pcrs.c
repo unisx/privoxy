@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.33 2009/05/19 17:44:54 fabiankeil Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.34 2009/06/19 15:34:32 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/pcrs.c,v $
@@ -1064,10 +1064,9 @@ static const char warning[] = "... [too long, truncated]";
  *                values of the variables and compiles it.
  *
  * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  pcrs_command = The dynamic pcrs command to compile
- *          3  :  v = NULL terminated array of variables and their values.
- *          4  :  error = pcrs error code
+ *          1  :  pcrs_command = The dynamic pcrs command to compile
+ *          2  :  v = NULL terminated array of variables and their values.
+ *          3  :  error = pcrs error code
  *
  * Returns     :  NULL in case of hard errors, otherwise the
  *                compiled pcrs job.   

@@ -5,7 +5,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: privoxy-man-page.sgml,v 2.30 2009/06/12 14:30:58 fabiankeil Exp $
+ $Id: privoxy-man-page.sgml,v 2.32 2009/07/18 16:25:36 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -42,8 +42,8 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "3.0.13">
-<!entity p-status "beta">
+<!entity p-version "3.0.14">
+<!entity p-status "BETA">
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">           <!-- define we are not a text only doc -->
@@ -309,7 +309,7 @@
 <refsect1><title>Notes</title>
 <![%p-not-stable;[
 <para>
- This is a &p-status; version of <command>Privoxy</command>. Not 
+ This is a &p-status; version of <command>Privoxy</command>. Not
  all features are well tested.
 </para>]]>
 <para>

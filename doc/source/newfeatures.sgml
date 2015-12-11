@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: newfeatures.sgml,v 2.12 2009/06/11 14:32:55 fabiankeil Exp $
+ $Id: newfeatures.sgml,v 2.13 2009/06/21 18:17:04 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -35,13 +35,15 @@
  <listitem>
   <para>
      Supports "Connection: keep-alive". Outgoing connections can
-     be kept alive independently from the client.
+     be kept alive independently from the client. Currently not
+     available on all platforms.
   </para>
  </listitem>
 
  <listitem>
   <para>
-     Supports IPv6.
+     Supports IPv6, provided the operating system does so too,
+     and the configure script detects it.
   </para>
  </listitem>
 
@@ -84,8 +86,7 @@
  <listitem>
   <para>
    Web page filtering (text replacements, removes banners based on size,
-   invisible <quote>web-bugs</quote>, JavaScript and HTML annoyances,
-   pop-up windows, etc.)
+   invisible <quote>web-bugs</quote> and HTML annoyances, etc.)
   </para>
  </listitem>
 
@@ -118,12 +119,6 @@
 
  <listitem>
   <para>
-   Multi-threaded (POSIX and native threads).
-  </para>
- </listitem>
-
- <listitem>
-  <para>
    User-customizable HTML templates for most proxy-generated pages (e.g. "blocked" page).
   </para>
  </listitem>
@@ -136,14 +131,7 @@
 
  <listitem>
   <para>
-   Improved signal handling, and a true daemon mode (Unix).
-  </para>
-</listitem>
-
- <listitem>
-  <para>
-   Every feature now controllable on a per-site or per-location basis, configuration
-   more powerful and versatile over-all.
+   Most features are controllable on a per-site or per-location basis.
   </para>
 </listitem>
 

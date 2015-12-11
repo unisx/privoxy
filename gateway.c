@@ -1,4 +1,4 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.54 2009/05/19 17:43:45 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.57 2009/07/13 17:12:28 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
@@ -131,7 +131,7 @@ static const char socks_userid[] = "anonymous";
 static unsigned int keep_alive_timeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 
 static struct reusable_connection reusable_connection[MAX_REUSABLE_CONNECTIONS];
-static int mark_connection_unused(jb_socket sfd);
+static int mark_connection_unused(const struct reusable_connection *connection);
 
 /*********************************************************************
  *
@@ -172,26 +172,22 @@ extern void initialize_reusable_connections(void)
  * Description :  Remembers a connection for reuse later on.
  *
  * Parameters  :
- *          1  :  sfd  = Open socket to remember.
- *          2  :  http = The destination for the connection.
- *          3  :  fwd  = The forwarder settings used.
- *          4  :  timeout = Number of seconds after which the
- *                          connection shouldn't be reused.
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  fwd = The forwarder settings used.
  *
  * Returns     : void
  *
  *********************************************************************/
-void remember_connection(jb_socket sfd,
-                         const struct http_request *http,
-                         const struct forward_spec *fwd,
-                         unsigned int timeout)
+void remember_connection(const struct client_state *csp, const struct forward_spec *fwd)
 {
    unsigned int slot = 0;
    int free_slot_found = FALSE;
+   const struct reusable_connection *connection = &csp->server_connection;
+   const struct http_request *http = csp->http;
 
-   assert(sfd != JB_INVALID_SOCKET);
+   assert(connection->sfd != JB_INVALID_SOCKET);
 
-   if (mark_connection_unused(sfd))
+   if (mark_connection_unused(connection))
    {
       return;
    }
@@ -206,7 +202,7 @@ void remember_connection(jb_socket sfd,
          assert(reusable_connection[slot].in_use == 0);
          log_error(LOG_LEVEL_CONNECT,
             "Remembering socket %d for %s:%d in slot %d.",
-            sfd, http->host, http->port, slot);
+            connection->sfd, http->host, http->port, slot);
          free_slot_found = TRUE;
          break;
       }
@@ -218,7 +214,7 @@ void remember_connection(jb_socket sfd,
         "No free slots found to remembering socket for %s:%d. Last slot %d.",
         http->host, http->port, slot);
       privoxy_mutex_unlock(&connection_reuse_mutex);
-      close_socket(sfd);
+      close_socket(connection->sfd);
       return;
    }
 
@@ -228,11 +224,13 @@ void remember_connection(jb_socket sfd,
    {
       log_error(LOG_LEVEL_FATAL, "Out of memory saving socket.");
    }
-   reusable_connection[slot].sfd = sfd;
+   reusable_connection[slot].sfd = connection->sfd;
    reusable_connection[slot].port = http->port;
    reusable_connection[slot].in_use = 0;
-   reusable_connection[slot].timestamp = time(NULL);
-   reusable_connection[slot].keep_alive_timeout = timeout;
+   reusable_connection[slot].timestamp = connection->timestamp;
+   reusable_connection->request_sent = connection->request_sent;
+   reusable_connection->response_received = connection->response_received;
+   reusable_connection[slot].keep_alive_timeout = connection->keep_alive_timeout;
 
    assert(NULL != fwd);
    assert(reusable_connection[slot].gateway_host == NULL);
@@ -293,6 +291,8 @@ void mark_connection_closed(struct reusable_connection *closed_connection)
    freez(closed_connection->host);
    closed_connection->port = 0;
    closed_connection->timestamp = 0;
+   closed_connection->request_sent = 0;
+   closed_connection->response_received = 0;
    closed_connection->keep_alive_timeout = 0;
    closed_connection->forwarder_type = SOCKS_NONE;
    freez(closed_connection->gateway_host);
@@ -423,16 +423,19 @@ int close_unusable_connections(void)
          && (JB_INVALID_SOCKET != reusable_connection[slot].sfd))
       {
          time_t time_open = time(NULL) - reusable_connection[slot].timestamp;
+         time_t latency = reusable_connection[slot].response_received -
+            reusable_connection[slot].request_sent;
 
-         if (reusable_connection[slot].keep_alive_timeout < time_open)
+         if (reusable_connection[slot].keep_alive_timeout < time_open + latency)
          {
             log_error(LOG_LEVEL_CONNECT,
                "The connection to %s:%d in slot %d timed out. "
-               "Closing socket %d. Timeout is: %d.",
+               "Closing socket %d. Timeout is: %d. Assumed latency: %d",
                reusable_connection[slot].host,
                reusable_connection[slot].port, slot,
                reusable_connection[slot].sfd,
-               reusable_connection[slot].keep_alive_timeout);
+               reusable_connection[slot].keep_alive_timeout,
+               latency);
             close_socket(reusable_connection[slot].sfd);
             mark_connection_closed(&reusable_connection[slot]);
          }
@@ -516,33 +519,33 @@ static jb_socket get_reusable_connection(const struct http_request *http,
  * Description :  Gives a remembered connection free for reuse.
  *
  * Parameters  :
- *          1  :  sfd = The socket belonging to the connection in question.
+ *          1  :  connection = The connection in question.
  *
  * Returns     :  TRUE => Socket found and marked as unused.
  *                FALSE => Socket not found.
  *
  *********************************************************************/
-static int mark_connection_unused(jb_socket sfd)
+static int mark_connection_unused(const struct reusable_connection *connection)
 {
    unsigned int slot = 0;
    int socket_found = FALSE;
 
-   assert(sfd != JB_INVALID_SOCKET);
+   assert(connection->sfd != JB_INVALID_SOCKET);
 
    privoxy_mutex_lock(&connection_reuse_mutex);
 
    for (slot = 0; slot < SZ(reusable_connection); slot++)
    {
-      if (reusable_connection[slot].sfd == sfd)
+      if (reusable_connection[slot].sfd == connection->sfd)
       {
          assert(reusable_connection[slot].in_use);
          socket_found = TRUE;
          log_error(LOG_LEVEL_CONNECT,
             "Marking open socket %d for %s:%d in slot %d as unused.",
-            sfd, reusable_connection[slot].host,
+            connection->sfd, reusable_connection[slot].host,
             reusable_connection[slot].port, slot);
          reusable_connection[slot].in_use = 0;
-         reusable_connection[slot].timestamp = time(NULL);
+         reusable_connection[slot].timestamp = connection->timestamp;
          break;
       }
    }
@@ -598,7 +601,8 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
    jb_socket sfd = JB_INVALID_SOCKET;
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-   if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING))
+   if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
+      && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
    {
       sfd = get_reusable_connection(http, fwd);
       if (JB_INVALID_SOCKET != sfd)

@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.26 2009/06/10 13:15:35 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.32 2009/07/19 09:21:19 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -27,16 +27,19 @@
 #############################################################################
 
 {{settings}}
-for-privoxy-version=3.0.13
+for-privoxy-version=3.0.14
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
 # Level  9 needs = config line user-manual\s+(\.?\.?/|[A-Za-z]:)
 # Level 12 needs = config line enable-edit-actions\s+1
 # Level 13 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE Yes
+# Level 13 needs = config line keep-alive-timeout\s+[1-9]+
 # Level 14 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE No
 # Level 15 needs = config line connection-sharing\s+0
+# Level 16 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE Yes
 # Level 16 needs = config line connection-sharing\s+1
+# Level 17 needs = feature status FEATURE_PTHREAD Yes
 
 #######################################################
 # Enable taggers to activate the tests on demand
@@ -254,6 +257,14 @@ TAG:^hide-if-modified-since\{block\}$
 # Expect Header = SOME CHANGE
 # Set Header    = If-Modified-Since: Thu, 1 Jan 1970 00:00:00 GMT
 # Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Thu, 1 Jan 123456789 00:00:00 GMT
+# Expect Header = REMOVAL
+# Set Header    = If-Modified-Since: Mon, 1 Jan 2525 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Thu, 1 Jan 1970 02:00:00 GMT
+# Expect Header = SOME CHANGE
 
 {+hide-if-modified-since{-60} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{-60\}$
@@ -451,7 +462,7 @@ TAG:^no-content-filter$
 # Expect Header = NO CHANGE
 # Level = 13
 # Set Header    = Connection:
-# Expect Header = Connection: keep-alive
+# Expect Header = REMOVAL
 # Level = 13
 {}
 TAG:^Connection: keep-alive$
@@ -472,7 +483,7 @@ TAG:^Connection: close$
 TAG:^connection-sharing disabled$
 
 # Set Header    = Connection: close
-# Expect Header = Connection: keep-alive
+# Expect Header = REMOVAL
 # Level = 16
 # Set Header    = Connection: keep-alive
 # Expect Header = NO CHANGE

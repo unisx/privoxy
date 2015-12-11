@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.13 User Manual"
+TITLE="Privoxy 3.0.14 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.13 User Manual</TH
+>Privoxy 3.0.14 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -84,9 +84,10 @@ NAME="WHATSNEW"
 ><P
 > <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.13</SPAN
-> introduces IPv6 support,
- improved keep-alive support and a bunch of minor improvements:</P
+>Privoxy 3.0.14 Beta</SPAN
+> is a bugfix-release
+ for the previous beta which introduced IPv6 support,  improved keep-alive
+ support and a bunch of minor improvements. The changes since 3.0.12:</P
 ><P
 > <P
 ></P
@@ -99,15 +100,20 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->    Added client-side keep-alive support. This should also allow
-    NTLM authentication through Privoxy, but this hasn't been
-    confirmed yet.
+>    Added client-side keep-alive support.
    </P
 ></LI
 ><LI
 ><P
 >    The connection sharing code is only used if the connection-sharing
     option is enabled.
+   </P
+></LI
+><LI
+><P
+>    The latency is taken into account when evaluating whether or not to
+    reuse a connection. This should significantly reduce the number of
+    connections problems several users reported.
    </P
 ></LI
 ><LI
@@ -119,8 +125,70 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->    Fixed a regression reintroduced in 3.0.12 that could cause
-    crashes on mingw32 if header date randomization was enabled.
+>    If the server doesn't specify how long the connection stays alive,
+    Privoxy errs on the safe side of caution and assumes it's only a second.
+   </P
+></LI
+><LI
+><P
+>    Setting keep-alive-timeout to 0 disables keep-alive support. Previously
+    Privoxy would claim to allow persistence but not reuse the connection.
+   </P
+></LI
+><LI
+><P
+>    Pipelined requests are less likely to be mistaken for the request
+    body of the previous request. Note that Privoxy still has no real
+    pipeline support and will either serialize pipelined requests or
+    drop them in which case the client has to resent them.
+   </P
+></LI
+><LI
+><P
+>    Fixed a crash on some Windows versions when header randomization
+    is enabled and the date couldn't be parsed.
+   </P
+></LI
+><LI
+><P
+>    Privoxy's keep-alive timeout for the current connection is reduced
+    to the one specified in the client's Keep-Alive header.
+   </P
+></LI
+><LI
+><P
+>    For HTTP/1.1 requests, Privoxy implies keep-alive support by not
+    setting any Connection header instead of using 'Connection: keep-alive'.
+   </P
+></LI
+><LI
+><P
+>    If the socket isn't reusable, Privoxy doesn't temporarily waste
+    a socket slot to remember the connection.
+   </P
+></LI
+><LI
+><P
+>    If keep-alive support is disabled but compiled in, the client's
+    Keep-Alive header is removed.
+   </P
+></LI
+><LI
+><P
+>    Fixed a bug on mingw32 where downloading large files failed if
+    keep-alive support was enabled.
+   </P
+></LI
+><LI
+><P
+>    Fixed a bug that (at least theoretically) could cause log
+    timestamps to be occasionally off by about a second.
+   </P
+></LI
+><LI
+><P
+>    The configure script respects the $PATH variable when searching
+    for groups and id.
    </P
 ></LI
 ><LI

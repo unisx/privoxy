@@ -452,12 +452,14 @@ CLASS="APPLICATION"
 ><LI
 ><P
 >     Supports "Connection: keep-alive". Outgoing connections can
-     be kept alive independently from the client.
+     be kept alive independently from the client. Currently not
+     available on all platforms.
   </P
 ></LI
 ><LI
 ><P
->     Supports IPv6.
+>     Supports IPv6, provided the operating system does so too,
+     and the configure script detects it.
   </P
 ></LI
 ><LI
@@ -504,8 +506,7 @@ TARGET="_top"
    invisible <SPAN
 CLASS="QUOTE"
 >"web-bugs"</SPAN
->, JavaScript and HTML annoyances,
-   pop-up windows, etc.)
+> and HTML annoyances, etc.)
   </P
 ></LI
 ><LI
@@ -533,11 +534,6 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   Multi-threaded (POSIX and native threads).
-  </P
-></LI
-><LI
-><P
 >   User-customizable HTML templates for most proxy-generated pages (e.g. "blocked" page).
   </P
 ></LI
@@ -548,13 +544,7 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   Improved signal handling, and a true daemon mode (Unix).
-  </P
-></LI
-><LI
-><P
->   Every feature now controllable on a per-site or per-location basis, configuration
-   more powerful and versatile over-all.
+>   Most features are controllable on a per-site or per-location basis.
   </P
 ></LI
 ><LI
@@ -629,7 +619,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN160"
+NAME="AEN156"
 >1.9. Can Privoxy make mistakes? 
 This does not sound very scientific.</A
 ></H3
@@ -656,7 +646,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN166"
+NAME="AEN162"
 >1.10. Will I have to configure Privoxy
  before I can use it?</A
 ></H3
@@ -1025,8 +1015,6 @@ TARGET="_top"
 >SPI's donation page</A
 >
  to see what the options are.</P
-><P
-></P
 ></DIV
 ></DIV
 ></DIV

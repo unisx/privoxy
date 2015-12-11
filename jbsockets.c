@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.64 2009/06/13 11:37:07 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.65 2009/07/22 22:27:16 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -1207,6 +1207,9 @@ unsigned long resolve_hostname_to_ip(const char *host)
  *********************************************************************/
 int socket_is_still_usable(jb_socket sfd)
 {
+   char buf[10];
+   int no_data_waiting;
+
 #ifdef HAVE_POLL
    int poll_result;
    struct pollfd poll_fd[1];
@@ -1217,20 +1220,16 @@ int socket_is_still_usable(jb_socket sfd)
 
    poll_result = poll(poll_fd, 1, 0);
 
-   if (-1 != poll_result)
-   {
-      return !(poll_fd[0].revents & POLLIN);
-   }
-   else
+   if (-1 == poll_result)
    {
       log_error(LOG_LEVEL_CONNECT, "Polling socket %d failed.", sfd);
       return FALSE;
    }
+   no_data_waiting = !(poll_fd[0].revents & POLLIN);
 #else
    fd_set readable_fds;
    struct timeval timeout;
    int ret;
-   int socket_is_alive = 0;
 
    memset(&timeout, '\0', sizeof(timeout));
    FD_ZERO(&readable_fds);
@@ -1239,17 +1238,13 @@ int socket_is_still_usable(jb_socket sfd)
    ret = select((int)sfd+1, &readable_fds, NULL, NULL, &timeout);
    if (ret < 0)
    {
-      log_error(LOG_LEVEL_ERROR, "select() failed!: %E");
+      log_error(LOG_LEVEL_CONNECT, "select() on socket %d failed: %E", sfd);
+      return FALSE;
    }
-
-   /*
-    * XXX: I'm not sure why !FD_ISSET() works,
-    * but apparently it does.
-    */
-   socket_is_alive = !FD_ISSET(sfd, &readable_fds);
-
-   return socket_is_alive;
+   no_data_waiting = !FD_ISSET(sfd, &readable_fds);
 #endif /* def HAVE_POLL */
+
+   return (no_data_waiting || (1 == recv(sfd, buf, 1, MSG_PEEK)));
 }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 

@@ -1,21 +1,55 @@
               Announcing Privoxy v.3.0.13 beta
 -----------------------------------------------------------------
 
-Privoxy 3.0.13 beta introduces IPv6 support, improved keep-alive
-support and a bunch of minor improvements.
+Privoxy 3.0.14 beta is a bugfix-release for the previous beta
+which introduced IPv6 support, improved keep-alive support and
+a bunch of minor improvements.
 
-See http://www.privoxy.org/3.0.13/user-manual/whatsnew.html for details.
+See http://www.privoxy.org/3.0.14/user-manual/whatsnew.html for details.
 
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.14 Beta ***
+
+- The latency is taken into account when evaluating whether or not to
+  reuse a connection. This should significantly reduce the number of
+  connections problems several users reported.
+- If the server doesn't specify how long the connection stays alive,
+  Privoxy errs on the safe side of caution and assumes it's only a second.
+- The error pages for connection timeouts or missing server data use a
+  Last-Modified date in the past. Retry attempts are detected and Privoxy
+  removes the If-Modified-Since header to prevent the server from responding
+  with status code 304 in which case the client would reuse the error message.
+- Setting keep-alive-timeout to 0 disables keep-alive support. Previously
+  Privoxy would claim to allow persistence but not reuse the connection.
+- Pipelined requests are less likely to be mistaken for the request
+  body of the previous request. Note that Privoxy still has no real
+  pipeline support and will either serialize pipelined requests or
+  drop them in which case the client has to resent them.
+- Fixed a crash on some Windows versions when header randomization
+  is enabled and the date couldn't be parsed.
+- Privoxy's keep-alive timeout for the current connection is reduced
+  to the one specified in the client's Keep-Alive header.
+- For HTTP/1.1 requests, Privoxy implies keep-alive support by not
+  setting any Connection header instead of using 'Connection: keep-alive'.
+- If the socket isn't reusable, Privoxy doesn't temporarily waste
+  a socket slot to remember the connection.
+- If keep-alive support is disabled but compiled in, the client's
+  Keep-Alive header is removed.
+- Fixed a bug on mingw32 where downloading large files failed if
+  keep-alive support was enabled.
+- Fixed a bug that (at least theoretically) could cause log
+  timestamps to be occasionally off by about a second.
+- No Proxy-Connection header if added if there already is one.
+- The configure script respects the $PATH variable when searching
+  for groups and id.
+
 *** Version 3.0.13 beta  ***
 
 - Added IPv6 support. Thanks to Petr Pisar who not only provided
   the initial patch but also helped a lot with the integration.
-- Added client-side keep-alive support. This should also allow
-  NTLM authentication through Privoxy, but this hasn't been
-  confirmed yet.
+- Added client-side keep-alive support.
 - The connection sharing code is only used if the connection-sharing
   option is enabled.
 - The max-client-connections option has been added to restrict
@@ -78,9 +112,11 @@ more control, more privacy and more freedom:
 
 
     *  Supports "Connection: keep-alive". Outgoing connections can be kept
-       alive independently from the client.
+       alive independently from the client. Currently not available on all
+       platforms.
 
-    *  Supports IPv6.
+    *  Supports IPv6, provided the operating system does so too,
+       and the configure script detects it.
 
     *  Supports tagging which allows to change the behaviour based on client
        and server headers.
@@ -98,8 +134,7 @@ more control, more privacy and more freedom:
        tracing of rule and filter effects. Remote toggling.
 
     *  Web page filtering (text replacements, removes banners based on size,
-       invisible "web-bugs", JavaScript and HTML annoyances, pop-up windows,
-       etc.)
+       invisible <quote>web-bugs</quote> and HTML annoyances, etc.)
 
     *  Modularized configuration that allows for standard settings and user
        settings to reside in separate files, so that installing updated actions
@@ -112,17 +147,12 @@ more control, more privacy and more freedom:
 
     *  Bypass many click-tracking scripts (avoids script redirection).
 
-    *  Multi-threaded (POSIX and native threads).
-
     *  User-customizable HTML templates for most proxy-generated pages (e.g.
        "blocked" page).
 
     *  Auto-detection and re-reading of config file changes.
-
-    *  Improved signal handling, and a true daemon mode (Unix).
     
-    *  Every feature now controllable on a per-site or per-location basis,
-       configuration more powerful and versatile over-all.
+    *  Most features are controllable on a per-site or per-location basis.
     
 
 Download location: 

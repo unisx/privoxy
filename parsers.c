@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.178 2009/06/11 14:13:19 david__schmidt Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.202 2009/07/19 11:48:32 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -156,6 +156,8 @@ static jb_err server_content_disposition(struct client_state *csp, char **header
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 static jb_err server_save_content_length(struct client_state *csp, char **header);
 static jb_err server_keep_alive(struct client_state *csp, char **header);
+static jb_err server_proxy_connection(struct client_state *csp, char **header);
+static jb_err client_keep_alive(struct client_state *csp, char **header);
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 static jb_err client_host_adder       (struct client_state *csp);
@@ -171,7 +173,6 @@ static jb_err create_forged_referrer(char **header, const char *hostport);
 static jb_err create_fake_referrer(char **header, const char *fake_referrer);
 static jb_err handle_conditional_hide_referrer_parameter(char **header,
    const char *host, const int parameter_conditional_block);
-static const char *get_appropiate_connection_header(const struct client_state *csp);
 static void create_content_length_header(unsigned long long content_length,
                                          char *header, size_t buffer_length);
 
@@ -201,7 +202,9 @@ static const struct parsers client_patterns[] = {
    { "TE:",                       3,   client_te },
    { "Host:",                     5,   client_host },
    { "if-modified-since:",       18,   client_if_modified_since },
-#ifndef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   { "Keep-Alive:",              11,   client_keep_alive },
+#else
    { "Keep-Alive:",              11,   crumble },
 #endif
    { "connection:",              11,   client_connection },
@@ -228,6 +231,7 @@ static const struct parsers server_patterns[] = {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    { "Content-Length:",          15, server_save_content_length },
    { "Keep-Alive:",              11, server_keep_alive },
+   { "Proxy-Connection:",        17, server_proxy_connection },
 #else
    { "Keep-Alive:",              11, crumble },
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
@@ -1580,7 +1584,11 @@ static jb_err filter_header(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err server_connection(struct client_state *csp, char **header)
 {
-   if (!strcmpic(*header, "Connection: keep-alive"))
+   if (!strcmpic(*header, "Connection: keep-alive")
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+    && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
+#endif
+      )
    {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
       if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE))
@@ -1620,7 +1628,7 @@ static jb_err server_connection(struct client_state *csp, char **header)
  *
  * Function    :  server_keep_alive
  *
- * Description :  Stores the servers keep alive timeout.
+ * Description :  Stores the server's keep alive timeout.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -1658,6 +1666,87 @@ static jb_err server_keep_alive(struct client_state *csp, char **header)
             "Server keep-alive timeout is %u. Sticking with %u.",
             keep_alive_timeout, csp->server_connection.keep_alive_timeout);
       }
+      csp->flags |= CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET;
+   }
+
+   return JB_ERR_OK;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  server_proxy_connection
+ *
+ * Description :  Figures out whether or not we should add a
+ *                Proxy-Connection header.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  header = On input, pointer to header to modify.
+ *                On output, pointer to the modified header, or NULL
+ *                to remove the header.  This function frees the
+ *                original string if necessary.
+ *
+ * Returns     :  JB_ERR_OK.
+ *
+ *********************************************************************/
+static jb_err server_proxy_connection(struct client_state *csp, char **header)
+{
+   csp->flags |= CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET;
+   return JB_ERR_OK;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  client_keep_alive
+ *
+ * Description :  Stores the client's keep alive timeout.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  header = On input, pointer to header to modify.
+ *                On output, pointer to the modified header, or NULL
+ *                to remove the header.  This function frees the
+ *                original string if necessary.
+ *
+ * Returns     :  JB_ERR_OK.
+ *
+ *********************************************************************/
+static jb_err client_keep_alive(struct client_state *csp, char **header)
+{
+   unsigned int keep_alive_timeout;
+   const char *timeout_position = strstr(*header, ": ");
+
+   if (!(csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE))
+   {
+      log_error(LOG_LEVEL_HEADER,
+         "keep-alive support is disabled. Crunching: %s.", *header);
+      freez(*header);
+      return JB_ERR_OK;
+   }
+
+   if ((NULL == timeout_position)
+    || (1 != sscanf(timeout_position, ": %u", &keep_alive_timeout)))
+   {
+      log_error(LOG_LEVEL_ERROR, "Couldn't parse: %s", *header);
+   }
+   else
+   {
+      if (keep_alive_timeout < csp->config->keep_alive_timeout)
+      {
+         log_error(LOG_LEVEL_HEADER,
+            "Reducing keep-alive timeout from %u to %u.",
+            csp->config->keep_alive_timeout, keep_alive_timeout);
+         csp->server_connection.keep_alive_timeout = keep_alive_timeout;
+      }
+      else
+      {
+         /* XXX: Is this log worthy? */
+         log_error(LOG_LEVEL_HEADER,
+            "Client keep-alive timeout is %u. Sticking with %u.",
+            keep_alive_timeout, csp->config->keep_alive_timeout);
+      }
    }
 
    return JB_ERR_OK;
@@ -1687,43 +1776,64 @@ static jb_err server_keep_alive(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err client_connection(struct client_state *csp, char **header)
 {
-   const char *wanted_header = get_appropiate_connection_header(csp);
+   static const char connection_close[] = "Connection: close";
 
-   if (strcmpic(*header, wanted_header))
+   if (!strcmpic(*header, connection_close))
    {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      if (!(csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING))
+      if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING))
+      {
+          if (!strcmpic(csp->http->ver, "HTTP/1.1"))
+          {
+             log_error(LOG_LEVEL_HEADER,
+                "Removing \'%s\' to imply keep-alive.", *header);
+             freez(*header);
+          }
+          else
+          {
+             char *old_header = *header;
+
+             *header = strdup("Connection: keep-alive");
+             if (header == NULL)
+             {
+                return JB_ERR_MEMORY;
+             }
+             log_error(LOG_LEVEL_HEADER,
+                "Replaced: \'%s\' with \'%s\'", old_header, *header);
+             freez(old_header);
+          }
+      }
+      else
       {
          log_error(LOG_LEVEL_HEADER,
             "Keeping the client header '%s' around. "
             "The connection will not be kept alive.",
             *header);
-      }
-      else
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
-      {
-         char *old_header = *header;
-
-         *header = strdup(wanted_header);
-         if (header == NULL)
-         {
-            return JB_ERR_MEMORY;
-         }
-         log_error(LOG_LEVEL_HEADER,
-            "Replaced: \'%s\' with \'%s\'", old_header, *header);
-         freez(old_header);
+         csp->flags &= ~CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
       }
    }
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
-   else
+   else if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE))
    {
       log_error(LOG_LEVEL_HEADER,
          "Keeping the client header '%s' around. "
          "The server connection will be kept alive if possible.",
          *header);
       csp->flags |= CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
-   }
 #endif  /* def FEATURE_CONNECTION_KEEP_ALIVE */
+   }
+   else
+   {
+      char *old_header = *header;
+
+      *header = strdup(connection_close);
+      if (header == NULL)
+      {
+         return JB_ERR_MEMORY;
+      }
+      log_error(LOG_LEVEL_HEADER,
+         "Replaced: \'%s\' with \'%s\'", old_header, *header);
+      freez(old_header);
+   }
 
    /* Signal client_connection_adder() to return early. */
    csp->flags |= CSP_FLAG_CLIENT_CONNECTION_HEADER_SET;
@@ -2108,7 +2218,11 @@ static jb_err server_save_content_length(struct client_state *csp, char **header
 
    assert(*(*header+14) == ':');
 
+#ifdef _WIN32
+   if (1 != sscanf(*header+14, ": %I64u", &content_length))
+#else
    if (1 != sscanf(*header+14, ": %llu", &content_length))
+#endif
    {
       log_error(LOG_LEVEL_ERROR, "Crunching invalid header: %s", *header);
       freez(*header);
@@ -2334,7 +2448,16 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
 #else
             timeptr = gmtime(&last_modified);
 #endif
-            strftime(newheader, sizeof(newheader), "%a, %d %b %Y %H:%M:%S GMT", timeptr);
+            if ((NULL == timeptr) || !strftime(newheader,
+                  sizeof(newheader), "%a, %d %b %Y %H:%M:%S GMT", timeptr))
+            {
+               log_error(LOG_LEVEL_ERROR,
+                  "Randomizing '%s' failed. Crunching the header without replacement.",
+                  *header);
+               freez(*header);
+               return JB_ERR_OK;
+            }
+
             freez(*header);
             *header = strdup("Last-Modified: ");
             string_append(header, newheader);
@@ -3053,7 +3176,15 @@ static jb_err client_if_modified_since(struct client_state *csp, char **header)
 #else
             timeptr = gmtime(&tm);
 #endif
-            strftime(newheader, sizeof(newheader), "%a, %d %b %Y %H:%M:%S GMT", timeptr);
+            if ((NULL == timeptr) || !strftime(newheader,
+                  sizeof(newheader), "%a, %d %b %Y %H:%M:%S GMT", timeptr))
+            {
+               log_error(LOG_LEVEL_ERROR,
+                  "Randomizing '%s' failed. Crunching the header without replacement.",
+                  *header);
+               freez(*header);
+               return JB_ERR_OK;
+            }
 
             freez(*header);
             *header = strdup("If-Modified-Since: ");
@@ -3372,7 +3503,7 @@ static jb_err server_connection_adder(struct client_state *csp)
 {
    const unsigned int flags = csp->flags;
    const char *response_status_line = csp->headers->first->str;
-   const char *wanted_header = get_appropiate_connection_header(csp);
+   static const char connection_close[] = "Connection: close";
 
    if ((flags & CSP_FLAG_CLIENT_HEADER_PARSING_DONE)
     && (flags & CSP_FLAG_SERVER_CONNECTION_HEADER_SET))
@@ -3386,16 +3517,21 @@ static jb_err server_connection_adder(struct client_state *csp)
    if ((csp->config->feature_flags &
         RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
     && (NULL != response_status_line)
-    && !strncmpic(response_status_line, "HTTP/1.1", 8))
+    && !strncmpic(response_status_line, "HTTP/1.1", 8)
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+    && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
+#endif
+       )
    {
       log_error(LOG_LEVEL_HEADER, "A HTTP/1.1 response "
          "without Connection header implies keep-alive.");
       csp->flags |= CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE;
+      return JB_ERR_OK;
    }
 
-   log_error(LOG_LEVEL_HEADER, "Adding: %s", wanted_header);
+   log_error(LOG_LEVEL_HEADER, "Adding: %s", connection_close);
 
-   return enlist(csp->headers, wanted_header);
+   return enlist(csp->headers, connection_close);
 }
 
 
@@ -3420,7 +3556,9 @@ static jb_err server_proxy_connection_adder(struct client_state *csp)
    static const char proxy_connection_header[] = "Proxy-Connection: keep-alive";
    jb_err err = JB_ERR_OK;
 
-   if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
+   if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
+    && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
+    && !(csp->flags & CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET))
    {
       log_error(LOG_LEVEL_HEADER, "Adding: %s", proxy_connection_header);
       err = enlist(csp->headers, proxy_connection_header);
@@ -3447,7 +3585,7 @@ static jb_err server_proxy_connection_adder(struct client_state *csp)
  *********************************************************************/
 static jb_err client_connection_header_adder(struct client_state *csp)
 {
-   const char *wanted_header = get_appropiate_connection_header(csp);
+   static const char connection_close[] = "Connection: close";
 
    if (!(csp->flags & CSP_FLAG_CLIENT_HEADER_PARSING_DONE)
      && (csp->flags & CSP_FLAG_CLIENT_CONNECTION_HEADER_SET))
@@ -3457,15 +3595,17 @@ static jb_err client_connection_header_adder(struct client_state *csp)
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
-      && (csp->http->ssl == 0))
+      && (csp->http->ssl == 0)
+      && !strcmpic(csp->http->ver, "HTTP/1.1"))
    {
       csp->flags |= CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
+      return JB_ERR_OK;
    }
 #endif /* FEATURE_CONNECTION_KEEP_ALIVE */
 
-   log_error(LOG_LEVEL_HEADER, "Adding: %s", wanted_header);
+   log_error(LOG_LEVEL_HEADER, "Adding: %s", connection_close);
 
-   return enlist(csp->headers, wanted_header);
+   return enlist(csp->headers, connection_close);
 }
 
 
@@ -4007,34 +4147,6 @@ static jb_err handle_conditional_hide_referrer_parameter(char **header,
 
    return JB_ERR_OK;
 
-}
-
-
-/*********************************************************************
- *
- * Function    :  get_appropiate_connection_header
- *
- * Description :  Returns an appropiate Connection header
- *                depending on whether or not we try to keep
- *                the connection to the server alive.
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *
- * Returns     :  Pointer to statically allocated header buffer.
- *
- *********************************************************************/
-static const char *get_appropiate_connection_header(const struct client_state *csp)
-{
-   static const char connection_keep_alive[] = "Connection: keep-alive";
-   static const char connection_close[] = "Connection: close";
-
-   if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
-    && (csp->http->ssl == 0))
-   {
-      return connection_keep_alive;
-   }
-   return connection_close;
 }
 
 

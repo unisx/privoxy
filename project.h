@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.142 2009/06/11 11:49:11 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.148 2009/07/18 12:20:05 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -639,7 +639,11 @@ struct reusable_connection
 {
    jb_socket sfd;
    int       in_use;
-   time_t    timestamp;
+   time_t    timestamp; /* XXX: rename? */
+
+   time_t    request_sent;
+   time_t    response_received;
+
    /*
     * Number of seconds after which this
     * connection will no longer be reused.
@@ -755,7 +759,34 @@ struct reusable_connection
  * the connection alive.
  */
 #define CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE  0x00008000U
+
+/**
+ * Flag for csp->flags: Set if we think we got the whole
+ * client request and shouldn't read any additional data
+ * coming from the client until the current request has
+ * been dealt with.
+ */
+#define CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ 0x00010000U
+
+/**
+ * Flag for csp->flags: Set if the server promised us to
+ * keep the connection open for a known number of seconds.
+ */
+#define CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET  0x00020000U
+
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+/**
+ * Flag for csp->flags: Set if we think we can't reuse
+ * the server socket.
+ */
+#define CSP_FLAG_SERVER_SOCKET_TAINTED          0x00040000U
+
+/**
+ * Flag for csp->flags: Set if the Proxy-Connection header
+ * is among the server headers.
+ */
+#define CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET 0x00080000U
 
 /*
  * Flags for use in return codes of child processes

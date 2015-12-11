@@ -32,7 +32,7 @@
  *
  *********************************************************************/
 
-This README is included with the development version of Privoxy 3.0.13. See
+This README is included with the development version of Privoxy 3.0.14. See
 http://www.privoxy.org/ for more information. The current code maturity level
 is "beta", but seems stable to us :).
 
@@ -54,14 +54,15 @@ Donations are welcome.
 
 1. IMPORTANT CHANGES
 
-Jun 2009, Privoxy 3.0.13 beta is released.
+July 2009, Privoxy 3.0.14 beta is released.
 
-This release introduces IPv6 support, improved keep-alive support and a bunch
-of minor improvements.. See the "ChangeLog", and the "What's New" section and
-the "Upgrader's Notes" in the User Manual for details.
+This is a bugfix-release for the previous beta which introduced IPv6 support,
+improved keep-alive support and a bunch of minor improvements. See the
+"ChangeLog", and the "What's New" section and the "Upgrader's Notes" in the
+User Manual for details.
 
-Depending on the feedback it will be either followed by another beta release,
-or by a stable release with the same feature set.
+Depending on the feedback it will be either followed by yet another beta
+release, or by a stable release with the same feature set.
 
 -------------------------------------------------------------------------------
 

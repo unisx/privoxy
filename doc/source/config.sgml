@@ -1,8 +1,8 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN"[
 <!entity % dummy "IGNORE"> 
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.13">
-<!entity p-status "beta">
+<!entity p-version "3.0.14">
+<!entity p-status "BETA">
 <!entity % p-not-stable "INCLUDE">
 <!entity % user-man "IGNORE">
 <!entity % config-file "IGNORE">
@@ -13,7 +13,7 @@
 
  Purpose     :  config file generation
                 
- $Id: config.sgml,v 2.13 2009/06/12 14:30:58 fabiankeil Exp $
+ $Id: config.sgml,v 2.14 2009/07/18 16:24:39 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
