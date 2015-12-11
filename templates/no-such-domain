@@ -118,7 +118,7 @@
           <p>Your request for <a href="@protocol@@hostport@@path@"><b>@protocol@@hostport@@path@</b></a>
             could not be fulfilled, because the domain name <b>@host@</b> could not be resolved.
           </p>
-          <p>This is often a temporary failiure, so you might just
+          <p>This is often a temporary failure, so you might just
             <a href="@protocol@@hostport@@path@">try again</a>.
          </p>
       </td>
@@ -127,7 +127,7 @@
     <tr>
       <td class="box" colspan="2">
         <h2>More Privoxy:</h2>
-        <ul>@menu@</ul>
+        <ul>@menu@<li><a href="@user-manual@">Documentation</a></li></ul>
       </td>
     </tr>
 

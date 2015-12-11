@@ -5,7 +5,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: privoxy-man-page.sgml,v 1.13.2.2 2002/07/25 21:49:52 hal9 Exp $
+ $Id: privoxy-man-page.sgml,v 1.13.2.4 2002/08/26 16:26:58 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -42,10 +42,10 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "2.9.15">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.0">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">           <!-- define we are not a text only doc -->
 <!entity % p-authors-formal "IGNORE"> <!-- exclude additional formating      -->
 <!entity my-copy "(C)">               <!-- db2man barfs on copyright symbol  -->
@@ -77,13 +77,13 @@
   <arg><option>--pidfile </option><replaceable class="parameter">pidfile</replaceable></arg>  
   <arg><option>--user </option><replaceable class="parameter">user[.group]</replaceable></arg> 
   <arg><replaceable class="parameter">configfile</replaceable></arg>        
-  <command>(UNIX)</command>
+  <command>&nbsp;(UNIX)</command>
  </cmdsynopsis>
 
  <cmdsynopsis> 
   <command>privoxy.exe</command>              
   <arg><replaceable class="parameter">configfile</replaceable></arg>
-  <command>(Windows)</command>
+  <command>&nbsp;(Windows)</command>
  </cmdsynopsis>                                      
 </refsynopsisdiv>
 
@@ -130,7 +130,7 @@
       <para>
         On startup, write the process ID to <replaceable class="parameter">pidfile</replaceable>.
         Delete the <replaceable class="parameter">pidfile</replaceable> on exit.
-        Failiure to create or delete the <replaceable class="parameter">pidfile</replaceable>
+        Failure to create or delete the <replaceable class="parameter">pidfile</replaceable>
         is non-fatal. If no <command>--pidfile</command> option is given, no PID file will be used.
       </para>
     </listitem>
@@ -195,7 +195,6 @@
  proxy HTTP and HTTPS traffic. Do not try it with FTP or other protocols.
 </para>
 
-</para>
 <para>
  For other browsers, check the documentation.
 </para>

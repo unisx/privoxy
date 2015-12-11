@@ -5,7 +5,7 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "2.9.16">
+<!entity p-version "2.9.20">
 <!entity p-status "beta">
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
@@ -20,7 +20,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 1.16.2.6 2002/07/26 15:22:15 oes Exp $
+ $Id: index.sgml,v 1.16.2.8 2002/08/16 03:05:42 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -125,6 +125,13 @@
     <ulink url="developer-manual/index.html">Developer Manual</ulink>
    </para>
   </listitem>
+<![%p-homepage;[
+<!-- not included for local index page -->
+  <listitem>
+   <para>
+    <ulink url="pdf/privoxy-pdf-docs.zip">The above docs as PDF in Zip archive</ulink>
+   </para>
+  </listitem> ]]>
   <listitem>
    <para>
     <ulink url="man-page/privoxy-man-page.html">Classic Man Page</ulink>
@@ -244,6 +251,12 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 1.16.2.8  2002/08/16 03:05:42  hal9
+ Put all pdf docs in a zip archive now.
+
+ Revision 1.16.2.7  2002/08/14 16:40:00  hal9
+ Add links to pdf docs.
+
  Revision 1.16.2.6  2002/07/26 15:22:15  oes
  Most recent release now inserted automatically (again)
 

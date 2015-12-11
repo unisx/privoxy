@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.33.2.18 2002/08/10 11:28:50 oes Exp $
+# $Id: privoxy-rh.spec,v 1.33.2.19 2002/08/25 23:36:03 hal9 Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated acordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 2.9.20
+Version: 3.0.0
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -67,9 +67,9 @@ Privoxy is based on the Internet Junkbuster.
 %build
 
 # We check to see if versions match
-VERSION_MAJOR=2
-VERSION_MINOR=9
-VERSION_POINT=20
+VERSION_MAJOR=3
+VERSION_MINOR=0
+VERSION_POINT=0
 
 CONFIG_VERSION=`cat configure.in | sed -n -e 's/^VERSION_MAJOR=\([0-9]*\)/\1./p' -e 's/^VERSION_MINOR=\([0-9]*\)/\1./p' -e 's/^VERSION_POINT=\([0-9]*\)/\1/p' | awk '{printf $1}'`
 if [ "%{version}" != "${CONFIG_VERSION}" ]; then
@@ -317,8 +317,11 @@ fi
 %{_mandir}/man1/%{name}.*
 
 %changelog
+* Tue Aug 25 2002 Hal Burgiss <hal@foobox.net>
+- Bump version for 3.0.0 :)
+
 * Tue Aug 06 2002 Hal Burgiss <hal@foobox.net>
-- Reset version for 2.9.17.
+- Reset version for 2.9.20.
 
 * Tue Jul 30 2002 Hal Burgiss <hal@foobox.net>
 - Reset version for 2.9.18.
@@ -725,6 +728,9 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.33.2.19  2002/08/25 23:36:03  hal9
+# Bump version for 3.0.0.
+#
 # Revision 1.33.2.18  2002/08/10 11:28:50  oes
 # Bumped version
 #

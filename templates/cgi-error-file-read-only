@@ -117,7 +117,7 @@
      <tr>
       <td class="box">
         <h2>Privoxy Menu:</h2>
-        <ul>@menu@</ul>
+        <ul>@menu@<li><a href="@user-manual@">Documentation</a></li></ul>
       </td>
     </tr>
 

@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48 2002/05/14 21:30:38 oes Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.1 2002/08/21 17:58:05 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/loadcfg.c,v $
@@ -35,6 +35,9 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48 2002/05/14 21:30:38 oes Exp $"
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.48.2.1  2002/08/21 17:58:05  oes
+ *    Temp kludge to let user and default action file be edited through win32 GUI (FR 592080)
+ *
  *    Revision 1.48  2002/05/14 21:30:38  oes
  *    savearg now uses own linking code instead of (now special-cased) add_help_link
  *
@@ -1459,7 +1462,8 @@ struct configuration_spec * load_config(void)
 /* FIXME: this is a kludge for win32 */
 #if defined(_WIN32) && !defined (_WIN_CONSOLE)
 
-   g_actions_file     = config->actions_file[0]; /* FIXME only works for first action file */
+   g_default_actions_file  = config->actions_file[1]; /* FIXME Hope this is default.action */
+   g_user_actions_file = config->actions_file[2]; /* FIXME Hope this is user.action */
    g_re_filterfile    = config->re_filterfile;
 
 #ifdef FEATURE_TRUST

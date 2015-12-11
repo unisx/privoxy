@@ -4,9 +4,10 @@
 >Actions Files</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 2.9.20 User Manual"
+TITLE="Privoxy 3.0.0 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -35,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 2.9.20 User Manual</TH
+>Privoxy 3.0.0 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="config.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="filter-file.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,9 +73,7 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="ACTIONS-FILE"
->8. Actions Files</A
-></H1
+NAME="ACTIONS-FILE">8. Actions Files</H1
 ><P
 > The actions files are used to define what actions
  <SPAN
@@ -131,10 +133,13 @@ CLASS="FILENAME"
 CLASS="FILENAME"
 >default.action</TT
 >. These have increasing levels of
-     aggressiveness <I
+     aggressiveness <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >and have no influence on your browsing unless
      you select them explicitly in the editor</I
+></SPAN
 >. It is not recommend
      to edit this file.
     </P
@@ -161,9 +166,12 @@ HREF="actions-file.html#ALIASES"
 >alias section</A
 > at the top of that file.
  Then comes the default set of rules which will apply universally to all
- sites and pages (be <I
+ sites and pages (be <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >very careful</I
+></SPAN
 > with using such a
  universal set in <TT
 CLASS="FILENAME"
@@ -203,9 +211,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN1640"
->8.1. Finding the Right Mix</A
-></H2
+NAME="AEN1640">8.1. Finding the Right Mix</H2
 ><P
 > Note that some <A
 HREF="actions-file.html#ACTIONS"
@@ -237,9 +243,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN1647"
->8.2. How to Edit</A
-></H2
+NAME="AEN1647">8.2. How to Edit</H2
 ><P
 > The easiest way to edit the actions files is with a browser by
  using our browser-based editor, which can be reached from <A
@@ -272,9 +276,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="ACTIONS-APPLY"
->8.3. How Actions are Applied to URLs</A
-></H2
+NAME="ACTIONS-APPLY">8.3. How Actions are Applied to URLs</H2
 ><P
 > Actions files are divided into sections. There are special sections,
  like the <SPAN
@@ -311,9 +313,12 @@ HREF="actions-file.html#BLOCK"
 >block</A
 > }</TT
 >, resulting
- in <I
+ in <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 > actions to apply.</P
 ><P
 > You can trace this process for any given URL by visiting <A
@@ -332,9 +337,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AF-PATTERNS"
->8.4. Patterns</A
-></H2
+NAME="AF-PATTERNS">8.4. Patterns</H2
 ><P
 > Generally, a pattern has the form <TT
 CLASS="LITERAL"
@@ -412,9 +415,12 @@ CLASS="LITERAL"
 CLASS="LITERAL"
 >/index.html</TT
 >, regardless of the domain,
-    i.e. on <I
+    i.e. on <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >any</I
+></SPAN
 > web server.
    </P
 ></DD
@@ -439,9 +445,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN1711"
->8.4.1. The Domain Pattern</A
-></H3
+NAME="AEN1711">8.4.1. The Domain Pattern</H3
 ><P
 > The matching of the domain part offers some flexible options: if the
  domain starts or ends with a dot, it becomes unanchored at that end. 
@@ -458,9 +462,12 @@ CLASS="LITERAL"
 ></DT
 ><DD
 ><P
->    matches any domain that <I
+>    matches any domain that <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >ENDS</I
+></SPAN
 > in
     <TT
 CLASS="LITERAL"
@@ -475,9 +482,12 @@ CLASS="LITERAL"
 ></DT
 ><DD
 ><P
->    matches any domain that <I
+>    matches any domain that <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >STARTS</I
+></SPAN
 > with
     <TT
 CLASS="LITERAL"
@@ -492,9 +502,12 @@ CLASS="LITERAL"
 ></DT
 ><DD
 ><P
->    matches any domain that <I
+>    matches any domain that <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >CONTAINS</I
+></SPAN
 > <TT
 CLASS="LITERAL"
 >.example.</TT
@@ -595,9 +608,12 @@ CLASS="LITERAL"
      <TT
 CLASS="LITERAL"
 >wwwz.example.com</TT
-> etc., but <I
+> etc., but <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >not</I
+></SPAN
 > 
      <TT
 CLASS="LITERAL"
@@ -613,9 +629,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN1773"
->8.4.2. The Path Pattern</A
-></H3
+NAME="AEN1773">8.4.2. The Path Pattern</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -658,9 +672,12 @@ CLASS="QUOTE"
 > (regular expression speak 
  for the beginning of a line).</P
 ><P
-> Please also note that matching in the path is <I
+> Please also note that matching in the path is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >CASE INSENSITIVE</I
+></SPAN
 >
  by default, but you can switch to case sensitive at any point in the pattern by using the 
  <SPAN
@@ -674,9 +691,12 @@ CLASS="LITERAL"
 CLASS="LITERAL"
 >PaTtErN</TT
 > in
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >exactly</I
+></SPAN
 > this capitalization.</P
 ></DIV
 ></DIV
@@ -685,9 +705,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="ACTIONS"
->8.5. Actions</A
-></H2
+NAME="ACTIONS">8.5. Actions</H2
 ><P
 > All actions are disabled by default, until they are explicitly enabled
  somewhere in an actions file. Actions are turned on if preceded with a
@@ -858,13 +876,19 @@ CLASS="LITERAL"
 >  
    Multi-value. These look exactly like parameterized actions,
    but they behave differently: If the action applies multiple times to the
-   same URL, but with different parameters, <I
+   same URL, but with different parameters, <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all</I
+></SPAN
 > the parameters
-   from <I
+   from <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all</I
+></SPAN
 > matches are remembered. This is used for actions
    that can be executed for the same request repeatedly, like adding multiple
    headers, or filtering through multiple filters. Syntax:
@@ -970,9 +994,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="ADD-HEADER"
->8.5.1. add-header</A
-></H4
+NAME="ADD-HEADER">8.5.1. add-header</H4
 ><P
 ></P
 ><DIV
@@ -1052,9 +1074,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="BLOCK"
->8.5.2. block</A
-></H4
+NAME="BLOCK">8.5.2. block</H4
 ><P
 ></P
 ><DIV
@@ -1135,9 +1155,12 @@ CLASS="QUOTE"
    </P
 ><P
 > 
-    A very important exception occurs if <I
+    A very important exception occurs if <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 > 
     <TT
 CLASS="LITERAL"
@@ -1217,9 +1240,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="CRUNCH-INCOMING-COOKIES"
->8.5.3. crunch-incoming-cookies</A
-></H4
+NAME="CRUNCH-INCOMING-COOKIES">8.5.3. crunch-incoming-cookies</H4
 ><P
 ></P
 ><DIV
@@ -1259,13 +1280,19 @@ CLASS="QUOTE"
 >Notes:</DT
 ><DD
 ><P
->    This action is only concerned with <I
+>    This action is only concerned with <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >incoming</I
+></SPAN
 > cookies. For
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >outgoing</I
+></SPAN
 > cookies, use
     <TT
 CLASS="LITERAL"
@@ -1274,15 +1301,21 @@ HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 ></TT
 >.
-    Use <I
+    Use <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 > to disable cookies completely.
    </P
 ><P
->    It makes <I
+>    It makes <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >no sense at all</I
+></SPAN
 > to use this action in conjunction
     with the <TT
 CLASS="LITERAL"
@@ -1321,9 +1354,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="CRUNCH-OUTGOING-COOKIES"
->8.5.4. crunch-outgoing-cookies</A
-></H4
+NAME="CRUNCH-OUTGOING-COOKIES">8.5.4. crunch-outgoing-cookies</H4
 ><P
 ></P
 ><DIV
@@ -1363,13 +1394,19 @@ CLASS="QUOTE"
 >Notes:</DT
 ><DD
 ><P
->    This action is only concerned with <I
+>    This action is only concerned with <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >outgoing</I
+></SPAN
 > cookies. For
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >incoming</I
+></SPAN
 > cookies, use
     <TT
 CLASS="LITERAL"
@@ -1378,15 +1415,21 @@ HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
 ></TT
 >.
-    Use <I
+    Use <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 > to disable cookies completely.
    </P
 ><P
->    It makes <I
+>    It makes <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >no sense at all</I
+></SPAN
 > to use this action in conjunction
     with the <TT
 CLASS="LITERAL"
@@ -1425,9 +1468,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="DEANIMATE-GIFS"
->8.5.5. deanimate-gifs</A
-></H4
+NAME="DEANIMATE-GIFS">8.5.5. deanimate-gifs</H4
 ><P
 ></P
 ><DIV
@@ -1515,9 +1556,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="DOWNGRADE-HTTP-VERSION"
->8.5.6. downgrade-http-version</A
-></H4
+NAME="DOWNGRADE-HTTP-VERSION">8.5.6. downgrade-http-version</H4
 ><P
 ></P
 ><DIV
@@ -1591,9 +1630,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="FAST-REDIRECTS"
->8.5.7. fast-redirects</A
-></H4
+NAME="FAST-REDIRECTS">8.5.7. fast-redirects</H4
 ><P
 ></P
 ><DIV
@@ -1634,9 +1671,12 @@ CLASS="VARIABLELIST"
     will link to some script on their own servers, giving the destination as a
     parameter, which will then redirect you to the final target. URLs
     resulting from this scheme typically look like:
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >http://some.place/click-tracker.cgi?target=http://some.where.else</I
+></SPAN
 >.
   </P
 ><P
@@ -1685,9 +1725,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="FILTER"
->8.5.8. filter</A
-></H4
+NAME="FILTER">8.5.8. filter</H4
 ><P
 ></P
 ><DIV
@@ -1877,9 +1915,12 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{banners-by-size}     # Kill banners based on their size for this page (<I
+>+filter{banners-by-size}     # Kill banners based on their size for this page (<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >very</I
+></SPAN
 > efficient!)</PRE
 ></TD
 ></TR
@@ -2108,9 +2149,12 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{js-events}           # Kill all JS event bindings (<I
+>+filter{js-events}           # Kill all JS event bindings (<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >Radically destructive!</I
+></SPAN
 > Only for extra nasty sites) </PRE
 ></TD
 ></TR
@@ -2126,9 +2170,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="HANDLE-AS-IMAGE"
->8.5.9. handle-as-image</A
-></H4
+NAME="HANDLE-AS-IMAGE">8.5.9. handle-as-image</H4
 ><P
 ></P
 ><DIV
@@ -2138,9 +2180,12 @@ CLASS="VARIABLELIST"
 >Typical use:</DT
 ><DD
 ><P
->Mark URLs as belonging to images (so they'll be replaced by images <I
+>Mark URLs as belonging to images (so they'll be replaced by images <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >if they get blocked</I
+></SPAN
 >)</P
 ></DD
 ><DT
@@ -2154,9 +2199,12 @@ CLASS="LITERAL"
 HREF="actions-file.html#BLOCK"
 >block</A
 ></TT
-> action <I
+> action <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >also applies</I
+></SPAN
 >,
     the presence or absence of this mark decides whether an HTML <SPAN
 CLASS="QUOTE"
@@ -2256,9 +2304,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="HIDE-FORWARDED-FOR-HEADERS"
->8.5.10. hide-forwarded-for-headers</A
-></H4
+NAME="HIDE-FORWARDED-FOR-HEADERS">8.5.10. hide-forwarded-for-headers</H4
 ><P
 ></P
 ><DIV
@@ -2337,9 +2383,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="HIDE-FROM-HEADER"
->8.5.11. hide-from-header</A
-></H4
+NAME="HIDE-FROM-HEADER">8.5.11. hide-from-header</H4
 ><P
 ></P
 ><DIV
@@ -2448,9 +2492,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="HIDE-REFERRER"
->8.5.12. hide-referrer</A
-></H4
+NAME="HIDE-REFERRER">8.5.12. hide-referrer</H4
 ><A
 NAME="HIDE-REFERER"
 ></A
@@ -2518,9 +2560,12 @@ CLASS="QUOTE"
 > is the preferred option here, since some servers will
     not send images back otherwise, in an attempt to prevent their valuable
     content from being embedded elsewhere (and hence, without being surrounded
-    by <I
+    by <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >their</I
+></SPAN
 > banners).
    </P
 ><P
@@ -2584,9 +2629,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="HIDE-USER-AGENT"
->8.5.13. hide-user-agent</A
-></H4
+NAME="HIDE-USER-AGENT">8.5.13. hide-user-agent</H4
 ><P
 ></P
 ><DIV
@@ -2646,9 +2689,12 @@ ALIGN="LEFT"
 ><P
 >     This breaks many web sites that depend on looking at this header in order
      to customize their content for different browsers (which, by the
-     way, is <I
+     way, is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >NOT</I
+></SPAN
 > a <A
 HREF="http://www.javascriptkit.com/javaindex.shtml"
 TARGET="_top"
@@ -2666,9 +2712,12 @@ TARGET="_top"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >not recommended</I
+></SPAN
 >. In single-user, single-browser
     setups, you might use it to delete your OS version information from
     the headers, because it is an invitation to exploit known bugs for your
@@ -2716,10 +2765,8 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="KILL-POPUPS"
->8.5.14. kill-popups<A
+NAME="KILL-POPUPS">8.5.14. kill-popups<A
 NAME="KILL-POPUP"
-></A
 ></A
 ></H4
 ><P
@@ -2819,9 +2866,12 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >.
     If the only kind of pop-ups that you want to kill are exit consoles (those
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >really nasty</I
+></SPAN
 > windows that appear when you close an other
     one), you might want to use
     <TT
@@ -2865,9 +2915,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="LIMIT-CONNECT"
->8.5.15. limit-connect</A
-></H4
+NAME="LIMIT-CONNECT">8.5.15. limit-connect</H4
 ><P
 ></P
 ><DIV
@@ -2968,9 +3016,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="PREVENT-COMPRESSION"
->8.5.16. prevent-compression</A
-></H4
+NAME="PREVENT-COMPRESSION">8.5.16. prevent-compression</H4
 ><P
 ></P
 ><DIV
@@ -3099,9 +3145,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="SEND-VANILLA-WAFER"
->8.5.17. send-vanilla-wafer</A
-></H4
+NAME="SEND-VANILLA-WAFER">8.5.17. send-vanilla-wafer</H4
 ><P
 ></P
 ><DIV
@@ -3172,9 +3216,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="SEND-WAFER"
->8.5.18. send-wafer</A
-></H4
+NAME="SEND-WAFER">8.5.18. send-wafer</H4
 ><P
 ></P
 ><DIV
@@ -3259,9 +3301,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="SESSION-COOKIES-ONLY"
->8.5.19. session-cookies-only</A
-></H4
+NAME="SESSION-COOKIES-ONLY">8.5.19. session-cookies-only</H4
 ><P
 ></P
 ><DIV
@@ -3274,9 +3314,12 @@ CLASS="VARIABLELIST"
 >    Allow only temporary <SPAN
 CLASS="QUOTE"
 >"session"</SPAN
-> cookies (for the current browser session <I
+> cookies (for the current browser session <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >only</I
+></SPAN
 >).
    </P
 ></DD
@@ -3338,9 +3381,12 @@ CLASS="LITERAL"
     sites, and is the recommended setting.
    </P
 ><P
->    It makes <I
+>    It makes <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >no sense at all</I
+></SPAN
 > to use <TT
 CLASS="LITERAL"
 >session-cookies-only</TT
@@ -3396,9 +3442,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="SET-IMAGE-BLOCKER"
->8.5.20. set-image-blocker</A
-></H4
+NAME="SET-IMAGE-BLOCKER">8.5.20. set-image-blocker</H4
 ><P
 ></P
 ><DIV
@@ -3414,9 +3458,12 @@ CLASS="VARIABLELIST"
 >Effect:</DT
 ><DD
 ><P
->     This action alone doesn't do anything noticeable. If <I
+>     This action alone doesn't do anything noticeable. If <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 >
      <TT
 CLASS="LITERAL"
@@ -3424,23 +3471,32 @@ CLASS="LITERAL"
 HREF="actions-file.html#BLOCK"
 >block</A
 ></TT
-> <I
+> <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >and</I
+></SPAN
 > <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
 ></TT
-> <I
+> <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >also</I
+></SPAN
 >
      apply, i.e. if the request is to be blocked as an image,
-     <I
+     <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >then</I
+></SPAN
 > the parameter of this action decides what will be
      sent as a replacement.
    </P
@@ -3559,9 +3615,12 @@ CLASS="QUOTE"
 >    There is a third (advanced) type, called <SPAN
 CLASS="QUOTE"
 >"auto"</SPAN
->. It is <I
+>. It is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >NOT</I
+></SPAN
 > to be
     used in <TT
 CLASS="LITERAL"
@@ -3639,9 +3698,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2701"
->8.5.21. Summary</A
-></H3
+NAME="AEN2701">8.5.21. Summary</H3
 ><P
 > Note that many of these actions have the potential to cause a page to
  misbehave, possibly even not to display at all. There are many ways 
@@ -3659,9 +3716,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="ALIASES"
->8.6. Aliases</A
-></H2
+NAME="ALIASES">8.6. Aliases</H2
 ><P
 > Custom <SPAN
 CLASS="QUOTE"
@@ -3686,10 +3741,13 @@ CLASS="QUOTE"
 > and <SPAN
 CLASS="QUOTE"
 >"}"</SPAN
->, but we <I
+>, but we <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >strongly 
  recommend</I
+></SPAN
 > that you only use <SPAN
 CLASS="QUOTE"
 >"a"</SPAN
@@ -3720,10 +3778,13 @@ CLASS="QUOTE"
 > sign, since they are merely textually
  expanded.</P
 ><P
-> Aliases can be used throughout the actions file, but they <I
+> Aliases can be used throughout the actions file, but they <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >must be
  defined in a special section at the top of the file!</I
+></SPAN
 >
  And there can only be one such section per actions file. Each actions file may
  have its own alias section, and the aliases defined in it are only visible
@@ -3736,9 +3797,12 @@ CLASS="EMPHASIS"
 CLASS="QUOTE"
 >"shop"</SPAN
 >, you can later change your policy on shops in
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >one</I
+></SPAN
 > place, and your changes will take effect everywhere
  in the actions file where the <SPAN
 CLASS="QUOTE"
@@ -3859,9 +3923,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="ACT-EXAMPLES"
->8.7. Actions Files Tutorial</A
-></H2
+NAME="ACT-EXAMPLES">8.7. Actions Files Tutorial</H2
 ><P
 > The above chapters have shown <A
 HREF="actions-file.html"
@@ -3895,9 +3957,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2753"
->8.7.1. default.action</A
-></H3
+NAME="AEN2753">8.7.1. default.action</H3
 ><P
 >Every config file should start with a short comment stating its purpose:</P
 ><P
@@ -3980,10 +4040,13 @@ shop        = mercy-for-cookies -filter{popups} -kill-popups</PRE
 ></P
 ><P
 > Now come the regular sections, i.e. sets of actions, accompanied
- by URL patterns to which they apply. Remember <I
+ by URL patterns to which they apply. Remember <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all actions
  are disabled when matching starts</I
+></SPAN
 >, so we have to explicitly
  enable the ones we want.</P
 ><P
@@ -4002,10 +4065,13 @@ HREF="actions-file.html#AF-PATTERNS"
  set of actions used in this <SPAN
 CLASS="QUOTE"
 >"default"</SPAN
-> section <I
+> section <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >will
  be applied to all requests as a start</I
+></SPAN
 >. It can  be partly or
  wholly overridden by later matches further down this file, or in user.action,
  but it will still be largely responsible for your overall browsing
@@ -4181,9 +4247,12 @@ CLASS="QUOTE"
 >"general policy"</SPAN
 > that applies
  universally and won't get any exceptions defined later. Other choices,
- like not blocking (which is <I
+ like not blocking (which is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >understandably</I
+></SPAN
 > the
  default!) need exceptions, i.e. we need to specify explicitly what we
  want to block in later sections.
@@ -4338,16 +4407,22 @@ edit.*.yahoo.com
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > knows which
- URLs belong to images, so that <I
+ URLs belong to images, so that <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >if</I
+></SPAN
 > they are to
  be blocked, a substitute image can be sent, rather than an HTML page.
  Contacting the remote site to find out is not an option, since it
  would destroy the loading time advantage of banner blocking, and it
- would feed the advertisers (in terms of money <I
+ would feed the advertisers (in terms of money <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >and</I
+></SPAN
 >
  information). We can mark any URL as an image with the <TT
 CLASS="LITERAL"
@@ -4386,9 +4461,12 @@ HREF="actions-file.html#HANDLE-AS-IMAGE"
 ><P
 > And then there are known banner sources. They often use scripts to
  generate the banners, so it won't be visible from the URL that the
- request is for an image. Hence we block them <I
+ request is for an image. Hence we block them <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >and</I
+></SPAN
 >
  mark them as images in one go, with the help of our
  <TT
@@ -4534,23 +4612,32 @@ CLASS="LITERAL"
 > e.g. catches 
  <SPAN
 CLASS="QUOTE"
->"nasty-<I
+>"nasty-<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >ads</I
+></SPAN
 >.nasty-corp.com"</SPAN
 > as intended,
  but also <SPAN
 CLASS="QUOTE"
->"downlo<I
+>"downlo<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >ads</I
+></SPAN
 >.sourcefroge.net"</SPAN
 > or
  <SPAN
 CLASS="QUOTE"
->"<I
+>"<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >ads</I
+></SPAN
 >l.some-provider.net."</SPAN
 > So here come some
  well-known exceptions to the <TT
@@ -4597,9 +4684,12 @@ HREF="actions-file.html#BLOCK"
 >-block</A
 ></TT
 >
- applies, so (unless it matches <I
+ applies, so (unless it matches <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >again</I
+></SPAN
 > further down) it ends up
  with no <TT
 CLASS="LITERAL"
@@ -4659,9 +4749,12 @@ HREF="actions-file.html#FILTER"
 >filter</A
 ></TT
 >
- disables <I
+ disables <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all</I
+></SPAN
 > filters in one fell swoop!</P
 ><P
 > <TABLE
@@ -4696,9 +4789,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2910"
->8.7.2. user.action</A
-></H3
+NAME="AEN2910">8.7.2. user.action</H3
 ><P
 > So far we are painting with a broad brush by setting general policies,
  which would be a reasonable starting point for many people. Now, 
@@ -4714,9 +4805,12 @@ CLASS="FILENAME"
 CLASS="FILENAME"
 >user.action</TT
 > is also a 
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >safe</I
+></SPAN
 > place for your personal settings, since
  <TT
 CLASS="FILENAME"
@@ -4999,6 +5093,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -5010,6 +5105,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="config.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -5018,6 +5114,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -5026,6 +5123,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="filter-file.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

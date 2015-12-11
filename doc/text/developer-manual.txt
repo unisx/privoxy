@@ -2,8 +2,7 @@ Privoxy Developer Manual
 
 Copyright © 2001, 2002 by Privoxy Developers
 
-$Id: developer-manual.txt,v 1.32.2.3 2002/08/10 15:31:16 oes Exp $
-
+$Id: developer-manual.txt,v 1.32.2.4 2002/08/25 23:41:19 hal9 Exp $
 
 The developer manual provides guidance on coding, testing, packaging,
 documentation and other issues of importance to those involved with Privoxy
@@ -11,31 +10,34 @@ development. It is mandatory (and helpful!) reading for anyone who wants to
 join the team.
 
 Please note that this document is constantly evolving. This copy represents the
-state at the release of version 2.9.20. You can find the latest version of the
+state at the release of version 3.0.0. You can find the latest version of the
 this manual at http://www.privoxy.org/developer-manual/. Please see the Contact
 section on how to contact the developers.
 
 -------------------------------------------------------------------------------
+
 Table of Contents
 1. Introduction
+   
     1.1. Quickstart to Privoxy Development
    
-   
 2. The CVS Repository
+   
     2.1. Access to CVS
     2.2. CVS Commit Guideline
     2.3. Discussing Changes First
    
-   
 3. Documentation Guidelines
+   
     3.1. Quickstart to Docbook and SGML
     3.2. Privoxy Documentation Style
     3.3. Privoxy Custom Entities
    
-   
 4. Coding Guidelines
+   
     4.1. Introduction
     4.2. Using Comments
+       
         4.2.1. Comment, Comment, Comment
         4.2.2. Use blocks for comments
         4.2.3. Keep Comments on their own line
@@ -44,16 +46,16 @@ Table of Contents
         4.2.6. Comment at the end of braces if the content is more than one
             screen length
        
-       
     4.3. Naming Conventions
+       
         4.3.1. Variable Names
         4.3.2. Function Names
         4.3.3. Header file prototypes
         4.3.4. Enumerations, and #defines
         4.3.5. Constants
        
-       
     4.4. Using Space
+       
         4.4.1. Put braces on a line by themselves.
         4.4.2. ALL control statements should have a block
         4.4.3. Do not belabor/blow-up boolean expressions
@@ -62,12 +64,12 @@ Table of Contents
         4.4.6. Make the last brace of a function stand out
         4.4.7. Use 3 character indentions
        
-       
     4.5. Initializing
+       
         4.5.1. Initialize all variables
        
-       
     4.6. Functions
+       
         4.6.1. Name functions that return a boolean as a question.
         4.6.2. Always specify a return type for a function.
         4.6.3. Minimize function calls when iterating by using variables
@@ -79,8 +81,8 @@ Table of Contents
         4.6.9. Where Possible, Use Forward Struct Declaration Instead of
             Includes
        
-       
     4.7. General Coding Practices
+       
         4.7.1. Turn on warnings
         4.7.2. Provide a default case for all switch statements
         4.7.3. Try to avoid falling through cases in a switch statement.
@@ -93,19 +95,19 @@ Table of Contents
         4.7.9. Add loaders to the `file_list' structure and in order
         4.7.10. "Uncertain" new code and/or changes to existing code, use FIXME
        
-       
     4.8. Addendum: Template for files and function comment blocks:
    
-   
 5. Testing Guidelines
+   
     5.1. Testplan for releases
     5.2. Test reports
    
-   
 6. Releasing a New Version
+   
     6.1. Version numbers
     6.2. Before the Release: Freeze
     6.3. Building and Releasing the Packages
+       
         6.3.1. Note on Privoxy Packaging
         6.3.2. Source Tarball
         6.3.3. SuSE, Conectiva or Red Hat RPM
@@ -119,24 +121,22 @@ Table of Contents
         6.3.11. Amiga OS
         6.3.12. AIX
        
-       
     6.4. Uploading and Releasing Your Package
     6.5. After the Release
    
-   
 7. Update the Webserver
 8. Contacting the developers, Bug Reporting and Feature Requests
+   
     8.1. Get Support
     8.2. Report Bugs
     8.3. Request New Features
     8.4. Report Ads or Other Actions-Related Problems
     8.5. Other
    
-   
 9. Privoxy Copyright, License and History
+   
     9.1. License
     9.2. History
-   
    
 10. See also
 
@@ -150,6 +150,7 @@ wide an audience as possible.
 
 One does not have to be a programmer to contribute. Packaging, testing, and
 porting, are all important jobs as well.
+
 -------------------------------------------------------------------------------
 
 1.1. Quickstart to Privoxy Development
@@ -159,6 +160,7 @@ to the list and wait until a project manager has added you.
 
 For the time being (read, this section is under construction), please refer to
 the extensive comments in the source code.
+
 -------------------------------------------------------------------------------
 
 2. The CVS Repository
@@ -166,6 +168,7 @@ the extensive comments in the source code.
 If you intend to help us with programming, documentation or packaging you will
 need write access to our holy grail, the CVS repository. Please read this
 chapter completely before accessing via CVS.
+
 -------------------------------------------------------------------------------
 
 2.1. Access to CVS
@@ -175,6 +178,7 @@ chapters 6 and 7 in SF's site documentation for the technical access details
 for your operating system. For historical reasons, the CVS server is called
 cvs.ijbswa.sourceforge.net, the repository is called ijbswa, and the source
 tree module is called current.
+
 -------------------------------------------------------------------------------
 
 2.2. CVS Commit Guideline
@@ -184,31 +188,31 @@ made to ensure that it is readable, compilable and consistent at all times. We
 therefore ask anyone with CVS access to strictly adhere to the following
 guidelines:
 
-  * Never (read: never, ever) be tempted to commit that small change without
+  * Never (read: never, ever) be tempted to commit that small change without
     testing it thoroughly first. When we're close to a public release, ask a
     fellow developer to review your changes.
    
-  * Your commit message should give a concise overview of what you changed (no
+  * Your commit message should give a concise overview of what you changed (no
     big details) and why you changed it Just check previous messages for good
     examples.
    
-  * Don't use the same message on multiple files, unless it equally applies to
+  * Don't use the same message on multiple files, unless it equally applies to
     all those files.
    
-  * If your changes span multiple files, and the code won't recompile unless
+  * If your changes span multiple files, and the code won't recompile unless
     all changes are committed (e.g. when changing the signature of a function),
     then commit all files one after another, without long delays in between. If
     necessary, prepare the commit messages in advance.
    
-  * Before changing things on CVS, make sure that your changes are in line with
+  * Before changing things on CVS, make sure that your changes are in line with
     the team's general consensus on what should be done (see below).
    
-  * Don't commit into the stable branch, unless immediately before a new
+  * Don't commit into the stable branch, unless immediately before a new
     release. (See Version Numbers below for details.) Collect your changes on
     the patches tracker instead.
    
-
 -------------------------------------------------------------------------------
+
 2.3. Discussing Changes First
 
 We don't have a too formal policy on this, just use common sense. Hints: If it
@@ -224,10 +228,10 @@ is..
    
  5. ..a major redesign of some part of the code: ask the list
    
-
 Note that near a major public release, we get a bit more cautious - if unsure,
 it doesn't hurt to ask first. There is always the possibility to submit a patch
 to the patches tracker instead.
+
 -------------------------------------------------------------------------------
 
 3. Documentation Guidelines
@@ -242,7 +246,7 @@ as Docbook SGML. These files, when built, in the top-level source directory are
 generated files! Also, the Privoxy index.html (and a variation on this file,
 privoxy-index.html, meant for inclusion with doc packages), are maintained as
 SGML as well. DO NOT edit these directly. Edit the SGML source, or contact
-someone involved in the documentation (at present Stefan and Hal).
+someone involved in the documentation (at present Hal).
 
 config requires some special handling. The reason it is maintained this way is
 so that the extensive comments in the file mirror those in user-manual. But the
@@ -271,16 +275,17 @@ before committing to CVS, if possible.
 How do you update the webserver (i.e. the pages on privoxy.org)?
 
  1. First, build the docs by running make dok (or alternately make redhat-dok).
+    For PDF docs, do make dok-pdf.
    
  2. Run make webserver which copies all files from doc/webserver to the
     sourceforge webserver via scp.
    
-
 Finished docs should be occasionally submitted to CVS (doc/webserver/*/*.html)
 so that those without the ability to build them locally, have access to them if
 needed. This is especially important just prior to a new release! Please do
 this after the $VERSION and other release specific data in configure.in has
 been updated (this is done just prior to a new release).
+
 -------------------------------------------------------------------------------
 
 3.1. Quickstart to Docbook and SGML
@@ -326,6 +331,7 @@ Look at any of the existing docs for examples of all these and more.
 
 You might also find "Writing Documentation Using DocBook - A Crash Course"
 useful.
+
 -------------------------------------------------------------------------------
 
 3.2. Privoxy Documentation Style
@@ -336,53 +342,56 @@ fashion.
 
 Here it is:
 
-  * All tags should be lower case.
+  * All tags should be lower case.
    
-  * Tags delimiting a block of text (even small blocks) should be on their own
+  * Tags delimiting a block of text (even small blocks) should be on their own
     line. Like:
    
-     <para>
-      Some text goes here.
-     </para>
-           
+     <para>
+      Some text goes here.
+     </para>
+           
+   
     Tags marking individual words, or few words, should be in-line:
    
-      Just to <emphasis>emphasize</emphasis>, some text goes here.
-           
+      Just to <emphasis>emphasize</emphasis>, some text goes here.
+           
    
-  * Tags should be nested and step indented for block text like: (except
+  * Tags should be nested and step indented for block text like: (except
     in-line tags)
    
-     <para>
-      <itemizedlist>
-       <para>
-        <listitem>
-          Some text goes here in our list example.
-         </listitem>
-       </para>
-      </itemizedlist>
-     </para>
-           
+     <para>
+      <itemizedlist>
+       <para>
+        <listitem>
+          Some text goes here in our list example.
+         </listitem>
+       </para>
+      </itemizedlist>
+     </para>
+           
+   
     This makes it easier to find the text amongst the tags ;-)
-  * Use white space to separate logical divisions within a document, like
+   
+  * Use white space to separate logical divisions within a document, like
     between sections. Running everything together consistently makes it harder
     to read and work on.
    
-  * Do not hesitate to make comments. Comments can either use the <comment>
+  * Do not hesitate to make comments. Comments can either use the <comment>
     element, or the <!-- --> style comment familiar from HTML. (Note in Docbook
     v4.x <comment> is replaced by <remark>.)
    
-  * We have an international audience. Refrain from slang, or English
+  * We have an international audience. Refrain from slang, or English
     idiosyncrasies (too many to list :). Humor also does not translate well
     sometimes.
    
-  * Try to keep overall line lengths in source files to 80 characters or less
+  * Try to keep overall line lengths in source files to 80 characters or less
     for obvious reasons. This is not always possible, with lengthy URLs for
     instance.
    
-  * Our documents are available in differing formats. Right now, they are just
-    plain text, and HTML, but PDF, and others is always a future possibility.
-    Be careful with URLs (<ulink>), and avoid this mistake:
+  * Our documents are available in differing formats. Right now, they are just
+    plain text, TML, and PDF, but others are always a future possibility. Be
+    careful with URLs (<ulink>), and avoid this mistake:
    
     My favorite site is <ulink url="http://example.com">here</ulink>.
    
@@ -391,11 +400,11 @@ Here it is:
    
     My favorite site is <ulink url="http://example.com">example.com</ulink>.
    
-  * All documents should be spell checked occasionally. aspell can check SGML
+  * All documents should be spell checked occasionally. aspell can check SGML
     with the -H option. (ispell I think too.)
    
-
 -------------------------------------------------------------------------------
+
 3.3. Privoxy Custom Entities
 
 Privoxy documentation is using a number of customized "entities" to facilitate
@@ -414,7 +423,7 @@ encouraged to use these where possible. Some of these obviously require
 re-setting with each release (done by the Makefile). A sampling of custom
 entities are listed below. See any of the main docs for examples.
 
-  * Re- "boilerplate" text entities are defined like:
+  * Re- "boilerplate" text entities are defined like:
    
     <!entity supported SYSTEM "supported.sgml">
    
@@ -424,19 +433,18 @@ entities are listed below. See any of the main docs for examples.
     semi-colon), and the contents will be dumped into the finished doc at that
     point.
    
-  * Commonly used "internal entities":
+  * Commonly used "internal entities":
    
-    p-version: the Privoxy version string, e.g. "2.9.20".                      
+    p-version: the Privoxy version string, e.g. "3.0.0".                       
     p-status: the project status, either "alpha", "beta", or "stable".         
     p-not-stable: use to conditionally include text in "not stable" releases   
     (e.g. "beta").                                                             
     p-stable: just the opposite.                                               
     p-text: this doc is only generated as text.                                
    
-   
-
 There are others in various places that are defined for a specific purpose.
 Read the source!
+
 -------------------------------------------------------------------------------
 
 4. Coding Guidelines
@@ -451,6 +459,7 @@ of success of the project.
 And that of course comes back to us as individuals. If we can increase our
 development and product efficiencies then we can solve more of the request for
 changes/improvements and in general feel good about ourselves. ;->
+
 -------------------------------------------------------------------------------
 
 4.2. Using Comments
@@ -471,6 +480,7 @@ describes something different than what the code is doing then maybe a
 programming error is occurring.
 
 Example:
+
 /* if page size greater than 1k ... */                                         
 if ( PageLength() > 1024 )                                                     
 {                                                                              
@@ -486,6 +496,7 @@ if ( PageLength() > 1024 )
 This demonstrates 2 cases of "what not to do".  The first is a                 
 "syntax comment".  The second is a comment that does not fit what              
 is actually being done.                                                        
+
 -------------------------------------------------------------------------------
 
 4.2.2. Use blocks for comments
@@ -498,6 +509,7 @@ separation between the comment and the code. Block identifiers do, by
 surrounding the code with a clear, definable pattern.
 
 Example:
+
 /*********************************************************************         
  * This will stand out clearly in your code!                                   
  *********************************************************************/        
@@ -524,6 +536,7 @@ Exception:
 If you are trying to add a small logic comment and do not wish to "disrupt" the
 flow of the code, feel free to use a 1 line comment which is NOT on the same
 line as the code.
+
 -------------------------------------------------------------------------------
 
 4.2.3. Keep Comments on their own line
@@ -538,6 +551,7 @@ often: during the definition of variables, at the end of closing braces, when
 used to comment parameters.
 
 Example:
+
 /*********************************************************************         
  * This will stand out clearly in your code,                                   
  * But the second example won't.                                               
@@ -572,6 +586,7 @@ short DoSomethingVeryImportant(
    ...code here...                                                             
                                                                                
 }   /* -END- DoSomethingVeryImportant */                                       
+
 -------------------------------------------------------------------------------
 
 4.2.4. Comment each logical step
@@ -586,6 +601,7 @@ into it to see where you forgot to put one.
 
 Most "for", "while", "do", etc... loops _probably_ need a comment. After all,
 these are usually major logic containers.
+
 -------------------------------------------------------------------------------
 
 4.2.5. Comment All Functions Thoroughly
@@ -602,6 +618,7 @@ code reuse by allowing a user to determine the safety and applicability of any
 function for the problem at hand. As a result of such benefits, all functions
 should contain the information presented in the addendum section of this
 document.
+
 -------------------------------------------------------------------------------
 
 4.2.6. Comment at the end of braces if the content is more than one screen
@@ -620,6 +637,7 @@ more readable:
 use following a closing brace: } /* -END- if() or while () or etc... */
 
 Example:
+
 if ( 1 == X )                                                                  
 {                                                                              
    DoSomethingVeryImportant();                                                 
@@ -633,6 +651,7 @@ if ( 1 == X )
    DoSomethingVeryImportant();                                                 
    ...some long list of commands...                                            
 } /* -END- if ( 1 == X ) */                                                    
+
 -------------------------------------------------------------------------------
 
 4.3. Naming Conventions
@@ -648,11 +667,13 @@ and system headers.) Do not use identifiers which are reserved in ANSI C++.
 port Privoxy to C++.
 
 Example:
+
 int ms_iis5_hack = 0;                                                          
 
 Instead of:
 
 int msiis5hack = 0; int msIis5Hack = 0;                                        
+
 -------------------------------------------------------------------------------
 
 4.3.2. Function Names
@@ -666,12 +687,14 @@ and system headers.) Do not use identifiers which are reserved in ANSI C++.
 port Privoxy to C++.
 
 Example:
+
 int load_some_file( struct client_state *csp )                                 
 
 Instead of:
 
 int loadsomefile( struct client_state *csp )                                   
 int loadSomeFile( struct client_state *csp )                                   
+
 -------------------------------------------------------------------------------
 
 4.3.3. Header file prototypes
@@ -682,13 +705,16 @@ Use a descriptive parameter name in the function prototype in header files. Use
 the same parameter name in the header file that you use in the c file.
 
 Example:
+
 (.h) extern int load_aclfile( struct client_state *csp );                      
 (.c) int load_aclfile( struct client_state *csp )                              
 
 Instead of:
+
 (.h) extern int load_aclfile( struct client_state * ); or                      
 (.h) extern int load_aclfile();                                                
 (.c) int load_aclfile( struct client_state *csp )                              
+
 -------------------------------------------------------------------------------
 
 4.3.4. Enumerations, and #defines
@@ -700,6 +726,7 @@ identifier with an underscore. (ANSI C reserves these for use by the compiler
 and system headers.)
 
 Example:
+
 (enumeration) : enum Boolean { FALSE, TRUE };                                  
 (#define) : #define DEFAULT_SIZE 100;                                          
 
@@ -708,11 +735,13 @@ the preprocessor: FEATURE_>, where > is a short (preferably 1 or 2 word)
 description.
 
 Example:
+
 #define FEATURE_FORCE 1                                                        
                                                                                
 #ifdef FEATURE_FORCE                                                           
 #define FORCE_PREFIX blah                                                      
 #endif /* def FEATURE_FORCE */                                                 
+
 -------------------------------------------------------------------------------
 
 4.3.5. Constants
@@ -728,6 +757,7 @@ Use underscore (_) to separate adjacent acronyms and abbreviations. Never
 terminate a name with an underscore.
 
 Example:
+
 #define USE_IMAGE_LIST 1                                                       
 
 Instead of:
@@ -737,6 +767,7 @@ Instead of:
 #define USE_IMAGE_LIST_ 1 or                                                   
 #define use_image_list 1 or                                                    
 #define UseImageList 1                                                         
+
 -------------------------------------------------------------------------------
 
 4.4. Using Space
@@ -751,6 +782,7 @@ This practice makes it easier to identify the opening and closing braces for a
 block.
 
 Example:
+
 if ( this == that )                                                            
 {                                                                              
    ...                                                                         
@@ -772,6 +804,7 @@ it easier to read.
 Status: developer-discretion.
 
 Example exception:
+
 while ( more lines are read )                                                  
 {                                                                              
    /* Please document what is/is not a comment line here */                    
@@ -779,6 +812,7 @@ while ( more lines are read )
                                                                                
    do_something( line );                                                       
 }                                                                              
+
 -------------------------------------------------------------------------------
 
 4.4.2. ALL control statements should have a block
@@ -789,6 +823,7 @@ Using braces to make a block will make your code more readable and less prone
 to error. All control statements should have a block defined.
 
 Example:
+
 if ( this == that )                                                            
 {                                                                              
    DoSomething();                                                              
@@ -807,11 +842,13 @@ Note: The first example in "Instead of" will execute in a manner other than
 that which the developer desired (per indentation). Using code braces would
 have prevented this "feature". The "explanation" and "exception" from the point
 above also applies.
+
 -------------------------------------------------------------------------------
 
 4.4.3. Do not belabor/blow-up boolean expressions
 
 Example:
+
 structure->flag = ( condition );                                               
 
 Instead of:
@@ -821,6 +858,7 @@ if ( condition ) { structure->flag = 1; } else { structure->flag = 0; }
 Note: The former is readable and concise. The later is wordy and inefficient.
 Please assume that any developer new to the project has at least a "good"
 knowledge of C/C++. (Hope I do not offend by that last comment ... 8-)
+
 -------------------------------------------------------------------------------
 
 4.4.4. Use white space freely because it is free
@@ -831,6 +869,7 @@ Make it readable. The notable exception to using white space freely is listed
 in the next guideline.
 
 Example:
+
 int firstValue   = 0;                                                          
 int someValue    = 0;                                                          
 int anotherValue = 0;                                                          
@@ -839,6 +878,7 @@ int thisVariable = 0;
 if ( thisVariable == thatVariable )                                            
                                                                                
 firstValue = oldValue + ( ( someValue - anotherValue ) - whatever )            
+
 -------------------------------------------------------------------------------
 
 4.4.5. Don't use white space around structure operators
@@ -853,16 +893,19 @@ parentheses next to names. With spaces, the connection between the object and
 variable/function name is not as clear.
 
 Example:
+
 aStruct->aMember;                                                              
 aStruct.aMember;                                                               
 FunctionName();                                                                
 
 Instead of: aStruct -> aMember; aStruct . aMember; FunctionName ();
+
 -------------------------------------------------------------------------------
 
 4.4.6. Make the last brace of a function stand out
 
 Example:
+
 int function1( ... )                                                           
 {                                                                              
    ...code...                                                                  
@@ -887,6 +930,7 @@ long if {} statements too. After all whitespace is free!
 
 Status: developer-discretion on the number of blank lines. Enforced is the end
 of function comments.
+
 -------------------------------------------------------------------------------
 
 4.4.7. Use 3 character indentions
@@ -898,6 +942,7 @@ very* ragged. So use 3 character indentions only. If you like to use TABs, pass
 your code through a filter such as "expand -t3" before checking in your code.
 
 Example:
+
 static const char * const url_code_map[256] =                                  
 {                                                                              
    NULL, ...                                                                   
@@ -918,6 +963,7 @@ int function1( ... )
    return( NEVER_GETS_HERE );                                                  
                                                                                
 }                                                                              
+
 -------------------------------------------------------------------------------
 
 4.5. Initializing
@@ -931,6 +977,7 @@ have been assigned a value somewhere else in the code. Remove the chance of
 accidentally using an unassigned variable.
 
 Example:
+
 short anShort = 0;                                                             
 float aFloat  = 0;                                                             
 struct *ptr = NULL;                                                            
@@ -941,6 +988,7 @@ SIGSEV vs. arrayPtr[0].
 
 Status: developer-discretion if and only if the variable is assigned a value
 "shortly after" declaration.
+
 -------------------------------------------------------------------------------
 
 4.6. Functions
@@ -953,9 +1001,11 @@ Value should be phrased as a question that would logically be answered as a
 true or false statement
 
 Example:
+
 ShouldWeBlockThis();                                                           
 ContainsAnImage();                                                             
 IsWebPageBlank();                                                              
+
 -------------------------------------------------------------------------------
 
 4.6.2. Always specify a return type for a function.
@@ -965,6 +1015,7 @@ Explanation:
 The default return for a function is an int. To avoid ambiguity, create a
 return for a function when the return has a purpose, and create a void return
 type if the function does not need to return anything.
+
 -------------------------------------------------------------------------------
 
 4.6.3. Minimize function calls when iterating by using variables
@@ -975,6 +1026,7 @@ It is easy to write the following code, and a clear argument can be made that
 the code is easy to understand:
 
 Example:
+
 for ( size_t cnt = 0; cnt < blockListLength(); cnt ++ )                        
 {                                                                              
    ....                                                                        
@@ -992,6 +1044,7 @@ Instead of using a function call during the iterations, assign the value to a
 variable, and evaluate using the variable.
 
 Example:
+
 size_t len = blockListLength();                                                
                                                                                
 for ( size_t cnt = 0; cnt < len; cnt ++ )                                      
@@ -1002,6 +1055,7 @@ for ( size_t cnt = 0; cnt < len; cnt ++ )
 Exceptions: if the value of blockListLength() *may* change or could *
 potentially* change, then you must code the function call in the for/while
 loop.
+
 -------------------------------------------------------------------------------
 
 4.6.4. Pass and Return by Const Reference
@@ -1018,6 +1072,7 @@ char *argv[] ) { strcmp( argv[0], "privoxy" ); }
 
 Both these pointers are *const*! If the c runtime library maintainers do it, we
 should too.
+
 -------------------------------------------------------------------------------
 
 4.6.5. Pass and Return by Value
@@ -1030,6 +1085,7 @@ client_state csp )
 
 would not work. So, to be consistent, we should declare all prototypes with
 "pass by value": int load_aclfile( struct client_state *csp )
+
 -------------------------------------------------------------------------------
 
 4.6.6. Names of include files
@@ -1043,6 +1099,7 @@ that utilizes a partial path to distinguish their header files from system or
 other header files.
 
 Example:
+
 #include <iostream.h>     /* This is not a local include */                    
 #include "config.h"       /* This IS a local include */                        
 
@@ -1053,6 +1110,7 @@ Exception:
 
 Note: Please! do not add "-I." to the Makefile without a _very_ good reason.
 This duplicates the #include "file.h" behavior.
+
 -------------------------------------------------------------------------------
 
 4.6.7. Provide multiple inclusion protection
@@ -1066,10 +1124,12 @@ of the file. Of course, replace PROJECT_H with your file name, with "." Changed
 to "_", and make it uppercase.
 
 Example:
+
 #ifndef PROJECT_H_INCLUDED                                                     
 #define PROJECT_H_INCLUDED                                                     
  ...                                                                           
 #endif /* ndef PROJECT_H_INCLUDED */                                           
+
 -------------------------------------------------------------------------------
 
 4.6.8. Use `extern "C"` when appropriate
@@ -1081,6 +1141,7 @@ If our headers are included from C++, they must declare our functions as
 of our code.
 
 Example:
+
 #ifdef __cplusplus                                                             
 extern "C"                                                                     
 {                                                                              
@@ -1091,6 +1152,7 @@ extern "C"
 #ifdef __cplusplus                                                             
 }                                                                              
 #endif /* def __cplusplus */                                                   
+
 -------------------------------------------------------------------------------
 
 4.6.9. Where Possible, Use Forward Struct Declaration Instead of Includes
@@ -1101,6 +1163,7 @@ Useful in headers that include pointers to other struct's. Modifications to
 excess header files may cause needless compiles.
 
 Example:
+
 /*********************************************************************         
  * We're avoiding an include statement here!                                   
  *********************************************************************/        
@@ -1112,6 +1175,7 @@ proper header file is necessary. If you only want to prototype a pointer,
 however, the header file is unnecessary.
 
 Status: Use with discretion.
+
 -------------------------------------------------------------------------------
 
 4.7. General Coding Practices
@@ -1123,6 +1187,7 @@ Explanation
 Compiler warnings are meant to help you find bugs. You should turn on as many
 as possible. With GCC, the switch is "-Wall". Try and fix as many warnings as
 possible.
+
 -------------------------------------------------------------------------------
 
 4.7.2. Provide a default case for all switch statements
@@ -1135,6 +1200,7 @@ protect yourself from the unknown, always have a default step in a switch
 statement.
 
 Example:
+
 switch( hash_string( cmd ) )                                                   
 {                                                                              
    case hash_actions_file :                                                    
@@ -1161,6 +1227,7 @@ issue. The "anomaly code goes here" may be no more than a print to the STDERR
 stream (as in load_config). Or it may really be an ABEND condition.
 
 Status: Programmer discretion is advised.
+
 -------------------------------------------------------------------------------
 
 4.7.3. Try to avoid falling through cases in a switch statement.
@@ -1179,6 +1246,7 @@ use a break statement for each case statement.
 
 If you choose to allow fall through, you should comment both the fact of the
 fall through and reason why you felt it was necessary.
+
 -------------------------------------------------------------------------------
 
 4.7.4. Use 'long' or 'short' Instead of 'int'
@@ -1192,6 +1260,7 @@ Status: open-to-debate. In the case of most FSF projects (including X/
 GNU-Emacs), there are typedefs to int4, int8, int16, (or equivalence ... I
 forget the exact typedefs now). Should we add these to IJB now that we have a
 "configure" script?
+
 -------------------------------------------------------------------------------
 
 4.7.5. Don't mix size_t and other types
@@ -1203,6 +1272,7 @@ whether it is signed or unsigned, or about how long it is. Do not compare a
 size_t against another variable of a different type (or even against a
 constant) without casting one of the values. Try to avoid using size_t if you
 can.
+
 -------------------------------------------------------------------------------
 
 4.7.6. Declare each variable and struct on its own line.
@@ -1212,6 +1282,7 @@ Explanation:
 It can be tempting to declare a series of variables all on one line. Don't.
 
 Example:
+
 long a = 0;                                                                    
 long b = 0;                                                                    
 long c = 0;                                                                    
@@ -1230,6 +1301,7 @@ variables; feel free to declare them on 1 line. You should, although, provide a
 good comment on their functions.
 
 Status: developer-discretion.
+
 -------------------------------------------------------------------------------
 
 4.7.7. Use malloc/zalloc sparingly
@@ -1243,8 +1315,10 @@ Only "malloc" a struct (on the heap) if the variable's life will extend beyond
 the context of one function call.
 
 Example:
+
 If a function creates a struct and stores a pointer to it in a                 
 list, then it should definitely be allocated via `malloc'.                     
+
 -------------------------------------------------------------------------------
 
 4.7.8. The Programmer Who Uses 'malloc' is Responsible for Ensuring 'free'
@@ -1259,6 +1333,7 @@ is a "good thing (tm)". You may need to offer a free/unload/destructor type
 function to accommodate this.
 
 Example:
+
 int load_re_filterfile( struct client_state *csp ) { ... }                     
 static void unload_re_filterfile( void *f ) { ... }                            
 
@@ -1269,6 +1344,7 @@ library functions ... such as `strdup'.
 
 Status: developer-discretion. The "main" use of this standard is for allocating
 and freeing data structures (complex or nested).
+
 -------------------------------------------------------------------------------
 
 4.7.9. Add loaders to the `file_list' structure and in order
@@ -1281,6 +1357,7 @@ easier to add/read new blockers when you expect a certain order.
 Note: It may appear that the alpha order is broken in places by POPUP tests
 coming before PCRS tests. But since POPUPs can also be referred to as
 KILLPOPUPs, it is clear that it should come first.
+
 -------------------------------------------------------------------------------
 
 4.7.10. "Uncertain" new code and/or changes to existing code, use FIXME
@@ -1305,57 +1382,59 @@ or:
 Note: If you make it clear that this may or may not be a "good thing (tm)", it
 will be easier to identify and include in the project (or conversely exclude
 from the project).
+
 -------------------------------------------------------------------------------
 
 4.8. Addendum: Template for files and function comment blocks:
 
 Example for file comments:
-const char FILENAME_rcs[] = "$Id: developer-manual.txt,v 1.32.2.3 2002/08/10 15:31:16 oes Exp $"; 
-/*********************************************************************                             
- *                                                                                                 
- * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                         
- *                                                                                                 
- * Purpose     :  (Fill me in with a good description!)                                            
- *                                                                                                 
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge                                
- *                Privoxy team. http://www.privoxy.org/                                            
- *                                                                                                 
- *                Based on the Internet Junkbuster originally written                              
- *                by and Copyright (C) 1997 Anonymous Coders and                                   
- *                Junkbusters Corporation.  http://www.junkbusters.com                             
- *                                                                                                 
- *                This program is free software; you can redistribute it                           
- *                and/or modify it under the terms of the GNU General                              
- *                Public License as published by the Free Software                                 
- *                Foundation; either version 2 of the License, or (at                              
- *                your option) any later version.                                                  
- *                                                                                                 
- *                This program is distributed in the hope that it will                             
- *                be useful, but WITHOUT ANY WARRANTY; without even the                            
- *                implied warranty of MERCHANTABILITY or FITNESS FOR A                             
- *                PARTICULAR PURPOSE.  See the GNU General Public                                  
- *                License for more details.                                                        
- *                                                                                                 
- *                The GNU General Public License should be included with                           
- *                this file.  If not, you can view it at                                           
- *                http://www.gnu.org/copyleft/gpl.html                                             
- *                or write to the Free Software Foundation, Inc., 59                               
- *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.                           
- *                                                                                                 
- * Revisions   :                                                                                   
+
+const char FILENAME_rcs[] = "$Id: developer-manual.txt,v 1.32.2.4 2002/08/25 23:41:19 hal9 Exp $"; 
+/*********************************************************************                              
+ *                                                                                                  
+ * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                          
+ *                                                                                                  
+ * Purpose     :  (Fill me in with a good description!)                                             
+ *                                                                                                  
+ * Copyright   :  Written by and Copyright (C) 2001 the SourceForge                                 
+ *                Privoxy team. http://www.privoxy.org/                                             
+ *                                                                                                  
+ *                Based on the Internet Junkbuster originally written                               
+ *                by and Copyright (C) 1997 Anonymous Coders and                                    
+ *                Junkbusters Corporation.  http://www.junkbusters.com                              
+ *                                                                                                  
+ *                This program is free software; you can redistribute it                            
+ *                and/or modify it under the terms of the GNU General                               
+ *                Public License as published by the Free Software                                  
+ *                Foundation; either version 2 of the License, or (at                               
+ *                your option) any later version.                                                   
+ *                                                                                                  
+ *                This program is distributed in the hope that it will                              
+ *                be useful, but WITHOUT ANY WARRANTY; without even the                             
+ *                implied warranty of MERCHANTABILITY or FITNESS FOR A                              
+ *                PARTICULAR PURPOSE.  See the GNU General Public                                   
+ *                License for more details.                                                         
+ *                                                                                                  
+ *                The GNU General Public License should be included with                            
+ *                this file.  If not, you can view it at                                            
+ *                http://www.gnu.org/copyleft/gpl.html                                              
+ *                or write to the Free Software Foundation, Inc., 59                                
+ *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.                            
+ *                                                                                                  
+ * Revisions   :                                                                                    
  *    $Log: developer-manual.txt,v $
- *    Revision 1.32.2.3  2002/08/10 15:31:16  oes
- *    Generated
- *                                                                                        
- *                                                                                                 
- *********************************************************************/                            
-                                                                                                   
-                                                                                                   
-#include "config.h"                                                                                
-                                                                                                   
-   ...necessary include files for us to do our work...                                             
-                                                                                                   
-const char FILENAME_h_rcs[] = FILENAME_H_VERSION;                                                  
+ *    Revision 1.32.2.4  2002/08/25 23:41:19  hal9
+ *    Regenerated docs for 3.0.0.
+ *                                                                                         
+ *                                                                                                  
+ *********************************************************************/                             
+                                                                                                    
+                                                                                                    
+#include "config.h"                                                                                 
+                                                                                                    
+   ...necessary include files for us to do our work...                                              
+                                                                                                    
+const char FILENAME_h_rcs[] = FILENAME_H_VERSION;                                                   
 
 Note: This declares the rcs variables that should be added to the
 "show-proxy-args" page. If this is a brand new creation by you, you are free to
@@ -1367,76 +1446,78 @@ the code (via `forward-page' and `backward-page'). Please include it if you
 can.
 
 Example for file header comments:
-#ifndef _FILENAME_H                                                                              
-#define _FILENAME_H                                                                              
-#define FILENAME_H_VERSION "$Id: developer-manual.txt,v 1.32.2.3 2002/08/10 15:31:16 oes Exp $" 
-/*********************************************************************                           
- *                                                                                               
- * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                       
- *                                                                                               
- * Purpose     :  (Fill me in with a good description!)                                          
- *                                                                                               
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge                              
- *                Privoxy team. http://www.privoxy.org/                                          
- *                                                                                               
- *                Based on the Internet Junkbuster originally written                            
- *                by and Copyright (C) 1997 Anonymous Coders and                                 
- *                Junkbusters Corporation.  http://www.junkbusters.com                           
- *                                                                                               
- *                This program is free software; you can redistribute it                         
- *                and/or modify it under the terms of the GNU General                            
- *                Public License as published by the Free Software                               
- *                Foundation; either version 2 of the License, or (at                            
- *                your option) any later version.                                                
- *                                                                                               
- *                This program is distributed in the hope that it will                           
- *                be useful, but WITHOUT ANY WARRANTY; without even the                          
- *                implied warranty of MERCHANTABILITY or FITNESS FOR A                           
- *                PARTICULAR PURPOSE.  See the GNU General Public                                
- *                License for more details.                                                      
- *                                                                                               
- *                The GNU General Public License should be included with                         
- *                this file.  If not, you can view it at                                         
- *                http://www.gnu.org/copyleft/gpl.html                                           
- *                or write to the Free Software Foundation, Inc., 59                             
- *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.                         
- *                                                                                               
- * Revisions   :                                                                                 
+
+#ifndef _FILENAME_H                                                                               
+#define _FILENAME_H                                                                               
+#define FILENAME_H_VERSION "$Id: developer-manual.txt,v 1.32.2.4 2002/08/25 23:41:19 hal9 Exp $" 
+/*********************************************************************                            
+ *                                                                                                
+ * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                        
+ *                                                                                                
+ * Purpose     :  (Fill me in with a good description!)                                           
+ *                                                                                                
+ * Copyright   :  Written by and Copyright (C) 2001 the SourceForge                               
+ *                Privoxy team. http://www.privoxy.org/                                           
+ *                                                                                                
+ *                Based on the Internet Junkbuster originally written                             
+ *                by and Copyright (C) 1997 Anonymous Coders and                                  
+ *                Junkbusters Corporation.  http://www.junkbusters.com                            
+ *                                                                                                
+ *                This program is free software; you can redistribute it                          
+ *                and/or modify it under the terms of the GNU General                             
+ *                Public License as published by the Free Software                                
+ *                Foundation; either version 2 of the License, or (at                             
+ *                your option) any later version.                                                 
+ *                                                                                                
+ *                This program is distributed in the hope that it will                            
+ *                be useful, but WITHOUT ANY WARRANTY; without even the                           
+ *                implied warranty of MERCHANTABILITY or FITNESS FOR A                            
+ *                PARTICULAR PURPOSE.  See the GNU General Public                                 
+ *                License for more details.                                                       
+ *                                                                                                
+ *                The GNU General Public License should be included with                          
+ *                this file.  If not, you can view it at                                          
+ *                http://www.gnu.org/copyleft/gpl.html                                            
+ *                or write to the Free Software Foundation, Inc., 59                              
+ *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.                          
+ *                                                                                                
+ * Revisions   :                                                                                  
  *    $Log: developer-manual.txt,v $
- *    Revision 1.32.2.3  2002/08/10 15:31:16  oes
- *    Generated
- *                                                                                      
- *                                                                                               
- *********************************************************************/                          
-                                                                                                 
-                                                                                                 
-#include "project.h"                                                                             
-                                                                                                 
-#ifdef __cplusplus                                                                               
-extern "C" {                                                                                     
-#endif                                                                                           
-                                                                                                 
-   ... function headers here ...                                                                 
-                                                                                                 
-                                                                                                 
-/* Revision control strings from this header and associated .c file */                           
-extern const char FILENAME_rcs[];                                                                
-extern const char FILENAME_h_rcs[];                                                              
-                                                                                                 
-                                                                                                 
-#ifdef __cplusplus                                                                               
-} /* extern "C" */                                                                               
-#endif                                                                                           
-                                                                                                 
-#endif /* ndef _FILENAME_H */                                                                    
-                                                                                                 
-/*                                                                                               
-  Local Variables:                                                                               
-  tab-width: 3                                                                                   
-  end:                                                                                           
-*/                                                                                               
+ *    Revision 1.32.2.4  2002/08/25 23:41:19  hal9
+ *    Regenerated docs for 3.0.0.
+ *                                                                                       
+ *                                                                                                
+ *********************************************************************/                           
+                                                                                                  
+                                                                                                  
+#include "project.h"                                                                              
+                                                                                                  
+#ifdef __cplusplus                                                                                
+extern "C" {                                                                                      
+#endif                                                                                            
+                                                                                                  
+   ... function headers here ...                                                                  
+                                                                                                  
+                                                                                                  
+/* Revision control strings from this header and associated .c file */                            
+extern const char FILENAME_rcs[];                                                                 
+extern const char FILENAME_h_rcs[];                                                               
+                                                                                                  
+                                                                                                  
+#ifdef __cplusplus                                                                                
+} /* extern "C" */                                                                                
+#endif                                                                                            
+                                                                                                  
+#endif /* ndef _FILENAME_H */                                                                     
+                                                                                                  
+/*                                                                                                
+  Local Variables:                                                                                
+  tab-width: 3                                                                                    
+  end:                                                                                            
+*/                                                                                                
 
 Example for function comments:
+
 /*********************************************************************         
  *                                                                             
  * Function    :  FUNCTION_NAME                                                
@@ -1459,11 +1540,13 @@ int FUNCTION_NAME( void *param1, const char *x )
 
 Note: If we all follow this practice, we should be able to parse our code to
 create a "self-documenting" web page.
+
 -------------------------------------------------------------------------------
 
 5. Testing Guidelines
 
 To be filled.
+
 -------------------------------------------------------------------------------
 
 5.1. Testplan for releases
@@ -1474,17 +1557,16 @@ Explain release numbers. major, minor. developer releases. etc.
    
  2. Remove any file that was left over. This includes (but is not limited to)
    
-      + /var/log/privoxy
+      + /var/log/privoxy
        
-      + /etc/privoxy
+      + /etc/privoxy
        
-      + /usr/sbin/privoxy
+      + /usr/sbin/privoxy
        
-      + /etc/init.d/privoxy
+      + /etc/init.d/privoxy
        
-      + /usr/doc/privoxy*
+      + /usr/doc/privoxy*
        
-   
  3. Install the rpm. Any error messages?
    
  4. start,stop,status Privoxy with the specific script (e.g. /etc/rc.d/init/
@@ -1494,22 +1576,22 @@ Explain release numbers. major, minor. developer releases. etc.
    
  6. Remove the rpm. Any error messages? All files removed?
    
-
 -------------------------------------------------------------------------------
+
 5.2. Test reports
 
 Please submit test reports only with the test form at sourceforge. Three simple
 steps:
 
-  * Select category: the distribution you test on.
+  * Select category: the distribution you test on.
    
-  * Select group: the version of Privoxy that we are about to release.
+  * Select group: the version of Privoxy that we are about to release.
    
-  * Fill the Summary and Detailed Description with something intelligent (keep
+  * Fill the Summary and Detailed Description with something intelligent (keep
     it short and precise).
    
-
 Do not mail to the mailing list (we cannot keep track on issues there).
+
 -------------------------------------------------------------------------------
 
 6. Releasing a New Version
@@ -1524,6 +1606,7 @@ outlined in this chapter.
 
 The following programs are required to follow this process: ncftpput (ncftp),
 scp, ssh (ssh), gmake (GNU's version of make), autoconf, cvs.
+
 -------------------------------------------------------------------------------
 
 6.1. Version numbers
@@ -1532,12 +1615,12 @@ First you need to determine which version number the release will have. Privoxy
 version numbers consist of three numbers, separated by dots, like in X.Y.Z,
 where:
 
-  * X, the version major, is rarely ever changed. It is increased by one if
+  * X, the version major, is rarely ever changed. It is increased by one if
     turning a development branch into stable substantially changes the
-    functionality, user interface or configuration syntax. Majors 1 and 2 were 
+    functionality, user interface or configuration syntax. Majors 1 and 2 were
     Junkbuster, and 3 will be the first stable Privoxy release.
    
-  * Y, the version minor, represents the branch within the major version. At
+  * Y, the version minor, represents the branch within the major version. At
     any point in time, there are two branches being maintained: The stable
     branch, with an even minor, say, 2N, in which no functionality is being
     added and only bug-fixes are made, and 2N+1, the development branch, in
@@ -1549,7 +1632,7 @@ where:
     up (i.e. no longer maintained), the former development branch 2N+1 becomes
     the new stable branch 2N+2, and a new development branch 2N+3 is opened.
    
-  * Z, the point or sub version, represents a release of the software within a
+  * Z, the point or sub version, represents a release of the software within a
     branch. It is therefore incremented immediately before each code freeze. In
     development branches, only the even point versions correspond to actual
     releases, while the odd ones denote the evolving state of the sources on
@@ -1560,22 +1643,22 @@ where:
     distinguished from released versions. The point version is reset to zero
     when the minor changes.
    
-
 -------------------------------------------------------------------------------
+
 6.2. Before the Release: Freeze
 
 The following must be done by one of the developers prior to each new release.
 
-  * Make sure that everybody who has worked on the code in the last couple of
+  * Make sure that everybody who has worked on the code in the last couple of
     days has had a chance to yell "no!" in case they have pending changes/fixes
     in their pipelines. Announce the freeze so that nobody will interfere with
     last minute changes.
    
-  * Increment the version number (point from odd to even in development
+  * Increment the version number (point from odd to even in development
     branches!) in configure.in. (RPM spec files will need to be incremented as
     well.)
    
-  * If default.action has changed since last release (i.e. software release or
+  * If default.action has changed since last release (i.e. software release or
     standalone actions file release), bump up its version info to A.B in this
     line:
    
@@ -1584,34 +1667,43 @@ The following must be done by one of the developers prior to each new release.
     Then change the version info in doc/webserver/actions/index.php, line:
     '$required_actions_file_version = "A.B";'
    
-  * All documentation should be rebuild after the version bump. Finished docs
+  * All documentation should be rebuild after the version bump. Finished docs
     should be then be committed to CVS (for those without the ability to build
     these). Some docs may require rather obscure processing tools. config, the
     man page (and the html version of the man page), and the PDF docs fall in
     this category. REAMDE, the man page, AUTHORS, and config should all also be
-    committed to CVS for other packageers. The formal docs should be uploaded
-    to the webserver. See the Section "Updating the webserver" in this manual
-    for details.
+    committed to CVS for other packagers. The formal docs should be uploaded to
+    the webserver. See the Section "Updating the webserver" in this manual for
+    details.
    
-  * All developers should look at the ChangeLog and make sure noteworthy
+  * The User Manual is also used for context sensitive help for the CGI editor.
+    This is version sensitive, so that the user will get appropriate help for
+    his/her release. So with each release a fresh version should be uploaded to
+    the webserver (this is in addition to the main User Manual link from the
+    main page since we need to keep manuals for various versions available).
+    The CGI pages will link to something like http://privoxy.org/$(VERSION)/
+    user-manual/. This will need to be updated for each new release. There is
+    no Makefile target for this at this time!!! It needs to be done manually.
+   
+  * All developers should look at the ChangeLog and make sure noteworthy
     changes are referenced.
    
-  * Commit all files that were changed in the above steps!
+  * Commit all files that were changed in the above steps!
    
-  * Tag all files in CVS with the version number with "cvs tag v_X_Y_Z". Don't
+  * Tag all files in CVS with the version number with "cvs tag v_X_Y_Z". Don't
     use vX_Y_Z, ver_X_Y_Z, v_X.Y.Z (won't work) etc.
    
-  * If the release was in a development branch, increase the point version from
+  * If the release was in a development branch, increase the point version from
     even to odd (X.Y.(Z+1)) again in configure.in and commit your change.
    
-  * On the webserver, copy the user manual to a new top-level directory called
+  * On the webserver, copy the user manual to a new top-level directory called
     X.Y.Z. This ensures that help links from the CGI pages, which have the
     version as a prefix, will go into the right version of the manual. If this
     is a development branch release, also symlink X.Y.(Z-1) to X.Y.Z and X.Y.
     (Z+1) to . (i.e. dot).
    
-
 -------------------------------------------------------------------------------
+
 6.3. Building and Releasing the Packages
 
 Now the individual packages can be built and released. Note that for GPL
@@ -1633,6 +1725,7 @@ them, all future bug reports, are based on exactly the same code.
 Please find additional instructions for the source tarball and the individual
 platform dependent binary packages below. And details on the Sourceforge
 release process below that.
+
 -------------------------------------------------------------------------------
 
 6.3.1. Note on Privoxy Packaging
@@ -1640,11 +1733,11 @@ release process below that.
 Please keep these general guidelines in mind when putting together your
 package. These apply to all platforms!
 
-  * Privoxy requires write access to: all *.action files, all logfiles, and the
+  * Privoxy requires write access to: all *.action files, all logfiles, and the
     trust file. You will need to determine the best way to do this for your
     platform.
    
-  * Please include up to date documentation. At a bare minimum:
+  * Please include up to date documentation. At a bare minimum:
    
     LICENSE (top-level directory)
    
@@ -1675,25 +1768,25 @@ package. These apply to all platforms!
     directory with privoxy-index.html, (i.e. one level up from the manual
     directories).
    
-  * user.action is designed for local preferences. Make sure this does not get
+  * user.action is designed for local preferences. Make sure this does not get
     overwritten!
    
-  * Other configuration files should be installed as the new defaults, but all
+  * Other configuration files should be installed as the new defaults, but all
     previously installed configuration files should be preserved as backups.
     This is just good manners :-)
    
-  * Please check platform specific notes in this doc, if you haven't done 
+  * Please check platform specific notes in this doc, if you haven't done
     "Privoxy" packaging before for other platform specific issues. Conversely,
     please add any notes that you know are important for your platform (or
     contact one of the doc maintainers to do this if you can't).
    
-  * Packagers should do a "clean" install of their package after building it.
+  * Packagers should do a "clean" install of their package after building it.
     So any previous installs should be removed first to ensure the integrity of
     the newly built package. Then run the package for a while to make sure
     there are no obvious problems, before uploading.
    
-
 -------------------------------------------------------------------------------
+
 6.3.2. Source Tarball
 
 First, make sure that you have freshly exported the right version into an empty
@@ -1712,6 +1805,7 @@ To upload the package to Sourceforge, simply issue
 
 Go to the displayed URL and release the file publicly on Sourceforge. For the
 change log field, use the relevant section of the ChangeLog file.
+
 -------------------------------------------------------------------------------
 
 6.3.3. SuSE, Conectiva or Red Hat RPM
@@ -1746,6 +1840,7 @@ To upload the package to Sourceforge, simply issue
 where rpm_packagerev is the RPM release number as determined above. Go to the
 displayed URL and release the file publicly on Sourceforge. Use the release
 notes and change log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.4. OS/2
@@ -1780,6 +1875,7 @@ You will find the WarpIN-installable executable in the ./files directory.
 Upload this anonymously to uploads.sourceforge.net/incoming, create a release
 for it, and you're done. Use the release notes and Change Log from the source
 tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.5. Solaris
@@ -1803,6 +1899,7 @@ which creates a gzip'ed tar archive. Sadly, you cannot use make solaris-upload
 on the Sourceforge machine (no ncftpput). You now have to manually upload the
 archive to Sourceforge's ftp server and release the file publicly. Use the
 release notes and Change Log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.6. Windows
@@ -1825,6 +1922,7 @@ winsetup/GNUmakefile. All you need to do is:
 Now you can manually rename privoxy_setup.exe to privoxy_setup_X_Y_Z.exe, and
 upload it to SourceForge. When releasing the package on SourceForge, use the
 release notes and Change Log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.7. Debian
@@ -1833,16 +1931,17 @@ First, make sure that you have freshly exported the right version into an empty
 directory. (See "Building and releasing packages" above). Then add a log entry
 to debian/changelog, if it is not already there, for example by running:
 
-  debchange -v 2.9.20-beta-1 "New upstream version"                            
+  debchange -v 3.0.0-stable-1 "New upstream version"                           
 
 Then, run:
 
   dpkg-buildpackage -rfakeroot -us -uc -b                                      
 
-This will create ../privoxy_2.9.20-beta-1_i386.deb which can be uploaded. To
+This will create ../privoxy_3.0.0-stable-1_i386.deb which can be uploaded. To
 upload the package to Sourceforge, simply issue
 
   make debian-upload                                                           
+
 -------------------------------------------------------------------------------
 
 6.3.8. Mac OSX
@@ -1872,6 +1971,7 @@ distributable zip file with the command:
 You can then upload privoxyosx_setup_x.y.z.zip anonymously to
 uploads.sourceforge.net/incoming, create a release for it, and you're done. Use
 the release notes and Change Log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.9. FreeBSD
@@ -1895,6 +1995,7 @@ which creates a gzip'ed tar archive. Sadly, you cannot use make freebsd-upload
 on the Sourceforge machine (no ncftpput). You now have to manually upload the
 archive to Sourceforge's ftp server and release the file publicly. Use the
 release notes and Change Log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.3.10. HP-UX 11
@@ -1906,6 +2007,7 @@ directory. (See "Building and releasing packages" above). Then run:
   autoheader && autoconf && ./configure                                        
 
 Then do FIXME.
+
 -------------------------------------------------------------------------------
 
 6.3.11. Amiga OS
@@ -1917,6 +2019,7 @@ directory. (See "Building and releasing packages" above). Then run:
   autoheader && autoconf && ./configure                                        
 
 Then do FIXME.
+
 -------------------------------------------------------------------------------
 
 6.3.12. AIX
@@ -1940,6 +2043,7 @@ which creates a gzip'ed tar archive. Sadly, you cannot use make aix-upload on
 the Sourceforge machine (no ncftpput). You now have to manually upload the
 archive to Sourceforge's ftp server and release the file publicly. Use the
 release notes and Change Log from the source tarball package.
+
 -------------------------------------------------------------------------------
 
 6.4. Uploading and Releasing Your Package
@@ -1947,24 +2051,23 @@ release notes and Change Log from the source tarball package.
 After the package is ready, it is time to upload it to SourceForge, and go
 through the release steps. The upload is done via FTP:
 
-  * Upload to: ftp://upload.sourceforge.net/incoming
+  * Upload to: ftp://upload.sourceforge.net/incoming
    
-  * user: anonymous
+  * user: anonymous
    
-  * password: ijbswa-developers@lists.sourceforge.net
+  * password: ijbswa-developers@lists.sourceforge.net
    
-
 Or use the make targets as described above.
 
 Once this done go to http://sourceforge.net/project/admin/editpackages.php?
 group_id=11118, making sure you are logged in. Find your target platform in the
 second column, and click Add Release. You will then need to create a new
 release for your package, using the format of $VERSION ($CODE_STATUS), e.g.
-2.9.20 (beta).
+3.0.0 (beta).
 
 Now just follow the prompts. Be sure to add any appropriate Release notes. You
 should see your freshly uploaded packages in "Step 2. Add Files To This
-Release". Check the appropriate box(es). Remember at each step to hit the 
+Release". Check the appropriate box(es). Remember at each step to hit the
 "Refresh/Submit" buttons! You should now see your file(s) listed in Step 3.
 Fill out the forms with the appropriate information for your platform, being
 sure to hit "Update" for each file. If anyone is monitoring your platform,
@@ -1973,6 +2076,7 @@ This should do it!
 
 If you have made errors, or need to make changes, you can go through
 essentially the same steps, but select Edit Release, instead of Add Release.
+
 -------------------------------------------------------------------------------
 
 6.5. After the Release
@@ -1980,29 +2084,36 @@ essentially the same steps, but select Edit Release, instead of Add Release.
 When all (or: most of the) packages have been uploaded and made available, send
 an email to the announce mailing list, Subject: "Version X.Y.Z available for
 download". Be sure to include the download location, the release notes and the
-change log.
+Changelog. Also, post an updated News item on the project page Sourceforge, and
+update the Home page and docs linked from the Home page (see below).
+
 -------------------------------------------------------------------------------
 
 7. Update the Webserver
 
-When updating the webserver, please follow these steps to make sure that no
-broken links, inconsistent contents or permission problems will occur:
+The webserver should be updated at least with each stable release. When
+updating, please follow these steps to make sure that no broken links,
+inconsistent contents or permission problems will occur (as it has many times
+in the past!):
 
-If you have changed anything in the documentation source SGML files, do:
+If you have changed anything in the stable-branch documentation source SGML
+files, do:
 
-  make dok # (or make redhat-dok if make dok doesn't work for you)             
+  make dok dok-pdf # (or 'make redhat-dok dok-pdf' if 'make dok' doesn't work for you)
 
 That will generate doc/webserver/user-manual, doc/webserver/developer-manual,
-doc/webserver/faq and doc/webserver/index.html automatically.
+doc/webserver/faq, doc/pdf/*.pdf and doc/webserver/index.html automatically.
 
-If you changed the manual page source, generate doc/webserver/man-page/
+If you changed the manual page sources, generate doc/webserver/man-page/
 privoxy-man-page.html by running "make man". (This is a separate target due to
-dependencies on some obscure perl scripts. See comments in GNUmakefile.)
+dependencies on some obscure perl scripts [now in CVS, but not well tested].
+See comments in GNUmakefile.)
 
 If you want to add new files to the webserver, create them locally in the doc/
 webserver/* directory (or create new directories under doc/webserver).
 
-Next, commit any changes from the above steps to CVS. All set? Then do
+Next, commit any changes from the above steps to CVS. All set? If these are
+docs in the stable branch, then do:
 
   make webserver                                                               
 
@@ -2010,7 +2121,10 @@ This will do the upload to the webserver (www.privoxy.org) and ensure all files
 and directories there are group writable.
 
 Please do NOT use any other means of transferring files to the webserver to
-avoid permission problems.
+avoid permission problems. Also, please do not upload docs from development
+branches or versions. The publicly posted docs should be in sync with the last
+official release.
+
 -------------------------------------------------------------------------------
 
 8. Contacting the developers, Bug Reporting and Feature Requests
@@ -2018,6 +2132,7 @@ avoid permission problems.
 We value your feedback. In fact, we rely on it to improve Privoxy and its
 configuration. However, please note the following hints, so we can provide you
 with the best support:
+
 -------------------------------------------------------------------------------
 
 8.1. Get Support
@@ -2027,6 +2142,7 @@ http://sourceforge.net/tracker/?group_id=11118&atid=211118
 
 All users are of course welcome to discuss their issues on the users mailing
 list, where the developers also hang around.
+
 -------------------------------------------------------------------------------
 
 8.2. Report Bugs
@@ -2047,6 +2163,7 @@ If not using the latest version, chances are that the bug has been found and
 fixed in the meantime. We would appreciate if you could take the time to 
 upgrade to the latest version (or even the latest CVS snapshot) and verify your
 bug, but this is not required for reporting.
+
 -------------------------------------------------------------------------------
 
 8.3. Request New Features
@@ -2054,6 +2171,7 @@ bug, but this is not required for reporting.
 You are welcome to submit ideas on new features or other proposals for
 improvement through our feature request tracker at http://sourceforge.net/
 tracker/?atid=361118&group_id=11118.
+
 -------------------------------------------------------------------------------
 
 8.4. Report Ads or Other Actions-Related Problems
@@ -2067,6 +2185,7 @@ troubled site and even pre-fill the form!
 New, improved default.action files will occasionally be made available based on
 your feedback. These will be announced on the ijbswa-announce list and
 available from our the files section of our project page.
+
 -------------------------------------------------------------------------------
 
 8.5. Other
@@ -2076,6 +2195,7 @@ interested users and people who wish to contribute to the project are also
 welcome on the developers list! You can find an overview of all Privoxy-related
 mailing lists, including list archives, at: http://sourceforge.net/mail/?
 group_id=11118.
+
 -------------------------------------------------------------------------------
 
 9. Privoxy Copyright, License and History
@@ -2084,6 +2204,7 @@ Copyright © 2001, 2002 by Privoxy Developers <developers@privoxy.org>
 
 Some source code is based on code Copyright © 1997 by Anonymous Coders and
 Junkbusters, Inc. and licensed under the GNU General Public License.
+
 -------------------------------------------------------------------------------
 
 9.1. License
@@ -2101,10 +2222,11 @@ is available from the Free Software Foundation, Inc, 59 Temple Place - Suite
 You should have received a copy of the GNU General Public License along with
 this program; if not, write to the
 
- Free Software
- Foundation, Inc. 59 Temple Place - Suite 330
- Boston, MA 02111-1307
- USA 
+ Free Software
+ Foundation, Inc. 59 Temple Place - Suite 330
+ Boston, MA 02111-1307
+ USA 
+
 -------------------------------------------------------------------------------
 
 9.2. History
@@ -2132,8 +2254,9 @@ Then, some developers picked up the thread, and started turning the software
 inside out, upside down, and then reassembled it, adding many new features
 along the way.
 
-The result of this is Privoxy, whose first stable release, 3.0, is due late
-summer or early fall 2002.
+The result of this is Privoxy, whose first stable release, 3.0, was released
+August, 2002.
+
 -------------------------------------------------------------------------------
 
 10. See also
@@ -2151,6 +2274,9 @@ http://config.privoxy.org/, the web-based user interface. Privoxy must be
 running for this to work. Shortcut: http://p.p/                                
 
 http://www.privoxy.org/actions/, to submit "misses" to the developers.
+
+http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/, cool and fun   
+ideas from Privoxy users.                                                      
 
 http://www.junkbusters.com/ht/en/cookies.html, an explanation how cookies are  
 used to track web users.                                                       

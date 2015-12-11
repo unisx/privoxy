@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.68.2.4 2002/08/10 11:21:57 oes Exp $
+dnl $Id: configure.in,v 1.68.2.5 2002/08/25 23:37:00 hal9 Exp $
 dnl 
 dnl Written by and Copyright (C) 2001, 2002 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,9 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.68.2.5  2002/08/25 23:37:00  hal9
+dnl Getting ready for 3.0 release.
+dnl
 dnl Revision 1.68.2.4  2002/08/10 11:21:57  oes
 dnl - Set Version to 2.9.20 (beta)
 dnl - Add two AC_DEFINEs that indicate if the pcre*.h headers
@@ -384,7 +387,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.68.2.4 $)
+AC_REVISION($Revision: 1.68.2.5 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -428,10 +431,10 @@ dnl =================================================================
 dnl Application version number
 dnl =================================================================
 
-VERSION_MAJOR=2
-VERSION_MINOR=9
-VERSION_POINT=20
-CODE_STATUS="beta"
+VERSION_MAJOR=3
+VERSION_MINOR=0
+VERSION_POINT=0
+CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output

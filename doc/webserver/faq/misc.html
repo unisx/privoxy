@@ -4,7 +4,8 @@
 >Miscellaneous</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="configuration.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="trouble.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,21 +73,17 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="MISC"
->4. Miscellaneous</A
-></H1
+NAME="MISC">4. Miscellaneous</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN523"
->4.1. How much does <SPAN
+NAME="AEN528">4.1. How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > slow my browsing down? This 
-has to add extra time to browsing.</A
-></H3
+has to add extra time to browsing.</H3
 ><P
 > It should not slow you down any in real terms, and may actually help 
  speed things up since ads, banners and other junk are not being displayed.
@@ -122,10 +122,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="LOADINGTIMES"
->4.2. I noticed considerable
-delays in page requests compared to the old Junkbuster. What's wrong?</A
-></H3
+NAME="LOADINGTIMES">4.2. I noticed considerable
+delays in page requests compared to the old Junkbuster. What's wrong?</H3
 ><P
 > If you use any <TT
 CLASS="LITERAL"
@@ -159,10 +157,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="CONFIGURL"
->4.3. What are "http://config.privoxy.org/" and
-"http://p.p/"?</A
-></H3
+NAME="CONFIGURL">4.3. What are "http://config.privoxy.org/" and
+"http://p.p/"?</H3
 ><P
 > <A
 HREF="http://config.privoxy.org/"
@@ -207,9 +203,12 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > for the request,
- hence it could not be intercepted, and you have accessed the <I
+ hence it could not be intercepted, and you have accessed the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >real</I
+></SPAN
 >
  web site at config.privoxy.org.</P
 ><P
@@ -233,16 +232,14 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >, http://example.com/show-proxy-args and http://i.j.b/,
  are no longer supported. If you still use such an old version, you should really consider
- upgrading to 2.9.20.</P
+ upgrading to 3.0.0.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BLOCKLIST"
->4.4. Do you still maintain the blocklists?</A
-></H3
+NAME="BLOCKLIST">4.4. Do you still maintain the blocklists?</H3
 ><P
 >  No. The patterns for blocking now reside (among other things) in the <A
 HREF="../user-manual/actions-file.html"
@@ -256,9 +253,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="NEWADS"
->4.5. How can I submit new ads?</A
-></H3
+NAME="NEWADS">4.5. How can I submit new ads?</H3
 ><P
 >Yes, absolutely! Please see the <A
 HREF="contact.html"
@@ -275,9 +270,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="IP"
->4.6. How can I hide my IP address?</A
-></H3
+NAME="IP">4.6. How can I hide my IP address?</H3
 ><P
 > If you run both the browser and the proxy locally, you cannot hide your IP
  address with <SPAN
@@ -317,12 +310,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN583"
->4.7. Can <SPAN
+NAME="AEN588">4.7. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> guarantee I am anonymous?</A
-></H3
+> guarantee I am anonymous?</H3
 ><P
 > No. Your chances of remaining anonymous are greatly improved, but unless you
  are an expert on Internet security it would be safest to assume that
@@ -332,9 +323,12 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > can remove various information about you,
- and allows <I
+ and allows <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >you</I
+></SPAN
 > more freedom  to decide which sites 
  you can trust, and what details you want to reveal. But it's still possible
  that web sites can find out who you are. Here's one way this can happen.</P
@@ -363,10 +357,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN594"
->4.8. Might some things break because header information or
-content is being altered?</A
-></H3
+NAME="AEN599">4.8. Might some things break because header information or
+content is being altered?</H3
 ><P
 > Definitely. More and more sites use HTTP header content to decide what to
  display and how to display it. There is many ways that this can be handled, 
@@ -413,16 +405,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN605"
->4.9. Can <SPAN
+NAME="AEN610">4.9. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > act as a <SPAN
 CLASS="QUOTE"
 >"caching"</SPAN
 > proxy to 
-speed up web browsing?</A
-></H3
+speed up web browsing?</H3
 ><P
 > No, it does not have this ability at all. You want something like 
  <A
@@ -455,12 +445,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN615"
->4.10. What about as a firewall? Can <SPAN
+NAME="AEN620">4.10. What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> protect me?</A
-></H3
+> protect me?</H3
 ><P
 > Not in the way you mean, or in the way a true firewall can. 
  <SPAN
@@ -468,9 +456,12 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > can help protect your privacy, but not
  protect you from intrusion attempts. It is, of course, perfectly possible
- and recommended to use <I
+ and recommended to use <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 >.</P
 ></DIV
 ><DIV
@@ -478,10 +469,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN621"
->4.11. I have large empty spaces / a checkerboard pattern now where
-ads used to be. Why?</A
-></H3
+NAME="AEN626">4.11. I have large empty spaces / a checkerboard pattern now where
+ads used to be. Why?</H3
 ><P
 > It would be technically possible eliminate the banners in a way that frees
  their screen estate in many cases, by doing all banner blocking with filters,
@@ -503,17 +492,18 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN626"
->4.12. How can <SPAN
+NAME="AEN631">4.12. How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> filter Secure (HTTPS) URLs?</A
-></H3
+> filter Secure (HTTPS) URLs?</H3
 ><P
 > Since secure HTTP connections are encrypted SSL sessions between your browser
- and the secure site, and are meant to be reliably <I
+ and the secure site, and are meant to be reliably <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >secure</I
+></SPAN
 >,
  there is little that <SPAN
 CLASS="APPLICATION"
@@ -546,16 +536,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN637"
->4.13. <SPAN
+NAME="AEN642">4.13. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > runs as a <SPAN
 CLASS="QUOTE"
 >"server"</SPAN
 >. How 
-secure is it? Do I need to take any special precautions?</A
-></H3
+secure is it? Do I need to take any special precautions?</H3
 ><P
 > There are no known exploits that might affect
  <SPAN
@@ -607,12 +595,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="TURNOFF"
->4.14. How can I temporarily disable <SPAN
+NAME="TURNOFF">4.14. How can I temporarily disable <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->?</A
-></H3
+>?</H3
 ><P
 > The easiest way is to access <SPAN
 CLASS="APPLICATION"
@@ -639,16 +625,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="REALLYOFF"
->4.15. When <SPAN
+NAME="REALLYOFF">4.15. When <SPAN
 CLASS="QUOTE"
 >"disabled"</SPAN
 > is <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > totally 
-out of the picture?</A
-></H3
+out of the picture?</H3
 ><P
 > No, this just means all filtering and actions are disabled.
  <SPAN
@@ -670,13 +654,121 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="SEEALSO"
->4.16. Where can I find more information about <SPAN
+NAME="CRUNCH">4.16. My logs show <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> <SPAN
+CLASS="QUOTE"
+>"crunches"</SPAN
+> 
+ads, but also its own CGI pages. What is a <SPAN
+CLASS="QUOTE"
+>"crunch"</SPAN
+>?</H3
+><P
+> A <SPAN
+CLASS="QUOTE"
+>"crunch"</SPAN
+> simply means <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> intercepted 
+ <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>something</I
+></SPAN
+>, nothing more. Often this is indeed ads or
+ banners, but <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> uses the same mechanism for
+ trapping requests for its own internal pages. For instance, a request for
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> configuration page at: <A
+HREF="http://config.privoxy.org"
+TARGET="_top"
+>http://config.privoxy.org</A
+>, is
+ intercepted (i.e. it does not go out to the 'net), and the familiar CGI
+ configuration is returned to the browser, and the log consequently will show
+ a <SPAN
+CLASS="QUOTE"
+>"crunch"</SPAN
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DOWNLOADS">4.17. Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> effect files that I download
+from a webserver? FTP server?</H3
+><P
+> From the webserver's perspective, there is no difference between
+ viewing a document (i.e. a page), and downloading a file. The same is true of
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. If there is a match for a <TT
+CLASS="LITERAL"
+><A
+HREF="../user-manual/actions-file.html#BLOCK"
+TARGET="_top"
+>block</A
+></TT
+> pattern,
+ it will still be blocked, and of course this is obvious. Filtering is
+ potentially more of a concern since the results are not always so obvious.</P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> knows the differences in files according
+ to the <SPAN
+CLASS="QUOTE"
+>"Document Type"</SPAN
+> as reported by the webserver. If this is
+ reported accurately (e.g. <SPAN
+CLASS="QUOTE"
+>"application/zip"</SPAN
+> for a zip archive),
+ then <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> knows to ignore these where
+ appropriate. It is possible, however, that documents that are of an unknown
+ type (generally assumed to be <SPAN
+CLASS="QUOTE"
+>"text/plain"</SPAN
+>) will be filtered, as
+ will those that might be incorrectly reported by the webserver. If such a
+ file is a downloaded file that is intended to be saved to disk, then any
+ content that might have been altered by filtering, will be saved too, for
+ these (probably very rare) cases.</P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> does not do FTP at all, only HTTP 
+  protocols.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="SEEALSO">4.18. Where can I find more information about <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
-and related issues?</A
-></H3
+and related issues?</H3
 ><P
 > Other references and sites of interest to <SPAN
 CLASS="APPLICATION"
@@ -801,6 +893,29 @@ TARGET="_top"
 CLASS="QUOTE"
 >"misses"</SPAN
 > to the developers. 
+  </TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+ <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>   <A
+HREF="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/"
+TARGET="_top"
+>http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/</A
+>, cool
+   and fun ideas from <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> users.
   </TD
 ></TR
 ></TBODY
@@ -945,6 +1060,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -956,6 +1072,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="configuration.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -964,6 +1081,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -972,6 +1090,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="trouble.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

@@ -1,4 +1,4 @@
-# $Id: privoxy-suse.spec,v 1.20.2.6 2002/08/10 11:28:50 oes Exp $
+# $Id: privoxy-suse.spec,v 1.20.2.7 2002/08/25 23:36:03 hal9 Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -36,7 +36,7 @@ Summary:      Privoxy - privacy enhancing proxy
 Vendor:       Privoxy.Org
 Name:         privoxy-suse
 Distribution: defineme
-Version: 2.9.20
+Version: 3.0.0
 Release: 1
 # Needs makefile change: Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}-%{status}-src.tar.gz
 Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}.tar.gz
@@ -217,14 +217,21 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 # -----------------------------------------------------------------------------
 #
 %changelog
+* Tue Aug 25 2002 Hal Burgiss <hal@foobox.net>
+- Bump version for 3.0.0 :) 
+
 * Tue Aug 06 2002 Hal Burgiss <hal@foobox.net>
-- Reset version for 2.9.18.
+- Reset version for 2.9.18. 
 
 * Wed Jul 30 2002 Hal Burgiss <hal@foobox.net>
 - Reset version for 2.9.17.
 
 * Sat Jul 27 2002 Hal Burgiss <hal@foobox.net>
 - Reset version and release for 2.9.16.
+
+* Mon May 27 2002 Hal Burgiss <hal@foobox.net>
++ privoxy-2.9.15-1
+- Index.html is now privoxy-index.html for doc usage.
 
 * Mon May 27 2002 Hal Burgiss <hal@foobox.net>
 + privoxy-2.9.15-1
@@ -338,6 +345,9 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 - new package: version 2.0
 
 # $Log: privoxy-suse.spec,v $
+# Revision 1.20.2.7  2002/08/25 23:36:03  hal9
+# Bump version for 3.0.0.
+#
 # Revision 1.20.2.6  2002/08/10 11:28:50  oes
 # Bumped version
 #

@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.104.2.14 2002/08/10 11:19:37 oes Exp $
+# $Id: GNUmakefile.in,v 1.104.2.18 2002/08/23 12:22:40 oes Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -132,7 +132,8 @@ DOC_FILES = AUTHORS LICENSE README ChangeLog \
 		`find doc/text/ -type f | grep -v "CVS" | grep -v "\.\#" | grep -v ".*~" | grep -v ".cvsignore" | grep -v "TAGS"` \
 		`find doc/webserver/ -name "*.html" | grep -v "\(webserver\|team\)\/index\.html"` \
 		`find doc/webserver/ -name "*.css"` \
-                privoxy.1
+                privoxy.1 \
+		doc/pdf/*.pdf
 
 #############################################################################
 # Filenames and libraries
@@ -640,7 +641,7 @@ dok-faq:
 	cd doc/source/faq && $(DB) ../faq.sgml && cd .. && cp faq/*.html ../webserver/faq/
 	cd doc/source && $(DB) -V nochunks faq.sgml > tmp.html && $(WDUMP) tmp.html > ../text/faq.txt && $(RM) -r tmp.html faq
 
-# man page
+# man page, one variation. Try to use the next target, just 'make man'. 
 dok-man: 
 	$(RM) doc/man/* doc/webserver/man-page/*.html
 ifneq ($(MAN2HTML),false)
@@ -650,6 +651,37 @@ ifneq ($(MAN2HTML),false)
 else
 	$(MAKE) groff2html
 endif
+
+# Build man page from sgml. This requires the SGMLSpm perl module.
+# See CPAN, or your favorite perl repository. This is the preferred 
+# target for man page generation!
+man: dok-release
+	mkdir -p doc/source/temp && cd doc/source/temp && $(RM) * ;\
+	nsgmls ../privoxy-man-page.sgml  | sgmlspl ../../../utils/docbook2man/docbook2man-spec.pl &&\
+	perl -pi.bak -e 's/ <URL:.*>//; s/\[ /\[/g' privoxy.1 ;\
+	$(DB) ../privoxy-man-page.sgml && $(MV) -f privoxy.1 ../../../privoxy.1
+
+# For those with man2html ala RH7s.
+man2html:
+	mkdir -p doc/webserver/man-page
+ifneq ($(MAN2HTML),false)
+	$(MAN2HTML) privoxy.1 |grep -v "^Content-type" > tmp.html
+	$(PERL) -pi.bak -e 's/<A .*Contents<\/A>//; s/<A .*man2html<\/A>/man2html/' tmp.html
+	$(PERL) -pi.bak -e 's/(<\/HEAD>)/<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"..\/p_doc.css\"><\/HEAD>/' tmp.html
+# Twice because my version of man2html is pulling in commas and periods in URLs.
+	$(PERL) -pi.bak -e 's/(<A.*),(">)/$$1$$2/g' tmp.html
+	$(PERL) -pi.bak -e 's,\.">,">,g' tmp.html
+# Get rid of spurious  from conversion. (How to do this with perl?)
+	$(SED) -e 's///g' tmp.html > doc/webserver/man-page/privoxy-man-page.html && $(RM) tmp.*
+else
+	$(MAKE) groff2html
+endif
+
+
+# Otherwise we get plain groff conversion.
+groff2html:
+	$(G2H_CMD) ./privoxy.1 | $(SED) -e 's@</head>@<link REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></head>@' > doc/webserver/man-page/privoxy-man-page.html
+
 
 # readme page
 dok-readme:
@@ -688,27 +720,6 @@ dok: dok-release dok-devel dok-user dok-faq dok-readme dok-webserver dok-authors
 redhat-dok: dok-release dok-devel dok-user dok-faq redhat-readme dok-webserver dok-authors
 	@$(ECHO) Documentation created.
 
-# For those with man2html ala RH7s.
-man2html:
-	mkdir -p doc/webserver/man-page
-ifneq ($(MAN2HTML),false)
-	$(MAN2HTML) privoxy.1 |grep -v "^Content-type" > tmp.html
-	$(PERL) -pi.bak -e 's/<A .*Contents<\/A>//; s/<A .*man2html<\/A>/man2html/' tmp.html
-	$(PERL) -pi.bak -e 's/(<\/HEAD>)/<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"..\/p_doc.css\"><\/HEAD>/' tmp.html
-# Twice because my version of man2html is pulling in commas and periods in URLs.
-	$(PERL) -pi.bak -e 's/(<A.*),(">)/$$1$$2/g' tmp.html
-	$(PERL) -pi.bak -e 's,\.">,">,g' tmp.html
-# Get rid of spurious  from conversion. (How to do this with perl?)
-	$(SED) -e 's///g' tmp.html > doc/webserver/man-page/privoxy-man-page.html && $(RM) tmp.*
-else
-	$(MAKE) groff2html
-endif
-
-
-# Otherwise we get plain groff conversion.
-groff2html:
-	$(G2H_CMD) ./privoxy.1 | $(SED) -e 's@</head>@<link REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></head>@' > doc/webserver/man-page/privoxy-man-page.html
-
 ## Make README
 redhat-readme: 
 	cd doc/source && $(DB)-notoc -V nochunks readme.sgml > tmp.html && $(WDUMP) \
@@ -718,20 +729,6 @@ redhat-readme:
 dok-authors: 
 	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && $(WDUMP) \
 	  tmp.html > ../../AUTHORS && $(RM) tmp.html
-
-# make a man page, and then (lousy) HTML version.
-# Requires docbook2man (short perl script), see comments 
-# in privoxy-man-page.sgml. This target is not invoked from other dok targets.
-# It is built separately due to dependencies on perl scripts.
-man: 
-	mkdir -p doc/source/man
-	cd doc/source/man && docbook2man ../privoxy-man-page.sgml &&\
-	perl -pi.bak -e 's/ <URL:.*>//; s/\[ /\[/g' privoxy.1
-	cd doc/source/man && $(DB) ../privoxy-man-page.sgml &&\
-	mv -f index.html privoxy-man-page.html
-     # This html is not used. See make man2html.
-	mv -f doc/source/man/privoxy.1 privoxy.1
-	$(MAKE) man2html
 
 # Set doc entities for VERSION and CODE_STATUS in sgml docs. Toggle content
 # exceptions accordingly. This needs to go before any doc building (doh).
@@ -755,15 +752,6 @@ else
 	$(RM) -r doc/source/*bak doc/source/*/*bak
 endif
 
-dok-pdf: dok-release 
-	$(RM) doc/pdf/*.pdf
-	cp -f doc/source/*.sgml doc/pdf
-	cp -f doc/source/*.dsl doc/pdf
-	cd doc/pdf && db2pdf --pdf -s ldp.dsl user-manual.sgml && mv user-manual.pdf privoxy-user-manual.pdf > /dev/null 2>&1
-	cd doc/pdf && db2pdf --pdf -s ldp.dsl developer-manual.sgml && mv developer-manual.pdf privoxy-developer-manual.pdf > /dev/null 2>&1
-	cd doc/pdf && db2pdf --pdf -s ldp.dsl faq.sgml && mv faq.pdf privoxy-faq.pdf > /dev/null 2>&1
-	$(RM) doc/pdf/*.sgml doc/pdf/*.dsl doc/pdf/*.out doc/pdf/*.tex doc/pdf/*.log doc/pdf/*.aux
-
 # Generate single page html. Used only for creating pdf docs (ATM).
 # Currently using: See http://www.easysw.com/htmldoc/pdf-o-matic.php.
 # If using this generator, remember U-M has a couple of graphics in 
@@ -775,6 +763,25 @@ dok-shtml: dok-release
 	cd doc/source && $(DB) -V nochunks developer-manual.sgml > temp/privoxy-developer-manual.html
 	cd doc/source && $(DB) -V nochunks faq.sgml > temp/privoxy-faq.html
 # one could use html2ps and ps2pdf. well, that does not work. htmlps produces incorrect output.
+
+# Make pdf docs from single page html. Requires htmldoc, see
+# (http://www.easysw.com/htmldoc/). Note: 1.8.20 has a TOC bug.
+# PDF docs are uploaded to webserver as zip archive.
+dok-pdf: dok-shtml
+	@$(ECHO) -n "starting htmldoc version: "; htmldoc --version
+	cd utils/ldp_print && $(RM) *html *bak *jpg *tmp *pdf *zip
+	cp -f doc/source/temp/*html doc/webserver/images/*jpg utils/ldp_print
+	cd utils/ldp_print ;\
+	$(PERL) -pi.bak -e 's/\.\.\/images\///; s/(<\/?)SUB/$$1small/i;\
+	                    s/\.\.\/user-manual\/index\.html/privoxy-user-manual.pdf/;\
+					s/\.\.\/developer-manual\/index\.html/privoxy-developer-manual.pdf/;\
+					s/\.\.\/faq\/index\.html/privoxy-faq.pdf/' *.html ;\
+	for i in developer-manual user-manual faq; do \
+		./ldp_print privoxy-$$i.html ;\
+		$(ECHO) DONE: privoxy-$$i.pdf ;\
+	done ;\
+	$(MV) *.pdf  ../../doc/pdf ;\
+	$(RM) -r *html *bak *jpg *pdf *zip ../../doc/source/temp
 
 # Create release announcement in text and html, with short and long versions.
 # This is a standalone target, and must be invoked directly.
@@ -843,10 +850,15 @@ webserver: tidy
 	@$(ECHO) it will not remove obsolete documents.
 	@$(ECHO) -------------------------------------------------------
 
-	@$(ECHO) Uploading 
+	@$(ECHO) Uploading html
 	@cd doc/webserver; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
           $(TAR) c $$upload | ssh ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
+
+	@$(ECHO) Uploading pdf
+	@cd doc/pdf;\
+          zip privoxy-pdf-docs *.pdf  ;\
+		scp -q privoxy-pdf-docs.zip ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/pdf
 
 	@$(ECHO) Fixing permissions
 	@ssh ijbswa.sourceforge.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
@@ -951,11 +963,23 @@ tags: $(SRCS) $(HDRS)
 	etags $(SRCS) $(HDRS)
 
 install: all
-	#
-	# FIXME: This is a dirty hack to have an install target
-	#        that works at least for some setups. This needs
-	#        to be fixed!
-	#
+	@$(ECHO) "***************************************************"; \
+        $(ECHO) "***                                             ***"; \
+        $(ECHO) "***                  WARNING                    ***"; \
+        $(ECHO) "***                                             ***"; \
+        $(ECHO) "*** The install target is very broken and       ***"; \
+        $(ECHO) "*** should not be used. For the time being,     ***"; \
+        $(ECHO) "*** run from the build dir, install manually,   ***"; \
+        $(ECHO) "*** or use a binary package. Sorry.             ***"; \
+        $(ECHO) "***                                             ***"; \
+        $(ECHO) "***************************************************"; \
+        $(ECHO) "Type \"yes i am sure\" if you are sure that you"; \
+        $(ECHO) -n "really want to proceed with the broken install: "; \
+        read answer; \
+        if [ "$$answer" != "yes i am sure" ]; then exit 1; fi
+
+	# FIXME!
+
 	$(STRIP_PROG) $(PROGRAM)
 	$(INSTALL) $(INSTALL_D) $(SBIN_DEST)
 	$(INSTALL) $(INSTALL_D) $(DEST)/user-manual
@@ -983,6 +1007,19 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.104.2.18  2002/08/23 12:22:40  oes
+# Added warning to broken install target
+#
+# Revision 1.104.2.17  2002/08/16 03:19:34  hal9
+# More (minor) cleanup of html before pdf processing to make some relative
+# links work as pdf -> pdf. Upload pdf as zip archive now.
+#
+# Revision 1.104.2.16  2002/08/14 16:43:27  hal9
+# Added pdf docs to make webserver target.
+#
+# Revision 1.104.2.15  2002/08/11 20:02:41  hal9
+# New targets for man page (make man) and pdf (make dok-pdf) targets.
+#
 # Revision 1.104.2.14  2002/08/10 11:19:37  oes
 # - Make -Ipcre (again) conditional on STATIC_PCRE
 # - $(RPMBUILD) -> $(RPM) for SuSE

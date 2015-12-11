@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/Attic/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.1.2.4 2002/08/06 08:31:58 oes Exp $
+#  $Id: default.action.master,v 1.1.2.9 2002/08/27 16:33:04 oes Exp $
 #
 #  Purpose     :  Default actions file, see
 #                 http://www.privoxy.org/faq/questions.html#CONFIGFILES
@@ -336,7 +336,7 @@
 #
 # +kill-popups
 #    Filter the website through a built-in filter to disable
-#    1;''.concat() etc.  The two alternative spellings are
+#    window.open() etc.  The two alternative spellings are
 #    equivalent.
 #
 # +send-vanilla-wafer
@@ -451,7 +451,7 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #############################################################################
 # Needed for automatic feedback evaluation; Please don't change or delete!
 #############################################################################
-{+add-header{X-Actions-File-Version: 1.4} -filter -kill-popups}
+{+add-header{X-Actions-File-Version: 1.5} -filter -kill-popups}
 .privoxy.org
 .oesterhelt.org/actions
 
@@ -460,7 +460,7 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #############################################################################
 {+handle-as-image}
 #############################################################################
-/.*\.(gif|jpe?g|png|bmp|ico)$
+/.*\.(gif|jpe?g|png|bmp|ico)($|\?)
 
 #############################################################################
 # Generic block patterns (the most effective!):
@@ -477,9 +477,9 @@ count*.
 
 # By path:
 #
-/(.*/)?(ads(erver?|tream)?|.*?ads/|ad/|adv(iew|ert(s|enties|is(ing|e?ments)?)?)?|(ad|all)?[-_]?banner(s|ads?|farm)?)
+/(.*/)?(ads(erver?|tream)?|.*?ads/|ad/|adv(iew|ert(s|enties|is(ing|e?ments)?)?)?|(ad|all|nn)?[-_]?banner(s|ads?|farm)?)
 /(.*/)?(publicite|werbung|rekla(ma|me|am)|annonse|maino(kset|nta|s)?/)
-/.*([^c]count|track)(er|run)?\.(pl|cgi|exe|dll|asp|php[34]?)  #[^c] is to save "account"
+/.*(count|track)(er|run)?\.(pl|cgi|exe|dll|asp|php[34]?)
 /.*promo.gif
 
 #############################################################################
@@ -545,14 +545,27 @@ b*.portalofevil.com/shlv
 i.imdb.com/Vpics/
 #MASTER# BLOCK-REFERRER: http://us.imdb.com/Title?0110912
 i.imdb.com/Photos/CMSIcons
-i.imdb.com/Icons/apix/Pro-title-box.gif
 rcm.amazon.com
+#MASTER# BLOCK-REFERRER: http://us.imdb.com/Trivia?0110116
+i.imdb.com/Icons/apix/
+#MASTER# BLOCK-REFERRER: http://www.nytimes.com/
+.nytimes.com/adx/
+#MASTER# BLOCK-REFERRER: http://www.salon.com/
+www.salon.com/Creatives
+images.salon.com/plus/gear/src/
+#MASTER# BLOCK-REFERRER: http://www.sourceforge.net/
+images.sourceforge.net/images/DB2powered.gif
+
+#############################################################################
+# Generic block-as-image patterns:
+#############################################################################
+{+block-as-image}
+#MASTER# BLOCK-REFERRER: http://experts-exchange.com/os2gen/
+/.*adimage\.(php|cgi)
 
 #############################################################################
 # Site-specific block-as-image patterns:
 #############################################################################
-{+block-as-image}
-
 #MASTER# BLOCK-REFERRER: http://www.cnn.com/
 #MASTER# BLOCK-REFERRER: http://www.aol.com/
 ar.atwola.com 
@@ -564,9 +577,10 @@ ar.atwola.com
 netcomm.spinbox.net
 #MASTER# BLOCK-REFERRER: http://www.joecartoon.com/
 servedby.advertising.com
-#MASTER# BLOCK-REFERRER: http://dailynews.yahoo.com/fc/Health/Cancer_Research
+#MASTER# BLOCK-REFERRER: http://hwww.yahoo.com/
 .a.yimg.com/(?:(?!/i/).)*$
 .a[0-9].yimg.com/(?:(?!/i/).)*$
+.yimg.com/.*/a/
 .yimg.com/.*/flash/promotions
 #MASTER# BLOCK-REFERRER: http://www.kostenlos.de/
 werbung.guj.de
@@ -608,7 +622,27 @@ magic.koti.com.pl/cgi-magic/banner_img.cgi
 naturalismedicina.com/cgibin/linswap
 #MASTER# BLOCK-REFERRER: http://www.dhtmlplanet.com/
 statse.webtrendslive.com
-
+#MASTER# BLOCK-REFERRER: http://www.versiontracker.com/
+#MASTER# REMARKS: 1) Used on many sites 2) URLs don't _end_ in .gif, hence +imageblock
+spinbox.versiontracker.com/.*\.gif
+#MASTER# BLOCK-REFERRER: http://educ8search.tripod.com/hacksoft.html
+#MASTER# REMARKS: Counter
+.netscape.com/c\.cgi\?
+#MASTER# BLOCK-REFERRER: http://privacy.net/analyze/
+a.consumer.net
+#MASTER# BLOCK-REFERRER: http://mycroft.mozdev.org/
+#MASTER# REMARKS: Counter
+m[0-9].nedstatbasic.net
+#MASTER# BLOCK-REFERRER: http://salon.com/
+#MASTER# REMARKS: Banner farms; just exclude their corp. info
+[a-v,x-z]*.atdmt.com/
+#MASTER# BLOCK-REFERRER: http://www.deviantart.com/
+images.deviantart.com/affiliates/
+images.deviantart.com/shared/(winzip|trillian)\.gif
+#MASTER# DONT-VERIFY
+#MASTER# REMARKS: Referenced from HTML-Emails
+.weather.com/creatives/
+.weather.com/web/services/email/
 
 #############################################################################
 # Generic unblockers to narrow the side effects of the generic blockers:
@@ -628,12 +662,15 @@ advice.
 
 # By path:
 #
-/.*ad(sl|v(i[cs]|an)) # advice/advisories/advan*
+/.*ad(sl|v(i[cs]|an|ertencia|entu)) # advice/advisories/advan*/advertencia (spanish)
 /.*((up|down)lo|p?thre|he|d|gr|l|ro)ads
+/.*account
 
 #############################################################################
 # Site-specific unblockers:
 #############################################################################
+#MASTER# UNBLOCK-REFERRER: http://bannerblind.mozdev.org/
+bannerblind.mozdev.org
 #MASTER# UNBLOCK-REFERRER: http://advogato.org/
 advogato.org
 #MASTER# UNBLOCK-REFERRER: http://www.handelsblatt.com/
@@ -663,6 +700,12 @@ www.comdirect.de/stat/count.php
 #MASTER# UNBLOCK-REFERRER: http://www.washingtonpost.com/wp-dyn/articles/A43890-2002Aug4.html
 #MASTER# REMARKS: Javascripts whose absence messes the page
 .washingtonpost.com/wp-srv/
+#MASTER# UNBLOCK-REFERRER: http://www.gnome.org/images/banner-gnomeis
+www.gnome.org
+#MASTER# UNBLOCK-REFERRER: http://www.nycsubway.org/
+.nycsubway.org/img/banner
+#MASTER# UNBLOCK-REFERRER: http://www.hellug.gr
+ads.hellug.gr
 
 #############################################################################
 # Site-specific special rules:
@@ -719,8 +762,14 @@ klubwakacyjny.interia.pl/pytanie.html
 www.m-w.com
 #MASTER# PROBLEM-URL: http://www.pcbox.es/boxshop/catalogo/entrada.asp?centro=53
 www.pcbox.es
+#MASTER# PROBLEM-URL: http://www.hola.com/club/trajelegante/
+www.hola.com/club/
+#MASTER# PROBLEM-URL: http://www.infoempleo.com/
+www.infoempleo.com
+#MASTER# PROBLEM-URL: http://www.netflix.com/
+www.netflix.com
 
-#----------------------------------------------------------------------------
+##----------------------------------------------------------------------------
 # Sometimes (i.e. often!) fast-redirects catches things by mistake
 #----------------------------------------------------------------------------
 {-fast-redirects}
@@ -756,13 +805,22 @@ www.fileplanet.com/redir\.asp\?
 {-filter}
 #MASTER# PROBLEM-URL: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/current/
 cvs.
+#MASTER# PROBLEM-URL: http://liveupdate.symantec.com/ennlu.x86
+liveupdate.symantec.com
 
 #----------------------------------------------------------------------------
-# These sites have a broken PHP setup:
+# These sites suffer from a bug in PHP < 4.2.3 (ob_gzhandler broken;
+# workaround is to use zlib.output_compression):
 #----------------------------------------------------------------------------
 {-prevent-compression}
+#MASTER# PROBLEM-URL: http://www.powie.de/
+www.powie.de
+#MASTER# PROBLEM-URL: http://www.phpcenter.de/
+www.phpcenter.de
 #MASTER# PROBLEM-URL: http://www.debianhelp.org/
 www.debianhelp.org
+#MASTER# PROBLEM-URL: http://www.timeanddate.com
+www.timeanddate.com
 #MASTER# PROBLEM-URL: http://www.pclinuxonline.com/
 #MASTER# PROBLEM-URL: http://pclinuxonline.com/
 .pclinuxonline.com
@@ -780,6 +838,8 @@ www.dhd24.com
 www.planetspiele.de/wbboard/
 #MASTER# PROBLEM-URL: http://www.digitalspy.co.uk/
 www.digitalspy.co.uk
+#MASTER# PROBLEM-URL: http://www.dealnews.com/
+.dealnews.com   
 
 #----------------------------------------------------------------------------
 # The first frame of the gif animation is more useful here:

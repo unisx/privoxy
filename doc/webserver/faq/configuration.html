@@ -4,7 +4,8 @@
 >Configuration</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="installation.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="misc.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,17 +73,13 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="CONFIGURATION"
->3. Configuration</A
-></H1
+NAME="CONFIGURATION">3. Configuration</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="GETUPDATES"
->3.1. Where can I get updated Actions Files?</A
-></H3
+NAME="GETUPDATES">3.1. Where can I get updated Actions Files?</H3
 ><P
 >   Based on your feedback and the continuing development, updated actions files will be
    made available on the <A
@@ -111,9 +111,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="NEWCONFIG"
->3.2. Can I use my old config files?</A
-></H3
+NAME="NEWCONFIG">3.2. Can I use my old config files?</H3
 ><P
 >   The syntax, number, and purpose of configuration files has substantially
    changed from <SPAN
@@ -139,12 +137,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN266"
->3.3. What is an <SPAN
+NAME="AEN266">3.3. What is an <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
-> file?</A
-></H3
+> file?</H3
 ><P
 > <A
 HREF="../user-manual/actions-file.html"
@@ -183,16 +179,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="ACTIONSS"
->3.4. The <SPAN
+NAME="ACTIONSS">3.4. The <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
 > concept confuses me. Please list 
 some of these <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
->.</A
-></H3
+>.</H3
 ><P
 > For a comprehensive discussion of the actions concept, please refer
  to the <A
@@ -222,13 +216,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN285"
->3.5. How are actions files configured? What is the easiest
-way to do this?</A
-></H3
+NAME="AEN285">3.5. How are actions files configured? What is the easiest
+way to do this?</H3
 ><P
 > Actions files are just text files in a special syntax and can be edited
- with a text editor. The probably easiest way is to access
+ with a text editor. But probably the easiest way is to access
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -258,13 +250,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN293"
->3.6. There are several different <SPAN
+NAME="AEN293">3.6. There are several different <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
 > files. What are
-the differences?</A
-></H3
+the differences?</H3
 ><P
 > As of <SPAN
 CLASS="APPLICATION"
@@ -323,9 +313,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="YAHOO"
->3.7. How can I make my Yahoo/Hotmail/GMX account work?</A
-></H3
+NAME="YAHOO">3.7. How can I make my Yahoo/Hotmail/GMX account work?</H3
 ><P
 >  The default configuration shouldn't impact the usability of any of these services.
   It will, however, make all cookies temporary, so that your browser will forget your
@@ -373,8 +361,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="CONFIGFILES"
->3.8. What's the difference between the
+NAME="CONFIGFILES">3.8. What's the difference between the
 <SPAN
 CLASS="QUOTE"
 >"Cautious"</SPAN
@@ -384,8 +371,7 @@ CLASS="QUOTE"
 > and <SPAN
 CLASS="QUOTE"
 >"Advanced"</SPAN
-> defaults?</A
-></H3
+> defaults?</H3
 ><P
 >  Configuring <SPAN
 CLASS="APPLICATION"
@@ -407,9 +393,7 @@ TARGET="_top"
 ><DIV
 CLASS="TABLE"
 ><A
-NAME="AEN328"
-></A
-><P
+NAME="AEN328"><P
 ><B
 >Table 1. Default Configurations</B
 ></P
@@ -750,10 +734,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BROWSECONFIG"
->3.9. Why can I change the configuration 
-with a browser? Does that not raise security issues?</A
-></H3
+NAME="BROWSECONFIG">3.9. Why can I change the configuration 
+with a browser? Does that not raise security issues?</H3
 ><P
 >  It may seem strange that regular users can edit the config files with their
   browsers, although the whole <TT
@@ -831,15 +813,13 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN431"
->3.10. What is the <TT
+NAME="AEN431">3.10. What is the <TT
 CLASS="FILENAME"
 >default.filter</TT
 > file? What is a <SPAN
 CLASS="QUOTE"
 >"filter"</SPAN
->?</A
-></H3
+>?</H3
 ><P
 > The <A
 HREF="../user-manual/filter-file.html"
@@ -849,13 +829,19 @@ CLASS="FILENAME"
 >default.filter</TT
 ></A
 >
- file is where <I
+ file is where <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >filters</I
+></SPAN
 > are defined, which can be used to modify or
- remove, web page content on the fly. Filters apply to <I
+ remove, web page content on the fly. Filters apply to <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >anything</I
+></SPAN
 >
  in the page source, including HTML tags, and JavaScript. Regular expressions are used
  to accomplish this. There are a number of pre-defined filters to deal with common
@@ -895,13 +881,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN447"
->3.11. How can I set up <SPAN
+NAME="AEN447">3.11. How can I set up <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to act as a proxy for my 
- LAN?</A
-></H3
+ LAN?</H3
 ><P
 > By default, <SPAN
 CLASS="APPLICATION"
@@ -972,9 +956,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN465"
->3.12. Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
-></H3
+NAME="AEN465">3.12. Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</H3
 ><P
 > The replacement for blocked images can be controlled with the <A
 HREF="../user-manual/actions-file.html#SET-IMAGE-BLOCKER"
@@ -998,9 +980,12 @@ TARGET="_top"
 >handle-as-image</A
 ></TT
 >
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >and</I
+></SPAN
 > <TT
 CLASS="LITERAL"
 ><A
@@ -1036,9 +1021,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN482"
->3.13. Why would anybody want to see a checkerboard pattern?</A
-></H3
+NAME="AEN482">3.13. Why would anybody want to see a checkerboard pattern?</H3
 ><P
 > Remember that <A
 HREF="general.html#WHATSANAD"
@@ -1049,9 +1032,12 @@ HREF="general.html#WHATSANAD"
  decent, but it shows you that and where images were blocked, which can be very
  helpful in case some navigation aid or otherwise innocent image was
  erraneously blocked. Some people might also enjoy seeing how many banners
- they <I
+ they <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >don't</I
+></SPAN
 > have to see..</P
 ></DIV
 ><DIV
@@ -1059,10 +1045,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN487"
->3.14. I see some images being replaced by a text
-instead of the checkerboard image. Why and how do I get rid of this?</A
-></H3
+NAME="AEN487">3.14. I see some images being replaced by a text
+instead of the checkerboard image. Why and how do I get rid of this?</H3
 ><P
 > This happens when the banners are not embedded in the HTML code of the
  page itself, but in separate HTML (sub)documents that are loaded into (i)frames
@@ -1090,13 +1074,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="SRVANY"
->3.15. Can <SPAN
+NAME="SRVANY">3.15. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > run as a service 
-on Win2K/NT?</A
-></H3
+on Win2K/NT?</H3
 ><P
 > Yes, it can run as a system service using <B
 CLASS="COMMAND"
@@ -1122,16 +1104,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="OTHERPROXY"
->3.16. How can I make <SPAN
+NAME="OTHERPROXY">3.16. How can I make <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > work with other 
 proxies like <SPAN
 CLASS="APPLICATION"
 >Squid</SPAN
->?</A
-></H3
+>?</H3
 ><P
 > This can be done and is often useful to combine the benefits of
  <SPAN
@@ -1155,15 +1135,30 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="TRANSPARENT"
->3.17. Can <SPAN
+NAME="PORT-80">3.17. Can I just set <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to use port 80
+and thus avoid individual browser configuration?</H3
+><P
+> No, its more complicated than that. This only works with special kinds 
+ of proxies known as <SPAN
+CLASS="QUOTE"
+>"transparent"</SPAN
+> proxies (see below).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="TRANSPARENT">3.18. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > run as a <SPAN
 CLASS="QUOTE"
 >"transparent"</SPAN
-> proxy?</A
-></H3
+> proxy?</H3
 ><P
 > No, <SPAN
 CLASS="APPLICATION"
@@ -1204,6 +1199,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -1215,6 +1211,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="installation.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -1223,6 +1220,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -1231,6 +1229,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="misc.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

@@ -4,9 +4,10 @@
 >Starting Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 2.9.20 User Manual"
+TITLE="Privoxy 3.0.0 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Quickstart to Using Privoxy"
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -35,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 2.9.20 User Manual</TH
+>Privoxy 3.0.0 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="quickstart.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="configuration.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,11 +73,9 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="STARTUP"
->5. Starting <SPAN
+NAME="STARTUP">5. Starting <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-></A
 ></H1
 ><P
 > Before launching <SPAN
@@ -97,9 +99,7 @@ CLASS="APPLICATION"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN439"
-></A
-><P
+NAME="AEN439"><P
 ><B
 >Figure 2. Proxy Configuration (Mozilla)</B
 ></P
@@ -107,10 +107,7 @@ NAME="AEN439"
 CLASS="MEDIAOBJECT"
 ><P
 ><IMG
-SRC="../images/proxy_setup.jpg"
-ALT="[ Screenshot of Mozilla Proxy Configuration ]"
-></IMG
-></P
+SRC="../images/proxy_setup.jpg"></P
 ></DIV
 ></DIV
 >
@@ -215,9 +212,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-REDHAT"
->5.1. Red Hat and Conectiva</A
-></H2
+NAME="START-REDHAT">5.1. Red Hat and Conectiva</H2
 ><P
 > We use a script. Note that Red Hat does not start Privoxy upon booting per
  default. It will use the file <TT
@@ -245,9 +240,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-DEBIAN"
->5.2. Debian</A
-></H2
+NAME="START-DEBIAN">5.2. Debian</H2
 ><P
 > We use a script. Note that Debian starts Privoxy upon booting per
  default.  It will use the file
@@ -276,9 +269,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-SUSE"
->5.3. SuSE</A
-></H2
+NAME="START-SUSE">5.3. SuSE</H2
 ><P
 >We use a script. It will use the file <TT
 CLASS="FILENAME"
@@ -306,9 +297,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-WINDOWS"
->5.4. Windows</A
-></H2
+NAME="START-WINDOWS">5.4. Windows</H2
 ><P
 >Click on the Privoxy Icon to start Privoxy. If no configuration file is
  specified on the command line, <SPAN
@@ -326,9 +315,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-UNICES"
->5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</A
-></H2
+NAME="START-UNICES">5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</H2
 ><P
 >Example Unix startup command:</P
 ><P
@@ -351,9 +338,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-OS2"
->5.6. OS/2</A
-></H2
+NAME="START-OS2">5.6. OS/2</H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -374,9 +359,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-MACOSX"
->5.7. Mac OSX</A
-></H2
+NAME="START-MACOSX">5.7. Mac OSX</H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -415,9 +398,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-AMIGAOS"
->5.8. AmigaOS</A
-></H2
+NAME="START-AMIGAOS">5.8. AmigaOS</H2
 ><P
 > Start <SPAN
 CLASS="APPLICATION"
@@ -447,9 +428,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-GENTOO"
->5.9. Gentoo</A
-></H2
+NAME="START-GENTOO">5.9. Gentoo</H2
 ><P
 > A script is again used. It will use the file <TT
 CLASS="FILENAME"
@@ -503,9 +482,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="CMDOPTIONS"
->5.10. Command Line Options</A
-></H2
+NAME="CMDOPTIONS">5.10. Command Line Options</H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -518,9 +495,12 @@ CLASS="APPLICATION"
 ><UL
 ><LI
 ><P
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >--version</I
+></SPAN
 >
   </P
 ><P
@@ -529,9 +509,12 @@ CLASS="EMPHASIS"
 ></LI
 ><LI
 ><P
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >--help</I
+></SPAN
 >
   </P
 ><P
@@ -540,9 +523,12 @@ CLASS="EMPHASIS"
 ></LI
 ><LI
 ><P
->   <I
+>   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >--no-daemon</I
+></SPAN
 >
   </P
 ><P
@@ -552,59 +538,86 @@ CLASS="EMPHASIS"
 ></LI
 ><LI
 ><P
->   <I
+>   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >--pidfile FILE</I
+></SPAN
 >
   
   </P
 ><P
->   On startup, write the process ID to <I
+>   On startup, write the process ID to <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >FILE</I
+></SPAN
 >. Delete the
-   <I
+   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >FILE</I
+></SPAN
 > on exit. Failure to create or delete the
-   <I
+   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >FILE</I
-> is non-fatal. If no <I
+></SPAN
+> is non-fatal. If no <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >FILE</I
+></SPAN
 >
    option is given, no PID file will be used. Unix only.
   </P
 ></LI
 ><LI
 ><P
->   <I
+>   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >--user USER[.GROUP]</I
+></SPAN
 >
   
   </P
 ><P
 >   After (optionally) writing the PID file, assume the user  ID  of
-   <I
+   <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >USER</I
+></SPAN
 >, and if included the GID of GROUP.  Exit if the
    privileges are not sufficient to do so. Unix only.
   </P
 ></LI
 ><LI
 ><P
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >configfile</I
+></SPAN
 >
   </P
 ><P
->    If no <I
+>    If no <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >configfile</I
+></SPAN
 > is included on the command line, 
     <SPAN
 CLASS="APPLICATION"
@@ -634,6 +647,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -645,6 +659,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="quickstart.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -653,6 +668,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -661,6 +677,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="configuration.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

@@ -11,7 +11,7 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "2.9.18">
+<!entity p-version "2.9.20">
 <!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
 <!entity % p-not-stable "INCLUDE">
@@ -32,7 +32,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 1.123.2.16 2002/08/09 19:20:54 david__schmidt Exp $
+ $Id: user-manual.sgml,v 1.123.2.18 2002/08/22 23:47:58 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -58,7 +58,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 1.123.2.16 2002/08/09 19:20:54 david__schmidt Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 1.123.2.18 2002/08/22 23:47:58 hal9 Exp $</pubdate>
 
 <!--
 
@@ -1273,6 +1273,9 @@ must find a better place for this paragraph
  </member>
  <member>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&squf;&nbsp;&nbsp;<ulink url="http://config.privoxy.org/toggle">Toggle Privoxy on or off</ulink>
+ </member>
+ <member>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&squf;&nbsp;&nbsp;<ulink url="http://www.privoxy.org/&p-version;/user-manual/">Documentation</ulink>
  </member>
  </simplelist>
  </msgtext>
@@ -5202,7 +5205,7 @@ Requests</title>
   <para>
    First, the server headers are read and processed to determine, among other
    things, the MIME type (document type) and encoding. The headers are then
-   filtered as deterimined by the 
+   filtered as determined by the 
    <link linkend="CRUNCH-INCOMING-COOKIES"><quote>+crunch-incoming-cookies</quote></link>,
    <link linkend="SESSION-COOKIES-ONLY"><quote>+session-cookies-only</quote></link>,
    and <link linkend="DOWNGRADE-HTTP-VERSION"><quote>+downgrade-http-version</quote></link>
@@ -5650,6 +5653,13 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: user-manual.sgml,v $
+ Revision 1.123.2.18  2002/08/22 23:47:58  hal9
+ Add 'Documentation' to Privoxy Menu shot in Configuration section to match
+ CGIs.
+
+ Revision 1.123.2.17  2002/08/18 01:13:05  hal9
+ Spell checked (only one typo this time!).
+
  Revision 1.123.2.16  2002/08/09 19:20:54  david__schmidt
  Update to Mac OSX startup script name
 

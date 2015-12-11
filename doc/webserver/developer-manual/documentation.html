@@ -4,7 +4,8 @@
 >Documentation Guidelines</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="cvs.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="coding.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,9 +73,7 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="DOCUMENTATION"
->3. Documentation Guidelines</A
-></H1
+NAME="DOCUMENTATION">3. Documentation Guidelines</H1
 ><P
 >    All formal documents are maintained in Docbook SGML and located in the
     <TT
@@ -140,12 +142,14 @@ CLASS="FILENAME"
 >privoxy-index.html</TT
 >, 
     meant for inclusion with doc packages), are maintained as SGML as well.
-    <I
+    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >DO NOT edit these directly</I
+></SPAN
 >. Edit the SGML source, or
-    contact someone involved in the documentation (at present Stefan and
-    Hal).
+    contact someone involved in the documentation (at present Hal).
     </P
 ><P
 >     <TT
@@ -170,7 +174,6 @@ CLASS="FILENAME"
 CLASS="FILENAME"
 >config</TT
 >.
-
     </P
 ><P
 >     Other, less formal documents (e.g. <TT
@@ -237,7 +240,11 @@ CLASS="COMPUTEROUTPUT"
 CLASS="COMPUTEROUTPUT"
 >make
         redhat-dok</TT
->).                 
+>). For PDF docs, do <TT
+CLASS="COMPUTEROUTPUT"
+>make
+        dok-pdf</TT
+>.
       </P
 ></LI
 ><LI
@@ -264,9 +271,12 @@ CLASS="FILENAME"
 >) so that those without 
    the ability to build them locally, have access to them if needed.
    This is especially important just prior to a new release! Please
-   do this <I
+   do this <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >after</I
+></SPAN
 > the <TT
 CLASS="LITERAL"
 >$VERSION</TT
@@ -282,9 +292,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="SGML"
->3.1. Quickstart to Docbook and SGML</A
-></H2
+NAME="SGML">3.1. Quickstart to Docbook and SGML</H2
 ><P
 > If you are not familiar with SGML, it is a markup language similar to HTML. 
  Actually, not a mark up language per se, but a language used to define 
@@ -383,43 +391,58 @@ BORDER="0"
 ><TBODY
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;para&#62;&#60;/para&#62;</I
+></SPAN
 >, paragraph delimiter. Most 
       text needs to be within paragraph elements (there are some exceptions).
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;emphasis&#62;&#60;/emphasis&#62;</I
+></SPAN
 >, the stylesheets
       make this italics.
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;filename&#62;&#60;/filename&#62;</I
+></SPAN
 >, files and directories.
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;command&#62;&#60;/command&#62;</I
+></SPAN
 >, command examples.
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;literallayout&#62;&#60;/literallayout&#62;</I
+></SPAN
 >, like 
       <TT
 CLASS="LITERAL"
@@ -429,25 +452,34 @@ CLASS="LITERAL"
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;itemizedlist&#62;&#60;/itemizedlist&#62;</I
+></SPAN
 >, list with bullets.
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;listitem&#62;&#60;/listitem&#62;</I
+></SPAN
 >, member of the above.
     </TD
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;screen&#62;&#60;/screen&#62;</I
+></SPAN
 >, screen output, implies 
       <TT
 CLASS="LITERAL"
@@ -457,9 +489,12 @@ CLASS="LITERAL"
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;ulink url="example.com"&#62;&#60;/ulink&#62;</I
+></SPAN
 >, like 
       HTML <TT
 CLASS="LITERAL"
@@ -469,9 +504,12 @@ CLASS="LITERAL"
 ></TR
 ><TR
 ><TD
->      <I
+>      <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >&#60;quote&#62;&#60;/quote&#62;</I
+></SPAN
 >, for, doh, quoting text. 
     </TD
 ></TR
@@ -498,12 +536,10 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="DOCSTYLE"
->3.2. <SPAN
+NAME="DOCSTYLE">3.2. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> Documentation Style</A
-></H2
+> Documentation Style</H2
 ><P
 >    It will be easier if everyone follows a similar writing style. This 
     just makes it easier to read what someone else has written if it 
@@ -523,9 +559,12 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->       Tags delimiting a <I
+>       Tags delimiting a <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >block</I
+></SPAN
 > of text (even small
        blocks) should be on their own line. Like:
        <P
@@ -595,7 +634,7 @@ CLASS="LITERALLAYOUT"
 ><LI
 ><P
 >    Our documents are available in differing formats. Right now, they 
-    are just plain text, and HTML, but PDF, and others is always a 
+    are just plain text, TML, and PDF, but others are always a 
     future possibility. Be careful with URLs (&#60;ulink&#62;), and avoid 
     this mistake:
    </P
@@ -639,9 +678,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN221"
->3.3. Privoxy Custom Entities</A
-></H2
+NAME="AEN222">3.3. Privoxy Custom Entities</H2
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -661,9 +698,12 @@ CLASS="QUOTE"
   that is used by multiple docs. This way we can write something once, and use
   it repeatedly without having to re-write the same content over and over again.
   If editing such a file, keep in mind that it should be
-  <I
+  <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >generic</I
+></SPAN
 >. That is the purpose; so it can be used in varying 
   contexts without additional modifications.
  </P
@@ -735,24 +775,30 @@ BORDER="0"
 ><TBODY
 ><TR
 ><TD
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >p-version</I
+></SPAN
 >: the <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > 
     version string, e.g. <SPAN
 CLASS="QUOTE"
->"2.9.20"</SPAN
+>"3.0.0"</SPAN
 >.
    </TD
 ></TR
 ><TR
 ><TD
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >p-status</I
+></SPAN
 >: the project status, either 
     <SPAN
 CLASS="QUOTE"
@@ -768,9 +814,12 @@ CLASS="QUOTE"
 ></TR
 ><TR
 ><TD
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >p-not-stable</I
+></SPAN
 >: use to conditionally include 
     text in <SPAN
 CLASS="QUOTE"
@@ -783,17 +832,23 @@ CLASS="QUOTE"
 ></TR
 ><TR
 ><TD
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >p-stable</I
+></SPAN
 >: just the opposite.
    </TD
 ></TR
 ><TR
 ><TD
->    <I
+>    <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >p-text</I
+></SPAN
 >: this doc is only generated as text.
    </TD
 ></TR
@@ -816,6 +871,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -827,6 +883,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="cvs.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -835,6 +892,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -843,6 +901,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="coding.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

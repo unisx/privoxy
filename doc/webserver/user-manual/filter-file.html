@@ -4,9 +4,10 @@
 >The Filter File</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 2.9.20 User Manual"
+TITLE="Privoxy 3.0.0 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Actions Files"
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -35,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 2.9.20 User Manual</TH
+>Privoxy 3.0.0 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="actions-file.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="templates.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,9 +73,7 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="FILTER-FILE"
->9. The Filter File</A
-></H1
+NAME="FILTER-FILE">9. The Filter File</H1
 ><P
 > All text substitutions that can be invoked through the
  <TT
@@ -118,34 +120,52 @@ CLASS="QUOTE"
 HREF="actions-file.html"
 >actions files</A
 >, the
- filter file is organized in sections, which are called <I
+ filter file is organized in sections, which are called <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >filters</I
+></SPAN
 >
  here. Each filter consists of a heading line, that starts with the
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >keyword</I
+></SPAN
 > <TT
 CLASS="LITERAL"
 >FILTER:</TT
 >, followed by
- the filter's <I
+ the filter's <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >name</I
+></SPAN
 >, and a short (one line) 
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >description</I
+></SPAN
 > of what it does. Below that line
- come the <I
+ come the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >jobs</I
+></SPAN
 >, i.e. lines that define the actual
  text substitutions. By convention, the name of a filter
- should describe what the filter <I
+ should describe what the filter <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >eliminates</I
+></SPAN
 >. The
  comment is used in the <A
 HREF="http://config.privoxy.org/"
@@ -253,9 +273,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN3013"
->9.1. Filter File Tutorial</A
-></H2
+NAME="AEN3013">9.1. Filter File Tutorial</H2
 ><P
 > Now, let's complete our <SPAN
 CLASS="QUOTE"
@@ -285,9 +303,12 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> But wait! Didn't the comment say that <I
+> But wait! Didn't the comment say that <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >all</I
+></SPAN
 > occurrences
  of <SPAN
 CLASS="QUOTE"
@@ -384,9 +405,12 @@ CLASS="QUOTE"
  matches <SPAN
 CLASS="QUOTE"
 >"&#60;script"</SPAN
->, followed by <I
+>, followed by <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >any</I
+></SPAN
 > text, i.e.
  it matches the whole page, from the start of the first &#60;script&#62; tag.</P
 ><P
@@ -398,18 +422,24 @@ CLASS="LITERAL"
 CLASS="QUOTE"
 >"document.referrer"</SPAN
 >. The dot needed to
- be <I
+ be <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >escaped</I
+></SPAN
 >, i.e. preceded by a backslash, to take away its
  special meaning as a joker, and make it just a regular dot. So far, the meaning is:
  Match from the start of the first &#60;script&#62; tag in a the page, up to, and including,
  the text <SPAN
 CLASS="QUOTE"
 >"document.referrer"</SPAN
->, if <I
+>, if <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >both</I
+></SPAN
 > are present
  in the page (and appear in that order).</P
 ><P
@@ -448,9 +478,12 @@ CLASS="QUOTE"
  text in between <SPAN
 CLASS="QUOTE"
 >"&#60;script"</SPAN
-> and the <I
+> and the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >first</I
+></SPAN
 > occurrence
  of <SPAN
 CLASS="QUOTE"
@@ -459,9 +492,12 @@ CLASS="QUOTE"
 CLASS="LITERAL"
 >.*</TT
 > will
- only span the text up to the <I
+ only span the text up to the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >first</I
+></SPAN
 > <SPAN
 CLASS="QUOTE"
 >"&#60;/script&#62;"</SPAN
@@ -506,9 +542,12 @@ CLASS="LITERAL"
  <TT
 CLASS="LITERAL"
 >"Not Your Business!"</TT
-> (<I
+> (<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >including</I
+></SPAN
 >
  the quotation marks!), followed by the text remembered as <TT
 CLASS="LITERAL"
@@ -584,9 +623,12 @@ CLASS="LITERAL"
 > construct means: <SPAN
 CLASS="QUOTE"
 >"a single
- <I
+ <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >or</I
+></SPAN
 > a double quote"</SPAN
 >. Finally, <TT
 CLASS="LITERAL"
@@ -596,13 +638,19 @@ CLASS="LITERAL"
 CLASS="LITERAL"
 >$1</TT
 > above,
- with the difference that in the <I
+ with the difference that in the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >pattern</I
+></SPAN
 >, a backslash indicates
- a backreference, whereas in the <I
+ a backreference, whereas in the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >substitute</I
+></SPAN
 >, it's the dollar.</P
 ><P
 > So what does this job do? It replaces assignments of single- or double-quoted
@@ -637,9 +685,12 @@ HREF="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Even
 TARGET="_top"
 >OnUnload
  event binding</A
-> in the HTML DOM was a <I
+> in the HTML DOM was a <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >CRIME</I
+></SPAN
 >.
  When I close a browser window, I want it to close and die. Basta.
  This job replaces the <SPAN
@@ -748,6 +799,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -759,6 +811,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="actions-file.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -767,6 +820,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -775,6 +829,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="templates.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

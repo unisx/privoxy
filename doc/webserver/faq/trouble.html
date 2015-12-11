@@ -4,7 +4,8 @@
 >Troubleshooting</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="misc.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="contact.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,21 +73,17 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="TROUBLE"
->5. Troubleshooting</A
-></H1
+NAME="TROUBLE">5. Troubleshooting</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN718"
->5.1. I just upgraded and am getting <SPAN
+NAME="AEN755">5.1. I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
 >
-with every web page?</A
-></H3
+with every web page?</H3
 ><P
 > Either <SPAN
 CLASS="APPLICATION"
@@ -128,10 +128,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN731"
->5.2. I just added a new rule, but the steenkin ad is 
-still getting through. How?</A
-></H3
+NAME="AEN768">5.2. I just added a new rule, but the steenkin ad is 
+still getting through. How?</H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
  held in the browser's cache for some time, so it will be displayed without
@@ -155,13 +153,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BADSITE"
->5.3. One of my favorite sites does not work with <SPAN
+NAME="BADSITE">5.3. One of my favorite sites does not work with <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >.
-What can I do?</A
-></H3
+What can I do?</H3
 ><P
 > First verify that it is indeed a <SPAN
 CLASS="APPLICATION"
@@ -234,13 +230,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="DUN"
->5.4. After installing <SPAN
+NAME="DUN">5.4. After installing <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >, I have to log in
-every time I start IE. What gives?</A
-></H3
+every time I start IE. What gives?</H3
 ><P
 > This is a quirk that effects the installation of
  <SPAN
@@ -292,13 +286,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="FTP"
->5.5. I cannot connect to any FTP sites. <SPAN
+NAME="FTP">5.5. I cannot connect to any FTP sites. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
- seems to be blocking me.</A
-></H3
+ seems to be blocking me.</H3
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -316,13 +308,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="OSXIE"
->5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+NAME="OSXIE">5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> as the HTTP proxy.</A
-></H3
+> as the HTTP proxy.</H3
 ><P
 >  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
   network settings.  In order to change the HTTP proxy, open System
@@ -344,11 +334,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="OSXUNINSTALL"
->5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+NAME="OSXUNINSTALL">5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
- empty the trash.</A
-></H3
+ empty the trash.</H3
 ><P
 >  Just dragging the <SPAN
 CLASS="APPLICATION"
@@ -374,12 +362,74 @@ CLASS="APPLICATION"
   from the desktop should make it appear empty again.
  </P
 ></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="BLANKPAGE">5.8. I get a completely blank page at one site. <SPAN
+CLASS="QUOTE"
+>"View Source"</SPAN
+>
+ shows only: <SPAN
+CLASS="MARKUP"
+>&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
+>.</H3
+><P
+>  This is often the result of a webserver using
+  <SPAN
+CLASS="APPLICATION"
+>PHP</SPAN
+> that mishandles the request
+  <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> sends to not compress the content 
+  (a <SPAN
+CLASS="APPLICATION"
+>PHP</SPAN
+> bug).
+ </P
+><P
+>  In a default configuration, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> requests all
+  data be sent <SPAN
+CLASS="QUOTE"
+>"uncompressed"</SPAN
+>. This is required for the page 
+  filtering and other magic to work. In some rare cases, the browser and 
+  webserver miscommunicate and the result is a totally blank page. The 
+  suggested work around is to selectively turn off this feature for sites 
+  that exhibit such behavior. Example section for <TT
+CLASS="FILENAME"
+>user.action</TT
+>:
+ </P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>   # Make exceptions for ill-behaved sites:                                     
+   #                                                                    
+   {-prevent-compression}                                               
+    .example.com</PRE
+></TD
+></TR
+></TABLE
+></DIV
 ></DIV
 ><DIV
 CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -391,6 +441,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="misc.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -399,6 +450,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -407,6 +459,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="contact.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

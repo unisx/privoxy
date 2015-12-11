@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "2.9.20">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.0">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -24,7 +24,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 1.61.2.15 2002/08/10 11:34:22 oes Exp $
+ $Id: faq.sgml,v 1.61.2.19 2002/08/25 23:31:56 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -72,7 +72,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 1.61.2.15 2002/08/10 11:34:22 oes Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 1.61.2.19 2002/08/25 23:31:56 hal9 Exp $</pubdate>
 
 <!--
 
@@ -115,6 +115,10 @@ Hal.
  <ulink url="http://www.privoxy.org/">Privoxy</ulink>.
  It can't and doesn't replace the
  <ulink url="../user-manual/index.html"><citetitle>User Manual</citetitle></ulink>.
+<!-- 
+ This works, at least in some situtations:
+ Test: <ulink url="privoxy-user-manual.pdf"><citetitle>User Manual</citetitle></ulink>.
+--> 
  </para>
 
 <!-- Include privoxy.sgml boilerplate: -->
@@ -564,7 +568,7 @@ way to do this?</title>
 
 <para>
  Actions files are just text files in a special syntax and can be edited
- with a text editor. The probably easiest way is to access
+ with a text editor. But probably the easiest way is to access
  <application>Privoxy</application>'s user interface with your web browser
  at <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>
  (Shortcut: <ulink url="http://p.p/">http://p.p/</ulink>) and then select
@@ -1033,6 +1037,17 @@ proxies like <application>Squid</application>?</title>
 </para>
 </sect2>
 
+<sect2 renderas="sect3" id="port-80">
+<title>Can I just set <application>Privoxy</application> to use port 80
+and thus avoid individual browser configuration?</title>
+
+<para>
+ No, its more complicated than that. This only works with special kinds 
+ of proxies known as <quote>transparent</quote> proxies (see below).
+</para>
+
+</sect2>
+
 <sect2 renderas="sect3" id="transparent">
 <title>Can <application>Privoxy</application> run as a <quote>transparent
 </quote> proxy?</title>
@@ -1424,6 +1439,52 @@ out of the picture?</title>
 </para>
 </sect2>
 
+<sect2 renderas="sect3" id="crunch">
+<title>My logs show <application>Privoxy</application> <quote>crunches</quote> 
+ads, but also its own CGI pages. What is a <quote>crunch</quote>?</title>
+<para>
+ A <quote>crunch</quote> simply means <application>Privoxy</application> intercepted 
+ <emphasis>something</emphasis>, nothing more. Often this is indeed ads or
+ banners, but <application>Privoxy</application> uses the same mechanism for
+ trapping requests for its own internal pages. For instance, a request for
+ <application>Privoxy's</application> configuration page at: <ulink
+ url="http://config.privoxy.org">http://config.privoxy.org</ulink>, is
+ intercepted (i.e. it does not go out to the 'net), and the familiar CGI
+ configuration is returned to the browser, and the log consequently will show
+ a <quote>crunch</quote>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="downloads">
+<title>Can <application>Privoxy</application> effect files that I download
+from a webserver? FTP server?</title>
+<para>
+ From the webserver's perspective, there is no difference between
+ viewing a document (i.e. a page), and downloading a file. The same is true of
+ <application>Privoxy</application>. If there is a match for a <literal><ulink
+ url="../user-manual/actions-file.html#BLOCK">block</ulink></literal> pattern,
+ it will still be blocked, and of course this is obvious. Filtering is
+ potentially more of a concern since the results are not always so obvious.
+</para>
+<para>
+ <application>Privoxy</application> knows the differences in files according
+ to the <quote>Document Type</quote> as reported by the webserver. If this is
+ reported accurately (e.g. <quote>application/zip</quote> for a zip archive),
+ then <application>Privoxy</application> knows to ignore these where
+ appropriate. It is possible, however, that documents that are of an unknown
+ type (generally assumed to be <quote>text/plain</quote>) will be filtered, as
+ will those that might be incorrectly reported by the webserver. If such a
+ file is a downloaded file that is intended to be saved to disk, then any
+ content that might have been altered by filtering, will be saved too, for
+ these (probably very rare) cases.
+</para>
+<para>
+ <application>Privoxy</application> does not do FTP at all, only HTTP 
+  protocols.
+</para>
+</sect2>
+
+
 <sect2 renderas="sect3" id="seealso">
 <title>Where can I find more information about <application>Privoxy</application>
 and related issues?</title>
@@ -1637,6 +1698,32 @@ every time I start IE. What gives?</title>
 </sect2>
 
 
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="blankpage">
+<title>I get a completely blank page at one site. <quote>View Source</quote>
+ shows only: <markup><![CDATA[<html><body></body></html>]]></markup>.</title>
+ <para>
+  This is often the result of a webserver using
+  <application>PHP</application> that mishandles the request
+  <application>Privoxy</application> sends to not compress the content 
+  (a <application>PHP</application> bug).
+ </para>
+ <para>
+  In a default configuration, <application>Privoxy</application> requests all
+  data be sent <quote>uncompressed</quote>. This is required for the page 
+  filtering and other magic to work. In some rare cases, the browser and 
+  webserver miscommunicate and the result is a totally blank page. The 
+  suggested work around is to selectively turn off this feature for sites 
+  that exhibit such behavior. Example section for <filename>user.action</filename>:
+ </para>
+ <screen>
+   # Make exceptions for ill-behaved sites:                                     
+   #                                                                    
+   {-prevent-compression}                                               
+    .example.com</screen>
+</sect2>
+
+
 </sect1>
 <!--
 </sect1>
@@ -1729,6 +1816,20 @@ FIXME: Commented out until we have something to put here. HB 03/18/02.
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 $Log: faq.sgml,v $
+Revision 1.61.2.19  2002/08/25 23:31:56  hal9
+Fix one grammatical error. Add brief FAQ relating to tranparent proxies (ie
+port 80 setting). Add FAQ on effects of Privoxy on downloaded files
+(especially filtering).
+
+Revision 1.61.2.18  2002/08/14 16:39:37  hal9
+Fix wrong tag on FAQ addition.
+
+Revision 1.61.2.17  2002/08/14 00:01:18  hal9
+Add a crunch FAQ.
+
+Revision 1.61.2.16  2002/08/13 00:10:38  hal9
+Add faq to troubleshooting re: blank page syndrome, ie {-prevent-compression}.
+
 Revision 1.61.2.15  2002/08/10 11:34:22  oes
 Add disclaimer about probably being out-of-date
 

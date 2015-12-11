@@ -31,6 +31,9 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list,v $
+#    Revision 1.26.2.2  2002/08/23 02:22:53  hal9
+#    Fix a perl brain fart with <li> in comments.
+#
 #    Revision 1.26  2002/05/23 23:37:25  oes
 #    Nit
 #
@@ -332,7 +335,7 @@ function a_p(section)
     <tr>
       <td class="box">
         <h2>More Privoxy:</h2>
-        <ul>@menu@</ul>
+        <ul>@menu@<li><a href="@user-manual@">Documentation</a></li></ul>
       </td>
     </tr>
 

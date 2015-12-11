@@ -4,7 +4,8 @@
 >Privoxy Frequently Asked Questions</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="NEXT"
 TITLE="General Information"
 HREF="general.html"><LINK
@@ -25,9 +26,7 @@ CLASS="TITLEPAGE"
 ><H1
 CLASS="TITLE"
 ><A
-NAME="AEN2"
->Privoxy Frequently Asked Questions</A
-></H1
+NAME="AEN2">Privoxy Frequently Asked Questions</H1
 ><P
 CLASS="PUBDATE"
 > <SUB
@@ -44,14 +43,12 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.15.2.6 2002/08/10 15:31:15 oes Exp $<BR></P
+>$Id: index.html,v 1.15.2.7 2002/08/25 23:41:33 hal9 Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
 ><A
-NAME="AEN9"
-></A
-><P
+NAME="AEN9"><P
 ></P
 ><P
 > This FAQ gives quick answers to frequently asked  questions about
@@ -69,6 +66,7 @@ CLASS="CITETITLE"
 >User Manual</I
 ></A
 >.
+ 
  </P
 ><P
 > <SPAN
@@ -98,7 +96,7 @@ CLASS="APPLICATION"
 > (tm).</P
 ><P
 >  Please note that this document is constantly evolving. This copy represents
-  the state at the release of version 2.9.20.
+  the state at the release of version 3.0.0.
   You can find the latest version of the document at <A
 HREF="http://www.privoxy.org/faq/"
 TARGET="_top"
@@ -429,6 +427,15 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >3.17. <A
+HREF="configuration.html#PORT-80"
+>Can I just set <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to use port 80
+and thus avoid individual browser configuration?</A
+></DT
+><DT
+>3.18. <A
 HREF="configuration.html#TRANSPARENT"
 >Can <SPAN
 CLASS="APPLICATION"
@@ -449,7 +456,7 @@ HREF="misc.html"
 ><DL
 ><DT
 >4.1. <A
-HREF="misc.html#AEN523"
+HREF="misc.html#AEN528"
 >How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -485,7 +492,7 @@ HREF="misc.html#IP"
 ></DT
 ><DT
 >4.7. <A
-HREF="misc.html#AEN583"
+HREF="misc.html#AEN588"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -493,13 +500,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.8. <A
-HREF="misc.html#AEN594"
+HREF="misc.html#AEN599"
 >Might some things break because header information or
 content is being altered?</A
 ></DT
 ><DT
 >4.9. <A
-HREF="misc.html#AEN605"
+HREF="misc.html#AEN610"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -511,7 +518,7 @@ speed up web browsing?</A
 ></DT
 ><DT
 >4.10. <A
-HREF="misc.html#AEN615"
+HREF="misc.html#AEN620"
 >What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -519,13 +526,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.11. <A
-HREF="misc.html#AEN621"
+HREF="misc.html#AEN626"
 >I have large empty spaces / a checkerboard pattern now where
 ads used to be. Why?</A
 ></DT
 ><DT
 >4.12. <A
-HREF="misc.html#AEN626"
+HREF="misc.html#AEN631"
 >How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -533,7 +540,7 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.13. <A
-HREF="misc.html#AEN637"
+HREF="misc.html#AEN642"
 ><SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -565,6 +572,30 @@ out of the picture?</A
 ></DT
 ><DT
 >4.16. <A
+HREF="misc.html#CRUNCH"
+>My logs show <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> <SPAN
+CLASS="QUOTE"
+>"crunches"</SPAN
+> 
+ads, but also its own CGI pages. What is a <SPAN
+CLASS="QUOTE"
+>"crunch"</SPAN
+>?</A
+></DT
+><DT
+>4.17. <A
+HREF="misc.html#DOWNLOADS"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> effect files that I download
+from a webserver? FTP server?</A
+></DT
+><DT
+>4.18. <A
 HREF="misc.html#SEEALSO"
 >Where can I find more information about <SPAN
 CLASS="APPLICATION"
@@ -583,7 +614,7 @@ HREF="trouble.html"
 ><DL
 ><DT
 >5.1. <A
-HREF="trouble.html#AEN718"
+HREF="trouble.html#AEN755"
 >I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
@@ -592,7 +623,7 @@ with every web page?</A
 ></DT
 ><DT
 >5.2. <A
-HREF="trouble.html#AEN731"
+HREF="trouble.html#AEN768"
 >I just added a new rule, but the steenkin ad is 
 still getting through. How?</A
 ></DT
@@ -639,6 +670,18 @@ HREF="trouble.html#OSXUNINSTALL"
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
  empty the trash.</A
 ></DT
+><DT
+>5.8. <A
+HREF="trouble.html#BLANKPAGE"
+>I get a completely blank page at one site. <SPAN
+CLASS="QUOTE"
+>"View Source"</SPAN
+>
+ shows only: <SPAN
+CLASS="MARKUP"
+>&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
+>.</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -684,12 +727,12 @@ HREF="copyright.html"
 ><DL
 ><DT
 >7.1. <A
-HREF="copyright.html#AEN841"
+HREF="copyright.html#AEN891"
 >License</A
 ></DT
 ><DT
 >7.2. <A
-HREF="copyright.html#AEN857"
+HREF="copyright.html#AEN907"
 >History</A
 ></DT
 ></DL
@@ -702,6 +745,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -723,6 +767,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="general.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

@@ -15,14 +15,15 @@ Current Project Contributors:
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
  Hal Burgiss (docs)
+ Karsten Hopp (Red Hat)
  Alexander Lazic
  Gábor Lipták
  Guy
  Haroon Rafique
- Roland Rosenfeld
- Georg Sauthoff
+ Roland Rosenfeld (Debian)
+ Georg Sauthoff (Gentoo)
  David Schmidt (OS/2, Mac OSX ports)
- Joerg Strohmayer
+ Joerg Strohmayer (Amiga)
  Sarantis Paskalis
 
 Based in part on code originally developed by:
@@ -42,6 +43,7 @@ suggestions. These include (in alphabetical order):
  Peter E
  Aaron Hamid
  Magnus Holmgren
+ Daniel Leite
  Paul Lieverse
  Roberto Ragusa
  Maynard Riley

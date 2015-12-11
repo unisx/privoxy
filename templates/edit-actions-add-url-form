@@ -31,6 +31,9 @@
 #
 # Revisions   :
 #    $Log: edit-actions-add-url-form,v $
+#    Revision 1.14.2.2  2002/08/23 02:22:53  hal9
+#    Fix a perl brain fart with <li> in comments.
+#
 #    Revision 1.14  2002/05/21 19:10:30  oes
 #     - Added jump target and button style to "cancel" link
 #     - Fixed title
@@ -171,7 +174,7 @@
     <tr>
       <td class="box">
         <h2>More Privoxy:</h2>
-        <ul>@menu@</ul>
+        <ul>@menu@<li><a href="@user-manual@">Documentation</a></li></ul>
       </td>
     </tr>
 

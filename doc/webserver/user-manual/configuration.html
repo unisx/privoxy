@@ -4,9 +4,10 @@
 >Privoxy Configuration</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 2.9.20 User Manual"
+TITLE="Privoxy 3.0.0 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Starting Privoxy"
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -35,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 2.9.20 User Manual</TH
+>Privoxy 3.0.0 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="startup.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="config.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,12 +73,10 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="CONFIGURATION"
->6. <SPAN
+NAME="CONFIGURATION">6. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> Configuration</A
-></H1
+> Configuration</H1
 ><P
 >  All <SPAN
 CLASS="APPLICATION"
@@ -92,12 +94,10 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN579"
->6.1. Controlling <SPAN
+NAME="AEN579">6.1. Controlling <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with Your Web Browser</A
-></H2
+> with Your Web Browser</H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -123,9 +123,10 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-> <H3
+> <H2
 CLASS="BRIDGEHEAD"
->    Privoxy Menu</H3
+><A
+NAME="AEN588">    Privoxy Menu</H2
 ><P
 ></P
 ><TABLE
@@ -173,6 +174,15 @@ TARGET="_top"
 HREF="http://config.privoxy.org/toggle"
 TARGET="_top"
 >Toggle Privoxy on or off</A
+>
+ </TD
+></TR
+><TR
+><TD
+>          &#9642;  <A
+HREF="http://www.privoxy.org/3.0.0/user-manual/"
+TARGET="_top"
+>Documentation</A
 >
  </TD
 ></TR
@@ -234,9 +244,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="CONFOVERVIEW"
->6.2. Configuration Files Overview</A
-></H2
+NAME="CONFOVERVIEW">6.2. Configuration Files Overview</H2
 ><P
 > For Unix, *BSD and Linux, all configuration files are located in
  <TT
@@ -247,9 +255,7 @@ CLASS="FILENAME"
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> executable.  The name
- and number of configuration files has changed from previous versions, and is
- subject to change as development progresses.</P
+> executable. </P
 ><P
 > The installed defaults provide a reasonable starting point, though 
  some settings may be aggressive by some standards. For the time being, the
@@ -405,18 +411,13 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"wake up"</SPAN
 > requests
- must obviously be sent to the <I
+ must obviously be sent to the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >old</I
+></SPAN
 > listening address.</P
-><P
-> While under development, the configuration content is subject to change. 
- The below documentation may not be accurate by the time you read this. 
- Also, what constitutes a <SPAN
-CLASS="QUOTE"
->"default"</SPAN
-> setting, may change, so 
- please check all your configuration files on important issues.</P
 ></DIV
 ></DIV
 ><DIV
@@ -424,6 +425,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -435,6 +437,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="startup.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -443,6 +446,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -451,6 +455,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="config.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR

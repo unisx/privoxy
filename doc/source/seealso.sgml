@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: seealso.sgml,v 1.9 2002/05/17 14:16:26 oes Exp $
+ $Id: seealso.sgml,v 1.9.2.1 2002/08/23 02:59:34 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -64,6 +64,12 @@
  <simplelist>
   <member>
    <ulink url="javascript:w=Math.floor(screen.width/2);h=Math.floor(screen.height*0.9);void(window.open('http://www.privoxy.org/actions','Feedback','screenx='+w+',width='+w+',height='+h+',scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">http://www.privoxy.org/actions/</ulink>, to submit <quote>misses</quote> to the developers. 
+  </member>
+ </simplelist>
+ <simplelist>
+  <member>
+   <ulink url="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/</ulink>, cool
+   and fun ideas from <application>Privoxy</application> users.
   </member>
  </simplelist>
  <simplelist>

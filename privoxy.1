@@ -3,15 +3,15 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "PRIVOXY" "1" "10 August 2002" "Privoxy 2.9.20 beta" ""
+.TH "PRIVOXY" "1" "26 August 2002" "Privoxy 3.0.0" ""
 .SH NAME
 privoxy \- Privacy Enhancing Proxy
 .SH SYNOPSIS
 
-\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB\fIconfigfile\fB\fR ]\fB(UNIX)\fR
+\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB\fIconfigfile\fB\fR ]\fB (UNIX)\fR
 
 
-\fBprivoxy.exe\fR [\fB\fIconfigfile\fB\fR ]\fB(Windows)\fR
+\fBprivoxy.exe\fR [\fB\fIconfigfile\fB\fR ]\fB (Windows)\fR
 
 .SH "OPTIONS"
 .PP
@@ -31,7 +31,7 @@ leader, don't detach from controlling tty, and do all logging there.
 \fB--pidfile \fIpidfile\fB\fR
 On startup, write the process ID to \fIpidfile\fR.
 Delete the \fIpidfile\fR on exit.
-Failiure to create or delete the \fIpidfile\fR
+Failure to create or delete the \fIpidfile\fR
 is non-fatal. If no \fB--pidfile\fR option is given, no PID file will be used.
 .TP
 \fB--user \fIuser[.group]\fB\fR
@@ -93,8 +93,7 @@ these files are in the same directory as the \fBPrivoxy\fR
 executable.
 .PP
 The name and number of configuration files has changed from previous
-versions, and is subject to change as development
-progresses. In fact, the configuration itself is changed  and  much more
+versions. In fact, the configuration itself is changed  and  much more
 sophisticated. See the user-manual for a complete
 explanation of all configuration options and general usage, and notes for 
 upgrading from \fBJunkbuster\fR and earlier \fBPrivoxy\fR
@@ -228,9 +227,6 @@ config file changes by \fBSIGHUP\fR -- it will detect them
 automatically. 
 .SH "NOTES"
 .PP
-This is a beta version of \fBPrivoxy\fR. Not 
-all features are well tested.
-.PP
 Please see the \fIUser Manual\fR on how to contact the
 developers for feature requests, reporting problems, and other questions.
 .SH "SEE ALSO"
@@ -254,6 +250,9 @@ the web-based user interface. \fBPrivoxy\fR must be
 running for this to work. Shortcut: http://p.p/
 
 http://www.privoxy.org/actions/, to submit ``misses'' to the developers. 
+
+http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/, cool
+and fun ideas from \fBPrivoxy\fR users.
 
 http://www.junkbusters.com/ht/en/cookies.html,
 an explanation how cookies are used to track web users.
@@ -284,14 +283,15 @@ the \fBPrivoxy\fR developer manual.
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
  Hal Burgiss (docs)
+ Karsten Hopp (Red Hat)
  Alexander Lazic
  Gábor Lipták
  Guy
  Haroon Rafique
- Roland Rosenfeld
- Georg Sauthoff
+ Roland Rosenfeld (Debian)
+ Georg Sauthoff (Gentoo)
  David Schmidt (OS/2, Mac OSX ports)
- Joerg Strohmayer
+ Joerg Strohmayer (Amiga)
  Sarantis Paskalis
 .fi
 .SH "COPYRIGHT AND LICENSE"

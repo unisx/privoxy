@@ -4,7 +4,8 @@
 >General Information</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -27,6 +28,7 @@ ALINK="#0000FF"
 ><DIV
 CLASS="NAVHEADER"
 ><TABLE
+SUMMARY="Header navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -44,6 +46,7 @@ ALIGN="left"
 VALIGN="bottom"
 ><A
 HREF="index.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -57,6 +60,7 @@ ALIGN="right"
 VALIGN="bottom"
 ><A
 HREF="installation.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
@@ -69,20 +73,16 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="GENERAL"
->1. General Information</A
-></H1
+NAME="GENERAL">1. General Information</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="NEWJB"
->1.1. What is this new version of <SPAN
+NAME="NEWJB">1.1. What is this new version of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->?</A
-></H3
+>?</H3
 ><P
 > In the beginning, there was the
  <A
@@ -159,7 +159,7 @@ TARGET="_top"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >, whose first
- stable release, 3.0, is due late summer or early fall 2002. 
+ stable release, 3.0, was released August, 2002. 
  </P
 ></DIV
 ><DIV
@@ -167,12 +167,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN45"
->1.2. Why <SPAN
+NAME="AEN45">1.2. Why <SPAN
 CLASS="QUOTE"
 >"Privoxy"</SPAN
->? Why a name change at all?</A
-></H3
+>? Why a name change at all?</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -180,17 +178,23 @@ CLASS="APPLICATION"
 > is the 
  <SPAN
 CLASS="QUOTE"
->"<I
+>"<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >Privacy Enhancing Proxy</I
+></SPAN
 >"</SPAN
 >. Also, its content
  modification and junk suppression allow you to browse your
  <SPAN
 CLASS="QUOTE"
->"<I
+>"<SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >private</I
+></SPAN
 > edition"</SPAN
 > of the web.</P
 ><P
@@ -229,23 +233,20 @@ CLASS="APPLICATION"
 ><P
 > The developers also believed that there are so many changes from the original 
  code, that it was time to make a clean break from the past and make 
- a name in their own right, especially now with the pending
- release of version 3.0.</P
+ a name in their own right.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="DIFFERS"
->1.3. How does <SPAN
+NAME="DIFFERS">1.3. How does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > differ
 from the old <SPAN
 CLASS="APPLICATION"
 >Junkbuster?</SPAN
-></A
 ></H3
 ><P
 > <SPAN
@@ -396,16 +397,14 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="PROXYMORON"
->1.4. What is a <SPAN
+NAME="PROXYMORON">1.4. What is a <SPAN
 CLASS="QUOTE"
 >"proxy"</SPAN
 >? How does
 <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> work?</A
-></H3
+> work?</H3
 ><P
 >  A web proxy is a service, based on a software such as <SPAN
 CLASS="APPLICATION"
@@ -438,22 +437,23 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="WHATSANAD"
->1.5. How does <SPAN
+NAME="WHATSANAD">1.5. How does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > know what is
-an ad, and what is not?</A
-></H3
+an ad, and what is not?</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >'s approach to blocking ads is twofold:</P
 ><P
-> First, there are certain patterns in the <I
+> First, there are certain patterns in the <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >locations</I
+></SPAN
 > (URLs)
  of banner images. This applies to both the path (you wouldn't guess how many
  web sites serve their banners from a directory called <SPAN
@@ -472,9 +472,12 @@ TARGET="_top"
  patterns</A
 > to sort out and block the requests for banners.</P
 ><P
-> Second, banners tend to come in certain <I
+> Second, banners tend to come in certain <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >sizes</I
+></SPAN
 >. But you
  can't tell the size of an image by its URL without downloading it, and if you
  do, it's too late to save bandwidth. Therefore, <SPAN
@@ -493,13 +496,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN136"
->1.6. Can <SPAN
+NAME="AEN136">1.6. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > make mistakes? 
-This does not sound very scientific.</A
-></H3
+This does not sound very scientific.</H3
 ><P
 > Actually, it's a black art ;-) And yes, it is always possible to have a broad
  rule accidentally block or change something by mistake. There is a good chance
@@ -523,8 +524,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BROWSERS2"
->1.7. My browser does the same things as
+NAME="BROWSERS2">1.7. My browser does the same things as
 <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -532,12 +532,14 @@ CLASS="APPLICATION"
 <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> at all?</A
-></H3
+> at all?</H3
 ><P
->  Modern browsers do indeed have <I
+>  Modern browsers do indeed have <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >some</I
+></SPAN
 > of the same
   functionality as <SPAN
 CLASS="APPLICATION"
@@ -561,10 +563,8 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="LICENSE"
->1.8. Is there is a license or fee? What about a 
-warranty? Registration?</A
-></H3
+NAME="LICENSE">1.8. Is there is a license or fee? What about a 
+warranty? Registration?</H3
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -586,17 +586,23 @@ CLASS="FILENAME"
   that should be included.
  </P
 ><P
->  There is <I
+>  There is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >no warranty</I
+></SPAN
 > of any kind, expressed, implied or otherwise.
   That is something that would cost real money ;-) There is no registration either.
   <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> really is <I
+> really is <SPAN
+CLASS="emphasis"
+><I
 CLASS="EMPHASIS"
 >free</I
+></SPAN
 >
   in every respect!
  </P
@@ -606,17 +612,13 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="JOINTEAM"
->1.9. I would like to help you, what do I do?</A
-></H3
+NAME="JOINTEAM">1.9. I would like to help you, what do I do?</H3
 ><DIV
 CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="JOINTEAM-MONEY"
->1.9.1. Money Money Money</A
-></H4
+NAME="JOINTEAM-MONEY">1.9.1. Money Money Money</H4
 ><P
 > We, of course, welcome donations and could use money for domain registering,
  buying software to test <SPAN
@@ -635,9 +637,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="JOINTEAM-SOFTWARE"
->1.9.2. Software</A
-></H4
+NAME="JOINTEAM-SOFTWARE">1.9.2. Software</H4
 ><P
 > If you are a vendor of a web-related software like a browser, web server
  or proxy, and would like us to ensure that <SPAN
@@ -653,9 +653,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="JOINTEAM-WORK"
->1.9.3. You want to work with us?</A
-></H4
+NAME="JOINTEAM-WORK">1.9.3. You want to work with us?</H4
 ><P
 >   Well, helping the team is always a good idea. We welcome new developers,
    packaging gurus or documentation writers. Simply <A
@@ -688,6 +686,7 @@ CLASS="NAVFOOTER"
 ><HR
 ALIGN="LEFT"
 WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
 WIDTH="100%"
 BORDER="0"
 CELLPADDING="0"
@@ -699,6 +698,7 @@ ALIGN="left"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="P"
 >Prev</A
 ></TD
 ><TD
@@ -707,6 +707,7 @@ ALIGN="center"
 VALIGN="top"
 ><A
 HREF="index.html"
+ACCESSKEY="H"
 >Home</A
 ></TD
 ><TD
@@ -715,6 +716,7 @@ ALIGN="right"
 VALIGN="top"
 ><A
 HREF="installation.html"
+ACCESSKEY="N"
 >Next</A
 ></TD
 ></TR
