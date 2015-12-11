@@ -1,0 +1,130 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/newfeatures.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: newfeatures.sgml,v 1.10 2002/05/15 03:54:29 hal9 Exp $
+
+ Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  user-manual
+  faq
+
+-->
+<para>
+ <itemizedlist>
+
+<!--
+ <listitem>
+  <para>
+  FIXME: complete the list of features. change the order: most important
+  features to the top of the list. prefix new features with "NEW".
+  </para>
+ </listitem> 
+-->
+
+ <listitem>
+  <para>
+   Integrated browser based configuration and control utility at <ulink
+   url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>
+   (shortcut: <ulink url="http://p.p/">http://p.p/</ulink>). Browser-based
+   tracing of rule and filter effects. Remote toggling.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Web page content filtering (removes banners based on size,
+   invisible <quote>web-bugs</quote>, JavaScript and HTML annoyances, pop-up windows, etc.)
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Modularized configuration that allows for standard settings and
+   user settings to reside in separate files, so that installing updated
+   actions files won't overwrite individual user settings.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   HTTP/1.1 compliant (but not all optional 1.1 features are supported).
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Support for Perl Compatible Regular Expressions in the configuration files, and 
+   generally a more sophisticated and flexible configuration syntax over
+   previous versions.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Improved cookie management features (e.g. session based cookies).
+  </para>
+</listitem> 
+
+ <listitem>
+  <para>
+   GIF de-animation. 
+  </para>
+ </listitem> 
+ 
+ <listitem>
+  <para>
+   Bypass many click-tracking scripts (avoids script redirection).
+  </para>
+ </listitem> 
+ 
+ <listitem>
+  <para>
+   Multi-threaded (POSIX and native threads).
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   User-customizable HTML templates for all proxy-generated pages (e.g. "blocked" page).
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Auto-detection and re-reading of config file changes.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   Improved signal handling, and a true daemon mode (Unix).
+  </para>
+</listitem> 
+
+ <listitem>
+  <para>
+   Every feature now controllable on a per-site or per-location basis, configuration
+   more powerful and versatile over-all.
+  </para>
+</listitem> 
+
+ <listitem>
+  <para>
+   Many smaller new features added, limitations and bugs removed, and security holes fixed.
+  </para>
+</listitem> 
+
+ </itemizedlist>
+</para>

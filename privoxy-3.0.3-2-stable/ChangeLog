@@ -1,0 +1,299 @@
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+*** Since 3.0.2 (to become Version 3.0.3 soon) ***
+
+- Fixed yet another two memory leaks. Process growth seems stopped now.
+- Further tightened security against malicious toggle-off links.
+- Excluded text/plain MIME types from filtering. This fixes a
+  couple of client-crashing, download corruption and
+  Privoxy performance issues, whose root cause lies in
+  web servers labelling content of unknown type as text/plain.
+- Assorted fixes for POSIX compliance, signal handling, graceful
+  termination, compiler warnings, OSX support, Win32 systray,
+  error logging, hostname wildcards, correct detection of NetBSD.
+- Workarounds for client (iTunes etc) and server (PHP < 4.2.3) bugs
+  including the notorious "blank page" problem.
+- Various filter improvements; most notably the unsolicited-popups
+  filter became less destructive     
+- Major revamp of the actions file
+	
+*** Version 3.0.2 ***
+
+- Fixed two memory leaks, one serious
+- Fixed bug in pcrs which could cause crashes with user-defined filters
+- Fixed bug in domain name matching
+- Assorted small fixes (Win32 menu, CGI URL editor, ..) 
+- Added basic support for the OPTIONS and TRACE http methods
+- Added workaround for Bug in Mac OSX that made Privoxy crash occasionally
+- Refined the default action file through >400 items of user feedback
+- Filter changes:
+  - Assorted refinements, optimizations and fixes in the js-annoyances,
+    img-reorder, banners-by-size, banners-by-link, webbugs, refresh-tags,
+    html-annoyances, content-cookies and fun filters
+  - Replaced filter "popups" by choice between two modes:
+    - "unsolicited-popups" tries to catch only the unsolicited ones
+    - "all-popups" tries to kill them all (as before)
+  - New filter "tiny-textforms" Help those tiny or hard-wrap textareas. 
+  - New filter "jumping-windows" that prevents windows from resizing
+    and moving themselves
+  - New filter "demoronizer" which fixes MS's abuse of std charsets
+    (common cases anyway).
+  - Replaced "nimda" with more general "ie-exploits" filter in which
+    all filters for exploits shall be collected
+- Improved cookie logging
+- Rewrote make install target. Added uninstall and install-strip
+  targets.
+- Fixed a potential (application-level, NOT OS-level!) security
+  problem involving remote toggling and action file manipulation
+  by mailicious websites.
+- Added ability to chroot (thanks to Sviatoslav Sviridov)
+- Added more action aliases for prehistoric action names
+- Add Slackware support to Makefile.
+
+*** Version 3.0  ***
+
+- Fixed Windows startmenu items, log window and tray icon menus.
+- Added warning for bogus install target
+- Added quicktime-kioskmode filter and improved frameset-borders
+- Updated default.action based on latest feedback
+- New PDF doc build process
+- Add a user contrib module to cvs: 
+  http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/
+
+*** Version 2.9.18  ***
+
+- Added workaround for IE bug that broke CGI interface
+- Bugfix: String actions now reliably editable through CGI interface
+- Three filters fixed (again!)
+- Assorted small fixes and doc enhancements
+
+*** Version 2.9.16  *** 
+
+- Major revamp of default.action to get rid of years of cruft.
+- Same for default.filter
+- Re-design and major improvements to the CGI editor interface.
+- Address spurious 'out of memory' error due to incorrect file permissions.
+- Impose buffer limits while reading client and server headers.
+- Better memory and CPU optimization.
+- Add Conectiva Linux package.
+- user-manual directive added to config for help links from within CGI
+  editor.
+- Multiple actions files can now be specified in config.
+- Actions files are changed to: default.action, standard.action, and 
+  user.action. user.action is for personal/local configuration.
+- The usual many small and miscellaneous bug and security fixes.
+
+*** Version 2.9.14 Beta *** 
+
+- Fix Solaris compile problem (gateway.h and filters.h)
+- Makefile fixes for Solaris, FreeBSD (?)
+- Fix build failure where certain features were disabled.
+- 'blocked-compact' template is removed. Various CGI improvements,
+  including an adaptive 'blocked' template.
+- Various tweaks for actions file to get ready for stable 3.0
+- Included a 'Bookmarklet' and PHP scripts for reporting actions file
+  problems via web interface at privoxy.org. Accessed via internal CGIs.
+- Include cgi-style.css for templates.
+- #include mechansim for common text in templates
+- Various other minor fixes.
+
+*** Version 2.9.13 Beta *** 
+
+- *NEWS*: The project has been renamed to Privoxy! The new name is 
+  reflected throughout (file locations, etc).
+- ijb.action is now default.action. re_filterfile is now 
+  default.filter.
+- http://i.j.b/ is now http://p.p/
+- The 'logo' option for replacing ad iamges is removed now. 'Pattern' 
+  (checkerboard) is now the default.
+- RPM spec file make over.
+
+
+*** Version 2.9.12 Beta *** 
+
+- **READ**: The default listening PORT is NOW 8118!!! Changed from 
+  8000 due to conflict with NAS (Network Audio Server, whatever that 
+  is.)
+- More CGI actions editor fixes and improvements.
+- Win32 command line fix ups.
+- re_filterfile now has modular sections that can be activated on a 
+  per site basis. Some new goodies there too.
+- +filter now takes arguments to match FILTER sections in re_filterfile
+  for even more flexibility. 
+- Added a new image blocker option: +image-blocker{pattern}, which 
+  displays a checkerboard patthern and scales better than the logo.
+- PNG images will be used in place of GIF for JB built-in images
+  if configured with --enable-no-gif.
+- Clean up compiler warnings (mostly).
+- Improved handling of failed DNS lookups & diagnostics for failed bind
+  to listen socket
+- Made --no-daemon mode log to tty instead of logfile.
+- Various spec file and init script cleanups and improvements (Redhat and
+  SuSE).
+- CGI Editor works on OS/2 now.
+- Fix restart failure where sockets were in TIME_WAIT.
+- Fixes for actions cgi editor, make sure we have right file.
+- A --pidfile command line option now, in addition to --help, 
+  --version, --no-daemon, --user and configfile. --no-daemon replaces
+  the former -d option and _DEBUG define. --user will drop privileges 
+  to the specified user.
+- Signal handling cleanups (*nix).
+- CGI actions editor improvements and fixes.
+- Error handling improvements, especially out of memory.
+- Default re_filterfile fix that caused spurious IJB logos 
+  (instead of 'blank').
+- configure.in threading fixes for Solaris.
+- Various other minor fixes.
+
+
+*** Version 2.9.11 Beta Changes ***
+
+- Add "session" cookie concept where cookies exist for the life 
+of that browser session only (ie never goes to disk). 
+- Checks for correct header length.
+- Fix user:pass@host.domain.com auth bug.
+- Better signal handling on *nix.
+- Fix CFLAGS hard-coded in configure.in
+- Fix threading bug re: gethostbyname() that caused random 
+URLs to fail in some cases.
+
+
+*** Version 2.9.11 Alpha Changes ***
+
+- A web-based editor for the actions file is included (go to http://i.j.b/).
+- Web-based toggle IJB on/off support.
+- Cookie handling has changed - the new +no-cookies-keep feature is now the
+default.
+- actionsfile is renamed to ijb.action.
+- junkbstr.txt is now config.txt on Win32.
+- Support for running IJB as a UNIX daemon process has improved.
+- Unix daemon now returns error code on failed start.
+- Timestamps in logfile and jarfile now.
+- Fix for the Netscape bug reintroduced in 2.9.9.
+- make should now abort if gmake (GNU make) not present.
+- Many other minor bugfixes
+- Start a ChangeLog :)
+
+
+
+*** Version 2.9.3 pre-Alpha Changes ***
+
+- Amiga support (completely untested by me - I don't have an Amiga)
+- "tinygif 3" support (redirects blocked images to a specified URL, so
+the browser doesn't have to load and cache many copies of the same
+image).
+- one case where there were both local and global "referrer" variables
+(yuck!) clarified by renaming the local one to "refer".
+- Fixed some places where close() was used instead of close_socket().
+Thanks to Jörg Strohmayer (joergs at users.sourceforge.net) for these.
+- Temporary hack to get FORCE_LOAD to work with IE.  I just lowercased the
+FORCE_LOAD_PREFIX.  Needs fixing properly.
+- Most URLs hardcoded into Junkbuster were changed to go through a script
+e.g. http://ijbswa.sourceforge.net/redirect.php?v=2.9.3&to=faq
+The only other URLs left are the GNU GPL:
+  http://www.fsf.org/copyleft/gpl.html
+and the home page:
+  http://ijbswa.sourceforge.net/
+... and various URLs which will be intercepted by Junkbuster anyway.
+TODO: Still need to do something with the URLs in Junkbuster Corp's 
+copyright/trademark notice on the bottom of the show-proxy-args page.
+- PCRE or GNU Regex is now a #define option.
+
+
+*** Version 2.9.2 pre-Alpha Changes ***
+
+- Andreas applied the latest version of the FORCE patch.
+
+
+*** Version 2.9.1 pre-Alpha Changes ***
+
+- in parsers.c, fixed two #ifdef FORCE to #ifdef FORCE_LOAD
+(BTW: I think FORCE is precise enough, since loading remote
+data is the whole purpose of a proxy..)
+- Set the FORCE_PREFIX (back) to 'IJB-FORCE-LOAD-'. While 'noijb.'
+is more elegant and looks like a hostname in the URL, it doesn't
+make clear to the inexperienced user that the proxy is bypassed. It
+also has a higher name collision risk.
+- Filled in the function header templates for my functions in
+parsers.c (again). They obviously got lost in our current
+patch war ;-)
+- Cut the credit for the §-referrer-option from the config file,
+that Stefan had placed there.
+- Improved the re_filterfile 
+
+
+*** Version 2.9.0 pre-Alpha Changes ***
+
+-  Now use PCRE, not GNU REGEX.  I have not yet had chance to check the
+syntax of the block/image/cookie file to ensure that they match what
+is expected - however they seem to work.
+-  Replaced "configure" script with one generated by "autoconf".  Also 
+use a header "config.h" (was ijbconfig.h in my previous release) for 
+the #defines.  "config.h" is now generated with "autoheader" from 
+"acconfig.h" and "configure.in".  (Note that to install you do not
+need autoconf or autoheader - just run "./configure".)
+To see command-line options, run "./configure --help".
+This is my first ever autoconf script, so it has some rough edges
+(how PCRE is handled is the roughest).
+-  Error logging code replaced with new module errlog.c, based on the
+one from JunkbusterMT (but with the threading code removed).
+-  Most of Rodney's 0.21 and 0.21A patches applied. (Marked *).  I did not
+apply all of these, since I had already independently done conditional
+popup file, conditional image file, and integration of popup code.
+- ACL, Jar and trust files conditionally compiled.
+- New source file headers.
+- Various cosmetic changes.  (But I have not consistently ordered the 
+config files - I think that's worthwhile, but it's 1am and I want to
+get this released!)
+- RCS tags on .h files.
+-  RCS tags are const char[] rather than const char *.  (Saves 4 bytes
+per tag ;-)
+- VC++ project files renamed to vc_junkbuster.*.
+- show-proxy-args now shows status of all conditionals, not just REGEX
+- Various functions moved around.  Most notably all the system-specific
+sockets code which was spread between jcc.c, bind.c, and connect.c,
+has been moved to "jbsockets.c".  The non-system-specific code from
+connect.c and socks4.c has been movet to "gateway.c".  Also, the
+config file loader and the global variables it writes to have been
+moved to "loadcfg.c".  (Maybe this should go into loaders.c?)
+And candidate for the "worst filename ever" award is "miscutil.c",
+which contains, well, miscellaneous utility functions like zalloc.
+(Suggestions for a better name for this file are welcome!)
+- Loaders now use a common function to read a line and skip comments,
+and this function also stores the proxy_args.
+- Added ./junkbuster --help     (Not for Win32 GUI)
+- Added ./junkbuster --version  (Not for Win32 GUI)
+- Win32 resources are now all marked as "U.S. English", rather than
+being a mix of "U.S. English", "U.K. English" and "Irish English".
+- Version number changes to 2.9.0
+
+
+
+----------------------------------------------------------------------
+Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+               Privoxy team. http://www.privoxy.org/
+
+               Based on the Internet Junkbuster originally written
+               by and Copyright (C) 1997 Anonymous Coders and 
+               Junkbusters Corporation.  http://www.junkbusters.com
+
+               This program is free software; you can redistribute it 
+               and/or modify it under the terms of the GNU General
+               Public License as published by the Free Software
+               Foundation; either version 2 of the License, or (at
+               your option) any later version.
+
+               This program is distributed in the hope that it will
+               be useful, but WITHOUT ANY WARRANTY; without even the
+               implied warranty of MERCHANTABILITY or FITNESS FOR A
+               PARTICULAR PURPOSE.  See the GNU General Public
+               License for more details.
+
+               The GNU General Public License should be included with
+               this file.  If not, you can view it at
+               http://www.gnu.org/copyleft/gpl.html
+               or write to the Free Software Foundation, Inc., 59
+               Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+set vi:tw=68

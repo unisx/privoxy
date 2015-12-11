@@ -1,0 +1,422 @@
+
+<HTML><HEAD><TITLE>Manpage of PRIVOXY</TITLE>
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></HEAD><BODY>
+<H1>PRIVOXY</H1>
+Section:  (1)<BR>Updated: 25 March 2003<BR><A HREF="#index">Index</A>
+<HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+privoxy - Privacy Enhancing Proxy
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<P>
+<B>privoxy</B> [<B>--help</B> ] [<B>--version</B> ] [<B>--no-daemon</B> ] [<B>--pidfile </B><I>pidfile</I><B></B> ] [<B>--user </B><I>user[.group]</I><B></B> ] [<B>--chroot</B> ] [<B></B><I>configfile</I><B></B> ]<B> (UNIX)</B>
+<P>
+<P>
+<B>privoxy.exe</B> [<B></B><I>configfile</I><B></B> ]<B> (Windows)</B>
+<P>
+<A NAME="lbAD">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<P>
+
+<B>Privoxy</B> may be invoked with the following command line
+options:
+<DL COMPACT>
+<DT><B>--help</B><DD>
+Print brief usage info and exit.
+<DT><B>--version</B><DD>
+Print version info and exit.
+<DT><B>--no-daemon</B><DD>
+Don't  become  a daemon, i.e. don't fork and become process group
+leader, don't detach from controlling tty, and do all logging there.
+<DT><B>--pidfile </B><I>pidfile</I><B></B><DD>
+On startup, write the process ID to <I>pidfile</I>.
+Delete the <I>pidfile</I> on exit.
+Failure to create or delete the <I>pidfile</I>
+is non-fatal. If no <B>--pidfile</B> option is given, no PID file will be used.
+<DT><B>--user </B><I>user[.group]</I><B></B><DD>
+After (optionally) writing the PID file, assume the user ID of
+<I>user</I> and the GID of
+<I>group</I>, or, if the optional
+<I>group</I> was not given, the default group of
+<I>user</I>. Exit if the privileges are not
+sufficient to do so.
+<DT><B>--chroot</B><DD>
+Before changing to the user ID given in the --user option, chroot to
+that user's home directory, i.e. make the kernel pretend to the
+<B>Privoxy</B> process that the directory tree starts
+there. If set up carefully, this can limit the impact of possible
+vulnerabilities in <B>Privoxy</B> to the files contained in
+that hierarchy. 
+</DL>
+<P>
+
+If the <I>configfile</I> is not specified on  the  command  line,
+<B>Privoxy</B>  will  look for a file named
+<I>config</I> in the current directory (except on Win32 where
+it will try <I>config.txt</I>). If no
+<I>configfile</I> is found, <B>Privoxy</B> will 
+fail to start.
+<A NAME="lbAE">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<P>
+
+<B>Privoxy</B> is a web proxy with advanced filtering
+capabilities for protecting privacy, filtering web page content, managing
+cookies, controlling access, and removing ads, banners, pop-ups and other
+obnoxious Internet junk. <B>Privoxy</B> has a very
+flexible configuration and can be customized to suit individual needs and
+tastes. <B>Privoxy</B> has application for both
+stand-alone systems and multi-user networks.
+<P>
+
+<B>Privoxy</B> is based on <B>Internet
+Junkbuster</B> (tm).
+<A NAME="lbAF">&nbsp;</A>
+<H2>INSTALLATION AND USAGE</H2>
+
+<P>
+
+Browsers must be individually configured to use <B>Privoxy</B> as
+a HTTP proxy.  The default setting is  for  localhost,  on port  8118
+(configurable in the main config file).  To set the HTTP proxy in Netscape
+and Mozilla, go through:  <B>Edit</B>;
+<B>Preferences</B>;  <B>Advanced</B>;
+<B>Proxies</B>;  <B>Manual Proxy Configuration</B>;
+<B>View</B>. 
+<P>
+
+For Internet Explorer, go through: <B>Tools</B>; 
+<B>Internet Properties</B>; <B>Connections</B>;
+<B>LAN Settings</B>. 
+<P>
+
+The Secure (SSL) Proxy should also be set to the same values, otherwise
+https: URLs will not be proxied. Note: <B>Privoxy</B> can only
+proxy HTTP and HTTPS traffic. Do not try it with FTP or other protocols.
+<P>
+
+For other browsers, check the documentation.
+<A NAME="lbAG">&nbsp;</A>
+<H2>CONFIGURATION</H2>
+
+<P>
+
+<B>Privoxy</B> can be configured with the various configuration
+files. The default configuration files are: <I>config</I>,
+<I>default.filter</I>, and
+<I>default.action</I>. <I>user.action</I> should 
+be used for locally defined exceptions to the default rules of
+<I>default.action</I> These are all well commented.  On Unix
+and Unix-like systems, these are located in
+<I>/etc/privoxy/</I> by default. On Windows, OS/2 and AmigaOS,
+these files are in the same directory as the <B>Privoxy</B>
+executable.
+<P>
+
+The name and number of configuration files has changed from previous
+versions. In fact, the configuration itself is changed  and  much more
+sophisticated. See the user-manual for a complete
+explanation of all configuration options and general usage, and notes for 
+upgrading from <B>Junkbuster</B> and earlier <B>Privoxy</B>
+versions.
+<P>
+
+The actions list (ad blocks, etc) can also be configured with your
+web browser at <A HREF="http://config.privoxy.org/">http://config.privoxy.org/.</A>
+<B>Privoxy's</B> configuration parameters  can also  be viewed at
+the same page. In addition, <B>Privoxy</B> can be toggled on/off.
+This is an internal page, and does not require Internet access.
+<A NAME="lbAH">&nbsp;</A>
+<H2>SAMPLE CONFIGURATION</H2>
+
+<P>
+
+A brief example of what a simple <I>default.action</I>
+configuration might look like:
+<P>
+<PRE>
+ # Define a few useful custom aliases for later use
+ {{alias}}
+
+ # Useful aliases
+ +crunch-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
+ -crunch-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
+ +imageblock      = +block +handle-as-image
+
+ # Fragile sites should have the minimum changes
+ fragile     = -block -deanimate-gifs -fast-redirects -filter \
+               -hide-referer -prevent-cookies -kill-popups
+
+ ## Turn some actions on ################################
+ { \
+ -add-header \
+ -block \
+ +deanimate-gifs{last} \
+ -downgrade-http-version \
+ -fast-redirects \
+ +filter{html-annoyances} \
+ +filter{js-annoyances} \
+ +filter{content-cookies} \
+ +filter{webbugs} \
+ +filter{banners-by-size} \
+ +hide-forwarded-for-headers \
+ +hide-from-header{block} \
+ +hide-referrer{forge} \
+ -hide-user-agent \
+ -handle-as-image \
+ +set-image-blocker{pattern} \
+ -limit-connect \
+ +prevent-compression \
+ +session-cookies-only \
+ -crunch-cookies \
+ -kill-popups \
+ }
+ /   # '/' Matches *all* URL patterns
+ 
+ # Block, and treat these URL patterns as if they were 'images'.
+ # We would expect these to be ads.
+ {+imageblock}
+  .ad.doubleclick.net
+  .a[0-9].yimg.com/(?:(?!/i/).)*$
+  ad.*.doubleclick.net
+
+ # Block any URLs that match these patterns
+ {+block}
+  ad*.
+  .*ads.
+  banner?.
+  /.*count(er)?\.(pl|cgi|exe|dll|asp|php[34]?)
+  .hitbox.com 
+
+ # Make exceptions for these harmless ones that would be 
+ # caught by our +block patterns just above.
+ {-block}
+  adsl.
+  advice.
+  .*downloads.
+</PRE>
+
+<P>
+
+Then for a <I>user.action</I>, we would put local,
+narrowly defined exceptions:
+<P>
+<PRE>
+ # Re-define aliases as needed here
+ {{alias}}
+
+ # Useful aliases
+ -crunch-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
+ 
+ # Set personal exceptions to the policies in default.action #######
+
+ # Sites where we want persistant cookies, so allow *all* cookies
+ {-crunch-cookies -session-cookies-only}
+  .redhat.com
+  .sun.com
+  .msdn.microsoft.com
+ 
+ # This site breaks easily.
+ {-block -fast-redirects}
+  .forbes.com
+</PRE>
+
+<P>
+
+See the comments in the configuration files themselves, or the 
+<I>user-manual</I>
+for explanations of the above syntax, and other <B>Privoxy</B>
+configuration options.
+<A NAME="lbAI">&nbsp;</A>
+<H2>FILES</H2>
+
+<P>
+<PRE>
+ 
+ <I>/usr/sbin/privoxy</I>
+ <I>/etc/privoxy/config</I>
+ <I>/etc/privoxy/default.action</I>
+ <I>/etc/privoxy/standard.action</I>
+ <I>/etc/privoxy/user.action</I>
+ <I>/etc/privoxy/default.filter</I>
+ <I>/etc/privoxy/trust</I>
+ <I>/etc/privoxy/templates/*</I>
+ <I>/var/log/privoxy/logfile</I>
+</PRE>
+
+<P>
+
+Various other files should be included, but may vary depending on platform
+and build configuration. More documentation should be included in the local
+documentation directory.
+<A NAME="lbAJ">&nbsp;</A>
+<H2>SIGNALS</H2>
+
+<P>
+
+<B>Privoxy</B> terminates on the <B>SIGINT</B>,
+<B>SIGTERM</B> and <B>SIGABRT</B> signals. Log
+rotation scripts may cause a re-opening of the logfile by sending a 
+<B>SIGHUP</B> to <B>Privoxy</B>. Note that unlike
+other daemons,  <B>Privoxy</B> does not need to be made aware of
+config file changes by <B>SIGHUP</B> -- it will detect them
+automatically. 
+<A NAME="lbAK">&nbsp;</A>
+<H2>NOTES</H2>
+
+<P>
+
+Please see the <I>User Manual</I> on how to contact the
+developers for feature requests, reporting problems, and other questions.
+<A NAME="lbAL">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<P>
+
+Other references and sites of interest to <B>Privoxy</B>
+users:
+<P>
+
+<P>
+<A HREF="http://www.privoxy.org/">http://www.privoxy.org/,</A> 
+the <B>Privoxy</B> Home page. 
+<P>
+<A HREF="http://www.privoxy.org/faq/">http://www.privoxy.org/faq/,</A> 
+the <B>Privoxy</B> FAQ. 
+<P>
+<A HREF="http://sourceforge.net/projects/ijbswa/">http://sourceforge.net/projects/ijbswa/,</A> 
+the Project Page for <B>Privoxy</B> on 
+SourceForge.
+<P>
+<A HREF="http://config.privoxy.org/">http://config.privoxy.org/,</A>
+the web-based user interface. <B>Privoxy</B> must be
+running for this to work. Shortcut: <A HREF="http://p.p/">http://p.p/</A>
+<P>
+<A HREF="http://www.privoxy.org/actions/">http://www.privoxy.org/actions/,</A> to submit ``misses'' to the developers. 
+<P>
+<A HREF="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/,</A> cool
+and fun ideas from <B>Privoxy</B> users.
+<P>
+<A HREF="http://www.junkbusters.com/ht/en/cookies.html">http://www.junkbusters.com/ht/en/cookies.html,</A>
+an explanation how cookies are used to track web users.
+<P>
+<A HREF="http://www.junkbusters.com/ijb.html">http://www.junkbusters.com/ijb.html,</A>
+the original Internet Junkbuster.
+<P>
+<A HREF="http://www.waldherr.org/junkbuster/">http://www.waldherr.org/junkbuster/,</A>
+Stefan Waldherr's version of Junkbuster, from which <B>Privoxy</B> was
+derived.
+<P>
+<A HREF="http://privacy.net/analyze/">http://privacy.net/analyze/,</A> a useful site
+to check what information about you is leaked while you browse the web.
+<P>
+<A HREF="http://www.squid-cache.org/">http://www.squid-cache.org/,</A> a very popular
+caching proxy, which is often used together with <B>Privoxy</B>.
+<P>
+<A HREF="http://www.privoxy.org/developer-manual/">http://www.privoxy.org/developer-manual/,</A> 
+the <B>Privoxy</B> developer manual. 
+<A NAME="lbAM">&nbsp;</A>
+<H2>DEVELOPMENT TEAM</H2>
+
+<P>
+<PRE>
+ Hal Burgiss (docs)
+ Jon Foster
+ Andreas Oesterhelt
+ David Schmidt (OS/2, Mac OSX ports)
+
+ Johny Agotnes 
+ Rodrigo Barbosa (RPM specfiles)
+ Moritz Barsnick
+ Mattes Dolak 
+ Karsten Hopp (Red Hat)
+ Alexander Lazic
+ Daniel Leite
+ G&#225;bor Lipt&#225;k
+ Adam Lock (Win32)
+ Guy Laroche
+ Haroon Rafique
+ Roland Rosenfeld (Debian)
+ Georg Sauthoff (Gentoo)
+ Thomas Steudten
+ Joerg Strohmayer (Amiga)
+ Rodney Stromlund
+ Sviatoslav Sviridov
+ Sarantis Paskalis
+ Stefan Waldherr
+</PRE>
+
+<A NAME="lbAN">&nbsp;</A>
+<H2>COPYRIGHT AND LICENSE</H2>
+
+<A NAME="lbAO">&nbsp;</A>
+<H3>COPYRIGHT</H3>
+
+<P>
+
+Copyright (C) 2001 - 2003 by Privoxy Developers &lt;<A HREF="mailto:developers@privoxy.org">developers@privoxy.org</A>&gt;
+<P>
+
+Some source code is based on code Copyright (C) 1997 by Anonymous Coders
+and Junkbusters, Inc. and licensed under the <I>GNU General Public
+License</I>.
+<A NAME="lbAP">&nbsp;</A>
+<H3>LICENSE</H3>
+
+<P>
+
+<B>Privoxy</B> is free software; you can
+redistribute it and/or modify it under the terms of the 
+<I>GNU General Public
+License</I>, version 2, as published by the Free Software Foundation.
+<P>
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the 
+<I>GNU General Public License</I> for
+more details, which is available from the Free Software Foundation, Inc, 59
+Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+<P>
+
+You should have received a copy of the  <I>GNU General Public License</I>
+along with this program; if not, write to the  Free Software
+Foundation, Inc. 59 Temple Place - Suite 330
+Boston, MA 02111-1307
+USA 
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">OPTIONS</A><DD>
+<DT><A HREF="#lbAE">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAF">INSTALLATION AND USAGE</A><DD>
+<DT><A HREF="#lbAG">CONFIGURATION</A><DD>
+<DT><A HREF="#lbAH">SAMPLE CONFIGURATION</A><DD>
+<DT><A HREF="#lbAI">FILES</A><DD>
+<DT><A HREF="#lbAJ">SIGNALS</A><DD>
+<DT><A HREF="#lbAK">NOTES</A><DD>
+<DT><A HREF="#lbAL">SEE ALSO</A><DD>
+<DT><A HREF="#lbAM">DEVELOPMENT TEAM</A><DD>
+<DT><A HREF="#lbAN">COPYRIGHT AND LICENSE</A><DD>
+<DL>
+<DT><A HREF="#lbAO">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAP">LICENSE</A><DD>
+</DL>
+</DL>
+<HR>
+This document was created by
+man2html,
+using the manual pages.<BR>
+Time: 02:05:48 GMT, March 26, 2003
+</BODY>
+</HTML>

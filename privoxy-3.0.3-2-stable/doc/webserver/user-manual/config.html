@@ -1,0 +1,3155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Main Configuration File</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Privoxy 3.0.3 User Manual"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Privoxy Configuration"
+HREF="configuration.html"><LINK
+REL="NEXT"
+TITLE="Actions Files"
+HREF="actions-file.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Privoxy 3.0.3 User Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="configuration.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="actions-file.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CONFIG"
+>7. The Main Configuration File</A
+></H1
+><P
+> Again, the main configuration file is named <TT
+CLASS="FILENAME"
+>config</TT
+> on
+ Linux/Unix/BSD and OS/2, and <TT
+CLASS="FILENAME"
+>config.txt</TT
+> on Windows.
+ Configuration lines consist of an initial keyword followed by a list of
+ values, all separated by whitespace (any number of spaces or tabs). For
+ example:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>confdir /etc/privoxy</I
+></SPAN
+></P
+>
+ </VAR
+> </P
+><P
+> Assigns the value <VAR
+CLASS="LITERAL"
+>/etc/privoxy</VAR
+> to the option
+ <VAR
+CLASS="LITERAL"
+>confdir</VAR
+> and thus indicates that the configuration
+ directory is named <SPAN
+CLASS="QUOTE"
+>"/etc/privoxy/"</SPAN
+>.</P
+><P
+> All options in the config file except for <VAR
+CLASS="LITERAL"
+>confdir</VAR
+> and
+ <VAR
+CLASS="LITERAL"
+>logdir</VAR
+> are optional. Watch out in the below description
+ for what happens if you leave them unset.</P
+><P
+> The main config file controls all aspects of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s
+ operation that are not location dependent (i.e. they apply universally, no matter
+ where you may be surfing).</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CONF-LOG-LOC"
+>7.1. Configuration and Log File Locations</A
+></H2
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> can (and normally does) use a number of
+ other files for additional configuration, help and logging.
+ This section of the configuration file tells <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ where to find those other files. </P
+><P
+> The user running <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, must have read
+ permission for all configuration files, and write permission to any files
+ that would be modified, such as log files and actions files.</P
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="CONFDIR"
+>7.1.1. confdir</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>The directory where the other configuration files are located</P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>Path name</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>/etc/privoxy (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> installation dir (Windows) </P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Mandatory</I
+></SPAN
+></P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    No trailing <SPAN
+CLASS="QUOTE"
+>"<VAR
+CLASS="LITERAL"
+>/</VAR
+>"</SPAN
+>, please
+   </P
+><P
+>    When development goes modular and multi-user, the blocker, filter, and
+    per-user config will be stored in subdirectories of <SPAN
+CLASS="QUOTE"
+>"confdir"</SPAN
+>.
+    For now, the configuration directory structure is flat, except for 
+    <TT
+CLASS="FILENAME"
+>confdir/templates</TT
+>, where the HTML templates for CGI 
+    output reside (e.g. <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> 404 error page). 
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="LOGDIR"
+>7.1.2. logdir</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The directory where all logging takes place (i.e. where <TT
+CLASS="FILENAME"
+>logfile</TT
+> and 
+    <TT
+CLASS="FILENAME"
+>jarfile</TT
+> are located) 
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>Path name</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>/var/log/privoxy (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> installation dir (Windows) </P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Mandatory</I
+></SPAN
+></P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    No trailing <SPAN
+CLASS="QUOTE"
+>"<VAR
+CLASS="LITERAL"
+>/</VAR
+>"</SPAN
+>, please
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ACTIONSFILE"
+>7.1.3. actionsfile</A
+></H4
+><A
+NAME="DEFAULT.ACTION"
+></A
+><A
+NAME="STANDARD.ACTION"
+></A
+><A
+NAME="USER.ACTION"
+></A
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The <A
+HREF="actions-file.html"
+>actions file(s)</A
+> to use
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>File name, relative to <VAR
+CLASS="LITERAL"
+>confdir</VAR
+>, without the <VAR
+CLASS="LITERAL"
+>.action</VAR
+> suffix</P
+></DD
+><DT
+>Default values:</DT
+><DD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>     <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;standard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Internal&nbsp;purposes,&nbsp;no&nbsp;editing&nbsp;recommended</P
+>
+    </TD
+></TR
+><TR
+><TD
+>     <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;default&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Main&nbsp;actions&nbsp;file</P
+>
+    </TD
+></TR
+><TR
+><TD
+>     <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;user&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;User&nbsp;customizations</P
+>
+    </TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No actions are taken at all. Simple neutral proxying. 
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Multiple <VAR
+CLASS="LITERAL"
+>actionsfile</VAR
+> lines are permitted, and are in fact recommended!
+   </P
+><P
+> 
+    The default values include standard.action, which is used for internal
+    purposes and should be loaded, default.action, which is the
+    <SPAN
+CLASS="QUOTE"
+>"main"</SPAN
+> actions file maintained by the developers, and
+    <TT
+CLASS="FILENAME"
+>user.action</TT
+>, where you can make your personal additions.
+   </P
+><P
+> 
+    Actions files are where all the per site and per URL configuration is done for 
+    ad blocking, cookie management, privacy considerations, etc.
+    There is no point in using <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> without at 
+    least one actions file.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="FILTERFILE"
+>7.1.4. filterfile</A
+></H4
+><A
+NAME="DEFAULT.FILTER"
+></A
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The <A
+HREF="filter-file.html"
+>filter file</A
+> to use
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>File name, relative to <VAR
+CLASS="LITERAL"
+>confdir</VAR
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>default.filter (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> default.filter.txt (Windows)</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No textual content filtering takes place, i.e. all
+    <VAR
+CLASS="LITERAL"
+>+<A
+HREF="actions-file.html#FILTER"
+>filter</A
+>{<VAR
+CLASS="REPLACEABLE"
+>name</VAR
+>}</VAR
+>
+    actions in the actions files are turned neutral.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The <A
+HREF="filter-file.html"
+>filter file</A
+> contains content modification
+    rules that use <A
+HREF="appendix.html#REGEX"
+>regular expressions</A
+>. These rules permit
+    powerful changes on the content of Web pages, e.g., you could disable your favorite
+    JavaScript annoyances, re-write the actual displayed text, or just have some
+    fun replacing <SPAN
+CLASS="QUOTE"
+>"Microsoft"</SPAN
+> with <SPAN
+CLASS="QUOTE"
+>"MicroSuck"</SPAN
+> wherever
+    it appears on a Web page.
+   </P
+><P
+>    The
+    <VAR
+CLASS="LITERAL"
+>+<A
+HREF="actions-file.html#FILTER"
+>filter</A
+>{<VAR
+CLASS="REPLACEABLE"
+>name</VAR
+>}</VAR
+>
+    actions rely on the relevant filter (<VAR
+CLASS="REPLACEABLE"
+>name</VAR
+>)
+    to be defined in the filter file!
+   </P
+><P
+>    A pre-defined filter file called <TT
+CLASS="FILENAME"
+>default.filter</TT
+> that contains
+    a bunch of handy filters for common problems is included in the distribution.
+    See the section on the <VAR
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER"
+>filter</A
+></VAR
+>
+    action for a list.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="LOGFILE"
+>7.1.5. logfile</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The log file to use
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>File name, relative to <VAR
+CLASS="LITERAL"
+>logdir</VAR
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>logfile (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> privoxy.log (Windows)</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No log file is used, all log messages go to the console (<VAR
+CLASS="LITERAL"
+>STDERR</VAR
+>).
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The logfile is where all logging and error messages are written. The level
+    of detail and number of messages are set with the <VAR
+CLASS="LITERAL"
+>debug</VAR
+>
+    option (see below). The logfile can be useful for tracking down a problem with
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> (e.g., it's not blocking an ad you
+    think it should block) but in most cases you probably will never look at it.
+   </P
+><P
+>    Your logfile will grow indefinitely, and you will probably want to
+    periodically remove it.  On Unix systems, you can do this with a cron job
+    (see <SPAN
+CLASS="QUOTE"
+>"man cron"</SPAN
+>). For Red Hat, a <B
+CLASS="COMMAND"
+>logrotate</B
+> 
+    script has been included.
+   </P
+><P
+>    On SuSE Linux systems, you can place a line like <SPAN
+CLASS="QUOTE"
+>"/var/log/privoxy.*
+    +1024k 644 nobody.nogroup"</SPAN
+> in <TT
+CLASS="FILENAME"
+>/etc/logfiles</TT
+>, with
+    the effect that cron.daily will automatically archive, gzip, and empty the
+    log, when it exceeds 1M size.
+   </P
+><P
+>    Any log files must be writable by whatever user <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    is being run as (default on UNIX, user id is <SPAN
+CLASS="QUOTE"
+>"privoxy"</SPAN
+>).
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="JARFILE"
+>7.1.6. jarfile</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The file to store intercepted cookies in
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>File name, relative to <VAR
+CLASS="LITERAL"
+>logdir</VAR
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>jarfile (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> privoxy.jar (Windows)</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Intercepted cookies are not stored at all.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The jarfile may grow to ridiculous sizes over time.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="TRUSTFILE"
+>7.1.7. trustfile</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The trust file to use
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>File name, relative to <VAR
+CLASS="LITERAL"
+>confdir</VAR
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset (commented out)</I
+></SPAN
+>. When activated: trust (Unix) <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>or</I
+></SPAN
+> trust.txt (Windows)</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    The entire trust mechanism is turned off.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The trust mechanism is an experimental feature for building white-lists and should
+    be used with care. It is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>NOT</I
+></SPAN
+> recommended for the casual user.
+   </P
+><P
+>    If you specify a trust file, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will only allow
+    access to sites that are specified in the trustfile. Sites can be listed 
+    in one of two ways:
+   </P
+><P
+>    Prepending a <VAR
+CLASS="LITERAL"
+>~</VAR
+> character limits access to this site 
+    only (and any sub-paths within this site), e.g. 
+    <VAR
+CLASS="LITERAL"
+>~www.example.com</VAR
+>. 
+   </P
+><P
+>    Or, you can designate sites as <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>trusted referrers</I
+></SPAN
+>, by
+    prepending the name with a <VAR
+CLASS="LITERAL"
+>+</VAR
+> character. The effect is that
+    access to untrusted sites will be granted -- but only if a link from this
+    trusted referrer was used. The link target will then be added to the
+    <SPAN
+CLASS="QUOTE"
+>"trustfile"</SPAN
+> so that future, direct accesses will be granted.
+    Sites added via this mechanism do not become trusted referrers themselves
+    (i.e. they are added with a <VAR
+CLASS="LITERAL"
+>~</VAR
+> designation).
+   </P
+><P
+>    If you use the <VAR
+CLASS="LITERAL"
+>+</VAR
+> operator in the trust file, it may grow 
+    considerably over time.
+   </P
+><P
+>    It is recommended that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> be compiled with
+    the <VAR
+CLASS="LITERAL"
+>--disable-force</VAR
+>, <VAR
+CLASS="LITERAL"
+>--disable-toggle</VAR
+> and
+    <VAR
+CLASS="LITERAL"
+> --disable-editor</VAR
+> options, if this feature is to be
+    used.
+   </P
+><P
+>    Possible applications include limiting Internet access for children.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="LOCAL-SET-UP"
+>7.2. Local Set-up Documentation</A
+></H2
+><P
+>    If you intend to operate <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> for more users
+    than just yourself, it might be a good idea to let them know how to reach
+    you, what you block and why you do that, your policies, etc.
+   </P
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="USER-MANUAL"
+>7.2.1. user-manual</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Location of the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> User Manual.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>A fully qualified URI</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    <A
+HREF="http://www.privoxy.org/user-manual/"
+TARGET="_top"
+>http://www.privoxy.org/<VAR
+CLASS="REPLACEABLE"
+>version</VAR
+>/user-manual/</A
+>
+    will be used, where <VAR
+CLASS="REPLACEABLE"
+>version</VAR
+> is the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> version.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The User Manual URI is used for help links from some of the internal CGI pages. 
+    The manual itself is normally packaged with the binary distributions, so you probably want
+    to set this to a locally installed copy. For multi-user setups, you could provide a copy on
+    a local webserver for all your users and use the corresponding URL here.
+   </P
+><P
+>    Examples:
+   </P
+><P
+>   Unix, in local filesystem:
+  </P
+><P
+>   <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  user-manual  file:///usr/share/doc/privoxy-3.0.3/user-manual/</PRE
+></TD
+></TR
+></TABLE
+>
+  </P
+><P
+>   Windows, in local filesystem, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>must</I
+></SPAN
+> use forward slash notation:
+  </P
+><P
+>   <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  user-manual  file:/c:/some-dir/privoxy-3.0.3/user-manual/</PRE
+></TD
+></TR
+></TABLE
+>
+  </P
+><P
+>   Windows, UNC notation (with forward slashes):
+  </P
+><P
+>   <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  user-manual  file://///some-server/some-path/privoxy-3.0.3/user-manual/</PRE
+></TD
+></TR
+></TABLE
+>
+  </P
+><P
+>   Any platform, on local webserver (called <SPAN
+CLASS="QUOTE"
+>"local-webserver"</SPAN
+>):
+  </P
+><P
+>   <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  user-manual  http://local-webserver/privoxy-user-manual/</PRE
+></TD
+></TR
+></TABLE
+>
+  </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     If set, this option should be <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>the first option in the config
+     file</I
+></SPAN
+>, because it is used while the config file is being read.
+   </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="TRUST-INFO-URL"
+>7.2.2. trust-info-url</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    A URL to be displayed in the error page that users will see if access to an untrusted page is denied.    
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>URL</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>Two example URL are provided</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No links are displayed on the "untrusted" error page.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The value of this option only matters if the experimental trust mechanism has been
+    activated. (See <A
+HREF="config.html#TRUSTFILE"
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>trustfile</I
+></SPAN
+></A
+> above.)
+   </P
+><P
+>    If you use the trust mechanism, it is a good idea to write up some on-line
+    documentation about your trust policy and to specify the URL(s) here.
+    Use multiple times for multiple URLs.
+   </P
+><P
+>    The URL(s) should be added to the trustfile as well, so users don't end up
+    locked out from the information on why they were locked out in the first place!
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ADMIN-ADDRESS"
+>7.2.3. admin-address</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    An email address to reach the proxy administrator.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>Email address</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No email address is displayed on error pages and the CGI user interface.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    If both <VAR
+CLASS="LITERAL"
+>admin-address</VAR
+> and <VAR
+CLASS="LITERAL"
+>proxy-info-url</VAR
+>
+    are unset, the whole "Local Privoxy Support" box on all generated pages will
+    not be shown.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="PROXY-INFO-URL"
+>7.2.4. proxy-info-url</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    A URL to documentation about the local <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> setup,
+    configuration or policies.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>URL</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    No link to local documentation is displayed on error pages and the CGI user interface.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    If both <VAR
+CLASS="LITERAL"
+>admin-address</VAR
+> and <VAR
+CLASS="LITERAL"
+>proxy-info-url</VAR
+>
+    are unset, the whole "Local Privoxy Support" box on all generated pages will
+    not be shown.
+   </P
+><P
+>    This URL shouldn't be blocked ;-)
+   </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DEBUGGING"
+>7.3. Debugging</A
+></H2
+><P
+>  These options are mainly useful when tracing a problem.
+  Note that you might also want to invoke
+  <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with the <VAR
+CLASS="LITERAL"
+>--no-daemon</VAR
+>
+  command line option when debugging.
+ </P
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="DEBUG"
+>7.3.1. debug</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Key values that determine what information gets logged to the 
+    <A
+HREF="config.html#LOGFILE"
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>logfile</I
+></SPAN
+></A
+>.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>Integer values</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>12289 (i.e.: URLs plus informational and warning messages)</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Nothing gets logged.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The available debug levels are:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  debug         1 # show each GET/POST/CONNECT request
+  debug         2 # show each connection status
+  debug         4 # show I/O status
+  debug         8 # show header parsing
+  debug        16 # log all data into the logfile
+  debug        32 # debug force feature
+  debug        64 # debug regular expression filter
+  debug       128 # debug fast redirects
+  debug       256 # debug GIF de-animation
+  debug       512 # Common Log Format
+  debug      1024 # debug kill pop-ups
+  debug      2048 # CGI user interface
+  debug      4096 # Startup banner and warnings.
+  debug      8192 # Non-fatal errors</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    To select multiple debug levels, you can either add them or use
+    multiple <VAR
+CLASS="LITERAL"
+>debug</VAR
+> lines.
+   </P
+><P
+>    A debug level of 1 is informative because it will show you each request
+    as it happens. <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>1, 4096 and 8192 are highly recommended</I
+></SPAN
+>
+    so that you will notice when things go wrong. The other levels are probably
+    only of interest if you are hunting down a specific problem. They can produce
+    a hell of an output (especially 16).
+    
+   </P
+><P
+>    The reporting of <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>fatal</I
+></SPAN
+> errors (i.e. ones which crash 
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>) is always on and cannot be disabled.
+   </P
+><P
+>    If you want to use CLF (Common Log Format), you should set <SPAN
+CLASS="QUOTE"
+>"debug
+    512"</SPAN
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>ONLY</I
+></SPAN
+> and not enable anything else.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="SINGLE-THREADED"
+>7.3.2. single-threaded</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Whether to run only one server thread
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>None</I
+></SPAN
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Multi-threaded (or, where unavailable: forked) operation, i.e. the ability to
+    serve multiple requests simultaneously.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This option is only there for debug purposes and you should never
+    need to use it. <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>It will drastically reduce performance.</I
+></SPAN
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="ACCESS-CONTROL"
+>7.4. Access Control and Security</A
+></H2
+><P
+>  This section of the config file controls the security-relevant aspects
+  of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s configuration.
+ </P
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="LISTEN-ADDRESS"
+>7.4.1. listen-address</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The IP address and TCP port on which <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will
+    listen for client requests.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>[<VAR
+CLASS="REPLACEABLE"
+>IP-Address</VAR
+>]:<VAR
+CLASS="REPLACEABLE"
+>Port</VAR
+></P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>127.0.0.1:8118</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Bind to 127.0.0.1 (localhost), port 8118. This is suitable and recommended for
+    home users who run <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> on the same machine as
+    their browser.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    You will need to configure your browser(s) to this proxy address and port.
+   </P
+><P
+>    If you already have another service running on port 8118, or if you want to
+    serve requests from other machines (e.g. on your local network) as well, you
+    will need to override the default.
+   </P
+><P
+>    If you leave out the IP address, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will
+    bind to all interfaces (addresses) on your machine and may become reachable
+    from the Internet. In that case, consider using <A
+HREF="config.html#ACLS"
+>access control lists</A
+> (ACL's, see below), and/or
+    a firewall.
+   </P
+><P
+>    If you open <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to untrusted users, you will
+    also want to turn off the <VAR
+CLASS="LITERAL"
+><A
+HREF="config.html#ENABLE-EDIT-ACTIONS"
+>enable-edit-actions</A
+></VAR
+> and
+    <VAR
+CLASS="LITERAL"
+><A
+HREF="config.html#ENABLE-REMOTE-TOGGLE"
+>enable-remote-toggle</A
+></VAR
+>
+    options!
+   </P
+></DD
+><DT
+>Example:</DT
+><DD
+><P
+>     Suppose you are running <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> on
+     a machine which has the address 192.168.0.1 on your local private network
+     (192.168.0.0) and has another outside connection with a different address.
+     You want it to serve requests from inside only:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  listen-address  192.168.0.1:8118</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="TOGGLE"
+>7.4.2. toggle</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Initial state of "toggle" status
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>1 or 0</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>1</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Act as if toggled on
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    If set to 0, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will start in
+    <SPAN
+CLASS="QUOTE"
+>"toggled off"</SPAN
+> mode, i.e. behave like a normal, content-neutral
+    proxy where all ad blocking, filtering, etc are disabled. See
+    <VAR
+CLASS="LITERAL"
+>enable-remote-toggle</VAR
+> below. This is not really useful
+    anymore, since toggling is much easier via <A
+HREF="http://config.privoxy.org/toggle"
+TARGET="_top"
+>the web interface</A
+> than via
+    editing the <TT
+CLASS="FILENAME"
+>conf</TT
+> file.
+   </P
+><P
+>    The windows version will only display the toggle icon in the system tray
+    if this option is present.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ENABLE-REMOTE-TOGGLE"
+>7.4.3. enable-remote-toggle</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Whether or not the <A
+HREF="http://config.privoxy.org/toggle"
+TARGET="_top"
+>web-based toggle
+    feature</A
+> may be used
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>0 or 1</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>1</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    The web-based toggle feature is disabled.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    When toggled off, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> acts like a normal,
+    content-neutral proxy, i.e. it acts as if none of the actions applied to
+    any URL.
+   </P
+><P
+>    For the time being, access to the toggle feature can <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> be
+    controlled separately by <SPAN
+CLASS="QUOTE"
+>"ACLs"</SPAN
+> or HTTP authentication,
+    so that everybody who can access <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> (see
+    <SPAN
+CLASS="QUOTE"
+>"ACLs"</SPAN
+> and <VAR
+CLASS="LITERAL"
+>listen-address</VAR
+> above) can
+    toggle it for all users. So this option is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not recommended</I
+></SPAN
+>
+    for multi-user environments with untrusted users.
+   </P
+><P
+>    Note that you must have compiled <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with
+    support for this feature, otherwise this option has no effect. 
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ENABLE-EDIT-ACTIONS"
+>7.4.4. enable-edit-actions</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Whether or not the <A
+HREF="http://config.privoxy.org/show-status"
+TARGET="_top"
+>web-based actions
+    file editor</A
+> may be used
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>0 or 1</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>1</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    The web-based actions file editor is disabled.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    For the time being, access to the editor can <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> be
+    controlled separately by <SPAN
+CLASS="QUOTE"
+>"ACLs"</SPAN
+> or HTTP authentication,
+    so that everybody who can access <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> (see
+    <SPAN
+CLASS="QUOTE"
+>"ACLs"</SPAN
+> and <VAR
+CLASS="LITERAL"
+>listen-address</VAR
+> above) can
+    modify its configuration for all users. So this option is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not
+    recommended</I
+></SPAN
+> for multi-user environments with untrusted users.
+   </P
+><P
+>    Note that you must have compiled <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with
+    support for this feature, otherwise this option has no effect. 
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ACLS"
+>7.4.5. ACLs: permit-access and deny-access</A
+></H4
+><A
+NAME="PERMIT-ACCESS"
+></A
+><A
+NAME="DENY-ACCESS"
+></A
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Who can access what.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <VAR
+CLASS="REPLACEABLE"
+>src_addr</VAR
+>[/<VAR
+CLASS="REPLACEABLE"
+>src_masklen</VAR
+>]
+    [<VAR
+CLASS="REPLACEABLE"
+>dst_addr</VAR
+>[/<VAR
+CLASS="REPLACEABLE"
+>dst_masklen</VAR
+>]]
+   </P
+><P
+>    Where <VAR
+CLASS="REPLACEABLE"
+>src_addr</VAR
+> and 
+   <VAR
+CLASS="REPLACEABLE"
+>dst_addr</VAR
+> are IP addresses in dotted decimal notation or valid
+    DNS names, and <VAR
+CLASS="REPLACEABLE"
+>src_masklen</VAR
+> and
+    <VAR
+CLASS="REPLACEABLE"
+>dst_masklen</VAR
+> are subnet masks in CIDR notation, i.e. integer
+    values from 2 to 30 representing the length (in bits) of the network address. The masks and the whole
+    destination part are optional.
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Don't restrict access further than implied by <VAR
+CLASS="LITERAL"
+>listen-address</VAR
+>
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Access controls are included at the request of ISPs and systems
+    administrators, and <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>are not usually needed by individual users</I
+></SPAN
+>.
+    For a typical home user, it will normally suffice to ensure that 
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> only listens on the localhost
+    (127.0.0.1) or internal (home) network address by means of the
+    <A
+HREF="config.html#LISTEN-ADDRESS"
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>listen-address</I
+></SPAN
+></A
+>
+    option. 
+   </P
+><P
+>    Please see the warnings in the FAQ that this proxy is not intended to be a substitute
+    for a firewall or to encourage anyone to defer addressing basic security
+    weaknesses.
+   </P
+><P
+>    Multiple ACL lines are OK.
+    If any ACLs are specified, then the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    talks only to IP addresses that match at least one <VAR
+CLASS="LITERAL"
+>permit-access</VAR
+> line
+    and don't match any subsequent <VAR
+CLASS="LITERAL"
+>deny-access</VAR
+> line. In other words, the
+    last match wins, with the default being <VAR
+CLASS="LITERAL"
+>deny-access</VAR
+>.
+   </P
+><P
+>    If <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is using a forwarder (see <VAR
+CLASS="LITERAL"
+>forward</VAR
+> below)
+    for a particular destination URL, the <VAR
+CLASS="REPLACEABLE"
+>dst_addr</VAR
+>
+    that is examined is the address of the forwarder and <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>NOT</I
+></SPAN
+> the address
+    of the ultimate target. This is necessary because it may be impossible for the local
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to determine the IP address of the
+    ultimate target (that's often what gateways are used for).
+   </P
+><P
+>    You should prefer using IP addresses over DNS names, because the address lookups take
+    time. All DNS names must resolve! You can <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not</I
+></SPAN
+> use domain patterns
+    like <SPAN
+CLASS="QUOTE"
+>"*.org"</SPAN
+> or partial domain names. If a DNS name resolves to multiple
+    IP addresses, only the first one is used.
+   </P
+><P
+>    Denying access to particular sites by ACL may have undesired side effects
+    if the site in question is hosted on a machine which also hosts other sites.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    Explicitly define the default behavior if no ACL and
+    <VAR
+CLASS="LITERAL"
+>listen-address</VAR
+> are set: <SPAN
+CLASS="QUOTE"
+>"localhost"</SPAN
+>
+    is OK. The absence of a <VAR
+CLASS="REPLACEABLE"
+>dst_addr</VAR
+> implies that
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all</I
+></SPAN
+> destination addresses are OK:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  permit-access  localhost</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Allow any host on the same class C subnet as www.privoxy.org access to
+    nothing but www.example.com:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  permit-access  www.privoxy.org/24 www.example.com/32</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Allow access from any host on the 26-bit subnet 192.168.45.64 to anywhere,
+    with the exception that 192.168.45.73 may not access www.dirty-stuff.example.com:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  permit-access  192.168.45.64/26
+  deny-access    192.168.45.73    www.dirty-stuff.example.com</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="BUFFER-LIMIT"
+>7.4.6. buffer-limit</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Maximum size of the buffer for content filtering.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>Size in Kbytes</P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>4096</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Use a 4MB (4096 KB) limit.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    For content filtering, i.e. the <VAR
+CLASS="LITERAL"
+>+filter</VAR
+> and
+    <VAR
+CLASS="LITERAL"
+>+deanimate-gif</VAR
+> actions, it is necessary that 
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> buffers the entire document body.
+    This can be potentially dangerous, since a server could just keep sending
+    data indefinitely and wait for your RAM to exhaust -- with nasty consequences.
+    Hence this option.
+   </P
+><P
+>    When a document buffer size reaches the <VAR
+CLASS="LITERAL"
+>buffer-limit</VAR
+>, it is
+    flushed to the client unfiltered and no further attempt to
+    filter the rest of the document is made. Remember that there may be multiple threads
+    running, which might require up to <VAR
+CLASS="LITERAL"
+>buffer-limit</VAR
+> Kbytes
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>each</I
+></SPAN
+>, unless you have enabled <SPAN
+CLASS="QUOTE"
+>"single-threaded"</SPAN
+>
+    above.
+   </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FORWARDING"
+>7.5. Forwarding</A
+></H2
+><P
+> This feature allows routing of HTTP requests through a chain of
+ multiple proxies.
+ It can be used to better protect privacy and confidentiality when
+ accessing specific domains by routing requests to those domains
+ through an anonymous public proxy (see e.g. <A
+HREF="http://www.multiproxy.org/anon_list.htm"
+TARGET="_top"
+>http://www.multiproxy.org/anon_list.htm</A
+>)
+ Or to use a caching proxy to speed up browsing. Or chaining to a parent
+ proxy may be necessary because the machine that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ runs on has no direct Internet access.</P
+><P
+> Also specified here are SOCKS proxies. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ supports the SOCKS 4 and SOCKS 4A protocols.</P
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="FORWARD"
+>7.5.1. forward</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    To which parent HTTP proxy specific requests should be routed.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <VAR
+CLASS="REPLACEABLE"
+>target_pattern</VAR
+>
+    <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+>[:<VAR
+CLASS="REPLACEABLE"
+>port</VAR
+>]
+   </P
+><P
+>    where <VAR
+CLASS="REPLACEABLE"
+>target_pattern</VAR
+> is a <A
+HREF="actions-file.html#AF-PATTERNS"
+>URL pattern</A
+> 
+    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <VAR
+CLASS="LITERAL"
+>/</VAR
+> to
+    denote <SPAN
+CLASS="QUOTE"
+>"all URLs"</SPAN
+>.
+    <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+>[:<VAR
+CLASS="REPLACEABLE"
+>port</VAR
+>]
+    is the DNS name or IP address of the parent HTTP proxy through which the requests should be forwarded,
+    optionally followed by its listening port (default: 8080).
+    Use a single dot (<VAR
+CLASS="LITERAL"
+>.</VAR
+>) to denote <SPAN
+CLASS="QUOTE"
+>"no forwarding"</SPAN
+>.
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Don't use parent HTTP proxies.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    If <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+> is <SPAN
+CLASS="QUOTE"
+>"."</SPAN
+>, then requests are not
+    forwarded to another HTTP proxy but are made directly to the web servers.
+   </P
+><P
+>    Multiple lines are OK, they are checked in sequence, and the last match wins.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    Everything goes to an example anonymizing proxy, except SSL on port 443 (which it doesn't handle):
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward   /      anon-proxy.example.org:8080
+  forward   :443   .</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Everything goes to our example ISP's caching proxy, except for requests
+    to that ISP's sites:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward   /                  caching-proxy.example-isp.net:8000
+  forward   .example-isp.net   .</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="SOCKS"
+>7.5.2. forward-socks4 and forward-socks4a</A
+></H4
+><A
+NAME="FORWARD-SOCKS4"
+></A
+><A
+NAME="FORWARD-SOCKS4A"
+></A
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Through which SOCKS proxy (and to which parent HTTP proxy) specific requests should be routed.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <VAR
+CLASS="REPLACEABLE"
+>target_pattern</VAR
+>
+    <VAR
+CLASS="REPLACEABLE"
+>socks_proxy</VAR
+>[:<VAR
+CLASS="REPLACEABLE"
+>port</VAR
+>]
+    <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+>[:<VAR
+CLASS="REPLACEABLE"
+>port</VAR
+>]
+   </P
+><P
+>    where <VAR
+CLASS="REPLACEABLE"
+>target_pattern</VAR
+> is a <A
+HREF="actions-file.html#AF-PATTERNS"
+>URL pattern</A
+> 
+    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <VAR
+CLASS="LITERAL"
+>/</VAR
+> to
+    denote <SPAN
+CLASS="QUOTE"
+>"all URLs"</SPAN
+>.
+    <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+> and <VAR
+CLASS="REPLACEABLE"
+>socks_proxy</VAR
+>
+    are IP addresses in dotted decimal notation or valid DNS names (<VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+>
+    may be <SPAN
+CLASS="QUOTE"
+>"."</SPAN
+> to denote <SPAN
+CLASS="QUOTE"
+>"no HTTP forwarding"</SPAN
+>), and the optional 
+    <VAR
+CLASS="REPLACEABLE"
+>port</VAR
+> parameters are TCP ports, i.e. integer values from 1 to 64535
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Don't use SOCKS proxies.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Multiple lines are OK, they are checked in sequence, and the last match wins.
+   </P
+><P
+>    The difference between <VAR
+CLASS="LITERAL"
+>forward-socks4</VAR
+> and <VAR
+CLASS="LITERAL"
+>forward-socks4a</VAR
+>
+    is that in the SOCKS 4A protocol, the DNS resolution of the target hostname happens on the SOCKS
+    server, while in SOCKS 4 it happens locally.
+   </P
+><P
+>    If <VAR
+CLASS="REPLACEABLE"
+>http_parent</VAR
+> is <SPAN
+CLASS="QUOTE"
+>"."</SPAN
+>, then requests are not
+    forwarded to another HTTP proxy but are made (HTTP-wise) directly to the web servers, albeit through
+    a SOCKS proxy.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>     From the company example.com, direct connections are made to all
+     <SPAN
+CLASS="QUOTE"
+>"internal"</SPAN
+> domains, but everything outbound goes through
+     their ISP's proxy by way of example.com's corporate SOCKS 4A gateway to
+     the Internet.
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward-socks4a   /              socks-gw.example.com:1080  www-cache.example-isp.net:8080
+  forward           .example.com   .</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    A rule that uses a SOCKS 4 gateway for all destinations but no HTTP parent looks like this:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward-socks4   /               socks-gw.example.com:1080  .</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="ADVANCED-FORWARDING-EXAMPLES"
+>7.5.3. Advanced Forwarding Examples</A
+></H4
+><P
+> If you have links to multiple ISPs that provide various special content 
+ only to their subscribers, you can configure multiple <SPAN
+CLASS="APPLICATION"
+>Privoxies</SPAN
+>
+ which have connections to the respective ISPs to act as forwarders to each other, so that
+ <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>your</I
+></SPAN
+> users can see the internal content of all ISPs.</P
+><P
+> Assume that host-a has a PPP connection to isp-a.net. And host-b has a PPP connection to
+ isp-b.net. Both run <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. Their forwarding
+ configuration can look like this:</P
+><P
+> host-a:</P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward    /           .
+  forward    .isp-b.net  host-b:8118</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> host-b:</P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward    /           .
+  forward    .isp-a.net  host-a:8118</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> Now, your users can set their browser's proxy to use either
+ host-a or host-b and be able to browse the internal content
+ of both isp-a and isp-b.</P
+><P
+> If you intend to chain <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and 
+ <SPAN
+CLASS="APPLICATION"
+>squid</SPAN
+> locally, then chain as 
+ <VAR
+CLASS="LITERAL"
+>browser -&#62; squid -&#62; privoxy</VAR
+> is the recommended way. </P
+><P
+> Assuming that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>squid</SPAN
+>
+ run on the same box, your <SPAN
+CLASS="APPLICATION"
+>squid</SPAN
+> configuration could then look like this:</P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  # Define Privoxy as parent proxy (without ICP) 
+  cache_peer 127.0.0.1 parent 8118 7 no-query 
+
+  # Define ACL for protocol FTP 
+  acl ftp proto FTP 
+
+  # Do not forward FTP requests to Privoxy
+  always_direct allow ftp 
+
+  # Forward all the rest to Privoxy
+  never_direct allow all</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> You would then need to change your browser's proxy settings to <SPAN
+CLASS="APPLICATION"
+>squid</SPAN
+>'s address and port.
+ Squid normally uses port 3128. If unsure consult <VAR
+CLASS="LITERAL"
+>http_port</VAR
+> in <TT
+CLASS="FILENAME"
+>squid.conf</TT
+>.</P
+><P
+> You could just as well decide to only forward requests for Windows executables through
+ a virus-scanning parent proxy, say, on <VAR
+CLASS="LITERAL"
+>antivir.example.com</VAR
+>, port 8010:</P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  forward   /                          .
+  forward   /.*\.(exe|com|dll|zip)$    antivir.example.com:8010</PRE
+></TD
+></TR
+></TABLE
+> </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="WINDOWS-GUI"
+>7.6. Windows GUI Options</A
+></H2
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has a number of options specific to the
+ Windows GUI interface:</P
+><A
+NAME="ACTIVITY-ANIMATION"
+></A
+><P
+> If <SPAN
+CLASS="QUOTE"
+>"activity-animation"</SPAN
+> is set to 1, the
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> icon will animate when
+ <SPAN
+CLASS="QUOTE"
+>"Privoxy"</SPAN
+> is active. To turn off, set to 0.</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>activity-animation   1</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-MESSAGES"
+></A
+><P
+> If <SPAN
+CLASS="QUOTE"
+>"log-messages"</SPAN
+> is set to 1,
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will log messages to the console
+ window:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-messages       1</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-BUFFER-SIZE"
+></A
+><P
+> 
+ If <SPAN
+CLASS="QUOTE"
+>"log-buffer-size"</SPAN
+> is set to 1, the size of the log buffer,
+ i.e. the amount of memory used for the log messages displayed in the
+ console window, will be limited to <SPAN
+CLASS="QUOTE"
+>"log-max-lines"</SPAN
+> (see below).</P
+><P
+> Warning: Setting this to 0 will result in the buffer to grow infinitely and
+ eat up all your memory!</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-buffer-size      1</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-MAX-LINES"
+></A
+><P
+> <SPAN
+CLASS="APPLICATION"
+>log-max-lines</SPAN
+> is the maximum number of lines held
+ in the log buffer. See above.</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-max-lines      200</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-HIGHLIGHT-MESSAGES"
+></A
+><P
+> If <SPAN
+CLASS="QUOTE"
+>"log-highlight-messages"</SPAN
+> is set to 1,
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will highlight portions of the log
+ messages with a bold-faced font:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-highlight-messages   1</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-FONT-NAME"
+></A
+><P
+> The font used in the console window:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-font-name        Comic Sans MS</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="LOG-FONT-SIZE"
+></A
+><P
+> Font size used in the console window:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>log-font-size        8</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="SHOW-ON-TASK-BAR"
+></A
+><P
+>  
+ <SPAN
+CLASS="QUOTE"
+>"show-on-task-bar"</SPAN
+> controls whether or not
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will appear as a button on the Task bar
+ when minimized:</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>show-on-task-bar     0</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="CLOSE-BUTTON-MINIMIZES"
+></A
+><P
+> If <SPAN
+CLASS="QUOTE"
+>"close-button-minimizes"</SPAN
+> is set to 1, the Windows close
+ button will minimize <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> instead of closing
+ the program (close with the exit option on the File menu).</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>close-button-minimizes  1</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+><A
+NAME="HIDE-CONSOLE"
+></A
+><P
+> The <SPAN
+CLASS="QUOTE"
+>"hide-console"</SPAN
+> option is specific to the MS-Win console
+ version of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. If this option is used,
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will disconnect from and hide  the
+ command console.</P
+><P
+> <VAR
+CLASS="LITERAL"
+>  <P
+CLASS="LITERALLAYOUT"
+>&nbsp;&nbsp;#<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hide-console</I
+></SPAN
+><br>
+&nbsp;&nbsp;&nbsp;</P
+> 
+ </VAR
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="configuration.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="actions-file.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> Configuration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Actions Files</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

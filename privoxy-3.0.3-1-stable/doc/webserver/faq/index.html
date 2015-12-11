@@ -1,0 +1,942 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Privoxy Frequently Asked Questions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="NEXT"
+TITLE="General Information"
+HREF="general.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css"></HEAD
+><BODY
+CLASS="ARTICLE"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Privoxy Frequently Asked Questions</A
+></H1
+><P
+CLASS="PUBDATE"
+> <SUB
+> <A
+HREF="copyright.html"
+>Copyright</A
+> © 2001-2004 by 
+ <A
+HREF="http://www.privoxy.org"
+TARGET="_top"
+>Privoxy Developers</A
+>
+ </SUB
+><BR></P
+><P
+CLASS="PUBDATE"
+>$Id: index.html,v 1.15.2.10 2004/01/31 00:05:43 oes Exp $<BR></P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN9"
+></A
+><P
+> This FAQ gives quick answers to frequently asked  questions about
+ <A
+HREF="http://www.privoxy.org/"
+TARGET="_top"
+>Privoxy</A
+>.
+ It can't and doesn't replace the
+ <A
+HREF="../user-manual/index.html"
+TARGET="_top"
+><I
+CLASS="CITETITLE"
+>User Manual</I
+></A
+>.
+ 
+ </P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is a web proxy with advanced filtering
+ capabilities for protecting privacy, modifying web page content, managing
+ cookies, controlling access, and removing ads, banners, pop-ups and other
+ obnoxious Internet junk. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has a very
+ flexible configuration and can be customized to suit individual needs and
+ tastes. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has application for both
+ stand-alone systems and multi-user networks.</P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is based on <SPAN
+CLASS="APPLICATION"
+>Internet
+ Junkbuster</SPAN
+> (tm).</P
+><P
+>  Please note that this document is constantly evolving. This copy represents
+  the state at the release of version 3.0.3.
+  You can find the latest version of the document at <A
+HREF="http://www.privoxy.org/faq/"
+TARGET="_top"
+>http://www.privoxy.org/faq/</A
+>.
+  Please see the <A
+HREF="contact.html"
+>Contact section</A
+> if you want to
+  contact the developers. 
+ </P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="general.html"
+>General Information</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="general.html#NEWJB"
+>What is this new version of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>?</A
+></DT
+><DT
+>1.2. <A
+HREF="general.html#AEN45"
+>Why <SPAN
+CLASS="QUOTE"
+>"Privoxy"</SPAN
+>? Why a name change at all?</A
+></DT
+><DT
+>1.3. <A
+HREF="general.html#DIFFERS"
+>How does <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> differ
+from the old <SPAN
+CLASS="APPLICATION"
+>Junkbuster?</SPAN
+></A
+></DT
+><DT
+>1.4. <A
+HREF="general.html#PROXYMORON"
+>What is a <SPAN
+CLASS="QUOTE"
+>"proxy"</SPAN
+>? How does
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> work?</A
+></DT
+><DT
+>1.5. <A
+HREF="general.html#WHATSANAD"
+>How does <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> know what is
+an ad, and what is not?</A
+></DT
+><DT
+>1.6. <A
+HREF="general.html#AEN136"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> make mistakes? 
+This does not sound very scientific.</A
+></DT
+><DT
+>1.7. <A
+HREF="general.html#AEN143"
+>Will I have to configure <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ before I can use it?</A
+></DT
+><DT
+>1.8. <A
+HREF="general.html#BROWSERS2"
+>My browser does the same things as
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. Why should I use
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> at all?</A
+></DT
+><DT
+>1.9. <A
+HREF="general.html#LICENSE"
+>Is there is a license or fee? What about a 
+warranty? Registration?</A
+></DT
+><DT
+>1.10. <A
+HREF="general.html#JOINTEAM"
+>I would like to help you, what do I do?</A
+></DT
+><DD
+><DL
+><DT
+>1.10.1. <A
+HREF="general.html#JOINTEAM-MONEY"
+>Money Money Money</A
+></DT
+><DT
+>1.10.2. <A
+HREF="general.html#JOINTEAM-SOFTWARE"
+>Software</A
+></DT
+><DT
+>1.10.3. <A
+HREF="general.html#JOINTEAM-WORK"
+>You want to work with us?</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>2. <A
+HREF="installation.html"
+>Installation</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="installation.html#WHICHBROWSERS"
+>Which browsers are supported by <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>?</A
+></DT
+><DT
+>2.2. <A
+HREF="installation.html#WHICHOS"
+>Which operating systems are supported?</A
+></DT
+><DT
+>2.3. <A
+HREF="installation.html#EMAIL-CLIENT"
+>Can I use <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with my email client?</A
+></DT
+><DT
+>2.4. <A
+HREF="installation.html#NEWINSTALL"
+>Can I install  
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> over <SPAN
+CLASS="APPLICATION"
+>Junkbuster</SPAN
+>?</A
+></DT
+><DT
+>2.5. <A
+HREF="installation.html#AEN226"
+>I just installed <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. Is there anything 
+special I have to do now?</A
+></DT
+><DT
+>2.6. <A
+HREF="installation.html#LOCALHOST"
+>What is the proxy address of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>?</A
+></DT
+><DT
+>2.7. <A
+HREF="installation.html#NOTHING"
+>I just installed <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, and nothing is happening.
+All the ads are there. What's wrong?</A
+></DT
+><DT
+>2.8. <A
+HREF="installation.html#NOTUSED"
+>I get a <SPAN
+CLASS="QUOTE"
+>"Privoxy is not being used"</SPAN
+> dummy page although
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is running and being used.</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="configuration.html"
+>Configuration</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="configuration.html#GETUPDATES"
+>Where can I get updated Actions Files?</A
+></DT
+><DT
+>3.2. <A
+HREF="configuration.html#NEWCONFIG"
+>Can I use my old config files?</A
+></DT
+><DT
+>3.3. <A
+HREF="configuration.html#AEN312"
+>What is an <SPAN
+CLASS="QUOTE"
+>"actions"</SPAN
+> file?</A
+></DT
+><DT
+>3.4. <A
+HREF="configuration.html#ACTIONSS"
+>The <SPAN
+CLASS="QUOTE"
+>"actions"</SPAN
+> concept confuses me. Please list 
+some of these <SPAN
+CLASS="QUOTE"
+>"actions"</SPAN
+>.</A
+></DT
+><DT
+>3.5. <A
+HREF="configuration.html#AEN331"
+>How are actions files configured? What is the easiest
+way to do this?</A
+></DT
+><DT
+>3.6. <A
+HREF="configuration.html#AEN339"
+>There are several different <SPAN
+CLASS="QUOTE"
+>"actions"</SPAN
+> files. What are
+the differences?</A
+></DT
+><DT
+>3.7. <A
+HREF="configuration.html#YAHOO"
+>How can I make my Yahoo/Hotmail/GMX account work?</A
+></DT
+><DT
+>3.8. <A
+HREF="configuration.html#CONFIGFILES"
+>What's the difference between the
+<SPAN
+CLASS="QUOTE"
+>"Cautious"</SPAN
+>, <SPAN
+CLASS="QUOTE"
+>"Medium"</SPAN
+> and <SPAN
+CLASS="QUOTE"
+>"Adventuresome"</SPAN
+> defaults?</A
+></DT
+><DT
+>3.9. <A
+HREF="configuration.html#BROWSECONFIG"
+>Why can I change the configuration 
+with a browser? Does that not raise security issues?</A
+></DT
+><DT
+>3.10. <A
+HREF="configuration.html#AEN404"
+>What is the <TT
+CLASS="FILENAME"
+>default.filter</TT
+> file? What is a <SPAN
+CLASS="QUOTE"
+>"filter"</SPAN
+>?</A
+></DT
+><DT
+>3.11. <A
+HREF="configuration.html#AEN420"
+>How can I set up <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to act as a proxy for my 
+ LAN?</A
+></DT
+><DT
+>3.12. <A
+HREF="configuration.html#AEN446"
+>Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
+></DT
+><DT
+>3.13. <A
+HREF="configuration.html#AEN463"
+>Why would anybody want to see a checkerboard pattern?</A
+></DT
+><DT
+>3.14. <A
+HREF="configuration.html#AEN468"
+>I see some images being replaced by a text
+instead of the checkerboard image. Why and how do I get rid of this?</A
+></DT
+><DT
+>3.15. <A
+HREF="configuration.html#SRVANY"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> run as a service 
+on Win2K/NT?</A
+></DT
+><DT
+>3.16. <A
+HREF="configuration.html#OTHERPROXY"
+>How can I make <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> work with other 
+proxies like <SPAN
+CLASS="APPLICATION"
+>Squid</SPAN
+>?</A
+></DT
+><DT
+>3.17. <A
+HREF="configuration.html#PORT-80"
+>Can I just set <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to use port 80
+and thus avoid individual browser configuration?</A
+></DT
+><DT
+>3.18. <A
+HREF="configuration.html#TRANSPARENT"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> run as a <SPAN
+CLASS="QUOTE"
+>"transparent"</SPAN
+> proxy?</A
+></DT
+><DT
+>3.19. <A
+HREF="configuration.html#OUTLOOK"
+>How can I configure <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> for use with <SPAN
+CLASS="APPLICATION"
+>Outlook
+ Express</SPAN
+>?</A
+></DT
+><DT
+>3.20. <A
+HREF="configuration.html#OUTLOOK-MORE"
+>How can I have separate rules just for HTML mail?</A
+></DT
+><DT
+>3.21. <A
+HREF="configuration.html#ALLOW-COOKIES"
+>How can I allow permanent cookies for my trusted sites?</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="misc.html"
+>Miscellaneous</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="misc.html#AEN537"
+>How much does <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> slow my browsing down? This 
+has to add extra time to browsing.</A
+></DT
+><DT
+>4.2. <A
+HREF="misc.html#LOADINGTIMES"
+>I noticed considerable
+delays in page requests compared to the old Junkbuster. What's wrong?</A
+></DT
+><DT
+>4.3. <A
+HREF="misc.html#CONFIGURL"
+>What are "http://config.privoxy.org/" and
+"http://p.p/"?</A
+></DT
+><DT
+>4.4. <A
+HREF="misc.html#BLOCKLIST"
+>Do you still maintain the blocklists?</A
+></DT
+><DT
+>4.5. <A
+HREF="misc.html#NEWADS"
+>How can I submit new ads?</A
+></DT
+><DT
+>4.6. <A
+HREF="misc.html#IP"
+>How can I hide my IP address?</A
+></DT
+><DT
+>4.7. <A
+HREF="misc.html#AEN598"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> guarantee I am anonymous?</A
+></DT
+><DT
+>4.8. <A
+HREF="misc.html#AEN609"
+>Might some things break because header information or
+content is being altered?</A
+></DT
+><DT
+>4.9. <A
+HREF="misc.html#AEN620"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> act as a <SPAN
+CLASS="QUOTE"
+>"caching"</SPAN
+> proxy to 
+speed up web browsing?</A
+></DT
+><DT
+>4.10. <A
+HREF="misc.html#AEN630"
+>What about as a firewall? Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> protect me?</A
+></DT
+><DT
+>4.11. <A
+HREF="misc.html#AEN636"
+>I have large empty spaces / a checkerboard pattern now where
+ads used to be. Why?</A
+></DT
+><DT
+>4.12. <A
+HREF="misc.html#AEN641"
+>How can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> filter Secure (HTTPS) URLs?</A
+></DT
+><DT
+>4.13. <A
+HREF="misc.html#AEN656"
+><SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> runs as a <SPAN
+CLASS="QUOTE"
+>"server"</SPAN
+>. How 
+secure is it? Do I need to take any special precautions?</A
+></DT
+><DT
+>4.14. <A
+HREF="misc.html#TURNOFF"
+>How can I temporarily disable <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>?</A
+></DT
+><DT
+>4.15. <A
+HREF="misc.html#REALLYOFF"
+>When <SPAN
+CLASS="QUOTE"
+>"disabled"</SPAN
+> is <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> totally 
+out of the picture?</A
+></DT
+><DT
+>4.16. <A
+HREF="misc.html#CRUNCH"
+>My logs show <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> <SPAN
+CLASS="QUOTE"
+>"crunches"</SPAN
+> 
+ads, but also its own CGI pages. What is a <SPAN
+CLASS="QUOTE"
+>"crunch"</SPAN
+>?</A
+></DT
+><DT
+>4.17. <A
+HREF="misc.html#DOWNLOADS"
+>Can <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> effect files that I download
+from a webserver? FTP server?</A
+></DT
+><DT
+>4.18. <A
+HREF="misc.html#DOWNLOADS2"
+>I just downloaded a Perl script, and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+altered it! Yikes, what is wrong!</A
+></DT
+><DT
+>4.19. <A
+HREF="misc.html#SEEALSO"
+>Where can I find more information about <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+and related issues?</A
+></DT
+><DT
+>4.20. <A
+HREF="misc.html#MICROSUCK"
+>I've noticed that Privoxy changes <SPAN
+CLASS="QUOTE"
+>"Microsoft"</SPAN
+> to 
+<SPAN
+CLASS="QUOTE"
+>"MicroSuck"</SPAN
+>! Why are you manipulating my browsing?</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="trouble.html"
+>Troubleshooting</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="trouble.html#AEN801"
+>I just upgraded and am getting <SPAN
+CLASS="QUOTE"
+>"connection refused"</SPAN
+>
+with every web page?</A
+></DT
+><DT
+>5.2. <A
+HREF="trouble.html#AEN814"
+>I just added a new rule, but the steenkin ad is 
+still getting through. How?</A
+></DT
+><DT
+>5.3. <A
+HREF="trouble.html#BADSITE"
+>One of my favorite sites does not work with <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>.
+What can I do?</A
+></DT
+><DT
+>5.4. <A
+HREF="trouble.html#DUN"
+>After installing <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, I have to log in
+every time I start IE. What gives?</A
+></DT
+><DT
+>5.5. <A
+HREF="trouble.html#FTP"
+>I cannot connect to any FTP sites. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ seems to be blocking me.</A
+></DT
+><DT
+>5.6. <A
+HREF="trouble.html#OSXIE"
+>In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> as the HTTP proxy.</A
+></DT
+><DT
+>5.7. <A
+HREF="trouble.html#OSXUNINSTALL"
+>In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+ uninstall it.  Now the finder tells me I don't have sufficient privileges to
+ empty the trash.</A
+></DT
+><DT
+>5.8. <A
+HREF="trouble.html#OSXIMAGES"
+>In Mac OSX Panther (10.3), images often fail to load and/or I
+ experience random delays in page loading. I'm using
+ <VAR
+CLASS="LITERAL"
+>localhost</VAR
+> as my browser's proxy setting.</A
+></DT
+><DT
+>5.9. <A
+HREF="trouble.html#BLANKPAGE"
+>I get a completely blank page at one site. <SPAN
+CLASS="QUOTE"
+>"View Source"</SPAN
+>
+ shows only: <SPAN
+CLASS="MARKUP"
+>&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
+>. Without
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> the page loads fine.</A
+></DT
+><DT
+>5.10. <A
+HREF="trouble.html#ERROR503"
+>Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
+></DT
+><DT
+>5.11. <A
+HREF="trouble.html#NOHOSTNAME"
+>My logs show many <SPAN
+CLASS="QUOTE"
+>"Unable to get my own hostname"</SPAN
+> lines.
+Why?</A
+></DT
+><DT
+>5.12. <A
+HREF="trouble.html#INUSE"
+>When I try to launch <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, I get an 
+error message <SPAN
+CLASS="QUOTE"
+>"port 8118 is already in use"</SPAN
+> (or similar wording).
+Why?</A
+></DT
+><DT
+>5.13. <A
+HREF="trouble.html#DEMORONIZER"
+>Pages with UTF-8 fonts are garbled.</A
+></DT
+><DT
+>5.14. <A
+HREF="trouble.html#DEMORONIZER2"
+>Why are binary files (such as images) corrupted when <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ is used?</A
+></DT
+><DT
+>5.15. <A
+HREF="trouble.html#DEMORONIZER3"
+>What is the <SPAN
+CLASS="QUOTE"
+>"demoronizer"</SPAN
+> and why is it there?</A
+></DT
+><DT
+>5.16. <A
+HREF="trouble.html#WINDOWOPEN"
+>Why do I keep seeing <SPAN
+CLASS="QUOTE"
+>"PrivoxyWindowOpen()"</SPAN
+> in raw source code?</A
+></DT
+></DL
+></DD
+><DT
+>6. <A
+HREF="contact.html"
+>Contacting the developers, Bug Reporting and Feature Requests</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="contact.html#CONTACT-SUPPORT"
+>Get Support</A
+></DT
+><DT
+>6.2. <A
+HREF="contact.html#CONTACT-BUGS"
+>Report Bugs</A
+></DT
+><DT
+>6.3. <A
+HREF="contact.html#CONTACT-FEATURE"
+>Request New Features</A
+></DT
+><DT
+>6.4. <A
+HREF="contact.html#CONTACT-ADS"
+>Report Ads or Other Actions-Related Problems</A
+></DT
+><DT
+>6.5. <A
+HREF="contact.html#CONTACT-OTHER"
+>Other</A
+></DT
+></DL
+></DD
+><DT
+>7. <A
+HREF="copyright.html"
+>Privoxy Copyright, License and History</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="copyright.html#AEN1014"
+>License</A
+></DT
+><DT
+>7.2. <A
+HREF="copyright.html#AEN1030"
+>History</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="general.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>General Information</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

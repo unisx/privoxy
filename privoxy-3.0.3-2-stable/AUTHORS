@@ -1,0 +1,68 @@
+              Authors of Privoxy v2.9.x and 3.x
+===========================================================================
+
+Current Developement Team:
+
+ Hal Burgiss (docs)
+ Andreas Oesterhelt
+ David Schmidt (OS/2, Mac OSX ports)
+ 
+
+
+Current and Former Project Contributors:
+
+ Johny Agotnes 
+ Rodrigo Barbosa (RPM specfiles)
+ Moritz Barsnick
+ Brian Dessent
+ Mattes Dolak 
+ Jon Foster
+ Karsten Hopp (Red Hat)
+ Alexander Lazic
+ Daniel Leite
+ Gábor Lipták
+ Adam Lock (Win32)
+ Guy Laroche
+ Haroon Rafique
+ Roland Rosenfeld (Debian)
+ Georg Sauthoff (Gentoo)
+ Thomas Steudten
+ Joerg Strohmayer (Amiga)
+ Rodney Stromlund
+ Sviatoslav Sviridov
+ Sarantis Paskalis
+ Stefan Waldherr
+
+Based in part on code originally developed by:
+
+ Junkbusters Corp.
+ Anonymous Coders
+
+Thanks to the many people who have tested Privoxy, reported bugs, or made
+suggestions. These include (in alphabetical order):
+
+ Ken Arromdee
+ Devin Bayer
+ Reiner Buehl
+ Andrew J. Caines
+ Clifford Caoile
+ Michael T. Davis
+ Brian Dessent
+ Peter E
+ Aaron Hamid
+ Magnus Holmgren
+ Don Libes  
+ Paul Lieverse
+ David Mediavilla 
+ Oliver Stoeneberg
+ Roberto Ragusa
+ Maynard Riley
+ Bart Schelstraete
+ Darren Wiebe
+ Jamie Zawinski
+
+If we've missed you off this list, please let us know!
+
+ Privoxy team. http://www.privoxy.org/
+ <ijbswa-developers@lists.sourceforge.net>
+

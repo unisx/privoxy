@@ -1,0 +1,167 @@
+######################################################################
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/standard.action,v $
+# 
+#  $Id: standard.action,v 1.2.2.9 2003/04/01 09:49:50 oes Exp $
+#
+#  Purpose     :  Provide prefedined sets of actions, see
+#                 http://www.privoxy.org/user-manual/actions-file.html
+#
+#  Copyright   :  Written by and Copyright
+#                 Privoxy team. http://www.privoxy.org/
+#
+######################################################################
+
+######################################################################
+#
+# CAUTION: THIS FILE IS *NOT* THE PLACE TO CUSTOMIZE YOUR CONFIGURATION!
+#
+#          If you want to customize Privoxy to suit your needs, 
+#          you can alter the default section in default.action and/or
+#          add your personal exceptions and extensions to user.action
+#
+######################################################################
+
+################
+#
+# Cautious settings -- safe for all sites, but offer little privacy protection
+#
+{ \
+-add-header \
+-block \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
+-deanimate-gifs \
+-downgrade-http-version \
+-fast-redirects \
++filter{js-annoyances} \
+-filter{js-events} \
++filter{html-annoyances} \
+-filter{content-cookies} \
+-filter{refresh-tags} \
++filter{unsolicited-popups} \
+-filter{all-popups} \
+-filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
++filter{webbugs} \
+-filter{tiny-textforms} \
+-filter{jumping-windows} \
+-filter{frameset-borders} \
+-filter{demoronizer} \
+-filter{shockwave-flash} \
+-filter{quicktime-kioskmode} \
+-filter{fun} \
+-filter{crude-parental} \
+-filter{ie-exploits} \
+-filter{site-specifics} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
+-hide-referrer \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
+-session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Cautious
+
+################
+#
+# Medium settings -- safe for most sites, with reasonable protection/damage tradeoff
+#
+{ \
+-add-header \
+-block \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
++deanimate-gifs{last} \
+-downgrade-http-version \
+-fast-redirects \
++filter{js-annoyances} \
+-filter{js-events} \
++filter{html-annoyances} \
+-filter{content-cookies} \
++filter{refresh-tags} \
++filter{unsolicited-popups} \
+-filter{all-popups} \
++filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
++filter{webbugs} \
+-filter{tiny-textforms} \
++filter{jumping-windows} \
+-filter{frameset-borders} \
+-filter{demoronizer} \
+-filter{shockwave-flash} \
+-filter{quicktime-kioskmode} \
+-filter{fun} \
+-filter{crude-parental} \
++filter{ie-exploits} \
+-filter{site-specifics} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
++session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Medium
+
+################
+#
+# Advanced settings -- fun but risky (and include new filters)
+#
+{ \
++add-header{X-User-Tracking: sucks} \
+-block \
++crunch-outgoing-cookies \
++crunch-incoming-cookies \
++deanimate-gifs{last} \
+-downgrade-http-version \
++fast-redirects \
++filter{js-annoyances} \
+-filter{js-events} \
++filter{html-annoyances} \
++filter{content-cookies} \
++filter{refresh-tags} \
++filter{unsolicited-popups} \
+-filter{all-popups} \
++filter{img-reorder} \
++filter{banners-by-size} \
++filter{banners-by-link} \
++filter{webbugs} \
+-filter{tiny-textforms} \
++filter{jumping-windows} \
++filter{frameset-borders} \
++filter{demoronizer} \
+-filter{shockwave-flash} \
++filter{quicktime-kioskmode} \
++filter{fun} \
+-filter{crude-parental} \
+-filter{ie-exploits} \
+-filter{site-specifics} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
+-session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Adventuresome

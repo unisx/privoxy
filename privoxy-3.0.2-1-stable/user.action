@@ -1,0 +1,154 @@
+######################################################################
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/user.action,v $
+# 
+#  $Id: user.action,v 1.1.2.2 2002/10/30 01:59:38 hal9 Exp $
+#
+#  Purpose     :  User-maintained actions file, see
+#                 http://www.privoxy.org/user-manual/actions-file.html
+#
+######################################################################
+
+# This is the place to add your personal exceptions and additions to
+# the general policies as defined in default.action. (Here they will be
+# safe from updates to default.action.) Later defined actions always
+# take precedence, so anything defined here should have the last word.
+
+# See http://www.privoxy.org/user-manual/actions-file.html, or the 
+# comments in default.action, for an explanation of what an "action" is
+# and what each action does.
+
+# The examples included here either use bogus sites, or have the actual
+# rules commented out (with the '#' character). Useful aliases are
+# included in the top section as a convenience.
+
+#############################################################################
+# Aliases
+#############################################################################
+{{alias}}
+#############################################################################
+#
+# Aliases must be defined before they are used and are local to the
+# actions file that they are defined in, you can't use the ones from
+# default.action, unless you repeat them here:
+
+# 
+# These aliases just save typing later, and the alias names should 
+# be self explanatory.
+#
++crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
+-crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
+ allow-all-cookies  = -crunch-all-cookies -session-cookies-only -filter{content-cookies}
+ allow-popups       = -filter{popups} -kill-popups
++block-as-image     = +block +handle-as-image
+-block-as-image     = -block
+
+# These aliases define combinations of actions that are useful for
+# certain types of sites:
+#
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups
+shop        = -crunch-all-cookies allow-popups
+
+# Your favourite blend of filters:
+#
+myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{popups}\
+              +filter{webbugs} +filter{nimda} +filter{banners-by-size} #+filter{fun}
+
+# Allow ads for selected useful free sites:
+#
+allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
+
+## end aliases ########################################################
+#######################################################################
+
+# Begin examples: #####################################################
+
+# Say you have accounts on some sites that you visit regularly, and you
+# don't want to have to log in manually each time. So you'd like to allow
+# persistent cookies for these sites. The allow-all-cookies alias defined
+# above does exactly that, i.e. it disables crunching of cookies in any
+# direction, and the processing of cookies to make them only temporary.
+#
+{ allow-all-cookies }
+#sunsolve.sun.com
+#slashdot.org
+#.yahoo.com
+#.msdn.microsoft.com
+#.redhat.com
+
+# Say the site where you do your homebanking needs to open popup
+# windows, but you have chosen to kill popups by default. This will
+# allow it for your-example-bank.com:
+#
+{ -filter{popups} -kill-popups }
+.your-example-bank.com
+
+# Some hosts and some file types you may not want to filter. Privoxy
+# makes no distinctions between regular web pages and downloads done via
+# your web browser if it is an html or text type document.
+#
+{ -filter }
+#localhost
+#apache_server.mylan
+#  A list of common file extensions that are likely to indicate raw
+#  text, and best if unfiltered.
+#/(.*/)?.*\.(pl|(s|p)?h|c(c|xx|pp)?|tcl||am|init?|cfg?|conf(ig)?|txt|rc|bat)$
+#  Documentation should not need filtering (at least on some sites).
+#.tldp.org
+
+# Example of a simple "block" action. Say you've seen an ad on your
+# favourite page on example.com that you want to get rid of. You have
+# right-clicked the image, selected "copy image location" and pasted
+# the URL below while removing the leading http://, into a { +block }
+# section. Note that { +handle-as-image } need not be specified, since
+# all URLs ending in .gif will be tagged as images by the general rules
+# as set in default.action anyway:
+#
+{ +block }
+www.example.com/nasty-ads/sponsor.gif
+#  Here we found one that is not in Privoxy's default blocked list:
+#.adbureau.net
+
+# To force URLs that tend to have ad images, but it is difficult for
+# Privoxy to know this since the ultimate returned object is obscured
+# for one reason or another, we can try to force these to be treated as
+# images (and thus avoid Privoxy's "BLOCKED" banner page). Note that if
+# what is returned by the server turns out NOT to be an image, then your
+# browser typically will display a broken icon image. Use cautiously.
+#
+{ +block-as-image }
+#.trip.com/.*\.swf
+#.doubleclick.net
+#/Realmedia/ads/
+#adremote.
+
+# Now you noticed that the default configuration breaks Forbes
+# Magazine, but you were too lazy to find out which action is the
+# culprit, and you were again too lazy to give feedback, so you just
+# used the fragile alias on the site, and -- whoa! -- it worked. The
+# 'fragile' aliases disables those actions that are most likely to break
+# a site. Also, good for testing purposes to see if it is Privoxy that
+# is causing the problem or not.
+# 
+{ fragile }
+#.forbes.com
+
+# Here are some sites we wish to support, and we will allow their ads
+# through.
+#
+{ allow-ads }
+#.sourceforge.net
+#.slashdot.org
+#.osdn.net
+
+# user.action is generally the best place to define exceptions and
+# additions to the default policies of default.action. Some actions are
+# safe to have their default policies set here though. So let's set a
+# default policy to have a 'blank' image as opposed to the checkerboard
+# pattern for ALL sites. '/' of course matches all URL paths and
+# patterns:
+#
+{ +set-image-blocker{blank} }
+#/
+
+## set vi:nowrap tw=72

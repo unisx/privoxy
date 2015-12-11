@@ -1,0 +1,46 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/supported.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: supported.sgml,v 1.10.2.4 2002/12/14 04:04:32 hal9 Exp $
+
+ Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  user-manual
+  faq
+  newfeatures
+  announce
+
+-->
+<para>
+ At present, <application>Privoxy</application> is known to run on
+ Windows(95, 98, ME, 2000, XP), Linux (RedHat, SuSE, Debian, Conectiva, Gentoo, 
+ Slackware), Mac OSX, OS/2, AmigaOS, BeOS, FreeBSD, NetBSD, OpenBSD, Solaris,
+ and many more flavors of Unix.
+</para>
+
+<![%p-supp-userman;[
+<para>
+ But any operating system that runs TCP/IP, can conceivably take advantage of
+ <application>Privoxy</application> in a networked situation where
+ <application>Privoxy</application> would run as a server on a LAN gateway. 
+ Then only the <quote>gateway</quote> needs to be running one of the above
+ operating systems.
+</para>
+
+<para>
+ Source code is freely available, so porting to other operating systems 
+ is always a possibility.
+</para>
+]]>

@@ -1,0 +1,122 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/contacting.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: contacting.sgml,v 1.15.2.3 2004/01/30 12:34:33 oes Exp $
+
+ Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ This file is included into:
+
+  faq
+  developer-manual
+  README
+  user-manual
+  webserver/index.sgml
+  announce.sgml
+
+-->
+
+<!-- READ: -->
+<!-- Careful of the literallayout tags and finished formatting -->
+
+<para>
+ We value your feedback. In fact, we rely on it to improve
+ <application>Privoxy</application> and its configuration.
+ However, please note the following hints, so we can 
+ provide you with the best support:
+</para>
+
+<sect2 id="contact-support"><title>Get Support</title>
+<para>
+ For casual users, our 
+ <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">support forum at SourceForge</ulink>
+ is probably best suited:
+ <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118</ulink>
+</para>
+
+<para>
+ All users are of course welcome to discuss their issues on the <ulink
+ url="http://lists.sourceforge.net/lists/listinfo/ijbswa-users">users
+ mailing list</ulink>, where the developers also hang around.
+</para>
+
+</sect2>
+
+<sect2 id="contact-bugs"><title>Report Bugs</title>
+<para>
+ Please report all bugs <emphasis>only</emphasis> through our
+ bug tracker: 
+ <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=111118">http://sourceforge.net/tracker/?group_id=11118&#38;atid=111118</ulink>. 
+</para>
+
+<para>
+  Before doing so, please make sure that the bug has not already been submitted
+  and observe the additional hints at the top of the <ulink
+  url="http://sourceforge.net/tracker/?func=add&amp;group_id=11118&amp;atid=111118">submit
+  form</ulink>.
+</para>
+
+<para> 
+  Please try to verify that it is a <application>Privoxy</application> bug,
+  and not a browser or site bug first. If unsure,
+  try <ulink url="javascript:void(window.open('http://config.privoxy.org/toggle?mini=y&amp;set=disabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">toggling
+  off</ulink> <application>Privoxy</application>, and see if the problem persists.
+  The <ulink url="http://www.privoxy.org/user-manual/appendix.html#ACTIONSANAT">appendix
+  of the user manual</ulink> also has helpful information 
+  on action debugging. If you are using your own custom configuration, please try
+  the stock configs to see if the problem is configuration related.
+</para>
+
+<para>
+  If not using the latest version, chances are that the bug has been found
+  and fixed in the meantime. We would appreciate if you could take the time
+  to <ulink url="http://www.privoxy.org/user-manual/installation.html">upgrade
+  to the latest version</ulink> (or  even the latest CVS snapshot) and verify
+  your bug, but this is not required for reporting.
+</para>
+</sect2>
+
+<sect2 id="contact-feature"><title>Request New Features</title>
+<para>
+ You are welcome to submit ideas on new features or other proposals
+ for improvement through our feature request tracker at
+ <ulink url="http://sourceforge.net/tracker/?atid=361118&#38;group_id=11118">http://sourceforge.net/tracker/?atid=361118&#38;group_id=11118</ulink>.
+</para>
+</sect2>
+
+<sect2 id="contact-ads"><title>Report Ads or Other Actions-Related Problems</title>
+<para>
+ Please send feedback on ads that slipped through, innocent images that were blocked,
+ and any other problems relating to the <filename>default.action</filename> file through
+ our actions feedback mechanism located at
+ <ulink url="javascript:w=Math.floor(screen.width/2);h=Math.floor(screen.height*0.9);void(window.open('http://www.privoxy.org/actions','Feedback','screenx='+w+',width='+w+',height='+h+',scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">http://www.privoxy.org/actions/</ulink>.
+ On this page, you will also find a bookmark which will take you back there from
+ any troubled site and even pre-fill the form!
+</para> 
+
+<para>
+ New, improved <filename>default.action</filename> files will occasionally be made
+ available based on your feedback. These will be announced on the <ulink
+ url="http://lists.sourceforge.net/lists/listinfo/ijbswa-announce">ijbswa-announce</ulink>
+ list and available from our the <ulink
+ url="http://sourceforge.net/project/showfiles.php?group_id=11118">files section</ulink> of
+ our <ulink url="http://sf.net/projects/ijbswa/">project page</ulink>.
+</para>
+</sect2>
+
+<sect2 id="contact-other"><title>Other</title>
+<para>
+For any other issues, feel free to use the mailing lists. Technically interested users
+and people who wish to contribute to the project are also welcome on the developers list!
+You can find an overview of all <application>Privoxy</application>-related mailing lists,
+including list archives, at:
+<ulink url="http://sourceforge.net/mail/?group_id=11118">http://sourceforge.net/mail/?group_id=11118</ulink>.
+</para>
+</sect2>
