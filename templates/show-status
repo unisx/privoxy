@@ -259,6 +259,14 @@
               <td>Allows the +handle-as-image action, to send <q>blocked</q> images instead of HTML.</td>
             </tr>
             <tr>
+              <td><code>FEATURE_IPV6_SUPPORT</code></td>
+              <td>@if-FEATURE_IPV6_SUPPORT-then@ Yes @else-not-FEATURE_IPV6_SUPPORT@ No @endif-FEATURE_IPV6_SUPPORT@</td>
+              <td>
+               Allows IPv6 addresses in incoming requests, when resolving domains to
+               IP addresses and in the configuration files.
+              </td>
+            </tr>
+            <tr>
               <td><code>FEATURE_IMAGE_DETECT_MSIE</code></td>
               <td>@if-FEATURE_IMAGE_DETECT_MSIE-then@ Yes @else-not-FEATURE_IMAGE_DETECT_MSIE@ No @endif-FEATURE_IMAGE_DETECT_MSIE@</td>
               <td>Enables automatic detection of image and HTML requests from

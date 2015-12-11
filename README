@@ -32,8 +32,9 @@
  *
  *********************************************************************/
 
-This README is included with Privoxy 3.0.12. See http://www.privoxy.org/ for
-more information. The current code maturity level is "stable".
+This README is included with the development version of Privoxy 3.0.13. See
+http://www.privoxy.org/ for more information. The current code maturity level
+is "beta", but seems stable to us :).
 
 -------------------------------------------------------------------------------
 
@@ -53,27 +54,14 @@ Donations are welcome.
 
 1. IMPORTANT CHANGES
 
-March 2009, Privoxy 3.0.12 is released.
+Jun 2009, Privoxy 3.0.13 beta is released.
 
-This is primarily a bug fix release. See the "ChangeLog", and the "What's New"
-section and the "Upgrader's Notes" in the User Manual for details.
+This release introduces IPv6 support, improved keep-alive support and a bunch
+of minor improvements.. See the "ChangeLog", and the "What's New" section and
+the "Upgrader's Notes" in the User Manual for details.
 
-February 2009, Privoxy 3.0.11 is released.
-
-As usual there are changes that effect the configuration. See the "ChangeLog",
-and the "What's New" section and the "Upgrader's Notes" in the User Manual for
-details and specifics.
-
-This is a stable release, and marks a departure for Privoxy development.
-
-Previously, odd numbered releases were considered beta versions and were only
-released at the end of the development cycle when the code was already believed
-to be stable. Usually it was, so the stable release contained pretty much the
-same code, but got a higher version number. In the future we intend to release
-several snapshots between stable releases. There will probably still be about
-two stable releases per year, but hopefully about six snapshots instead of the
-two betas we have now. The intentions is to make testing without CVS access
-easier.
+Depending on the feedback it will be either followed by another beta release,
+or by a stable release with the same feature set.
 
 -------------------------------------------------------------------------------
 
@@ -122,16 +110,22 @@ try it with FTP or other protocols for the simple reason it does not work.
 The actions list can be configured via the web interface accessed via http://
 p.p/, as well other options.
 
+All configuration files are subject to unannounced changes during the
+development process.
+
 -------------------------------------------------------------------------------
 
 5. DOCUMENTATION
 
-There should be documentation in the 'doc' subdirectory. In particular, see the
-User Manual there, the FAQ, and those interested in Privoxy development, should
-look at developer-manual.
+There should be documentation in the 'doc' subdirectory, but it may not be
+completed at this point. In particular, see the User Manual there, the FAQ, and
+those interested in Privoxy development, should look at developer-manual.
 
-The source and configuration files are all well commented. The main
-configuration files are: 'config', 'default.action', and 'default.filter'.
+The most up to date source of information on the current development version,
+may still be either comments in the source code, or the included configuration
+files. The source and configuration files are all well commented. The main
+configuration files are: 'config', 'default.action', and 'default.filter' in
+the top-level source directory.
 
 Included documentation may vary according to platform and packager. All
 documentation is posted on http://www.privoxy.org, in case you don't have it,

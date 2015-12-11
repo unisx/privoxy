@@ -1,6 +1,6 @@
 #ifndef W32TASKBAR_H_INCLUDED
 #define W32TASKBAR_H_INCLUDED
-#define W32TASKBAR_H_VERSION "$Id: w32taskbar.h,v 1.6 2006/07/18 14:48:48 david__schmidt Exp $"
+#define W32TASKBAR_H_VERSION "$Id: w32taskbar.h,v 1.7 2009/05/16 13:27:20 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32taskbar.h,v $
@@ -32,28 +32,8 @@
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: w32taskbar.h,v $
- *    Revision 1.6  2006/07/18 14:48:48  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.4  2002/03/26 22:57:10  jongfoster
- *    Web server name should begin www.
- *
- *    Revision 1.3  2002/03/24 12:03:47  jongfoster
- *    Name change
- *
- *    Revision 1.2  2001/07/29 18:43:08  jongfoster
- *    Changing #ifdef _FILENAME_H to FILENAME_H_INCLUDED, to conform to
- *    ANSI C rules.
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:08  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #ifdef __cplusplus
 extern "C" {

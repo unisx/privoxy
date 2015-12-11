@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.235 2009/03/18 21:01:20 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.257 2009/06/12 13:39:02 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -31,1205 +31,8 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.235 2009/03/18 21:01:20 fabiankeil Exp $"
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: jcc.c,v $
- *    Revision 1.235  2009/03/18 21:01:20  fabiankeil
- *    Comment fix. Spotted by Roland.
- *
- *    Revision 1.234  2009/03/18 20:48:42  fabiankeil
- *    If the --no-daemon option is used, enable LOG_LEVEL_INFO
- *    before the config file has been parsed (as we always did).
- *
- *    Revision 1.233  2009/03/13 14:10:07  fabiankeil
- *    Fix some more harmless warnings on amd64.
- *
- *    Revision 1.232  2009/03/08 19:29:16  fabiankeil
- *    Reinitialize the timeout structure every time before passing
- *    it to select(). Apparently some implementations mess with it.
- *    Probably fixes #2669131 reported by cyberpatrol.
- *
- *    Revision 1.231  2009/03/08 14:19:23  fabiankeil
- *    Fix justified (but harmless) compiler warnings
- *    on platforms where sizeof(int) < sizeof(long).
- *
- *    Revision 1.230  2009/03/07 13:09:17  fabiankeil
- *    Change csp->expected_content and_csp->expected_content_length from
- *    size_t to unsigned long long to reduce the likelihood of integer
- *    overflows that would let us close the connection prematurely.
- *    Bug found while investigating #2669131, reported by cyberpatrol.
- *
- *    Revision 1.229  2009/03/07 11:17:01  fabiankeil
- *    Fix compiler warning.
- *
- *    Revision 1.228  2009/03/06 20:30:13  fabiankeil
- *    Log unsigned values as such.
- *
- *    Revision 1.227  2009/03/02 19:18:11  fabiankeil
- *    Streamline parse_http_request()'s prototype. As
- *    cparser pointed out it doesn't actually use csp.
- *
- *    Revision 1.226  2009/03/01 18:28:24  fabiankeil
- *    Help clang understand that we aren't dereferencing
- *    NULL pointers here.
- *
- *    Revision 1.225  2009/02/19 18:09:32  fabiankeil
- *    Unbreak build without FEATURE_CONNECTION_KEEP_ALIVE.
- *    Noticed by David.
- *
- *    Revision 1.224  2009/02/14 15:32:04  fabiankeil
- *    Add the request URL to the timeout message in chat().
- *    Suggested by Lee.
- *
- *    Revision 1.223  2009/02/09 21:21:16  fabiankeil
- *    Now that init_log_module() is called earlier, call show_version()
- *    later on from main() directly so it doesn't get called for --help
- *    or --version.
- *
- *    Revision 1.222  2009/02/08 12:56:51  fabiankeil
- *    Call initialize_mutexes() before init_log_module() again.
- *    Broken since r220, might be the cause of Lee's #2579448.
- *
- *    Revision 1.221  2009/02/06 18:02:58  fabiankeil
- *    When dropping privileges, also give up membership in supplementary
- *    groups. Thanks to Matthias Drochner for reporting the problem,
- *    providing the initial patch and testing the final version.
- *
- *    Revision 1.220  2009/02/04 18:29:07  fabiankeil
- *    Initialize the log module before parsing arguments.
- *    Thanks to Matthias Drochner for the report.
- *
- *    Revision 1.219  2009/01/31 16:08:21  fabiankeil
- *    Remove redundant error check in receive_client_request().
- *
- *    Revision 1.218  2009/01/31 12:25:54  fabiankeil
- *    Flatten indentation in receive_client_request().
- *
- *    Revision 1.217  2009/01/07 19:50:09  fabiankeil
- *    - If the socket-timeout has been reached and the client
- *      hasn't received any data yet, send an explanation before
- *      closing the connection.
- *    - In get_request_line(), signal timeouts the right way.
- *
- *    Revision 1.216  2008/12/24 22:13:11  ler762
- *    fix GCC 3.4.4 warning
- *
- *    Revision 1.215  2008/12/24 17:06:19  fabiankeil
- *    Keep a thread around to timeout alive connections
- *    even if no new requests are coming in.
- *
- *    Revision 1.214  2008/12/20 14:53:55  fabiankeil
- *    Add config option socket-timeout to control the time
- *    Privoxy waits for data to arrive on a socket. Useful
- *    in case of stale ssh tunnels or when fuzz-testing.
- *
- *    Revision 1.213  2008/12/15 18:45:51  fabiankeil
- *    When logging crunches, log the whole URL, so one can easily
- *    differentiate between vanilla HTTP and CONNECT requests.
- *
- *    Revision 1.212  2008/12/14 15:46:22  fabiankeil
- *    Give crunched requests their own log level.
- *
- *    Revision 1.211  2008/12/06 10:05:03  fabiankeil
- *    Downgrade "Received x bytes while expecting y." message to
- *    LOG_LEVEL_CONNECT as it doesn't necessarily indicate an error.
- *
- *    Revision 1.210  2008/12/02 22:03:18  fabiankeil
- *    Don't miscalculate byte_count if we don't get all the
- *    server headers with one read_socket() call. With keep-alive
- *    support enabled, this caused delays until the server closed
- *    the connection.
- *
- *    Revision 1.209  2008/11/27 09:44:04  fabiankeil
- *    Cosmetics for the last commit: Don't watch out for
- *    the last chunk if the content isn't chunk-encoded or
- *    if we already determined the content length previously.
- *
- *    Revision 1.208  2008/11/26 18:24:17  fabiankeil
- *    Recognize that the server response is complete if the
- *    last chunk is read together with the server headers.
- *    Reported by Lee.
- *
- *    Revision 1.207  2008/11/25 17:25:16  fabiankeil
- *    Don't convert the client-header list to text until we need to.
- *
- *    Revision 1.206  2008/11/23 17:00:11  fabiankeil
- *    Some more chat() cosmetics.
- *
- *    Revision 1.205  2008/11/16 12:43:49  fabiankeil
- *    Turn keep-alive support into a runtime feature
- *    that is disabled by setting keep-alive-timeout
- *    to a negative value.
- *
- *    Revision 1.204  2008/11/06 19:42:17  fabiankeil
- *    Fix last-chunk detection hack to also apply
- *    if buf[] contains nothing but the last-chunk.
- *
- *    Revision 1.203  2008/11/06 18:34:35  fabiankeil
- *    Factor receive_client_request() and
- *    parse_client_request() out of chat().
- *
- *    Revision 1.202  2008/11/02 18:40:34  fabiankeil
- *    If we received a different amount of data than we expected,
- *    log a warning and make sure the server socket isn't reused.
- *
- *    Revision 1.201  2008/11/02 16:48:20  fabiankeil
- *    Revert revision 1.195 and try again.
- *
- *    Revision 1.200  2008/10/26 16:53:18  fabiankeil
- *    Fix gcc44 warning.
- *
- *    Revision 1.199  2008/10/26 15:36:10  fabiankeil
- *    Remove two debug messages with LOG_LEVEL_INFO.
- *
- *    Revision 1.198  2008/10/22 15:19:55  fabiankeil
- *    Once More, With Feeling: if there is no logfile
- *    because the user didn't specify one, we shouldn't
- *    call init_error_log() after receiving SIGHUP either.
- *
- *    Revision 1.197  2008/10/20 17:02:40  fabiankeil
- *    If SIGHUP is received while we aren't running in daemon
- *    mode, calling init_error_log() would be a mistake.
- *
- *    Revision 1.196  2008/10/16 09:16:41  fabiankeil
- *    - Fix two gcc44 conversion warnings.
- *    - Don't bother logging the last five bytes
- *      of the 0-chunk.
- *
- *    Revision 1.195  2008/10/13 16:04:37  fabiankeil
- *    Make sure we don't try to reuse tainted server sockets.
- *
- *    Revision 1.194  2008/10/12 18:35:18  fabiankeil
- *    The last commit was a bit too ambitious, apparently the content
- *    length adjustment is only necessary if we aren't buffering.
- *
- *    Revision 1.193  2008/10/12 15:57:35  fabiankeil
- *    Fix content length calculation if we read headers
- *    and the start of the body at once. Now that we have
- *    FEATURE_CONNECTION_KEEP_ALIVE, it actually matters.
- *
- *    Revision 1.192  2008/10/11 18:19:14  fabiankeil
- *    Even more chat() cosmetics.
- *
- *    Revision 1.191  2008/10/11 18:00:14  fabiankeil
- *    Reformat some comments in chat().
- *
- *    Revision 1.190  2008/10/11 14:58:00  fabiankeil
- *    In case of chunk-encoded content, stop reading if
- *    the buffer looks like it ends with the last chunk.
- *
- *    Revision 1.189  2008/10/11 09:53:00  fabiankeil
- *    Let server_response_is_complete() deal properly with
- *    content that is neither buffered nor read all at once.
- *
- *    Revision 1.188  2008/10/09 18:21:41  fabiankeil
- *    Flush work-in-progress changes to keep outgoing connections
- *    alive where possible. Incomplete and mostly #ifdef'd out.
- *
- *    Revision 1.187  2008/09/07 12:35:05  fabiankeil
- *    Add mutex lock support for _WIN32.
- *
- *    Revision 1.186  2008/09/04 08:13:58  fabiankeil
- *    Prepare for critical sections on Windows by adding a
- *    layer of indirection before the pthread mutex functions.
- *
- *    Revision 1.185  2008/08/30 12:03:07  fabiankeil
- *    Remove FEATURE_COOKIE_JAR.
- *
- *    Revision 1.184  2008/08/22 15:34:45  fabiankeil
- *    - Silence LLVM/Clang complaint.
- *    - Make received_hup_signal static.
- *    - Hide definitions for basedir, pidfile and received_hup_signal
- *      from __EMX__ as they only seem to be used in case of #ifdef unix.
- *
- *    Revision 1.183  2008/08/21 07:09:35  fabiankeil
- *    Accept Shoutcast responses again. Problem reported
- *    and fix suggested by Stefan in #2062860.
- *
- *    Revision 1.182  2008/06/27 11:13:56  fabiankeil
- *    Fix possible NULL-pointer dereference reported
- *    by din_a4 in #2003937. Pointy hat to me.
- *
- *    Revision 1.181  2008/05/21 15:47:15  fabiankeil
- *    Streamline sed()'s prototype and declare
- *    the header parse and add structures static.
- *
- *    Revision 1.180  2008/05/21 15:26:32  fabiankeil
- *    - Mark csp as immutable for send_crunch_response().
- *    - Fix comment spelling.
- *
- *    Revision 1.179  2008/05/20 20:13:32  fabiankeil
- *    Factor update_server_headers() out of sed(), ditch the
- *    first_run hack and make server_patterns_light static.
- *
- *    Revision 1.178  2008/05/10 13:23:38  fabiankeil
- *    Don't provide get_header() with the whole client state
- *    structure when it only needs access to csp->iob.
- *
- *    Revision 1.177  2008/05/10 11:51:12  fabiankeil
- *    Make the "read the rest of the headers" loop a bit more readable.
- *
- *    Revision 1.176  2008/05/10 11:37:57  fabiankeil
- *    - Instead of logging when the IIS5 hack is enabled, log when it fails.
- *    - Remove useless comment.
- *
- *    Revision 1.175  2008/05/09 18:53:59  fabiankeil
- *    Fix comment grammar.
- *
- *    Revision 1.174  2008/05/07 18:05:53  fabiankeil
- *    Remove the pointless buffer in client_protocol_is_unsupported().
- *
- *    Revision 1.173  2008/05/06 15:09:00  fabiankeil
- *    Least-effort fix for bug #1821930 (reported by Lee):
- *    If the response doesn't look like HTTP,
- *    tell the client and log the problem.
- *
- *    Revision 1.172  2008/04/16 16:38:21  fabiankeil
- *    Don't pass the whole csp structure to flush_socket()
- *    when it only needs a file descriptor and a buffer.
- *
- *    Revision 1.171  2008/03/27 18:27:25  fabiankeil
- *    Remove kill-popups action.
- *
- *    Revision 1.170  2008/03/06 16:33:46  fabiankeil
- *    If limit-connect isn't used, don't limit CONNECT requests to port 443.
- *
- *    Revision 1.169  2008/03/04 18:30:39  fabiankeil
- *    Remove the treat-forbidden-connects-like-blocks action. We now
- *    use the "blocked" page for forbidden CONNECT requests by default.
- *
- *    Revision 1.168  2008/03/02 12:25:25  fabiankeil
- *    Also use shiny new connect_port_is_forbidden() in jcc.c.
- *
- *    Revision 1.167  2008/02/23 16:57:12  fabiankeil
- *    Rename url_actions() to get_url_actions() and let it
- *    use the standard parameter ordering.
- *
- *    Revision 1.166  2008/02/23 16:33:43  fabiankeil
- *    Let forward_url() use the standard parameter ordering
- *    and mark its second parameter immutable.
- *
- *    Revision 1.165  2008/02/02 19:36:56  fabiankeil
- *    Remove the "Listening ... for local connections only" log message.
- *    Whether or not remote connections are able to reach Privoxy is up
- *    to the operating system.
- *
- *    Revision 1.164  2007/12/16 18:32:46  fabiankeil
- *    Prevent the log messages for CONNECT requests to unacceptable
- *    ports from printing the limit-connect argument as [null] if
- *    limit-connect hasn't been explicitly enabled.
- *
- *    Revision 1.163  2007/12/13 01:47:11  david__schmidt
- *    Make sure all console-mode apps get a usage() instance
- *
- *    Revision 1.162  2007/12/06 17:54:57  fabiankeil
- *    Reword NO_SERVER_DATA_RESPONSE to make it harder
- *    to misunderstand what the message is all about.
- *
- *    Revision 1.161  2007/12/04 19:44:22  fabiankeil
- *    Unbreak trustfile which previously didn't work without
- *    FEATURE_TOGGLE. Fixes BR#1843585, reported by Lee.
- *
- *    Revision 1.160  2007/11/29 18:00:29  fabiankeil
- *    Plug memory leak. Spotted by Valgrind, triggered by
- *    Privoxy-Regression-Test feeding proxyfuzz.py.
- *
- *    Revision 1.159  2007/11/24 14:34:09  fabiankeil
- *    In the HTTP snipplets, refer to the client as client.
- *
- *    Revision 1.158  2007/11/11 16:44:17  fabiankeil
- *    Emit a log message when activating the MS IIS5 hack.
- *
- *    Revision 1.157  2007/11/03 17:34:49  fabiankeil
- *    Log the "weak randomization factor" warning only
- *    once for mingw32 and provide some more details.
- *
- *    Revision 1.156  2007/11/01 18:20:58  fabiankeil
- *    Initialize log module after initializing mutexes, future
- *    deadlocks in that code should now work cross-platform.
- *
- *    Revision 1.155  2007/10/23 20:12:45  fabiankeil
- *    Fix first CSUCCEED line to end in \r\n as required by RFC1945.
- *    Reported by Bert van Leeuwen in BR#1818808.
- *
- *    Revision 1.154  2007/10/19 17:00:08  fabiankeil
- *    Downgrade "Flushing header and buffers" message to LOG_LEVEL_INFO.
- *
- *    Revision 1.153  2007/10/14 14:12:41  fabiankeil
- *    When in daemon mode, close stderr after the configuration file has been
- *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
- *
- *    Revision 1.152  2007/10/04 18:03:34  fabiankeil
- *    - Fix a crash when parsing invalid requests whose first header
- *      is rejected by get_header(). Regression (re?)introduced
- *      in r1.143 by yours truly.
- *    - Move ACTION_VANILLA_WAFER handling into parsers.c's
- *      client_cookie_adder() to make sure send-vanilla-wafer can be
- *      controlled through tags (and thus regression-tested).
- *
- *    Revision 1.151  2007/09/29 10:21:16  fabiankeil
- *    - Move get_filter_function() from jcc.c to filters.c
- *      so the filter functions can be static.
- *    - Don't bother filtering body-less responses.
- *
- *    Revision 1.150  2007/09/28 16:39:29  fabiankeil
- *    Execute content filters through execute_content_filter().
- *
- *    Revision 1.149  2007/09/04 15:08:48  fabiankeil
- *    Initialize req to NULL to make sure it's defined if the
- *    first read_socket() call fails. Reported by icmp30.
- *
- *    Revision 1.148  2007/08/26 16:47:13  fabiankeil
- *    Add Stephen Gildea's --pre-chroot-nslookup patch [#1276666],
- *    extensive comments moved to user manual.
- *
- *    Revision 1.147  2007/08/25 14:42:40  fabiankeil
- *    Don't crash if a broken header filter wiped out the request line.
- *
- *    Revision 1.146  2007/08/20 17:09:32  fabiankeil
- *    Fix byte_count calculation in case of flushes
- *    and don't parse the server headers a second time.
- *
- *    Revision 1.145  2007/08/19 13:13:31  fabiankeil
- *    - If there's a connection problem after we already forwarded
- *      parts of the original content, just hang up. Fixes BR#1776724.
- *    - Fix warnings about unused code on mingw32.
- *    - In case of flushes, calculate the byte count
- *      less incorrectly (I think).
- *
- *    Revision 1.144  2007/08/11 14:43:22  fabiankeil
- *    Add some more prototypes for static functions.
- *
- *    Revision 1.143  2007/08/05 13:58:19  fabiankeil
- *    Comment out request_contains_null_bytes() until it's used again.
- *
- *    Revision 1.142  2007/08/05 13:50:26  fabiankeil
- *    #1763173 from Stefan Huehner: s@const static@static const@
- *    and declare some more functions static.
- *
- *    Revision 1.141  2007/08/04 09:56:23  fabiankeil
- *    - Log rejected CONNECT requests with LOG_LEVEL_INFO
- *      and explain why they were rejected in the first place.
- *    - Fix the LOG_LEVEL_CLF message for crunches of unallowed
- *      CONNECT requests. The request line was missing.
- *    - Add two more XXX reminders as we don't have enough already.
- *
- *    Revision 1.140  2007/07/21 11:51:36  fabiankeil
- *    As Hal noticed, checking dispatch_cgi() as the last cruncher
- *    looks like a bug if CGI requests are blocked unintentionally,
- *    so don't do it unless the user enabled the new config option
- *    "allow-cgi-request-crunching".
- *
- *    Revision 1.139  2007/07/14 07:46:41  fabiankeil
- *    - Allow to rewrite the request destination behind the client's back.
- *    - Turn the weird-looking unconditional for loop that
- *      reads the client request into a conditional while loop.
- *      Move the stuff that only runs once out of the loop.
- *    - Move parts of chat(), server_content_type() and the
- *      necessary stuff to fix BR#1750917 into get_filter_function().
- *
- *    Revision 1.138  2007/06/03 18:45:18  fabiankeil
- *    Temporary workaround for BR#1730105.
- *
- *    Revision 1.137  2007/06/01 18:16:36  fabiankeil
- *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
- *    deadlocks and crashes on OpenBSD and possibly other OS with neither
- *    gethostbyname_r() nor gethostaddr_r(). Closes BR#1729174.
- *    Thanks to Ralf Horstmann for report and solution.
- *
- *    Revision 1.136  2007/06/01 16:41:11  fabiankeil
- *    Add forward-override{} to change the forwarding settings through
- *    action sections. This is mainly interesting to forward different
- *    clients differently (for example based on User-Agent or request
- *    origin).
- *
- *    Revision 1.135  2007/05/24 17:03:50  fabiankeil
- *    - Let usage() mention the --chroot parameter.
- *    - Use read_socket() consistently and always leave
- *      the last buffer byte alone, even in cases where
- *      null termination (currently) doesn't matter.
- *
- *    Revision 1.134  2007/05/16 14:59:46  fabiankeil
- *    - Fix config file loading on Unix if no config file is specified.
- *      Since r1.97 Privoxy would always interpret the last argument as
- *      config file, even if it's a valid command line option.
- *    - Abort in case of unrecognized command line options. Closes #1719696.
- *    - Remove a bunch of unnecessary strcpy() calls (yay for c&p without thinking).
- *    - Replace the remaining strcpy() and strcat() calls with strlcpy() and strcat().
- *
- *    Revision 1.133  2007/05/04 11:23:19  fabiankeil
- *    - Don't rerun crunchers that only depend on the request URL.
- *    - Don't count redirects and CGI requests as "blocked requests".
- *
- *    Revision 1.132  2007/04/25 15:15:17  fabiankeil
- *    Support crunching based on tags created by server-header taggers.
- *
- *    Revision 1.131  2007/04/22 13:24:50  fabiankeil
- *    Make HTTP snippets static (again). Add a Content-Type for those
- *    with content so the browser doesn't guess it based on the URL.
- *
- *    Revision 1.130  2007/04/19 13:47:34  fabiankeil
- *    Move crunching and request line rebuilding out of chat().
- *
- *    Revision 1.129  2007/04/15 16:39:20  fabiankeil
- *    Introduce tags as alternative way to specify which
- *    actions apply to a request. At the moment tags can be
- *    created based on client and server headers.
- *
- *    Revision 1.128  2007/03/25 16:55:54  fabiankeil
- *    Don't CLF-log CONNECT requests twice.
- *
- *    Revision 1.127  2007/03/20 13:53:17  fabiankeil
- *    Log the source address for ACL-related connection drops.
- *
- *    Revision 1.126  2007/03/17 15:20:05  fabiankeil
- *    New config option: enforce-blocks.
- *
- *    Revision 1.125  2007/03/09 14:12:00  fabiankeil
- *    - Move null byte check into separate function.
- *    - Don't confuse the client with error pages
- *      if a CONNECT request was already confirmed.
- *
- *    Revision 1.124  2007/02/23 14:59:54  fabiankeil
- *    Speed up NULL byte escaping and only log the complete
- *    NULL byte requests with header debugging enabled.
- *
- *    Revision 1.123  2007/02/21 18:42:10  fabiankeil
- *    Answer requests that contain NULL bytes with
- *    a custom response instead of waiting for more
- *    data until the client eventually hangs up.
- *
- *    Revision 1.122  2007/02/07 11:12:02  fabiankeil
- *    - Move delivery and logging of crunched responses
- *      from chat() into send_crunch_response().
- *    - Display the reason for generating http_responses.
- *    - Log the content length for LOG_LEVEL_CLF correctly
- *      (still incorrect for some fixed responses).
- *    - Reword an incorrect comment about
- *      treat-forbidden-connects-like-blocks violating
- *      the specs.
- *    - Add some log messages.
- *
- *    Revision 1.121  2007/01/27 10:52:56  fabiankeil
- *    Move mutex initialization into separate
- *    function and exit in case of errors.
- *
- *    Revision 1.120  2007/01/26 14:18:42  fabiankeil
- *    - Start to reduce chat()'s line count and move
- *      parts of it into separate functions.
- *    - Add "HTTP/1.1 100 Continue" hack for BR 756734.
- *
- *    Revision 1.119  2007/01/25 14:02:30  fabiankeil
- *    - Add Proxy-Agent header to HTTP snippets that are
- *      supposed to reach HTTP clients only.
- *    - Made a few CONNECT log messages more descriptive.
- *    - Catch completely empty server responses (as seen
- *      with Tor's fake ".noconnect" top level domain).
- *    - Use shiny new "forwarding-failed" template for socks errors.
- *
- *    Revision 1.118  2007/01/07 07:43:43  joergs
- *    AmigaOS4 support added.
- *
- *    Revision 1.117  2006/12/31 17:56:37  fabiankeil
- *    Added config option accept-intercepted-requests
- *    and disabled it by default.
- *
- *    Revision 1.116  2006/12/29 19:08:22  fabiankeil
- *    Reverted parts of my last commit
- *    to keep error handling working.
- *
- *    Revision 1.115  2006/12/29 17:38:57  fabiankeil
- *    Fixed gcc43 conversion warnings.
- *
- *    Revision 1.114  2006/12/27 18:52:02  fabiankeil
- *    Fix -pedantic ISO C warning about converting
- *    from function pointer to object pointer.
- *
- *    Revision 1.113  2006/12/26 17:38:50  fabiankeil
- *    Silence compiler warning I introduced with my last commit.
- *
- *    Revision 1.112  2006/12/26 17:31:41  fabiankeil
- *    Mutex protect rand() if POSIX threading
- *    is used, warn the user if that's not possible
- *    and stop using it on _WIN32 where it could
- *    cause crashes.
- *
- *    Revision 1.111  2006/12/23 16:15:06  fabiankeil
- *    Don't prevent core dumps by catching SIGABRT.
- *    It's rude and makes debugging unreasonable painful.
- *
- *    Revision 1.110  2006/12/13 14:52:53  etresoft
- *    Fix build failure on MacOS X. Global symbols can be either static or extern, but not both.
- *
- *    Revision 1.109  2006/12/06 19:41:40  fabiankeil
- *    Privoxy is now able to run as intercepting
- *    proxy in combination with any packet filter
- *    that does the port redirection. The destination
- *    is extracted from the "Host:" header which
- *    should be available for nearly all requests.
- *
- *    Moved HTTP snipplets into jcc.c.
- *    Added error message for gopher proxy requests.
- *
- *    Revision 1.108  2006/11/28 15:38:51  fabiankeil
- *    Only unlink the pidfile if it's actually used.
- *
- *    Change order of interception checks to make
- *    it possible to block or redirect requests for
- *    the cgi pages.
- *
- *    Revision 1.107  2006/11/13 19:05:51  fabiankeil
- *    Make pthread mutex locking more generic. Instead of
- *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
- *    and use mutex locking unless there is an _r function
- *    available. Better safe than sorry.
- *
- *    Fixes "./configure --disable-pthread" and should result
- *    in less threading-related problems on pthread-using platforms,
- *    but it still doesn't fix BR#1122404.
- *
- *    Revision 1.106  2006/11/06 19:58:23  fabiankeil
- *    Move pthread.h inclusion from jcc.c to jcc.h.
- *    Fixes build on x86-freebsd1 (FreeBSD 5.4-RELEASE).
- *
- *    Revision 1.105  2006/11/06 14:26:02  fabiankeil
- *    Don't exit after receiving the second SIGHUP on Solaris.
- *
- *    Fixes BR 1052235, but the same problem may exist on other
- *    systems. Once 3.0.6 is out we should use sigset()
- *    where available and see if it breaks anything.
- *
- *    Revision 1.104  2006/09/23 13:26:38  roro
- *    Replace TABs by spaces in source code.
- *
- *    Revision 1.103  2006/09/21 12:54:43  fabiankeil
- *    Fix +redirect{}. Didn't work with -fast-redirects.
- *
- *    Revision 1.102  2006/09/06 13:03:04  fabiankeil
- *    Respond with 400 and a short text message
- *    if the client tries to use Privoxy as FTP proxy.
- *
- *    Revision 1.101  2006/09/06 09:23:37  fabiankeil
- *    Make number of retries in case of forwarded-connect problems
- *    a config file option (forwarded-connect-retries) and use 0 as
- *    default.
- *
- *    Revision 1.100  2006/09/03 19:42:59  fabiankeil
- *    Set random(3) seed.
- *
- *    Revision 1.99  2006/09/02 15:36:42  fabiankeil
- *    Follow the OpenBSD port's lead and protect the resolve
- *    functions on OpenBSD as well.
- *
- *    Revision 1.98  2006/08/24 11:01:34  fabiankeil
- *    --user fix. Only use the user as group if no group is specified.
- *    Solves BR 1492612. Thanks to Spinor S. and David Laight.
- *
- *    Revision 1.97  2006/08/18 15:23:17  david__schmidt
- *    Windows service (re-)integration
- *
- *    The new args are:
- *
- *    --install[:service_name]
- *    --uninstall[:service_name]
- *    --service
- *
- *    They work as follows:
- *    --install will create a service for you and then terminate.
- *    By default the service name will be "privoxy" (without the quotes).
- *    However you can run multiple services if you wish, just by adding
- *    a colon and then a name (no spaces).
- *
- *    --uninstall follows the exact same rules a --install.
- *
- *    --service is used when the program is executed by the service
- *    control manager, and in normal circumstances would never be
- *    used as a command line argument.
- *
- *    Revision 1.96  2006/08/15 20:12:36  david__schmidt
- *    Windows service integration
- *
- *    Revision 1.95  2006/08/03 02:46:41  david__schmidt
- *    Incorporate Fabian Keil's patch work:
-http://www.fabiankeil.de/sourcecode/privoxy/
- *
- *    Revision 1.94  2006/07/18 14:48:46  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.92.2.16  2005/04/03 20:10:50  david__schmidt
- *    Thanks to Jindrich Makovicka for a race condition fix for the log
- *    file.  The race condition remains for non-pthread implementations.
- *    Reference patch #1175720.
- *
- *    Revision 1.92.2.15  2004/10/03 12:53:32  david__schmidt
- *    Add the ability to check jpeg images for invalid
- *    lengths of comment blocks.  Defensive strategy
- *    against the exploit:
- *       Microsoft Security Bulletin MS04-028
- *       Buffer Overrun in JPEG Processing (GDI+) Could
- *       Allow Code Execution (833987)
- *    Enabled with +inspect-jpegs in actions files.
- *
- *    Revision 1.92.2.14  2003/12/12 12:52:53  oes
- *    - Fixed usage info for non-unix platforms
- *    - Fixed small cmdline parsing bug
- *
- *    Revision 1.92.2.13  2003/11/27 19:20:27  oes
- *    Diagnostics: Now preserve the returncode of pthread_create
- *    in errno. Closes BR #775721. Thanks to Geoffrey Hausheer.
- *
- *    Revision 1.92.2.12  2003/07/11 11:34:19  oes
- *    No longer ignore SIGCHLD. Fixes bug #769381
- *
- *    Revision 1.92.2.11  2003/05/14 12:32:02  oes
- *    Close jarfile on graceful exit, remove stray line
- *
- *    Revision 1.92.2.10  2003/05/08 15:13:46  oes
- *    Cosmetics: Killed a warning, a typo and an allocation left at exit
- *
- *    Revision 1.92.2.9  2003/04/03 15:08:42  oes
- *    No longer rely on non-POSIX.1 extensions of getcwd().
- *    Fixes bug #711001
- *
- *    Revision 1.92.2.8  2003/03/31 13:12:32  oes
- *    Replaced setenv() by posix-compliant putenv()
- *    Thanks to Neil McCalden (nmcc AT users.sf.net).
- *
- *    Revision 1.92.2.7  2003/03/17 16:48:59  oes
- *    Added chroot ability, thanks to patch by Sviatoslav Sviridov
- *
- *    Revision 1.92.2.6  2003/03/11 11:55:00  oes
- *    Clean-up and extension of improvements for forked mode:
- *     - Child's return code now consists of flags RC_FLAG_*
- *     - Reporting toggle to parent now properly #ifdef'ed
- *     - Children now report blocking to parent. This enables
- *       statistics in forked mode
- *
- *    Revision 1.92.2.5  2003/03/10 23:45:32  oes
- *    Fixed bug #700381: Non-Threaded version now capable of being toggled.
- *    Children now report having been toggled through _exit(17), parents
- *    watch for that code and toggle themselves if found.
- *
- *    Revision 1.92.2.4  2003/03/07 03:41:04  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with 
- *    mutex semaphores for OSX.  Hopefully this will take care of all 
- *    of those pesky crash reports.
- *
- *    Revision 1.92.2.3  2003/02/28 12:53:06  oes
- *    Fixed two mostly harmless mem leaks
- *
- *    Revision 1.92.2.2  2002/11/20 14:37:47  oes
- *    Fix: Head of global clients list now initialized to NULL
- *
- *    Revision 1.92.2.1  2002/09/25 14:52:24  oes
- *    Added basic support for OPTIONS and TRACE HTTP methods:
- *     - New interceptor direct_response() added in chat().
- *     - sed() moved to earlier in the process, so that the
- *       Host: header is evaluated before actions and forwarding
- *       are decided on.
- *
- *    Revision 1.92  2002/05/08 16:00:46  oes
- *    Chat's buffer handling:
- *     - Fixed bug with unchecked out-of-mem conditions
- *       while reading client request & server headers
- *     - No longer predict if the buffer limit will be exceeded
- *       in the next read -- check add_to_iob's new
- *       return code. If buffer couldn't be extended
- *       (policy or out-of-mem) while
- *       - reading from client: abort
- *       - reading server headers: send error page
- *       - buffering server body for filter: flush,
- *         and if that fails: send error page
- *
- *    Revision 1.91  2002/04/08 20:35:58  swa
- *    fixed JB spelling
- *
- *    Revision 1.90  2002/04/02 14:57:28  oes
- *    Made sending wafers independent of FEATURE_COOKIE_JAR
- *
- *    Revision 1.89  2002/03/31 17:18:59  jongfoster
- *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
- *
- *    Revision 1.88  2002/03/27 14:32:43  david__schmidt
- *    More compiler warning message maintenance
- *
- *    Revision 1.87  2002/03/26 22:29:54  swa
- *    we have a new homepage!
- *
- *    Revision 1.86  2002/03/25 17:04:55  david__schmidt
- *    Workaround for closing the jarfile before load_config() comes around again
- *
- *    Revision 1.85  2002/03/24 15:23:33  jongfoster
- *    Name changes
- *
- *    Revision 1.84  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.83  2002/03/16 23:54:06  jongfoster
- *    Adding graceful termination feature, to help look for memory leaks.
- *    If you enable this (which, by design, has to be done by hand
- *    editing config.h) and then go to http://i.j.b/die, then the program
- *    will exit cleanly after the *next* request.  It should free all the
- *    memory that was used.
- *
- *    Revision 1.82  2002/03/13 00:27:05  jongfoster
- *    Killing warnings
- *
- *    Revision 1.81  2002/03/12 01:42:50  oes
- *    Introduced modular filters
- *
- *    Revision 1.80  2002/03/11 22:07:05  david__schmidt
- *    OS/2 port maintenance:
- *    - Fixed EMX build - it had decayed a little
- *    - Fixed inexplicable crash during FD_ZERO - must be due to a bad macro.
- *      substituted a memset for now.
- *
- *    Revision 1.79  2002/03/09 20:03:52  jongfoster
- *    - Making various functions return int rather than size_t.
- *      (Undoing a recent change).  Since size_t is unsigned on
- *      Windows, functions like read_socket that return -1 on
- *      error cannot return a size_t.
- *
- *      THIS WAS A MAJOR BUG - it caused frequent, unpredictable
- *      crashes, and also frequently caused JB to jump to 100%
- *      CPU and stay there.  (Because it thought it had just
- *      read ((unsigned)-1) == 4Gb of data...)
- *
- *    - The signature of write_socket has changed, it now simply
- *      returns success=0/failure=nonzero.
- *
- *    - Trying to get rid of a few warnings --with-debug on
- *      Windows, I've introduced a new type "jb_socket".  This is
- *      used for the socket file descriptors.  On Windows, this
- *      is SOCKET (a typedef for unsigned).  Everywhere else, it's
- *      an int.  The error value can't be -1 any more, so it's
- *      now JB_INVALID_SOCKET (which is -1 on UNIX, and in
- *      Windows it maps to the #define INVALID_SOCKET.)
- *
- *    - The signature of bind_port has changed.
- *
- *    Revision 1.78  2002/03/08 21:35:04  oes
- *    Added optional group supplement to --user option. Will now use default group of user if no group given
- *
- *    Revision 1.77  2002/03/07 03:52:06  oes
- *     - Fixed compiler warnings etc
- *     - Improved handling of failed DNS lookups
- *
- *    Revision 1.76  2002/03/06 22:54:35  jongfoster
- *    Automated function-comment nitpicking.
- *
- *    Revision 1.75  2002/03/06 10:02:19  oes
- *    Fixed stupid bug when --user was not given
- *
- *    Revision 1.74  2002/03/06 00:49:31  jongfoster
- *    Fixing warning on Windows
- *    Making #ifdefs that refer to the same variable consistently
- *    use #ifdef unix rather than mixing #ifdef unix & #ifndef OS2
- *
- *    Revision 1.73  2002/03/05 23:57:30  hal9
- *    Stray character 's' on line 1618 was breaking build.
- *
- *    Revision 1.72  2002/03/05 21:33:45  david__schmidt
- *    - Re-enable OS/2 building after new parms were added
- *    - Fix false out of memory report when resolving CGI templates when no IP
- *      address is available of failed attempt (a la no such domain)
- *
- *    Revision 1.71  2002/03/05 18:13:56  oes
- *    Added --user option
- *
- *    Revision 1.70  2002/03/05 04:52:42  oes
- *    Deleted non-errlog debugging code
- *
- *    Revision 1.69  2002/03/04 23:50:00  jongfoster
- *    Splitting off bind_port() call into bind_port_helper(), with
- *    improved logging.
- *
- *    Revision 1.68  2002/03/04 20:17:32  oes
- *    Fixed usage info
- *
- *    Revision 1.67  2002/03/04 18:18:57  oes
- *    - Removed _DEBUG mode
- *    - Cleand up cmdline parsing
- *    - Introduced --no-daemon, --pidfile options
- *    - Cleaned up signal handling:
- *      - Terminate cleanly on INT, TERM and ABRT
- *      - Schedule logfile for re-opening on HUP
- *      - Ignore CHLD and PIPE
- *      - Leave the rest with their default handlers
- *      - Uniform handler registration
- *    - Added usage() function
- *    - Played styleguide police
- *
- *    Revision 1.66  2002/03/03 15:06:55  oes
- *    Re-enabled automatic config reloading
- *
- *    Revision 1.65  2002/03/03 14:49:11  oes
- *    Fixed CLF logging: Now uses client's original HTTP request
- *
- *    Revision 1.64  2002/03/03 09:18:03  joergs
- *    Made jumbjuster work on AmigaOS again.
- *
- *    Revision 1.63  2002/03/02 04:14:50  david__schmidt
- *    Clean up a little CRLF unpleasantness that suddenly appeared
- *
- *    Revision 1.62  2002/02/20 23:17:23  jongfoster
- *    Detecting some out-of memory conditions and exiting with a log message.
- *
- *    Revision 1.61  2002/01/17 21:01:52  jongfoster
- *    Moving all our URL and URL pattern parsing code to urlmatch.c.
- *
- *    Revision 1.60  2001/12/30 14:07:32  steudten
- *    - Add signal handling (unix)
- *    - Add SIGHUP handler (unix)
- *    - Add creation of pidfile (unix)
- *    - Add action 'top' in rc file (RH)
- *    - Add entry 'SIGNALS' to manpage
- *    - Add exit message to logfile (unix)
- *
- *    Revision 1.59  2001/12/13 14:07:18  oes
- *    Fixed Bug: 503 error page now sent OK
- *
- *    Revision 1.58  2001/11/30 23:37:24  jongfoster
- *    Renaming the Win32 config file to config.txt - this is almost the
- *    same as the corresponding UNIX name "config"
- *
- *    Revision 1.57  2001/11/16 00:47:43  jongfoster
- *    Changing the tty-disconnection code to use setsid().
- *
- *    Revision 1.56  2001/11/13 20:20:54  jongfoster
- *    Tabs->spaces, fixing a bug with missing {} around an if()
- *
- *    Revision 1.55  2001/11/13 20:14:53  jongfoster
- *    Patch for FreeBSD setpgrp() as suggested by Alexander Lazic
- *
- *    Revision 1.54  2001/11/07 00:03:14  steudten
- *    Give reliable return value if an error
- *    occurs not just 0 with new daemon mode.
- *
- *    Revision 1.53  2001/11/05 21:41:43  steudten
- *    Add changes to be a real daemon just for unix os.
- *    (change cwd to /, detach from controlling tty, set
- *    process group and session leader to the own process.
- *    Add DBG() Macro.
- *    Add some fatal-error log message for failed malloc().
- *    Add '-d' if compiled with 'configure --with-debug' to
- *    enable debug output.
- *
- *    Revision 1.52  2001/10/26 20:11:20  jongfoster
- *    Fixing type mismatch
- *
- *    Revision 1.51  2001/10/26 17:38:28  oes
- *    Cosmetics
- *
- *    Revision 1.50  2001/10/25 03:40:48  david__schmidt
- *    Change in porting tactics: OS/2's EMX porting layer doesn't allow multiple
- *    threads to call select() simultaneously.  So, it's time to do a real, live,
- *    native OS/2 port.  See defines for __EMX__ (the porting layer) vs. __OS2__
- *    (native). Both versions will work, but using __OS2__ offers multi-threading.
- *
- *    Revision 1.49  2001/10/23 21:41:35  jongfoster
- *    Added call to initialize the (statically-allocated of course)
- *    "out of memory" CGI response.
- *
- *    Revision 1.48  2001/10/10 19:56:46  jongfoster
- *    Moving some code that wasn't cookie-related out of an #ifdef
- *    FEATURE_COOKIE_JAR
- *
- *    Revision 1.47  2001/10/10 16:44:36  oes
- *    Added CONNECT destination port limitation check
- *
- *    Revision 1.46  2001/10/08 15:17:41  oes
- *    Re-enabled SSL forwarding
- *
- *    Revision 1.45  2001/10/07 15:42:11  oes
- *    Replaced 6 boolean members of csp with one bitmap (csp->flags)
- *
- *    Moved downgrading of the HTTP version from parse_http_request to
- *      chat(), since we can't decide if it is necessary before we have
- *      determined the actions for the URL. The HTTP command is now
- *      *always* re-built so the repairs need no longer be special-cased.
- *
- *    filter_popups now gets a csp pointer so it can raise the new
- *      CSP_FLAG_MODIFIED flag.
- *
- *    Bugfix
- *
- *    Added configurable size limit for the IOB. If the IOB grows so
- *      large that the next read would exceed the limit, the header
- *      is generated, and the header & unfiltered buffer are flushed
- *      to the client. Chat then continues in non-buffering,
- *      non-filtering body mode.
- *
- *    Revision 1.44  2001/10/02 18:13:57  oes
- *    Ooops
- *
- *    Revision 1.43  2001/10/02 15:32:13  oes
- *    Moved generation of hdr
- *
- *    Revision 1.42  2001/09/21 23:02:02  david__schmidt
- *    Cleaning up 2 compiler warnings on OS/2.
- *
- *    Revision 1.41  2001/09/16 17:05:14  jongfoster
- *    Removing unused #include showarg.h
- *
- *    Revision 1.40  2001/09/16 15:41:45  jongfoster
- *    Fixing signed/unsigned comparison warning.
- *
- *    Revision 1.39  2001/09/16 13:21:27  jongfoster
- *    Changes to use new list functions.
- *
- *    Revision 1.38  2001/09/16 13:01:46  jongfoster
- *    Removing redundant function call that zeroed zalloc()'d memory.
- *
- *    Revision 1.37  2001/09/10 11:12:24  oes
- *    Deleted unused variable
- *
- *    Revision 1.36  2001/09/10 10:56:15  oes
- *    Silenced compiler warnings
- *
- *    Revision 1.35  2001/07/31 14:44:22  oes
- *    Deleted unused size parameter from filter_popups()
- *
- *    Revision 1.34  2001/07/30 22:08:36  jongfoster
- *    Tidying up #defines:
- *    - All feature #defines are now of the form FEATURE_xxx
- *    - Permanently turned off WIN_GUI_EDIT
- *    - Permanently turned on WEBDAV and SPLIT_PROXY_ARGS
- *
- *    Revision 1.33  2001/07/29 19:32:00  jongfoster
- *    Renaming _main() [mingw32 only] to real_main(), for ANSI compliance.
- *
- *    Revision 1.32  2001/07/29 18:47:05  jongfoster
- *    Adding missing #include "loadcfg.h"
- *
- *    Revision 1.31  2001/07/29 12:17:48  oes
- *    Applied pthread fix by Paul Lieverse
- *
- *    Revision 1.30  2001/07/25 22:57:13  jongfoster
- *    __BEOS__ no longer overrides FEATURE_PTHREAD.
- *    This is because FEATURE_PTHREAD will soon be widely used, so I
- *    want to keep it simple.
- *
- *    Revision 1.29  2001/07/24 12:47:06  oes
- *    Applied BeOS support update by Eugenia
- *
- *    Revision 1.28  2001/07/23 13:26:12  oes
- *    Fixed bug in popup-killing for the first read that caused binary garbage to be sent between headers and body
- *
- *    Revision 1.27  2001/07/19 19:09:47  haroon
- *    - Added code to take care of the situation where while processing the first
- *      server response (which includes the server header), after finding the end
- *      of the headers we were not looking past the end of the headers for
- *      content modification. I enabled it for filter_popups.
- *      Someone else should look to see if other similar operations should be
- *      done to the discarded portion of the buffer.
- *
- *      Note 2001/07/20: No, the other content modification mechanisms will process
- *                       the whole iob later anyway. --oes
- *
- *    Revision 1.26  2001/07/18 12:31:36  oes
- *    cosmetics
- *
- *    Revision 1.25  2001/07/15 19:43:49  jongfoster
- *    Supports POSIX threads.
- *    Also removed some unused #includes.
- *
- *    Revision 1.24  2001/07/13 14:00:40  oes
- *     - Generic content modification scheme:
- *       Each feature has its own applicability flag that is set
- *       from csp->action->flags.
- *       Replaced the "filtering" int flag , by a function pointer
- *       "content_filter" to the function that will do the content
- *       modification. If it is != NULL, the document will be buffered
- *       and processed through *content_filter, which must set
- *       csp->content_length and return a modified copy of the body
- *       or return NULL (on failiure).
- *     - Changed csp->is_text to the more generic bitmap csp->content_type
- *       which can currently take the valued CT_TEXT or CT_GIF
- *     - Reformatting etc
- *     - Removed all #ifdef PCRS
- *
- *    Revision 1.23  2001/07/02 02:28:25  iwanttokeepanon
- *    Added "#ifdef ACL_FILES" conditional compilation to line 1291 to exclude
- *    the `block_acl' call.  This prevents a compilation error when the user
- *    does not wish to use the "ACL" feature.
- *
- *    Revision 1.22  2001/06/29 21:45:41  oes
- *    Indentation, CRLF->LF, Tab-> Space
- *
- *    Revision 1.21  2001/06/29 13:29:36  oes
- *    - Cleaned up, improved comments
- *    - Unified all possible interceptors (CGI,
- *      block, trust, fast_redirect) in one
- *      place, with one (CGI) answer generation
- *      mechansim. Much clearer now.
- *    - Removed the GIF image generation, which
- *      is now done in filters.c:block_url()
- *    - Made error conditions like domain lookup
- *      failiure or (various) problems while talking
- *      to the server use cgi.c:error_response()
- *      instead of generating HTML/HTTP in chat() (yuck!)
- *    - Removed logentry from cancelled commit
- *
- *    Revision 1.20  2001/06/09 10:55:28  jongfoster
- *    Changing BUFSIZ ==> BUFFER_SIZE
- *
- *    Revision 1.19  2001/06/07 23:12:52  jongfoster
- *    Replacing function pointer in struct gateway with a directly
- *    called function forwarded_connect().
- *    Replacing struct gateway with struct forward_spec
- *
- *    Revision 1.18  2001/06/03 19:12:16  oes
- *    introduced new cgi handling
- *
- *    Revision 1.17  2001/06/01 20:07:23  jongfoster
- *    Now uses action +image-blocker{} rather than config->tinygif
- *
- *    Revision 1.16  2001/06/01 18:49:17  jongfoster
- *    Replaced "list_share" with "list" - the tiny memory gain was not
- *    worth the extra complexity.
- *
- *    Revision 1.15  2001/05/31 21:24:47  jongfoster
- *    Changed "permission" to "action" throughout.
- *    Removed DEFAULT_USER_AGENT - it must now be specified manually.
- *    Moved vanilla wafer check into chat(), since we must now
- *    decide whether or not to add it based on the URL.
- *
- *    Revision 1.14  2001/05/29 20:14:01  joergs
- *    AmigaOS bugfix: PCRS needs a lot of stack, stacksize for child threads
- *    increased.
- *
- *    Revision 1.13  2001/05/29 09:50:24  jongfoster
- *    Unified blocklist/imagelist/permissionslist.
- *    File format is still under discussion, but the internal changes
- *    are (mostly) done.
- *
- *    Also modified interceptor behaviour:
- *    - We now intercept all URLs beginning with one of the following
- *      prefixes (and *only* these prefixes):
- *        * http://i.j.b/
- *        * http://ijbswa.sf.net/config/
- *        * http://ijbswa.sourceforge.net/config/
- *    - New interceptors "home page" - go to http://i.j.b/ to see it.
- *    - Internal changes so that intercepted and fast redirect pages
- *      are not replaced with an image.
- *    - Interceptors now have the option to send a binary page direct
- *      to the client. (i.e. ijb-send-banner uses this)
- *    - Implemented show-url-info interceptor.  (Which is why I needed
- *      the above interceptors changes - a typical URL is
- *      "http://i.j.b/show-url-info?url=www.somesite.com/banner.gif".
- *      The previous mechanism would not have intercepted that, and
- *      if it had been intercepted then it then it would have replaced
- *      it with an image.)
- *
- *    Revision 1.12  2001/05/27 22:17:04  oes
- *
- *    - re_process_buffer no longer writes the modified buffer
- *      to the client, which was very ugly. It now returns the
- *      buffer, which it is then written by chat.
- *
- *    - content_length now adjusts the Content-Length: header
- *      for modified documents rather than crunch()ing it.
- *      (Length info in csp->content_length, which is 0 for
- *      unmodified documents)
- *
- *    - For this to work, sed() is called twice when filtering.
- *
- *    Revision 1.11  2001/05/26 17:27:53  jongfoster
- *    Added support for CLF and fixed LOG_LEVEL_LOG.
- *    Also did CRLF->LF fix of my previous patch.
- *
- *    Revision 1.10  2001/05/26 15:26:15  jongfoster
- *    ACL feature now provides more security by immediately dropping
- *    connections from untrusted hosts.
- *
- *    Revision 1.9  2001/05/26 00:28:36  jongfoster
- *    Automatic reloading of config file.
- *    Removed obsolete SIGHUP support (Unix) and Reload menu option (Win32).
- *    Most of the global variables have been moved to a new
- *    struct configuration_spec, accessed through csp->config->globalname
- *    Most of the globals remaining are used by the Win32 GUI.
- *
- *    Revision 1.8  2001/05/25 22:43:18  jongfoster
- *    Fixing minor memory leak and buffer overflow.
- *
- *    Revision 1.7  2001/05/25 22:34:30  jongfoster
- *    Hard tabs->Spaces
- *
- *    Revision 1.6  2001/05/23 00:13:58  joergs
- *    AmigaOS support fixed.
- *
- *    Revision 1.5  2001/05/22 18:46:04  oes
- *
- *    - Enabled filtering banners by size rather than URL
- *      by adding patterns that replace all standard banner
- *      sizes with the "Junkbuster" gif to the re_filterfile
- *
- *    - Enabled filtering WebBugs by providing a pattern
- *      which kills all 1x1 images
- *
- *    - Added support for PCRE_UNGREEDY behaviour to pcrs,
- *      which is selected by the (nonstandard and therefore
- *      capital) letter 'U' in the option string.
- *      It causes the quantifiers to be ungreedy by default.
- *      Appending a ? turns back to greedy (!).
- *
- *    - Added a new interceptor ijb-send-banner, which
- *      sends back the "Junkbuster" gif. Without imagelist or
- *      MSIE detection support, or if tinygif = 1, or the
- *      URL isn't recognized as an imageurl, a lame HTML
- *      explanation is sent instead.
- *
- *    - Added new feature, which permits blocking remote
- *      script redirects and firing back a local redirect
- *      to the browser.
- *      The feature is conditionally compiled, i.e. it
- *      can be disabled with --disable-fast-redirects,
- *      plus it must be activated by a "fast-redirects"
- *      line in the config file, has its own log level
- *      and of course wants to be displayed by show-proxy-args
- *      Note: Boy, all the #ifdefs in 1001 locations and
- *      all the fumbling with configure.in and acconfig.h
- *      were *way* more work than the feature itself :-(
- *
- *    - Because a generic redirect template was needed for
- *      this, tinygif = 3 now uses the same.
- *
- *    - Moved GIFs, and other static HTTP response templates
- *      to project.h
- *
- *    - Some minor fixes
- *
- *    - Removed some >400 CRs again (Jon, you really worked
- *      a lot! ;-)
- *
- *    Revision 1.4  2001/05/21 19:34:01  jongfoster
- *    Made failure to bind() a fatal error.
- *
- *    Revision 1.3  2001/05/20 01:21:20  jongfoster
- *    Version 2.9.4 checkin.
- *    - Merged popupfile and cookiefile, and added control over PCRS
- *      filtering, in new "permissionsfile".
- *    - Implemented LOG_LEVEL_FATAL, so that if there is a configuration
- *      file error you now get a message box (in the Win32 GUI) rather
- *      than the program exiting with no explanation.
- *    - Made killpopup use the PCRS MIME-type checking and HTTP-header
- *      skipping.
- *    - Removed tabs from "config"
- *    - Moved duplicated url parsing code in "loaders.c" to a new funcition.
- *    - Bumped up version number.
- *
- *    Revision 1.2  2001/05/17 22:34:44  oes
- *     - Added hint on GIF char array generation to jcc.c
- *     - Cleaned CRLF's from the sources and related files
- *     - Repaired logging for REF and FRC
- *
- *    Revision 1.1.1.1  2001/05/15 13:58:56  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 
@@ -1434,15 +237,6 @@ static const char MISSING_DESTINATION_RESPONSE[] =
    "Bad request. Privoxy was unable to extract the destination.\r\n";
 
 /* XXX: should be a template */
-static const char NO_SERVER_DATA_RESPONSE[] =
-   "HTTP/1.0 502 Server or forwarder response empty\r\n"
-   "Proxy-Agent: Privoxy " VERSION "\r\n"
-   "Content-Type: text/plain\r\n"
-   "Connection: close\r\n\r\n"
-   "Empty server or forwarder response.\r\n"
-   "The connection has been closed but Privoxy didn't receive any data.\r\n";
-
-/* XXX: should be a template */
 static const char INVALID_SERVER_HEADERS_RESPONSE[] =
    "HTTP/1.0 502 Server or forwarder response invalid\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
@@ -1468,13 +262,19 @@ static const char MESSED_UP_REQUEST_RESPONSE[] =
    "Connection: close\r\n\r\n"
    "Bad request. Messed up with header filters.\r\n";
 
-/* XXX: should be a template */
-static const char CONNECTION_TIMEOUT_RESPONSE[] =
-   "HTTP/1.0 502 Connection timeout\r\n"
+static const char TOO_MANY_CONNECTIONS_RESPONSE[] =
+   "HTTP/1.0 503 Too many open connections\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
-   "The connection timed out.\r\n";
+   "Maximum number of open connections reached.\r\n";
+
+static const char CLIENT_CONNECTION_TIMEOUT_RESPONSE[] =
+   "HTTP/1.0 504 Connection timeout\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "The connection timed out because the client request didn't arrive in time.\r\n";
 
 /* A function to crunch a response */
 typedef struct http_response *(*crunch_func_ptr)(struct client_state *);
@@ -1681,8 +481,10 @@ static jb_err get_request_destination_elsewhere(struct client_state *csp, struct
    }
    else if (JB_ERR_OK == get_destination_from_headers(headers, csp->http))
    {
+#ifndef FEATURE_EXTENDED_HOST_PATTERNS
       /* Split the domain we just got for pattern matching */
       init_domain_components(csp->http);
+#endif
 
       return JB_ERR_OK;
    }
@@ -1851,6 +653,12 @@ static const char *crunch_reason(const struct http_response *rsp)
          break;
       case RSP_REASON_OUT_OF_MEMORY:
          reason = "Out of memory (may mask other reasons)";
+         break;
+      case RSP_REASON_CONNECTION_TIMEOUT:
+         reason = "Connection timeout";
+         break;
+      case RSP_REASON_NO_SERVER_DATA:
+         reason = "No server data received";
          break;
       default:
          reason = "No reason recorded";
@@ -2229,7 +1037,7 @@ static int server_response_is_complete(struct client_state *csp,
  * Returns     :  N/A
  *
  *********************************************************************/
-static void wait_for_alive_connections()
+static void wait_for_alive_connections(void)
 {
    int connections_alive = close_unusable_connections();
 
@@ -2244,6 +1052,73 @@ static void wait_for_alive_connections()
 
    log_error(LOG_LEVEL_CONNECT, "No connections to wait for left.");
 
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  save_connection_destination
+ *
+ * Description :  Remembers a connection for reuse later on.
+ *
+ * Parameters  :
+ *          1  :  sfd  = Open socket to remember.
+ *          2  :  http = The destination for the connection.
+ *          3  :  fwd  = The forwarder settings used.
+ *          3  :  server_connection  = storage.
+ *
+ * Returns     : void
+ *
+ *********************************************************************/
+void save_connection_destination(jb_socket sfd,
+                                 const struct http_request *http,
+                                 const struct forward_spec *fwd,
+                                 struct reusable_connection *server_connection)
+{
+   assert(sfd != JB_INVALID_SOCKET);
+   assert(NULL != http->host);
+   server_connection->host = strdup(http->host);
+   if (NULL == server_connection->host)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory saving socket.");
+   }
+   server_connection->port = http->port;
+
+   assert(NULL != fwd);
+   assert(server_connection->gateway_host == NULL);
+   assert(server_connection->gateway_port == 0);
+   assert(server_connection->forwarder_type == 0);
+   assert(server_connection->forward_host == NULL);
+   assert(server_connection->forward_port == 0);
+
+   server_connection->forwarder_type = fwd->type;
+   if (NULL != fwd->gateway_host)
+   {
+      server_connection->gateway_host = strdup(fwd->gateway_host);
+      if (NULL == server_connection->gateway_host)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory saving gateway_host.");
+      }
+   }
+   else
+   {
+      server_connection->gateway_host = NULL;
+   }
+   server_connection->gateway_port = fwd->gateway_port;
+
+   if (NULL != fwd->forward_host)
+   {
+      server_connection->forward_host = strdup(fwd->forward_host);
+      if (NULL == server_connection->forward_host)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory saving forward_host.");
+      }
+   }
+   else
+   {
+      server_connection->forward_host = NULL;
+   }
+   server_connection->forward_port = fwd->forward_port;
 }
 #endif /* FEATURE_CONNECTION_KEEP_ALIVE */
 
@@ -2297,8 +1172,8 @@ static char *get_request_line(struct client_state *csp)
       {
          log_error(LOG_LEVEL_ERROR,
             "Stopped waiting for the request line.");
-         write_socket(csp->cfd, CONNECTION_TIMEOUT_RESPONSE,
-            strlen(CONNECTION_TIMEOUT_RESPONSE));
+         write_socket(csp->cfd, CLIENT_CONNECTION_TIMEOUT_RESPONSE,
+            strlen(CLIENT_CONNECTION_TIMEOUT_RESPONSE));
          return NULL;
       }
 
@@ -2428,6 +1303,7 @@ static jb_err receive_client_request(struct client_state *csp)
          {
             log_error(LOG_LEVEL_ERROR,
                "Stopped grabbing the client headers.");
+            destroy_list(headers);
             return JB_ERR_PARSE;
          }
 
@@ -2710,7 +1586,7 @@ static void chat(struct client_state *csp)
 
    if (fwd->forward_host)
    {
-      log_error(LOG_LEVEL_CONNECT, "via %s:%d to: %s",
+      log_error(LOG_LEVEL_CONNECT, "via [%s]:%d to: %s",
          fwd->forward_host, fwd->forward_port, http->hostport);
    }
    else
@@ -2720,41 +1596,67 @@ static void chat(struct client_state *csp)
 
    /* here we connect to the server, gateway, or the forwarder */
 
-   while ((csp->sfd = forwarded_connect(fwd, http, csp))
-      && (errno == EINVAL)
-      && (forwarded_connect_retries++ < max_forwarded_connect_retries))
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   if ((csp->sfd != JB_INVALID_SOCKET)
+      && socket_is_still_usable(csp->sfd)
+      && connection_destination_matches(&csp->server_connection, http, fwd))
    {
-      log_error(LOG_LEVEL_ERROR,
-         "failed request #%u to connect to %s. Trying again.",
-         forwarded_connect_retries, http->hostport);
+      log_error(LOG_LEVEL_CONNECT,
+         "Reusing server socket %u. Opened for %s.",
+         csp->sfd, csp->server_connection.host);
    }
-
-   if (csp->sfd == JB_INVALID_SOCKET)
+   else
    {
-      if (fwd->type != SOCKS_NONE)
+      if (csp->sfd != JB_INVALID_SOCKET)
       {
-         /* Socks error. */
-         rsp = error_response(csp, "forwarding-failed", errno);
+         log_error(LOG_LEVEL_CONNECT,
+            "Closing server socket %u. Opened for %s.",
+            csp->sfd, csp->server_connection.host);
+         close_socket(csp->sfd);
+         mark_connection_closed(&csp->server_connection);
       }
-      else if (errno == EINVAL)
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+      while ((csp->sfd = forwarded_connect(fwd, http, csp))
+         && (errno == EINVAL)
+         && (forwarded_connect_retries++ < max_forwarded_connect_retries))
       {
-         rsp = error_response(csp, "no-such-domain", errno);
-      }
-      else
-      {
-         rsp = error_response(csp, "connect-failed", errno);
-         log_error(LOG_LEVEL_CONNECT, "connect to: %s failed: %E",
-            http->hostport);
+         log_error(LOG_LEVEL_ERROR,
+            "failed request #%u to connect to %s. Trying again.",
+            forwarded_connect_retries, http->hostport);
       }
 
-      /* Write the answer to the client */
-      if (rsp != NULL)
+      if (csp->sfd == JB_INVALID_SOCKET)
       {
-         send_crunch_response(csp, rsp);
-      }
+         if (fwd->type != SOCKS_NONE)
+         {
+            /* Socks error. */
+            rsp = error_response(csp, "forwarding-failed");
+         }
+         else if (errno == EINVAL)
+         {
+            rsp = error_response(csp, "no-such-domain");
+         }
+         else
+         {
+            rsp = error_response(csp, "connect-failed");
+            log_error(LOG_LEVEL_CONNECT, "connect to: %s failed: %E",
+               http->hostport);
+         }
 
-      return;
+         /* Write the answer to the client */
+         if (rsp != NULL)
+         {
+            send_crunch_response(csp, rsp);
+         }
+
+         return;
+      }
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+      save_connection_destination(csp->sfd, http, fwd, &csp->server_connection);
+      csp->server_connection.keep_alive_timeout = (unsigned)csp->config->keep_alive_timeout;
    }
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
    hdr = list_to_text(csp->headers);
    if (hdr == NULL)
@@ -2776,7 +1678,7 @@ static void chat(struct client_state *csp)
          log_error(LOG_LEVEL_CONNECT,
             "write header to: %s failed: %E", http->hostport);
 
-         rsp = error_response(csp, "connect-failed", errno);
+         rsp = error_response(csp, "connect-failed");
          if (rsp)
          {
             send_crunch_response(csp, rsp);
@@ -2866,8 +1768,7 @@ static void chat(struct client_state *csp)
             "Didn't receive data in time: %s", http->url);
          if ((byte_count == 0) && (http->ssl == 0))
          {
-            write_socket(csp->cfd, CONNECTION_TIMEOUT_RESPONSE,
-               strlen(CONNECTION_TIMEOUT_RESPONSE));
+            send_crunch_response(csp, error_response(csp, "connection-timeout"));
          }
          mark_server_socket_tainted(csp);
          return;
@@ -2882,6 +1783,9 @@ static void chat(struct client_state *csp)
       /*
        * This is the body of the browser's request,
        * just read and write it.
+       *
+       * XXX: Make sure the client doesn't use pipelining
+       * behind Privoxy's back.
        */
       if (FD_ISSET(csp->cfd, &rfds))
       {
@@ -2910,7 +1814,7 @@ static void chat(struct client_state *csp)
        */
       if (FD_ISSET(csp->sfd, &rfds))
       {
-         fflush(0);
+         fflush(NULL);
          len = read_socket(csp->sfd, buf, sizeof(buf) - 1);
 
          if (len < 0)
@@ -2942,14 +1846,11 @@ static void chat(struct client_state *csp)
                mark_server_socket_tainted(csp);
                return;
             }
-
-            rsp = error_response(csp, "connect-failed", errno);
-            if (rsp)
-            {
-               send_crunch_response(csp, rsp);
-            }
-
-            return;
+            /*
+             * XXX: Consider handling the cases above the same.
+             */
+            mark_server_socket_tainted(csp);
+            len = 0;
          }
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
@@ -3162,9 +2063,14 @@ static void chat(struct client_state *csp)
                    * The header is incomplete and there isn't anything
                    * we can do about it.
                    */
-                  log_error(LOG_LEVEL_INFO,
-                     "MS IIS5 hack didn't produce valid headers.");
-                  break;
+                  log_error(LOG_LEVEL_ERROR, "Invalid server headers. "
+                     "Applying the MS IIS5 hack didn't help.");
+                  log_error(LOG_LEVEL_CLF,
+                     "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
+                  write_socket(csp->cfd, INVALID_SERVER_HEADERS_RESPONSE,
+                     strlen(INVALID_SERVER_HEADERS_RESPONSE));
+                  mark_server_socket_tainted(csp);
+                  return;
                }
                else
                {
@@ -3187,7 +2093,7 @@ static void chat(struct client_state *csp)
             {
                log_error(LOG_LEVEL_ERROR, "Empty server or forwarder response.");
                log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
-               write_socket(csp->cfd, NO_SERVER_DATA_RESPONSE, strlen(NO_SERVER_DATA_RESPONSE));
+               send_crunch_response(csp, error_response(csp, "no-server-data"));
                free_http_request(http);
                mark_server_socket_tainted(csp);
                return;
@@ -3301,9 +2207,15 @@ static void chat(struct client_state *csp)
              */
             if (ms_iis5_hack)
             {
-               log_error(LOG_LEVEL_INFO,
-                  "Closed server connection detected with MS IIS5 hack enabled.");
-               break;
+               log_error(LOG_LEVEL_ERROR,
+                  "Closed server connection detected. "
+                  "Applying the MS IIS5 hack didn't help.");
+               log_error(LOG_LEVEL_CLF,
+                  "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
+               write_socket(csp->cfd, INVALID_SERVER_HEADERS_RESPONSE,
+                  strlen(INVALID_SERVER_HEADERS_RESPONSE));
+               mark_server_socket_tainted(csp);
+               return;
             }
          }
          continue;
@@ -3342,7 +2254,8 @@ static void chat(struct client_state *csp)
  * Function    :  serve
  *
  * Description :  This is little more than chat.  We only "serve" to
- *                to close any socket that chat may have opened.
+ *                to close (or remember) any socket that chat may have
+ *                opened.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -3356,37 +2269,107 @@ void serve(struct client_state *csp)
 static void serve(struct client_state *csp)
 #endif /* def AMIGA */
 {
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   static int monitor_thread_running = 0;
+   int continue_chatting = 0;
+   do
+   {
+      chat(csp);
+
+      continue_chatting = (csp->config->feature_flags
+         & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
+         && (csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
+         && (csp->cfd != JB_INVALID_SOCKET)
+         && (csp->sfd != JB_INVALID_SOCKET)
+         && socket_is_still_usable(csp->sfd);
+
+      if (continue_chatting)
+      {
+         log_error(LOG_LEVEL_CONNECT,
+            "Waiting for the next client request. "
+            "Keeping the server socket %d to %s open.",
+            csp->sfd, csp->server_connection.host);
+
+         if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
+            && data_is_available(csp->cfd, (int)csp->server_connection.keep_alive_timeout)
+            && socket_is_still_usable(csp->cfd))
+         {
+            log_error(LOG_LEVEL_CONNECT, "Client request arrived in "
+               "time or the client closed the connection.");
+            /*
+             * Get the csp in a mostly vergin state again.
+             * XXX: Should be done elsewhere.
+             */
+            csp->content_type = 0;
+            csp->content_length = 0;
+            csp->expected_content_length = 0;
+            list_remove_all(csp->headers);
+            freez(csp->iob->buf);
+            memset(csp->iob, 0, sizeof(csp->iob));
+            freez(csp->error_message);
+            free_http_request(csp->http);
+            destroy_list(csp->headers);
+            destroy_list(csp->tags);
+            free_current_action(csp->action);
+            if (NULL != csp->fwd)
+            {
+               unload_forward_spec(csp->fwd);
+               csp->fwd = NULL;
+            }
+
+            /* XXX: Store per-connection flags someplace else. */
+            csp->flags = CSP_FLAG_ACTIVE | (csp->flags & CSP_FLAG_TOGGLED_ON);
+         }
+         else
+         {
+            log_error(LOG_LEVEL_CONNECT,
+               "No additional client request received in time.");
+            if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING))
+            {
+               remember_connection(csp->sfd, csp->http,
+                  forward_url(csp, csp->http),
+                  csp->server_connection.keep_alive_timeout);
+               csp->sfd = JB_INVALID_SOCKET;
+               close_socket(csp->cfd);
+               csp->cfd = JB_INVALID_SOCKET;
+               privoxy_mutex_lock(&connection_reuse_mutex);
+               if (!monitor_thread_running)
+               {
+                  monitor_thread_running = 1;
+                  privoxy_mutex_unlock(&connection_reuse_mutex);
+                  wait_for_alive_connections();
+                  privoxy_mutex_lock(&connection_reuse_mutex);
+                  monitor_thread_running = 0;
+               }
+               privoxy_mutex_unlock(&connection_reuse_mutex);
+            }
+            break;
+         }
+      }
+      else if (csp->sfd != JB_INVALID_SOCKET)
+      {
+         log_error(LOG_LEVEL_CONNECT,
+            "The connection on server socket %d to %s isn't reusable. "
+            "Closing.", csp->sfd, csp->server_connection.host);
+      }
+   } while (continue_chatting);
+
+   mark_connection_closed(&csp->server_connection);
+#else
    chat(csp);
-   close_socket(csp->cfd);
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
    if (csp->sfd != JB_INVALID_SOCKET)
    {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      static int monitor_thread_running = 0;
-
-      if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
-       && (csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE))
-      {
-         remember_connection(csp->sfd, csp->http, forward_url(csp, csp->http));
-         privoxy_mutex_lock(&connection_reuse_mutex);
-         if (!monitor_thread_running)
-         {
-            monitor_thread_running = 1;
-            privoxy_mutex_unlock(&connection_reuse_mutex);
-            wait_for_alive_connections();
-            privoxy_mutex_lock(&connection_reuse_mutex);
-            monitor_thread_running = 0;
-         }
-         privoxy_mutex_unlock(&connection_reuse_mutex);
-      }
-      else
-      {
-         forget_connection(csp->sfd);
-         close_socket(csp->sfd);
-      }
-#else
-      close_socket(csp->sfd);
+      forget_connection(csp->sfd);
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+      close_socket(csp->sfd);
+   }
+
+   if (csp->cfd != JB_INVALID_SOCKET)
+   {
+      close_socket(csp->cfd);
    }
 
    csp->flags &= ~CSP_FLAG_ACTIVE;
@@ -4125,7 +3108,8 @@ static void listen_loop(void)
 {
    struct client_state *csp = NULL;
    jb_socket bfd;
-   struct configuration_spec * config;
+   struct configuration_spec *config;
+   unsigned int active_threads = 0;
 
    config = load_config();
 
@@ -4155,7 +3139,7 @@ static void listen_loop(void)
       /*
        * Free data that was used by died threads
        */
-      sweep();
+      active_threads = sweep();
 
 #if defined(unix)
       /*
@@ -4186,7 +3170,7 @@ static void listen_loop(void)
       {
          /*
           * Since we were listening to the "old port", we will not see
-          * a "listen" param change until the next IJB request.  So, at
+          * a "listen" param change until the next request.  So, at
           * least 1 more request must be made for us to find the new
           * setting.  I am simply closing the old socket and binding the
           * new one.
@@ -4240,10 +3224,25 @@ static void listen_loop(void)
       {
          log_error(LOG_LEVEL_CONNECT, "Connection from %s dropped due to ACL", csp->ip_addr_str);
          close_socket(csp->cfd);
+         freez(csp->ip_addr_str);
          freez(csp);
          continue;
       }
 #endif /* def FEATURE_ACL */
+
+      if ((0 != config->max_client_connections)
+         && (active_threads >= config->max_client_connections))
+      {
+         log_error(LOG_LEVEL_CONNECT,
+            "Rejecting connection from %s. Maximum number of connections reached.",
+            csp->ip_addr_str);
+         write_socket(csp->cfd, TOO_MANY_CONNECTIONS_RESPONSE,
+            strlen(TOO_MANY_CONNECTIONS_RESPONSE));
+         close_socket(csp->cfd);
+         freez(csp->ip_addr_str);
+         freez(csp);
+         continue;
+      }
 
       /* add it to the list of clients */
       csp->next = clients->next;
@@ -4411,19 +3410,19 @@ static void listen_loop(void)
 #undef SELECTED_ONE_OPTION
 /* end of cpp switch () */
 
-         if (child_id < 0) /* failed */
+         if (child_id < 0)
          {
-            char buf[BUFFER_SIZE];
-
-            log_error(LOG_LEVEL_ERROR, "can't fork: %E");
-
-            snprintf(buf , sizeof(buf), "Privoxy: can't fork: errno = %d", errno);
-
-            write_socket(csp->cfd, buf, strlen(buf));
+            /*
+             * Spawning the child failed, assume it's because
+             * there are too many children running already.
+             * XXX: If you assume ...
+             */
+            log_error(LOG_LEVEL_ERROR,
+               "Unable to take any additional connections: %E");
+            write_socket(csp->cfd, TOO_MANY_CONNECTIONS_RESPONSE,
+               strlen(TOO_MANY_CONNECTIONS_RESPONSE));
             close_socket(csp->cfd);
             csp->flags &= ~CSP_FLAG_ACTIVE;
-            sleep(5);
-            continue;
          }
       }
       else

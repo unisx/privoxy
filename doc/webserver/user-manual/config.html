@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.12 User Manual"
+TITLE="Privoxy 3.0.13 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.12 User Manual</TH
+>Privoxy 3.0.13 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -137,7 +137,9 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >'s
  operation that are not location dependent (i.e. they apply universally, no matter
- where you may be surfing).</P
+ where you may be surfing). Like the filter and action files, the config file is
+ a plain text file and can be modified with a text editor like emacs, vim or
+ notepad.exe.</P
 ><DIV
 CLASS="SECT2"
 ><H2
@@ -1409,7 +1411,7 @@ CLASS="LITERAL"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->1, 4096 and 8192 are recommended</I
+>1, 1024, 4096 and 8192 are recommended</I
 ></SPAN
 >
     so that you will notice when things go wrong. The other levels are
@@ -1663,12 +1665,12 @@ CLASS="REPLACEABLE"
 >Effect if unset:</DT
 ><DD
 ><P
->    Bind to 127.0.0.1 (localhost), port 8118. This is suitable and recommended for
-    home users who run <SPAN
+>    Bind to 127.0.0.1 (IPv4 localhost), port 8118. This is suitable and
+    recommended for home users who run <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> on the same machine as
-    their browser.
+> on
+    the same machine as their browser.
    </P
 ></DD
 ><DT
@@ -1683,16 +1685,24 @@ CLASS="APPLICATION"
     will need to override the default.
    </P
 ><P
+>    IPv6 addresses containing colons have to be quoted by brackets.
+   </P
+><P
 >    If you leave out the IP address, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > will
-    bind to all interfaces (addresses) on your machine and may become reachable
+    bind to all IPv4 interfaces (addresses) on your machine and may become reachable
     from the Internet. In that case, consider using <A
 HREF="config.html#ACLS"
 >access control lists</A
 > (ACL's, see below), and/or
-    a firewall.
+    a firewall. If the hostname is localhost, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    will explicitly try to bind to an IPv4 address. For other hostnames it depends
+    on the operating system which IP version will be used.
    </P
 ><P
 >    If you open <SPAN
@@ -1737,6 +1747,29 @@ WIDTH="90%"
 ><PRE
 CLASS="PROGRAMLISTING"
 >  listen-address  192.168.0.1:8118</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Suppose you are running <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> on an
+    IPv6-capable machine and you want it to listen on the IPv6 address
+    of the loopback device:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  listen-address [::1]:8118</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2253,7 +2286,12 @@ CLASS="REPLACEABLE"
 ><I
 >src_addr</I
 ></TT
->[/<TT
+>[:<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>][/<TT
 CLASS="REPLACEABLE"
 ><I
 >src_masklen</I
@@ -2264,7 +2302,12 @@ CLASS="REPLACEABLE"
 ><I
 >dst_addr</I
 ></TT
->[/<TT
+>[:<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>][/<TT
 CLASS="REPLACEABLE"
 ><I
 >dst_masklen</I
@@ -2283,8 +2326,14 @@ CLASS="REPLACEABLE"
 ><I
 >dst_addr</I
 ></TT
-> are IP addresses in dotted decimal notation or valid
-    DNS names, and <TT
+> are IPv4 addresses in dotted decimal notation or valid
+    DNS names, <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+> is a port
+    number, and <TT
 CLASS="REPLACEABLE"
 ><I
 >src_masklen</I
@@ -2299,6 +2348,45 @@ CLASS="REPLACEABLE"
     values from 2 to 30 representing the length (in bits) of the network address. The masks and the whole
     destination part are optional.
    </P
+><P
+>    If your system implements
+    <A
+HREF="http://tools.ietf.org/html/rfc3493"
+TARGET="_top"
+>RFC 3493</A
+>, then
+    <TT
+CLASS="REPLACEABLE"
+><I
+>src_addr</I
+></TT
+> and <TT
+CLASS="REPLACEABLE"
+><I
+>dst_addr</I
+></TT
+> can be IPv6 addresses delimeted by
+    brackets, <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+> can be a number
+    or a service name, and
+    <TT
+CLASS="REPLACEABLE"
+><I
+>src_masklen</I
+></TT
+> and
+    <TT
+CLASS="REPLACEABLE"
+><I
+>dst_masklen</I
+></TT
+> can be a number
+    from 0 to 128.
+   </P
 ></DD
 ><DT
 >Default value:</DT
@@ -2311,6 +2399,27 @@ CLASS="EMPHASIS"
 >Unset</I
 ></SPAN
 ></P
+><P
+>    If no <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+> is specified,
+    any port will match. If no <TT
+CLASS="REPLACEABLE"
+><I
+>src_masklen</I
+></TT
+> or
+    <TT
+CLASS="REPLACEABLE"
+><I
+>src_masklen</I
+></TT
+> is given, the complete IP
+    address has to match (i.e. 32 bits for IPv4 and 128 bits for IPv6).
+   </P
 ></DD
 ><DT
 >Effect if unset:</DT
@@ -2423,6 +2532,16 @@ CLASS="QUOTE"
     IP addresses, only the first one is used.
    </P
 ><P
+>     Some systems allows IPv4 client to connect to IPv6 server socket.
+     Then the client's IPv4 address will be translated by system into
+     IPv6 address space with special prefix ::ffff:0:0/96 (so called IPv4
+     mapped IPv6 address). <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> can handle it
+     and maps such ACL addresses automatically.
+   </P
+><P
 >    Denying access to particular sites by ACL may have undesired side effects
     if the site in question is hosted on a machine which also hosts other sites
     (most sites are).
@@ -2504,6 +2623,44 @@ WIDTH="90%"
 CLASS="SCREEN"
 >  permit-access  192.168.45.64/26
   deny-access    192.168.45.73    www.dirty-stuff.example.com</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>     Allow access from the IPv4 network 192.0.2.0/24 even if listening on
+     an IPv6 wild card address (not supported on all platforms):
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  permit-access  192.0.2.0/24</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>     This is equivalent to the following line even if listening on an
+     IPv4 address (not supported on all platforms):
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  permit-access  [::ffff:192.0.2.0]/120</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2707,7 +2864,7 @@ CLASS="REPLACEABLE"
 ></TT
 >]
     is the DNS name or IP address of the parent HTTP proxy through which the requests should be forwarded,
-    optionally followed by its listening port (default: 8080).
+    optionally followed by its listening port (default: 8000).
     Use a single dot (<TT
 CLASS="LITERAL"
 >.</TT
@@ -2752,6 +2909,29 @@ CLASS="QUOTE"
     forwarded to another HTTP proxy but are made directly to the web servers.
    </P
 ><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>http_parent</I
+></TT
+> can be a
+     numerical IPv6 address (if
+    <A
+HREF="http://tools.ietf.org/html/rfc3493"
+TARGET="_top"
+>RFC 3493</A
+> is
+    implemented). To prevent clashes with the port delimiter, the whole IP
+    address has to be put into brackets. On the other hand a <TT
+CLASS="REPLACEABLE"
+><I
+>target_pattern</I
+></TT
+> containing an IPv6 address
+    has to be put into angle brackets (normal brackets are reserved for
+    regular expressions already).
+   </P
+><P
 >    Multiple lines are OK, they are checked in sequence, and the last match wins.
    </P
 ></DD
@@ -2792,6 +2972,44 @@ WIDTH="90%"
 CLASS="SCREEN"
 >  forward   /                  caching-proxy.isp.example.net:8000
   forward   .isp.example.net   .</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Parent proxy specified by an IPv6 address:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  foward   /                   [2001:DB8::1]:8000</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Suppose your parent proxy doesn't support IPv6:
+   </P
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>  forward  /                        parent-proxy.example.org:8000
+  forward  ipv6-server.example.org  .
+  forward  &#60;[2-3][0-9a-f][0-9a-f][0-9a-f]:*&#62;   .</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2956,6 +3174,35 @@ CLASS="LITERAL"
 > the DNS resolution will happen on the remote server as well.
    </P
 ><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>socks_proxy</I
+></TT
+> and
+    <TT
+CLASS="REPLACEABLE"
+><I
+>http_parent</I
+></TT
+> can be a
+     numerical IPv6 address (if
+    <A
+HREF="http://tools.ietf.org/html/rfc3493"
+TARGET="_top"
+>RFC 3493</A
+> is
+    implemented). To prevent clashes with the port delimiter, the whole IP
+    address has to be put into brackets. On the other hand a <TT
+CLASS="REPLACEABLE"
+><I
+>target_pattern</I
+></TT
+> containing an IPv6 address
+    has to be put into angle brackets (normal brackets are reserved for
+    regular expressions already).
+   </P
+><P
 >    If <TT
 CLASS="REPLACEABLE"
 ><I
@@ -3028,7 +3275,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  forward-socks4a   /               127.0.0.1:9050 .</PRE
+>  forward-socks5   /               127.0.0.1:9050 .</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3336,13 +3583,22 @@ CLASS="QUOTE"
 ></DL
 ></DIV
 ></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="MISC"
+>7.6. Miscellaneous</A
+></H2
 ><DIV
 CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
 NAME="ACCEPT-INTERCEPTED-REQUESTS"
->7.5.5. accept-intercepted-requests</A
+>7.6.1. accept-intercepted-requests</A
 ></H4
 ><P
 ></P
@@ -3436,7 +3692,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ALLOW-CGI-REQUEST-CRUNCHING"
->7.5.6. allow-cgi-request-crunching</A
+>7.6.2. allow-cgi-request-crunching</A
 ></H4
 ><P
 ></P
@@ -3519,7 +3775,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SPLIT-LARGE-FORMS"
->7.5.7. split-large-forms</A
+>7.6.3. split-large-forms</A
 ></H4
 ><P
 ></P
@@ -3608,7 +3864,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="KEEP-ALIVE-TIMEOUT"
->7.5.8. keep-alive-timeout</A
+>7.6.4. keep-alive-timeout</A
 ></H4
 ><P
 ></P
@@ -3644,44 +3900,43 @@ CLASS="REPLACEABLE"
 >Effect if unset:</DT
 ><DD
 ><P
->    Connections are not reused.
+>    Connections are not kept alive.
    </P
 ></DD
 ><DT
 >Notes:</DT
 ><DD
+><P
+>    This option allows clients to keep the connection to <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    alive. If the server supports it, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will keep
+    the connection to the server alive as well. Under certain
+    circumstances this may result in speed-ups.
+   </P
+><P
+>    By default, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will close the connection to the server if
+    the client connection gets closed, or if the specified timeout
+    has been reached without a new request coming in. This behaviour
+    can be changed with the <A
+HREF="#CONNECTION-SHARING"
+TARGET="_top"
+>connection-sharing</A
+> option.
+   </P
 ><P
 >    This option has no effect if <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
     has been compiled without keep-alive support.
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    Note that reusing connections doesn't necessary cause speedups.
-    There are also a few privacy implications you should be aware of.
-   </P
-><P
->    Outgoing connections are shared between clients (if there are more
-    than one) and closing the client that initiated the outgoing connection
-    does not affect the connection between <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> and the server unless
-    the client's request hasn't been completed yet. If the outgoing connection
-    is idle, it will not be closed until either <SPAN
-CLASS="APPLICATION"
->Privoxy's</SPAN
->
-    or the server's timeout is reached. While it's open, the server knows
-    that the system running <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> is still there.
    </P
 ></DD
 ><DT
@@ -3699,8 +3954,130 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="CONNECTION-SHARING"
+>7.6.5. connection-sharing</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Whether or not outgoing connections that have been kept alive
+    should be shared between different incoming connections.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>0 or 1</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>None</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Connections are not shared.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This option has no effect if <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    has been compiled without keep-alive support, or if it's disabled.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Note that reusing connections doesn't necessary cause speedups.
+    There are also a few privacy implications you should be aware of.
+   </P
+><P
+>    If this option is effective, outgoing connections are shared between
+    clients (if there are more than one) and closing the browser that initiated
+    the outgoing connection does no longer affect the connection between <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    and the server unless the client's request hasn't been completed yet.
+   </P
+><P
+>    If the outgoing connection  is idle, it will not be closed until either
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> or the server's timeout is reached.
+    While it's open, the server knows that the system running <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is still
+    there.
+   </P
+><P
+>    If there are more than one client (maybe even belonging to multiple users),
+    they will be able to reuse each others connections. This is potentially
+    dangerous in case of authentication schemes like NTLM where only the
+    connection is authenticated, instead of requiring authentication for
+    each request.
+   </P
+><P
+>    If there is only a single client, and if said client can keep connections
+    alive on its own, enabling this option has next to no effect. If the client
+    doesn't support connection keep-alive, enabling this option may make sense
+    as it allows <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to keep outgoing connections alive even if the client
+    itself doesn't support it.
+   </P
+><P
+>    You should also be aware that enabling this option increases the likelihood
+    of getting the "No server or forwarder data" error message, especially if you
+    are using a slow connection to the Internet.
+   </P
+><P
+>    This option should only be used by experienced users who
+    understand the risks and can weight them against the benefits.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    connection-sharing 1
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="SOCKET-TIMEOUT"
->7.5.9. socket-timeout</A
+>7.6.6. socket-timeout</A
 ></H4
 ><P
 ></P
@@ -3759,6 +4136,120 @@ CLASS="REPLACEABLE"
 ></DL
 ></DIV
 ></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="MAX-CLIENT-CONNECTIONS"
+>7.6.7. max-client-connections</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Maximum number of client connections that will be served.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>Positive number.</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>None</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Connections are served until a resource limit is reached.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> creates one thread (or process) for every incoming client
+    connection that isn't rejected based on the access control settings.
+   </P
+><P
+>    If the system is powerful enough, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> can theoretically deal with
+    several hundred (or thousand) connections at the same time, but some
+    operating systems enforce resource limits by shutting down offending
+    processes and their default limits may be below the ones <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> would
+    require under heavy load.
+   </P
+><P
+>    Configuring <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to enforce a connection limit below the thread
+    or process limit used by the operating system makes sure this doesn't
+    happen. Simply increasing the operating system's limit would work too,
+    but if <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> isn't the only application running on the system,
+    you may actually want to limit the resources used by <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>.
+   </P
+><P
+>    If <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is only used by a single trusted user, limiting the
+    number of client connections is probably unnecessary. If there
+    are multiple possibly untrusted users you probably still want to
+    additionally use a packet filter to limit the maximal number of
+    incoming connections per client. Otherwise a malicious user could
+    intentionally create a high number of connections to prevent other
+    users from using <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>.
+   </P
+><P
+>    Obviously using this option only makes sense if you choose a limit
+    below the one enforced by the operating system.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    max-client-connections 256
+   </P
+></DD
+></DL
+></DIV
+></DIV
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -3766,7 +4257,7 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WINDOWS-GUI"
->7.6. Windows GUI Options</A
+>7.7. Windows GUI Options</A
 ></H2
 ><P
 > <SPAN

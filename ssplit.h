@@ -1,6 +1,6 @@
 #ifndef SSPLIT_H_INCLUDED
 #define SSPLIT_H_INCLUDED
-#define SSPLIT_H_VERSION "$Id: ssplit.h,v 1.7 2006/07/18 14:48:47 david__schmidt Exp $"
+#define SSPLIT_H_VERSION "$Id: ssplit.h,v 1.8 2009/05/16 13:27:20 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.h,v $
@@ -32,33 +32,8 @@
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: ssplit.h,v $
- *    Revision 1.7  2006/07/18 14:48:47  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.5  2002/03/26 22:29:55  swa
- *    we have a new homepage!
- *
- *    Revision 1.4  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.3  2001/07/29 18:43:08  jongfoster
- *    Changing #ifdef _FILENAME_H to FILENAME_H_INCLUDED, to conform to
- *    ANSI C rules.
- *
- *    Revision 1.2  2001/05/29 08:54:25  jongfoster
- *    Rewrote the innards of ssplit() to be easier to understand,
- *    faster, and to use less memory.  Didn't change the interface
- *    except to give the parameters meaningful names.
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:04  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #ifdef __cplusplus
 extern "C" {

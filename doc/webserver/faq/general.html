@@ -451,7 +451,13 @@ CLASS="APPLICATION"
 ><UL
 ><LI
 ><P
->     Can keep outgoing connections alive and reuse them later on.
+>     Supports "Connection: keep-alive". Outgoing connections can
+     be kept alive independently from the client.
+  </P
+></LI
+><LI
+><P
+>     Supports IPv6.
   </P
 ></LI
 ><LI
@@ -469,7 +475,7 @@ CLASS="APPLICATION"
 ><LI
 ><P
 >     Sophisticated actions and filters for manipulating both server and client
-     headers. 
+     headers.
    </P
 ></LI
 ><LI
@@ -479,7 +485,7 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->   Integrated browser based configuration and control utility at <A
+>   Integrated browser-based configuration and control utility at <A
 HREF="http://config.privoxy.org/"
 TARGET="_top"
 >http://config.privoxy.org/</A
@@ -498,7 +504,7 @@ TARGET="_top"
    invisible <SPAN
 CLASS="QUOTE"
 >"web-bugs"</SPAN
->, JavaScript and HTML annoyances, 
+>, JavaScript and HTML annoyances,
    pop-up windows, etc.)
   </P
 ></LI
@@ -511,18 +517,13 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   Support for Perl Compatible Regular Expressions in the configuration files, and 
+>   Support for Perl Compatible Regular Expressions in the configuration files, and
    a more sophisticated and flexible configuration syntax.
   </P
 ></LI
 ><LI
 ><P
->   Improved cookie management features (e.g. session based cookies).
-  </P
-></LI
-><LI
-><P
->   GIF de-animation. 
+>   GIF de-animation.
   </P
 ></LI
 ><LI
@@ -898,7 +899,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="JOINTEAM"
+NAME="HELP-THE-DEVELOPERS"
 >1.17. I would like to help you, what can I do?</A
 ></H3
 ><DIV
@@ -906,7 +907,7 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="JOINTEAM-WORK"
+NAME="PARTICIPATE"
 >1.17.1. Would you like to participate?</A
 ></H4
 ><P
@@ -932,30 +933,46 @@ CLASS="QUOTE"
 >. There are many other tasks available. In fact,
    the programmers often can't spend as much time programming because of some
    of the other, more mundane things that need to be done, like checking the
-   Tracker feedback sections. 
+   Tracker feedback sections or responding to user questions on the mailing
+   lists.
  </P
 ><P
->  So first thing, <A
+>  So first thing, subscribe to the <A
+HREF="https://lists.sourceforge.net/lists/listinfo/ijbswa-users"
+TARGET="_top"
+>Privoxy Users</A
+>
+  or the <A
+HREF="https://lists.sourceforge.net/lists/listinfo/ijbswa-developers"
+TARGET="_top"
+>Privoxy
+  Developers</A
+> mailing list, join the discussion, help out other users, provide general
+  feedback or report problems you noticed.
+ </P
+><P
+>  If you intend to help out with the trackers, you also might want to <A
 HREF="https://sourceforge.net/account/register.php"
 TARGET="_top"
 >get an account on SourceForge.net</A
 >
-   and mail your id to the <A
-HREF="mailto:ijbswa-developers@lists.sourceforge.net"
-TARGET="_top"
->developers
-   mailing list</A
->. Then, please read the <A
+   so we don't confuse you with the other name-less users.
+ </P
+><P
+>   We also have a <A
 HREF="../developer-manual/index.html"
 TARGET="_top"
 >Developer's Manual</A
->, at least
-   the pertinent sections.</P
+>.
+   While it is partly out of date, it's still worth reading.</P
 ><P
->  You can also start helping out without SourceForge.net account,
-  simply by showing up on the mailing list, helping out other users,
-  providing general feedback or reporting problems you noticed.
- </P
+>   Our <A
+HREF="http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO?view=markup"
+TARGET="_top"
+>TODO list</A
+>
+   may be of interest to you as well.
+   Please let us know if you want to work on one of the items listed.</P
 ></DIV
 ><DIV
 CLASS="SECT3"

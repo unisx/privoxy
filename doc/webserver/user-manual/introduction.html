@@ -7,10 +7,10 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.12 User Manual"
+TITLE="Privoxy 3.0.13 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
-TITLE="Privoxy 3.0.12 User Manual"
+TITLE="Privoxy 3.0.13 User Manual"
 HREF="index.html"><LINK
 REL="NEXT"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.12 User Manual</TH
+>Privoxy 3.0.13 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -82,11 +82,27 @@ NAME="INTRODUCTION"
 >1. Introduction</A
 ></H1
 ><P
-> This documentation is included with the current stable version of
+> This documentation is included with the current beta version of
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->, v.3.0.12.</P
+>, v.3.0.13, 
+ and is mostly complete at this point. The most up to date reference for the
+ time being is still the comments in the source files and in the individual
+ configuration files. Development of a new version is currently nearing
+ completion, and includes significant changes and enhancements over
+ earlier versions. .</P
+><P
+> Since this is a beta version, not all new features are well tested. This
+ documentation may be slightly out of sync as a result (especially with 
+ CVS sources). And there <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>may be</I
+></SPAN
+> bugs, though hopefully
+ not many! </P
 ><DIV
 CLASS="SECT2"
 ><H2
@@ -107,7 +123,7 @@ TARGET="_top"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > provides many supplemental
- features, 
+ features, some of them currently under development, 
  that give the end-user more control, more privacy and more freedom:</P
 ><P
 > <P
@@ -115,7 +131,13 @@ CLASS="APPLICATION"
 ><UL
 ><LI
 ><P
->     Can keep outgoing connections alive and reuse them later on.
+>     Supports "Connection: keep-alive". Outgoing connections can
+     be kept alive independently from the client.
+  </P
+></LI
+><LI
+><P
+>     Supports IPv6.
   </P
 ></LI
 ><LI
@@ -133,7 +155,7 @@ CLASS="APPLICATION"
 ><LI
 ><P
 >     Sophisticated actions and filters for manipulating both server and client
-     headers. 
+     headers.
    </P
 ></LI
 ><LI
@@ -143,7 +165,7 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->   Integrated browser based configuration and control utility at <A
+>   Integrated browser-based configuration and control utility at <A
 HREF="http://config.privoxy.org/"
 TARGET="_top"
 >http://config.privoxy.org/</A
@@ -162,7 +184,7 @@ TARGET="_top"
    invisible <SPAN
 CLASS="QUOTE"
 >"web-bugs"</SPAN
->, JavaScript and HTML annoyances, 
+>, JavaScript and HTML annoyances,
    pop-up windows, etc.)
   </P
 ></LI
@@ -175,18 +197,13 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   Support for Perl Compatible Regular Expressions in the configuration files, and 
+>   Support for Perl Compatible Regular Expressions in the configuration files, and
    a more sophisticated and flexible configuration syntax.
   </P
 ></LI
 ><LI
 ><P
->   Improved cookie management features (e.g. session based cookies).
-  </P
-></LI
-><LI
-><P
->   GIF de-animation. 
+>   GIF de-animation.
   </P
 ></LI
 ><LI
@@ -273,7 +290,7 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Privoxy 3.0.12 User Manual</TD
+>Privoxy 3.0.13 User Manual</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"

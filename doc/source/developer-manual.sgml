@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.11">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.13">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
@@ -24,7 +24,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.27 2009/02/19 02:20:22 hal9 Exp $
+ $Id: developer-manual.sgml,v 2.29 2009/06/12 14:30:58 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -51,7 +51,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.27 2009/02/19 02:20:22 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.29 2009/06/12 14:30:58 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -1854,9 +1854,6 @@ const char FILENAME_rcs[] = "$I<!-- Break CVS Substitution -->d$";
  *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
  *                USA
  *
- * Revisions   :
- *    $L<!-- Break CVS Substitution -->og$
- *
  *********************************************************************/
 
 
@@ -1910,9 +1907,6 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
  *                or write to the Free Software Foundation, Inc., 
  *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
  *                USA
- *
- * Revisions   :
- *    $L<!-- Break CVS Substitution -->og$
  *
  *********************************************************************/
 
@@ -3011,6 +3005,12 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.29  2009/06/12 14:30:58  fabiankeil
+  Update entities for 3.0.13 beta.
+
+  Revision 2.28  2009/05/16 13:27:21  fabiankeil
+  Remove CVS revision logs. TODO item #33.
+
   Revision 2.27  2009/02/19 02:20:22  hal9
   Make some links in seealso conditional. Man page is now privoxy only links.
 

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.126 2009/03/21 10:45:06 fabiankeil Exp $
+dnl $Id: configure.in,v 1.130 2009/06/11 12:19:20 fabiankeil Exp $
 dnl 
 dnl Written by and Copyright (C) 2001-2009 the
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,19 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.130  2009/06/11 12:19:20  fabiankeil
+dnl Change code status to beta.
+dnl
+dnl Revision 1.129  2009/04/17 11:45:19  fabiankeil
+dnl Replace HAVE_GETADDRINFO and HAVE_GETNAMEINFO macros
+dnl with HAVE_RFC2553 macro. Original patch by Petr Pisar.
+dnl
+dnl Revision 1.128  2009/04/17 11:27:49  fabiankeil
+dnl Petr Pisar's privoxy-3.0.12-ipv6-3.diff.
+dnl
+dnl Revision 1.127  2009/03/25 17:26:31  fabiankeil
+dnl And they are running again. Bump version to 3.0.13 UNRELEASED.
+dnl
 dnl Revision 1.126  2009/03/21 10:45:06  fabiankeil
 dnl Declare the code stable.
 dnl
@@ -566,7 +579,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.126 $)
+AC_REVISION($Revision: 1.130 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -612,8 +625,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=12
-CODE_STATUS="stable"
+VERSION_POINT=13
+CODE_STATUS="beta"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
@@ -1239,6 +1252,14 @@ dnl uncommenting does not work for swa. suse linux
 dnl AC_FUNC_STAT
 AC_CHECK_FUNCS([access atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r gettimeofday inet_ntoa localtime_r memchr memmove memset poll putenv random regcomp select setlocale snprintf socket strchr strdup strerror strftime strlcat strlcpy strptime strstr strtoul timegm tzset])
 
+dnl Checks for RFC 2553 resolver and socket functions
+AC_CHECK_FUNC([getaddrinfo],
+   [AC_CHECK_FUNC([getnameinfo],
+      [AC_DEFINE([HAVE_RFC2553], [1],
+         [Define if RFC 2553 resolver functions like getaddrinfo(3) and
+          getnameinfo(3) present])
+      ])
+])
 
 dnl =================================================================
 dnl Checks for libraries.

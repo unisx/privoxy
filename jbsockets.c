@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.50 2008/12/20 14:53:55 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.64 2009/06/13 11:37:07 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -8,7 +8,7 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.50 2008/12/20 14:53:55 fabian
  *                OS-independent.  Contains #ifdefs to make this work
  *                on many platforms.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,240 +33,8 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.50 2008/12/20 14:53:55 fabian
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: jbsockets.c,v $
- *    Revision 1.50  2008/12/20 14:53:55  fabiankeil
- *    Add config option socket-timeout to control the time
- *    Privoxy waits for data to arrive on a socket. Useful
- *    in case of stale ssh tunnels or when fuzz-testing.
- *
- *    Revision 1.49  2008/11/10 17:03:57  fabiankeil
- *    Fix a gcc44 warning and remove a now-obsolete cast.
- *
- *    Revision 1.48  2008/09/04 08:13:58  fabiankeil
- *    Prepare for critical sections on Windows by adding a
- *    layer of indirection before the pthread mutex functions.
- *
- *    Revision 1.47  2008/03/26 18:07:07  fabiankeil
- *    Add hostname directive. Closes PR#1918189.
- *
- *    Revision 1.46  2008/03/21 11:13:57  fabiankeil
- *    Only gather host information if it's actually needed.
- *    Also move the code out of accept_connection() so it's less likely
- *    to delay other incoming connections if the host is misconfigured.
- *
- *    Revision 1.45  2007/09/30 16:59:22  fabiankeil
- *    Set the maximum listen() backlog to 128. Apparently SOMAXCONN is
- *    neither high enough, nor a hard limit on mingw32. Again for BR#1795281.
- *
- *    Revision 1.44  2007/09/15 13:01:31  fabiankeil
- *    Increase listen() backlog to SOMAXCONN (or 128) to decrease
- *    chances of dropped connections under load. Problem reported
- *    and fix suggested by nobody in BR#1795281.
- *
- *    Revision 1.43  2007/06/01 18:16:36  fabiankeil
- *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
- *    deadlocks and crashes on OpenBSD and possibly other OS with neither
- *    gethostbyname_r() nor gethostaddr_r(). Closes BR#1729174.
- *    Thanks to Ralf Horstmann for report and solution.
- *
- *    Revision 1.42  2007/04/01 17:37:07  fabiankeil
- *    - Add DNS retries for Solaris and other systems
- *      whose gethostbyname_r version takes five arguments.
- *    - Move maximum number of DNS retries into a macro.
- *
- *    Revision 1.41  2006/11/13 19:05:51  fabiankeil
- *    Make pthread mutex locking more generic. Instead of
- *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
- *    and use mutex locking unless there is an _r function
- *    available. Better safe than sorry.
- *
- *    Fixes "./configure --disable-pthread" and should result
- *    in less threading-related problems on pthread-using platforms,
- *    but it still doesn't fix BR#1122404.
- *
- *    Revision 1.40  2006/09/02 15:36:42  fabiankeil
- *    Follow the OpenBSD port's lead and protect the resolve
- *    functions on OpenBSD as well.
- *
- *    Revision 1.39  2006/08/03 02:46:41  david__schmidt
- *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
- *
- *    Revision 1.38  2006/07/18 14:48:46  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.35.2.8  2006/01/21 16:16:08  david__schmidt
- *    Thanks to  Edward Carrel for his patch to modernize OSX'spthreads support.  See bug #1409623.
- *
- *    Revision 1.35.2.7  2005/05/07 21:50:55  david__schmidt
- *    A few memory leaks plugged (mostly on error paths)
- *
- *    Revision 1.35.2.6  2003/12/17 16:34:40  oes
- *    Cosmetics
- *
- *    Revision 1.35.2.5  2003/04/29 11:32:54  oes
- *    Don't rely on h_addr being non-NULL after gethostbyname.
- *    Works around an oddness in Max OSX and closes bug #724796
- *
- *    Revision 1.35.2.4  2003/04/04 12:40:20  oes
- *    Made sure the errno set by bind, not close[socket] is used in
- *    bind_port. Probably fixes bugs #713777, #705562.
- *
- *    Revision 1.35.2.3  2003/03/07 03:41:04  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
- *
- *    Revision 1.35.2.2  2002/11/20 14:37:24  oes
- *    Fixed Win32 error logging in bind_port.
- *    Thanks to Oliver Stoeneberg for the hint.
- *
- *    Revision 1.35.2.1  2002/05/26 23:41:27  joergs
- *    AmigaOS: Fixed wrong type of len in write_socket()
- *
- *    Revision 1.35  2002/04/26 15:50:04  joergs
- *    AmigaOS: No socklen_t, added AMIGA to the systems using int instead.
- *
- *    Revision 1.34  2002/04/08 20:31:41  swa
- *    fixed JB spelling
- *
- *    Revision 1.33  2002/04/03 16:02:18  gliptak
- *    Correcting compile warning with older gcc
- *
- *    Revision 1.32  2002/03/31 17:18:59  jongfoster
- *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
- *
- *    Revision 1.31  2002/03/29 03:33:13  david__schmidt
- *    Fix Mac OSX compiler warnings
- *
- *    Revision 1.30  2002/03/27 14:32:43  david__schmidt
- *    More compiler warning message maintenance
- *
- *    Revision 1.29  2002/03/26 22:29:54  swa
- *    we have a new homepage!
- *
- *    Revision 1.28  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.27  2002/03/13 00:27:05  jongfoster
- *    Killing warnings
- *
- *    Revision 1.26  2002/03/11 22:07:02  david__schmidt
- *    OS/2 port maintenance:
- *    - Fixed EMX build - it had decayed a little
- *    - Fixed inexplicable crash during FD_ZERO - must be due to a bad macro.
- *      substituted a memset for now.
- *
- *    Revision 1.25  2002/03/09 20:03:52  jongfoster
- *    - Making various functions return int rather than size_t.
- *      (Undoing a recent change).  Since size_t is unsigned on
- *      Windows, functions like read_socket that return -1 on
- *      error cannot return a size_t.
- *
- *      THIS WAS A MAJOR BUG - it caused frequent, unpredictable
- *      crashes, and also frequently caused JB to jump to 100%
- *      CPU and stay there.  (Because it thought it had just
- *      read ((unsigned)-1) == 4Gb of data...)
- *
- *    - The signature of write_socket has changed, it now simply
- *      returns success=0/failure=nonzero.
- *
- *    - Trying to get rid of a few warnings --with-debug on
- *      Windows, I've introduced a new type "jb_socket".  This is
- *      used for the socket file descriptors.  On Windows, this
- *      is SOCKET (a typedef for unsigned).  Everywhere else, it's
- *      an int.  The error value can't be -1 any more, so it's
- *      now JB_INVALID_SOCKET (which is -1 on UNIX, and in
- *      Windows it maps to the #define INVALID_SOCKET.)
- *
- *    - The signature of bind_port has changed.
- *
- *    Revision 1.24  2002/03/07 03:51:36  oes
- *     - Improved handling of failed DNS lookups
- *     - Fixed compiler warnings etc
- *
- *    Revision 1.23  2002/03/05 00:36:01  jongfoster
- *    Fixing bug 514988 - unable to restart Junkbuster
- *
- *    Revision 1.22  2002/03/04 02:08:02  david__schmidt
- *    Enable web editing of actions file on OS/2 (it had been broken all this time!)
- *
- *    Revision 1.21  2002/01/09 14:32:33  oes
- *    Added support for gethostbyname_r and gethostbyaddr_r.
- *
- *    Revision 1.20  2001/11/16 00:48:48  jongfoster
- *    Enabling duplicate-socket detection for all platforms, not
- *    just Win32.
- *
- *    Revision 1.19  2001/10/25 03:40:47  david__schmidt
- *    Change in porting tactics: OS/2's EMX porting layer doesn't allow multiple
- *    threads to call select() simultaneously.  So, it's time to do a real, live,
- *    native OS/2 port.  See defines for __EMX__ (the porting layer) vs. __OS2__
- *    (native). Both versions will work, but using __OS2__ offers multi-threading.
- *
- *    Revision 1.18  2001/09/21 23:02:02  david__schmidt
- *    Cleaning up 2 compiler warnings on OS/2.
- *
- *    Revision 1.17  2001/09/13 20:11:46  jongfoster
- *    Fixing 2 compiler warnings under Win32
- *
- *    Revision 1.16  2001/07/30 22:08:36  jongfoster
- *    Tidying up #defines:
- *    - All feature #defines are now of the form FEATURE_xxx
- *    - Permanently turned off WIN_GUI_EDIT
- *    - Permanently turned on WEBDAV and SPLIT_PROXY_ARGS
- *
- *    Revision 1.15  2001/07/29 17:40:43  jongfoster
- *    Fixed compiler warning by adding a cast
- *
- *    Revision 1.14  2001/07/18 13:47:59  oes
- *    Eliminated dirty hack for getsockbyname()
- *
- *    Revision 1.13  2001/07/15 13:56:57  jongfoster
- *    Removing unused local variable.
- *
- *    Revision 1.12  2001/07/01 17:04:11  oes
- *    Bugfix: accept_connection no longer uses the obsolete hstrerror() function
- *
- *    Revision 1.11  2001/06/29 21:45:41  oes
- *    Indentation, CRLF->LF, Tab-> Space
- *
- *    Revision 1.10  2001/06/29 13:29:15  oes
- *    - Added remote (server) host IP to csp->http->host_ip_addr_str
- *    - Added detection of local socket IP and fqdn
- *    - Removed logentry from cancelled commit
- *
- *    Revision 1.9  2001/06/07 23:06:09  jongfoster
- *    The host parameter to connect_to() is now const.
- *
- *    Revision 1.8  2001/06/03 19:12:07  oes
- *    filled comment
- *
- *    Revision 1.7  2001/05/28 16:14:00  jongfoster
- *    Fixing bug in LOG_LEVEL_LOG
- *
- *    Revision 1.6  2001/05/26 17:28:32  jongfoster
- *    Fixed LOG_LEVEL_LOG
- *
- *    Revision 1.5  2001/05/26 15:26:15  jongfoster
- *    ACL feature now provides more security by immediately dropping
- *    connections from untrusted hosts.
- *
- *    Revision 1.4  2001/05/26 00:37:42  jongfoster
- *    Cosmetic indentation correction.
- *
- *    Revision 1.3  2001/05/25 21:57:54  jongfoster
- *    Now gives a warning under Windows if you try to bind
- *    it to a port that's already in use.
- *
- *    Revision 1.2  2001/05/17 23:01:01  oes
- *     - Cleaned CRLF's from the sources and related files
- *
- *    Revision 1.1.1.1  2001/05/15 13:58:54  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 
@@ -315,16 +83,30 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.50 2008/12/20 14:53:55 fabian
 
 #endif
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef HAVE_POLL
+#ifdef __GLIBC__
+#include <sys/poll.h>
+#else
+#include <poll.h>
+#endif /* def __GLIBC__ */
+#endif /* HAVE_POLL */
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
 #include "project.h"
 
-#ifdef FEATURE_PTHREAD
+/* For mutex semaphores only */
 #include "jcc.h"
-/* jcc.h is for mutex semaphores only */
-#endif /* def FEATURE_PTHREAD */
 
 #include "jbsockets.h"
 #include "filters.h"
 #include "errlog.h"
+#include "miscutil.h"
+
+/* Mac OSX doesn't define AI_NUMERICSESRV */
+#ifndef AI_NUMERICSERV
+#define AI_NUMERICSERV 0
+#endif
 
 const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
 
@@ -355,6 +137,202 @@ const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
  *                file descriptor.
  *
  *********************************************************************/
+#ifdef HAVE_RFC2553
+/* Getaddrinfo implementation */
+jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
+{
+   struct addrinfo hints, *result, *rp;
+   char service[6];
+   int retval;
+   jb_socket fd;
+   fd_set wfds;
+   struct timeval tv[1];
+#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA)
+   int   flags;
+#endif /* !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) */
+   int connect_failed;
+
+#ifdef FEATURE_ACL
+   struct access_control_addr dst[1];
+#endif /* def FEATURE_ACL */
+
+   retval = snprintf(service, sizeof(service), "%d", portnum);
+   if ((-1 == retval) || (sizeof(service) <= retval))
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Port number (%d) ASCII decimal representation doesn't fit into 6 bytes",
+         portnum);
+      csp->http->host_ip_addr_str = strdup("unknown");
+      return(JB_INVALID_SOCKET);
+   }
+
+   memset((char *)&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+   hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV; /* avoid service look-up */
+   if ((retval = getaddrinfo(host, service, &hints, &result)))
+   {
+      log_error(LOG_LEVEL_INFO,
+         "Can not resolve %s: %s", host, gai_strerror(retval));
+      csp->http->host_ip_addr_str = strdup("unknown");
+      return(JB_INVALID_SOCKET);
+   }
+
+   for (rp = result; rp != NULL; rp = rp->ai_next)
+   {
+
+#ifdef FEATURE_ACL
+      memcpy(&dst->addr, rp->ai_addr, rp->ai_addrlen);
+
+      if (block_acl(dst, csp))
+      {
+#ifdef __OS2__
+         errno = SOCEPERM;
+#else
+         errno = EPERM;
+#endif
+         continue;
+      }
+#endif /* def FEATURE_ACL */
+
+      csp->http->host_ip_addr_str = malloc(NI_MAXHOST);
+      if (NULL == csp->http->host_ip_addr_str)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while getting the server IP address.");
+         return JB_INVALID_SOCKET;
+      }
+      retval = getnameinfo(rp->ai_addr, rp->ai_addrlen,
+         csp->http->host_ip_addr_str, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+      if (!csp->http->host_ip_addr_str || retval)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Can not save csp->http->host_ip_addr_str: %s",
+            (csp->http->host_ip_addr_str) ?
+            gai_strerror(retval) : "Insufficient memory");
+         freez(csp->http->host_ip_addr_str);
+         continue;
+      }
+
+#ifdef _WIN32
+      if ((fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol)) ==
+            JB_INVALID_SOCKET)
+#else
+      if ((fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol)) < 0)
+#endif
+      {
+         continue;
+      }
+
+#ifdef TCP_NODELAY
+      {  /* turn off TCP coalescence */
+         int mi = 1;
+         setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *) &mi, sizeof (int));
+      }
+#endif /* def TCP_NODELAY */
+
+#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__)
+      if ((flags = fcntl(fd, F_GETFL, 0)) != -1)
+      {
+         flags |= O_NDELAY;
+         fcntl(fd, F_SETFL, flags);
+      }
+#endif /* !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__) */
+
+      connect_failed = 0;
+      while (connect(fd, rp->ai_addr, rp->ai_addrlen) == JB_INVALID_SOCKET)
+      {
+#ifdef _WIN32
+         if (errno == WSAEINPROGRESS)
+#elif __OS2__
+         if (sock_errno() == EINPROGRESS)
+#else /* ifndef _WIN32 */
+         if (errno == EINPROGRESS)
+#endif /* ndef _WIN32 || __OS2__ */
+         {
+            break;
+         }
+
+#ifdef __OS2__
+         if (sock_errno() != EINTR)
+#else
+         if (errno != EINTR)
+#endif /* __OS2__ */
+         {
+            close_socket(fd);
+            connect_failed = 1;
+            break;
+         }
+      }
+      if (connect_failed)
+      {
+         continue;
+      }
+
+#if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__)
+      if (flags != -1)
+      {
+         flags &= ~O_NDELAY;
+         fcntl(fd, F_SETFL, flags);
+      }
+#endif /* !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__) */
+
+      /* wait for connection to complete */
+      FD_ZERO(&wfds);
+      FD_SET(fd, &wfds);
+
+      tv->tv_sec  = 30;
+      tv->tv_usec = 0;
+
+      /* MS Windows uses int, not SOCKET, for the 1st arg of select(). Wierd! */
+      if ((select((int)fd + 1, NULL, &wfds, NULL, tv) > 0)
+         && FD_ISSET(fd, &wfds))
+      {
+         /*
+          * See Linux connect(2) man page for more info
+          * about connecting on non-blocking socket.
+          */
+         int socket_in_error;
+         socklen_t optlen = sizeof(socket_in_error);
+         if (!getsockopt(fd, SOL_SOCKET, SO_ERROR, &socket_in_error, &optlen))
+         {
+            if (!socket_in_error)
+            {
+               /* Connection established, no need to try other addresses. */
+               break;
+            }
+            log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s: %s.",
+               csp->http->host_ip_addr_str, service, strerror(socket_in_error));
+         }
+         else
+         {
+            log_error(LOG_LEVEL_ERROR, "Could not get the state of "
+               "the connection to [%s]:%s: %s; dropping connection.",
+               csp->http->host_ip_addr_str, service, strerror(errno));
+         }
+      }
+
+      /* Connection failed, try next address */
+      close_socket(fd);
+   }
+
+   freeaddrinfo(result);
+   if (!rp)
+   {
+      log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s.",
+         host, service);
+      return(JB_INVALID_SOCKET);
+   }
+   log_error(LOG_LEVEL_CONNECT, "Connected to %s[%s]:%s.",
+      host, csp->http->host_ip_addr_str, service);
+
+   return(fd);
+
+}
+
+#else /* ndef HAVE_RFC2553 */
+/* Pre-getaddrinfo implementation */
+
 jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
 {
    struct sockaddr_in inaddr;
@@ -482,6 +460,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    return(fd);
 
 }
+#endif /* ndef HAVE_RFC2553 */
 
 
 /*********************************************************************
@@ -677,7 +656,19 @@ void close_socket(jb_socket fd)
  *********************************************************************/
 int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
 {
+#ifdef HAVE_RFC2553
+   struct addrinfo hints;
+   struct addrinfo *result, *rp;
+   /*
+    * XXX: portnum should be a string to allow symbolic service
+    * names in the configuration file and to avoid the following
+    * int2string.
+    */
+   char servnam[6];
+   int retval;
+#else
    struct sockaddr_in inaddr;
+#endif /* def HAVE_RFC2553 */
    jb_socket fd;
 #ifndef _WIN32
    int one = 1;
@@ -685,6 +676,45 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
 
    *pfd = JB_INVALID_SOCKET;
 
+#ifdef HAVE_RFC2553
+   retval = snprintf(servnam, sizeof(servnam), "%d", portnum);
+   if ((-1 == retval) || (sizeof(servnam) <= retval))
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Port number (%d) ASCII decimal representation doesn't fit into 6 bytes",
+         portnum);
+      return -1;
+   }
+
+   memset(&hints, 0, sizeof(struct addrinfo));
+   if ((hostnam == NULL) || !strcmpic(hostnam, "localhost"))
+   {
+      /*
+       * XXX: This is a hack. The right thing to do
+       * would be to bind to both AF_INET and AF_INET6.
+       * This will also fail if there is no AF_INET
+       * version available.
+       */
+      hints.ai_family = AF_INET;
+   }
+   else
+   {
+      hints.ai_family = AF_UNSPEC;
+   }
+   hints.ai_socktype = SOCK_STREAM;
+   hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+   hints.ai_protocol = 0; /* Realy any stream protocol or TCP only */
+   hints.ai_canonname = NULL;
+   hints.ai_addr = NULL;
+   hints.ai_next = NULL;
+
+   if ((retval = getaddrinfo(hostnam, servnam, &hints, &result)))
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Can not resolve %s: %s", hostnam, gai_strerror(retval));
+      return -2;
+   }
+#else
    memset((char *)&inaddr, '\0', sizeof inaddr);
 
    inaddr.sin_family      = AF_INET;
@@ -707,8 +737,15 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
       inaddr.sin_port = htonl((unsigned long) portnum);
    }
 #endif /* ndef _WIN32 */
+#endif /* def HAVE_RFC2553 */
 
+#ifdef HAVE_RFC2553
+   for (rp = result; rp != NULL; rp = rp->ai_next)
+   {
+      fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+#else
    fd = socket(AF_INET, SOCK_STREAM, 0);
+#endif /* def HAVE_RFC2553 */
 
 #ifdef _WIN32
    if (fd == JB_INVALID_SOCKET)
@@ -716,7 +753,11 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    if (fd < 0)
 #endif
    {
+#ifdef HAVE_RFC2553
+      continue;
+#else
       return(-1);
+#endif
    }
 
 #ifndef _WIN32
@@ -735,7 +776,11 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
 #endif /* ndef _WIN32 */
 
+#ifdef HAVE_RFC2553
+   if (bind(fd, rp->ai_addr, rp->ai_addrlen) < 0)
+#else
    if (bind(fd, (struct sockaddr *)&inaddr, sizeof(inaddr)) < 0)
+#endif
    {
 #ifdef _WIN32
       errno = WSAGetLastError();
@@ -744,15 +789,41 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
       if (errno == EADDRINUSE)
 #endif
       {
+#ifdef HAVE_RFC2553
+         freeaddrinfo(result);
+#endif
          close_socket(fd);
          return(-3);
       }
       else
       {
          close_socket(fd);
+#ifndef HAVE_RFC2553
          return(-1);
       }
    }
+#else
+      }
+   }
+   else
+   {
+      /* bind() succeeded, escape from for-loop */
+      /*
+       * XXX: Support multiple listening sockets (e.g. localhost
+       * resolves to AF_INET and AF_INET6, but only the first address
+       * is used
+       */
+      break;
+   }
+   }
+
+   freeaddrinfo(result);
+   if (rp == NULL)
+   {
+      /* All bind()s failed */
+      return(-1);
+   }
+#endif /* ndef HAVE_RFC2553 */
 
    while (listen(fd, MAX_LISTEN_BACKLOG) == -1)
    {
@@ -792,14 +863,20 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
  *********************************************************************/
 void get_host_information(jb_socket afd, char **ip_address, char **hostname)
 {
+#ifdef HAVE_RFC2553
+   struct sockaddr_storage server;
+   int retval;
+#else
    struct sockaddr_in server;
    struct hostent *host = NULL;
+#endif /* HAVE_RFC2553 */
 #if defined(_WIN32) || defined(__OS2__) || defined(__APPLE_CC__) || defined(AMIGA)
    /* according to accept_connection() this fixes a warning. */
-   int s_length;
+   int s_length, s_length_provided;
 #else
-   socklen_t s_length;
+   socklen_t s_length, s_length_provided;
 #endif
+#ifndef HAVE_RFC2553
 #if defined(HAVE_GETHOSTBYADDR_R_8_ARGS) ||  defined(HAVE_GETHOSTBYADDR_R_7_ARGS) || defined(HAVE_GETHOSTBYADDR_R_5_ARGS)
    struct hostent result;
 #if defined(HAVE_GETHOSTBYADDR_R_5_ARGS)
@@ -809,7 +886,8 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
    int thd_err;
 #endif /* def HAVE_GETHOSTBYADDR_R_5_ARGS */
 #endif /* def HAVE_GETHOSTBYADDR_R_(8|7|5)_ARGS */
-   s_length = sizeof(server);
+#endif /* ifndef HAVE_RFC2553 */
+   s_length = s_length_provided = sizeof(server);
 
    if (NULL != hostname)
    {
@@ -819,8 +897,31 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
 
    if (!getsockname(afd, (struct sockaddr *) &server, &s_length))
    {
+      if (s_length > s_length_provided)
+      {
+         log_error(LOG_LEVEL_ERROR, "getsockname() truncated server address");
+         return;
+      }
+#ifdef HAVE_RFC2553
+      *ip_address = malloc(NI_MAXHOST);
+      if (NULL == *ip_address)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while getting the client's IP address.");
+         return;
+      }
+      retval = getnameinfo((struct sockaddr *) &server, s_length,
+         *ip_address, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+      if (retval)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Unable to print my own IP address: %s", gai_strerror(retval));
+         freez(*ip_address);
+         return;
+      }
+#else
       *ip_address = strdup(inet_ntoa(server.sin_addr));
-
+#endif /* HAVE_RFC2553 */
       if (NULL == hostname)
       {
          /*
@@ -829,6 +930,24 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
           */
          return;
       }
+
+#ifdef HAVE_RFC2553
+      *hostname = malloc(NI_MAXHOST);
+      if (NULL == *hostname)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while getting the client's hostname.");
+         return;
+      }
+      retval = getnameinfo((struct sockaddr *) &server, s_length,
+         *hostname, NI_MAXHOST, NULL, 0, NI_NAMEREQD);
+      if (retval)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Unable to resolve my own IP address: %s", gai_strerror(retval));
+         freez(*hostname);
+      }
+#else
 #if defined(HAVE_GETHOSTBYADDR_R_8_ARGS)
       gethostbyaddr_r((const char *)&server.sin_addr,
                       sizeof(server.sin_addr), AF_INET,
@@ -849,7 +968,7 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
       {
          host = NULL;
       }
-#elif FEATURE_PTHREAD
+#elif defined(MUTEX_LOCKS_AVAILABLE)
       privoxy_mutex_lock(&resolver_mutex);
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -866,6 +985,7 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
       {
          *hostname = strdup(host->h_name);
       }
+#endif /* else def HAVE_RFC2553 */
    }
 
    return;
@@ -890,7 +1010,13 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
  *********************************************************************/
 int accept_connection(struct client_state * csp, jb_socket fd)
 {
+#ifdef HAVE_RFC2553
+   /* XXX: client is stored directly into csp->tcp_addr */
+#define client (csp->tcp_addr)
+   int retval;
+#else
    struct sockaddr_in client;
+#endif
    jb_socket afd;
 #if defined(_WIN32) || defined(__OS2__) || defined(__APPLE_CC__) || defined(AMIGA)
    /* Wierdness - fix a warning. */
@@ -919,8 +1045,27 @@ int accept_connection(struct client_state * csp, jb_socket fd)
 #endif
 
    csp->cfd = afd;
+#ifdef HAVE_RFC2553
+   csp->ip_addr_str = malloc(NI_MAXHOST);
+   if (NULL == csp->ip_addr_str)
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Out of memory while getting the client's IP address.");
+      return 0;
+   }
+   retval = getnameinfo((struct sockaddr *) &client, c_length,
+         csp->ip_addr_str, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+   if (!csp->ip_addr_str || retval)
+   {
+      log_error(LOG_LEVEL_ERROR, "Can not save csp->ip_addr_str: %s",
+            (csp->ip_addr_str) ? gai_strerror(retval) : "Insuffcient memory");
+      freez(csp->ip_addr_str);
+   }
+#undef client
+#else
    csp->ip_addr_str  = strdup(inet_ntoa(client.sin_addr));
    csp->ip_addr_long = ntohl(client.sin_addr.s_addr);
+#endif /* def HAVE_RFC2553 */
 
    return 1;
 
@@ -995,7 +1140,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
       {
          hostp = NULL;
       }
-#elif FEATURE_PTHREAD
+#elif defined(MUTEX_LOCKS_AVAILABLE)
       privoxy_mutex_lock(&resolver_mutex);
       while (NULL == (hostp = gethostbyname(host))
              && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
@@ -1045,6 +1190,68 @@ unsigned long resolve_hostname_to_ip(const char *host)
    return(inaddr.sin_addr.s_addr);
 
 }
+
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+/*********************************************************************
+ *
+ * Function    :  socket_is_still_usable
+ *
+ * Description :  Decides whether or not an open socket is still usable.
+ *
+ * Parameters  :
+ *          1  :  sfd = The socket to check.
+ *
+ * Returns     :  TRUE for yes, otherwise FALSE.
+ *
+ *********************************************************************/
+int socket_is_still_usable(jb_socket sfd)
+{
+#ifdef HAVE_POLL
+   int poll_result;
+   struct pollfd poll_fd[1];
+
+   memset(poll_fd, 0, sizeof(poll_fd));
+   poll_fd[0].fd = sfd;
+   poll_fd[0].events = POLLIN;
+
+   poll_result = poll(poll_fd, 1, 0);
+
+   if (-1 != poll_result)
+   {
+      return !(poll_fd[0].revents & POLLIN);
+   }
+   else
+   {
+      log_error(LOG_LEVEL_CONNECT, "Polling socket %d failed.", sfd);
+      return FALSE;
+   }
+#else
+   fd_set readable_fds;
+   struct timeval timeout;
+   int ret;
+   int socket_is_alive = 0;
+
+   memset(&timeout, '\0', sizeof(timeout));
+   FD_ZERO(&readable_fds);
+   FD_SET(sfd, &readable_fds);
+
+   ret = select((int)sfd+1, &readable_fds, NULL, NULL, &timeout);
+   if (ret < 0)
+   {
+      log_error(LOG_LEVEL_ERROR, "select() failed!: %E");
+   }
+
+   /*
+    * XXX: I'm not sure why !FD_ISSET() works,
+    * but apparently it does.
+    */
+   socket_is_alive = !FD_ISSET(sfd, &readable_fds);
+
+   return socket_is_alive;
+#endif /* def HAVE_POLL */
+}
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 
 /*

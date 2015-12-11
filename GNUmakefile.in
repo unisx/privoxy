@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.180 2009/02/28 08:28:14 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.181 2009/04/04 20:24:29 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2008 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -965,7 +965,8 @@ $(PROGRAM): $(OBJS) $(W32_FILES)
 	$(LD) $(LDFLAGS) -o $(PROGRAM) $(OBJS) $(LIBS)
 
 clean:
-	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action `find . -name TAGS -o -name tags` config.base config.tmp
+	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action \
+		`find . -name TAGS -o -name tags | $(GREP) -v .git` config.base config.tmp
 
 tidy:
 	$(RM) `find . -name "*~"`
@@ -1317,6 +1318,9 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.181  2009/04/04 20:24:29  fabiankeil
+# Let the clean target play nice with git.
+#
 # Revision 1.180  2009/02/28 08:28:14  fabiankeil
 # pcrs.o doesn't depend on pcre/pcre.h if we are linking
 # dynamically. Patch provided by drauh in #2056286.

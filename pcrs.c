@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.29 2007/09/22 16:17:19 fabiankeil Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.33 2009/05/19 17:44:54 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/pcrs.c,v $
@@ -35,156 +35,8 @@ const char pcrs_rcs[] = "$Id: pcrs.c,v 1.29 2007/09/22 16:17:19 fabiankeil Exp $
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: pcrs.c,v $
- *    Revision 1.29  2007/09/22 16:17:19  fabiankeil
- *    Move our includes below system includes to prevent macro conflicts.
- *
- *    Revision 1.28  2007/08/18 14:37:27  fabiankeil
- *    Ditch hex_to_byte() in favour of xtoi().
- *
- *    Revision 1.27  2007/08/05 13:47:04  fabiankeil
- *    #1763173 from Stefan Huehner: s@const static@static const@.
- *
- *    Revision 1.26  2007/07/01 13:29:54  fabiankeil
- *    Add limited hex notation support for the PCRS
- *    substitution text ('\x7e' = '~'). Closes #1627140.
- *
- *    Revision 1.25  2007/04/30 15:02:18  fabiankeil
- *    Introduce dynamic pcrs jobs that can resolve variables.
- *
- *    Revision 1.24  2007/01/05 15:46:12  fabiankeil
- *    Don't use strlen() to calculate the length of
- *    the pcrs substitutes. They don't have to be valid C
- *    strings and getting their length wrong can result in
- *    user-controlled memory corruption.
- *
- *    Thanks to Felix Gröbert for reporting the problem
- *    and providing the fix [#1627140].
- *
- *    Revision 1.23  2006/12/29 17:53:05  fabiankeil
- *    Fixed gcc43 conversion warnings.
- *
- *    Revision 1.22  2006/12/24 17:34:20  fabiankeil
- *    Add pcrs_strerror() message for PCRE_ERROR_MATCHLIMIT
- *    and give a hint why an error code might be unknown.
- *
- *    Catch NULL subjects early in pcrs_execute().
- *
- *    Revision 1.21  2006/07/18 14:48:47  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.19.2.4  2005/05/07 21:50:55  david__schmidt
- *    A few memory leaks plugged (mostly on error paths)
- *
- *    Revision 1.19.2.3  2003/12/04 12:32:45  oes
- *    Append a trailing nullbyte to result to facilitate string processing
- *
- *    Revision 1.19.2.2  2002/10/08 16:22:28  oes
- *    Bugfix: Need to check validity of backreferences explicitly,
- *    because when max_matches are reached and matches is expanded,
- *    realloc() does not zero the memory. Fixes Bug # 606227
- *
- *    Revision 1.19.2.1  2002/08/10 11:23:40  oes
- *    Include prce.h via project.h, where the appropriate
- *    source will have been selected
- *
- *    Revision 1.19  2002/03/08 14:47:48  oes
- *    Cosmetics
- *
- *    Revision 1.18  2002/03/08 14:17:14  oes
- *    Fixing -Wconversion warnings
- *
- *    Revision 1.17  2002/03/08 13:45:48  oes
- *    Hiding internal functions
- *
- *    Revision 1.16  2001/11/30 21:32:14  jongfoster
- *    Fixing signed/unsigned comparison (Andreas please check this!)
- *    One tab->space
- *
- *    Revision 1.15  2001/09/20 16:11:06  steudten
- *
- *    Add casting for some string functions.
- *
- *    Revision 1.14  2001/09/09 21:41:57  oes
- *    Fixing yet another silly bug
- *
- *    Revision 1.13  2001/09/06 14:05:59  oes
- *    Fixed silly bug
- *
- *    Revision 1.12  2001/08/18 11:35:00  oes
- *    - Introduced pcrs_strerror()
- *    - made some NULL arguments non-fatal
- *    - added support for \n \r \e \b \t \f \a \0 in substitute
- *    - made quoting adhere to standard rules
- *    - added warning for bad backrefs
- *    - added pcrs_execute_list()
- *    - fixed comments
- *    - bugfix & cosmetics
- *
- *    Revision 1.11  2001/08/15 15:32:03  oes
- *     - Added support for Perl's special variables $+, $' and $`
- *     - Improved the substitute parser
- *     - Replaced the hard limit for the maximum number of matches
- *       by dynamic reallocation
- *
- *    Revision 1.10  2001/08/05 13:13:11  jongfoster
- *    Making parameters "const" where possible.
- *
- *    Revision 1.9  2001/07/18 17:27:00  oes
- *    Changed interface; Cosmetics
- *
- *    Revision 1.8  2001/06/29 21:45:41  oes
- *    Indentation, CRLF->LF, Tab-> Space
- *
- *    Revision 1.7  2001/06/29 13:33:04  oes
- *    - Cleaned up, renamed and reordered functions,
- *      improved comments
- *    - Removed my_strsep
- *    - Replaced globalflag with a general flags int
- *      that holds PCRS_GLOBAL, PCRS_SUCCESS, and PCRS_TRIVIAL
- *    - Introduced trivial option that will prevent pcrs
- *      from honouring backreferences in the substitute,
- *      which is useful for large substitutes that are
- *      red in from somewhere and saves the pain of escaping
- *      the backrefs
- *    - Introduced convenience function pcrs_free_joblist()
- *    - Split pcrs_make_job() into pcrs_compile(), which still
- *      takes a complete s/// comand as argument and parses it,
- *      and a new function pcrs_make_job, which takes the
- *      three separate components. This should make for a
- *      much friendlier frontend.
- *    - Removed create_pcrs_job() which was useless
- *    - Fixed a bug in pcrs_execute
- *    - Success flag is now handled by pcrs instead of user
- *
- *    Revision 1.6  2001/06/03 19:12:45  oes
- *    added FIXME
- *
- *    Revision 1.5  2001/05/29 09:50:24  jongfoster
- *    (Fixed one int -> size_t)
- *
- *    Revision 1.4  2001/05/25 14:12:40  oes
- *    Fixed bug: Empty substitutes now detected
- *
- *    Revision 1.3  2001/05/25 11:03:55  oes
- *    Added sanity check for NULL jobs to pcrs_exec_substitution
- *
- *    Revision 1.2  2001/05/22 18:46:04  oes
- *
- *      Added support for PCRE_UNGREEDY behaviour to pcrs,
- *      which is selected by the (nonstandard and therefore
- *      capital) letter 'U' in the option string.
- *      It causes the quantifiers to be ungreedy by default.
- *      Appending a ? turns back to greedy (!).
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:02  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include <string.h>
 #include <ctype.h>
@@ -629,7 +481,7 @@ pcrs_job *pcrs_compile_command(const char *command, int *errptr)
    char *tokens[4];   
    pcrs_job *newjob;
    
-   i = k = l = 0;
+   k = l = 0;
    
    /*
     * Tokenize the perl command
@@ -830,7 +682,7 @@ int pcrs_execute_list(pcrs_job *joblist, char *subject, size_t subject_length, c
  
    old = subject;
    *result_length = subject_length;
-   hits = total_hits = 0;
+   total_hits = 0;
 
    for (job = joblist; job != NULL; job = job->next)
    {
@@ -894,7 +746,7 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
    pcrs_match *matches, *dummy;
    char *result_offset;
 
-   offset = i = k = 0;
+   offset = i = 0;
 
    /* 
     * Sanity check & memory allocation

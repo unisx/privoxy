@@ -29,21 +29,5 @@
 #                or write to the Free Software Foundation, Inc., 59
 #                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
-# Revisions   :
-#    $Log: edit-actions-list-button,v $
-#    Revision 1.3  2002/05/12 15:53:10  jongfoster
-#    Restoring CVS log information accidentally removed in
-#    my previous commit.
-#
-#    Revision 1.2  2002/05/12 15:45:33  jongfoster
-#    Applying [Patch 552094] New templates for edit-actions-list
-#    This cleans up the templates by:
-#    - Removing the (confusing) alternating color scheme.
-#    - Making everything left-justified.
-#
-#    Revision 1.1  2002/05/03 23:00:38  jongfoster
-#    Support for templates for "standard actions" buttons.
-#    See bug #549871
-#
 #############################################################################
  &nbsp; <a href="eas?f=@f@&amp;v=@v@&amp;s=@all-urls-s@&amp;p=@button-name@#l@all-urls-s@">Set to @button-name@</a>

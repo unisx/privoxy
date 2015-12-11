@@ -15,16 +15,6 @@
 #                Foundation; either version 2 of the License, or (at
 #                your option) any later version.
 #
-# Revisions   :
-#    $Log: edit-actions-for-url-filter,v $
-#    Revision 1.8  2007/03/29 11:40:34  fabiankeil
-#    Divide @filter-params@ into @client-header-filter-params@
-#    @content-filter-params@ and @server-header-filter-params@.
-#
-#    Revision 1.7  2007/03/20 15:40:00  fabiankeil
-#    Adjust to new world order with dedicated header-filter actions.
-#
-#
 ##############################################################################
 
 <tr class="bg1" align="left" valign="top">

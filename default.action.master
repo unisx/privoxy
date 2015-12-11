@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.170 2009/03/04 15:05:00 ler762 Exp $
+#  $Id: default.action.master,v 1.178 2009/05/25 21:27:19 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -892,6 +892,14 @@ static.lycos-europe.net
 #MASTER# BLOCK-REFERRER: http://www.networkworld.com/resourcelibrary/?tid=4&type=special%20report
 # Blocked URL = http://clk.atdmt.com/
 .atdmt.com/
+#MASTER# REMARKS: Actionsfile feedback item #2723873 2009-04-01
+#MASTER# BLOCK-REFERRER: http://www.news.software.coop/paralysed-perl-package-problem/602/
+# Blocked URL = http://www.awin1.com/cread.php?s=123049&v=1983&q=80970&r=79561
+.awin1.com
+#MASTER# BLOCK-REFERRER: http://crooksandliars.com/
+# Blocked URL = http://rotator.adjuggler.com/servlet/ajrotator/616245/0/vh?z=csm&dim=616028
+.adjuggler.com/servlet/ajrotator/
+
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -1020,8 +1028,7 @@ bwp.
 .yahoo.com/mc/stampNonJs
 # Blocked URL = http://richmedia.yimg.com/js/123/personnals_banners/PER_happy_sara1_4_425x600/ad.js?q=123
 /.*/ad\.js\?
-# Blocked URL = http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&site=123&section_code=123
-/.*\?ad_(type|size)=
+
 
 #############################################################################
 # Generic block-as-image patterns:
@@ -1052,6 +1059,8 @@ bwp.
 # Blocked URL = http://icons-aa.wunderground.com/ads/images/TripAdvisor-Blinky.gif
 # URL = http://icons-aa.wunderground.com/ads/images/TripAdvisor-Blinky.gif
 /(.*/)?ads/images/
+# Blocked URL = http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&site=123&section_code=123
+/.*\?ad_(type|size)=
 
 #############################################################################
 # Site-specific block-as-image patterns:
@@ -1115,7 +1124,7 @@ a.tribalfusion.com/
 #MASTER# REMARKS: Pointdexter
 .ru4.com/
 #MASTER# BLOCK-REFERRER: http://www.boursorama.com/infos/actualites/detail_actu_marches.phtml?news=1510287
-www.smartadserver.com/
+.smartadserver.com/
 #MASTER# BLOCK-REFERRER: http://www.chez.tiscali.fr/ 10/07/06
 admedia.
 #MASTER# REMARKS: Bannerfarm used by Morpheus file sharing software
@@ -1620,6 +1629,17 @@ qa.debian.org/popcon\.php
 # URL = http://graphics8.nytimes.com/css/0.1/screen/common/ads.css
 # URL = http://graphics8.nytimes.com/css/0.1/screen/homepage/ads.css
 .nytimes.com/.*/ads\.css$
+#MASTER# REMARKS: All hosted videos seemingly require this file.
+#MASTER# UNBLOCK-REFERRER: http://www.cnn.com/video/#/video/showbiz/2009/04/14/dcl.boyle.british.talent.show.cnn
+# URL = http://i.cdn.turner.com/cnn/.element/js/2.0/video/xmp/AdServiceAdapter.swf
+.turner.com/cnn/.*/AdServiceAdapter.swf
+#MASTER# REMARKS: Tracker 2786745 : MySpace music player doesn't work
+#MASTER# UNBLOCK-REFERRER: www.myspace.com/bandofskulls
+# URL = http://lads.myspacecdn.com/videos/musicPlayerAssets.swf
+lads.myspacecdn.com/
+#MASTER# REMARKS: AF#2789653 iTunes download blocked
+# URL = http://a957.phobos.apple.com/us/r1000/000/Music/ad/47/56/mzi.gnjsyarh.aac.a.m4p
+.phobos.apple.com/
 
 
 #############################################################################
@@ -2082,7 +2102,7 @@ rds.yahoo.com/
 #MASTER# COMMENTS: Verified 2007-01-19 fk
 #MASTER# REDIRECT-REFERRER: http://www.gamefaqs.com/computer/doswin/game/914819.html
 # URL = http://dw.com.com/redir?asid=0&astid=8&siteid=19&edid=107&destCat=33862&destURL=http%3A%2F%2Fdb.gamefaqs.com%2Fcomputer%2Fdoswin%2Ffile%2Fvampire_tmb_b.txt
-dw.com.com/
+dw.com.com/redir\?
 #MASTER# REMARKS: Action tracker 1593393. Added 2007-01-20.
 # URL = http://wzus.bloglines.com/r?t=a&d=us&s=bl&c=blen&ti=1&ai=51060&l=dir&o=0&sv=z6f537f5b&ip=971AC44B&u=http%3A%2F%2Fwww.skweezer.net%2Fbloglines%2Fskweeze.aspx%3F%26i%3Dd%26l%3Den%26r%3Dhttp%253A%252F%252Fwww.bloglines.com%252Fmyblogs_display%253Fsub%253D29302699%2526site%253D5382440%26url%3Dhttp%253A%252F%252Fpermalink.gmane.org%252Fgmane.linux.debian.devel.changes.unstable%252F97340
 .bloglines.com/r\?

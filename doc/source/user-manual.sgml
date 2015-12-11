@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.11">
-<!entity p-status "stable">
+<!entity p-version "3.0.13">
+<!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -34,7 +34,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.103 2009/03/21 10:49:05 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.107 2009/06/12 14:30:58 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -60,7 +60,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.103 2009/03/21 10:49:05 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.107 2009/06/12 14:30:58 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -437,88 +437,110 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- <application>Privoxy 3.0.12</application> is mainly a bugfix release:
+ <application>Privoxy 3.0.13</application> introduces IPv6 support,
+ improved keep-alive support and a bunch of minor improvements:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    The socket-timeout option now also works on platforms whose
-    select() implementation modifies the timeout structure.
-    Previously the timeout was triggered even if the connection
-    didn't stall. Reported by cyberpatrol.
+    Added IPv6 support. Thanks to Petr Pisar who not only provided
+    the initial patch but also helped a lot with the integration.
    </para>
   </listitem>
   <listitem>
    <para>
-    The Connection: keep-alive code properly deals with files
-    larger than 2GB. Previously the connection was closed too
-    early.
+    Added client-side keep-alive support. This should also allow
+    NTLM authentication through Privoxy, but this hasn't been
+    confirmed yet.
    </para>
   </listitem>
   <listitem>
    <para>
-    The content length for files above 2GB is logged correctly.
+    The connection sharing code is only used if the connection-sharing
+    option is enabled.
    </para>
   </listitem>
   <listitem>
    <para>
-    The user-manual directive on the show-status page links to
-    the documentation location specified with the directive,
-    not to the Privoxy website.
+    The max-client-connections option has been added to restrict
+    the number of client connections below a value enforced by
+    the operating system.
    </para>
   </listitem>
   <listitem>
    <para>
-    When running in daemon mode, Privoxy doesn't log anything
-    to the console unless there are errors before the logfile
-    has been opened.
+    Fixed a regression reintroduced in 3.0.12 that could cause
+    crashes on mingw32 if header date randomization was enabled.
    </para>
   </listitem>
   <listitem>
    <para>
-    The show-status page prints warnings about invalid directives
-    on the same line as the directives themselves.
+    Compressed content with extra fields couldn't be decompressed
+    and would get passed to the client unfiltered. This problem
+    has only be detected through statical analysis with clang as
+    nobody seems to be using extra fields anyway.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed several justified (but harmless) compiler warnings,
-    mostly on 64 bit platforms.
+    If the server resets the Connection after sending only the headers
+    Privoxy forwards what it got to the client. Previously Privoxy
+    would deliver an error message instead.
    </para>
   </listitem>
   <listitem>
    <para>
-    The mingw32 version explicitly requests the default charset
-    to prevent display problems with some fonts available on more
-    recent Windows versions. Patch by Burberry.
+    Error messages in case of connection timeouts use the right
+    HTTP status code.
    </para>
   </listitem>
   <listitem>
    <para>
-    The mingw32 version uses the Privoxy icon in the alt-tab
-    windows. Patch by Burberry.
+    If spawning a child to handle a request fails, the client
+    gets an error message and Privoxy continues to listen for
+    new requests right away.
    </para>
   </listitem>
   <listitem>
    <para>
-    The timestamp and the thread id is omitted in the "Fatal error"
-    message box on mingw32.
+    The error messages in case of server-connection timeouts or
+    prematurely closed server connections are now template-based.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed two related mingw32-only buffer overflows. Triggering
-    them required control over the configuration file, therefore
-    this isn't seen as a security issue.
+    If zlib support isn't compiled in, Privoxy no longer tries to
+    filter compressed content unless explicitly asked to do so.
    </para>
   </listitem>
   <listitem>
    <para>
-    In verbose mode, or if the new option --show-skipped-tests
-    is used, Privoxy-Regression-Test logs skipped tests and the
-    skip reason.
+    In case of connections that are denied based on ACL directives,
+    the memory used for the client IP is no longer leaked.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed another small memory leak if the client request times out
+    while waiting for client headers other than the request line.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The client socket is kept open until the server socket has
+    been marked as unused. This should increase the chances that
+    the still-open connection will be reused for the client's next
+    request to the same destination. Note that this only matters
+    if connection-sharing is enabled.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    A TODO list has been added to the source tarballs to give potential
+    volunteers a better idea of what the current goals are. Donations
+    are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
    </para>
   </listitem>
  </itemizedlist>
@@ -2147,12 +2169,12 @@ for details.
  
 <para>
  Generally, an URL pattern has the form
- <literal>&lt;domain&gt;/&lt;path&gt;</literal>, where both the
- <literal>&lt;domain&gt;</literal> and <literal>&lt;path&gt;</literal> are
- optional. (This is why the special <literal>/</literal> pattern matches all
- URLs). Note that the protocol portion of the URL pattern (e.g.
- <literal>http://</literal>) should <emphasis>not</emphasis> be included in
- the pattern. This is assumed already!
+ <literal>&lt;domain&gt;&lt;port&gt;/&lt;path&gt;</literal>, where the
+ <literal>&lt;domain&gt;</literal>, the <literal>&lt;port&gt;</literal>
+ and the <literal>&lt;path&gt;</literal> are optional. (This is why the special
+ <literal>/</literal> pattern matches all URLs). Note that the protocol
+ portion of the URL pattern (e.g. <literal>http://</literal>) should
+ <emphasis>not</emphasis> be included in the pattern. This is assumed already!
 </para>
 <para>
  The pattern matching syntax is different for the domain and path parts of
@@ -2160,6 +2182,12 @@ for details.
  while the path part uses more flexible 
  <ulink url="http://en.wikipedia.org/wiki/Regular_expressions"><quote>Regular
   Expressions</quote></ulink> (POSIX 1003.2).
+</para>
+<para>
+ The port part of a pattern is a decimal port number preceded by a colon
+ (<literal>:</literal>). If the domain part contains a numerical IPv6 address,
+ it has to be put into angle brackets
+ (<literal>&lt;</literal>, <literal>&gt;</literal>).
 </para>
 
 <variablelist>
@@ -2207,6 +2235,23 @@ for details.
    <para>
     matches the document <literal>/index.html</literal>, regardless of the domain,
     i.e. on <emphasis>any</emphasis> web server anywhere.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><literal>:8000/</literal></term>
+  <listitem>
+   <para>
+    Matches any URL pointing to TCP port 8000.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><literal>&lt;2001:db8::1&gt;/</literal></term>
+  <listitem>
+   <para>
+    Matches any URL with the host address <literal>2001:db8::1</literal>.
+    (Note that the real URL uses plain brackets, not angle brackets.)
    </para>
   </listitem>
  </varlistentry>
@@ -8453,6 +8498,18 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.107  2009/06/12 14:30:58  fabiankeil
+ Update entities for 3.0.13 beta.
+
+ Revision 2.106  2009/06/12 11:04:13  fabiankeil
+ Import ChangeLog for 3.0.13 beta.
+
+ Revision 2.105  2009/04/17 11:32:57  fabiankeil
+ Grammar and spelling fixes.
+
+ Revision 2.104  2009/04/17 11:27:49  fabiankeil
+ Petr Pisar's privoxy-3.0.12-ipv6-3.diff.
+
  Revision 2.103  2009/03/21 10:49:05  fabiankeil
  Merge updated ChangeLog.
 

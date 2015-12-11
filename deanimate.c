@@ -1,4 +1,4 @@
-const char deanimate_rcs[] = "$Id: deanimate.c,v 1.19 2008/05/21 15:29:35 fabiankeil Exp $";
+const char deanimate_rcs[] = "$Id: deanimate.c,v 1.20 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/deanimate.c,v $
@@ -37,77 +37,8 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.19 2008/05/21 15:29:35 fabian
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: deanimate.c,v $
- *    Revision 1.19  2008/05/21 15:29:35  fabiankeil
- *    Fix gcc43 warnings.
- *
- *    Revision 1.18  2008/03/28 15:13:38  fabiankeil
- *    Remove inspect-jpegs action.
- *
- *    Revision 1.17  2007/08/05 13:42:22  fabiankeil
- *    #1763173 from Stefan Huehner: declare some more functions static.
- *
- *    Revision 1.16  2007/07/14 08:01:58  fabiankeil
- *    s@failiure@failure@
- *
- *    Revision 1.15  2007/01/03 14:39:19  fabiankeil
- *    Fix a gcc43 warning and mark the binbuffer
- *    as immutable for buf_getbyte().
- *
- *    Revision 1.14  2006/07/18 14:48:45  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.12.2.1  2004/10/03 12:53:32  david__schmidt
- *    Add the ability to check jpeg images for invalid
- *    lengths of comment blocks.  Defensive strategy
- *    against the exploit:
- *       Microsoft Security Bulletin MS04-028
- *       Buffer Overrun in JPEG Processing (GDI+) Could
- *       Allow Code Execution (833987)
- *    Enabled with +inspect-jpegs in actions files.
- *
- *    Revision 1.12  2002/05/12 21:36:29  jongfoster
- *    Correcting function comments
- *
- *    Revision 1.11  2002/03/26 22:29:54  swa
- *    we have a new homepage!
- *
- *    Revision 1.10  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.9  2002/03/13 00:27:04  jongfoster
- *    Killing warnings
- *
- *    Revision 1.8  2002/03/09 19:42:47  jongfoster
- *    Fixing more warnings
- *
- *    Revision 1.7  2002/03/08 17:46:04  jongfoster
- *    Fixing int/size_t warnings
- *
- *    Revision 1.6  2002/03/07 03:46:17  oes
- *    Fixed compiler warnings
- *
- *    Revision 1.5  2001/09/10 10:16:06  oes
- *    Silenced compiler warnings
- *
- *    Revision 1.4  2001/07/18 12:28:49  oes
- *    - Added feature for extracting the first frame
- *      to gif_deanimate
- *    - Separated image buffer extension into buf_extend
- *    - Extended gif deanimation to GIF87a (untested!)
- *    - Cosmetics
- *
- *    Revision 1.3  2001/07/15 13:57:50  jongfoster
- *    Adding #includes string.h and miscutil.h
- *
- *    Revision 1.2  2001/07/13 13:46:20  oes
- *    Introduced GIF deanimation feature
- *
- *
  **********************************************************************/
-
+
 
 #include "config.h"
 

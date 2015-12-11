@@ -1,7 +1,50 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Version 3.0.12 (UNRELEASED) ***
+*** Version 3.0.13 Beta ***
+
+- Added IPv6 support. Thanks to Petr Pisar who not only provided
+  the initial patch but also helped a lot with the integration.
+- Added client-side keep-alive support. This should also allow
+  NTLM authentication through Privoxy, but this hasn't been
+  confirmed yet.
+- The connection sharing code is only used if the connection-sharing
+  option is enabled.
+- The max-client-connections option has been added to restrict
+  the number of client connections below a value enforced by
+  the operating system.
+- Fixed a regression reintroduced in 3.0.12 that could cause
+  crashes on mingw32 if header date randomization was enabled.
+- Compressed content with extra fields couldn't be decompressed
+  and would get passed to the client unfiltered. This problem
+  has only be detected through statical analysis with clang as
+  nobody seems to be using extra fields anyway.
+- If the server resets the Connection after sending only the headers
+  Privoxy forwards what it got to the client. Previously Privoxy
+  would deliver an error message instead.
+- Error messages in case of connection timeouts use the right
+  HTTP status code.
+- If spawning a child to handle a request fails, the client
+  gets an error message and Privoxy continues to listen for
+  new requests right away.
+- The error messages in case of server-connection timeouts or
+  prematurely closed server connections are now template-based.
+- If zlib support isn't compiled in, Privoxy no longer tries to
+  filter compressed content unless explicitly asked to do so.
+- In case of connections that are denied based on ACL directives,
+  the memory used for the client IP is no longer leaked.
+- Fixed another small memory leak if the client request times out
+  while waiting for client headers other than the request line.
+- The client socket is kept open until the server socket has
+  been marked as unused. This should increase the chances that
+  the still-open connection will be reused for the client's next
+  request to the same destination. Note that this only matters
+  if connection-sharing is enabled.
+- A TODO list has been added to the source tarballs to give potential
+  volunteers a better idea of what the current goals are. Donations
+  are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
+
+*** Version 3.0.12 ***
 
 - The socket-timeout option now also works on platforms whose
   select() implementation modifies the timeout structure.

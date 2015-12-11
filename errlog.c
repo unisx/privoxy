@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.92 2009/03/20 03:39:31 ler762 Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.96 2009/05/28 21:13:34 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -31,413 +31,8 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.92 2009/03/20 03:39:31 ler762 Exp $
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: errlog.c,v $
- *    Revision 1.92  2009/03/20 03:39:31  ler762
- *    I like having the version logged at startup and the Windows GUI stopped logging
- *    it after LOG_LEVEL_INFO was removed from
- *      static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);
- *
- *    Revision 1.91  2009/03/18 21:56:30  fabiankeil
- *    In init_error_log(), suppress the "(Re-)Opening logfile" message if
- *    we're still logging to stderr. This restores the "silent mode", but
- *    with LOG_LEVEL_INFO enabled, the show_version() info is written to
- *    the logfile as intended.
- *
- *    Revision 1.90  2009/03/18 20:43:19  fabiankeil
- *    Don't enable LOG_LEVEL_INFO by default and don't apply the user's
- *    debug settings until the logfile has been opened (if there is one).
- *    Patch submitted by Roland in #2624120.
- *
- *    Revision 1.89  2009/03/07 12:56:12  fabiankeil
- *    Add log_error() support for unsigned long long (%lld).
- *
- *    Revision 1.88  2009/03/07 11:34:36  fabiankeil
- *    Omit timestamp and thread id in the mingw32 message box.
- *
- *    Revision 1.87  2009/03/01 18:28:24  fabiankeil
- *    Help clang understand that we aren't dereferencing
- *    NULL pointers here.
- *
- *    Revision 1.86  2009/02/09 21:21:15  fabiankeil
- *    Now that init_log_module() is called earlier, call show_version()
- *    later on from main() directly so it doesn't get called for --help
- *    or --version.
- *
- *    Revision 1.85  2009/02/06 17:51:38  fabiankeil
- *    Be prepared if I break the log module initialization again.
- *
- *    Revision 1.84  2008/12/14 15:46:22  fabiankeil
- *    Give crunched requests their own log level.
- *
- *    Revision 1.83  2008/12/04 18:14:32  fabiankeil
- *    Fix some cparser warnings.
- *
- *    Revision 1.82  2008/11/23 16:06:58  fabiankeil
- *    Update a log message I missed in 1.80.
- *
- *    Revision 1.81  2008/11/23 15:59:27  fabiankeil
- *    - Update copyright range.
- *    - Remove stray line breaks in a log message
- *      nobody is supposed to see anyway.
- *
- *    Revision 1.80  2008/11/23 15:49:49  fabiankeil
- *    In log_error(), don't surround the thread id with "Privoxy(" and ")".
- *
- *    Revision 1.79  2008/10/20 17:09:25  fabiankeil
- *    Update init_error_log() description to match reality.
- *
- *    Revision 1.78  2008/09/07 16:59:31  fabiankeil
- *    Update a comment to reflect that we
- *    have mutex support on mingw32 now.
- *
- *    Revision 1.77  2008/09/07 12:43:44  fabiankeil
- *    Move the LogPutString() call in log_error() into the locked
- *    region so the Windows GUI log is consistent with the logfile.
- *
- *    Revision 1.76  2008/09/07 12:35:05  fabiankeil
- *    Add mutex lock support for _WIN32.
- *
- *    Revision 1.75  2008/09/04 08:13:58  fabiankeil
- *    Prepare for critical sections on Windows by adding a
- *    layer of indirection before the pthread mutex functions.
- *
- *    Revision 1.74  2008/08/06 18:33:36  fabiankeil
- *    If the "close fd first" workaround doesn't work,
- *    the fatal error message will be lost, so we better
- *    explain the consequences while we still can.
- *
- *    Revision 1.73  2008/08/04 19:06:55  fabiankeil
- *    Add a lame workaround for the "can't open an already open
- *    logfile on OS/2" problem reported by Maynard in #2028842
- *    and describe what a real solution would look like.
- *
- *    Revision 1.72  2008/07/27 12:04:28  fabiankeil
- *    Fix a comment typo.
- *
- *    Revision 1.71  2008/06/28 17:17:15  fabiankeil
- *    Remove another stray semicolon.
- *
- *    Revision 1.70  2008/06/28 17:10:29  fabiankeil
- *    Remove stray semicolon in get_log_timestamp().
- *    Reported by Jochen Voss in #2005221.
- *
- *    Revision 1.69  2008/05/30 15:55:25  fabiankeil
- *    Declare variable "debug" static and complain about its name.
- *
- *    Revision 1.68  2008/04/27 16:50:46  fabiankeil
- *    Remove an incorrect assertion. The value of debug may change if
- *    the configuration is reloaded in another thread. While we could
- *    cache the initial value, the assertion doesn't seem worth it.
- *
- *    Revision 1.67  2008/03/27 18:27:23  fabiankeil
- *    Remove kill-popups action.
- *
- *    Revision 1.66  2008/01/31 15:38:14  fabiankeil
- *    - Make the logfp assertion more strict. As of 1.63, the "||" could
- *      have been an "&&", which means we can use two separate assertions
- *      and skip on of them on Windows.
- *    - Break a long commit message line in two.
- *
- *    Revision 1.65  2008/01/31 14:44:33  fabiankeil
- *    Use (a != b) instead of !(a == b) so the sanity check looks less insane.
- *
- *    Revision 1.64  2008/01/21 18:56:46  david__schmidt
- *    Swap #def from negative to positive, re-joined it so it didn't
- *    span an assertion (compilation failure on OS/2)
- *
- *    Revision 1.63  2007/12/15 19:49:32  fabiankeil
- *    Stop overloading logfile to control the mingw32 log window as well.
- *    It's no longer necessary now that we disable all debug lines by default
- *    and at least one user perceived it as a regression (added in 1.55).
- *
- *    Revision 1.62  2007/11/30 15:33:46  fabiankeil
- *    Unbreak LOG_LEVEL_FATAL. It wasn't fatal with logging disabled
- *    and on mingw32 fatal log messages didn't end up in the log file.
- *
- *    Revision 1.61  2007/11/04 19:03:01  fabiankeil
- *    Fix another deadlock Hal spotted and that mysteriously didn't affect FreeBSD.
- *
- *    Revision 1.60  2007/11/03 19:03:31  fabiankeil
- *    - Prevent the Windows GUI from showing the version two times in a row.
- *    - Stop using the imperative in the "(Re-)Open logfile" message.
- *    - Ditch the "Switching to daemon mode" message as the detection
- *      whether or not we're already in daemon mode doesn't actually work.
- *
- *    Revision 1.59  2007/11/01 12:50:56  fabiankeil
- *    Here's looking at you, deadlock.
- *
- *    Revision 1.58  2007/10/28 19:04:21  fabiankeil
- *    Don't mention daemon mode in "Logging disabled" message. Some
- *    platforms call it differently and it's not really relevant anyway.
- *
- *    Revision 1.57  2007/10/27 13:02:26  fabiankeil
- *    Relocate daemon-mode-related log messages to make sure
- *    they aren't shown again in case of configuration reloads.
- *
- *    Revision 1.56  2007/10/14 14:26:56  fabiankeil
- *    Remove the old log_error() version.
- *
- *    Revision 1.55  2007/10/14 14:12:41  fabiankeil
- *    When in daemon mode, close stderr after the configuration file has been
- *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
- *
- *    Revision 1.54  2007/09/22 16:15:34  fabiankeil
- *    - Let it compile with pcc.
- *    - Move our includes below system includes to prevent macro conflicts.
- *
- *    Revision 1.53  2007/08/05 13:53:14  fabiankeil
- *    #1763173 from Stefan Huehner: declare some more functions
- *    static and use void instead of empty parameter lists.
- *
- *    Revision 1.52  2007/07/14 07:28:47  fabiankeil
- *    Add translation function for JB_ERR_FOO codes.
- *
- *    Revision 1.51  2007/05/11 11:51:34  fabiankeil
- *    Fix a type mismatch warning.
- *
- *    Revision 1.50  2007/04/11 10:55:44  fabiankeil
- *    Enforce some assertions that could be triggered
- *    on mingw32 and other systems where we use threads
- *    but no locks.
- *
- *    Revision 1.49  2007/04/08 16:44:15  fabiankeil
- *    We need <sys/time.h> for gettimeofday(), not <time.h>.
- *
- *    Revision 1.48  2007/03/31 13:33:28  fabiankeil
- *    Add alternative log_error() with timestamps
- *    that contain milliseconds and without using
- *    strcpy(), strcat() or sprintf().
- *
- *    Revision 1.47  2006/11/28 15:25:15  fabiankeil
- *    Only unlink the pidfile if it's actually used.
- *
- *    Revision 1.46  2006/11/13 19:05:51  fabiankeil
- *    Make pthread mutex locking more generic. Instead of
- *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
- *    and use mutex locking unless there is an _r function
- *    available. Better safe than sorry.
- *
- *    Fixes "./configure --disable-pthread" and should result
- *    in less threading-related problems on pthread-using platforms,
- *    but it still doesn't fix BR#1122404.
- *
- *    Revision 1.45  2006/08/21 11:15:54  david__schmidt
- *    MS Visual C++ build updates
- *
- *    Revision 1.44  2006/08/18 16:03:16  david__schmidt
- *    Tweak for OS/2 build happiness.
- *
- *    Revision 1.43  2006/08/03 02:46:41  david__schmidt
- *    Incorporate Fabian Keil's patch work:
- *    http://www.fabiankeil.de/sourcecode/privoxy/
- *
- *    Revision 1.42  2006/07/18 14:48:46  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.40.2.4  2005/04/03 20:10:50  david__schmidt
- *    Thanks to Jindrich Makovicka for a race condition fix for the log
- *    file.  The race condition remains for non-pthread implementations.
- *    Reference patch #1175720.
- *
- *    Revision 1.40.2.3  2003/03/07 03:41:04  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with mutex 
- *    semaphores for OSX.  Hopefully this will take care of all of those pesky
- *    crash reports.
- *
- *    Revision 1.40.2.2  2002/09/28 00:30:57  david__schmidt
- *    Update error logging to give sane values for thread IDs on Mach kernels.
- *    It's still a hack, but at least it looks farily normal.  We print the
- *    absolute value of the first 4 bytes of the pthread_t modded with 1000.
- *
- *    Revision 1.40.2.1  2002/09/25 12:47:42  oes
- *    Make log_error safe against NULL string arguments
- *
- *    Revision 1.40  2002/05/22 01:27:27  david__schmidt
- *
- *    Add os2_socket_strerr mirroring w32_socket_strerr.
- *
- *    Revision 1.39  2002/04/03 17:15:27  gliptak
- *    zero padding thread ids in log
- *
- *    Revision 1.38  2002/03/31 17:18:59  jongfoster
- *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
- *
- *    Revision 1.37  2002/03/27 14:32:43  david__schmidt
- *    More compiler warning message maintenance
- *
- *    Revision 1.36  2002/03/26 22:29:54  swa
- *    we have a new homepage!
- *
- *    Revision 1.35  2002/03/24 15:23:33  jongfoster
- *    Name changes
- *
- *    Revision 1.34  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.33  2002/03/13 00:27:04  jongfoster
- *    Killing warnings
- *
- *    Revision 1.32  2002/03/07 03:46:17  oes
- *    Fixed compiler warnings
- *
- *    Revision 1.31  2002/03/06 23:02:57  jongfoster
- *    Removing tabs
- *
- *    Revision 1.30  2002/03/05 22:43:45  david__schmidt
- *    - Better error reporting on OS/2
- *    - Fix double-slash comment (oops)
- *
- *    Revision 1.29  2002/03/04 23:45:13  jongfoster
- *    Printing thread ID if using Win32 native threads
- *
- *    Revision 1.28  2002/03/04 17:59:59  oes
- *    Deleted deletePidFile(), cosmetics
- *
- *    Revision 1.27  2002/03/04 02:08:01  david__schmidt
- *    Enable web editing of actions file on OS/2 (it had been broken all this time!)
- *
- *    Revision 1.26  2002/01/09 19:05:45  steudten
- *    Fix big memory leak.
- *
- *    Revision 1.25  2002/01/09 14:32:08  oes
- *    Added support for gmtime_r and localtime_r.
- *
- *    Revision 1.24  2001/12/30 14:07:32  steudten
- *    - Add signal handling (unix)
- *    - Add SIGHUP handler (unix)
- *    - Add creation of pidfile (unix)
- *    - Add action 'top' in rc file (RH)
- *    - Add entry 'SIGNALS' to manpage
- *    - Add exit message to logfile (unix)
- *
- *    Revision 1.23  2001/11/07 00:02:13  steudten
- *    Add line number in error output for lineparsing for
- *    actionsfile and configfile.
- *    Special handling for CLF added.
- *
- *    Revision 1.22  2001/11/05 23:43:05  steudten
- *    Add time+date to log files.
- *
- *    Revision 1.21  2001/10/25 03:40:47  david__schmidt
- *    Change in porting tactics: OS/2's EMX porting layer doesn't allow multiple
- *    threads to call select() simultaneously.  So, it's time to do a real, live,
- *    native OS/2 port.  See defines for __EMX__ (the porting layer) vs. __OS2__
- *    (native). Both versions will work, but using __OS2__ offers multi-threading.
- *
- *    Revision 1.20  2001/09/16 23:04:34  jongfoster
- *    Fixing a warning
- *
- *    Revision 1.19  2001/09/13 20:08:06  jongfoster
- *    Adding support for LOG_LEVEL_CGI
- *
- *    Revision 1.18  2001/09/10 11:27:24  oes
- *    Declaration of w32_socket_strerr now conditional
- *
- *    Revision 1.17  2001/09/10 10:17:13  oes
- *    Removed unused variable; Fixed sprintf format
- *
- *    Revision 1.16  2001/07/30 22:08:36  jongfoster
- *    Tidying up #defines:
- *    - All feature #defines are now of the form FEATURE_xxx
- *    - Permanently turned off WIN_GUI_EDIT
- *    - Permanently turned on WEBDAV and SPLIT_PROXY_ARGS
- *
- *    Revision 1.15  2001/07/29 17:41:10  jongfoster
- *    Now prints thread ID for each message (pthreads only)
- *
- *    Revision 1.14  2001/07/19 19:03:48  haroon
- *    - Added case for LOG_LEVEL_POPUPS
- *
- *    Revision 1.13  2001/07/13 13:58:58  oes
- *     - Added case for LOG_LEVEL_DEANIMATE
- *     - Removed all #ifdef PCRS
- *
- *    Revision 1.12  2001/06/09 10:55:28  jongfoster
- *    Changing BUFSIZ ==> BUFFER_SIZE
- *
- *    Revision 1.11  2001/06/01 18:14:49  jongfoster
- *    Changing the calls to strerr() to check HAVE_STRERR (which is defined
- *    in config.h if appropriate) rather than the NO_STRERR macro.
- *
- *    Revision 1.10  2001/05/29 11:52:21  oes
- *    Conditional compilation of w32_socket_error
- *
- *    Revision 1.9  2001/05/28 16:15:17  jongfoster
- *    Improved reporting of errors under Win32.
- *
- *    Revision 1.8  2001/05/26 17:25:14  jongfoster
- *    Added support for CLF (Common Log Format) and fixed LOG_LEVEL_LOG
- *
- *    Revision 1.7  2001/05/26 15:21:28  jongfoster
- *    Activity animation in Win32 GUI now works even if debug==0
- *
- *    Revision 1.6  2001/05/25 21:55:08  jongfoster
- *    Now cleans up properly on FATAL (removes taskbar icon etc)
- *
- *    Revision 1.5  2001/05/22 18:46:04  oes
- *
- *    - Enabled filtering banners by size rather than URL
- *      by adding patterns that replace all standard banner
- *      sizes with the "Junkbuster" gif to the re_filterfile
- *
- *    - Enabled filtering WebBugs by providing a pattern
- *      which kills all 1x1 images
- *
- *    - Added support for PCRE_UNGREEDY behaviour to pcrs,
- *      which is selected by the (nonstandard and therefore
- *      capital) letter 'U' in the option string.
- *      It causes the quantifiers to be ungreedy by default.
- *      Appending a ? turns back to greedy (!).
- *
- *    - Added a new interceptor ijb-send-banner, which
- *      sends back the "Junkbuster" gif. Without imagelist or
- *      MSIE detection support, or if tinygif = 1, or the
- *      URL isn't recognized as an imageurl, a lame HTML
- *      explanation is sent instead.
- *
- *    - Added new feature, which permits blocking remote
- *      script redirects and firing back a local redirect
- *      to the browser.
- *      The feature is conditionally compiled, i.e. it
- *      can be disabled with --disable-fast-redirects,
- *      plus it must be activated by a "fast-redirects"
- *      line in the config file, has its own log level
- *      and of course wants to be displayed by show-proxy-args
- *      Note: Boy, all the #ifdefs in 1001 locations and
- *      all the fumbling with configure.in and acconfig.h
- *      were *way* more work than the feature itself :-(
- *
- *    - Because a generic redirect template was needed for
- *      this, tinygif = 3 now uses the same.
- *
- *    - Moved GIFs, and other static HTTP response templates
- *      to project.h
- *
- *    - Some minor fixes
- *
- *    - Removed some >400 CRs again (Jon, you really worked
- *      a lot! ;-)
- *
- *    Revision 1.4  2001/05/21 19:32:54  jongfoster
- *    Added another #ifdef _WIN_CONSOLE
- *
- *    Revision 1.3  2001/05/20 01:11:40  jongfoster
- *    Added support for LOG_LEVEL_FATAL
- *    Renamed LOG_LEVEL_FRC to LOG_LEVEL_FORCE,
- *    and LOG_LEVEL_REF to LOG_LEVEL_RE_FILTER
- *
- *    Revision 1.2  2001/05/17 22:42:01  oes
- *     - Cleaned CRLF's from the sources and related files
- *     - Repaired logging for REF and FRC
- *
- *    Revision 1.1.1.1  2001/05/15 13:58:51  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -832,7 +427,7 @@ static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
 
 #ifdef HAVE_LOCALTIME_R
    tm_now = *localtime_r(&now, &tm_now);
-#elif FEATURE_PTHREAD
+#elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&localtime_mutex);
    tm_now = *localtime(&now); 
    privoxy_mutex_unlock(&localtime_mutex);
@@ -890,7 +485,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
    time (&now); 
 #ifdef HAVE_GMTIME_R
    gmt = *gmtime_r(&now, &gmt);
-#elif FEATURE_PTHREAD
+#elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&gmtime_mutex);
    gmt = *gmtime(&now);
    privoxy_mutex_unlock(&gmtime_mutex);
@@ -899,7 +494,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
 #endif
 #ifdef HAVE_LOCALTIME_R
    tm_now = localtime_r(&now, &dummy);
-#elif FEATURE_PTHREAD
+#elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&localtime_mutex);
    tm_now = localtime(&now); 
    privoxy_mutex_unlock(&localtime_mutex);
@@ -1156,7 +751,7 @@ void log_error(int loglevel, const char *fmt, ...)
             {
                unsigned long long lluval = va_arg(ap, unsigned long long);
                snprintf(tempbuf, sizeof(tempbuf), "%llu", lluval);
-               ch = *src++;
+               src++;
             }
             else
             {

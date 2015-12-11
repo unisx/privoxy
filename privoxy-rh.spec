@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.63 2009/03/21 10:46:15 fabiankeil Exp $
+# $Id: privoxy-rh.spec,v 1.65 2009/06/11 12:16:02 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated accordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.12
+Version: 3.0.13
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -70,7 +70,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=12
+VERSION_POINT=13
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -291,6 +291,7 @@ fi
 %config %{privoxyconf}/templates/cgi-error-parse
 %config %{privoxyconf}/templates/cgi-style.css
 %config %{privoxyconf}/templates/connect-failed
+%config %{privoxyconf}/templates/connection-timeout
 %config %{privoxyconf}/templates/default
 %config %{privoxyconf}/templates/forwarding-failed
 %config %{privoxyconf}/templates/edit-actions-add-url-form
@@ -306,6 +307,7 @@ fi
 %config %{privoxyconf}/templates/mod-support-and-service
 %config %{privoxyconf}/templates/mod-title
 %config %{privoxyconf}/templates/mod-unstable-warning
+%config %{privoxyconf}/templates/no-server-data
 %config %{privoxyconf}/templates/no-such-domain
 %config %{privoxyconf}/templates/show-request
 %config %{privoxyconf}/templates/show-status
@@ -765,6 +767,12 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.65  2009/06/11 12:16:02  fabiankeil
+# Add recently added cgi templates.
+#
+# Revision 1.64  2009/06/11 12:13:51  fabiankeil
+# Bump version for 3.0.13 beta.
+#
 # Revision 1.63  2009/03/21 10:46:15  fabiankeil
 # Bump version to 3.0.12.
 #

@@ -1,4 +1,4 @@
-const char w32_svrapi_rcs[] = "$Id: w32svrapi.c,v 1.2 2006/09/20 03:15:43 david__schmidt Exp $";
+const char w32_svrapi_rcs[] = "$Id: w32svrapi.c,v 1.3 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32svrapi.c,v $
@@ -44,19 +44,8 @@ const char w32_svrapi_rcs[] = "$Id: w32svrapi.c,v 1.2 2006/09/20 03:15:43 david_
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: w32svrapi.c,v $
- *    Revision 1.2  2006/09/20 03:15:43  david__schmidt
- *    Clean up a variable type declaration which just
- *    happened to work...
- *
- *    Revision 1.1  2006/08/12 03:54:37  david__schmidt
- *    Windows service integration
- *
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 

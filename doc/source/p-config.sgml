@@ -3,7 +3,7 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.41 2009/02/19 16:59:41 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.53 2009/06/12 11:53:33 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -81,7 +81,9 @@
 <para>
  The main config file controls all aspects of <application>Privoxy</application>'s
  operation that are not location dependent (i.e. they apply universally, no matter
- where you may be surfing).
+ where you may be surfing). Like the filter and action files, the config file is
+ a plain text file and can be modified with a text editor like emacs, vim or
+ notepad.exe.
 </para>
 
 ]]>
@@ -95,7 +97,7 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.41 2009/02/19 16:59:41 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.53 2009/06/12 11:53:33 fabiankeil Exp $
 </para>
 <para>
 Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
@@ -1025,7 +1027,7 @@ actionsfile
    </para>
    <para>
     A debug level of 1 is informative because it will show you each request
-    as it happens. <emphasis>1, 4096 and 8192 are recommended</emphasis>
+    as it happens. <emphasis>1, 1024, 4096 and 8192 are recommended</emphasis>
     so that you will notice when things go wrong. The other levels are
     probably only of interest if you are hunting down a specific problem.
     They can produce a hell of an output (especially 16).
@@ -1213,9 +1215,9 @@ actionsfile
   <term>Effect if unset:</term>
   <listitem>
    <para>
-    Bind to 127.0.0.1 (localhost), port 8118. This is suitable and recommended for
-    home users who run <application>Privoxy</application> on the same machine as
-    their browser.
+    Bind to 127.0.0.1 (IPv4 localhost), port 8118. This is suitable and
+    recommended for home users who run <application>Privoxy</application> on
+    the same machine as their browser.
    </para>
   </listitem>
  </varlistentry>
@@ -1231,11 +1233,16 @@ actionsfile
     will need to override the default.
    </para>
    <para>
+    IPv6 addresses containing colons have to be quoted by brackets.
+   </para>
+   <para>
     If you leave out the IP address, <application>Privoxy</application> will
-    bind to all interfaces (addresses) on your machine and may become reachable
+    bind to all IPv4 interfaces (addresses) on your machine and may become reachable
     from the Internet. In that case, consider using <link
     linkend="acls">access control lists</link> (ACL's, see below), and/or
-    a firewall.
+    a firewall. If the hostname is localhost, <application>Privoxy</application>
+    will explicitly try to bind to an IPv4 address. For other hostnames it depends
+    on the operating system which IP version will be used.
    </para>
    <para>
     If you open <application>Privoxy</application> to untrusted users, you will
@@ -1257,6 +1264,16 @@ actionsfile
    <para>
     <programlisting>
   listen-address  192.168.0.1:8118
+</programlisting>
+   </para>
+   <para>
+    Suppose you are running <application>Privoxy</application> on an
+    IPv6-capable machine and you want it to listen on the IPv6 address
+    of the loopback device:
+   </para>
+   <para>
+    <programlisting>
+  listen-address [::1]:8118
 </programlisting>
    </para>
   </listitem>
@@ -1611,16 +1628,28 @@ ACLs: permit-access and deny-access</title>
   <term>Type of value:</term>
   <listitem>
    <para>
-    <replaceable class="parameter">src_addr</replaceable>[/<replaceable class="parameter">src_masklen</replaceable>]
-    [<replaceable class="parameter">dst_addr</replaceable>[/<replaceable class="parameter">dst_masklen</replaceable>]]
+    <replaceable class="parameter">src_addr</replaceable>[:<replaceable class="parameter">port</replaceable>][/<replaceable class="parameter">src_masklen</replaceable>]
+    [<replaceable class="parameter">dst_addr</replaceable>[:<replaceable class="parameter">port</replaceable>][/<replaceable class="parameter">dst_masklen</replaceable>]]
    </para>
    <para>
     Where <replaceable class="parameter">src_addr</replaceable> and 
-   <replaceable class="parameter">dst_addr</replaceable> are IP addresses in dotted decimal notation or valid
-    DNS names, and <replaceable class="parameter">src_masklen</replaceable> and
+   <replaceable class="parameter">dst_addr</replaceable> are IPv4 addresses in dotted decimal notation or valid
+    DNS names, <replaceable class="parameter">port</replaceable> is a port
+    number, and <replaceable class="parameter">src_masklen</replaceable> and
     <replaceable class="parameter">dst_masklen</replaceable> are subnet masks in CIDR notation, i.e. integer
     values from 2 to 30 representing the length (in bits) of the network address. The masks and the whole
     destination part are optional.
+   </para>
+   <para>
+    If your system implements
+    <ulink url="http://tools.ietf.org/html/rfc3493">RFC 3493</ulink>, then
+    <replaceable class="parameter">src_addr</replaceable> and <replaceable
+    class="parameter">dst_addr</replaceable> can be IPv6 addresses delimeted by
+    brackets, <replaceable class="parameter">port</replaceable> can be a number
+    or a service name, and
+    <replaceable class="parameter">src_masklen</replaceable> and
+    <replaceable class="parameter">dst_masklen</replaceable> can be a number
+    from 0 to 128.
    </para>
   </listitem>
  </varlistentry>
@@ -1628,6 +1657,12 @@ ACLs: permit-access and deny-access</title>
   <term>Default value:</term>
   <listitem>
    <para><emphasis>Unset</emphasis></para>
+   <para>
+    If no <replaceable class="parameter">port</replaceable> is specified,
+    any port will match. If no <replaceable class="parameter">src_masklen</replaceable> or
+    <replaceable class="parameter">src_masklen</replaceable> is given, the complete IP
+    address has to match (i.e. 32 bits for IPv4 and 128 bits for IPv6).
+   </para>
   </listitem>
  </varlistentry>
  <varlistentry>
@@ -1677,6 +1712,13 @@ ACLs: permit-access and deny-access</title>
     IP addresses, only the first one is used.
    </para>
    <para>
+     Some systems allows IPv4 client to connect to IPv6 server socket.
+     Then the client's IPv4 address will be translated by system into
+     IPv6 address space with special prefix ::ffff:0:0/96 (so called IPv4
+     mapped IPv6 address). <application>Privoxy</application> can handle it
+     and maps such ACL addresses automatically.
+   </para>
+   <para>
     Denying access to particular sites by ACL may have undesired side effects
     if the site in question is hosted on a machine which also hosts other sites
     (most sites are).
@@ -1716,6 +1758,24 @@ ACLs: permit-access and deny-access</title>
   permit-access  192.168.45.64/26
   deny-access    192.168.45.73    www.dirty-stuff.example.com
 </screen>
+   </para>
+   <para>
+     Allow access from the IPv4 network 192.0.2.0/24 even if listening on
+     an IPv6 wild card address (not supported on all platforms):
+   </para>
+   <para>
+    <programlisting>
+  permit-access  192.0.2.0/24
+</programlisting>
+   </para>
+   <para>
+     This is equivalent to the following line even if listening on an
+     IPv4 address (not supported on all platforms):
+   </para>
+   <para>
+    <programlisting>
+  permit-access  [::ffff:192.0.2.0]/120
+</programlisting>
    </para>
   </listitem>
  </varlistentry>
@@ -1838,7 +1898,7 @@ ACLs: permit-access and deny-access</title>
     denote <quote>all URLs</quote>.
     <replaceable class="parameter">http_parent</replaceable>[:<replaceable class="parameter">port</replaceable>]
     is the DNS name or IP address of the parent HTTP proxy through which the requests should be forwarded,
-    optionally followed by its listening port (default: 8080).
+    optionally followed by its listening port (default: 8000).
     Use a single dot (<literal>.</literal>) to denote <quote>no forwarding</quote>.
    </para>
   </listitem>
@@ -1863,6 +1923,16 @@ ACLs: permit-access and deny-access</title>
    <para>
     If <replaceable class="parameter">http_parent</replaceable> is <quote>.</quote>, then requests are not
     forwarded to another HTTP proxy but are made directly to the web servers.
+   </para>
+   <para>
+    <replaceable class="parameter">http_parent</replaceable> can be a
+     numerical IPv6 address (if
+    <ulink url="http://tools.ietf.org/html/rfc3493">RFC 3493</ulink> is
+    implemented). To prevent clashes with the port delimiter, the whole IP
+    address has to be put into brackets. On the other hand a <replaceable
+    class="parameter">target_pattern</replaceable> containing an IPv6 address
+    has to be put into angle brackets (normal brackets are reserved for
+    regular expressions already).
    </para>
    <para>
     Multiple lines are OK, they are checked in sequence, and the last match wins.
@@ -1890,6 +1960,24 @@ ACLs: permit-access and deny-access</title>
   forward   /                  caching-proxy.isp.example.net:8000
   forward   .isp.example.net   .
 </screen>
+   </para>
+   <para>
+    Parent proxy specified by an IPv6 address:
+   </para>
+   <para>
+    <programlisting>
+  foward   /                   [2001:DB8::1]:8000
+</programlisting>
+   </para>
+   <para>
+    Suppose your parent proxy doesn't support IPv6:
+   </para>
+   <para>
+    <programlisting>
+  forward  /                        parent-proxy.example.org:8000
+  forward  ipv6-server.example.org  .
+  forward  &lt;[2-3][0-9a-f][0-9a-f][0-9a-f]:*&gt;   .
+</programlisting>
    </para>
   </listitem>
  </varlistentry>
@@ -1963,6 +2051,17 @@ forward-socks4, forward-socks4a and forward-socks5</title>
     With <literal>forward-socks5</literal> the DNS resolution will happen on the remote server as well.
    </para>
    <para>
+    <replaceable class="parameter">socks_proxy</replaceable> and
+    <replaceable class="parameter">http_parent</replaceable> can be a
+     numerical IPv6 address (if
+    <ulink url="http://tools.ietf.org/html/rfc3493">RFC 3493</ulink> is
+    implemented). To prevent clashes with the port delimiter, the whole IP
+    address has to be put into brackets. On the other hand a <replaceable
+    class="parameter">target_pattern</replaceable> containing an IPv6 address
+    has to be put into angle brackets (normal brackets are reserved for
+    regular expressions already).
+   </para>
+   <para>
     If <replaceable class="parameter">http_parent</replaceable> is <quote>.</quote>, then requests are not
     forwarded to another HTTP proxy but are made (HTTP-wise) directly to the web servers, albeit through
     a SOCKS proxy.
@@ -1999,7 +2098,7 @@ forward-socks4, forward-socks4a and forward-socks5</title>
    </para>
    <para>
     <screen>
-  forward-socks4a   /               127.0.0.1:9050 .
+  forward-socks5   /               127.0.0.1:9050 .
 </screen>
    </para>
 
@@ -2193,6 +2292,11 @@ forward-socks4, forward-socks4a and forward-socks5</title>
 </variablelist>
 <![%config-file;[<literallayout>@@forwarded-connect-retries  0</literallayout>]]>
 </sect3>
+
+</sect2>
+
+<sect2 id="misc">
+<title>Miscellaneous</title>
 
 <sect3 renderas="sect4" id="accept-intercepted-requests"><title>accept-intercepted-requests</title>
 <variablelist>
@@ -2410,34 +2514,29 @@ forward-socks4, forward-socks4a and forward-socks5</title>
   <term>Effect if unset:</term>
   <listitem>
    <para>
-    Connections are not reused.
+    Connections are not kept alive.
    </para>
   </listitem>
  </varlistentry>
  <varlistentry>
   <term>Notes:</term>
   <listitem>
+   <para>
+    This option allows clients to keep the connection to &my-app;
+    alive. If the server supports it, &my-app; will keep
+    the connection to the server alive as well. Under certain
+    circumstances this may result in speed-ups.
+   </para>
+   <para>
+    By default, &my-app; will close the connection to the server if
+    the client connection gets closed, or if the specified timeout
+    has been reached without a new request coming in. This behaviour
+    can be changed with the <ulink
+     url="#CONNECTION-SHARING">connection-sharing</ulink> option.
+   </para>
    <para>
     This option has no effect if <application>Privoxy</application>
     has been compiled without keep-alive support.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    Note that reusing connections doesn't necessary cause speedups.
-    There are also a few privacy implications you should be aware of.
-   </para>
-   <para>
-    Outgoing connections are shared between clients (if there are more
-    than one) and closing the client that initiated the outgoing connection
-    does not affect the connection between &my-app; and the server unless
-    the client's request hasn't been completed yet. If the outgoing connection
-    is idle, it will not be closed until either <application>Privoxy's</application>
-    or the server's timeout is reached. While it's open, the server knows
-    that the system running &my-app; is still there.
    </para>
   </listitem>
  </varlistentry>
@@ -2451,6 +2550,105 @@ forward-socks4, forward-socks4a and forward-socks5</title>
  </varlistentry>
 </variablelist>
 <![%config-file;[<literallayout>@@keep-alive-timeout 300</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="connection-sharing"><title>connection-sharing</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Whether or not outgoing connections that have been kept alive
+    should be shared between different incoming connections.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>0 or 1</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Connections are not shared.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    This option has no effect if <application>Privoxy</application>
+    has been compiled without keep-alive support, or if it's disabled.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Note that reusing connections doesn't necessary cause speedups.
+    There are also a few privacy implications you should be aware of.
+   </para>
+   <para>
+    If this option is effective, outgoing connections are shared between
+    clients (if there are more than one) and closing the browser that initiated
+    the outgoing connection does no longer affect the connection between &my-app;
+    and the server unless the client's request hasn't been completed yet.
+   </para>
+   <para>
+    If the outgoing connection  is idle, it will not be closed until either
+    <application>Privoxy's</application> or the server's timeout is reached.
+    While it's open, the server knows that the system running &my-app; is still
+    there.
+   </para>
+   <para>
+    If there are more than one client (maybe even belonging to multiple users),
+    they will be able to reuse each others connections. This is potentially
+    dangerous in case of authentication schemes like NTLM where only the
+    connection is authenticated, instead of requiring authentication for
+    each request.
+   </para>
+   <para>
+    If there is only a single client, and if said client can keep connections
+    alive on its own, enabling this option has next to no effect. If the client
+    doesn't support connection keep-alive, enabling this option may make sense
+    as it allows &my-app; to keep outgoing connections alive even if the client
+    itself doesn't support it.
+   </para>
+   <para>
+    You should also be aware that enabling this option increases the likelihood
+    of getting the "No server or forwarder data" error message, especially if you
+    are using a slow connection to the Internet.
+   </para>
+   <para>
+    This option should only be used by experienced users who
+    understand the risks and can weight them against the benefits.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    connection-sharing 1
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@#connection-sharing 1</literallayout>]]>
 </sect3>
 
 
@@ -2507,6 +2705,87 @@ forward-socks4, forward-socks4a and forward-socks5</title>
  </varlistentry>
 </variablelist>
 <![%config-file;[<literallayout>@@socket-timeout 300</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="max-client-connections"><title>max-client-connections</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Maximum number of client connections that will be served.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>Positive number.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Connections are served until a resource limit is reached.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    &my-app; creates one thread (or process) for every incoming client
+    connection that isn't rejected based on the access control settings.
+   </para>
+   <para>
+    If the system is powerful enough, &my-app; can theoretically deal with
+    several hundred (or thousand) connections at the same time, but some
+    operating systems enforce resource limits by shutting down offending
+    processes and their default limits may be below the ones &my-app; would
+    require under heavy load.
+   </para>
+   <para>
+    Configuring &my-app; to enforce a connection limit below the thread
+    or process limit used by the operating system makes sure this doesn't
+    happen. Simply increasing the operating system's limit would work too,
+    but if &my-app; isn't the only application running on the system,
+    you may actually want to limit the resources used by &my-app;.
+   </para>
+   <para>
+    If &my-app; is only used by a single trusted user, limiting the
+    number of client connections is probably unnecessary. If there
+    are multiple possibly untrusted users you probably still want to
+    additionally use a packet filter to limit the maximal number of
+    incoming connections per client. Otherwise a malicious user could
+    intentionally create a high number of connections to prevent other
+    users from using &my-app;.
+   </para>
+   <para>
+    Obviously using this option only makes sense if you choose a limit
+    below the one enforced by the operating system.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    max-client-connections 256
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@#max-client-connections 256</literallayout>]]>
 </sect3>
 
 

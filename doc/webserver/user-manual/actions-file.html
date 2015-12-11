@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.12 User Manual"
+TITLE="Privoxy 3.0.13 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.12 User Manual</TH
+>Privoxy 3.0.13 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -233,7 +233,7 @@ CLASS="FILENAME"
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2189"
+NAME="AEN2325"
 ></A
 ><P
 ><B
@@ -501,7 +501,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2288"
+NAME="AEN2424"
 >8.1. Finding the Right Mix</A
 ></H2
 ><P
@@ -536,7 +536,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2295"
+NAME="AEN2431"
 >8.2. How to Edit</A
 ></H2
 ><P
@@ -714,31 +714,34 @@ CLASS="EMPHASIS"
 > Generally, an URL pattern has the form
  <TT
 CLASS="LITERAL"
->&#60;domain&#62;/&#60;path&#62;</TT
->, where both the
+>&#60;domain&#62;&#60;port&#62;/&#60;path&#62;</TT
+>, where the
  <TT
 CLASS="LITERAL"
 >&#60;domain&#62;</TT
-> and <TT
+>, the <TT
+CLASS="LITERAL"
+>&#60;port&#62;</TT
+>
+ and the <TT
 CLASS="LITERAL"
 >&#60;path&#62;</TT
-> are
- optional. (This is why the special <TT
-CLASS="LITERAL"
->/</TT
-> pattern matches all
- URLs). Note that the protocol portion of the URL pattern (e.g.
+> are optional. (This is why the special
  <TT
 CLASS="LITERAL"
+>/</TT
+> pattern matches all URLs). Note that the protocol
+ portion of the URL pattern (e.g. <TT
+CLASS="LITERAL"
 >http://</TT
->) should <SPAN
+>) should
+ <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >not</I
 ></SPAN
-> be included in
- the pattern. This is assumed already!</P
+> be included in the pattern. This is assumed already!</P
 ><P
 > The pattern matching syntax is different for the domain and path parts of
  the URL. The domain part uses a simple globbing type matching technique, 
@@ -752,6 +755,20 @@ CLASS="QUOTE"
   Expressions"</SPAN
 ></A
 > (POSIX 1003.2).</P
+><P
+> The port part of a pattern is a decimal port number preceded by a colon
+ (<TT
+CLASS="LITERAL"
+>:</TT
+>). If the domain part contains a numerical IPv6 address,
+ it has to be put into angle brackets
+ (<TT
+CLASS="LITERAL"
+>&#60;</TT
+>, <TT
+CLASS="LITERAL"
+>&#62;</TT
+>).</P
 ><P
 ></P
 ><DIV
@@ -847,6 +864,30 @@ CLASS="EMPHASIS"
 ><DT
 ><TT
 CLASS="LITERAL"
+>:8000/</TT
+></DT
+><DD
+><P
+>    Matches any URL pointing to TCP port 8000.
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>&#60;2001:db8::1&#62;/</TT
+></DT
+><DD
+><P
+>    Matches any URL with the host address <TT
+CLASS="LITERAL"
+>2001:db8::1</TT
+>.
+    (Note that the real URL uses plain brackets, not angle brackets.)
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
 >index.html</TT
 ></DT
 ><DD
@@ -866,7 +907,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2386"
+NAME="AEN2538"
 >8.4.1. The Domain Pattern</A
 ></H3
 ><P
@@ -1106,7 +1147,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2462"
+NAME="AEN2614"
 >8.4.2. The Path Pattern</A
 ></H3
 ><P
@@ -6674,7 +6715,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4093"
+NAME="AEN4245"
 >8.5.34. Summary</A
 ></H3
 ><P
@@ -6976,7 +7017,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4157"
+NAME="AEN4309"
 >8.7.1. match-all.action</A
 ></H3
 ><P
@@ -7074,7 +7115,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4179"
+NAME="AEN4331"
 >8.7.2. default.action</A
 ></H3
 ><P
@@ -7675,7 +7716,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4292"
+NAME="AEN4444"
 >8.7.3. user.action</A
 ></H3
 ><P

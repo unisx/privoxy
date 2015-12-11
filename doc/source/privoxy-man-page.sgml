@@ -5,7 +5,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: privoxy-man-page.sgml,v 2.29 2009/02/19 02:20:22 hal9 Exp $
+ $Id: privoxy-man-page.sgml,v 2.30 2009/06/12 14:30:58 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -42,10 +42,10 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "3.0.11">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.13">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">           <!-- define we are not a text only doc -->
 <!entity % p-authors-formal "IGNORE"> <!-- exclude additional formating      -->
 <!entity my-copy "(C)">               <!-- db2man barfs on copyright symbol  -->

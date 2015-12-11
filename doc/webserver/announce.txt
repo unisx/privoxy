@@ -1,47 +1,55 @@
-                 Announcing Privoxy v.3.0.12
+              Announcing Privoxy v.3.0.13 beta
 -----------------------------------------------------------------
 
-Privoxy 3.0.12-stable is primarily a bugfix release.
+Privoxy 3.0.13 beta introduces IPv6 support, improved keep-alive
+support and a bunch of minor improvements.
 
-See http://www.privoxy.org/3.0.12/user-manual/whatsnew.html for details.
+See http://www.privoxy.org/3.0.13/user-manual/whatsnew.html for details.
 
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Version 3.0.12  ***
+*** Version 3.0.13 beta  ***
 
-- The socket-timeout option now also works on platforms whose
-  select() implementation modifies the timeout structure.
-  Previously the timeout was triggered even if the connection
-  didn't stall. Reported by cyberpatrol.
-- The Connection: keep-alive code properly deals with files
-  larger than 2GB. Previously the connection was closed too
-  early.
-- The content length for files above 2GB is logged correctly.
-- The user-manual directive on the show-status page links to
-  the documentation location specified with the directive,
-  not to the Privoxy website.
-- When running in daemon mode, Privoxy doesn't log anything
-  to the console unless there are errors before the logfile
-  has been opened.
-- The show-status page prints warnings about invalid directives
-  on the same line as the directives themselves.
-- Fixed several justified (but harmless) compiler warnings,
-  mostly on 64 bit platforms.
-- The mingw32 version explicitly requests the default charset
-  to prevent display problems with some fonts available on more
-  recent Windows versions. Patch by Burberry.
-- The mingw32 version uses the Privoxy icon in the alt-tab
-  windows. Patch by Burberry.
-- The timestamp and the thread id is omitted in the "Fatal error"
-  message box on mingw32.
-- Fixed two related mingw32-only buffer overflows. Triggering
-  them required control over the configuration file, therefore
-  this isn't seen as a security issue.
-- In verbose mode, or if the new option --show-skipped-tests
-  is used, Privoxy-Regression-Test logs skipped tests and the
-  skip reason.
-
+- Added IPv6 support. Thanks to Petr Pisar who not only provided
+  the initial patch but also helped a lot with the integration.
+- Added client-side keep-alive support. This should also allow
+  NTLM authentication through Privoxy, but this hasn't been
+  confirmed yet.
+- The connection sharing code is only used if the connection-sharing
+  option is enabled.
+- The max-client-connections option has been added to restrict
+  the number of client connections below a value enforced by
+  the operating system.
+- Fixed a regression reintroduced in 3.0.12 that could cause
+  crashes on mingw32 if header date randomization was enabled.
+- Compressed content with extra fields couldn't be decompressed
+  and would get passed to the client unfiltered. This problem
+  has only be detected through statical analysis with clang as
+  nobody seems to be using extra fields anyway.
+- If the server resets the Connection after sending only the headers
+  Privoxy forwards what it got to the client. Previously Privoxy
+  would deliver an error message instead.
+- Error messages in case of connection timeouts use the right
+  HTTP status code.
+- If spawning a child to handle a request fails, the client
+  gets an error message and Privoxy continues to listen for
+  new requests right away.
+- The error messages in case of server-connection timeouts or
+  prematurely closed server connections are now template-based.
+- If zlib support isn't compiled in, Privoxy no longer tries to
+  filter compressed content unless explicitly asked to do so.
+- In case of connections that are denied based on ACL directives,
+  the memory used for the client IP is no longer leaked.
+- Fixed another small memory leak if the client request times out
+  while waiting for client headers other than the request line.
+- The client socket is kept open until the server socket has
+  been marked as unused. This should increase the chances that
+  the still-open connection will be reused for the client's next
+  request to the same destination. Note that this only matters
+  if connection-sharing is enabled.
+- A TODO list has been added to the source tarballs to give potential
+  volunteers a better idea of what the current goals are.
 
 -----------------------------------------------------------------
 About Privoxy:
@@ -69,7 +77,10 @@ Privoxy provides many supplemental features, that give the end-user
 more control, more privacy and more freedom:
 
 
-    *  Can keep outgoing connections alive and reuse them later on.
+    *  Supports "Connection: keep-alive". Outgoing connections can be kept
+       alive independently from the client.
+
+    *  Supports IPv6.
 
     *  Supports tagging which allows to change the behaviour based on client
        and server headers.
@@ -96,8 +107,6 @@ more control, more privacy and more freedom:
 
     *  Support for Perl Compatible Regular Expressions in the configuration
        files, and a more sophisticated and flexible configuration syntax.
-
-    *  Improved cookie management features (e.g. session based cookies).
 
     *  GIF de-animation.
 

@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.12">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.13">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.26 2009/03/21 11:32:38 hal9 Exp $
+ $Id: readme.sgml,v 2.28 2009/06/13 12:40:44 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -128,34 +128,18 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
 <para>
- March 2009, Privoxy 3.0.12 is released.
+ Jun 2009, Privoxy 3.0.13 beta is released.
 </para>
 <para>
- This is primarily a bug fix release. See the "ChangeLog", and the "What's
+ This release introduces IPv6 support, improved keep-alive support
+ and a bunch of minor improvements.. See the "ChangeLog", and the "What's
  New" section and the "Upgrader's Notes" in <citetitle>the User
  Manual</citetitle> for details. 
 </para>
 
 <para>
- February 2009, Privoxy 3.0.11 is released.
-</para>
-<para>
- As usual there are changes that effect the configuration. See the "ChangeLog",
- and the "What's New" section and the "Upgrader's Notes" in
- <citetitle>the User Manual</citetitle> for details and specifics. 
-</para>
-<para>
- This is a stable release, and marks a departure for Privoxy development.
-</para>
-<para>
- Previously, odd numbered releases were considered beta versions and
- were only released at the end of the development cycle when the code
- was already believed to be stable. Usually it was, so the stable release
- contained pretty much the same code, but got a higher version number.
- In the future we intend to release several snapshots between stable releases.
- There will probably still be about two stable releases per year,
- but hopefully about six snapshots instead of the two betas we have now.
- The intentions is to make testing without CVS access easier.
+ Depending on the feedback it will be either followed by another
+ beta release, or by a stable release with the same feature set.
 </para>
 </sect1>
 
@@ -262,7 +246,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.26 2009/03/21 11:32:38 hal9 Exp $ -->
+<!--  $Id: readme.sgml,v 2.28 2009/06/13 12:40:44 fabiankeil Exp $ -->
 <!-- </para> -->
 
 </article>

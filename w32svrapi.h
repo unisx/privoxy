@@ -1,6 +1,6 @@
 #ifndef W32_SVRAPI_H_INCLUDED
 #define W32_SVRAPI_H_INCLUDED
-#define W32_SVRAPI_H_VERSION "$Id: w32svrapi.h,v 1.1 2006/08/12 03:54:37 david__schmidt Exp $"
+#define W32_SVRAPI_H_VERSION "$Id: w32svrapi.h,v 1.2 2009/05/16 13:27:20 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32svrapi.h,v $
@@ -47,15 +47,8 @@
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: w32svrapi.h,v $
- *    Revision 1.1  2006/08/12 03:54:37  david__schmidt
- *    Windows service integration
- *
- *
- *
  *********************************************************************/
-
+
 
 #ifdef __cplusplus
 extern "C" {

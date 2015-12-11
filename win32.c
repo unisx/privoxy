@@ -1,4 +1,4 @@
-const char win32_rcs[] = "$Id: win32.c,v 1.15 2009/02/09 19:16:35 fabiankeil Exp $";
+const char win32_rcs[] = "$Id: win32.c,v 1.16 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/win32.c,v $
@@ -29,61 +29,8 @@ const char win32_rcs[] = "$Id: win32.c,v 1.15 2009/02/09 19:16:35 fabiankeil Exp
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: win32.c,v $
- *    Revision 1.15  2009/02/09 19:16:35  fabiankeil
- *    Bump copyright year in win32_blurb[].
- *
- *    Revision 1.14  2008/03/02 18:15:41  fabiankeil
- *    Update copyright year in win32_blurb[].
- *
- *    Revision 1.13  2007/01/31 16:25:24  fabiankeil
- *    Update copyright range for the About message.
- *
- *    Revision 1.12  2006/08/12 03:54:37  david__schmidt
- *    Windows service integration
- *
- *    Revision 1.11  2006/07/18 14:48:48  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.9.2.2  2002/08/27 18:03:40  oes
- *    Fixed stupid typo
- *
- *    Revision 1.9.2.1  2002/08/21 17:59:27  oes
- *    Sync win32_blurb[] with our standard blurb
- *
- *    Revision 1.9  2002/03/31 17:19:00  jongfoster
- *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
- *
- *    Revision 1.8  2002/03/26 22:57:10  jongfoster
- *    Web server name should begin www.
- *
- *    Revision 1.7  2002/03/24 12:03:47  jongfoster
- *    Name change
- *
- *    Revision 1.6  2002/03/16 21:53:28  jongfoster
- *    VC++ Heap debug option
- *
- *    Revision 1.5  2002/03/04 23:47:30  jongfoster
- *    - Rewritten, simpler command-line pre-parser
- *    - not using raise(SIGINT) any more
- *
- *    Revision 1.4  2001/11/30 21:29:33  jongfoster
- *    Fixing a warning
- *
- *    Revision 1.3  2001/11/16 00:46:31  jongfoster
- *    Fixing compiler warnings
- *
- *    Revision 1.2  2001/07/29 19:32:00  jongfoster
- *    Renaming _main() [mingw32 only] to real_main(), for ANSI compliance.
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:08  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 

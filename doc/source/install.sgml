@@ -1,10 +1,10 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!entity % dummy "IGNORE"> 
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.11">
-<!entity p-status "stable">
-<!entity % p-stable "INCLUDE">
-<!entity % p-not-stable "IGNORE">
+<!entity p-version "3.0.13">
+<!entity p-status "beta">
+<!entity % p-stable "IGNORE">
+<!entity % p-not-stable "INCLUDE">
 <!entity % p-alpha "IGNORE">
 <!entity % p-beta "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
@@ -16,7 +16,7 @@
 
  Purpose     :  INSTALL file for Privoxy
                 
- $Id: install.sgml,v 2.11 2009/02/12 16:08:26 fabiankeil Exp $
+ $Id: install.sgml,v 2.12 2009/06/12 14:30:58 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.

@@ -1,4 +1,4 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.14 2008/05/21 15:38:13 fabiankeil Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.15 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
@@ -31,54 +31,8 @@ const char encode_rcs[] = "$Id: encode.c,v 1.14 2008/05/21 15:38:13 fabiankeil E
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: encode.c,v $
- *    Revision 1.14  2008/05/21 15:38:13  fabiankeil
- *    Garbage-collect cookie_encode().
- *
- *    Revision 1.13  2007/08/18 14:34:27  fabiankeil
- *    Make xtoi() extern so it can be used in pcrs.c.
- *
- *    Revision 1.12  2007/08/04 10:15:51  fabiankeil
- *    Use strlcpy() instead of strcpy().
- *
- *    Revision 1.11  2006/12/28 18:25:53  fabiankeil
- *    Fixed gcc43 compiler warning.
- *
- *    Revision 1.10  2006/07/18 14:48:45  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.8  2002/03/26 22:29:54  swa
- *    we have a new homepage!
- *
- *    Revision 1.7  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.6  2002/03/13 00:27:04  jongfoster
- *    Killing warnings
- *
- *    Revision 1.5  2002/03/07 03:46:53  oes
- *    Fixed compiler warnings etc
- *
- *    Revision 1.4  2002/01/22 23:28:07  jongfoster
- *    Adding convenience function html_encode_and_free_original()
- *    Making all functions accept NULL paramaters - in this case, they
- *    simply return NULL.  This allows error-checking to be deferred.
- *
- *    Revision 1.3  2001/11/13 00:16:40  jongfoster
- *    Replacing references to malloc.h with the standard stdlib.h
- *    (See ANSI or K&R 2nd Ed)
- *
- *    Revision 1.2  2001/05/17 22:52:35  oes
- *     - Cleaned CRLF's from the sources and related files
- *
- *    Revision 1.1.1.1  2001/05/15 13:58:51  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 

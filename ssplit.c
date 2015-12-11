@@ -1,4 +1,4 @@
-const char ssplit_rcs[] = "$Id: ssplit.c,v 1.9 2007/11/03 14:35:45 fabiankeil Exp $";
+const char ssplit_rcs[] = "$Id: ssplit.c,v 1.10 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.c,v $
@@ -30,39 +30,8 @@ const char ssplit_rcs[] = "$Id: ssplit.c,v 1.9 2007/11/03 14:35:45 fabiankeil Ex
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: ssplit.c,v $
- *    Revision 1.9  2007/11/03 14:35:45  fabiankeil
- *    Fix spelling in Purpose line. Patch submitted by Simon Ruderich.
- *
- *    Revision 1.8  2006/07/18 14:48:47  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.6  2002/03/26 22:29:55  swa
- *    we have a new homepage!
- *
- *    Revision 1.5  2002/03/24 13:25:43  swa
- *    name change related issues
- *
- *    Revision 1.4  2001/11/13 00:16:38  jongfoster
- *    Replacing references to malloc.h with the standard stdlib.h
- *    (See ANSI or K&R 2nd Ed)
- *
- *    Revision 1.3  2001/05/29 08:54:25  jongfoster
- *    Rewrote the innards of ssplit() to be easier to understand,
- *    faster, and to use less memory.  Didn't change the interface
- *    except to give the parameters meaningful names.
- *
- *    Revision 1.2  2001/05/17 23:01:01  oes
- *     - Cleaned CRLF's from the sources and related files
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:04  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 

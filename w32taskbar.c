@@ -1,4 +1,4 @@
-const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.10 2006/09/23 13:26:38 roro Exp $";
+const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.11 2009/05/16 13:27:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32taskbar.c,v $
@@ -30,46 +30,8 @@ const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.10 2006/09/23 13:26:38 roro
  *                or write to the Free Software Foundation, Inc., 59
  *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * Revisions   :
- *    $Log: w32taskbar.c,v $
- *    Revision 1.10  2006/09/23 13:26:38  roro
- *    Replace TABs by spaces in source code.
- *
- *    Revision 1.9  2006/07/18 14:48:48  david__schmidt
- *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- *    with what was really the latest development (the v_3_0_branch branch)
- *
- *    Revision 1.7.2.2  2003/03/19 21:27:42  gliptak
- *    Corrected compilation error/typo
- *
- *    Revision 1.7.2.1  2002/11/20 14:39:32  oes
- *    Applied patch by Mattes Dolak which adds re-creation of the win32 taskbar
- *    icon on reception of the "TaskbarCreated" window message.
- *
- *    Revision 1.7  2002/03/31 17:19:00  jongfoster
- *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
- *
- *    Revision 1.6  2002/03/26 22:57:10  jongfoster
- *    Web server name should begin www.
- *
- *    Revision 1.5  2002/03/24 12:03:47  jongfoster
- *    Name change
- *
- *    Revision 1.4  2001/11/16 00:46:31  jongfoster
- *    Fixing compiler warnings
- *
- *    Revision 1.3  2001/05/22 18:56:28  oes
- *    CRLF -> LF
- *
- *    Revision 1.2  2001/05/20 15:07:54  jongfoster
- *    File is now ignored if _WIN_CONSOLE is defined.
- *
- *    Revision 1.1.1.1  2001/05/15 13:59:08  oes
- *    Initial import of version 2.9.3 source tree
- *
- *
  *********************************************************************/
-
+
 
 #include "config.h"
 
