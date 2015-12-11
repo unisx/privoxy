@@ -1,0 +1,147 @@
+######################################################################
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/standard.action,v $
+# 
+#  $Id: standard.action,v 1.2.2.2 2002/07/27 18:13:36 oes Exp $
+#
+#  Purpose     :  Provide prefedined sets of actions, see
+#                 http://www.privoxy.org/faq/questions.html#CONFIGFILES
+#
+#  Copyright   :  Written by and Copyright
+#                 Privoxy team. http://www.privoxy.org/
+#
+######################################################################
+
+######################################################################
+#
+# CAUTION: MODYFING THIS FILE IS *NOT* RECOMMENDED for the average
+#          user.
+#
+#          If you want to customize Privoxy to suit your needs, 
+#          you can alter the default section in default.action and/or
+#          add your personal exceptions and extensions to user.action
+#
+######################################################################
+
+################
+#
+# Cautions settings -- safe for all sites, but offer little privacy protection
+#
+{ \
+-add-header \
+-block \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
+-deanimate-gifs \
+-downgrade-http-version \
+-fast-redirects \
++filter{js-annoyances} \
++filter{html-annoyances} \
++filter{webbugs} \
+-filter{popups} \
+-filter{frameset-borders} \
+-filter{refresh-tags} \
+-filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
+-filter{fun} \
++filter{nimda} \
+-filter{shockwave-flash} \
+-filter{js-events} \
+-filter{crude-parental} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
+-hide-referrer \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
+-session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Cautious
+
+################
+#
+# Medium settings -- safe for most sites, with reasonable protection/damage tradeoff
+#
+{ \
+-add-header \
+-block \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
++deanimate-gifs{last} \
+-downgrade-http-version \
+-fast-redirects \
++filter{js-annoyances} \
++filter{html-annoyances} \
++filter{webbugs} \
++filter{popups} \
+-filter{frameset-borders} \
+-filter{refresh-tags} \
+-filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
+-filter{fun} \
++filter{nimda} \
+-filter{shockwave-flash} \
+-filter{js-events} \
+-filter{crude-parental} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
++session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Medium
+
+################
+#
+# Advanced settings -- fun but risky (and include new filters)
+#
+{ \
++add-header{X-User-Tracking: sucks} \
+-block \
++crunch-outgoing-cookies \
++crunch-incoming-cookies \
++deanimate-gifs{last} \
+-downgrade-http-version \
++fast-redirects \
++filter{js-annoyances} \
++filter{html-annoyances} \
++filter{webbugs} \
++filter{popups} \
++filter{frameset-borders} \
+-filter{refresh-tags} \
++filter{img-reorder} \
++filter{banners-by-size} \
++filter{banners-by-link} \
++filter{fun} \
++filter{nimda} \
+-filter{shockwave-flash} \
+-filter{js-events} \
+-filter{crude-parental} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
+-session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Advanced

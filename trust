@@ -1,0 +1,66 @@
+######################################################################
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/trust,v $
+# 
+#  $Id: trust,v 1.2 2002/03/27 15:30:26 swa Exp $
+#
+#  Purpose     :  Trustfiles are an experimental feature used for
+#                 building "whitelists" (versus the usual "blacklists"
+#                 in a blockfile).
+# 
+#  Copyright   :  Written by and Copyright
+#                 Privoxy team. http://www.privoxy.org/
+#
+#                 Based on the Internet Junkbuster originally written
+#                 by and Copyright (C) 1997 Anonymous Coders and
+#                 Junkbusters Corporation.  http://www.junkbusters.com
+#
+# We value your feedback. However, to provide you with the best support,
+# please note:
+#  
+#  * Use the support forum to get help:
+#    http://sourceforge.net/tracker/?group_id=11118&atid=211118
+#  * Submit bugs only thru our bug forum:
+#    http://sourceforge.net/tracker/?group_id=11118&atid=111118 
+#    Make sure that the bug has not already been submitted. Please try
+#    to verify that it is a Junkbuster bug, and not a browser or site
+#    bug first. If you are using your own custom configuration, please
+#    try the stock configs to see if the problem is a configuration
+#    related bug. And if not using the latest development snapshot,
+#    please try the latest one. Or even better, CVS sources.
+#  * Submit feature requests only thru our feature request forum:
+#    http://sourceforge.net/tracker/?atid=361118&group_id=11118&func=browse
+#      
+# For any other issues, feel free to use the mailing lists:
+# http://sourceforge.net/mail/?group_id=11118
+#    
+# Anyone interested in actively participating in development and related
+# discussions can join the appropriate mailing list here:
+# http://sourceforge.net/mail/?group_id=11118. Archives are available
+# here too.
+# 
+######################################################################
+#
+#  Illustrative Trustfile for Privoxy
+
+# For this file to have any effect, the line beginning "trustfile" must
+# be commented in, with the name of this file following the word "trustfile"
+
+# Trustfiles are an experimental feature used for building "whitelists"
+# (versus the usual "blacklists" in a blockfile). Most people don't use it.
+# For more detail, see http://www.junkbusters.com/ht/en/ijbman.html#trustfile
+#
+# This is like parsed exactly like a blockfile, except that a '+'
+# in column one is treated like a '~' (i.e. doesn't block) and
+# it adds the spec to the trusted-referer list.
+#
+# Also, the default is to block any URL that is NOT mentioned on this list.
+#
+# While browsing, the domains for URLs that are referred by a trusted referer
+# are added to this list.  Thus this acts as a "white-list" of OK places
+# to browse. Note this means that the file will grow longer with use.
+#
+# Example: to allow only links that came from yahooligans, uncomment this line
+# +yahooligans.com
+# and remove the last line (* alone), which unblock everything:
+*

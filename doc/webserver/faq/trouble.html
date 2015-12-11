@@ -1,0 +1,434 @@
+<HTML
+><HEAD
+><TITLE
+>Troubleshooting</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.60"><LINK
+REL="HOME"
+TITLE="Privoxy Frequently Asked Questions"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Miscellaneous"
+HREF="misc.html"><LINK
+REL="NEXT"
+TITLE="Contacting the developers, Bug Reporting and Feature Requests"
+HREF="contact.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Privoxy Frequently Asked Questions</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="misc.html"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="contact.html"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="TROUBLE"
+>5. Troubleshooting</A
+></H1
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="AEN718"
+>5.1. I just upgraded and am getting <SPAN
+CLASS="QUOTE"
+>"connection refused"</SPAN
+>
+with every web page?</A
+></H3
+><P
+> Either <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is not running, or your 
+ browser is configured for a different port than what
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is using.</P
+><P
+> The old <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> (and also
+ <SPAN
+CLASS="APPLICATION"
+>Junkbuster</SPAN
+>) used port 8000 by 
+ default. This has been changed to port 8118 now, due to a conflict 
+ with NAS (Network Audio Service), which uses port 8000. If you haven't, 
+ you need to change your browser to the new port number, or alternately 
+ change the <A
+HREF="../user-manual/config.html#LISTEN-ADDRESS"
+TARGET="_top"
+><TT
+CLASS="LITERAL"
+>listen-address</TT
+>
+ option</A
+> in <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> <A
+HREF="../user-manual/config.html"
+TARGET="_top"
+>main configuration file</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="AEN731"
+>5.2. I just added a new rule, but the steenkin ad is 
+still getting through. How?</A
+></H3
+><P
+> If the ad had been displayed before you added its URL, it will probably be
+ held in the browser's cache for some time, so it will be displayed without
+ the need for any request to the server, and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ will not be in the picture. The best thing to do is try flushing the browser's
+ caches. And then try again.</P
+><P
+> If this doesn't help, you probably have an error in the rule you
+ applied. Try pasting the full URL of the offending ad into <A
+HREF="http://config.privoxy.org/show-url-info"
+TARGET="_top"
+>http://config.privoxy.org/show-url-info</A
+>
+ and see if it really matches your new rule.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="BADSITE"
+>5.3. One of my favorite sites does not work with <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>.
+What can I do?</A
+></H3
+><P
+> First verify that it is indeed a <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> problem, 
+ by toggling off <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> through <A
+HREF="http://config.privoxy.org/toggle"
+TARGET="_top"
+>http://config.privoxy.org/toggle</A
+>,
+ and then shift-reloading the problem page (i.e. holding down the shift key
+ while clicking reload. Alternatively, flush your browser's disk and memory
+ caches).</P
+><P
+> If still a problem, go to <A
+HREF="http://config.privoxy.org/show-url-info"
+TARGET="_top"
+>http://config.privoxy.org/show-url-info</A
+>
+ and paste the full URL of the page in question into the prompt. See which actions
+ are being applied to the URL, and which matches in which actions files are
+ responsible for that. Now, armed with this information, go to <A
+HREF="http://config.privoxy.org/show-status"
+TARGET="_top"
+>http://config.privoxy.org/show-status</A
+>
+ and select the appropriate actions files for editing.</P
+><P
+> You can now either look for a section which disables the actions that
+ you suspect to cause the problem and add a pattern for your site there,
+ or make up a completely new section for your site. In any case, the recommended
+ way is to disable only the prime suspect, reload the problem page, and only
+ if the problem persists, disable more and more actions until you have
+ identified the culprit. You may or may not want to turn the other actions
+ on again. Remember to flush your browser's caches in between any such changes!</P
+><P
+> Alternately, if you are comfortable with a text editor, you can accomplish 
+ the same thing by editing the appropriate actions file. Probably the easiest 
+ way to deal with such problems when editing by hand is to add your
+ site to a <TT
+CLASS="LITERAL"
+>{ fragile }</TT
+> section in <TT
+CLASS="FILENAME"
+>user.action</TT
+>,
+ which is an alias that turns off most <SPAN
+CLASS="QUOTE"
+>"dangerous"</SPAN
+>
+ actions, but is also likely to turn off more actions then needed, and thus lower
+ your privacy and protection more than necessary, </P
+><P
+> Troubleshooting actions is discussed in more detail in the <A
+HREF="../user-manual/appendix.html#ACTIONSANAT"
+TARGET="_top"
+>user-manual appendix</A
+>.
+ There is also an <A
+HREF="../user-manual/actions-file.html#ACT-EXAMPLES"
+TARGET="_top"
+>actions tutorial</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DUN"
+>5.4. After installing <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, I have to log in
+every time I start IE. What gives?</A
+></H3
+><P
+> This is a quirk that effects the installation of
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, in conjunction with Internet Explorer and
+ Internet Connection Sharing on Windows 2000 and Windows XP. The symptoms may
+ appear to be corrupted or invalid DUN settings, or passwords.</P
+><P
+> When setting up an NT based Windows system with
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> you may find that things do not seem to be
+ doing what you expect. When you set your system up you will probably have set
+ up Internet Connection Sharing (ICS) with Dial up Networking (DUN) when
+ logged in with administrator privileges. You will probably have made this DUN
+ connection available to other accounts that you may have set-up on your
+ system. E.g. Mum or Dad sets up the system and makes accounts suitably
+ configured for the kids.</P
+><P
+> When setting up <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> in this environment you
+ will have to alter the proxy set-up of Internet Explorer (IE) for the
+ specific DUN connection on which you wish to use
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>. When you do this the ICS DUN set-up
+ becomes user specific. In this instance you will see no difference if you
+ change the DUN connection under the account used to set-up the connection.
+ However when you do this from another user you will notice that the DUN
+ connection changes to make available to "Me only". You will also find that
+ you have to store the password under each different user!</P
+><P
+> The reason for this is that each user's set-up for IE is user specific. Each
+ set-up DUN connection and each LAN connection in IE store the settings for
+ each user individually. As such this enforces individual configurations
+ rather than common ones. Hence the first time you use a DUN connection after
+ re-booting your system it may not perform as you expect, and prompt you for 
+ the password. Just set and save the password again and all should be OK.</P
+><P
+>[Thanks to Ray Griffith for this submission.]</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="FTP"
+>5.5. I cannot connect to any FTP sites. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ seems to be blocking me.</A
+></H3
+><P
+>  <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> cannot act as a proxy for FTP traffic, 
+  so do not configure your browser to use <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+  as an FTP proxy. The same is true for any protocol other than HTTP or HTTPS.
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="OSXIE"
+>5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> as the HTTP proxy.</A
+></H3
+><P
+>  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
+  network settings.  In order to change the HTTP proxy, open System
+  Preferences, and click on the Network icon.  In the settings pane that
+  comes up, click on the Proxies tab.  Ensure the "Web Proxy (HTTP)" checkbox 
+  is checked and enter <TT
+CLASS="LITERAL"
+>127.0.0.1</TT
+> in the entry field.  
+  Enter <TT
+CLASS="LITERAL"
+>8118</TT
+> in the Port field.  The next time you start
+  IE, it should reflect these values.
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="OSXUNINSTALL"
+>5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+ uninstall it.  Now the finder tells me I don't have sufficient privileges to
+ empty the trash.</A
+></H3
+><P
+>  Just dragging the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> folder to the trash is
+  not enough to delete it.  <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> supplies an
+  <SPAN
+CLASS="APPLICATION"
+>uninstall.command</SPAN
+> file that takes care of
+  these details.  Open the trash, drag the <SPAN
+CLASS="APPLICATION"
+>uninstall.command</SPAN
+>
+  file out of the trash and double-click on it.  You will be prompted for
+  confirmation and the administration password.
+ </P
+><P
+>  The trash may still appear full after this command; emptying the trash 
+  from the desktop should make it appear empty again.
+ </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="misc.html"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="contact.html"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Miscellaneous</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Contacting the developers, Bug Reporting and Feature Requests</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
