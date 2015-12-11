@@ -1,6 +1,6 @@
 #ifndef FILTERS_H_INCLUDED
 #define FILTERS_H_INCLUDED
-#define FILTERS_H_VERSION "$Id: filters.h,v 1.41 2010/09/14 07:16:07 fabiankeil Exp $"
+#define FILTERS_H_VERSION "$Id: filters.h,v 1.43 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.h,v $
@@ -16,10 +16,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -89,8 +89,8 @@ extern int connect_port_is_forbidden(const struct client_state *csp);
  */
 extern void get_url_actions(struct client_state *csp,
                             struct http_request *http);
-extern void apply_url_actions(struct current_action_spec *action, 
-                              struct http_request *http, 
+extern void apply_url_actions(struct current_action_spec *action,
+                              struct http_request *http,
                               struct url_actions *b);
 /*
  * Determining parent proxies
@@ -117,15 +117,7 @@ extern int filters_available(const struct client_state *csp);
  */
 extern struct http_response *direct_response(struct client_state *csp);
 
-
 /*
- * Solaris fix:
- */
-#ifndef INADDR_NONE
-#define INADDR_NONE -1
-#endif     
-
-/* 
  * Revision control strings from this header and associated .c file
  */
 extern const char filters_rcs[];

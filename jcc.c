@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.331 2010/11/06 11:48:32 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.374 2011/11/06 11:58:51 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -151,7 +151,9 @@ static void serve(struct client_state *csp);
 static void usage(const char *myname);
 #endif
 static void initialize_mutexes(void);
-static jb_socket bind_port_helper(struct configuration_spec *config);
+static jb_socket bind_port_helper(const char *haddr, int hport);
+static void bind_ports_helper(struct configuration_spec *config, jb_socket sockets[]);
+static void close_ports_helper(jb_socket sockets[]);
 static void listen_loop(void);
 
 #ifdef AMIGA
@@ -206,31 +208,31 @@ static int received_hup_signal = 0;
 
 /* HTTP snipplets. */
 static const char CSUCCEED[] =
-   "HTTP/1.0 200 Connection established\r\n"
+   "HTTP/1.1 200 Connection established\r\n"
    "Proxy-Agent: Privoxy/" VERSION "\r\n\r\n";
 
 static const char CHEADER[] =
-   "HTTP/1.0 400 Invalid header received from client\r\n"
+   "HTTP/1.1 400 Invalid header received from client\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Invalid header received from client.\r\n";
 
 static const char FTP_RESPONSE[] =
-   "HTTP/1.0 400 Invalid request received from client\r\n"
+   "HTTP/1.1 400 Invalid request received from client\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Invalid request. Privoxy doesn't support FTP.\r\n";
 
 static const char GOPHER_RESPONSE[] =
-   "HTTP/1.0 400 Invalid request received from client\r\n"
+   "HTTP/1.1 400 Invalid request received from client\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Invalid request. Privoxy doesn't support gopher.\r\n";
 
 /* XXX: should be a template */
 static const char MISSING_DESTINATION_RESPONSE[] =
-   "HTTP/1.0 400 Bad request received from client\r\n"
+   "HTTP/1.1 400 Bad request received from client\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
@@ -238,7 +240,7 @@ static const char MISSING_DESTINATION_RESPONSE[] =
 
 /* XXX: should be a template */
 static const char INVALID_SERVER_HEADERS_RESPONSE[] =
-   "HTTP/1.0 502 Server or forwarder response invalid\r\n"
+   "HTTP/1.1 502 Server or forwarder response invalid\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
@@ -246,21 +248,21 @@ static const char INVALID_SERVER_HEADERS_RESPONSE[] =
 
 /* XXX: should be a template */
 static const char MESSED_UP_REQUEST_RESPONSE[] =
-   "HTTP/1.0 400 Malformed request after rewriting\r\n"
+   "HTTP/1.1 400 Malformed request after rewriting\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Bad request. Messed up with header filters.\r\n";
 
 static const char TOO_MANY_CONNECTIONS_RESPONSE[] =
-   "HTTP/1.0 503 Too many open connections\r\n"
+   "HTTP/1.1 503 Too many open connections\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
    "Maximum number of open connections reached.\r\n";
 
 static const char CLIENT_CONNECTION_TIMEOUT_RESPONSE[] =
-   "HTTP/1.0 504 Connection timeout\r\n"
+   "HTTP/1.1 504 Connection timeout\r\n"
    "Proxy-Agent: Privoxy " VERSION "\r\n"
    "Content-Type: text/plain\r\n"
    "Connection: close\r\n\r\n"
@@ -315,7 +317,7 @@ static const struct cruncher crunchers_light[] = {
 #if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
 /*********************************************************************
  *
- * Function    :  sig_handler 
+ * Function    :  sig_handler
  *
  * Description :  Signal handler for different signals.
  *                Exit gracefully on TERM and INT
@@ -325,7 +327,7 @@ static const struct cruncher crunchers_light[] = {
  * Parameters  :
  *          1  :  the_signal = the signal cause this function to call
  *
- * Returns     :  - 
+ * Returns     :  -
  *
  *********************************************************************/
 static void sig_handler(int the_signal)
@@ -348,10 +350,10 @@ static void sig_handler(int the_signal)
 #if defined(unix)
          received_hup_signal = 1;
 #endif
-         break;         
+         break;
 
       default:
-         /* 
+         /*
           * We shouldn't be here, unless we catch signals
           * in main() that we can't handle here!
           */
@@ -563,7 +565,7 @@ static jb_err get_server_headers(struct client_state *csp)
          log_error(LOG_LEVEL_HEADER, "Continue hack in da house.");
          continue_hack_in_da_house = 1;
       }
-      else if (*header == '\0') 
+      else if (*header == '\0')
       {
          /*
           * If the header is empty, but the Continue hack
@@ -721,7 +723,7 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
       if (cgi_error_memory() != rsp)
       {
          free_http_response(rsp);
-      } 
+      }
       return;
 }
 
@@ -749,7 +751,7 @@ static int crunch_response_triggered(struct client_state *csp, const struct crun
    /*
     * If CGI request crunching is disabled,
     * check the CGI dispatcher out of order to
-    * prevent unintentional blocks or redirects. 
+    * prevent unintentional blocks or redirects.
     */
    if (!(csp->config->feature_flags & RUNTIME_FEATURE_CGI_CRUNCHING)
        && (NULL != (rsp = dispatch_cgi(csp))))
@@ -1151,14 +1153,20 @@ static void verify_request_length(struct client_state *csp)
  *********************************************************************/
 static void mark_server_socket_tainted(struct client_state *csp)
 {
+   /*
+    * For consistency we always mark the server socket
+    * tainted, however, to reduce the log noise we only
+    * emit a log message if the server socket could have
+    * actually been reused.
+    */
    if ((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
       && !(csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED))
    {
       log_error(LOG_LEVEL_CONNECT,
          "Marking the server socket %d tainted.",
          csp->server_connection.sfd);
-      csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
    }
+   csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
 }
 
 /*********************************************************************
@@ -1331,7 +1339,7 @@ static jb_err receive_client_request(struct client_state *csp)
             destroy_list(headers);
             return JB_ERR_PARSE;
          }
-         
+
          if (add_to_iob(csp, buf, len))
          {
             /*
@@ -1346,7 +1354,7 @@ static jb_err receive_client_request(struct client_state *csp)
       {
          /*
           * We were able to read a complete
-          * header and can finaly enlist it.
+          * header and can finally enlist it.
           */
          enlist(headers, p);
          freez(p);
@@ -1389,7 +1397,7 @@ static jb_err receive_client_request(struct client_state *csp)
       get_url_actions(csp, http);
    }
 
-   /* 
+   /*
     * Save a copy of the original request for logging
     */
    http->ocmd = strdup(http->cmd);
@@ -1489,7 +1497,7 @@ static jb_err parse_client_request(struct client_state *csp)
  *                this function is called (via serve()) to handle the
  *                main business of the communication.  This function
  *                returns after dealing with a single request. It can
- *                be called multiple times witht the same client socket
+ *                be called multiple times with the same client socket
  *                if the client is keeping the connection alive.
  *
  *                The decision whether or not a client connection will
@@ -1516,8 +1524,6 @@ static void chat(struct client_state *csp)
    int server_body;
    int ms_iis5_hack = 0;
    unsigned long long byte_count = 0;
-   int forwarded_connect_retries = 0;
-   int max_forwarded_connect_retries = csp->config->forwarded_connect_retries;
    const struct forward_spec *fwd;
    struct http_request *http;
    long len = 0; /* for buffer sizes (and negative error codes) */
@@ -1595,8 +1601,8 @@ static void chat(struct client_state *csp)
          csp->action->string[ACTION_STRING_LIMIT_CONNECT];
       assert(NULL != acceptable_connect_ports);
       log_error(LOG_LEVEL_INFO, "Request from %s marked for blocking. "
-         "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
-         csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
+         "limit-connect{%s} doesn't allow CONNECT requests to %s",
+         csp->ip_addr_str, acceptable_connect_ports, csp->http->hostport);
       csp->action->flags |= ACTION_BLOCK;
       http->ssl = 0;
    }
@@ -1653,14 +1659,7 @@ static void chat(struct client_state *csp)
       }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
-      while ((csp->server_connection.sfd = forwarded_connect(fwd, http, csp))
-         && (errno == EINVAL)
-         && (forwarded_connect_retries++ < max_forwarded_connect_retries))
-      {
-         log_error(LOG_LEVEL_ERROR,
-            "failed request #%u to connect to %s. Trying again.",
-            forwarded_connect_retries, http->hostport);
-      }
+      csp->server_connection.sfd = forwarded_connect(fwd, http, csp);
 
       if (csp->server_connection.sfd == JB_INVALID_SOCKET)
       {
@@ -1676,8 +1675,6 @@ static void chat(struct client_state *csp)
          else
          {
             rsp = error_response(csp, "connect-failed");
-            log_error(LOG_LEVEL_CONNECT, "connect to: %s failed: %E",
-               http->hostport);
          }
 
          /* Write the answer to the client */
@@ -1696,16 +1693,16 @@ static void chat(struct client_state *csp)
    }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
-   hdr = list_to_text(csp->headers);
-   if (hdr == NULL)
-   {
-      /* FIXME Should handle error properly */
-      log_error(LOG_LEVEL_FATAL, "Out of memory parsing client header");
-   }
-   list_remove_all(csp->headers);
-
    if (fwd->forward_host || (http->ssl == 0))
    {
+      hdr = list_to_text(csp->headers);
+      if (hdr == NULL)
+      {
+         /* FIXME Should handle error properly */
+         log_error(LOG_LEVEL_FATAL, "Out of memory parsing client header");
+      }
+      list_remove_all(csp->headers);
+
       /*
        * Write the client's (modified) header to the server
        * (along with anything else that may be in the buffer)
@@ -1725,17 +1722,18 @@ static void chat(struct client_state *csp)
          freez(hdr);
          return;
       }
+      freez(hdr);
    }
    else
    {
       /*
        * We're running an SSL tunnel and we're not forwarding,
-       * so just send the "connect succeeded" message to the
-       * client, flush the rest, and get out of the way.
+       * so just ditch the client headers, send the "connect succeeded"
+       * message to the client, flush the rest, and get out of the way.
        */
+      list_remove_all(csp->headers);
       if (write_socket(csp->cfd, CSUCCEED, strlen(CSUCCEED)))
       {
-         freez(hdr);
          return;
       }
       IOB_RESET(csp);
@@ -1744,9 +1742,6 @@ static void chat(struct client_state *csp)
    log_error(LOG_LEVEL_CONNECT, "to %s successful", http->hostport);
 
    csp->server_connection.request_sent = time(NULL);
-
-   /* we're finished with the client's header */
-   freez(hdr);
 
    maxfd = (csp->cfd > csp->server_connection.sfd) ?
       csp->cfd : csp->server_connection.sfd;
@@ -1943,7 +1938,14 @@ static void chat(struct client_state *csp)
       if (FD_ISSET(csp->server_connection.sfd, &rfds))
       {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-         if (!socket_is_still_alive(csp->cfd))
+         /*
+          * If we are buffering content, we don't want to eat up to
+          * buffer-limit bytes if the client no longer cares about them.
+          * If we aren't buffering, however, a dead client socket will be
+          * noticed pretty much right away anyway, so we can reduce the
+          * overhead by skipping the check.
+          */
+         if (buffer_and_filter_content && !socket_is_still_alive(csp->cfd))
          {
 #ifdef _WIN32
             log_error(LOG_LEVEL_CONNECT,
@@ -2059,6 +2061,20 @@ static void chat(struct client_state *csp)
                   {
                      csp->content_length = (size_t)(csp->iob->eod - csp->iob->cur);
                   }
+#ifdef FEATURE_COMPRESSION
+                  else if ((csp->flags & CSP_FLAG_CLIENT_SUPPORTS_DEFLATE)
+                     && (csp->content_length > LOWER_LENGTH_LIMIT_FOR_COMPRESSION))
+                  {
+                     char *compressed_content = compress_buffer(p,
+                        (size_t *)&csp->content_length, csp->config->compression_level);
+                     if (compressed_content != NULL)
+                     {
+                        freez(p);
+                        p = compressed_content;
+                        csp->flags |= CSP_FLAG_BUFFERED_CONTENT_DEFLATED;
+                     }
+                  }
+#endif
 
                   if (JB_ERR_OK != update_server_headers(csp))
                   {
@@ -2131,7 +2147,7 @@ static void chat(struct client_state *csp)
                   hdr = list_to_text(csp->headers);
                   if (hdr == NULL)
                   {
-                     /* 
+                     /*
                       * Memory is too tight to even generate the header.
                       * Send our static "Out-of-memory" page.
                       */
@@ -2188,7 +2204,7 @@ static void chat(struct client_state *csp)
             {
                log_error(LOG_LEVEL_ERROR, "Out of memory while looking for end of server headers.");
                rsp = cgi_error_memory();
-               send_crunch_response(csp, rsp);               
+               send_crunch_response(csp, rsp);
                mark_server_socket_tainted(csp);
                return;
             }
@@ -2240,18 +2256,19 @@ static void chat(struct client_state *csp)
                if ((csp->flags & CSP_FLAG_REUSED_CLIENT_CONNECTION))
                {
                   log_error(LOG_LEVEL_ERROR,
-                     "Empty server or forwarder response received on socket %d. "
+                     "No server or forwarder response received on socket %d. "
                      "Closing client socket %d without sending data.",
                      csp->server_connection.sfd, csp->cfd);
+                  log_error(LOG_LEVEL_CLF,
+                     "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
                }
                else
                {
                   log_error(LOG_LEVEL_ERROR,
-                     "Empty server or forwarder response received on socket %d.",
+                     "No server or forwarder response received on socket %d.",
                      csp->server_connection.sfd);
                   send_crunch_response(csp, error_response(csp, "no-server-data"));
                }
-               log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
                free_http_request(http);
                mark_server_socket_tainted(csp);
                return;
@@ -2388,7 +2405,7 @@ static void chat(struct client_state *csp)
    if (csp->content_length == 0)
    {
       /*
-       * If Privoxy didn't recalculate the Content-Lenght,
+       * If Privoxy didn't recalculate the Content-Length,
        * byte_count is still correct.
        */
       csp->content_length = byte_count;
@@ -2427,6 +2444,8 @@ static void chat(struct client_state *csp)
  *********************************************************************/
 static void prepare_csp_for_next_request(struct client_state *csp)
 {
+   unsigned int toggled_on_flag_set = (0 != (csp->flags & CSP_FLAG_TOGGLED_ON));
+
    csp->content_type = 0;
    csp->content_length = 0;
    csp->expected_content_length = 0;
@@ -2445,9 +2464,11 @@ static void prepare_csp_for_next_request(struct client_state *csp)
       csp->fwd = NULL;
    }
    /* XXX: Store per-connection flags someplace else. */
-   csp->flags &= CSP_FLAG_TOGGLED_ON;
-   csp->flags |= CSP_FLAG_ACTIVE;
-   csp->flags |= CSP_FLAG_REUSED_CLIENT_CONNECTION;
+   csp->flags = (CSP_FLAG_ACTIVE | CSP_FLAG_REUSED_CLIENT_CONNECTION);
+   if (toggled_on_flag_set)
+   {
+      csp->flags |= CSP_FLAG_TOGGLED_ON;
+   }
 }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
@@ -2481,6 +2502,7 @@ static void serve(struct client_state *csp)
    do
    {
       unsigned int latency;
+      int config_file_change_detected = 0; /* Only used for debugging */
 
       chat(csp);
 
@@ -2493,10 +2515,13 @@ static void serve(struct client_state *csp)
 
       continue_chatting = (csp->config->feature_flags
          & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
-         && (((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
-               && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
-            || (csp->flags & CSP_FLAG_CRUNCHED))
-         && (csp->cfd != JB_INVALID_SOCKET);
+         && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
+         && ((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
+             || (csp->flags & CSP_FLAG_CRUNCHED))
+         && (csp->cfd != JB_INVALID_SOCKET)
+         && ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
+             || (csp->config->feature_flags &
+                RUNTIME_FEATURE_CONNECTION_SHARING));
 
       if (continue_chatting && !(csp->flags & CSP_FLAG_CRUNCHED))
       {
@@ -2515,39 +2540,49 @@ static void serve(struct client_state *csp)
          }
       }
 
+      if (continue_chatting && any_loaded_file_changed(csp->config->config_file_list))
+      {
+         continue_chatting = 0;
+         config_file_change_detected = 1;
+      }
+
       if (continue_chatting)
       {
-         unsigned int client_timeout;
+         unsigned int client_timeout = 1; /* XXX: Use something else here? */
 
-         if (csp->server_connection.sfd != JB_INVALID_SOCKET)
+         if (0 != (csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
          {
-            client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
-            log_error(LOG_LEVEL_CONNECT,
-               "Waiting for the next client request on socket %d. "
-               "Keeping the server socket %d to %s open.",
-               csp->cfd, csp->server_connection.sfd, csp->server_connection.host);
-         }
-         else
-         {
-            client_timeout = 1; /* XXX: Use something else here? */
-            log_error(LOG_LEVEL_CONNECT,
-               "Waiting for the next client request on socket %d. "
-               "No server socket to keep open.", csp->cfd);
+            if (csp->server_connection.sfd != JB_INVALID_SOCKET)
+            {
+               client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
+               log_error(LOG_LEVEL_CONNECT,
+                  "Waiting for the next client request on socket %d. "
+                  "Keeping the server socket %d to %s open.",
+                  csp->cfd, csp->server_connection.sfd, csp->server_connection.host);
+            }
+            else
+            {
+               log_error(LOG_LEVEL_CONNECT,
+                  "Waiting for the next client request on socket %d. "
+                  "No server socket to keep open.", csp->cfd);
+            }
          }
          if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
             && data_is_available(csp->cfd, (int)client_timeout)
             && socket_is_still_alive(csp->cfd))
          {
-            log_error(LOG_LEVEL_CONNECT, "Client request arrived in "
-               "time or the client closed the connection on socket %d.",
-                csp->cfd);
+            log_error(LOG_LEVEL_CONNECT,
+               "Client request arrived in time on socket %d.", csp->cfd);
             prepare_csp_for_next_request(csp);
          }
          else
          {
-            log_error(LOG_LEVEL_CONNECT,
-               "No additional client request received in time on socket %d.",
-                csp->cfd);
+            if (0 != (csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
+            {
+               log_error(LOG_LEVEL_CONNECT,
+                  "No additional client request received in time on socket %d.",
+                  csp->cfd);
+            }
 #ifdef FEATURE_CONNECTION_SHARING
             if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
                && (socket_is_still_alive(csp->server_connection.sfd)))
@@ -2581,8 +2616,17 @@ static void serve(struct client_state *csp)
       else if (csp->server_connection.sfd != JB_INVALID_SOCKET)
       {
          log_error(LOG_LEVEL_CONNECT,
-            "The connection on server socket %d to %s isn't reusable. "
-            "Closing.", csp->server_connection.sfd, csp->server_connection.host);
+            "The connection on server socket %d to %s isn't reusable. Closing. "
+            "Server connection: keep-alive %u, tainted: %u, socket alive %u. "
+            "Client connection: socket alive: %u. Server timeout: %u. "
+            "Configuration file change detected: %u",
+            csp->server_connection.sfd, csp->server_connection.host,
+            0 != (csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE),
+            0 != (csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED),
+            socket_is_still_alive(csp->server_connection.sfd),
+            socket_is_still_alive(csp->cfd),
+            csp->server_connection.keep_alive_timeout,
+            config_file_change_detected);
       }
    } while (continue_chatting);
 
@@ -2807,6 +2851,7 @@ static void initialize_mutexes(void)
 #ifndef HAVE_RANDOM
    privoxy_mutex_init(&rand_mutex);
 #endif /* ndef HAVE_RANDOM */
+
 #endif /* def MUTEX_LOCKS_AVAILABLE */
 }
 
@@ -2845,7 +2890,6 @@ int main(int argc, char **argv)
 #ifdef unix
    struct passwd *pw = NULL;
    struct group *grp = NULL;
-   char *p;
    int do_chroot = 0;
    char *pre_chroot_nslookup_to_load_resolver = NULL;
 #endif
@@ -2884,7 +2928,7 @@ int main(int argc, char **argv)
             pName++;
          exit( (install_service(pName)) ? 0 : 1 );
       }
-      else if (strncmp(argv[argc_pos], "--uninstall", + 11) == 0)
+      else if (strncmp(argv[argc_pos], "--uninstall", 11) == 0)
       {
          const char *pName = argv[argc_pos] + 11;
          if (*pName == ':')
@@ -2930,23 +2974,39 @@ int main(int argc, char **argv)
 
       else if (strcmp(argv[argc_pos], "--user" ) == 0)
       {
+         char *user_arg;
+         char *group_name;
+
          if (++argc_pos == argc) usage(argv[argc_pos]);
 
-         if ((NULL != (p = strchr(argv[argc_pos], '.'))) && *(p + 1) != '0')
+         user_arg = strdup(argv[argc_pos]);
+         if (NULL == user_arg)
          {
-            *p++ = '\0';
-            if (NULL == (grp = getgrnam(p)))
+            log_error(LOG_LEVEL_FATAL,
+               "Out of memory splitting --user argument '%s'.", argv[argc_pos]);
+         }
+         group_name = strchr(user_arg, '.');
+         if (NULL != group_name)
+         {
+            /* Nul-terminate the user name */
+            *group_name = '\0';
+
+            /* Skip the former delimiter to actually reach the group name */
+            group_name++;
+
+            grp = getgrnam(group_name);
+            if (NULL == grp)
             {
-               log_error(LOG_LEVEL_FATAL, "Group %s not found.", p);
+               log_error(LOG_LEVEL_FATAL, "Group '%s' not found.", group_name);
             }
          }
-
-         if (NULL == (pw = getpwnam(argv[argc_pos])))
+         pw = getpwnam(user_arg);
+         if (NULL == pw)
          {
-            log_error(LOG_LEVEL_FATAL, "User %s not found.", argv[argc_pos]);
+            log_error(LOG_LEVEL_FATAL, "User '%s' not found.", user_arg);
          }
 
-         if (p != NULL) *--p = '\0';
+         freez(user_arg);
       }
 
       else if (strcmp(argv[argc_pos], "--pre-chroot-nslookup" ) == 0)
@@ -2986,7 +3046,7 @@ int main(int argc, char **argv)
    {
       char cwd[BUFFER_SIZE];
       char *abs_file;
-      size_t abs_file_size; 
+      size_t abs_file_size;
 
       /* make config-filename absolute here */
       if (NULL == getcwd(cwd, sizeof(cwd)))
@@ -3040,12 +3100,11 @@ int main(int argc, char **argv)
 #if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
 {
    int idx;
-   const int catched_signals[] = { SIGTERM, SIGINT, SIGHUP, 0 };
-   const int ignored_signals[] = { SIGPIPE, 0 };
+   const int catched_signals[] = { SIGTERM, SIGINT, SIGHUP };
 
-   for (idx = 0; catched_signals[idx] != 0; idx++)
+   for (idx = 0; idx < SZ(catched_signals); idx++)
    {
-#ifdef sun /* FIXME: Is it safe to check for HAVE_SIGSET instead? */ 
+#ifdef sun /* FIXME: Is it safe to check for HAVE_SIGSET instead? */
       if (sigset(catched_signals[idx], sig_handler) == SIG_ERR)
 #else
       if (signal(catched_signals[idx], sig_handler) == SIG_ERR)
@@ -3055,12 +3114,9 @@ int main(int argc, char **argv)
       }
    }
 
-   for (idx = 0; ignored_signals[idx] != 0; idx++)
+   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
    {
-      if (signal(ignored_signals[idx], SIG_IGN) == SIG_ERR)
-      {
-         log_error(LOG_LEVEL_FATAL, "Can't set ignore-handler for signal %d: %E", ignored_signals[idx]);
-      }
+      log_error(LOG_LEVEL_FATAL, "Can't set ignore-handler for SIGPIPE: %E");
    }
 
 }
@@ -3215,7 +3271,7 @@ int main(int argc, char **argv)
          if (putenv(putenv_dummy) != 0)
          {
             log_error(LOG_LEVEL_FATAL, "Cannot putenv(): HOME");
-         }                
+         }
 
          snprintf(putenv_dummy, sizeof(putenv_dummy), "USER=%s", pw->pw_name);
          if (putenv(putenv_dummy) != 0)
@@ -3236,7 +3292,7 @@ int main(int argc, char **argv)
     */
    if (bRunAsService)
    {
-      /* Yup, so now we must attempt to establish a connection 
+      /* Yup, so now we must attempt to establish a connection
        * with the service dispatcher. This will only work if this
        * process was launched by the service control manager to
        * actually run as a service. If this isn't the case, i've
@@ -3278,58 +3334,124 @@ int main(int argc, char **argv)
  *                on failure.
  *
  * Parameters  :
- *          1  :  config = Privoxy configuration.  Specifies port
- *                         to bind to.
+ *          1  :  haddr = Host addres to bind to. Use NULL to bind to
+ *                        INADDR_ANY.
+ *          2  :  hport = Specifies port to bind to.
  *
  * Returns     :  Port that was opened.
  *
  *********************************************************************/
-static jb_socket bind_port_helper(struct configuration_spec * config)
+static jb_socket bind_port_helper(const char *haddr, int hport)
 {
    int result;
    jb_socket bfd;
 
-   if (config->haddr == NULL)
-   {
-      log_error(LOG_LEVEL_INFO, "Listening on port %d on all IP addresses",
-                config->hport);
-   }
-   else
-   {
-      log_error(LOG_LEVEL_INFO, "Listening on port %d on IP address %s",
-                config->hport, config->haddr);
-   }
-
-   result = bind_port(config->haddr, config->hport, &bfd);
+   result = bind_port(haddr, hport, &bfd);
 
    if (result < 0)
    {
+      const char *bind_address = (NULL != haddr) ? haddr : "INADDR_ANY";
       switch(result)
       {
-         case -3 :
-            log_error(LOG_LEVEL_FATAL, "can't bind to %s:%d: "
-               "There may be another Privoxy or some other "
-               "proxy running on port %d",
-               (NULL != config->haddr) ? config->haddr : "INADDR_ANY",
-                      config->hport, config->hport);
+         case -3:
+            log_error(LOG_LEVEL_FATAL,
+               "can't bind to %s:%d: There may be another Privoxy "
+               "or some other proxy running on port %d",
+               bind_address, hport, hport);
 
-         case -2 :
-            log_error(LOG_LEVEL_FATAL, "can't bind to %s:%d: " 
-               "The hostname is not resolvable",
-               (NULL != config->haddr) ? config->haddr : "INADDR_ANY", config->hport);
+         case -2:
+            log_error(LOG_LEVEL_FATAL,
+               "can't bind to %s:%d: The hostname is not resolvable",
+               bind_address, hport);
 
-         default :
+         default:
             log_error(LOG_LEVEL_FATAL, "can't bind to %s:%d: %E",
-               (NULL != config->haddr) ? config->haddr : "INADDR_ANY", config->hport);
+               bind_address, hport);
       }
 
       /* shouldn't get here */
       return JB_INVALID_SOCKET;
    }
 
-   config->need_bind = 0;
+   if (haddr == NULL)
+   {
+      log_error(LOG_LEVEL_INFO, "Listening on port %d on all IP addresses",
+         hport);
+   }
+   else
+   {
+      log_error(LOG_LEVEL_INFO, "Listening on port %d on IP address %s",
+         hport, haddr);
+   }
 
    return bfd;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  bind_ports_helper
+ *
+ * Description :  Bind the listen ports.  Handles logging, and aborts
+ *                on failure.
+ *
+ * Parameters  :
+ *          1  :  config = Privoxy configuration.  Specifies ports
+ *                         to bind to.
+ *          2  :  sockets = Preallocated array of opened sockets
+ *                          corresponding to specification in config.
+ *                          All non-opened sockets will be set to
+ *                          JB_INVALID_SOCKET.
+ *
+ * Returns     :  Nothing. Inspect sockets argument.
+ *
+ *********************************************************************/
+static void bind_ports_helper(struct configuration_spec * config,
+                              jb_socket sockets[])
+{
+   int i;
+
+   for (i = 0; i < MAX_LISTENING_SOCKETS; i++)
+   {
+      if (config->hport[i])
+      {
+         sockets[i] = bind_port_helper(config->haddr[i], config->hport[i]);
+      }
+      else
+      {
+         sockets[i] = JB_INVALID_SOCKET;
+      }
+   }
+   config->need_bind = 0;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  close_ports_helper
+ *
+ * Description :  Close listenings ports.
+ *
+ * Parameters  :
+ *          1  :  sockets = Array of opened and non-opened sockets to
+ *                          close. All sockets will be set to
+ *                          JB_INVALID_SOCKET.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+static void close_ports_helper(jb_socket sockets[])
+{
+   int i;
+
+   for (i = 0; i < MAX_LISTENING_SOCKETS; i++)
+   {
+      if (JB_INVALID_SOCKET != sockets[i])
+      {
+         close_socket(sockets[i]);
+      }
+      sockets[i] = JB_INVALID_SOCKET;
+   }
 }
 
 
@@ -3359,7 +3481,7 @@ static void listen_loop(void)
 {
    struct client_states *csp_list = NULL;
    struct client_state *csp = NULL;
-   jb_socket bfd;
+   jb_socket bfds[MAX_LISTENING_SOCKETS];
    struct configuration_spec *config;
    unsigned int active_threads = 0;
 
@@ -3373,7 +3495,7 @@ static void listen_loop(void)
    initialize_reusable_connections();
 #endif /* def FEATURE_CONNECTION_SHARING */
 
-   bfd = bind_port_helper(config);
+   bind_ports_helper(config, bfds);
 
 #ifdef FEATURE_GRACEFUL_TERMINATION
    while (!g_terminate)
@@ -3416,34 +3538,9 @@ static void listen_loop(void)
       }
       csp = &csp_list->csp;
 
-      csp->flags |= CSP_FLAG_ACTIVE;
-      csp->server_connection.sfd = JB_INVALID_SOCKET;
-
-      csp->config = config = load_config();
-
-      if ( config->need_bind )
-      {
-         /*
-          * Since we were listening to the "old port", we will not see
-          * a "listen" param change until the next request.  So, at
-          * least 1 more request must be made for us to find the new
-          * setting.  I am simply closing the old socket and binding the
-          * new one.
-          *
-          * Which-ever is correct, we will serve 1 more page via the
-          * old settings.  This should probably be a "show-proxy-args"
-          * request.  This should not be a so common of an operation
-          * that this will hurt people's feelings.
-          */
-
-         close_socket(bfd);
-
-         bfd = bind_port_helper(config);
-      }
-
       log_error(LOG_LEVEL_CONNECT, "Listening for new connections ... ");
 
-      if (!accept_connection(csp, bfd))
+      if (!accept_connection(csp, bfds))
       {
          log_error(LOG_LEVEL_CONNECT, "accept failed: %E");
 
@@ -3463,6 +3560,31 @@ static void listen_loop(void)
             csp->ip_addr_str, csp->cfd);
       }
 
+      csp->flags |= CSP_FLAG_ACTIVE;
+      csp->server_connection.sfd = JB_INVALID_SOCKET;
+
+      csp->config = config = load_config();
+
+      if (config->need_bind)
+      {
+         /*
+          * Since we were listening to the "old port", we will not see
+          * a "listen" param change until the next request.  So, at
+          * least 1 more request must be made for us to find the new
+          * setting.  I am simply closing the old socket and binding the
+          * new one.
+          *
+          * Which-ever is correct, we will serve 1 more page via the
+          * old settings.  This should probably be a "show-proxy-args"
+          * request.  This should not be a so common of an operation
+          * that this will hurt people's feelings.
+          */
+
+         close_ports_helper(bfds);
+
+         bind_ports_helper(config, bfds);
+      }
+
 #ifdef FEATURE_TOGGLE
       if (global_toggle_state)
 #endif /* def FEATURE_TOGGLE */
@@ -3479,7 +3601,8 @@ static void listen_loop(void)
 #ifdef FEATURE_ACL
       if (block_acl(NULL,csp))
       {
-         log_error(LOG_LEVEL_CONNECT, "Connection from %s dropped due to ACL", csp->ip_addr_str);
+         log_error(LOG_LEVEL_CONNECT,
+            "Connection from %s on socket %d dropped due to ACL", csp->ip_addr_str, csp->cfd);
          close_socket(csp->cfd);
          freez(csp->ip_addr_str);
          freez(csp_list);
@@ -3509,7 +3632,7 @@ static void listen_loop(void)
       {
          int child_id;
 
-/* this is a switch () statment in the C preprocessor - ugh */
+/* this is a switch () statement in the C preprocessor - ugh */
 #undef SELECTED_ONE_OPTION
 
 /* Use Pthreads in preference to native code */
@@ -3565,7 +3688,7 @@ static void listen_loop(void)
 #if defined(AMIGA) && !defined(SELECTED_ONE_OPTION)
 #define SELECTED_ONE_OPTION
          csp->cfd = ReleaseSocket(csp->cfd, -1);
-         
+
 #ifdef __amigaos4__
          child_id = (int)CreateNewProcTags(NP_Entry, (ULONG)server_thread,
                                            NP_Output, Output(),
@@ -3606,7 +3729,7 @@ static void listen_loop(void)
 
             serve(csp);
 
-            /* 
+            /*
              * If we've been toggled or we've blocked the request, tell Mom
              */
 
@@ -3617,7 +3740,7 @@ static void listen_loop(void)
             }
 #endif /* def FEATURE_TOGGLE */
 
-#ifdef FEATURE_STATISTICS  
+#ifdef FEATURE_STATISTICS
             if (csp->flags & CSP_FLAG_REJECTED)
             {
                rc |= RC_FLAG_BLOCKED;
@@ -3637,7 +3760,7 @@ static void listen_loop(void)
 
             wait( &child_status );
 
-            /* 
+            /*
              * Evaluate child's return code: If the child has
              *  - been toggled, toggle ourselves
              *  - blocked its request, bump up the stats counter
@@ -3656,7 +3779,7 @@ static void listen_loop(void)
             {
                urls_rejected++;
             }
-#endif /* def FEATURE_STATISTICS */ 
+#endif /* def FEATURE_STATISTICS */
 
 #endif /* !defined(_WIN32) && defined(__CYGWIN__) */
             close_socket(csp->cfd);
@@ -3722,7 +3845,6 @@ static void listen_loop(void)
 #if defined(unix)
    freez(basedir);
 #endif
-   freez(configfile);
 
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)
    /* Cleanup - remove taskbar icon etc. */

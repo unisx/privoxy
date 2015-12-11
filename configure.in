@@ -1,38 +1,38 @@
 dnl Process this file with autoconf to produce a configure script.
-dnl 
-dnl $Id: configure.in,v 1.147 2010/10/30 15:57:50 fabiankeil Exp $
-dnl 
+dnl
+dnl $Id: configure.in,v 1.163 2011/11/13 16:53:45 fabiankeil Exp $
+dnl
 dnl Written by and Copyright (C) 2001-2010 the
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
-dnl by and Copyright (C) 1997 Anonymous Coders and 
+dnl by and Copyright (C) 1997 Anonymous Coders and
 dnl Junkbusters Corporation.  http://www.junkbusters.com
 dnl
-dnl This program is free software; you can redistribute it 
+dnl This program is free software; you can redistribute it
 dnl and/or modify it under the terms of the GNU General
 dnl Public License as published by the Free Software
 dnl Foundation; either version 2 of the License, or (at
 dnl your option) any later version.
-dnl 
+dnl
 dnl This program is distributed in the hope that it will
 dnl be useful, but WITHOUT ANY WARRANTY; without even the
 dnl implied warranty of MERCHANTABILITY or FITNESS FOR A
 dnl PARTICULAR PURPOSE.  See the GNU General Public
 dnl License for more details.
-dnl 
+dnl
 dnl The GNU General Public License should be included with
 dnl this file.  If not, you can view it at
 dnl http://www.gnu.org/copyleft/gpl.html
 dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-dnl 
+dnl
 
 dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.147 $)
+AC_REVISION($Revision: 1.163 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -44,7 +44,7 @@ if test ! -f config.h.in; then
    else
       autoheader
   fi
-fi  
+fi
 
 AC_CONFIG_HEADER([config.h])
 AC_CANONICAL_HOST
@@ -52,13 +52,13 @@ AC_CANONICAL_HOST
 dodk=auto
 DKPREFIX=none
 AC_ARG_WITH(docbook, dnl
-  --with-docbook=[[yes|no|directory]]	
-                           Enable docbook documentation creation 
+  --with-docbook=[[yes|no|directory]]
+                           Enable docbook documentation creation
 			   (default = yes, for gnu and linux),[dnl
 case "$with_docbook" in
 yes) dodk=yes;;
 no) dodk=no;;
-*) 
+*)
 	dodk=yes
 	DKPREFIX=$withval
 	;;
@@ -78,7 +78,7 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=17
+VERSION_POINT=18
 CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
@@ -124,7 +124,7 @@ AC_SUBST(ID)
 AC_SUBST(BGROUPS)
 
 dnl =================================================================
-dnl debug, gcc and gdb support 
+dnl debug, gcc and gdb support
 dnl =================================================================
 
 AC_ARG_WITH(debug,
@@ -202,7 +202,7 @@ else
   AC_MSG_CHECKING([for group])
   AC_ARG_WITH(group,
         [  --with-group=privoxy         Set group for privoxy],
-        [ 
+        [
                 if test "x$withval" != "xyes"; then
                   if test $BGROUPS = no ; then
                     AC_MSG_ERROR(There is no 'groups' program on this system)
@@ -241,7 +241,7 @@ fi
 dnl =================================================================
 dnl additional gcc flags
 dnl =================================================================
-dnl 
+dnl
 if test "$GCC"; then
   if test "$host" != "powerpc-unknown-amigaos"; then
     CFLAGS="-pipe $CFLAGS"
@@ -259,7 +259,7 @@ dnl Reason: This sets CFLAGS in order to switch the Cygwin compiler
 dnl into Cygwin or MinGW32 modes.  Depending on the mode selected,
 dnl the compiler will use completely different sets of library
 dnl and include files.
-dnl 
+dnl
 dnl =================================================================
 
 AC_MINGW32
@@ -315,7 +315,7 @@ else
 fi
 AC_SUBST(WIN_ONLY)
 
-dnl Checking which text html browser we have avaliable
+dnl Checking which text html browser we have available
 if test $dodk != no; then
 	AC_CHECK_PROGS(WDUMP,w3m lynx links,false)
 	if test "$WDUMP" = false; then
@@ -323,7 +323,7 @@ if test $dodk != no; then
 	fi
 	if test $DB2HTML = false; then
 		dnl We need to clean the variable, otherwise AC_CHECK_PROGS
-		dnl will fail	
+		dnl will fail
 		DB2HTML=""
 		AC_CHECK_PROGS(DB2HTML,db2html docbook2html,false)
 	fi
@@ -429,7 +429,7 @@ AC_ARG_ENABLE(pthread,
 [if test $enableval = no; then
   # Disable pthreads
   if test $have_pthread = yes; then
-     AC_MSG_WARN([pthreads seem to be available but you are using --disable-pthread.]) 
+     AC_MSG_WARN([pthreads seem to be available but you are using --disable-pthread.])
      AC_MSG_WARN([This is almost always a mistake and can render Privoxy unacceptable slow.])
   fi
   have_pthread=no
@@ -647,10 +647,10 @@ AC_SUBST(SOCKET_LIB)
 dnl =================================================================
 dnl Mac OSX specific
 dnl =================================================================
-    
+
 case "$host" in
 *-apple-darwin*) SPECIAL_CFLAGS="-Dunix"
-;;  
+;;
 esac
 
 dnl =================================================================
@@ -700,21 +700,23 @@ dnl AC_CHECK_HEADERS(fcntl.h limits.h malloc.h sys/time.h unistd.h)
 AC_CHECK_HEADERS([OS.h arpa/inet.h errno.h fcntl.h limits.h locale.h netdb.h netinet/in.h stddef.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h sys/timeb.h sys/wait.h unistd.h])
 
 dnl Checks for library functions.
-dnl AC_TYPE_SIGNAL
-dnl AC_CHECK_FUNC(strstr)
-dnl bcopy and memmove are for PCRE
-AC_CHECK_FUNCS([strerror bcopy memmove])
+dnl bcopy is for PCRE
+AC_CHECK_FUNCS([bcopy])
 AC_PROG_GCC_TRADITIONAL
-dnl uncommenting does not work for swa. suse linux
-dnl AC_FUNC_MALLOC
-AC_FUNC_SETPGRP
 AC_TYPE_SIGNAL
-dnl uncommenting does not work for swa. suse linux
-dnl AC_FUNC_STAT
 AC_CHECK_FUNCS([access atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r gettimeofday inet_ntoa localtime_r memchr memmove memset poll putenv random regcomp select setlocale snprintf socket strchr strdup strerror strftime strlcat strlcpy strptime strstr strtoul timegm tzset])
 
 dnl Checks for RFC 2553 resolver and socket functions
-if test $target_type = mingw; then
+AC_ARG_ENABLE(ipv6-support,
+[  --disable-ipv6-support          Disable IPv6 support and other RFC-2554-related improvements],
+[if test $enableval = yes; then
+  enable_ipv6_support=yes
+fi], enable_ipv6_support=yes)
+
+if test $enable_ipv6_support != yes; then
+  AC_MSG_WARN([Skipping checks for IPv6 support and other RFC-2554-related improvements.
+    Due to lock contention, this may result in slower DNS resolution for IPv4 setups, too.])
+elif test $target_type = mingw; then
   AC_CHECK_LIB(ws2_32, main)
 
   AC_MSG_CHECKING(getaddrinfo in ws2_32)
@@ -771,7 +773,7 @@ AC_CHECK_LIB(pcre, pcre_compile, [
       ], [have_pcre=no])
    ])
 ], [have_pcre=no])
- 
+
 AC_CHECK_LIB(pcreposix, regcomp, [
    AC_CHECK_HEADER(pcreposix.h, [
       AC_EGREP_HEADER(pcreposix_regerror, pcreposix.h, [AC_MSG_WARN([[pcreposix old version installed]]); have_pcreposix=no], [have_pcreposix=yes])
@@ -780,7 +782,7 @@ AC_CHECK_LIB(pcreposix, regcomp, [
          AC_EGREP_HEADER(pcreposix_regerror, pcre/pcreposix.h, [AC_MSG_WARN([[pcreposix old version installed]]); have_pcreposix=no], [have_pcreposix=yes]; [AC_DEFINE(PCREPOSIX_H_IN_SUBDIR)])
       ], [have_pcreposix=no])
    ])
-], [have_pcreposix=no], -lpcre) 
+], [have_pcreposix=no], -lpcre)
 
 dnl ================================================================
 dnl libpcrs is temporarily disabled.
@@ -835,15 +837,15 @@ AC_ARG_ENABLE(ie-images,
 fi],)
 
 AC_ARG_ENABLE(image-blocking,
-[  --disable-image-blocking        Don't try to figure out whether a request is 
+[  --disable-image-blocking        Don't try to figure out whether a request is
                                   for an image or HTML - assume HTML.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_IMAGE_BLOCKING)
 fi],
 AC_DEFINE(FEATURE_IMAGE_BLOCKING))
 
-AC_ARG_ENABLE(acl-files,
-[  --disable-acl-files             Prevents the use of ACL files to control access to
+AC_ARG_ENABLE(acl-support,
+[  --disable-acl-support            Prevents the use of ACLs to control access to
                                   Privoxy by IP address.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_ACL)
@@ -925,12 +927,25 @@ if test $enableval2 = yes; then
   AC_CHECK_LIB(z, zlibVersion, [have_zlib="yes"], [have_zlib="no"])
   if test $have_zlib = "yes"; then
     LIBS="$LIBS -lz"
-    AC_DEFINE(FEATURE_ZLIB,1,[Define to 1 to use compression through the zlib library.])
+    AC_DEFINE(FEATURE_ZLIB,1,[Define to 1 to use zlib to decompress data before filtering.])
   else
    AC_MSG_WARN([No zlib found.
    Privoxy will not be able to filter compressed content.
    This may become a fatal error in the future.])
-  fi  
+  fi
+fi
+
+AC_ARG_ENABLE(compression,
+[  --enable-compression            Allow Privoxy to compress buffered content if the client supports it. Requires zlib support.],
+[enableval2=$enableval],
+[enableval2=no])
+if test $enableval2 = yes; then
+  if test $have_zlib = "yes"; then
+    echo Enabling compression support.
+    AC_DEFINE(FEATURE_COMPRESSION,1,[Define to 1 to use compression through the zlib library.])
+  else
+   AC_MSG_WARN([No zlib found. Privoxy will not be able to (re-)compressed buffered content.])
+  fi
 fi
 
 
@@ -944,8 +959,8 @@ if test $have_pcre = "yes"; then
   STATIC_PCRE_ONLY=#
   LIBS="$LIBS -lpcre -lpcreposix"
 else
-  AC_MSG_WARN([You are using the static PCRE code which is scheduled for removal, for details see: 
-    https://sourceforge.net/mailarchive/message.php?msg_id=20080511195555.2dc6cfdc%40fabiankeil.de])
+  AC_MSG_WARN([You are using the static PCRE code which is out of date and scheduled for removal, for details see:
+    http://sourceforge.net/mailarchive/forum.php?thread_name=20080511195555.2dc6cfdc%40fabiankeil.de&forum_name=ijbswa-developers])
   pcre_dyn=no
   AC_DEFINE(STATIC_PCRE)
   STATIC_PCRE_ONLY=
@@ -983,7 +998,7 @@ dnl =================================================================
 dnl Final cleanup and output
 dnl =================================================================
 
-dnl Remove the SPECIAL_CFLAGS stuff from CFLAGS, and add it seperately
+dnl Remove the SPECIAL_CFLAGS stuff from CFLAGS, and add it separately
 dnl in the Makefile
 CFLAGS=$old_CFLAGS_nospecial
 AC_SUBST(SPECIAL_CFLAGS)

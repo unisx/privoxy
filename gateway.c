@@ -1,4 +1,4 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.65 2010/04/23 11:53:48 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.82 2011/10/23 11:21:28 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
@@ -68,7 +68,7 @@ const char gateway_rcs[] = "$Id: gateway.c,v 1.65 2010/04/23 11:53:48 fabiankeil
 #include "miscutil.h"
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 #ifdef HAVE_POLL
-#ifdef __GLIBC__ 
+#ifdef __GLIBC__
 #include <sys/poll.h>
 #else
 #include <poll.h>
@@ -88,21 +88,24 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
                                 int target_port,
                                 struct client_state *csp);
 
+enum {
+   SOCKS4_REQUEST_GRANTED        =  90,
+   SOCKS4_REQUEST_REJECT         =  91,
+   SOCKS4_REQUEST_IDENT_FAILED   =  92,
+   SOCKS4_REQUEST_IDENT_CONFLICT =  93
+};
 
-#define SOCKS_REQUEST_GRANTED          90
-#define SOCKS_REQUEST_REJECT           91
-#define SOCKS_REQUEST_IDENT_FAILED     92
-#define SOCKS_REQUEST_IDENT_CONFLICT   93
-
-#define SOCKS5_REQUEST_GRANTED             0
-#define SOCKS5_REQUEST_FAILED              1
-#define SOCKS5_REQUEST_DENIED              2
-#define SOCKS5_REQUEST_NETWORK_UNREACHABLE 3
-#define SOCKS5_REQUEST_HOST_UNREACHABLE    4
-#define SOCKS5_REQUEST_CONNECTION_REFUSED  5
-#define SOCKS5_REQUEST_TTL_EXPIRED         6
-#define SOCKS5_REQUEST_PROTOCOL_ERROR      7
-#define SOCKS5_REQUEST_BAD_ADDRESS_TYPE    8
+enum {
+   SOCKS5_REQUEST_GRANTED             = 0,
+   SOCKS5_REQUEST_FAILED              = 1,
+   SOCKS5_REQUEST_DENIED              = 2,
+   SOCKS5_REQUEST_NETWORK_UNREACHABLE = 3,
+   SOCKS5_REQUEST_HOST_UNREACHABLE    = 4,
+   SOCKS5_REQUEST_CONNECTION_REFUSED  = 5,
+   SOCKS5_REQUEST_TTL_EXPIRED         = 6,
+   SOCKS5_REQUEST_PROTOCOL_ERROR      = 7,
+   SOCKS5_REQUEST_BAD_ADDRESS_TYPE    = 8
+};
 
 /* structure of a socks client operation */
 struct socks_op {
@@ -335,16 +338,12 @@ void forget_connection(jb_socket sfd)
             sfd, reusable_connection[slot].host,
             reusable_connection[slot].port, slot);
          mark_connection_closed(&reusable_connection[slot]);
-         privoxy_mutex_unlock(&connection_reuse_mutex);
-
-         return;
+         break;
       }
    }
 
-   log_error(LOG_LEVEL_CONNECT,
-      "Socket %d already forgotten or never remembered.", sfd);
-
    privoxy_mutex_unlock(&connection_reuse_mutex);
+
 }
 #endif /* def FEATURE_CONNECTION_SHARING */
 
@@ -383,7 +382,9 @@ int connection_destination_matches(const struct reusable_connection *connection,
          && strcmpic(connection->gateway_host, fwd->gateway_host))
        && (connection->gateway_host != fwd->gateway_host))
    {
-      log_error(LOG_LEVEL_CONNECT, "Gateway mismatch.");
+      log_error(LOG_LEVEL_CONNECT,
+         "Gateway mismatch. Previous gateway: %s. Current gateway: %s",
+         connection->gateway_host, fwd->gateway_host);
       return FALSE;
    }
 
@@ -392,7 +393,9 @@ int connection_destination_matches(const struct reusable_connection *connection,
          && strcmpic(connection->forward_host, fwd->forward_host))
       && (connection->forward_host != fwd->forward_host))
    {
-      log_error(LOG_LEVEL_CONNECT, "Forwarding proxy mismatch.");
+      log_error(LOG_LEVEL_CONNECT,
+         "Forwarding proxy mismatch. Previous proxy: %s. Current proxy: %s",
+         connection->forward_host, fwd->forward_host);
       return FALSE;
    }
 
@@ -652,7 +655,7 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
       default:
          /* Should never get here */
          log_error(LOG_LEVEL_FATAL,
-            "SOCKS4 impossible internal error - bad SOCKS type.");
+            "Internal error in forwarded_connect(). Bad proxy type: %d", fwd->type);
    }
 
    if (JB_INVALID_SOCKET != sfd)
@@ -721,7 +724,7 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
    if (err)
    {
       log_error(LOG_LEVEL_CONNECT, "socks4_connect: %s", errstr);
-      csp->error_message = strdup(errstr); 
+      csp->error_message = strdup(errstr);
       errno = EINVAL;
       return(JB_INVALID_SOCKET);
    }
@@ -802,12 +805,22 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
 
    if (sfd == JB_INVALID_SOCKET)
    {
-      /*
-       * XXX: connect_to should fill in the exact reason.
-       * Most likely resolving the IP of the forwarder failed.
-       */
-      errstr = "connect_to failed: see logfile for details";
+      /* The error an its reason have already been logged by connect_to()  */
+      return(JB_INVALID_SOCKET);
+   }
+   else if (!data_is_available(sfd, csp->config->socket_timeout))
+   {
+      if (socket_is_still_alive(sfd))
+      {
+         errstr = "SOCKS4 negotiation timed out";
+      }
+      else
+      {
+         errstr = "SOCKS4 negotiation got aborted by the server";
+      }
+      log_error(LOG_LEVEL_CONNECT, "socks4_connect: %s", errstr);
       err = 1;
+      close_socket(sfd);
    }
    else if (write_socket(sfd, (char *)c, csiz))
    {
@@ -826,24 +839,24 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
 
    if (err)
    {
-      csp->error_message = strdup(errstr);      
+      csp->error_message = strdup(errstr);
       return(JB_INVALID_SOCKET);
    }
 
    switch (s->cd)
    {
-      case SOCKS_REQUEST_GRANTED:
+      case SOCKS4_REQUEST_GRANTED:
          return(sfd);
-      case SOCKS_REQUEST_REJECT:
+      case SOCKS4_REQUEST_REJECT:
          errstr = "SOCKS request rejected or failed.";
          errno = EINVAL;
          break;
-      case SOCKS_REQUEST_IDENT_FAILED:
+      case SOCKS4_REQUEST_IDENT_FAILED:
          errstr = "SOCKS request rejected because "
             "SOCKS server cannot connect to identd on the client.";
          errno = EACCES;
          break;
-      case SOCKS_REQUEST_IDENT_CONFLICT:
+      case SOCKS4_REQUEST_IDENT_CONFLICT:
          errstr = "SOCKS request rejected because "
             "the client program and identd report "
             "different user-ids.";
@@ -930,7 +943,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
 {
    int err = 0;
    char cbuf[300];
-   char sbuf[30];
+   char sbuf[10];
    size_t client_pos = 0;
    int server_size = 0;
    size_t hostlen = 0;
@@ -986,6 +999,8 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
    {
       errstr = "socks5 server unreachable";
       log_error(LOG_LEVEL_CONNECT, "socks5_connect: %s", errstr);
+      /* Free the generic error message provided by connect_to() */
+      freez(csp->error_message);
       csp->error_message = strdup(errstr);
       return(JB_INVALID_SOCKET);
    }
@@ -1004,7 +1019,20 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
       return(JB_INVALID_SOCKET);
    }
 
-   if (read_socket(sfd, sbuf, sizeof(sbuf)) != 2)
+   if (!data_is_available(sfd, csp->config->socket_timeout))
+   {
+      if (socket_is_still_alive(sfd))
+      {
+         errstr = "SOCKS5 negotiation timed out";
+      }
+      else
+      {
+         errstr = "SOCKS5 negotiation got aborted by the server";
+      }
+      err = 1;
+   }
+
+   if (!err && read_socket(sfd, sbuf, sizeof(sbuf)) != 2)
    {
       errstr = "SOCKS5 negotiation read failed";
       err = 1;
@@ -1053,7 +1081,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
 
    if (write_socket(sfd, cbuf, client_pos))
    {
-      errstr = "SOCKS5 negotiation read failed";
+      errstr = "SOCKS5 negotiation write failed";
       csp->error_message = strdup(errstr);
       log_error(LOG_LEVEL_CONNECT, "%s", errstr);
       close_socket(sfd);
@@ -1062,43 +1090,33 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
    }
 
    server_size = read_socket(sfd, sbuf, sizeof(sbuf));
-   if (server_size < 3)
+   if (server_size != sizeof(sbuf))
    {
       errstr = "SOCKS5 negotiation read failed";
-      err = 1;
    }
-   else if (server_size > 20)
+   else
    {
-      /* This is somewhat unexpected but doesn't realy matter. */
-      log_error(LOG_LEVEL_CONNECT, "socks5_connect: read %d bytes "
-         "from socks server. Would have accepted up to %d.",
-         server_size, sizeof(sbuf));
-   }
-
-   if (!err && (sbuf[0] != '\x05'))
-   {
-      errstr = "SOCKS5 negotiation protocol version error";
-      err = 1;
-   }
-
-   if (!err && (sbuf[2] != '\x00'))
-   {
-      errstr = "SOCKS5 negotiation protocol error";
-      err = 1;
-   }
-
-   if (!err)
-   {
-      if (sbuf[1] == SOCKS5_REQUEST_GRANTED)
+      if (sbuf[0] != '\x05')
+      {
+         errstr = "SOCKS5 negotiation protocol version error";
+      }
+      else if (sbuf[2] != '\x00')
+      {
+         errstr = "SOCKS5 negotiation protocol error";
+      }
+      else if (sbuf[1] != SOCKS5_REQUEST_GRANTED)
+      {
+         errstr = translate_socks5_error(sbuf[1]);
+      }
+      else
       {
          return(sfd);
       }
-      errstr = translate_socks5_error(sbuf[1]);
    }
 
    assert(errstr != NULL);
    csp->error_message = strdup(errstr);
-   log_error(LOG_LEVEL_CONNECT, "socks5_connect: %s", errstr);
+   log_error(LOG_LEVEL_CONNECT, "socks5_connect: %s: %N", errstr, server_size, sbuf);
    close_socket(sfd);
    errno = EINVAL;
 

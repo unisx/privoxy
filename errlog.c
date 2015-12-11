@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.110 2010/07/26 12:11:51 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.112 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -10,10 +10,10 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.110 2010/07/26 12:11:51 fabiankeil 
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -121,9 +121,9 @@ static inline void unlock_loginit(void)
 #else /* ! MUTEX_LOCKS_AVAILABLE */
 /*
  * FIXME we need a cross-platform locking mechanism.
- * The locking/unlocking functions below should be 
+ * The locking/unlocking functions below should be
  * fleshed out for non-pthread implementations.
- */ 
+ */
 static inline void lock_logfile() {}
 static inline void unlock_logfile() {}
 static inline void lock_loginit() {}
@@ -134,7 +134,7 @@ static inline void unlock_loginit() {}
  *
  * Function    :  fatal_error
  *
- * Description :  Displays a fatal error to standard error (or, on 
+ * Description :  Displays a fatal error to standard error (or, on
  *                a WIN32 GUI, to a dialog box), and exits Privoxy
  *                with status code 1.
  *
@@ -154,8 +154,8 @@ static void fatal_error(const char *error_message)
       /* Shouldn't happen but ... */
       box_message = error_message;
    }
-   MessageBox(g_hwndLogFrame, box_message, "Privoxy Error", 
-      MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);  
+   MessageBox(g_hwndLogFrame, box_message, "Privoxy Error",
+      MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);
 
    /* Cleanup - remove taskbar icon etc. */
    TermLogWindow();
@@ -232,7 +232,7 @@ void init_log_module(void)
  *                XXX: we should only use the LOG_LEVEL_MINIMUM
  *                until the first time the configuration file has
  *                been parsed.
- *                
+ *
  * Parameters  :  1: debug_level = The debug level to set.
  *
  * Returns     :  Nothing.
@@ -249,7 +249,7 @@ void set_debug_level(int debug_level)
  * Function    :  disable_logging
  *
  * Description :  Disables logging.
- *                
+ *
  * Parameters  :  None.
  *
  * Returns     :  Nothing.
@@ -375,7 +375,7 @@ void init_error_log(const char *prog_name, const char *logfname)
  * Description :  Returns a number that is different for each thread.
  *
  *                XXX: Should be moved elsewhere (miscutil.c?)
- *                
+ *
  * Parameters  :  None
  *
  * Returns     :  thread_id
@@ -430,7 +430,7 @@ static long get_thread_id(void)
 static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
 {
    size_t length;
-   time_t now; 
+   time_t now;
    struct tm tm_now;
    struct timeval tv_now; /* XXX: stupid name */
    long msecs;
@@ -444,16 +444,16 @@ static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
    tm_now = *localtime_r(&now, &tm_now);
 #elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&localtime_mutex);
-   tm_now = *localtime(&now); 
+   tm_now = *localtime(&now);
    privoxy_mutex_unlock(&localtime_mutex);
 #else
-   tm_now = *localtime(&now); 
+   tm_now = *localtime(&now);
 #endif
 
-   length = strftime(buffer, buffer_size, "%b %d %H:%M:%S", &tm_now);
+   length = strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S", &tm_now);
    if (length > (size_t)0)
    {
-      msecs_length = snprintf(buffer+length, buffer_size - length, ".%.3ld", msecs);               
+      msecs_length = snprintf(buffer+length, buffer_size - length, ".%.3ld", msecs);
    }
    if (msecs_length > 0)
    {
@@ -488,7 +488,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
     * the %z field in strftime()
     */
    time_t now;
-   struct tm *tm_now; 
+   struct tm *tm_now;
    struct tm gmt;
 #ifdef HAVE_LOCALTIME_R
    struct tm dummy;
@@ -497,7 +497,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
    size_t length;
    int tz_length = 0;
 
-   time (&now); 
+   time (&now);
 #ifdef HAVE_GMTIME_R
    gmt = *gmtime_r(&now, &gmt);
 #elif defined(MUTEX_LOCKS_AVAILABLE)
@@ -511,14 +511,14 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
    tm_now = localtime_r(&now, &dummy);
 #elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&localtime_mutex);
-   tm_now = localtime(&now); 
+   tm_now = localtime(&now);
    privoxy_mutex_unlock(&localtime_mutex);
 #else
-   tm_now = localtime(&now); 
+   tm_now = localtime(&now);
 #endif
-   days = tm_now->tm_yday - gmt.tm_yday; 
-   hrs = ((days < -1 ? 24 : 1 < days ? -24 : days * 24) + tm_now->tm_hour - gmt.tm_hour); 
-   mins = hrs * 60 + tm_now->tm_min - gmt.tm_min; 
+   days = tm_now->tm_yday - gmt.tm_yday;
+   hrs = ((days < -1 ? 24 : 1 < days ? -24 : days * 24) + tm_now->tm_hour - gmt.tm_hour);
+   mins = hrs * 60 + tm_now->tm_min - gmt.tm_min;
 
    length = strftime(buffer, buffer_size, "%d/%b/%Y:%H:%M:%S ", tm_now);
 
@@ -546,7 +546,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
  *
  * Description :  Translates a numerical loglevel into a string.
  *
- * Parameters  :  
+ * Parameters  :
  *          1  :  loglevel = LOG_LEVEL_FOO
  *
  * Returns     :  Log level string.
@@ -682,7 +682,7 @@ void log_error(int loglevel, const char *fmt, ...)
    /* protect the whole function because of the static buffer (outbuf) */
    lock_logfile();
 
-   if (NULL == outbuf_save) 
+   if (NULL == outbuf_save)
    {
       outbuf_save = (char*)zalloc(log_buffer_size + 1); /* +1 for paranoia */
       if (NULL == outbuf_save)
@@ -840,7 +840,7 @@ void log_error(int loglevel, const char *fmt, ...)
                format_string = strerror(ival);
             }
 #else /* ifndef _WIN32 */
-            ival = errno; 
+            ival = errno;
 #ifdef HAVE_STRERROR
             format_string = strerror(ival);
 #else /* ifndef HAVE_STRERROR */

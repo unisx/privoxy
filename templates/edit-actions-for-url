@@ -4,7 +4,7 @@
 #
 # Purpose     :  Template used to edit the actions associated with a
 #                particular section in an actions file.
-# 
+#
 #
 # Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
 #                Privoxy team. http://www.privoxy.org/
@@ -12,7 +12,7 @@
 #                Original Author: Copyright (C) 2001 Jonathan Foster
 #                http://www.jon-foster.co.uk/
 #
-#                This program is free software; you can redistribute it 
+#                This program is free software; you can redistribute it
 #                and/or modify it under the terms of the GNU General
 #                Public License as published by the Free Software
 #                Foundation; either version 2 of the License, or (at
@@ -32,33 +32,6 @@
 #
 ##############################################################################
 #
-# Browser support for the JavaScript on this page:
-#   MS Internet Explorer 5.5 - Tested,   Yes
-#   Netscape 6.0             - Tested,   Yes
-#   Netscape 4.75            - Tested,   NO
-#   Opera 5.12               - Tested,   NO
-#   MS Internet Explorer 4+  - Untested, Yes
-#   MS IE 3.x, NS3.x         - Untested, NO
-#   Mozilla >=0.6            - Untested, Yes
-#
-# All browsers should work, you just might not get the pretty DHTML effects.
-#
-# The effects that only work under the browsers marked "Yes" above are:
-#  - Text edit boxes that won't have any effect are disabled.
-#  - Table rows containing additional settings are hidden if the feature in
-#    question is disabled.
-#
-# There are major kludges to get around these problems with NS4, but they
-# screw up the HTML too much for other browsers.  If anyone wants to try,
-# here's some descriptions of the kludges:
-#    http://www.webreference.com/js/tips/991114.html
-#    http://www.webreference.com/dhtml/column12/outDisplay.html
-#
-# If you're favorite browser isn't listed, please test and add it.
-#
-#
-#############################################################################
-#
 # Standard support:
 #
 # This file currently produces valid HTML 4.01 Strict.
@@ -66,7 +39,7 @@
 # If you change it, please save the generated page from your web browser
 # and then upload it to http://validator.w3.org/ for checking.
 #
-#############################################################################
+##############################################################################
 #
 # Available variables include:
 #
@@ -89,7 +62,7 @@
 # image-blocker-param-custom
 #
 #
-#############################################################################
+##############################################################################
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
@@ -378,7 +351,7 @@ function show_limit_connect_opts(tf)
         id="change_x_forwarded_for_mode_block" @change-x-forwarded-for-param-block@><label
         for="change_x_forwarded_for_mode_block">Block the header.</label><br>
         <input type="radio" name="change_x_forwarded_for_mode" value="add"
-        id="change_x_forwarded_for_mode_add" @change-x-forwarded-for-param-add@><label 
+        id="change_x_forwarded_for_mode_add" @change-x-forwarded-for-param-add@><label
         for="change_x_forwarded_for_mode_add">Add the header.</label><br>
     </tr>
     <tr class="bg1" align="left" valign="top">
@@ -538,7 +511,7 @@ function show_limit_connect_opts(tf)
       <td>Use the <input type="radio" name="deanimate_gifs_mode"
         value="first" id="deanimate_first" @deanimate-gifs-param-first@><label
         for="deanimate_first">first frame</label>&nbsp;&nbsp; <input
-        type="radio" name="deanimate_gifs_mode" value="last" 
+        type="radio" name="deanimate_gifs_mode" value="last"
         id="deanimate_last" @deanimate-gifs-param-last@><label
         for="deanimate_last">last frame</label></td>
     </tr>
@@ -577,7 +550,7 @@ function show_limit_connect_opts(tf)
         value="simple-check" id="fast_redirects_simple_check" @fast-redirects-param-simple-check@><label
         for="fast_redirects_simple_check">Simple check.</label>
        <br>
-       <input type="radio" name="fast_redirects_mode" value="check-decoded-url" 
+       <input type="radio" name="fast_redirects_mode" value="check-decoded-url"
         id="fast_redirects_check_decoded_url" @fast-redirects-param-check-decoded-url@><label
         for="fast_redirects_check_decoded_url">Decode URL before checking.</label></td>
     </tr>
@@ -679,7 +652,7 @@ function show_limit_connect_opts(tf)
       <td>&nbsp;</td>
       <td>
         Overriding forward directive:<br>
-        <input type="text" name="forward_override_param" 
+        <input type="text" name="forward_override_param"
         id="forward_override_param" size="40"
         value="@forward-override-param@"><br>
      </td>
@@ -745,7 +718,7 @@ function show_limit_connect_opts(tf)
         onclick="hide_accept_language_param_disable(false)"
         @hide-accept-language-param-custom@ id="hide_accept_language_mode_set"><label
         for="hide_accept_language_mode_set">Fake these language settings:</label><br>
-        <input type="text" name="hide_accept_language_param" 
+        <input type="text" name="hide_accept_language_param"
         id="hide_accept_language_param" size="40"
         value="@hide-accept-language-param@"><br>
      </td>
@@ -779,7 +752,7 @@ function show_limit_connect_opts(tf)
         onclick="hide_content_disposition_param_disable(false)"
         @hide-content-disposition-param-custom@ id="hide_content_disposition_mode_set"><label
         for="hide_content_disposition_mode_set">Overwrite content-dispostion header with:</label><br>
-        <input type="text" name="hide_content_disposition_param" 
+        <input type="text" name="hide_content_disposition_param"
         id="hide_content_disposition_param" size="40"
         value="@hide-content-disposition-param@"><br>
      </td>
@@ -807,7 +780,7 @@ function show_limit_connect_opts(tf)
         onclick="hide_from_header_param_disable(true);"
         @hide-from-header-param-block@ id="hide_from_header_mode_block"><label
         for="hide_from_header_mode_block">Remove completely</label><br>
-        <input type="radio" name="hide_from_header_mode" value="CUSTOM" 
+        <input type="radio" name="hide_from_header_mode" value="CUSTOM"
         onclick="hide_from_header_param_disable(false);"
         @hide-from-header-param-custom@ id="hide_from_header_mode_set"><label
         for="hide_from_header_mode_set">Fake e-mail address:</label><br>
@@ -842,7 +815,7 @@ function show_limit_connect_opts(tf)
         onclick="hide_if_modified_since_param_disable(true)"
         @hide-if-modified-since-param-custom@ id="hide_if_modified_since_mode_set"><label
         for="hide_if_modified_since_mode_set">Add random amount of seconds in the range of</label>
-        <input type="text" name="hide_if_modified_since_param" 
+        <input type="text" name="hide_if_modified_since_param"
         id="hide_if_modified_since_param" size="4"
         value="@hide-if-modified-since-param@"> minute(s).
         To appreciate this option a small amount of paranoia is required,
@@ -906,7 +879,7 @@ function show_limit_connect_opts(tf)
         onclick="hide_referrer_param_disable(false)"
         @hide-referrer-param-custom@ id="hide_referrer_mode_set"><label
         for="hide_referrer_mode_set">Fake as this web address:</label><br>
-        <input type="text" name="hide_referrer_param" 
+        <input type="text" name="hide_referrer_param"
         id="hide_referrer_param" size="40"
         value="@hide-referrer-param@"><br>
         <input type="radio" name="hide_referrer_mode" value="conditional-block"
@@ -1085,7 +1058,7 @@ function show_limit_connect_opts(tf)
         ("per-session") ones, which only last until you close your web
         browser.  This will allow you to use sites that require cookies, but
         sites will not be able to track you across sessions.  For this to
-        be useful, you should disable 
+        be useful, you should disable
         <a href="@user-manual@@actions-help-prefix@CRUNCH-OUTGOING-COOKIES"><b>crunch-outgoing-cookies</b></a> and
         <a href="@user-manual@@actions-help-prefix@CRUNCH-INCOMING-COOKIES"><b>crunch-incoming-cookies</b></a>.</td>
     </tr>
@@ -1116,7 +1089,7 @@ function show_limit_connect_opts(tf)
         alt="pattern">)</label><br>
         <input type="radio" name="set_image_blocker_mode" value="blank"
         onclick="set_image_blocker_param_disable(true)"
-        id="set_image_blocker_mode_blank" @set-image-blocker-param-blank@><label 
+        id="set_image_blocker_mode_blank" @set-image-blocker-param-blank@><label
         for="set_image_blocker_mode_blank">Send a 1x1 transparent GIF</label><br>
         <input type="radio" name="set_image_blocker_mode" value="CUSTOM"
         onclick="set_image_blocker_param_disable(false)"

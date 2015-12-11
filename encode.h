@@ -1,6 +1,6 @@
 #ifndef ENCODE_H_INCLUDED
 #define ENCODE_H_INCLUDED
-#define ENCODE_H_VERSION "$Id: encode.h,v 1.10 2009/05/16 13:27:20 fabiankeil Exp $"
+#define ENCODE_H_VERSION "$Id: encode.h,v 1.12 2011/11/06 11:44:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.h,v $
@@ -12,10 +12,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -45,6 +45,7 @@ extern char * url_encode(const char *s);
 extern char * url_decode(const char *str);
 extern int    xtoi(const char *s);
 extern char * html_encode_and_free_original(char *s);
+extern char * percent_encode_url(const char *s);
 
 /* Revision control strings from this header and associated .c file */
 extern const char encode_rcs[];

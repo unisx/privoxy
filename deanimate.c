@@ -1,4 +1,4 @@
-const char deanimate_rcs[] = "$Id: deanimate.c,v 1.20 2009/05/16 13:27:20 fabiankeil Exp $";
+const char deanimate_rcs[] = "$Id: deanimate.c,v 1.21 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/deanimate.c,v $
@@ -6,7 +6,7 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.20 2009/05/16 13:27:20 fabian
  * Purpose     :  Declares functions to manipulate binary images on the
  *                fly.  High-level functions include:
  *                  - Deanimation of GIF images
- *                
+ *
  *                Functions declared include: gif_deanimate, buf_free,
  *                buf_copy,  buf_getbyte, gif_skip_data_block
  *                and gif_extract_image
@@ -19,7 +19,7 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.20 2009/05/16 13:27:20 fabian
  *                and ideas from the Image::DeAnim Perl module by
  *                Ken MacFarlane, <ksm+cpan@universal.dca.net>
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -53,7 +53,7 @@ const char deanimate_rcs[] = "$Id: deanimate.c,v 1.20 2009/05/16 13:27:20 fabian
 const char deanimate_h_rcs[] = DEANIMATE_H_VERSION;
 
 /*********************************************************************
- * 
+ *
  * Function    :  buf_free
  *
  * Description :  Safely frees a struct binbuffer
@@ -79,7 +79,7 @@ void buf_free(struct binbuffer *buf)
 
 
 /*********************************************************************
- * 
+ *
  * Function    :  buf_extend
  *
  * Description :  Ensure that a given binbuffer can hold a given amount
@@ -90,7 +90,7 @@ void buf_free(struct binbuffer *buf)
  * Parameters  :
  *          1  :  buf = Pointer to the binbuffer
  *          2  :  length = Desired minimum size
- *                
+ *
  *
  * Returns     :  0 on success, 1 on failure.
  *
@@ -121,7 +121,7 @@ static int buf_extend(struct binbuffer *buf, size_t length)
 
 
 /*********************************************************************
- * 
+ *
  * Function    :  buf_copy
  *
  * Description :  Safely copies a given amount of bytes from one
@@ -142,7 +142,7 @@ static int buf_copy(struct binbuffer *src, struct binbuffer *dst, size_t length)
    /*
     * Sanity check: Can't copy more data than we have
     */
-   if (src->offset + length > src->size) 
+   if (src->offset + length > src->size)
    {
       return 1;
    }
@@ -150,7 +150,7 @@ static int buf_copy(struct binbuffer *src, struct binbuffer *dst, size_t length)
    /*
     * Ensure that dst can hold the new data
     */
-   if (buf_extend(dst, length)) 
+   if (buf_extend(dst, length))
    {
       return 1;
    }
@@ -169,7 +169,7 @@ static int buf_copy(struct binbuffer *src, struct binbuffer *dst, size_t length)
 
 
 /*********************************************************************
- * 
+ *
  * Function    :  buf_getbyte
  *
  * Description :  Safely gets a byte from a given binbuffer at a
@@ -197,7 +197,7 @@ static unsigned char buf_getbyte(const struct binbuffer *src, size_t offset)
 
 
 /*********************************************************************
- * 
+ *
  * Function    :  gif_skip_data_block
  *
  * Description :  Safely advances the offset of a given struct binbuffer
@@ -215,7 +215,7 @@ static int gif_skip_data_block(struct binbuffer *buf)
 {
    unsigned char c;
 
-   /* 
+   /*
     * Data blocks are sequences of chunks, which are headed
     * by a one-byte length field, with the last chunk having
     * zero length.
@@ -236,12 +236,12 @@ static int gif_skip_data_block(struct binbuffer *buf)
 
 
 /*********************************************************************
- * 
+ *
  * Function    :  gif_extract_image
  *
  * Description :  Safely extracts an image data block from a given
  *                struct binbuffer that contains a GIF image and whose
- *                offset is positioned at the start of a data block 
+ *                offset is positioned at the start of a data block
  *                into a given destination binbuffer.
  *
  * Parameters  :
@@ -279,7 +279,7 @@ static int gif_extract_image(struct binbuffer *src, struct binbuffer *dst)
       if (buf_copy(src, dst, (size_t)map_length))
       {
          return 1;
-      }           
+      }
    }
    if (buf_copy(src, dst, 1)) return 1;
 
@@ -304,7 +304,7 @@ static int gif_extract_image(struct binbuffer *src, struct binbuffer *dst)
 }
 
 /*********************************************************************
- * 
+ *
  * Function    :  gif_deanimate
  *
  * Description :  Deanimate a given GIF image, i.e. given a GIF with
@@ -336,9 +336,9 @@ int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_im
    c = buf_getbyte(src, 10);
 
    /*
-    * Check & copy GIF header 
+    * Check & copy GIF header
     */
-   if (strncmp(src->buffer, "GIF89a", 6) && strncmp(src->buffer, "GIF87a", 6)) 
+   if (strncmp(src->buffer, "GIF89a", 6) && strncmp(src->buffer, "GIF87a", 6))
    {
       return 1;
    }
@@ -390,7 +390,7 @@ int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_im
       case 0x3b:
          goto write;
 
-         /* 
+         /*
           * Image block: Extract to current image buffer.
           */
       case 0x2c:
@@ -450,13 +450,13 @@ int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_im
           */
       default:
          goto failed;
-         
+
       }
    } /* -END- while src */
 
    /*
     * Either we got here by goto, or because the GIF is
-    * bogus and EOF was reached before an end-of-gif marker 
+    * bogus and EOF was reached before an end-of-gif marker
     * was found.
     */
 

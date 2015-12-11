@@ -1,4 +1,4 @@
-const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.11 2009/05/16 13:27:20 fabiankeil Exp $";
+const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.12 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32taskbar.c,v $
@@ -12,7 +12,7 @@ const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.11 2009/05/16 13:27:20 fabi
  *                Written by and Copyright (C) 1999 Adam Lock
  *                <locka@iol.ie>
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at

@@ -1,6 +1,6 @@
 #ifndef ACTIONS_H_INCLUDED
 #define ACTIONS_H_INCLUDED
-#define ACTIONS_H_VERSION "$Id: actions.h,v 1.19 2009/05/16 13:27:20 fabiankeil Exp $"
+#define ACTIONS_H_VERSION "$Id: actions.h,v 1.20 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.h,v $
@@ -12,10 +12,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -56,27 +56,27 @@ struct action_alias
 };
 
 
-extern jb_err get_actions (char *line, 
+extern jb_err get_actions (char *line,
                            struct action_alias * alias_list,
                            struct action_spec *cur_action);
 extern void free_alias_list(struct action_alias *alias_list);
 
 extern void init_action(struct action_spec *dest);
 extern void free_action(struct action_spec *src);
-extern jb_err merge_actions (struct action_spec *dest, 
+extern jb_err merge_actions (struct action_spec *dest,
                              const struct action_spec *src);
 #if 0
 extern int update_action_bits_for_all_tags(struct client_state *csp);
 #endif
 extern int update_action_bits_for_tag(struct client_state *csp, const char *tag);
-extern jb_err copy_action (struct action_spec *dest, 
+extern jb_err copy_action (struct action_spec *dest,
                            const struct action_spec *src);
 extern char * actions_to_text     (const struct action_spec *action);
 extern char * actions_to_html     (const struct client_state *csp,
                                    const struct action_spec *action);
 extern void init_current_action     (struct current_action_spec *dest);
 extern void free_current_action     (struct current_action_spec *src);
-extern jb_err merge_current_action  (struct current_action_spec *dest, 
+extern jb_err merge_current_action  (struct current_action_spec *dest,
                                      const struct action_spec *src);
 extern char * current_action_to_html(const struct client_state *csp,
                                      const struct current_action_spec *action);

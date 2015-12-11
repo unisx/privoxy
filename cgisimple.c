@@ -1,22 +1,22 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.99 2010/03/28 18:02:22 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.111 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
  *
  * Purpose     :  Simple CGIs to get information about Privoxy's
  *                status.
- *                
- *                Functions declared include:
- * 
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ *                Functions declared include:
+ *
+ *
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -80,7 +80,7 @@ static jb_err load_file(const char *filename, char **buffer, size_t *length);
  * Description :  CGI function that is called for the CGI_SITE_1_HOST
  *                and CGI_SITE_2_HOST/CGI_SITE_2_PATH base URLs.
  *                Boring - only exports the default exports.
- *               
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  rsp = http_response data structure for output
@@ -118,7 +118,7 @@ jb_err cgi_default(struct client_state *csp,
  *
  * Description :  CGI function that is called if an unknown action was
  *                given.
- *               
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  rsp = http_response data structure for output
@@ -127,7 +127,7 @@ jb_err cgi_default(struct client_state *csp,
  * CGI Parameters : none
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_error_404(struct client_state *csp,
@@ -165,7 +165,7 @@ jb_err cgi_error_404(struct client_state *csp,
  *                NOTE: Turning this on in a production build
  *                would be a BAD idea.  An EXTREMELY BAD idea.
  *                In short, don't do it.
- *               
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  rsp = http_response data structure for output
@@ -174,13 +174,27 @@ jb_err cgi_error_404(struct client_state *csp,
  * CGI Parameters : none
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_die (struct client_state *csp,
                 struct http_response *rsp,
                 const struct map *parameters)
 {
+   static const char status[] = "200 OK Privoxy shutdown request received";
+   static const char body[] =
+      "<html>\n"
+      "<head>\n"
+      " <title>Privoxy shutdown request received</title>\n"
+      " <link rel=\"shortcut icon\" href=\"" CGI_PREFIX "error-favicon.ico\" type=\"image/x-icon\">\n"
+      " <link rel=\"stylesheet\" type=\"text/css\" href=\"http://config.privoxy.org/send-stylesheet\">\n"
+      "</head>\n"
+      "<body>\n"
+      "<h1>Privoxy shutdown request received</h1>\n"
+      "<p>Privoxy is going to shut down after the next request.</p>\n"
+      "</body>\n"
+      "</html>\n";
+
    assert(csp);
    assert(rsp);
    assert(parameters);
@@ -188,12 +202,21 @@ jb_err cgi_die (struct client_state *csp,
    /* quit */
    g_terminate = 1;
 
-   /*
-    * I don't really care what gets sent back to the browser.
-    * Take the easy option - "out of memory" page.
-    */
+   csp->flags &= ~CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
 
-   return JB_ERR_MEMORY;
+   rsp->content_length = 0;
+   rsp->head_length = 0;
+   rsp->is_static = 0;
+
+   rsp->body = strdup(body);
+   rsp->status = strdup(status);
+
+   if ((rsp->body == NULL) || (rsp->status == NULL))
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   return JB_ERR_OK;
 }
 #endif /* def FEATURE_GRACEFUL_TERMINATION */
 
@@ -204,7 +227,7 @@ jb_err cgi_die (struct client_state *csp,
  *
  * Description :  Show the client's request and what sed() would have
  *                made of it.
- *               
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  rsp = http_response data structure for output
@@ -213,7 +236,7 @@ jb_err cgi_die (struct client_state *csp,
  * CGI Parameters : none
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_show_request(struct client_state *csp,
@@ -231,7 +254,7 @@ jb_err cgi_show_request(struct client_state *csp,
    {
       return JB_ERR_MEMORY;
    }
-   
+
    /*
     * Repair the damage done to the IOB by get_header()
     */
@@ -266,7 +289,7 @@ jb_err cgi_show_request(struct client_state *csp,
  *
  * Function    :  cgi_send_banner
  *
- * Description :  CGI function that returns a banner. 
+ * Description :  CGI function that returns a banner.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -281,7 +304,7 @@ jb_err cgi_show_request(struct client_state *csp,
  *                  equivalent).
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_banner(struct client_state *csp,
@@ -294,7 +317,7 @@ jb_err cgi_send_banner(struct client_state *csp,
     * If type is auto, then determine the right thing
     * to do from the set-image-blocker action
     */
-   if (imagetype == 'a') 
+   if (imagetype == 'a')
    {
       /*
        * Default to pattern
@@ -345,14 +368,14 @@ jb_err cgi_send_banner(struct client_state *csp,
       }
 #endif /* def FEATURE_IMAGE_BLOCKING */
    }
-      
+
    /*
     * Now imagetype is either the non-auto type we were called with,
     * or it was auto and has since been determined. In any case, we
     * can proceed to actually answering the request by sending a redirect
     * or an image as appropriate:
     */
-   if (imagetype == 'r') 
+   if (imagetype == 'r')
    {
       rsp->status = strdup("302 Local Redirect from Privoxy");
       if (rsp->status == NULL)
@@ -367,7 +390,7 @@ jb_err cgi_send_banner(struct client_state *csp,
    }
    else
    {
-      if ((imagetype == 'b') || (imagetype == 't')) 
+      if ((imagetype == 'b') || (imagetype == 't'))
       {
          rsp->body = bindup(image_blank_data, image_blank_length);
          rsp->content_length = image_blank_length;
@@ -409,7 +432,7 @@ jb_err cgi_send_banner(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_transparent_image(struct client_state *csp,
@@ -453,7 +476,7 @@ jb_err cgi_transparent_image(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_default_favicon(struct client_state *csp,
@@ -514,7 +537,7 @@ jb_err cgi_send_default_favicon(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_error_favicon(struct client_state *csp,
@@ -576,7 +599,7 @@ jb_err cgi_send_error_favicon(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_stylesheet(struct client_state *csp,
@@ -584,7 +607,7 @@ jb_err cgi_send_stylesheet(struct client_state *csp,
                            const struct map *parameters)
 {
    jb_err err;
-   
+
    assert(csp);
    assert(rsp);
 
@@ -630,7 +653,7 @@ jb_err cgi_send_stylesheet(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_url_info_osd(struct client_state *csp,
@@ -660,6 +683,48 @@ jb_err cgi_send_url_info_osd(struct client_state *csp,
 
 /*********************************************************************
  *
+ * Function    :  get_content_type
+ *
+ * Description :  Use the file extension to guess the content type
+ *                header we should use to serve the file.
+ *
+ * Parameters  :
+ *          1  :  filename = Name of the file whose content type
+ *                           we care about
+ *
+ * Returns     :  The guessed content type.
+ *
+ *********************************************************************/
+static const char *get_content_type(const char *filename)
+{
+   int i;
+   struct content_type
+   {
+      const char *extension;
+      const char *content_type;
+   };
+   static const struct content_type content_types[] =
+   {
+      {".css",  "text/css"},
+      {".jpg",  "image/jpeg"},
+      {".jpeg", "image/jpeg"},
+      {".png",  "image/png"},
+   };
+
+   for (i = 0; i < SZ(content_types); i++)
+   {
+      if (strstr(filename, content_types[i].extension))
+      {
+         return content_types[i].content_type;
+      }
+   }
+
+   /* No match by extension, default to html */
+   return "text/html";
+}
+
+/*********************************************************************
+ *
  * Function    :  cgi_send_user_manual
  *
  * Description :  CGI function that sends a file in the user
@@ -674,17 +739,17 @@ jb_err cgi_send_url_info_osd(struct client_state *csp,
  *                  (relative to user-manual from config)
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_send_user_manual(struct client_state *csp,
                             struct http_response *rsp,
                             const struct map *parameters)
 {
-   const char * filename;
+   const char *filename;
    char *full_path;
    jb_err err = JB_ERR_OK;
-   size_t length;
+   const char *content_type;
 
    assert(csp);
    assert(rsp);
@@ -704,17 +769,24 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    }
 
    get_string_param(parameters, "file", &filename);
-   /* Check paramter for hack attempts */
-   if (filename && strchr(filename, '/'))
+   if (filename == NULL)
    {
-      return JB_ERR_CGI_PARAMS;
+      /* It's '/' so serve the index.html if there is one.  */
+      filename = "index.html";
    }
-   if (filename && strstr(filename, ".."))
+   else if (NULL != strchr(filename, '/') || NULL != strstr(filename, ".."))
    {
+      /*
+       * We currently only support a flat file
+       * hierarchy for the documentation.
+       */
+      log_error(LOG_LEVEL_ERROR,
+         "Rejecting the request to serve '%s' as it contains '/' or '..'",
+         filename);
       return JB_ERR_CGI_PARAMS;
    }
 
-   full_path = make_path(csp->config->usermanual, filename ? filename : "index.html");
+   full_path = make_path(csp->config->usermanual, filename);
    if (full_path == NULL)
    {
       return JB_ERR_MEMORY;
@@ -733,29 +805,12 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    }
    freez(full_path);
 
-   /* Guess correct Content-Type based on the filename's ending */
-   if (filename)
-   {
-      length = strlen(filename);
-   }
-   else
-   {
-      length = 0;
-   } 
-   if((length>=4) && !strcmp(&filename[length-4], ".css"))
-   {
-      err = enlist(rsp->headers, "Content-Type: text/css");
-   }
-   else if((length>=4) && !strcmp(&filename[length-4], ".jpg"))
-   {
-      err = enlist(rsp->headers, "Content-Type: image/jpeg");
-   }
-   else
-   {
-      err = enlist(rsp->headers, "Content-Type: text/html");
-   }
+   content_type = get_content_type(filename);
+   log_error(LOG_LEVEL_CGI,
+      "Content-Type guessed for %s: %s", filename, content_type);
 
-   return err;
+   return enlist_unique_header(rsp->headers, "Content-Type", content_type);
+
 }
 
 
@@ -774,7 +829,7 @@ jb_err cgi_send_user_manual(struct client_state *csp,
  * CGI Parameters : none
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_show_version(struct client_state *csp,
@@ -823,7 +878,7 @@ jb_err cgi_show_version(struct client_state *csp,
  *                Default is to show menu and other information.
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_show_status(struct client_state *csp,
@@ -869,7 +924,7 @@ jb_err cgi_show_status(struct client_state *csp,
    if (!err) err = map(exports, "options", 1, csp->config->proxy_args, 1);
    if (!err) err = show_defines(exports);
 
-   if (err) 
+   if (err)
    {
       free_map(exports);
       return JB_ERR_MEMORY;
@@ -913,8 +968,8 @@ jb_err cgi_show_status(struct client_state *csp,
 #else /* ndef FEATURE_STATISTICS */
    err = err || map_block_killer(exports, "statistics");
 #endif /* ndef FEATURE_STATISTICS */
-   
-   /* 
+
+   /*
     * List all action files in use, together with view and edit links,
     * except for standard.action, which should only be viewable. (Not
     * enforced in the editor itself)
@@ -955,7 +1010,7 @@ jb_err cgi_show_status(struct client_state *csp,
          if (!err) err = string_append(&s, "</td></tr>\n");
       }
    }
-   if (*s != '\0')   
+   if (*s != '\0')
    {
       if (!err) err = map(exports, "actions-filenames", 1, s, 0);
    }
@@ -964,7 +1019,7 @@ jb_err cgi_show_status(struct client_state *csp,
       if (!err) err = map(exports, "actions-filenames", 1, "<tr><td>None specified</td></tr>", 1);
    }
 
-   /* 
+   /*
     * List all re_filterfiles in use, together with view options.
     * FIXME: Shouldn't include hardwired HTML here, use line template instead!
     */
@@ -981,7 +1036,7 @@ jb_err cgi_show_status(struct client_state *csp,
          if (!err) err = string_append(&s, "</td></tr>\n");
       }
    }
-   if (*s != '\0')   
+   if (*s != '\0')
    {
       if (!err) err = map(exports, "re-filter-filenames", 1, s, 0);
    }
@@ -1021,7 +1076,7 @@ jb_err cgi_show_status(struct client_state *csp,
    return template_fill_for_cgi(csp, "show-status", exports, rsp);
 }
 
- 
+
 /*********************************************************************
  *
  * Function    :  cgi_show_url_info
@@ -1042,7 +1097,7 @@ jb_err cgi_show_status(struct client_state *csp,
  *                  the template.
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_show_url_info(struct client_state *csp,
@@ -1160,7 +1215,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
       struct http_request url_to_query[1];
       struct current_action_spec action[1];
       int i;
-      
+
       if (map(exports, "url", 1, html_encode(url_param), 0))
       {
          free(url_param);
@@ -1448,7 +1503,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
  * CGI Parameters : None
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 jb_err cgi_robots_txt(struct client_state *csp,
@@ -1496,7 +1551,7 @@ jb_err cgi_robots_txt(struct client_state *csp,
  *          1  :  exports = map to extend
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 static jb_err show_defines(struct map *exports)
@@ -1520,6 +1575,12 @@ static jb_err show_defines(struct map *exports)
 #else /* ifndef FEATURE_CGI_EDIT_ACTIONS */
    if (!err) err = map_conditional(exports, "FEATURE_CGI_EDIT_ACTIONS", 0);
 #endif /* ndef FEATURE_CGI_EDIT_ACTIONS */
+
+#ifdef FEATURE_COMPRESSION
+   if (!err) err = map_conditional(exports, "FEATURE_COMPRESSION", 1);
+#else /* ifndef FEATURE_COMPRESSION */
+   if (!err) err = map_conditional(exports, "FEATURE_COMPRESSION", 0);
+#endif /* ndef FEATURE_COMPRESSION */
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    if (!err) err = map_conditional(exports, "FEATURE_CONNECTION_KEEP_ALIVE", 1);
@@ -1740,7 +1801,7 @@ static char *show_rcs(void)
  *                Default is to show menu and other information.
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.  
+ *                JB_ERR_MEMORY on out-of-memory error.
  *
  *********************************************************************/
 static jb_err cgi_show_file(struct client_state *csp,
@@ -1834,7 +1895,7 @@ static jb_err cgi_show_file(struct client_state *csp,
    return JB_ERR_CGI_PARAMS;
 }
 
- 
+
 /*********************************************************************
  *
  * Function    :  load_file
@@ -1861,6 +1922,7 @@ static jb_err load_file(const char *filename, char **buffer, size_t *length)
    fp = fopen(filename, "rb");
    if (NULL == fp)
    {
+      log_error(LOG_LEVEL_ERROR, "Failed to open %s: %E", filename);
       return JB_ERR_FILE;
    }
 

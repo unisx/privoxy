@@ -1,6 +1,6 @@
 #ifndef JBSOCKETS_H_INCLUDED
 #define JBSOCKETS_H_INCLUDED
-#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.17 2010/04/23 11:53:48 fabiankeil Exp $"
+#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.20 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.h,v $
@@ -14,10 +14,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -57,8 +57,8 @@ extern int data_is_available(jb_socket fd, int seconds_to_wait);
 extern void close_socket(jb_socket fd);
 
 extern int bind_port(const char *hostnam, int portnum, jb_socket *pfd);
-extern int accept_connection(struct client_state * csp, jb_socket fd);
-extern void get_host_information(jb_socket afd, char **ip_address, char **hostname);
+extern int accept_connection(struct client_state * csp, jb_socket fds[]);
+extern void get_host_information(jb_socket afd, char **ip_address, char **port, char **hostname);
 
 extern unsigned long resolve_hostname_to_ip(const char *host);
 
@@ -67,6 +67,15 @@ extern int socket_is_still_alive(jb_socket sfd);
 /* Revision control strings from this header and associated .c file */
 extern const char jbsockets_rcs[];
 extern const char jbsockets_h_rcs[];
+
+/*
+ * Solaris workaround
+ * XXX: still necessary?
+ */
+#ifndef INADDR_NONE
+#define INADDR_NONE -1
+#endif
+
 
 #ifdef __cplusplus
 } /* extern "C" */

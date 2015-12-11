@@ -3,7 +3,7 @@
 # File        :  $Source: /cvsroot/ijbswa/current/templates/edit-actions-list,v $
 #
 # Purpose     :  Template used to edit the actions file.
-# 
+#
 #
 # Copyright   :  Written by and Copyright (C) 2001-2009 the
 #                Privoxy team. http://www.privoxy.org/
@@ -11,7 +11,7 @@
 #                Original Author: Copyright (C) 2001 Jonathan Foster
 #                http://www.jon-foster.co.uk/
 #
-#                This program is free software; you can redistribute it 
+#                This program is free software; you can redistribute it
 #                and/or modify it under the terms of the GNU General
 #                Public License as published by the Free Software
 #                Foundation; either version 2 of the License, or (at
@@ -183,7 +183,7 @@ function a_p(link,section)
       <td class="info">
 	<h2>What is all this?</h2>
         <p>
-         If you haven't already done so, it is <b>strongly recommended</b> that you at 
+         If you haven't already done so, it is <b>strongly recommended</b> that you at
          least skim <a href="@user-manual@@actions-help-prefix@ACTIONS-FILE">the
          chapter on actions files</a> in the <a href="@user-manual@">User Manual</a>
          before making any changes. You will also find a comprehensive list of
@@ -201,7 +201,7 @@ function a_p(link,section)
         <!-- @if-default-action-then@ -->
         <p>
          This is the default action file. Updates for it are available from
-         <a href="http://www.privoxy.org/">Privoxy.org</a> from time to time. 
+         <a href="http://www.privoxy.org/">Privoxy.org</a> from time to time.
          It is therefore <b>not recommended</b> that you add your private
          rules here, since they will be lost if you install an update in the future.
          Put your rules in a separate actions file, like <tt>user.action</tt> instead.

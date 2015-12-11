@@ -1,23 +1,23 @@
 #ifndef LOADERS_H_INCLUDED
 #define LOADERS_H_INCLUDED
-#define LOADERS_H_VERSION "$Id: loaders.h,v 1.25 2009/05/16 13:27:20 fabiankeil Exp $"
+#define LOADERS_H_VERSION "$Id: loaders.h,v 1.29 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.h,v $
  *
  * Purpose     :  Functions to load and unload the various
  *                configuration files.  Also contains code to manage
- *                the list of active loaders, and to automatically 
+ *                the list of active loaders, and to automatically
  *                unload files that are no longer in use.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -49,7 +49,7 @@ struct configuration_spec;
 struct url_spec;
 
 extern unsigned int sweep(void);
-extern char *read_config_line(char *buf, size_t buflen, FILE *fp, unsigned long *linenum);
+extern char *read_config_line(FILE *fp, unsigned long *linenum, char **buf);
 extern int check_file_changed(const struct file_list * current,
                               const char * filename,
                               struct file_list ** newfl);
@@ -73,7 +73,7 @@ extern jb_err simple_read_line(FILE *fp, char **dest, int *newline);
 
 /*
  * Types of newlines that a file may contain, as strings.  If you have an
- * extremely wierd compiler that does not have '\r' == CR == ASCII 13 and
+ * extremely weird compiler that does not have '\r' == CR == ASCII 13 and
  * '\n' == LF == ASCII 10), then fix CHAR_CR and CHAR_LF in loaders.c as
  * well as these definitions.
  */
@@ -98,9 +98,11 @@ void unload_current_re_filterfile(void);
 
 void unload_forward_spec(struct forward_spec *fwd);
 
-extern void add_loader(int (*loader)(struct client_state *), 
+extern void add_loader(int (*loader)(struct client_state *),
                        struct configuration_spec * config);
 extern int run_loader(struct client_state *csp);
+
+extern int any_loaded_file_changed(const struct file_list *files_to_check);
 
 /* Revision control strings from this header and associated .c file */
 extern const char loaders_rcs[];

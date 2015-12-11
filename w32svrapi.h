@@ -1,6 +1,6 @@
 #ifndef W32_SVRAPI_H_INCLUDED
 #define W32_SVRAPI_H_INCLUDED
-#define W32_SVRAPI_H_VERSION "$Id: w32svrapi.h,v 1.2 2009/05/16 13:27:20 fabiankeil Exp $"
+#define W32_SVRAPI_H_VERSION "$Id: w32svrapi.h,v 1.3 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32svrapi.h,v $
@@ -29,7 +29,7 @@
  *                development of this code.
  *
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -136,4 +136,4 @@ extern BOOL w32_set_service_status(
 #endif
 
 #endif /* ndef W32_SVRAPI_H_INCLUDED */
-  
+

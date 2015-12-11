@@ -2,10 +2,10 @@
  File        :  $Source: /cvsroot/ijbswa/current/doc/source/contacting.sgml,v $
 
  Purpose     :  Entity included in other project documents.
-                
- $Id: contacting.sgml,v 2.23 2010/11/13 13:04:56 fabiankeil Exp $
 
- Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
+ $Id: contacting.sgml,v 2.30 2011/11/19 14:44:01 fabiankeil Exp $
+
+ Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -29,13 +29,13 @@
 <para>
  We value your feedback. In fact, we rely on it to improve
  <application>Privoxy</application> and its configuration.
- However, please note the following hints, so we can 
+ However, please note the following hints, so we can
  provide you with the best support:
 </para>
 
 <sect2 id="contact-support"><title>Get Support</title>
 <para>
- For casual users, our 
+ For casual users, our
  <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">support forum at SourceForge</ulink>
  is probably best suited:
  <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118</ulink>
@@ -50,6 +50,15 @@
 <para>
  Please don't sent private support requests to individual Privoxy
  developers, either use the mailing lists or the support trackers.
+</para>
+
+<para>
+ If you have to contact a Privoxy developer directly for other reasons,
+ please send a real mail and do not bother with SourceForge's messaging
+ system. Answers to SourceForge messages are usually bounced by SourceForge's
+ mail server in which case the developer wasted time writing a response you
+ don't get. From your point of view it will look like your message has
+ been completely ignored, so this is frustrating for all parties involved.
 </para>
 
 <para>
@@ -77,30 +86,30 @@
 
   <listitem>
    <para>
-    Configuration issues, such as ads that slip through, or sites that 
-    don't function properly due to one <application>Privoxy</application> 
+    Configuration issues, such as ads that slip through, or sites that
+    don't function properly due to one <application>Privoxy</application>
     <quote>action</quote> or another being turned <quote>on</quote>.
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
-    <quote>Bugs</quote> in the programming code that makes up 
+    <quote>Bugs</quote> in the programming code that makes up
     <application>Privoxy</application>, such as that might cause a crash.
    </para>
-  </listitem> 
+  </listitem>
 </itemizedlist>
 
 
 <sect3 id="contact-ads"><title>Reporting Ads or Other Configuration Problems</title>
 <para>
  Please send feedback on ads that slipped through, innocent images that were
- blocked, sites that don't work properly, and other configuration related problem of 
- <filename>default.action</filename> file, to 
+ blocked, sites that don't work properly, and other configuration related problem of
+ <filename>default.action</filename> file, to
  <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">
  http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288</ulink>,
  the Actions File Tracker.
-</para> 
+</para>
 
 <para>
  New, improved <filename>default.action</filename> files may occasionally be made
@@ -115,15 +124,15 @@
 
 <sect3 id="contact-bugs"><title>Reporting Bugs</title>
 <para>
- Please report all bugs through our bug tracker: 
- <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118</ulink>. 
+ Please report all bugs through our bug tracker:
+ <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118</ulink>.
 </para>
 
 <para>
   Before doing so, please make sure that the bug has <emphasis>not already been submitted</emphasis>
   and observe the additional hints at the top of the <ulink
   url="http://sourceforge.net/tracker/?func=add&amp;group_id=11118&amp;atid=111118">submit
-  form</ulink>. If already submitted, please feel free to add any info to the 
+  form</ulink>. If already submitted, please feel free to add any info to the
   original report that might help to solve the issue.
 </para>
 
@@ -150,7 +159,7 @@
   that your bug still exists.
 </para>
 <para>
-Please be sure to provide the following information:
+  Please be sure to provide the following information:
 </para>
 <para>
  <itemizedlist>
@@ -161,7 +170,7 @@ Please be sure to provide the following information:
     (if you got the source from CVS, please also provide the source code revisions
      as shown in <ulink url="http://config.privoxy.org/show-version">http://config.privoxy.org/show-version</ulink>).
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
@@ -171,11 +180,11 @@ Please be sure to provide the following information:
     sending the output of <quote>uname -a</quote> should do,
     in case of GNU/Linux, please also name the distribution.
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
-    The name, platform, and version of the <application>browser</application> 
+    The name, platform, and version of the <application>browser</application>
     you were using (e.g. <application>Internet Explorer v5.5</application> for Mac).
    </para>
   </listitem>
@@ -183,9 +192,9 @@ Please be sure to provide the following information:
   <listitem>
    <para>
     The URL where the problem occurred, or some way for us to duplicate the
-    problem (e.g. <literal>http://somesite.example.com/?somethingelse=123</literal>). 
+    problem (e.g. <literal>http://somesite.example.com/?somethingelse=123</literal>).
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
@@ -193,22 +202,22 @@ Please be sure to provide the following information:
     by the <application>Privoxy</application> developers via SourceForge,
     or if you got your copy somewhere else.
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
-    Whether you are using <application>Privoxy</application> in tandem with 
+    Whether you are using <application>Privoxy</application> in tandem with
     another proxy such as <application>Tor</application>. If so, please
     temporary disable the other proxy to see if the symptoms change.
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
-    Whether you are using a personal firewall product. If so, does 
+    Whether you are using a personal firewall product. If so, does
     <application>Privoxy</application> work without it?
    </para>
-  </listitem> 
+  </listitem>
 
   <listitem>
    <para>
@@ -237,7 +246,7 @@ debug  8192 # Non-fatal errors</literallayout>
     submit any logfiles you didn't read first. You can mask sensitive information
     as long as it's clear that you removed something.
    </para>
-  </listitem> 
+  </listitem>
 
 </itemizedlist>
 </para>
@@ -263,9 +272,15 @@ debug  8192 # Non-fatal errors</literallayout>
 </para>
 
 <para>
+ If you are new to reporting problems, you might be interested in
+  <ulink url="http://www.chiark.greenend.org.uk/~sgtatham/bugs.html"
+  >How to Report Bugs Effectively</ulink>.
+</para>
+
+<para>
   The <ulink url="http://www.privoxy.org/user-manual/appendix.html#ACTIONSANAT">appendix
-  of the Privoxy User Manual</ulink> also has helpful information 
-  on understanding <literal>actions</literal>, and <literal>action</literal> debugging. 
+  of the Privoxy User Manual</ulink> also has helpful information
+  on understanding <literal>actions</literal>, and <literal>action</literal> debugging.
 </para>
 </sect3>
 </sect2>

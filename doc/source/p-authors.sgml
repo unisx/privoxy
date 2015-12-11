@@ -2,8 +2,8 @@
  File        :  $Source: /cvsroot/ijbswa/current/doc/source/p-authors.sgml,v $
 
  Purpose     :  Entity included in other project documents.
-                
- $Id: p-authors.sgml,v 2.41 2009/12/16 08:28:11 fabiankeil Exp $
+
+ $Id: p-authors.sgml,v 2.43 2011/11/19 15:08:00 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -12,7 +12,7 @@
   This file used for inclusion with other documents only.
  ======================================================================
 
- If you make changes to this file, please verify the finished 
+ If you make changes to this file, please verify the finished
  docs all display as intended.
 
  This file is included into:
@@ -87,6 +87,7 @@ Current Privoxy Team:
  Andrew J. Caines
  Clifford Caoile
  Wan-Teh Chang
+ Billy Crook
  Frédéric Crozat
  Michael T. Davis
  Mattes Dolak
@@ -112,9 +113,11 @@ Current Privoxy Team:
  Bert van Leeuwen
  Don Libes
  Paul Lieverse
+ Han Liu
  Toby Lyward
  Wil Mahan
  Jindrich Makovicka
+ Raphael Marichez
  Francois Marier
  David Mediavilla
  Raphael Moll
@@ -128,6 +131,7 @@ Current Privoxy Team:
  Chung-chieh Shan
  Spinor S.
  Bart Schelstraete
+ Dan Stahlke
  Oliver Stoeneberg
  Peter Thoenen
  Martin Thomas

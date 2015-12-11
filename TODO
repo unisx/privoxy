@@ -1,6 +1,10 @@
-$Id: TODO,v 1.26 2010/11/06 11:58:16 fabiankeil Exp $
+$Id: TODO,v 1.60 2011/10/16 17:34:26 fabiankeil Exp $
 
-Some Privoxy related task, not ordered in any way.
+Some Privoxy-related tasks, sorted by the time they
+have been added, not by priority.
+
+The latest version should be available at:
+http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
 
 1)  Add some regression tests. Filters should be tested automatically
     (variables too). Could probably reuse large parts of Privoxy-Filter-Test.
@@ -39,13 +43,9 @@ Some Privoxy related task, not ordered in any way.
 11) CGI templates should use semantically-correct HTML
     and scale properly.
 
-12) Add pipelining support.
+12) Improve pipelining support.
 
-13) Use zlib to compress content before sending it to
-    the client. Measure if it makes a difference.
-
-14) Log and filter POST parameters. They can now be logged with
-    the noisy debug 32768, but are still not filtered.
+14) Allow to filter POST parameters.
 
 15) If trusted CGI pages are requested without trusted referrer,
     set the status code to 403 instead of 200.
@@ -86,24 +86,20 @@ Some Privoxy related task, not ordered in any way.
 32) In case of forwarding failures with socks port == 9050,
     show extra info about Tor (the whole FAQ entry?).
 
-35) Do less work in the accept_connection() thread.
-    Partly done. Good enough?
-
 36) Unload unused action files directly, even if they are
     disabled without replacement.
 
 38) In the final results, explicitly list disabled multi actions
     with their parameters. Not as trivial as it sounds.
 
-39) Verify loadcfg.c jarfile reloading and friends.
-    /* XXX: Does disabling this actually work? */
-
-40) Fix core dumping in daemon mode. Introduce a cwd config option?
+40) When running in daemon mode, Privoxy's working directory is '/'
+    which means it may not have permissions to dump core when necessary.
+    Figure out a way to solve this. Introduce a cwd config option?
 
 41) Change documentation framework to one that works cross-platform.
     Evaluate WML.
 
-42) Add DTrace hooks. Now that FreeBSD has userland DTrace
+42) Add a DTrace USDT provider. Now that FreeBSD has userland DTrace
     support there's no longer any reason not to.
 
 43) Write a tool to check URL patterns against URLs in the log file.
@@ -160,12 +156,12 @@ Some Privoxy related task, not ordered in any way.
 
 65) Polish Website. Probably involves ditching the Docbook
     mess in favour of wml. There should be already some threads
-    in the mailinglists archives about this.
+    in the mailinglists archives about this. See also #41.
 
 66) Increase maximum number of action and filter files.
 
-67) Clean up directory layout. Depends on 54 so we don't
-    lose the revision history.
+67) Clean up source code directory layout. Depends on 54 so
+    we don't lose the revision history.
 
 68) Use standard make syntax so we don't depend on GNU make.
 
@@ -174,9 +170,6 @@ Some Privoxy related task, not ordered in any way.
 70) If the server connection is reset but the headers are
     received, consider passing the mess to the client instead
     of showing the connect-failed template. Relates to #2698674.
-
-71) Allow to listen on multiple addresses without having to
-    bind to all.
 
 74) Let Privoxy-Regression-Test optionally check that action
     sections which disable actions actually are preceded by
@@ -199,7 +192,99 @@ Some Privoxy related task, not ordered in any way.
 80) Change FEATURE_EXTENDED_HOST_PATTERNS to support both
     extended and vanilla host patterns at the same time.
 
-81) Merge Fabian's unlimited-config-lines branch.
+    Note that the requirement is to allow the user to decide
+    if the domain pattern should be interpreted as regex or
+    traditional host pattern and if it's not obvious that the
+    user made any decision, default to the latter.
+
+    Possible solutions would be:
+
+    1. An always-use-regex-domain-patterns config option
+    2. An enable-regex-domain-patterns-for-this-action-file option
+    3. An enable-regex-domain-patterns-for-this-action-file-until-the-user-says-otherwise option
+    4. A treat-the-domain-pattern-in-this-line-as-regex(-or-not) option
+    5. Combinations of the options above
+
+    With 2+4, 3+4 or 2+3+4 being the preferences until
+    further discussion.
 
 82) Detect if the system time goes back in time let the user
     know if it caused any connections to get closed.
+
+84) Flesh out the user-manual delivery to serve pages from
+    other directories, too.
+
+85) Once #84 is done, write a script that populates a directory with
+    various common third-party icons (stumbleupon.png, facebook.png ...)
+    and redirect requests for them to Privoxy.
+
+86) Add a server-body-tagger action. This is trivial as as all the
+    functionallity required to do it already exists.
+
+87) Add a client-body-tagger action. This is less trivial as we currently
+    don't buffer client bodies. After 14) is implemented it would be
+    trivial, though.
+
+88) Investigate if there's a Perl module that Privoxy-Regression-Test
+    could optionally use to keep connections alive.
+
+89) When multiple block actions apply, consider showing all the block
+    reasons on the blocked page that haven't been overruled, not just
+    the last one.
+
+90) Implement NO-TAG: patterns that enable a section if the
+    provided pattern doesn't match any TAG. This would make
+    some things cleaner.
+
+91) Add an optional limit for internal redirects. It would probably
+    be reasonable to default to a limit of one and showing an error
+    message if the request for the redirect URL would be redirected
+    again.
+
+92) The statistics currently aren't calculated correctly by Privoxy
+    as each thread is only counted as one request which is no longer
+    correct. This should be fixed, or the statistic code removed.
+    Privoxy-Log-Parser's provides more detailed statistics, anyway.
+
+93) Add a config directive to let Privoxy explicitly request either
+    IPv4 (or IPv6) addresses, even if the system supports both.
+    Could be useful as a workaround for misconfigured setups where the
+    libc returns IPv6 addresses even if there's no IPv6 connectivity.
+
+94) Add a config directive to let Privoxy prefer either IPv4 (or IPv6)
+    addresses, instead of trusting the libc to return them in an order
+    that makes sense. Like #93, this could be useful as a workaround
+    for misconfigured setups.
+
+95) Support a non-standard client header in CONNECT requests that
+    contains the URL of the requested ressource, which is then treated
+    like the request URL.
+
+    This way the client could opt-in for path-based blocking of https
+    requests. Given that the headers from the CONNECT request aren't
+    forwarded to the destination server, an unencrypted URL should be
+    acceptable if the client and Privoxy are running on the same system
+    or in a trusted environment.
+
+96) Enabled filters should be easier to look up. Currently most functions
+    that work with filters spent more (duplicated) code on finding
+    filters than on actually doing something useful with them. Dividing
+    filters by type instead of filter file would reduce the lookup-code
+    quite a bit.
+
+97) Add support for Tor's 'optimistic data' socks extension.
+    Mostly done, not yet pushed to CVS.
+
+98) When showing action section on the CGI pages, properly escape
+    line breaks so they can be copy&pasted into action files without
+    adjustments.
+
+99) Figure out a mechanism through which a user can easily enable
+    site-specific action sections that are too aggressive to be
+    enalbled by default. This could be similiar to the presettings
+    in default.action, but could also be just another action file
+    that isn't used by default.
+
+100) Create a cross-platform Privoxy control program and retire
+     the win32 GUI. Integrate support for Privoxy-Regression-Test,
+     Privoxy-Log-Parser, Privoxy-Filter-Test, uagen and similar tools.

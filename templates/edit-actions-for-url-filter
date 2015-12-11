@@ -4,12 +4,12 @@
 #
 # Purpose     :  Template that is included from most of Privoxy's CGI pages
 #                to show the user how to get help or report problems.
-# 
+#
 #
 # Copyright   :  Written by and Copyright (C) 2002-2007 members of
 #                the SourceForge Privoxy team. http://www.privoxy.org/
 #
-#                This template is free software; you can redistribute it 
+#                This template is free software; you can redistribute it
 #                and/or modify it under the terms of the GNU General
 #                Public License as published by the Free Software
 #                Foundation; either version 2 of the License, or (at

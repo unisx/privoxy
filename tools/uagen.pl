@@ -3,7 +3,7 @@
 ##############################################################################################
 # uagen (http://www.fabiankeil.de/sourcecode/uagen/)
 #
-# $Id: uagen.pl,v 1.7 2010/10/30 15:57:26 fabiankeil Exp $
+# $Id: uagen.pl,v 1.18 2011/11/13 16:55:32 fabiankeil Exp $
 #
 # Generates a pseudo-random Firefox user agent and writes it into a Privoxy action file
 # and optionally into a Mozilla prefs file. For documentation see 'perldoc uagen(.pl)'.
@@ -18,7 +18,7 @@
 # Mozilla/5.0 (X11; U; OpenBSD sparc64; pl-PL; rv:1.8.0.2) Gecko/20060429 Firefox/1.5.0.2
 # Mozilla/5.0 (X11; U; Linux i686; en-CA; rv:1.8.0.2) Gecko/20060413 Firefox/1.5.0.2
 #
-# Copyright (c) 2006-2009 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2006-2011 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -40,7 +40,7 @@ use Getopt::Long;
 
 use constant {
 
-   UAGEN_VERSION       => 'uagen 1.0.10',
+   UAGEN_VERSION       => 'uagen 1.1',
 
    UAGEN_LOGFILE       => '/var/log/uagen.log',
    ACTION_FILE         => '/etc/privoxy/user-agent.action',
@@ -51,14 +51,18 @@ use constant {
    LOOP                =>  0,
    SLEEPING_TIME       =>  5,
 
+   # As of Firefox 4, the "Gecko token" has been frozen
+   # http://hacks.mozilla.org/2010/09/final-user-agent-string-for-firefox-4/
+   RANDOMIZE_RELEASE_DATE => 0,
+
    # These variables belong together. If you only change one of them, the generated
    # User-Agent might be invalid. If you're not sure which values make sense,
    # are too lazy to check, but want to change them anyway, take the values you
    # see in the "Help/About Mozilla Firefox" menu.
 
-   BROWSER_VERSION                   => "3.6.12",
-   BROWSER_REVISION                  => '1.9.2.12',
-   BROWSER_RELEASE_DATE              => '20101028',
+   BROWSER_VERSION                   => "8.0",
+   BROWSER_REVISION                  => '8.0',
+   BROWSER_RELEASE_DATE              => '20100101',
 };
 
 use constant LANGUAGES => qw(
@@ -68,51 +72,48 @@ use constant LANGUAGES => qw(
 #######################################################################################
 
 sub generate_creation_time($) {
-    my $release_date = $_ = shift;
+    my $release_date = shift;
 
     my ($rel_year, $rel_mon, $rel_day);
     my ($c_day, $c_mon, $c_year);
     my $now = time;
-    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
-       localtime $now;
+    my (undef, undef, undef, $mday, $mon, $year, undef, undef, undef) = localtime($now);
     $mon  += 1;
     $year += 1900;
 
-    unless ( m/\d{6}/ ) {
+    unless ($release_date =~ m/\d{6}/) {
         log_error("Invalid release date format: $release_date. Using "
                   . BROWSER_RELEASE_DATE . " instead.");
         $release_date = BROWSER_RELEASE_DATE;
     }
-    $rel_year = substr $release_date, 0, 4;
-    $rel_mon  = substr $release_date, 4, 2;
-    $rel_day  = substr $release_date, 6, 2;
+    $rel_year = substr($release_date, 0, 4);
+    $rel_mon  = substr($release_date, 4, 2);
+    $rel_day  = substr($release_date, 6, 2);
 
     #1, 2, 3, Check.
-    die "release year in the future" if ( $year < $rel_year );
+    die "release year in the future" if ($year < $rel_year);
     die "release month in the future"
-      if ( ( $year == $rel_year ) and ( $mon < $rel_mon ) );
+      if (($year == $rel_year) and ($mon < $rel_mon));
     die "release day in the future"
-      if (  ( $year == $rel_year )
-        and ( $mon  == $rel_mon )
-        and ( $mday  < $rel_day ) );
+      if (($year == $rel_year) and ($mon == $rel_mon) and ($mday < $rel_day));
 
     my @c_time = (0, 0, 0, $rel_day, $rel_mon - 1, $rel_year - 1900, 0, 0, 0);
-    my $c_seconds = &timelocal( @c_time );
+    my $c_seconds = timelocal(@c_time);
 
     $c_seconds = $now - (int rand ($now - $c_seconds));
-    @c_time = localtime $c_seconds;
-    ($sec, $min, $hour, $c_day, $c_mon, $c_year, $wday, $yday, $isdst) = @c_time;
+    @c_time = localtime($c_seconds);
+    (undef, undef, undef, $c_day, $c_mon, $c_year, undef, undef, undef) = @c_time;
     $c_mon  += 1;
     $c_year += 1900;
 
     #3, 2, 1, Test.
-    die "Compilation year in the future" if ( $year < $c_year );
+    die "Compilation year in the future" if ($year < $c_year);
     die "Compilation month in the future"
-      if ( ( $year == $c_year ) and ( $mon < $c_mon ) );
+      if (($year == $c_year) and ($mon < $c_mon));
     die "Compilation day in the future"
-      if ( ( $year == $c_year ) and ( $mon == $c_mon ) and ( $mday < $c_day ) );
+      if (($year == $c_year) and ($mon == $c_mon) and ($mday < $c_day));
 
-    return sprintf "%.2i%.2i%.2i", $c_year, $c_mon, $c_day;
+    return sprintf("%.2i%.2i%.2i", $c_year, $c_mon, $c_day);
 }
 
 sub generate_language_settings() {
@@ -200,17 +201,18 @@ sub generate_firefox_user_agent() {
     our $browser_version;
     our $browser_revision;
     our $browser_release_date;
+    our $randomize_release_date;
 
     my $mozillaversion  = '5.0';
-    my $security        = "U";
 
-    my $creation_time = generate_creation_time($browser_release_date);
+    my $creation_time = $randomize_release_date ?
+        generate_creation_time($browser_release_date) : $browser_release_date;
     my ( $locale,   $accept_language ) = generate_language_settings();
     my ( $platform, $os_or_cpu )       = generate_platform_and_os;
 
     my $firefox_user_agent =
-      sprintf "Mozilla/%s (%s; %s; %s; %s; rv:%s) Gecko/%s Firefox/%s",
-      $mozillaversion, $platform, $security, $os_or_cpu, $locale, $browser_revision,
+      sprintf "Mozilla/%s (%s; %s; rv:%s) Gecko/%s Firefox/%s",
+      $mozillaversion, $platform, $os_or_cpu, $browser_revision,
       $creation_time, $browser_version;
 
     return $accept_language, $firefox_user_agent;
@@ -232,10 +234,9 @@ sub log_to_file($) {
 
     return if $no_logging;
 
-    open( LOGFILE, ">>" . $logfile ) || die "Writing " . $logfile . " failed";
-    printf LOGFILE UAGEN_VERSION . " ($logtime) $message\n";
-    close(LOGFILE);
-
+    open(my $log_fd, ">>" . $logfile) || die "Writing " . $logfile . " failed";
+    printf $log_fd UAGEN_VERSION . " ($logtime) $message\n";
+    close($log_fd);
 }
 
 sub log_error($) {
@@ -260,14 +261,14 @@ sub write_action_file() {
     my $action_file_content = '';
 
     if ($action_injection){
-        open( ACTIONFILE, $action_file )
+        open(my $actionfile_fd, "<", $action_file)
             or log_error "Reading action file $action_file failed!";
-        while (<ACTIONFILE>) {
+        while (<$actionfile_fd>) {
             s@(hide-accept-language\{).*?(\})@$1$accept_language$2@;
             s@(hide-user-agent\{).*?(\})@$1$user_agent$2@;
 	    $action_file_content .= $_;
         }
-        close (ACTIONFILE);
+        close($actionfile_fd);
     } else {
 	$action_file_content = "{";
 	$action_file_content .= sprintf "+hide-accept-language{%s} \\\n",
@@ -275,10 +276,10 @@ sub write_action_file() {
         $action_file_content .= sprintf " +hide-user-agent{%s} \\\n}\n/\n",
             $user_agent;
     }
-    open( ACTIONFILE, ">" . $action_file )
+    open(my $actionfile_fd, ">" . $action_file)
       or log_error "Writing action file $action_file failed!";
-    print ACTIONFILE $action_file_content;
-    close(ACTIONFILE);
+    print $actionfile_fd $action_file_content;
+    close($actionfile_fd);
 
     return 0;
 }
@@ -289,16 +290,18 @@ sub write_prefs_file() {
     our $user_agent;
     our $accept_language;
     our $clean_prefs;
+
     my $prefs_file_content = '';
+    my $prefsfile_fd;
 
-    if (open( PREFSFILE, $mozilla_prefs_file )) {
+    if (open($prefsfile_fd, $mozilla_prefs_file)) {
 
-        while (<PREFSFILE>) {
+        while (<$prefsfile_fd>) {
             s@user_pref\(\"general.useragent.override\",.*\);\n?@@;
             s@user_pref\(\"intl.accept_languages\",.*\);\n?@@;
 	    $prefs_file_content .= $_;
         }
-        close (PREFSFILE);
+        close($prefsfile_fd);
     } else {
         log_error "Reading prefs file $mozilla_prefs_file failed. Creating a new file!";
     }
@@ -308,15 +311,15 @@ sub write_prefs_file() {
         sprintf("user_pref(\"intl.accept_languages\", \"%s\");\n", $accept_language)
         unless $clean_prefs;
 
-    open( PREFSFILE, ">" . $mozilla_prefs_file )
+    open($prefsfile_fd, ">" . $mozilla_prefs_file)
       or log_error "Writing prefs file $mozilla_prefs_file failed!";
-    print PREFSFILE $prefs_file_content;
-    close(PREFSFILE);
+    print $prefsfile_fd $prefs_file_content;
+    close($prefsfile_fd);
 
 }
 
 sub VersionMessage() {
-    printf UAGEN_VERSION . "\n" . 'Copyright (C) 2006-2009 Fabian Keil <fk@fabiankeil.de> ' .
+    printf UAGEN_VERSION . "\n" . 'Copyright (C) 2006-2011 Fabian Keil <fk@fabiankeil.de> ' .
         "\nhttp://www.fabiankeil.de/sourcecode/uagen/\n";
 }
 
@@ -359,6 +362,7 @@ Options and their default values if there are any:
     [--no-hide-accept-language]
     [--no-logfile]
     [--prefs-file$mozilla_prefs_file]
+    [--randomize-release-date]
     [--quiet]
     [--silent]
     [--sleeping-time $sleeping_time]
@@ -378,6 +382,7 @@ sub main() {
     our $no_logging              = NO_LOGGING;
     our $logfile                 = UAGEN_LOGFILE;
     our $action_file             = ACTION_FILE;
+    our $randomize_release_date  = RANDOMIZE_RELEASE_DATE;
     our $browser_version         = BROWSER_VERSION;
     our $browser_revision        = BROWSER_REVISION;
     our $browser_release_date    = BROWSER_RELEASE_DATE;
@@ -398,6 +403,7 @@ sub main() {
                'no-hide-accept-language' => \$no_hide_accept_language,
                'no-logfile' => \$no_logging,
                'no-action-file' => \$no_action_file,
+               'randomize-release-date' => \$randomize_release_date,
                'browser-version=s' => \$browser_version,
                'browser-revision=s' => \$browser_revision,
                'browser-release-date=s' => \$browser_release_date,
@@ -433,7 +439,6 @@ sub main() {
 }
 
 main();
-exit(0);
 
 =head1 NAME
 
@@ -448,14 +453,14 @@ B<uagen> [B<--action-file> I<action_file>] [B<--action-injection>]
 [B<--clean-prefs-file>]
 [B<--help>] [B<--language-overwrite> I<language(s)>]
 [B<--logfile> I<logfile>] [B<--loop>] [B<--no-action-file>] [B<--no-logfile>]
-[B<--prefs-file> I<prefs_file>]
+[B<--prefs-file> I<prefs_file>] [B<--randomize-release-date>]
 [B<--quiet>] [B<--sleeping-time> I<minutes>] [B<--silent>] [B<--version>]
 
 =head1 DESCRIPTION
 
 B<uagen> generates a fake Firefox User-Agent and writes it into a Privoxy action file
 as parameter for Privoxy's B<hide-user-agent> action. Operating system, architecture,
-platform, language and build date are randomized.
+platform, language and, optionally, the build date are randomized.
 
 The generated language is also used as parameter for the
 B<hide-accept-language> action which is understood by Privoxy since
@@ -475,10 +480,9 @@ to keep custom URL patterns. For this to work, the action file
 has to be already present. B<uagen> neither checks the syntax
 nor cares if all actions are present. Garbage in, garbage out.
 
-B<--browser-release-date> I<browser_release_date> Date when the faked
-browser version was first released, format is YYYYMMDD. B<uagen> will
-pick a date between the release date and the actual date to use it as
-build time. Some sanity checks are done, but you shouldn't rely on them.
+B<--browser-release-date> I<browser_release_date> Date to use.
+The format is YYYYMMDD. Some sanity checks are done, but you
+shouldn't rely on them.
 
 B<--browser-revision> I<browser_revision> Use a custom revision.
 B<uagen> will use it without any sanity checks.
@@ -519,6 +523,12 @@ I<prefs_file>, The B<intl.accept_languages> variable will be set as well.
 Firefox's preference file is usually located in
 ~/.mozilla/firefox/*.default/prefs.js. Note that Firefox doesn't reread
 the file once it is running.
+
+B<--randomize-release-date> Randomly pick a date between the configured
+release date and the actual date. Note that Firefox versions after 4.0
+no longer provide the build date in the User-Agent header, so if you
+randomize the date anyway, it will be obvious that the generated User-Agent
+is fake.
 
 B<--quiet> Don't print the generated User-Agent to the console.
 

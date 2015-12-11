@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.160 2010/10/10 09:58:12 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.171 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -148,7 +148,7 @@ typedef int jb_err;
 #define JB_ERR_CGI_PARAMS 2 /**< Missing or corrupt CGI parameters        */
 #define JB_ERR_FILE       3 /**< Error opening, reading or writing a file */
 #define JB_ERR_PARSE      4 /**< Error parsing file                       */
-#define JB_ERR_MODIFIED   5 /**< File has been modified outside of the  
+#define JB_ERR_MODIFIED   5 /**< File has been modified outside of the
                                  CGI actions editor.                      */
 #define JB_ERR_COMPRESS   6 /**< Error on decompression                   */
 
@@ -173,7 +173,7 @@ typedef int jb_err;
  */
 #define ijb_toupper(__X) toupper((int)(unsigned char)(__X))
 #define ijb_tolower(__X) tolower((int)(unsigned char)(__X))
-#define ijb_isspace(__X) isspace((int)(unsigned char)(__X))  
+#define ijb_isspace(__X) isspace((int)(unsigned char)(__X))
 
 /**
  * Use for statically allocated buffers if you have no other choice.
@@ -191,7 +191,7 @@ typedef int jb_err;
  * Buffer size for capturing struct hostent data in the
  * gethostby(name|addr)_r library calls. Since we don't
  * loop over gethostbyname_r, the buffer must be sufficient
- * to accomodate multiple IN A RRs, as used in DNS round robin
+ * to accommodate multiple IN A RRs, as used in DNS round robin
  * load balancing. W3C's wwwlib uses 1K, so that should be
  * good enough for us, too.
  */
@@ -233,7 +233,7 @@ struct list_entry
     * your own code.
     */
    char *str;
-   
+
    /** Next entry in the linked list, or NULL if no more. */
    struct list_entry *next;
 };
@@ -503,7 +503,7 @@ struct iob
 #define ACTION_FORCE_TEXT_MODE                       0x00400000UL
 /** Action bitmap: Enable text mode by force */
 #define ACTION_CRUNCH_IF_NONE_MATCH                  0x00800000UL
-/** Action bitmap: Enable content-dispostion crunching */
+/** Action bitmap: Enable content-disposition crunching */
 #define ACTION_HIDE_CONTENT_DISPOSITION              0x01000000UL
 /** Action bitmap: Replace or block Last-Modified header */
 #define ACTION_OVERWRITE_LAST_MODIFIED               0x02000000UL
@@ -531,7 +531,7 @@ struct iob
 #define ACTION_STRING_LANGUAGE              8
 /** Action string index: Replacement for the "Content-Type:" header*/
 #define ACTION_STRING_CONTENT_TYPE          9
-/** Action string index: Replacement for the "content-dispostion:" header*/
+/** Action string index: Replacement for the "content-disposition:" header*/
 #define ACTION_STRING_CONTENT_DISPOSITION  10
 /** Action string index: Replacement for the "If-Modified-Since:" header*/
 #define ACTION_STRING_IF_MODIFIED_SINCE    11
@@ -675,7 +675,7 @@ struct reusable_connection
 /*
  * Flags for use in csp->flags
  */
- 
+
 /**
  * Flag for csp->flags: Set if this client is processing data.
  * Cleared when the thread associated with this structure dies.
@@ -765,7 +765,7 @@ struct reusable_connection
 #define CSP_FLAG_SERVER_CONTENT_LENGTH_SET     0x00002000U
 
 /**
- * Flag for csp->flags: Set if we know the content lenght,
+ * Flag for csp->flags: Set if we know the content length,
  * either because the server set it, or we figured it out
  * on our own.
  */
@@ -810,6 +810,17 @@ struct reusable_connection
  */
 #define CSP_FLAG_REUSED_CLIENT_CONNECTION           0x00100000U
 
+/**
+ * Flag for csp->flags: Set if the supports deflate compression.
+ */
+#define CSP_FLAG_CLIENT_SUPPORTS_DEFLATE            0x00200000U
+
+/**
+ * Flag for csp->flags: Set if the content has been deflated by Privoxy
+ */
+#define CSP_FLAG_BUFFERED_CONTENT_DEFLATED          0x00400000U
+
+
 /*
  * Flags for use in return codes of child processes
  */
@@ -831,6 +842,12 @@ struct reusable_connection
  * to size an array.
  */
 #define MAX_AF_FILES 10
+
+/**
+ * Maximum number of sockets to listen to.  This limit is arbitrary - it's just used
+ * to size an array.
+ */
+#define MAX_LISTENING_SOCKETS 10
 
 /**
  * The state of a Privoxy processing thread.
@@ -995,7 +1012,7 @@ struct file_list
     * Read-only once the structure has been created.
     */
    time_t lastmodified;
-   
+
    /**
     * The full filename.
     */
@@ -1031,12 +1048,16 @@ struct block_spec
 
 #endif /* def FEATURE_TRUST */
 
-
-#define SOCKS_NONE    0    /**< Don't use a SOCKS server               */
-#define SOCKS_4      40    /**< original SOCKS 4 protocol              */
-#define SOCKS_4A     41    /**< as modified for hosts w/o external DNS */
-#define SOCKS_5      50    /**< as modified for hosts w/o external DNS */
-
+enum forwarder_type {
+   /**< Don't use a SOCKS server               */
+   SOCKS_NONE =  0,
+   /**< original SOCKS 4 protocol              */
+   SOCKS_4    = 40,
+   /**< SOCKS 4A, DNS resolution is done by the SOCKS server */
+   SOCKS_4A   = 41,
+   /**< SOCKS 5 with hostnames, DNS resolution is done by the SOCKS server */
+   SOCKS_5    = 50,
+};
 
 /**
  * How to forward a connection to a parent proxy.
@@ -1047,7 +1068,7 @@ struct forward_spec
    struct url_spec url[1];
 
    /** Connection type.  Must be SOCKS_NONE, SOCKS_4, SOCKS_4A or SOCKS_5. */
-   int   type;
+   enum forwarder_type type;
 
    /** SOCKS server hostname.  Only valid if "type" is SOCKS_4 or SOCKS_4A. */
    char *gateway_host;
@@ -1175,6 +1196,9 @@ struct access_control_list
 /** configuration_spec::feature_flags: Pages blocked with +handle-as-empty-doc get a return status of 200 OK. */
 #define RUNTIME_FEATURE_EMPTY_DOC_RETURNS_OK       512U
 
+/** configuration_spec::feature_flags: Buffered content is sent compressed if the client supports it. */
+#define RUNTIME_FEATURE_COMPRESSION               1024U
+
 /**
  * Data loaded from the configuration file.
  *
@@ -1184,7 +1208,7 @@ struct configuration_spec
 {
    /** What to log */
    int debug;
-   
+
    /** Nonzero to enable multithreading. */
    int multi_threaded;
 
@@ -1241,11 +1265,11 @@ struct configuration_spec
    /** The hostname to show on CGI pages, or NULL to use the real one. */
    const char *hostname;
 
-   /** IP address to bind to.  Defaults to HADDR_DEFAULT == 127.0.0.1. */
-   const char *haddr;
+   /** IP addresses to bind to.  Defaults to HADDR_DEFAULT == 127.0.0.1. */
+   const char *haddr[MAX_LISTENING_SOCKETS];
 
-   /** Port to bind to.  Defaults to HADDR_PORT == 8118. */
-   int         hport;
+   /** Ports to bind to.  Defaults to HADDR_PORT == 8118. */
+   int         hport[MAX_LISTENING_SOCKETS];
 
    /** Size limit for IOB */
    size_t buffer_limit;
@@ -1290,6 +1314,10 @@ struct configuration_spec
    unsigned int default_server_timeout;
 #endif
 
+#ifdef FEATURE_COMPRESSION
+   int compression_level;
+#endif
+
    /** All options from the config file, HTML-formatted. */
    char *proxy_args;
 
@@ -1319,7 +1347,7 @@ struct configuration_spec
 #endif /* def FEATURE_NO_GIFS */
 
 
-/* 
+/*
  * Hardwired URLs
  */
 

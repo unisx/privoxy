@@ -1,19 +1,18 @@
-const char miscutil_rcs[] = "$Id: miscutil.c,v 1.64 2009/05/19 17:45:31 fabiankeil Exp $";
+const char miscutil_rcs[] = "$Id: miscutil.c,v 1.68 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.c,v $
  *
- * Purpose     :  zalloc, hash_string, safe_strerror, strcmpic,
- *                strncmpic, chomp, and MinGW32 strdup
- *                functions. 
- *                These are each too small to deserve their own file
- *                but don't really fit in any other file.
+ * Purpose     :  zalloc, hash_string, strcmpic, strncmpic, and
+ *                MinGW32 strdup functions.  These are each too small
+ *                to deserve their own file but don't really fit in
+ *                any other file.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007
- *                the SourceForge Privoxy team. http://www.privoxy.org/
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
+ *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
  *                The timegm replacement function was taken from GnuPG,
@@ -24,7 +23,7 @@ const char miscutil_rcs[] = "$Id: miscutil.c,v 1.64 2009/05/19 17:45:31 fabianke
  *                used under the terms of the GPL or the terms of the
  *                "Frontier Artistic License".
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -98,19 +97,19 @@ void *zalloc(size_t size)
 #if defined(unix)
 /*********************************************************************
  *
- * Function    :  write_pid_file 
+ * Function    :  write_pid_file
  *
- * Description :  Writes a pid file with the pid of the main process 
+ * Description :  Writes a pid file with the pid of the main process
  *
  * Parameters  :  None
  *
- * Returns     :  N/A 
+ * Returns     :  N/A
  *
  *********************************************************************/
 void write_pid_file(void)
 {
    FILE   *fp;
-   
+
    /*
     * If no --pidfile option was given,
     * we can live without one.
@@ -148,7 +147,7 @@ void write_pid_file(void)
  *********************************************************************/
 unsigned int hash_string( const char* s )
 {
-   unsigned int h = 0; 
+   unsigned int h = 0;
 
    for ( ; *s; ++s )
    {
@@ -156,75 +155,6 @@ unsigned int hash_string( const char* s )
    }
 
    return (h);
-
-}
-
-
-#ifdef __MINGW32__
-/*********************************************************************
- *
- * Function    :  strdup
- *
- * Description :  For some reason (which is beyond me), gcc and WIN32
- *                don't like strdup.  When a "free" is executed on a
- *                strdup'd ptr, it can at times freez up!  So I just
- *                replaced it and problem was solved.
- *
- * Parameters  :
- *          1  :  s = string to duplicate
- *
- * Returns     :  Pointer to newly malloc'ed copy of the string.
- *
- *********************************************************************/
-char *strdup( const char *s )
-{
-   char * result = (char *)malloc( strlen(s)+1 );
-
-   if (result != NULL)
-   {
-      strcpy( result, s );
-   }
-
-   return( result );
-}
-
-#endif /* def __MINGW32__ */
-
-
-
-/*********************************************************************
- *
- * Function    :  safe_strerror
- *
- * Description :  Variant of the library routine strerror() which will
- *                work on systems without the library routine, and
- *                which should never return NULL.
- *
- * Parameters  :
- *          1  :  err = the `errno' of the last operation.
- *
- * Returns     :  An "English" string of the last `errno'.  Allocated
- *                with strdup(), so caller frees.  May be NULL if the
- *                system is out of memory.
- *
- *********************************************************************/
-char *safe_strerror(int err)
-{
-   char *s = NULL;
-   char buf[BUFFER_SIZE];
-
-
-#ifdef HAVE_STRERROR
-   s = strerror(err);
-#endif /* HAVE_STRERROR */
-
-   if (s == NULL)
-   {
-      snprintf(buf, sizeof(buf), "(errno = %d)", err);
-      s = buf;
-   }
-
-   return(strdup(s));
 
 }
 
@@ -264,7 +194,7 @@ int strcmpic(const char *s1, const char *s2)
  *
  * Function    :  strncmpic
  *
- * Description :  Case insensitive string comparison (upto n characters)
+ * Description :  Case insensitive string comparison (up to n characters)
  *
  * Parameters  :
  *          1  :  s1 = string 1 to compare
@@ -279,7 +209,7 @@ int strncmpic(const char *s1, const char *s2, size_t n)
    if (n <= (size_t)0) return(0);
    if (!s1) s1 = "";
    if (!s2) s2 = "";
-   
+
    while (*s1 && *s2)
    {
       if ( ( *s1 != *s2 ) && ( ijb_tolower(*s1) != ijb_tolower(*s2) ) )
@@ -313,7 +243,7 @@ char *chomp(char *string)
 {
    char *p, *q, *r;
 
-   /* 
+   /*
     * strip trailing whitespace
     */
    p = string + strlen(string);
@@ -323,8 +253,8 @@ char *chomp(char *string)
    }
    *p = '\0';
 
-   /* 
-    * find end of leading whitespace 
+   /*
+    * find end of leading whitespace
     */
    q = r = string;
    while (*q && ijb_isspace(*q))
@@ -352,7 +282,7 @@ char *chomp(char *string)
  *
  * Function    :  string_append
  *
- * Description :  Reallocate target_string and append text to it.  
+ * Description :  Reallocate target_string and append text to it.
  *                This makes it easier to append to malloc'd strings.
  *                This is similar to the (removed) strsav(), but
  *                running out of memory isn't catastrophic.
@@ -497,7 +427,7 @@ jb_err string_join(char **target_string, char *text_to_append)
  * Parameters  :
  *          1  :  string = string to convert
  *
- * Returns     :  Uppercase copy of string if possible, 
+ * Returns     :  Uppercase copy of string if possible,
  *                NULL on out-of-memory or if string was NULL.
  *
  *********************************************************************/
@@ -510,7 +440,7 @@ char *string_toupper(const char *string)
    {
       return NULL;
    }
-   
+
    q = string;
    p = result;
 
@@ -560,11 +490,11 @@ char *bindup(const char *string, size_t len)
  *
  * Function    :  make_path
  *
- * Description :  Takes a directory name and a file name, returns 
+ * Description :  Takes a directory name and a file name, returns
  *                the complete path.  Handles windows/unix differences.
  *                If the file name is already an absolute path, or if
- *                the directory name is NULL or empty, it returns 
- *                the filename. 
+ *                the directory name is NULL or empty, it returns
+ *                the filename.
  *
  * Parameters  :
  *          1  :  dir: Name of directory or NULL for none.
@@ -573,7 +503,7 @@ char *bindup(const char *string, size_t len)
  * Returns     :  "dir/file" (Or on windows, "dir\file").
  *                It allocates the string on the heap.  Caller frees.
  *                Returns NULL in error (i.e. NULL file or out of
- *                memory) 
+ *                memory)
  *
  *********************************************************************/
 char * make_path(const char * dir, const char * file)
@@ -686,7 +616,7 @@ char * make_path(const char * dir, const char * file)
  * Parameters  :
  *          1  :  range: Highest possible number to pick.
  *
- * Returns     :  Picked number. 
+ * Returns     :  Picked number.
  *
  *********************************************************************/
 long int pick_from_range(long int range)
@@ -702,7 +632,7 @@ long int pick_from_range(long int range)
    if (range <= 0) return 0;
 
 #ifdef HAVE_RANDOM
-   number = random() % range + 1; 
+   number = random() % range + 1;
 #elif defined(MUTEX_LOCKS_AVAILABLE)
    privoxy_mutex_lock(&rand_mutex);
 #ifdef _WIN32
@@ -806,7 +736,7 @@ size_t privoxy_strlcat(char *destination, const char *source, const size_t size)
  * Parameters  :
  *          1  :  tm: Broken-down time struct.
  *
- * Returns     :  tm converted into time_t seconds. 
+ * Returns     :  tm converted into time_t seconds.
  *
  *********************************************************************/
 time_t timegm(struct tm *tm)
@@ -858,7 +788,7 @@ time_t timegm(struct tm *tm)
                                   snprintf.c
                    - a portable implementation of snprintf,
        including vsnprintf.c, asnprintf, vasnprintf, asprintf, vasprintf
-                                       
+
    snprintf is a routine to convert numeric and string arguments to
    formatted strings. It is similar to sprintf(3) provided in a system's
    C library, yet it requires an additional argument - the buffer size -
@@ -1500,7 +1430,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
             }
           }
        /* zero padding to specified precision? */
-          if (num_of_digits < precision) 
+          if (num_of_digits < precision)
             number_of_zeros_to_pad = precision - num_of_digits;
         }
      /* zero padding to specified minimal field width? */
@@ -1518,7 +1448,7 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt, va_list ap) {
 #if defined(PERL_COMPATIBLE) || defined(LINUX_COMPATIBLE)
      /* keep the entire format string unchanged */
         str_arg = starting_p; str_arg_l = p - starting_p;
-     /* well, not exactly so for Linux, which does something inbetween,
+     /* well, not exactly so for Linux, which does something between,
       * and I don't feel an urge to imitate it: "%+++++hy" -> "%+y"  */
 #else
      /* discard the unrecognized conversion, just keep *

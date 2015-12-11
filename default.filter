@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.79 2010/09/03 17:40:07 fabiankeil Exp $
+#  $Id: default.filter,v 1.83 2011/10/16 14:01:05 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -128,15 +128,15 @@ s/(open\s*\([^\)]+always(?:raised|lowered)=)(["']?)(?:yes|1)\2/$1$2no$2/sigU
 
 #################################################################################
 #
-# js-events: Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
+# js-events: Kill JavaScript event bindings and timers (Radically destructive! Only for extra nasty sites).
 #
 #################################################################################
-FILTER: js-events Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
+FILTER: js-events Kill JavaScript event bindings and timers (Radically destructive! Only for extra nasty sites).
 
 s/(on|event\.)((mouse(over|out|down|up|move))|(un)?load|contextmenu|selectstart)/never/ig
 # Not events, but abused on the same type of sites:
 s/(alert|confirm)\s*\(/concat(/ig
-s/settimeout\(/concat(/ig
+s/set(timeout|interval)\(/concat(/ig
 
 #################################################################################
 #
@@ -603,7 +603,7 @@ s@</head>@\n<style type="text/css">\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
  \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
  \#nwad, \#MWA2, \#MSCM, \#yregad, \#sponsored-links,\
- \#ks-ypn-ads, .ad, \#east, \#ygrp-vital {display: none !important;}\n\
+ \#ks-ypn-ads, .ad, \#east, \#ygrp-vital, .ads {display: none !important;}\n\
  \#yschpri, \#yschweb, \#pri, \#web, \#main, .yschttl, .abstr, .res \n\
  {width: 99% !important; max-width: 100% !important;}\n\
  .yschttl, .res, .res.indent, \#web {padding: 0px; margin: 0px !important;}\n\
@@ -632,6 +632,9 @@ s@</head>@<style type="text/css">\n\
  max-width: 100% !important; /* width:100% sometimes causes horizontal scrollbars */}\n\
  /* Remove "suggestions". They are next to worthless but partly overlap with the search results */\n\
  .suggestion, \#nys_right, \#nys {clear: both; display:none;}\n\
+ \#s_notf_div,\n \
+ /* Overlay ads to enable Facebook 'likes' in search results. */\n\
+ .sn_container {display:none !important;}\n\
  \#content {padding-right: 0;}\n\
  </style>\n$0@
 # Are these ids still in use?

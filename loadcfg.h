@@ -1,12 +1,12 @@
 #ifndef LOADCFG_H_INCLUDED
 #define LOADCFG_H_INCLUDED
-#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.15 2009/09/10 14:45:17 fabiankeil Exp $"
+#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.16 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.h,v $
  *
  * Purpose     :  Loads settings from the configuration file into
- *                global variables.  This file contains both the 
+ *                global variables.  This file contains both the
  *                routine to load the configuration and the global
  *                variables it writes to.
  *
@@ -14,10 +14,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at

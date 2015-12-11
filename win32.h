@@ -1,6 +1,6 @@
 #ifndef WIN32_H_INCLUDED
 #define WIN32_H_INCLUDED
-#define WIN32_H_VERSION "$Id: win32.h,v 1.8 2009/05/16 13:27:20 fabiankeil Exp $"
+#define WIN32_H_VERSION "$Id: win32.h,v 1.9 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/win32.h,v $
@@ -13,7 +13,7 @@
  *                Written by and Copyright (C) 1999 Adam Lock
  *                <locka@iol.ie>
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -60,7 +60,7 @@ extern const char win32_h_rcs[];
 #endif
 
 #endif /* ndef WIN32_H_INCLUDED */
-  
+
 /*
   Local Variables:
   tab-width: 3

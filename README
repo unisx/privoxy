@@ -4,14 +4,14 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -26,13 +26,13 @@
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
  *                http://www.gnu.org/copyleft/gpl.html
- *                or write to the Free Software Foundation, Inc., 
- *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, 
+ *                or write to the Free Software Foundation, Inc.,
+ *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
  *                USA
  *
  *********************************************************************/
 
-This README is included with Privoxy 3.0.17. See http://www.privoxy.org/ for
+This README is included with Privoxy 3.0.18. See http://www.privoxy.org/ for
 more information. The current code maturity level is "stable".
 
 -------------------------------------------------------------------------------
@@ -56,19 +56,10 @@ Helping hands and donations are welcome:
 
 -------------------------------------------------------------------------------
 
-1. IMPORTANT CHANGES
+1. CHANGES
 
-November 2010, Privoxy 3.0.17 stable is released.
-
-This is mainly a bug-fix release for the previously released Privoxy 3.0.16.
-
-It contains fixes for two bugs that could cause connections to hang under
-certain circumstances when keep-alive support was enabled, until they timed
-out or where closed by the server.
-
-As usual, there are also a bunch of minor improvements. For details please
-see the "ChangeLog", the "What's New" section or the "Upgrader's Notes" in
-the User Manual.
+For a list of changes in this release, please have a look at the "ChangeLog",
+the "What's New" section or the "Upgrader's Notes" in the User Manual.
 
 -------------------------------------------------------------------------------
 
@@ -148,6 +139,13 @@ list, where the developers also hang around.
 
 Please don't sent private support requests to individual Privoxy developers,
 either use the mailing lists or the support trackers.
+
+If you have to contact a Privoxy developer directly for other reasons, please
+send a real mail and do not bother with SourceForge's messaging system. Answers
+to SourceForge messages are usually bounced by SourceForge's mail server in
+which case the developer wasted time writing a response you don't get. From
+your point of view it will look like your message has been completely ignored,
+so this is frustrating for all parties involved.
 
 Note that the Privoxy mailing lists are moderated. Posts from unsubscribed
 addresses have to be accepted manually by a moderator. This may cause a delay
@@ -277,6 +275,9 @@ we may request additional information. If you use a SF id, you should
 automatically get a mail when someone responds to your request. Please don't
 bother to add an email address when using the tracker. If you prefer to
 communicate through email, just use one of the mailing lists directly.
+
+If you are new to reporting problems, you might be interested in How to Report
+Bugs Effectively.
 
 The appendix of the Privoxy User Manual also has helpful information on
 understanding actions, and action debugging.

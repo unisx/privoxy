@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.111 2010/08/14 23:28:52 ler762 Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.121 2011/07/30 15:05:23 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -133,12 +133,14 @@ static struct file_list *current_configfile = NULL;
 #define hash_admin_address               4112573064ul /* "admin-address" */
 #define hash_allow_cgi_request_crunching  258915987ul /* "allow-cgi-request-crunching" */
 #define hash_buffer_limit                1881726070ul /* "buffer-limit */
+#define hash_compression_level           2464423563ul /* "compression-level" */
 #define hash_confdir                        1978389ul /* "confdir" */
 #define hash_connection_sharing          1348841265ul /* "connection-sharing" */
 #define hash_debug                            78263ul /* "debug" */
 #define hash_default_server_timeout      2530089913ul /* "default-server-timeout" */
 #define hash_deny_access                 1227333715ul /* "deny-access" */
 #define hash_enable_edit_actions         2517097536ul /* "enable-edit-actions" */
+#define hash_enable_compression          3943696946ul /* "enable-compression" */
 #define hash_enable_remote_toggle        2979744683ul /* "enable-remote-toggle" */
 #define hash_enable_remote_http_toggle    110543988ul /* "enable-remote-http-toggle" */
 #define hash_enforce_blocks              1862427469ul /* "enforce-blocks" */
@@ -227,7 +229,10 @@ static void unload_configfile (void * data)
    freez(config->templdir);
    freez(config->hostname);
 
-   freez(config->haddr);
+   for (i = 0; i < MAX_LISTENING_SOCKETS; i++)
+   {
+      freez(config->haddr[i]);
+   }
    freez(config->logfile);
 
    for (i = 0; i < MAX_AF_FILES; i++)
@@ -278,6 +283,51 @@ void unload_current_config_file(void)
 
 /*********************************************************************
  *
+ * Function    :  parse_toggle_value
+ *
+ * Description :  Parse the value of a directive that can only be
+ *                enabled or disabled. Terminates with a fatal error
+ *                if the value is NULL or something other than 0 or 1.
+ *
+ * Parameters  :
+ *          1  :  name:  The name of the directive. Used for log messages.
+ *          2  :  value: The value to parse
+ *
+ *
+ * Returns     :  The numerical toggle state
+ *
+ *********************************************************************/
+static int parse_toggle_state(const char *name, const char *value)
+{
+   int toggle_state;
+   assert(name != NULL);
+   assert(value != NULL);
+
+   if ((value == NULL) || (*value == '\0'))
+   {
+      log_error(LOG_LEVEL_FATAL, "Directive %s used without argument", name);
+   }
+
+   toggle_state = atoi(value);
+
+   /*
+    * Also check the length as atoi() doesn't mind
+    * garbage after a valid integer, but we do.
+    */
+   if (((toggle_state != 0) && (toggle_state != 1)) || (strlen(value) != 1))
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Directive %s used with invalid argument '%s'. Use either '0' or '1'.",
+         name, value);
+   }
+
+   return toggle_state;
+
+}
+
+
+/*********************************************************************
+ *
  * Function    :  load_config
  *
  * Description :  Load the config file and all parameters.
@@ -292,7 +342,7 @@ void unload_current_config_file(void)
  *********************************************************************/
 struct configuration_spec * load_config(void)
 {
-   char buf[BUFFER_SIZE];
+   char *buf = NULL;
    char *p, *q;
    FILE *configfp = NULL;
    struct configuration_spec * config = NULL;
@@ -364,6 +414,13 @@ struct configuration_spec * load_config(void)
    config->feature_flags            &= ~RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
    config->feature_flags            &= ~RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
    config->feature_flags            &= ~RUNTIME_FEATURE_EMPTY_DOC_RETURNS_OK;
+#ifdef FEATURE_COMPRESSION
+   config->feature_flags            &= ~RUNTIME_FEATURE_COMPRESSION;
+   /*
+    * XXX: Run some benchmarks to see if there are better default values.
+    */
+   config->compression_level         = 1;
+#endif
 
    configfp = fopen(configfile, "r");
    if (NULL == configfp)
@@ -373,7 +430,7 @@ struct configuration_spec * load_config(void)
       /* Never get here - LOG_LEVEL_FATAL causes program exit */
    }
 
-   while (read_config_line(buf, sizeof(buf), configfp, &linenum) != NULL)
+   while (read_config_line(configfp, &linenum, &buf) != NULL)
    {
       char cmd[BUFFER_SIZE];
       char arg[BUFFER_SIZE];
@@ -404,11 +461,15 @@ struct configuration_spec * load_config(void)
       }
 
       /* Copy the argument into arg */
-      strlcpy(arg, p, sizeof(arg));
+      if (strlcpy(arg, p, sizeof(arg)) >= sizeof(arg))
+      {
+         log_error(LOG_LEVEL_FATAL, "Config line too long: %s", buf);
+      }
 
       /* Should never happen, but check this anyway */
       if (*cmd == '\0')
       {
+         freez(buf);
          continue;
       }
 
@@ -449,7 +510,7 @@ struct configuration_spec * load_config(void)
  * accept-intercepted-requests
  * *************************************************************************/
          case hash_accept_intercepted_requests:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
             }
@@ -471,7 +532,7 @@ struct configuration_spec * load_config(void)
  * allow-cgi-request-crunching
  * *************************************************************************/
          case hash_allow_cgi_request_crunching:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_CGI_CRUNCHING;
             }
@@ -497,11 +558,37 @@ struct configuration_spec * load_config(void)
             break;
 
 /* *************************************************************************
+ * compression-level 0-9
+ * *************************************************************************/
+#ifdef FEATURE_COMPRESSION
+         case hash_compression_level :
+            if (*arg != '\0')
+            {
+               int compression_level = atoi(arg);
+               if (-1 <= compression_level && compression_level <= 9)
+               {
+                  config->compression_level = compression_level;;
+               }
+               else
+               {
+                  log_error(LOG_LEVEL_FATAL,
+                     "Invalid compression-level value: %s", arg);
+               }
+            }
+            else
+            {
+               log_error(LOG_LEVEL_FATAL,
+                  "Invalid compression-level directive. Compression value missing");
+            }
+            break;
+#endif
+
+/* *************************************************************************
  * connection-sharing (0|1)
  * *************************************************************************/
 #ifdef FEATURE_CONNECTION_SHARING
          case hash_connection_sharing :
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_CONNECTION_SHARING;
             }
@@ -628,7 +715,7 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
 #ifdef FEATURE_CGI_EDIT_ACTIONS
          case hash_enable_edit_actions:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_CGI_EDIT_ACTIONS;
             }
@@ -640,11 +727,28 @@ struct configuration_spec * load_config(void)
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
 
 /* *************************************************************************
+ * enable-compression 0|1
+ * *************************************************************************/
+#ifdef FEATURE_COMPRESSION
+         case hash_enable_compression:
+            if (parse_toggle_state(cmd, arg) == 1)
+            {
+               config->feature_flags |= RUNTIME_FEATURE_COMPRESSION;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_COMPRESSION;
+            }
+            break;
+#endif /* def FEATURE_COMPRESSION */
+
+
+/* *************************************************************************
  * enable-remote-toggle 0|1
  * *************************************************************************/
 #ifdef FEATURE_TOGGLE
          case hash_enable_remote_toggle:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_CGI_TOGGLE;
             }
@@ -659,7 +763,7 @@ struct configuration_spec * load_config(void)
  * enable-remote-http-toggle 0|1
  * *************************************************************************/
          case hash_enable_remote_http_toggle:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_HTTP_TOGGLE;
             }
@@ -674,7 +778,7 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_enforce_blocks:
 #ifdef FEATURE_FORCE_LOAD
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_ENFORCE_BLOCKS;
             }
@@ -918,7 +1022,7 @@ struct configuration_spec * load_config(void)
  *   to the browser for blocked pages.
  ***************************************************************************/
          case hash_handle_as_empty_returns_ok:
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_EMPTY_DOC_RETURNS_OK;
             }
@@ -965,8 +1069,23 @@ struct configuration_spec * load_config(void)
  * listen-address [ip][:port]
  * *************************************************************************/
          case hash_listen_address :
-            freez(config->haddr);
-            config->haddr = strdup(arg);
+            i = 0;
+            while ((i < MAX_LISTENING_SOCKETS) && (NULL != config->haddr[i]))
+            {
+               i++;
+            }
+
+            if (i >= MAX_LISTENING_SOCKETS)
+            {
+               log_error(LOG_LEVEL_FATAL, "Too many 'listen-address' directives in config file - limit is %d.\n"
+                  "(You can increase this limit by changing MAX_LISTENING_SOCKETS in project.h and recompiling).",
+                  MAX_LISTENING_SOCKETS);
+            }
+            config->haddr[i] = strdup(arg);
+            if (NULL == config->haddr[i])
+            {
+               log_error(LOG_LEVEL_FATAL, "Out of memory while copying listening address");
+            }
             break;
 
 /* *************************************************************************
@@ -1127,7 +1246,7 @@ struct configuration_spec * load_config(void)
  * split-large-cgi-forms
  * *************************************************************************/
          case hash_split_large_cgi_forms :
-            if ((*arg != '\0') && (0 != atoi(arg)))
+            if (parse_toggle_state(cmd, arg) == 1)
             {
                config->feature_flags |= RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
             }
@@ -1339,7 +1458,7 @@ struct configuration_spec * load_config(void)
 
       /* Save the argument for the show-status page. */
       savearg(cmd, arg, config);
-
+      freez(buf);
    } /* end while ( read_config_line(...) ) */
 
    fclose(configfp);
@@ -1406,14 +1525,14 @@ struct configuration_spec * load_config(void)
       log_error(LOG_LEVEL_FATAL, "Out of memory loading config - insufficient memory for config->proxy_args");
    }
 
-   if (config->actions_file[0])
-   {
-      add_loader(load_action_files, config);
-   }
-
    if (config->re_filterfile[0])
    {
       add_loader(load_re_filterfiles, config);
+   }
+
+   if (config->actions_file[0])
+   {
+      add_loader(load_action_files, config);
    }
 
 #ifdef FEATURE_TRUST
@@ -1423,39 +1542,45 @@ struct configuration_spec * load_config(void)
    }
 #endif /* def FEATURE_TRUST */
 
-   if ( NULL == config->haddr )
+   if ( NULL == config->haddr[0] )
    {
-      config->haddr = strdup( HADDR_DEFAULT );
+      config->haddr[0] = strdup( HADDR_DEFAULT );
+      if (NULL == config->haddr[0])
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory while copying default listening address");
+      }
    }
 
-   if ( NULL != config->haddr )
+   for (i = 0; i < MAX_LISTENING_SOCKETS && NULL != config->haddr[i]; i++)
    {
-      if ((*config->haddr == '[')
-         && (NULL != (p = strchr(config->haddr, ']')))
+      if ((*config->haddr[i] == '[')
+         && (NULL != (p = strchr(config->haddr[i], ']')))
          && (p[1] == ':')
-         && (0 < (config->hport = atoi(p + 2))))
+         && (0 < (config->hport[i] = atoi(p + 2))))
       {
          *p = '\0';
-         memmove((void *)config->haddr, config->haddr + 1,
-            (size_t)(p - config->haddr));
+         memmove((void *)config->haddr[i], config->haddr[i] + 1,
+            (size_t)(p - config->haddr[i]));
       }
-      else if (NULL != (p = strchr(config->haddr, ':'))
-         && (0 < (config->hport = atoi(p + 1))))
+      else if (NULL != (p = strchr(config->haddr[i], ':'))
+         && (0 < (config->hport[i] = atoi(p + 1))))
       {
          *p = '\0';
       }
       else
       {
-         log_error(LOG_LEVEL_FATAL, "invalid bind port spec %s", config->haddr);
+         log_error(LOG_LEVEL_FATAL, "invalid bind port spec %s", config->haddr[i]);
          /* Never get here - LOG_LEVEL_FATAL causes program exit */
       }
-      if (*config->haddr == '\0')
+      if (*config->haddr[i] == '\0')
       {
          /*
-          * Only the port specified. We stored it in config->hport
+          * Only the port specified. We stored it in config->hport[i]
           * and don't need its text representation anymore.
+          * Use config->hport[i] == 0 to iterate listening addresses since
+          * now.
           */
-         freez(config->haddr);
+         freez(config->haddr[i]);
       }
    }
 
@@ -1499,30 +1624,34 @@ struct configuration_spec * load_config(void)
       struct configuration_spec * oldcfg = (struct configuration_spec *)
                                            current_configfile->f;
       /*
-       * Check if config->haddr,hport == oldcfg->haddr,hport
+       * Check if config->haddr[i],hport[i] == oldcfg->haddr[i],hport[i]
        *
        * The following could be written more compactly as a single,
        * (unreadably long) if statement.
        */
       config->need_bind = 0;
-      if (config->hport != oldcfg->hport)
+
+      for (i = 0; i < MAX_LISTENING_SOCKETS; i++)
       {
-         config->need_bind = 1;
-      }
-      else if (config->haddr == NULL)
-      {
-         if (oldcfg->haddr != NULL)
+         if (config->hport[i] != oldcfg->hport[i])
          {
             config->need_bind = 1;
          }
-      }
-      else if (oldcfg->haddr == NULL)
-      {
-         config->need_bind = 1;
-      }
-      else if (0 != strcmp(config->haddr, oldcfg->haddr))
-      {
-         config->need_bind = 1;
+         else if (config->haddr[i] == NULL)
+         {
+            if (oldcfg->haddr[i] != NULL)
+            {
+               config->need_bind = 1;
+            }
+         }
+         else if (oldcfg->haddr[i] == NULL)
+         {
+            config->need_bind = 1;
+         }
+         else if (0 != strcmp(config->haddr[i], oldcfg->haddr[i]))
+         {
+            config->need_bind = 1;
+         }
       }
 
       current_configfile->unloader = unload_configfile;

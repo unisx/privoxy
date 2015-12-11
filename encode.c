@@ -1,4 +1,4 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.17 2010/09/09 21:00:25 fabiankeil Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.24 2011/11/06 11:51:57 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
@@ -10,10 +10,10 @@ const char encode_rcs[] = "$Id: encode.c,v 1.17 2010/09/09 21:00:25 fabiankeil E
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -47,20 +47,20 @@ const char encode_rcs[] = "$Id: encode.c,v 1.17 2010/09/09 21:00:25 fabiankeil E
 const char encode_h_rcs[] = ENCODE_H_VERSION;
 
 /* Maps special characters in a URL to their equivalent % codes. */
-static const char * const url_code_map[256] = {
-   NULL, "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09",
+static const char const url_code_map[256][4] = {
+   "",    "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09",
    "%0A", "%0B", "%0C", "%0D", "%0E", "%0F", "%10", "%11", "%12", "%13",
    "%14", "%15", "%16", "%17", "%18", "%19", "%1A", "%1B", "%1C", "%1D",
-   "%1E", "%1F", "+",   "%21", "%22", "%23", "%24", "%25", "%26", "%27",
-   "%28", "%29", NULL,  "%2B", "%2C", NULL,  NULL,  "%2F", NULL,  NULL,
-   NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  "%3A", "%3B",
-   "%3C", "%3D", "%3E", "%3F", NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
-   NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
-   NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
-   NULL,  "%5B", "%5C", "%5D", "%5E", NULL,  "%60", NULL,  NULL,  NULL,
-   NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
-   NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL,
-   NULL,  NULL,  NULL,  "%7B", "%7C", "%7D", "%7E", "%7F", "%80", "%81",
+   "%1E", "%1F", "%20", "%21", "%22", "%23", "%24", "%25", "%26", "%27",
+   "%28", "%29", "",    "%2B", "%2C", "",    "",    "%2F", "",    "",
+   "",    "",    "",    "",    "",    "",    "",    "",    "%3A", "%3B",
+   "%3C", "%3D", "%3E", "%3F", "",    "",    "",    "",    "",    "",
+   "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+   "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+   "",    "%5B", "%5C", "%5D", "%5E", "",    "%60", "",    "",    "",
+   "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+   "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+   "",    "",    "",    "%7B", "%7C", "%7D", "%7E", "%7F", "%80", "%81",
    "%82", "%83", "%84", "%85", "%86", "%87", "%88", "%89", "%8A", "%8B",
    "%8C", "%8D", "%8E", "%8F", "%90", "%91", "%92", "%93", "%94", "%95",
    "%96", "%97", "%98", "%99", "%9A", "%9B", "%9C", "%9D", "%9E", "%9F",
@@ -76,12 +76,12 @@ static const char * const url_code_map[256] = {
    "%FA", "%FB", "%FC", "%FD", "%FE", "%FF"
 };
 
-/* Maps special characters in HTML to their equivalent entites. */
+/* Maps special characters in HTML to their equivalent entities. */
 static const char * const html_code_map[256] = {
    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-   NULL, NULL, NULL, NULL,"&quot;",NULL,NULL,NULL,"&amp;","&apos;",
+   NULL, NULL, NULL, NULL,"&quot;",NULL,NULL,NULL,"&amp;","&#39;",
    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
    "&lt;",NULL,"&gt;",NULL,NULL, NULL, NULL, NULL, NULL, NULL,
@@ -119,7 +119,7 @@ static const char * const html_code_map[256] = {
  * Parameters  :
  *          1  :  s = String to encode.  Null-terminated.
  *
- * Returns     :  Encoded string, newly allocated on the heap. 
+ * Returns     :  Encoded string, newly allocated on the heap.
  *                Caller is responsible for freeing it with free().
  *                If s is NULL, or on out-of memory, returns NULL.
  *
@@ -128,7 +128,7 @@ char * html_encode(const char *s)
 {
    char * buf;
    size_t buf_size;
-   
+
    if (s == NULL)
    {
       return NULL;
@@ -178,7 +178,7 @@ char * html_encode(const char *s)
  * Parameters  :
  *          1  :  s = String to encode.  Null-terminated.
  *
- * Returns     :  Encoded string, newly allocated on the heap. 
+ * Returns     :  Encoded string, newly allocated on the heap.
  *                Caller is responsible for freeing it with free().
  *                If s is NULL, or on out-of memory, returns NULL.
  *
@@ -186,7 +186,7 @@ char * html_encode(const char *s)
 char * html_encode_and_free_original(char *s)
 {
    char * result;
-   
+
    if (s == NULL)
    {
       return NULL;
@@ -207,10 +207,13 @@ char * html_encode_and_free_original(char *s)
  *                query string.  Replaces special characters with
  *                the appropriate %xx codes.
  *
+ *                XXX: url_query_encode() would be a more fitting
+ *                     name.
+ *
  * Parameters  :
  *          1  :  s = String to encode.  Null-terminated.
  *
- * Returns     :  Encoded string, newly allocated on the heap. 
+ * Returns     :  Encoded string, newly allocated on the heap.
  *                Caller is responsible for freeing it with free().
  *                If s is NULL, or on out-of memory, returns NULL.
  *
@@ -235,8 +238,8 @@ char * url_encode(const char *s)
       char * p = buf;
       while( (c = *s++) != '\0')
       {
-         const char * replace_with = url_code_map[(unsigned char) c];
-         if (replace_with != NULL)
+         const char *replace_with = url_code_map[(unsigned char) c];
+         if (*replace_with != '\0')
          {
             const size_t bytes_written = (size_t)(p - buf);
             assert(bytes_written < buf_size);
@@ -275,7 +278,7 @@ static int xdtoi(const int d)
    {
       return(d - '0');
    }
-   else if ((d >= 'a') && (d <= 'f')) 
+   else if ((d >= 'a') && (d <= 'f'))
    {
       return(d - 'a' + 10);
    }
@@ -331,7 +334,7 @@ int xtoi(const char *s)
  * Parameters  :
  *          1  :  s = String to decode.  Null-terminated.
  *
- * Returns     :  Decoded string, newly allocated on the heap. 
+ * Returns     :  Decoded string, newly allocated on the heap.
  *                Caller is responsible for freeing it with free().
  *
  *********************************************************************/
@@ -371,6 +374,83 @@ char *url_decode(const char * s)
       }
       *q = '\0';
    }
+
+   return(buf);
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  percent_encode_url
+ *
+ * Description :  Percent-encodes a string so it no longer contains
+ *                any characters that aren't valid in an URL according
+ *                to RFC 3986.
+ *
+ *                XXX: Do not confuse with encode_url()
+ *
+ * Parameters  :
+ *          1  :  s = String to encode.  Null-terminated.
+ *
+ * Returns     :  Encoded string, newly allocated on the heap.
+ *                Caller is responsible for freeing it with free().
+ *                If s is NULL, or on out-of memory, returns NULL.
+ *
+ *********************************************************************/
+char *percent_encode_url(const char *s)
+{
+   static const char allowed_characters[128] = {
+      '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+      '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+      '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+      '\0', '\0', '\0', '!',  '\0', '#',  '$',  '%',  '&',  '\'',
+      '(',  ')',  '*',  '+',  ',',  '-',  '.',  '/',  '0',  '1',
+      '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  ':',  ';',
+      '\0', '=',  '\0', '?',  '@',  'A',  'B',  'C',  'D',  'E',
+      'F',  'G',  'H',  'I',  'J',  'K',  'L',  'M',  'N',  'O',
+      'P',  'Q',  'R',  'S',  'T',  'U',  'V',  'W',  'X',  'Y',
+      'Z',  '[',  '\0', ']',  '\0', '_',  '\0', 'a',  'b',  'c',
+      'd',  'e',  'f',  'g',  'h',  'i',  'j',  'k',  'l',  'm',
+      'n',  'o',  'p',  'q',  'r',  's',  't',  'u',  'v',  'w',
+      'x',  'y',  'z',  '\0', '\0', '\0', '~',  '\0'
+   };
+   char *buf;
+   size_t buf_size;
+
+   assert(s != NULL);
+
+   /* Each input char can expand to at most 3 chars. */
+   buf_size = (strlen(s) * 3) + 1;
+   buf = (char *)malloc(buf_size);
+
+   if (buf != NULL)
+   {
+      char c;
+      char *p = buf;
+      while((c = *s++) != '\0')
+      {
+         const unsigned int i = (unsigned char)c;
+         if (i >= sizeof(allowed_characters) || '\0' == allowed_characters[i])
+         {
+            const char *replace_with = url_code_map[i];
+            assert(*replace_with != '\0');
+            if (*replace_with != '\0')
+            {
+               const size_t bytes_written = (size_t)(p - buf);
+               assert(bytes_written < buf_size);
+               p += strlcpy(p, replace_with, buf_size - bytes_written);
+            }
+         }
+         else
+         {
+            *p++ = c;
+         }
+      }
+      *p = '\0';
+   }
+
+   assert(strlen(buf) < buf_size);
 
    return(buf);
 

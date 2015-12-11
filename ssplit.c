@@ -1,4 +1,4 @@
-const char ssplit_rcs[] = "$Id: ssplit.c,v 1.10 2009/05/16 13:27:20 fabiankeil Exp $";
+const char ssplit_rcs[] = "$Id: ssplit.c,v 1.12 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.c,v $
@@ -9,10 +9,10 @@ const char ssplit_rcs[] = "$Id: ssplit.c,v 1.10 2009/05/16 13:27:20 fabiankeil E
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -63,18 +63,18 @@ const char ssplit_h_rcs[] = SSPLIT_H_VERSION;
  *          3  :  vec[] = results vector (aka. array) [out]
  *          4  :  vec_len = number of usable slots in the vector (aka. array size)
  *          5  :  dont_save_empty_fields = zero if consecutive delimiters
- *                give a null output field(s), nonzero if they are just 
+ *                give a null output field(s), nonzero if they are just
  *                to be considered as single delimeter
  *          6  :  ignore_leading = nonzero to ignore leading field
  *                separators.
  *
- * Returns     :  -1 => Error: vec_len is too small to hold all the 
+ * Returns     :  -1 => Error: vec_len is too small to hold all the
  *                      data, or str == NULL.
  *                >=0 => the number of fields put in `vec'.
  *                On error, vec and str may still have been overwritten.
  *
  *********************************************************************/
-int ssplit(char *str, const char *delim, char *vec[], int vec_len, 
+int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
            int dont_save_empty_fields, int ignore_leading)
 {
    unsigned char is_delim[256];
@@ -122,7 +122,7 @@ int ssplit(char *str, const char *delim, char *vec[], int vec_len,
      || (is_delim[(unsigned)(unsigned char)*str] == 0) )
       {
       /*
-       * We want empty fields, or the first character in this 
+       * We want empty fields, or the first character in this
        * field is not a delimiter or the end of string.
        * So save it.
        */
@@ -130,24 +130,24 @@ int ssplit(char *str, const char *delim, char *vec[], int vec_len,
       {
          return(-1); /* overflow */
       }
-      vec[vec_count++] = (char *) str;   
+      vec[vec_count++] = (char *) str;
    }
 
    while ((char_type = is_delim[(unsigned)(unsigned char)*str]) != 2)
    {
-      if (char_type == 1)    
+      if (char_type == 1)
       {
          /* the char is a separator */
 
          /* null terminate the substring */
-         *str++ = '\0';      
+         *str++ = '\0';
 
          /* Check if we want to save this field */
          if ( (!dont_save_empty_fields)
            || (is_delim[(unsigned)(unsigned char)*str] == 0) )
             {
             /*
-             * We want empty fields, or the first character in this 
+             * We want empty fields, or the first character in this
              * field is not a delimiter or the end of string.
              * So save it.
              */
@@ -155,7 +155,7 @@ int ssplit(char *str, const char *delim, char *vec[], int vec_len,
             {
                return(-1); /* overflow */
             }
-            vec[vec_count++] = (char *) str;   
+            vec[vec_count++] = (char *) str;
          }
       }
       else

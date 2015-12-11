@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.35 2009/08/19 15:28:08 fabiankeil Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.38 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/pcrs.c,v $
@@ -16,7 +16,7 @@ const char pcrs_rcs[] = "$Id: pcrs.c,v 1.35 2009/08/19 15:28:08 fabiankeil Exp $
  *
  *                Copyright (C) 2006, 2007 Fabian Keil <fk@fabiankeil.de>
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU Lesser
  *                General Public License (LGPL), version 2.1, which  should
  *                be included in this distribution (see LICENSE.txt), with
@@ -71,7 +71,7 @@ static int              is_hex_sequence(const char *sequence);
  * Function    :  pcrs_strerror
  *
  * Description :  Return a string describing a given error code.
- *             
+ *
  * Parameters  :
  *          1  :  error = the error code
  *
@@ -80,7 +80,7 @@ static int              is_hex_sequence(const char *sequence);
  *********************************************************************/
 const char *pcrs_strerror(const int error)
 {
-   if (error < 0)
+   if (error != 0)
    {
       switch (error)
       {
@@ -94,7 +94,7 @@ const char *pcrs_strerror(const int error)
          case PCRE_ERROR_UNKNOWN_NODE: return "(pcre:) Bad node in pattern";
 
          /* Can't happen / not passed: */
-         case PCRE_ERROR_NOSUBSTRING:  return "(pcre:) Fire in power supply"; 
+         case PCRE_ERROR_NOSUBSTRING:  return "(pcre:) Fire in power supply";
          case PCRE_ERROR_NOMATCH:      return "(pcre:) Water in power supply";
 
 #ifdef PCRE_ERROR_MATCHLIMIT
@@ -113,7 +113,7 @@ const char *pcrs_strerror(const int error)
          case PCRS_WARN_TRUNCATION:
             return "(pcrs:) At least one variable was too big and has been truncated before compilation";
 
-         /* 
+         /*
           * XXX: With the exception of PCRE_ERROR_MATCHLIMIT we
           * only catch PCRE errors that can happen with our internal
           * version. If Privoxy is linked against a newer
@@ -139,12 +139,12 @@ const char *pcrs_strerror(const int error)
  *                'T' (trivial) options but pcrs needs them, the corresponding
  *                flags are set if 'g'or 'T' is encountered.
  *                Note: The 'T' and 'U' options do not conform to Perl.
- *             
+ *
  * Parameters  :
  *          1  :  optstring = string with options in perl syntax
  *          2  :  flags = see description
  *
- * Returns     :  option integer suitable for pcre 
+ * Returns     :  option integer suitable for pcre
  *
  *********************************************************************/
 static int pcrs_parse_perl_options(const char *optstring, int *flags)
@@ -236,7 +236,7 @@ static pcrs_substitute *pcrs_compile_replacement(const char *replacement, int tr
       return NULL;
    }
    memset(text, '\0', length + 1);
-   
+
 
    /*
     * In trivial mode, just copy the substitute text
@@ -305,7 +305,7 @@ static pcrs_substitute *pcrs_compile_replacement(const char *replacement, int tr
                   assert(ascii_value < 256);
                   text[k++] = (char)ascii_value;
                   i += 4;
-               }               
+               }
                else
                {
                   quoted = 1;
@@ -337,7 +337,7 @@ static pcrs_substitute *pcrs_compile_replacement(const char *replacement, int tr
             /* Symbolic backreferences: */
             else if (NULL != (symbol = strchr(symbols, replacement[i + 1])))
             {
-               
+
                if (symbol - symbols == 2) /* $+ */
                {
                   r->backref[l] = capturecount;
@@ -368,10 +368,10 @@ static pcrs_substitute *pcrs_compile_replacement(const char *replacement, int tr
             else
             {
                *errptr = PCRS_WARN_BADREF;
-            }   
+            }
             continue;
          }
-         
+
 plainchar:
          /* Plain chars are copied */
          text[k++] = replacement[i++];
@@ -397,13 +397,13 @@ plainchar:
  * Function    :  pcrs_free_job
  *
  * Description :  Frees the memory used by a pcrs_job struct and its
- *                dependant structures.
+ *                dependent structures.
  *
  * Parameters  :
  *          1  :  job = pointer to the pcrs_job structure to be freed
  *
  * Returns     :  a pointer to the next job, if there was any, or
- *                NULL otherwise. 
+ *                NULL otherwise.
  *
  *********************************************************************/
 pcrs_job *pcrs_free_job(pcrs_job *job)
@@ -458,7 +458,7 @@ void pcrs_free_joblist(pcrs_job *joblist)
  *
  * Function    :  pcrs_compile_command
  *
- * Description :  Parses a string with a Perl-style s/// command, 
+ * Description :  Parses a string with a Perl-style s/// command,
  *                calls pcrs_compile, and returns a corresponding
  *                pcrs_job, or NULL if parsing or compiling the job
  *                fails.
@@ -478,11 +478,11 @@ pcrs_job *pcrs_compile_command(const char *command, int *errptr)
    int i, k, l, quoted = FALSE;
    size_t limit;
    char delimiter;
-   char *tokens[4];   
+   char *tokens[4];
    pcrs_job *newjob;
-   
+
    k = l = 0;
-   
+
    /*
     * Tokenize the perl command
     */
@@ -501,7 +501,7 @@ pcrs_job *pcrs_compile_command(const char *command, int *errptr)
 
    for (i = 0; i <= (int)limit; i++)
    {
-      
+
       if (command[i] == delimiter && !quoted)
       {
          if (l == 3)
@@ -513,7 +513,7 @@ pcrs_job *pcrs_compile_command(const char *command, int *errptr)
          tokens[++l] = tokens[0] + k;
          continue;
       }
-      
+
       else if (command[i] == '\\' && !quoted)
       {
          quoted = TRUE;
@@ -535,11 +535,11 @@ pcrs_job *pcrs_compile_command(const char *command, int *errptr)
       free(tokens[0]);
       return NULL;
    }
-   
+
    newjob = pcrs_compile(tokens[1], tokens[2], tokens[3], errptr);
    free(tokens[0]);
    return newjob;
-   
+
 }
 
 
@@ -571,14 +571,14 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
 
    *errptr = 0;
 
-   /* 
+   /*
     * Handle NULL arguments
     */
    if (pattern == NULL) pattern = "";
    if (substitute == NULL) substitute = "";
 
 
-   /* 
+   /*
     * Get and init memory
     */
    if (NULL == (newjob = (pcrs_job *)malloc(sizeof(pcrs_job))))
@@ -618,10 +618,10 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
       pcrs_free_job(newjob);
       return NULL;
    }
- 
 
-   /* 
-    * Determine the number of capturing subpatterns. 
+
+   /*
+    * Determine the number of capturing subpatterns.
     * This is needed for handling $+ in the substitute.
     */
    if (0 > (*errptr = pcre_fullinfo(newjob->pattern, newjob->hints, PCRE_INFO_CAPTURECOUNT, &capturecount)))
@@ -629,7 +629,7 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
       pcrs_free_job(newjob);
       return NULL;
    }
- 
+
 
    /*
     * Compile the substitute
@@ -639,7 +639,7 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
       pcrs_free_job(newjob);
       return NULL;
    }
- 
+
    return newjob;
 
 }
@@ -654,7 +654,7 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
  *                the joblist to the subject.
  *                The subject itself is left untouched, memory for the result
  *                is malloc()ed and it is the caller's responsibility to free
- *                the result when it's no longer needed. 
+ *                the result when it's no longer needed.
  *
  *                Note: For convenient string handling, a null byte is
  *                      appended to the result. It does not count towards the
@@ -664,8 +664,8 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
  * Parameters  :
  *          1  :  joblist = the chained list of pcrs_jobs to be executed
  *          2  :  subject = the subject string
- *          3  :  subject_length = the subject's length 
- *          4  :  result = char** for returning  the result 
+ *          3  :  subject_length = the subject's length
+ *          4  :  result = char** for returning  the result
  *          5  :  result_length = size_t* for returning the result's length
  *
  * Returns     :  On success, the number of substitutions that were made.
@@ -679,7 +679,7 @@ int pcrs_execute_list(pcrs_job *joblist, char *subject, size_t subject_length, c
    pcrs_job *job;
    char *old, *new = NULL;
    int hits, total_hits;
- 
+
    old = subject;
    *result_length = subject_length;
    total_hits = 0;
@@ -724,8 +724,8 @@ int pcrs_execute_list(pcrs_job *joblist, char *subject, size_t subject_length, c
  * Parameters  :
  *          1  :  job = the pcrs_job to be executed
  *          2  :  subject = the subject (== original) string
- *          3  :  subject_length = the subject's length 
- *          4  :  result = char** for returning  the result 
+ *          3  :  subject_length = the subject's length
+ *          4  :  result = char** for returning  the result
  *          5  :  result_length = size_t* for returning the result's length
  *
  * Returns     :  On success, the number of substitutions that were made.
@@ -748,7 +748,7 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
 
    offset = i = 0;
 
-   /* 
+   /*
     * Sanity check & memory allocation
     */
    if (job == NULL || job->pattern == NULL || job->substitute == NULL || NULL == subject)
@@ -781,13 +781,13 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
          matches[i].submatch_offset[k] = offsets[2 * k];
 
          /* Note: Non-found optional submatches have length -1-(-1)==0 */
-         matches[i].submatch_length[k] = (size_t)(offsets[2 * k + 1] - offsets[2 * k]); 
+         matches[i].submatch_length[k] = (size_t)(offsets[2 * k + 1] - offsets[2 * k]);
 
          /* reserve mem for each submatch as often as it is ref'd */
          newsize += matches[i].submatch_length[k] * (size_t)job->substitute->backref_count[k];
       }
       /* plus replacement text size minus match text size */
-      newsize += job->substitute->length - matches[i].submatch_length[0]; 
+      newsize += job->substitute->length - matches[i].submatch_length[0];
 
       /* chunk before match */
       matches[i].submatch_offset[PCRS_MAX_SUBMATCHES] = 0;
@@ -829,12 +829,12 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
    if (submatches < PCRE_ERROR_NOMATCH)
    {
       free(matches);
-      return submatches;   
+      return submatches;
    }
    matches_found = i;
 
 
-   /* 
+   /*
     * Get memory for the result (must be freed by caller!)
     * and append terminating null byte.
     */
@@ -849,7 +849,7 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
    }
 
 
-   /* 
+   /*
     * Replace
     */
    offset = 0;
@@ -858,7 +858,7 @@ int pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char
    for (i = 0; i < matches_found; i++)
    {
       /* copy the chunk preceding the match */
-      memcpy(result_offset, subject + offset, (size_t)(matches[i].submatch_offset[0] - offset)); 
+      memcpy(result_offset, subject + offset, (size_t)(matches[i].submatch_offset[0] - offset));
       result_offset += matches[i].submatch_offset[0] - offset;
 
       /* For every segment of the substitute.. */
@@ -988,7 +988,7 @@ int pcrs_job_is_dynamic (char *job)
  * Parameters  :
  *          1  :  string = The string to search in
  *
- * Returns     :  A safe delimiter if one was found, otherwise '\0'.  
+ * Returns     :  A safe delimiter if one was found, otherwise '\0'.
  *
  *********************************************************************/
 char pcrs_get_delimiter(const char *string)
@@ -1021,11 +1021,11 @@ char pcrs_get_delimiter(const char *string)
  *
  * Parameters  :
  *          1  :  subject = the subject (== original) string
- *          2  :  pcrs_command = the pcrs command as string (s@foo@bar@) 
- *          3  :  hits = int* for returning  the number of modifications 
+ *          2  :  pcrs_command = the pcrs command as string (s@foo@bar@)
+ *          3  :  hits = int* for returning  the number of modifications
  *
  * Returns     :  NULL in case of errors, otherwise the
- *                result of the pcrs command.  
+ *                result of the pcrs command.
  *
  *********************************************************************/
 char *pcrs_execute_single_command(const char *subject, const char *pcrs_command, int *hits)
@@ -1069,7 +1069,7 @@ static const char warning[] = "... [too long, truncated]";
  *          3  :  error = pcrs error code
  *
  * Returns     :  NULL in case of hard errors, otherwise the
- *                compiled pcrs job.   
+ *                compiled pcrs job.
  *
  *********************************************************************/
 pcrs_job *pcrs_compile_dynamic_command(char *pcrs_command, const struct pcrs_variable v[], int *error)

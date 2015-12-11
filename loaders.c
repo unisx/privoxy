@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.76 2010/07/21 14:35:09 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.87 2011/11/06 11:53:15 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -8,7 +8,7 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.76 2010/07/21 14:35:09 fabiankeil
  *                the list of active loaders, and to automatically
  *                unload files that are no longer in use.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -142,12 +142,12 @@ unsigned int sweep(void)
           */
          csp->config->config_file_list->active = 1;
 
-         /* 
+         /*
           * Actions files
           */
          for (i = 0; i < MAX_AF_FILES; i++)
          {
-            if (csp->actions_list[i])     
+            if (csp->actions_list[i])
             {
                csp->actions_list[i]->active = 1;
             }
@@ -158,7 +158,7 @@ unsigned int sweep(void)
           */
          for (i = 0; i < MAX_AF_FILES; i++)
          {
-            if (csp->rlist[i])     
+            if (csp->rlist[i])
             {
                csp->rlist[i]->active = 1;
             }
@@ -179,7 +179,7 @@ unsigned int sweep(void)
          last_active = client_list;
          client_list = client_list->next;
       }
-      else 
+      else
       /*
        * This client is not active. Free its resources.
        */
@@ -211,7 +211,7 @@ unsigned int sweep(void)
 #endif /* def FEATURE_STATISTICS */
 
          freez(client_list);
-         
+
          client_list = last_active->next;
       }
    }
@@ -359,7 +359,7 @@ jb_err simple_read_line(FILE *fp, char **dest, int *newline)
    p = buf;
 
 /*
- * Character codes.  If you have a wierd compiler and the following are
+ * Character codes.  If you have a weird compiler and the following are
  * incorrect, you also need to fix NEWLINE() in loaders.h
  */
 #define CHAR_CR '\r' /* ASCII 13 */
@@ -737,41 +737,27 @@ jb_err edit_read_line(FILE *fp,
  *                and respects escaping of newline and comment char.
  *
  * Parameters  :
- *          1  :  buf = Buffer to use.
- *          2  :  buflen = Size of buffer in bytes.
- *          3  :  fp = File to read from
- *          4  :  linenum = linenumber in file
+ *          1  :  fp = File to read from
+ *          2  :  linenum = linenumber in file
+ *          3  :  buf = Pointer to a pointer to set to the data buffer.
  *
  * Returns     :  NULL on EOF or error
  *                Otherwise, returns buf.
  *
  *********************************************************************/
-char *read_config_line(char *buf, size_t buflen, FILE *fp, unsigned long *linenum)
+char *read_config_line(FILE *fp, unsigned long *linenum, char **buf)
 {
    jb_err err;
-   char *buf2 = NULL;
-   err = edit_read_line(fp, NULL, NULL, &buf2, NULL, linenum);
+   err = edit_read_line(fp, NULL, NULL, buf, NULL, linenum);
    if (err)
    {
       if (err == JB_ERR_MEMORY)
       {
          log_error(LOG_LEVEL_FATAL, "Out of memory loading a config file");
       }
-      return NULL;
+      *buf = NULL;
    }
-   else
-   {
-      assert(buf2);
-      if (strlen(buf2) + 1U > buflen)
-      {
-         log_error(LOG_LEVEL_FATAL,
-            "Max line limit reached. Linenumber: %u. Lenght: %u. Max lenght: %u.",
-            *linenum, strlen(buf2), buflen-1);
-      }
-      strlcpy(buf, buf2, buflen);
-      free(buf2);
-      return buf;
-   }
+   return *buf;
 }
 
 
@@ -849,7 +835,7 @@ int load_trustfile(struct client_state *csp)
    struct block_spec *b, *bl;
    struct url_spec **tl;
 
-   char  buf[BUFFER_SIZE], *p, *q;
+   char *buf = NULL;
    int reject, trusted;
    struct file_list *fs;
    unsigned long linenum = 0;
@@ -858,10 +844,7 @@ int load_trustfile(struct client_state *csp)
    if (!check_file_changed(current_trustfile, csp->config->trustfile, &fs))
    {
       /* No need to load */
-      if (csp)
-      {
-         csp->tlist = current_trustfile;
-      }
+      csp->tlist = current_trustfile;
       return(0);
    }
    if (!fs)
@@ -883,7 +866,7 @@ int load_trustfile(struct client_state *csp)
 
    tl = csp->config->trust_list;
 
-   while (read_config_line(buf, sizeof(buf), fp, &linenum) != NULL)
+   while (read_config_line(fp, &linenum, &buf) != NULL)
    {
       trusted = 0;
       reject  = 1;
@@ -896,6 +879,9 @@ int load_trustfile(struct client_state *csp)
 
       if (*buf == '~')
       {
+         char *p;
+         char *q;
+
          reject = 0;
          p = buf;
          q = p+1;
@@ -908,6 +894,7 @@ int load_trustfile(struct client_state *csp)
       /* skip blank lines */
       if (*buf == '\0')
       {
+         freez(buf);
          continue;
       }
 
@@ -941,9 +928,10 @@ int load_trustfile(struct client_state *csp)
             *tl++ = b->url;
          }
       }
+      freez(buf);
    }
 
-   if(trusted_referrers >= MAX_TRUSTED_REFERRERS) 
+   if(trusted_referrers >= MAX_TRUSTED_REFERRERS)
    {
       /*
        * FIXME: ... after Privoxy 3.0.4 is out.
@@ -967,17 +955,14 @@ int load_trustfile(struct client_state *csp)
    fs->next    = files->next;
    files->next = fs;
    current_trustfile = fs;
-
-   if (csp)
-   {
-      csp->tlist = fs;
-   }
+   csp->tlist = fs;
 
    return(0);
 
 load_trustfile_error:
    log_error(LOG_LEVEL_FATAL, "can't load trustfile '%s': %E",
-             csp->config->trustfile);
+      csp->config->trustfile);
+   freez(buf);
    return(-1);
 
 }
@@ -1021,7 +1006,7 @@ static void unload_re_filterfile(void *f)
  *
  * Function    :  unload_forward_spec
  *
- * Description :  Unload the forward spec settings by freeing all 
+ * Description :  Unload the forward spec settings by freeing all
  *                memory referenced by members and the memory for
  *                the spec itself.
  *
@@ -1075,7 +1060,7 @@ void unload_current_re_filterfile(void)
  *
  * Function    :  load_re_filterfiles
  *
- * Description :  Loads all the filterfiles. 
+ * Description :  Loads all the filterfiles.
  *                Generate a chained list of re_filterfile_spec's from
  *                the "FILTER: " blocks, compiling all their substitutions
  *                into chained lists of pcrs_job structs.
@@ -1116,7 +1101,7 @@ int load_re_filterfiles(struct client_state *csp)
  *
  * Function    :  load_one_re_filterfile
  *
- * Description :  Load a re_filterfile. 
+ * Description :  Load a re_filterfile.
  *                Generate a chained list of re_filterfile_spec's from
  *                the "FILTER: " blocks, compiling all their substitutions
  *                into chained lists of pcrs_job structs.
@@ -1134,7 +1119,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
    struct re_filterfile_spec *new_bl, *bl = NULL;
    struct file_list *fs;
 
-   char  buf[BUFFER_SIZE];
+   char *buf = NULL;
    int error;
    unsigned long linenum = 0;
    pcrs_job *dummy, *lastjob = NULL;
@@ -1144,10 +1129,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
     */
    if (!check_file_changed(current_re_filterfile[fileid], csp->config->re_filterfile[fileid], &fs))
    {
-      if (csp)
-      {
-         csp->rlist[fileid] = current_re_filterfile[fileid];
-      }
+      csp->rlist[fileid] = current_re_filterfile[fileid];
       return(0);
    }
    if (!fs)
@@ -1155,7 +1137,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
       goto load_re_filterfile_error;
    }
 
-   /* 
+   /*
     * Open the file or fail
     */
    if ((fp = fopen(csp->config->re_filterfile[fileid], "r")) == NULL)
@@ -1165,10 +1147,10 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
 
    log_error(LOG_LEVEL_INFO, "Loading filter file: %s", csp->config->re_filterfile[fileid]);
 
-   /* 
+   /*
     * Read line by line
     */
-   while (read_config_line(buf, sizeof(buf), fp, &linenum) != NULL)
+   while (read_config_line(fp, &linenum, &buf) != NULL)
    {
       int new_filter = NO_NEW_FILTER;
 
@@ -1233,7 +1215,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
          }
 
          new_bl->name = strdup(chomp(new_bl->name));
-         
+
          /*
           * If this is the first filter block, chain it
           * to the file_list rather than its (nonexistant)
@@ -1252,12 +1234,13 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
 
          log_error(LOG_LEVEL_RE_FILTER, "Reading in filter \"%s\" (\"%s\")", bl->name, bl->description);
 
+         freez(buf);
          continue;
       }
 
-      /* 
+      /*
        * Else, save the expression, make it a pcrs_job
-       * and chain it into the current filter's joblist 
+       * and chain it into the current filter's joblist
        */
       if (bl != NULL)
       {
@@ -1283,7 +1266,8 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
             bl->dynamic = 1;
             log_error(LOG_LEVEL_RE_FILTER,
                "Adding dynamic re_filter job \'%s\' to filter %s succeeded.", buf, bl->name);
-            continue;             
+            freez(buf);
+            continue;
          }
          else if (bl->dynamic)
          {
@@ -1294,6 +1278,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
              */
             log_error(LOG_LEVEL_RE_FILTER,
                "Adding static re_filter job \'%s\' to dynamic filter %s succeeded.", buf, bl->name);
+            freez(buf);
             continue;
          }
 
@@ -1301,6 +1286,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
          {
             log_error(LOG_LEVEL_ERROR,
                "Adding re_filter job \'%s\' to filter %s failed with error %d.", buf, bl->name, error);
+            freez(buf);
             continue;
          }
          else
@@ -1322,11 +1308,12 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
          log_error(LOG_LEVEL_ERROR, "Ignoring job %s outside filter block in %s, line %d",
             buf, csp->config->re_filterfile[fileid], linenum);
       }
+      freez(buf);
    }
 
    fclose(fp);
 
-   /* 
+   /*
     * Schedule the now-obsolete old data for unloading
     */
    if ( NULL != current_re_filterfile[fileid] )
@@ -1340,11 +1327,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
    fs->next    = files->next;
    files->next = fs;
    current_re_filterfile[fileid] = fs;
-
-   if (csp)
-   {
-      csp->rlist[fileid] = fs;
-   }
+   csp->rlist[fileid] = fs;
 
    return( 0 );
 
@@ -1376,7 +1359,7 @@ void add_loader(int (*loader)(struct client_state *),
 {
    int i;
 
-   for (i=0; i < NLOADERS; i++)
+   for (i = 0; i < NLOADERS; i++)
    {
       if (config->loaders[i] == NULL)
       {
@@ -1410,7 +1393,7 @@ int run_loader(struct client_state *csp)
    int ret = 0;
    int i;
 
-   for (i=0; i < NLOADERS; i++)
+   for (i = 0; i < NLOADERS; i++)
    {
       if (csp->config->loaders[i] == NULL)
       {
@@ -1420,6 +1403,66 @@ int run_loader(struct client_state *csp)
    }
    return(ret);
 
+}
+
+/*********************************************************************
+ *
+ * Function    :  file_has_been_modified
+ *
+ * Description :  Helper function to check if a file has been changed
+ *
+ * Parameters  :
+ *          1  : filename = The name of the file to check
+ *          2  : last_known_modification = The time of the last known
+ *                                         modification
+ *
+ * Returns     :  TRUE if the file has been changed,
+ *                FALSE otherwise.
+ *
+ *********************************************************************/
+static int file_has_been_modified(const char *filename, time_t last_know_modification)
+{
+   struct stat statbuf[1];
+
+   if (stat(filename, statbuf) < 0)
+   {
+      /* Error, probably file not found which counts as change. */
+      return 1;
+   }
+
+   return (last_know_modification != statbuf->st_mtime);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  any_loaded_file_changed
+ *
+ * Description :  Helper function to check if any loaded file has been
+ *                changed since the time it has been loaded.
+ *
+ *                XXX: Should we cache the return value for x seconds?
+ *
+ * Parameters  :
+ *          1  : files_to_check = List of files to check
+ *
+ * Returns     : TRUE if any file has been changed,
+ *               FALSE otherwise.
+ *
+ *********************************************************************/
+int any_loaded_file_changed(const struct file_list *files_to_check)
+{
+   const struct file_list *file_to_check = files_to_check;
+
+   while (file_to_check != NULL)
+   {
+      if (file_has_been_modified(file_to_check->filename, file_to_check->lastmodified))
+      {
+         return TRUE;
+      }
+      file_to_check = file_to_check->next;
+   }
+   return FALSE;
 }
 
 

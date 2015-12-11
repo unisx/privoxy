@@ -10,7 +10,7 @@
 #                Original Author: Copyright (C) 2001 Jonathan Foster
 #                http://www.jon-foster.co.uk/
 #
-#                This program is free software; you can redistribute it 
+#                This program is free software; you can redistribute it
 #                and/or modify it under the terms of the GNU General
 #                Public License as published by the Free Software
 #                Foundation; either version 2 of the License, or (at
@@ -33,7 +33,7 @@
 /*
  * CSS for Privoxy CGI and script output
  *
- * $Id: cgi-style.css,v 1.13 2009/05/16 13:27:21 fabiankeil Exp $
+ * $Id: cgi-style.css,v 1.14 2011/09/04 11:09:40 fabiankeil Exp $
  */
 
 /*
@@ -146,6 +146,6 @@ em.warning, strong.warning { color: #ff0000 }
 /*
  * Let the URL and pattern input fields scale with the browser
  * width and try to prevent vertical scroll bars if the width
- * is less than 80 characters. 
+ * is less than 80 characters.
  */
 input.url, input.pattern { width: 95%; }

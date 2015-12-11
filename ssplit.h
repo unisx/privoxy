@@ -1,6 +1,6 @@
 #ifndef SSPLIT_H_INCLUDED
 #define SSPLIT_H_INCLUDED
-#define SSPLIT_H_VERSION "$Id: ssplit.h,v 1.8 2009/05/16 13:27:20 fabiankeil Exp $"
+#define SSPLIT_H_VERSION "$Id: ssplit.h,v 1.10 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.h,v $
@@ -11,10 +11,10 @@
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-extern int ssplit(char *str, const char *delim, char *vec[], int vec_len, 
+extern int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
                   int dont_save_empty_fields, int ignore_leading);
 
 /* Revision control strings from this header and associated .c file */

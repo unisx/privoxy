@@ -1,15 +1,15 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.189 2010/02/20 12:53:30 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.204 2011/09/06 18:45:28 fabiankeil Exp $
 #
-# Written by and Copyright (C) 2001-2010 members of the
+# Written by and Copyright (C) 2001-2011 members of the
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
-# by and Copyright (C) 1997 Anonymous Coders and 
+# by and Copyright (C) 1997 Anonymous Coders and
 # Junkbusters Corporation.  http://www.junkbusters.com
 #
-# This program is free software; you can redistribute it 
+# This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
 # Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at
@@ -60,21 +60,22 @@ CONF_BASE    = @sysconfdir@
 SBIN_DEST    = @sbindir@
 MAN_DIR      = @mandir@
 MAN_DEST     = $(MAN_DIR)/man1
+MAN_PAGE     = privoxy.1
 SHARE_DEST   = @datadir@
 DOC_DEST     = $(SHARE_DEST)/doc/privoxy
 VAR_DEST     = @localstatedir@
 LOGS_DEST    = $(VAR_DEST)/log/privoxy
 PIDS_DEST    = $(VAR_DEST)/run
 
-# if $prefix = /usr/local then the default CONFDEST change from 
-# CONF_DEST = $(CONF_BASE) to CONF_DEST = $(CONF_BASE)/privoxy  
+# if $prefix = /usr/local then the default CONFDEST change from
+# CONF_DEST = $(CONF_BASE) to CONF_DEST = $(CONF_BASE)/privoxy
 # by the target rule CONF_DEST
 #
 # also if the $prefix is /usr/local and there is no
 # $(SHARE_DEST)/doc, it checks for $prefix/doc and installs there
 # instead in this situation
 #
-# finally if $prefix=/usr/local and VAR_DEST=$prefix/var it 
+# finally if $prefix=/usr/local and VAR_DEST=$prefix/var it
 # changes this to /var for storing the logs and pidfile
 
 # used in source dir only, the install goes to $share_dest/doc/privoxy
@@ -90,13 +91,13 @@ RA_MODE   = 0664
 DIR_MODE   = 0755
 # Files daemon writes to.
 RWD_MODE   = 0660
-INSTALL_P  = -m $(BIN_MODE)  
+INSTALL_P  = -m $(BIN_MODE)
 INSTALL_T  = -m $(RA_MODE)
 INSTALL_D  = -m $(DIR_MODE) -d
 INSTALL_R  = -m $(RWD_MODE)
 
 # install options for superuser install
-#INSTALL_S  = -g @GROUP@ -o @USER@ 
+#INSTALL_S  = -g @GROUP@ -o @USER@
 
 #############################################################################
 # Build tools
@@ -141,6 +142,7 @@ PERL       = perl
 DOC_DIR    = doc/source
 DOC_TMP    = $(DOC_DIR)/tmp
 DOC_STATUS = @DOC_STATUS@
+TIDY       = tidy -modify -indent -clean -wrap 78
 
 # Program to do LF->CRLF
 #
@@ -175,7 +177,7 @@ CONFIG_FILES = $(CONFIGS) \
 DOC_FILES = AUTHORS LICENSE README ChangeLog INSTALL \
 		`find doc/webserver/ -name "*.html" | grep -v "\(webserver\|team\)\/index\.html"` \
 		`find doc/webserver/ -name "*.css"` \
-                privoxy.1
+                $(MAN_PAGE)
 
 #############################################################################
 # Filenames and libraries
@@ -237,11 +239,11 @@ LIBS         = @LIBS@ $(W32_LIB) $(SOCKET_LIB) $(PTHREAD_LIB)
 # possibly other OSs).
 SPECIAL_CFLAGS = @SPECIAL_CFLAGS@
 
-# Add your flags here 
-OTHER_CFLAGS =   
+# Add your flags here
+OTHER_CFLAGS =
 
 CFLAGS = @CFLAGS@ @CPPFLAGS@ $(OTHER_CFLAGS) $(SPECIAL_CFLAGS) -Wall \
-         @STATIC_PCRE_ONLY@ -Ipcre 
+         @STATIC_PCRE_ONLY@ -Ipcre
 
 LDFLAGS = @LDFLAGS@ $(DEBUG_CFLAGS) $(SPECIAL_CFLAGS)
 
@@ -273,8 +275,7 @@ PID_DEST check_doc install-strip uninstall GROUP_T
 # Strip master copy comments from default.action:
 #############################################################################
 default.action: default.action.master
-	$(GREP) -v '^#MASTER#' $< > $@
-
+	$(GREP) -v '^#MASTER#' default.action.master > $@
 #############################################################################
 # Win32 config files
 #############################################################################
@@ -293,7 +294,7 @@ config.txt: config
 	$(DOSFILTER) <default.filter >default.filter.txt && mv default.filter.txt default.filter
 
 trust.txt: trust
-	$(DOSFILTER) < $< > $@ 
+	$(DOSFILTER) < $< > $@
 
 #############################################################################
 # Pre-dist check:
@@ -321,9 +322,9 @@ dist-check:
 
 #############################################################################
 # create tar.gz from CVS:
-# This make-target is usually called through 'create-archive'. If you 
+# This make-target is usually called through 'create-archive'. If you
 # run 'make create-snapshot' without setting SNAPVERSION, you'll get a
-# tar.gz with the current date in the name and as a releasenumber in the 
+# tar.gz with the current date in the name and as a releasenumber in the
 # spec-file. But the main usage is to run it as follows (Red Hat example):
 # make SNAPVERSION=1.6x create-snapshot
 # This creates a tar.gz.
@@ -343,7 +344,7 @@ create-snapshot:
 
 #############################################################################
 # looks at the version of Makefile and exports a corresponding source-tree
-# example: if the Makefile has the sticky tag v_2_9_13, you'll get 
+# example: if the Makefile has the sticky tag v_2_9_13, you'll get
 # privoxy-*-2.4.13.tar.gz.
 #############################################################################
 create-archive:
@@ -364,7 +365,7 @@ gen-dist: dist-check
 # add config files
 	for foo in $(CONFIG_FILES); do \
 		(cd .. && $(TAR) -uvhf --exclude "PACKAGERS" privoxy-$(TARGET_OS)-$(VERSION)-$(CODE_STATUS)-src.tar privoxy-$(VERSION)-$(CODE_STATUS)/$$foo;) \
-	done; 
+	done;
 # add documentation
 	for foo in $(DOC_FILES); do \
 		(cd .. && $(TAR) -uvhf --exclude "PACKAGERS" privoxy-$(TARGET_OS)-$(VERSION)-$(CODE_STATUS)-src.tar privoxy-$(VERSION)-$(CODE_STATUS)/$$foo;) \
@@ -403,7 +404,7 @@ tarball-dist: dist-check clean clobber
 	cd .. && $(TAR) -cvhf privoxy-$(VERSION)-$(CODE_STATUS)-src.tar $$files ; \
 
 # and zip the archive
-	$(RM) ../privoxy-$(VERSION)-$(CODE_STATUS) 
+	$(RM) ../privoxy-$(VERSION)-$(CODE_STATUS)
 	$(GZIP_PROG) ../privoxy-$(VERSION)-$(CODE_STATUS)-src.tar
 	@$(ECHO) Tarball distribution created.
 
@@ -428,14 +429,14 @@ tarball-clean:
 #############################################################################
 
 # developer manual
-dok-devel: 
+dok-devel:
 	$(RM) doc/webserver/developer-manual/*.html
 	$(RM) -r doc/source/developer-manual
 	mkdir -p doc/source/developer-manual
 	cd doc/source/developer-manual && $(DB) ../developer-manual.sgml && cd .. && cp developer-manual/*.html ../webserver/developer-manual/
 
 # user manual
-dok-user: 
+dok-user:
 	$(RM) doc/webserver/user-manual/*.html
 	$(RM) -r doc/source/user-manual/
 	mkdir -p doc/source/user-manual
@@ -446,58 +447,56 @@ dok-user:
 	$(PERL) -pi.bak -e 's/<\/head/\n<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"p_doc.css\">\n<\/head/i' doc/webserver/user-manual/*html
 
 # faq
-dok-faq: 
+dok-faq:
 	$(RM) doc/webserver/faq/*.html
 	$(RM) -r doc/source/faq
 	mkdir -p doc/source/faq
 	cd doc/source/faq && $(DB) ../faq.sgml && cd .. && cp faq/*.html ../webserver/faq/
 
-# man page, one variation. Try to use the next target, just 'make man'. 
-dok-man: 
+# man page, one variation. Try to use the next target, just 'make man'.
+dok-man:
 	$(RM) doc/man/* doc/webserver/man-page/*.html
-ifneq ($(MAN2HTML),false)
-	$(ECHO) "<html><head><title>Privoxy Man page</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../p_web.css\"></head><body><H2>NAME</H2>" > doc/webserver/man-page/privoxy-man-page.html
-	man ./privoxy.1 | $(MAN2HTML) -bare >> doc/webserver/man-page/privoxy-man-page.html
-	$(ECHO) "</body></html>" >> doc/webserver/man-page/privoxy-man-page.html
-else
-	$(MAKE) groff2html
-endif
+	echo MAN2HTML is $(MAN2HTML)
+	@if [ $(MAN2HTML) != "false" ]; then \
+		$(ECHO) "<html><head><title>Privoxy Man page</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../p_web.css\"></head><body><H2>NAME</H2>" > doc/webserver/man-page/privoxy-man-page.html; \
+		man ./$(MAN_PAGE) | $(MAN2HTML) -bare >> doc/webserver/man-page/privoxy-man-page.html; \
+		$(ECHO) "</body></html>" >> doc/webserver/man-page/privoxy-man-page.html; \
+	else \
+		$(MAKE) groff2html; \
+	fi;
 
 # Build man page from sgml. This requires the SGMLSpm perl module.
-# See CPAN, or your favorite perl repository. This is the preferred 
+# See CPAN, or your favorite perl repository. This is the preferred
 # target for man page generation!
 man: dok-release
 	mkdir -p doc/source/temp && cd doc/source/temp && $(RM) * ;\
 	nsgmls ../privoxy-man-page.sgml  | sgmlspl ../../../utils/docbook2man/docbook2man-spec.pl &&\
-	perl -pi.bak -e 's/ <URL:.*>//; s/\[ /\[/g' privoxy.1 ;\
-	perl -pi.bak -e "s/\[ /\[/g;s/á/\\\\['a]/g;s/é/\\\\['e]/g" privoxy.1; \
-	perl -pi.bak -e "s/ö/\\\\[:o]/g" privoxy.1; \
-	perl -pi.bak -e 's/([ {])-([a-z])/$$1\\-$$2/g' privoxy.1; \
-	perl -pi.bak -e 's/ --([a-z])/ \\-\\-$$1/g' privoxy.1; \
-	perl -pi.bak -e 's/\\fB--/\\fB\\-\\-/g' privoxy.1; \
-	$(DB) ../privoxy-man-page.sgml && $(MV) -f privoxy.1 ../../../privoxy.1
+	perl -pi.bak -e 's/ <URL:.*>//; s/\[ /\[/g' $(MAN_PAGE) ;\
+	perl -pi.bak -e "s/\[ /\[/g;s/á/\\\\['a]/g;s/é/\\\\['e]/g" $(MAN_PAGE); \
+	perl -pi.bak -e "s/ö/\\\\[:o]/g" $(MAN_PAGE); \
+	perl -pi.bak -e 's/([ {])-([a-z])/$$1\\-$$2/g' $(MAN_PAGE); \
+	perl -pi.bak -e 's/ --([a-z])/ \\-\\-$$1/g' $(MAN_PAGE); \
+	perl -pi.bak -e 's/\\fB--/\\fB\\-\\-/g' $(MAN_PAGE); \
+	$(DB) ../privoxy-man-page.sgml && $(MV) -f $(MAN_PAGE) ../../../$(MAN_PAGE)
 
 # For those with man2html ala RH7s.
 man2html:
 	mkdir -p doc/webserver/man-page
-ifneq ($(MAN2HTML),false)
-	$(MAN2HTML) privoxy.1 |grep -v "^Content-type" > tmp.html
-	$(PERL) -pi.bak -e 's/<A .*Contents<\/A>//; s/<A .*man2html<\/A>/man2html/' tmp.html
-	$(PERL) -pi.bak -e 's/(<\/HEAD>)/<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"..\/p_doc.css\"><\/HEAD>/' tmp.html
-# Twice because my version of man2html is pulling in commas and periods in URLs.
-	$(PERL) -pi.bak -e 's/(<A.*),(">)/$$1$$2/g' tmp.html
-	$(PERL) -pi.bak -e 's,\.">,">,g' tmp.html
-	$(PERL) -pi.bak -e "s/\['a\]/\&aacute;/g;s/\['e\]/\&eacute;/g" tmp.html
-# Get rid of spurious  from conversion. (How to do this with perl?)
-	$(SED) -e 's///g' tmp.html > doc/webserver/man-page/privoxy-man-page.html && $(RM) tmp.*
-else
-	$(MAKE) groff2html
-endif
-
+	@if [ $(MAN2HTML) != "false" ]; then \
+		$(MAN2HTML) $(MAN_PAGE) |grep -v "^Content-type" > tmp.html; \
+		$(PERL) -pi.bak -e 's/<A .*Contents<\/A>//; s/<A .*man2html<\/A>/man2html/' tmp.html; \
+		$(PERL) -pi.bak -e 's/(<\/HEAD>)/<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"..\/p_doc.css\"><\/HEAD>/' tmp.html; \
+		$(PERL) -pi.bak -e 's/(<A.*),(">)/$$1$$2/g' tmp.html; \
+		$(PERL) -pi.bak -e 's,\.">,">,g' tmp.html; \
+		$(PERL) -pi.bak -e "s/\['a\]/\&aacute;/g;s/\['e\]/\&eacute;/g" tmp.html; \
+		$(SED) -e 's///g' tmp.html > doc/webserver/man-page/privoxy-man-page.html && $(RM) tmp.*; \
+	else \
+		$(MAKE) groff2html; \
+	fi;
 
 # Otherwise we get plain groff conversion.
 groff2html:
-	$(G2H_CMD) ./privoxy.1 | $(SED) -e 's@</head>@<link REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></head>@' > doc/webserver/man-page/privoxy-man-page.html
+	$(G2H_CMD) ./$(MAN_PAGE) | $(SED) -e 's@</head>@<link REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></head>@' > doc/webserver/man-page/privoxy-man-page.html
 
 
 # readme page and INSTALL file
@@ -512,7 +511,7 @@ dok-readme: dok-release
 # for documentation, etc.
 #
 # index.html for webserver:
-dok-webserver: 
+dok-webserver:
 	cd doc/source/webserver && $(DB)-notoc -ip-homepage -V nochunks index.sgml > ../../webserver/index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
 	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
@@ -522,7 +521,7 @@ dok-webserver:
      doc/webserver/index.html && $(RM) doc/webserver/*.bak
 
 # privoxy-index.html for local documentation:
-dok-index: 
+dok-index:
 	cd doc/source/webserver && $(DB)-notoc -ip-index -V nochunks index.sgml > ../../webserver/privoxy-index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
 	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
@@ -536,7 +535,7 @@ dok: dok-release dok-devel dok-user dok-faq dok-readme dok-webserver dok-authors
 	@$(ECHO) Documentation created.
 
 ## Make AUTHORS file
-dok-authors: 
+dok-authors:
 	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && env -u LANG $(WDUMP) \
 	  tmp.html > ../../AUTHORS && $(RM) tmp.html
 
@@ -548,19 +547,18 @@ dok-release:
      s/<!entity +p-status.*>/<!entity p-status "$(CODE_STATUS)">/' \
      doc/source/*sgml doc/source/*/*sgml
 	$(RM) -r doc/source/*bak doc/source/*/*bak
-ifeq ($(CODE_STATUS),stable)
-	@$(ECHO) Setting docs to stable $(VERSION)
-	@$(PERL) -pi.bak -e 's/<!entity +% +p-stable.*>/<!entity % p-stable "INCLUDE">/;\
-     s/<!entity +% +p-not-stable.*>/<!entity % p-not-stable "IGNORE">/' \
-     doc/source/*sgml doc/source/*/*sgml
-	$(RM) -r doc/source/*bak doc/source/*/*bak
-else
-	@$(ECHO) Setting docs to not stable $(VERSION)
-	@$(PERL) -pi.bak -e 's/<!entity +% +p-stable.*>/<!entity % p-stable "IGNORE">/;\
-     s/<!entity +% +p-not-stable.*>/<!entity % p-not-stable "INCLUDE">/' \
-     doc/source/*sgml doc/source/*/*sgml
-	$(RM) -r doc/source/*bak doc/source/*/*bak
-endif
+	@if [ $(CODE_STATUS) = "stable" ]; then \
+		$(ECHO) Setting docs to stable $(VERSION); \
+		$(PERL) -pi.bak -e 's/<!entity +% +p-stable.*>/<!entity % p-stable "INCLUDE">/;\
+			s/<!entity +% +p-not-stable.*>/<!entity % p-not-stable "IGNORE">/' \
+		doc/source/*sgml doc/source/*/*sgml; \
+	else \
+		$(ECHO) Setting docs to not stable $(VERSION); \
+		$(PERL) -pi.bak -e 's/<!entity +% +p-stable.*>/<!entity % p-stable "IGNORE">/; \
+			s/<!entity +% +p-not-stable.*>/<!entity % p-not-stable "INCLUDE">/' \
+		doc/source/*sgml doc/source/*/*sgml; \
+	fi;
+	$(RM) -r doc/source/*bak doc/source/*/*bak;
 
 # Create release announcement in text and html, with short and long versions.
 # This is a standalone target, and must be invoked directly.
@@ -570,13 +568,13 @@ endif
 # 	mv -f index.html announce.html && $(WDUMP) announce.html > announce.txt
 # 	cd $(DOC_TMP) && $(DB) announce.sgml &&\
 # 	mv -f index.html announce-mini.html && $(WDUMP) announce-mini.html > announce-mini.txt &&\
-# 	mv -f *html *txt ../../.. 
+# 	mv -f *html *txt ../../..
 # 	rm -fr $(DOC_TMP)
 
-# The main Privoxy config file, generated from sgml sources. 
-# NOTE: This will require some hand editing. The new file is outputted 
+# The main Privoxy config file, generated from sgml sources.
+# NOTE: This will require some hand editing. The new file is outputted
 # as config.new so that problem sections can be compared to previous
-# version. This is hardcored to w3m for html/text conversion. Also, 
+# version. This is hardcored to w3m for html/text conversion. Also,
 # requires the shell util 'fmt'.
 config-file: dok-release
 	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
@@ -595,7 +593,7 @@ config-file: dok-release
 
 # config file, alternate version using lynx (perl stuff unfinished). Lynx
 # does not do so good a job.
-config-file-alt: 
+config-file-alt:
 	cd doc/source && $(ECHO) -e ".h2 JUSTIFY\\nJUSTIFY:FALSE" > __tmp.lynx_cfg &&\
 	$(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
 	lynx -cfg=__tmp.lynx_cfg -width=78 -dump __tmp.html > ../../config.new && $(RM) -r __tmp.*
@@ -609,36 +607,42 @@ config-file-alt:
 # moves dokumentation to webserver
 #
 #############################################################################
-webserver: tidy
+webserver: clean-editor-files
 	@$(ECHO) -------------------------------------------------------
 	@$(ECHO) You will need to "create" a SF shell first:
-	@$(ECHO)    ssh -t USER,PROJECT@shell.sourceforge.net create
+	@$(ECHO)    ssh -t SF-USER-ID,ijbswa@shell.sourceforge.net create
 	@$(ECHO) Please make sure your documentation files are up to date.
-	@$(ECHO) Note that this command updates the home page and scps 
+	@$(ECHO) Note that this command updates the home page and copys
 	@$(ECHO) all stuff to the webserver, it will not remove obsolete documents.
-	@$(ECHO) You will also need to change the user-manual symlink manually.
+	@$(ECHO) Note that a botched upload can result in the documentation
+	@$(ECHO) on the website becoming unreachable! Also the CSS files
+	@$(ECHO) currently seem to end up at the wrong place.
 	@$(ECHO) -------------------------------------------------------
+
+	@$(ECHO) Replacing the user-manual symlink
+	@$(SSH) shell.sourceforge.net "cd /home/groups/i/ij/ijbswa/htdocs && rm user-manual \
+	 && mkdir -p $(VERSION)/user-manual && ln -s $(VERSION)/user-manual user-manual"
 
 	@$(ECHO) Uploading html
 	@cd doc/webserver; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
-          $(TAR) cf - $$upload | ssh shell.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
+          $(TAR) cf - $$upload | $(SSH) shell.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
 
 	@$(ECHO) Fixing permissions
 	@$(SSH) shell.sourceforge.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
 	@$(SSH) shell.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/ -type f | xargs chmod 664 2>/dev/null; true'
 
-web-actions: tidy
-	@$(ECHO) Uploading 
+web-actions: clean-editor-files
+	@$(ECHO) Uploading
 	@cd doc/webserver/actions; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
-          $(TAR) cf - $$upload | ssh ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/actions; tar xvm'
+          $(TAR) cf - $$upload | $(SSH) ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/actions; tar xvm'
 
 	@$(ECHO) Fixing permissions
 	@$(SSH) ijbswa.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/actions/ -type f | xargs chmod 664 2>/dev/null'
 	@$(SSH) ijbswa.sourceforge.net 'chmod 666 /home/groups/i/ij/ijbswa/htdocs/actions/results/actions-feedback.txt 2>/dev/null'
 
-## 
+##
 dok-put:
 	tar --exclude ".cvsignore" --exclude "CVS" --exclude "source" --exclude ".htaccess" \
 	     --exclude "obsolete" --exclude "actions" --exclude "*.zip" --exclude "robots.txt"\
@@ -654,6 +658,22 @@ dok-get:
 	$(WGET) http://www.privoxy.org/docs/$(DOC_FILE) ;\
 	$(TAR) -zxvf $(DOC_FILE)
 
+#############################################################################
+#
+# Try to clean up the generated HTML files.
+#
+# The files are a such a mess that some of them require two tidy runs
+# in row as the first abort prematurely. The vanilla tidy output renders
+# poorly as it contains a bit too much white-space, so we additionally run
+# the files through perl to fix this again.
+#
+#############################################################################
+dok-tidy:
+	for html_file in `find doc/webserver -name "*.html"`; do \
+		$(TIDY) $$html_file || $(TIDY) $$html_file; \
+		$(PERL) -i'' -e 's@^\s*<br>\s*$$@@; s@ +$$@@;' -n -p $$html_file; \
+	done
+
 
 #############################################################################
 # Source file dependencies
@@ -666,7 +686,7 @@ cgisimple.@OBJEXT@: cgisimple.c cgisimple.h config.h $(PROJECT_H_DEPS) cgi.h lis
 deanimate.@OBJEXT@: deanimate.c deanimate.h config.h $(PROJECT_H_DEPS)
 encode.@OBJEXT@:    encode.c    encode.h    config.h
 errlog.@OBJEXT@:    errlog.c    errlog.h    config.h $(PROJECT_H_DEPS) @WIN_ONLY@w32log.h
-filters.@OBJEXT@:   filters.c   filters.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h gateway.h jbsockets.h jcc.h loadcfg.h parsers.h ssplit.h cgi.h deanimate.h urlmatch.h @WIN_ONLY@win32.h 
+filters.@OBJEXT@:   filters.c   filters.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h gateway.h jbsockets.h jcc.h loadcfg.h parsers.h ssplit.h cgi.h deanimate.h urlmatch.h @WIN_ONLY@win32.h
 gateway.@OBJEXT@:   gateway.c   gateway.h   config.h $(PROJECT_H_DEPS) errlog.h jbsockets.h jcc.h loadcfg.h
 jbsockets.@OBJEXT@: jbsockets.c jbsockets.h config.h $(PROJECT_H_DEPS) filters.h
 jcc.@OBJEXT@:       jcc.c       jcc.h       config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h loadcfg.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h w32svrapi.h cgi.h
@@ -682,12 +702,12 @@ urlmatch.@OBJEXT@:  urlmatch.c  urlmatch.h  config.h $(PROJECT_H_DEPS) errlog.h 
 gnu_regex.@OBJEXT@: gnu_regex.c gnu_regex.h config.h
 
 # PCRS
-pcrs.@OBJEXT@: pcrs.c pcrs.h config.h @STATIC_PCRE_ONLY@pcre/pcre.h 
+pcrs.@OBJEXT@: pcrs.c pcrs.h config.h @STATIC_PCRE_ONLY@pcre/pcre.h
 
 # PCRE
 pcre/get.@OBJEXT@:        pcre/get.c        pcre/config.h pcre/internal.h pcre/pcre.h
 pcre/maketables.@OBJEXT@: pcre/maketables.c pcre/config.h pcre/internal.h pcre/pcre.h
-pcre/pcre.@OBJEXT@:       pcre/pcre.c       pcre/config.h pcre/internal.h pcre/pcre.h pcre/chartables.c 
+pcre/pcre.@OBJEXT@:       pcre/pcre.c       pcre/config.h pcre/internal.h pcre/pcre.h pcre/chartables.c
 pcre/pcreposix.@OBJEXT@:  pcre/pcreposix.c  pcre/config.h pcre/internal.h pcre/pcre.h pcre/pcreposix.h
 pcre/study.@OBJEXT@:      pcre/study.c      pcre/config.h pcre/internal.h pcre/pcre.h
 
@@ -726,20 +746,20 @@ clean:
 	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action \
 		`find . -name TAGS -o -name tags | $(GREP) -v .git` config.base config.tmp
 
-tidy:
+clean-editor-files:
 	$(RM) `find . -name "*~"`
 	$(RM) `find . -name "#*#"` # Emacs backup files
 	$(RM) `find . -name ".\#*"`
 
-clobber: tidy
+clobber: clean-editor-files
 	$(RM) GNUmakefile configure config.h.in config.h config.cache config.status config.log logfile \
               privoxy.log core *.tar.gz *.tar privoxy-cl.spec doc/source/ldp.dsl config.new
 	$(RM) -r autom4te.cache
 
 #
-# FIXME: What is all this? 
+# FIXME: What is all this?
 #
-	$(RM) cscope.*  *.pdb *.lib *.exp 
+	$(RM) cscope.*  *.pdb *.lib *.exp
 
 distclean: clobber
 
@@ -780,11 +800,11 @@ GROUP_T:=$(shell if [ x$(GROUP) = x ] && [ x$(USER) != x ];then \
 install-strip:
 	$(MAKE) install STRIP=-s
 
-# FIXME: Test USER and GROUP on Slack to make sure this works as 
+# FIXME: Test USER and GROUP on Slack to make sure this works as
 # intended.
 #
-# FIXME: id handling needs help, probably via configure, since 'id -u' is not 
-# universally reliable (eg Solaris). Group handling could be better. 
+# FIXME: id handling needs help, probably via configure, since 'id -u' is not
+# universally reliable (eg Solaris). Group handling could be better.
 # Perhaps the whole user/group validation should be done here, and simplified.
 PROGRAM_V = Privoxy $(VERSION) $(CODE_STATUS)
 install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
@@ -792,7 +812,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	@if [ -n "$(USER)" ]; then \
 		$(ID) $(USER) >/dev/null || exit 1;\
 	fi
-	@# Test for valid group. FIXME. USER does not have to belong to GROUP 
+	@# Test for valid group. FIXME. USER does not have to belong to GROUP
 	@# for file ownership purposes.
 # 	if [ -n "$(GROUP_T)" ] && [ -n "$(USER)" ] && ! $(GROUPS) $(USER) | $(GREP) "\<$(GROUP_T)\>" >/dev/null; then \
 # 		$(ECHO) Group $(GROUP_T) for User $(USER) is invalid && exit 1 ;\
@@ -838,8 +858,8 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $(DESTDIR)$$DOC/user-manual;\
 	fi
 	@# Not all platforms support gzipped man pages.
-	@$(ECHO) Installing man page to $(DESTDIR)$(MAN_DEST)/privoxy.1
-	-$(INSTALL) $(INSTALL_T) privoxy.1  $(DESTDIR)$(MAN_DEST)/privoxy.1
+	@$(ECHO) Installing man page to $(DESTDIR)$(MAN_DEST)/$(MAN_PAGE)
+	-$(INSTALL) $(INSTALL_T) $(MAN_PAGE)  $(DESTDIR)$(MAN_DEST)/$(MAN_PAGE)
 
 	@# Change the config file default directories according to the configured ones
 	@$(ECHO) Rewriting config for this installation
@@ -855,10 +875,10 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
       $(SED) 's+^#\?user-manual .*+user-manual $(prefix)/doc/privoxy/user-manual/+' config.tmp >config.updated ;\
 	fi;\
 	$(MV) config config.base
-	$(MV) config.updated config 
+	$(MV) config.updated config
 
-	@# Install the config support files. Test for root install, and abort 
-	@# if there is no privoxy user, and no other user was enabled during 
+	@# Install the config support files. Test for root install, and abort
+	@# if there is no privoxy user, and no other user was enabled during
 	@# configure. Later, install init script if appropriate.
 	@$(ECHO) Installing templates to $(DESTDIR)$(CONF_DEST)/templates
 	@for i in `find templates -type f`; do \
@@ -987,7 +1007,7 @@ uninstall: CONF_DEST LOG_DEST PID_DEST check_doc
 
 	@# man page and docs
 	@$(ECHO) Removing $(PROGRAM) docs
-	-$(RM) $(DESTDIR)$(MAN_DEST)/privoxy.1*
+	-$(RM) $(DESTDIR)$(MAN_DEST)/$(MAN_PAGE)*
 	-$(RM) -r $(DESTDIR)$(DOC_DEST) || $(RM) -r $(DESTDIR)$(prefix)/doc/privoxy
 
 	@# Log and pidfile

@@ -1,4 +1,4 @@
-const char list_rcs[] = "$Id: list.c,v 1.21 2009/05/16 13:27:20 fabiankeil Exp $";
+const char list_rcs[] = "$Id: list.c,v 1.25 2011/09/04 11:10:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/list.c,v $
@@ -185,13 +185,13 @@ static int list_is_valid (const struct list *the_list)
        * Note that the 1000 limit was hit by a real user in tracker 911950;
        * removing it for now.  Real circular references should eventually
        * be caught by the check above, anyway.
-       */         
+       */
       /*
       if (entry > 1000)
-      {           
+      {
          return 0;
-      }           
-      */          
+      }
+      */
 
       /*
        * Check this isn't marked as the last entry, unless of course it's
@@ -496,7 +496,7 @@ char *list_to_text(const struct list *the_list)
    assert(list_is_valid(the_list));
 
    /*
-    * Calculate the lenght of the final text.
+    * Calculate the length of the final text.
     * '2' because of the '\r\n' at the end of
     * each string and at the end of the text.
     */
@@ -839,7 +839,7 @@ int list_contains_item(const struct list *the_list, const char *str)
       if (entry->str == NULL)
       {
          /*
-          * NULL pointers are allowed in some lists. 
+          * NULL pointers are allowed in some lists.
           * For example for csp->headers in case a
           * header was removed.
           */
@@ -921,7 +921,7 @@ void free_map(struct map *the_map)
  *
  *                Note: Since all strings will be free()d in free_map()
  *                      later, set the copy flags for constants or
- *                      strings that will be independantly free()d.
+ *                      strings that will be independently free()d.
  *
  *                Note2: This function allows NULL parameters - it
  *                       returns JB_ERR_MEMORY in that case.
@@ -1040,7 +1040,7 @@ jb_err unmap(struct map *the_map, const char *name)
 
    assert(the_map);
    assert(name);
-   
+
    last_entry = the_map->first;
 
    for (cur_entry = the_map->first; cur_entry != NULL; cur_entry = cur_entry->next)
@@ -1060,13 +1060,13 @@ jb_err unmap(struct map *the_map, const char *name)
          }
 
          /*
-          * Update the map's last pointer 
+          * Update the map's last pointer
           */
          if (cur_entry == the_map->last)
          {
             the_map->last = last_entry;
          }
-         
+
          /*
           * Free the map_entry
           */

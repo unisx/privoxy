@@ -2,7 +2,7 @@
 
 ##########################################################################
 #
-# $Id: changelog2doc.pl,v 1.7 2010/10/31 13:29:31 fabiankeil Exp $
+# $Id: changelog2doc.pl,v 1.8 2011/11/13 17:00:54 fabiankeil Exp $
 #
 # Filter to parse the ChangeLog and translate the changes for
 # the most recent version into something that looks like markup
@@ -86,6 +86,7 @@ sub create_listitem_markup($) {
     } else {
         if (defined $entry->{last_list_item}) {
             $markup .= $lws . " </para>\n";
+            $markup .= $lws . " </listitem>\n";
             $markup .= $lws . "</itemizedlist>\n";
             $lws = $default_lws;
         }

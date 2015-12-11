@@ -1,23 +1,23 @@
 #ifndef MISCUTIL_H_INCLUDED
 #define MISCUTIL_H_INCLUDED
-#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.31 2009/05/16 13:27:20 fabiankeil Exp $"
+#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.34 2011/09/04 11:10:56 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.h,v $
  *
- * Purpose     :  zalloc, hash_string, safe_strerror, strcmpic,
- *                strncmpic, and MinGW32 strdup functions.  These are
- *                each too small to deserve their own file but don't 
- *                really fit in any other file.
+ * Purpose     :  zalloc, hash_string, strcmpic, strncmpic, and
+ *                MinGW32 strdup functions.  These are each too small
+ *                to deserve their own file but don't really fit in
+ *                any other file.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -53,8 +53,6 @@ extern void write_pid_file(void);
 
 extern unsigned int hash_string(const char* s);
 
-extern char *safe_strerror(int err);
-
 extern int strcmpic(const char *s1, const char *s2);
 extern int strncmpic(const char *s1, const char *s2, size_t n);
 
@@ -68,10 +66,6 @@ extern char *bindup(const char *string, size_t len);
 extern char *make_path(const char * dir, const char * file);
 
 long int pick_from_range(long int range);
-
-#ifdef __MINGW32__
-extern char *strdup(const char *s);
-#endif /* def __MINGW32__ */
 
 #ifndef HAVE_SNPRINTF
 extern int snprintf(char *, size_t, const char *, /*args*/ ...);

@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.79 2010/07/26 11:30:09 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.110 2011/11/18 23:53:26 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -8,14 +8,14 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.79 2010/07/26 11:30:09 fabian
  *                OS-independent.  Contains #ifdefs to make this work
  *                on many platforms.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                by and Copyright (C) 1997 Anonymous Coders and
  *                Junkbusters Corporation.  http://www.junkbusters.com
  *
- *                This program is free software; you can redistribute it 
+ *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
  *                Public License as published by the Free Software
  *                Foundation; either version 2 of the License, or (at
@@ -118,6 +118,11 @@ const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
 
 #define MAX_LISTEN_BACKLOG 128
 
+#ifdef HAVE_RFC2553
+static jb_socket rfc2553_connect_to(const char *host, int portnum, struct client_state *csp);
+#else
+static jb_socket no_rfc2553_connect_to(const char *host, int portnum, struct client_state *csp);
+#endif
 
 /*********************************************************************
  *
@@ -130,30 +135,75 @@ const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
  *          1  :  host = hostname to connect to
  *          2  :  portnum = port to connent on (XXX: should be unsigned)
  *          3  :  csp = Current client state (buffers, headers, etc...)
- *                      Not modified, only used for source IP and ACL.
  *
  * Returns     :  JB_INVALID_SOCKET => failure, else it is the socket
  *                file descriptor.
  *
  *********************************************************************/
+jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
+{
+   jb_socket fd;
+   int forwarded_connect_retries = 0;
+
+   do
+   {
+      /*
+       * XXX: The whole errno overloading is ridiculous and should
+       *      be replaced with something sane and thread safe
+       */
+      /* errno = 0;*/
+#ifdef HAVE_RFC2553
+      fd = rfc2553_connect_to(host, portnum, csp);
+#else
+      fd = no_rfc2553_connect_to(host, portnum, csp);
+#endif
+      if ((fd != JB_INVALID_SOCKET) || (errno == EINVAL)
+         || (csp->fwd == NULL)
+         || ((csp->fwd->forward_host == NULL) && (csp->fwd->type == SOCKS_NONE)))
+      {
+         break;
+      }
+      forwarded_connect_retries++;
+      if (csp->config->forwarded_connect_retries != 0)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Attempt %d of %d to connect to %s failed. Trying again.",
+            forwarded_connect_retries, csp->config->forwarded_connect_retries, host);
+      }
+
+   } while (forwarded_connect_retries < csp->config->forwarded_connect_retries);
+
+   return fd;
+}
+
 #ifdef HAVE_RFC2553
 /* Getaddrinfo implementation */
-jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
+static jb_socket rfc2553_connect_to(const char *host, int portnum, struct client_state *csp)
 {
    struct addrinfo hints, *result, *rp;
    char service[6];
    int retval;
    jb_socket fd;
    fd_set wfds;
-   struct timeval tv[1];
+   struct timeval timeout;
 #if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA) && !defined(__OS2__)
    int   flags;
 #endif
    int connect_failed;
+   /*
+    * XXX: Initializeing it here is only necessary
+    *      because not all situations are properly
+    *      covered yet.
+    */
+   int socket_error = 0;
 
 #ifdef FEATURE_ACL
    struct access_control_addr dst[1];
 #endif /* def FEATURE_ACL */
+
+   /* Don't leak memory when retrying. */
+   freez(csp->error_message);
+   freez(csp->http->host_ip_addr_str);
 
    retval = snprintf(service, sizeof(service), "%d", portnum);
    if ((-1 == retval) || (sizeof(service) <= retval))
@@ -161,6 +211,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
       log_error(LOG_LEVEL_ERROR,
          "Port number (%d) ASCII decimal representation doesn't fit into 6 bytes",
          portnum);
+      csp->error_message = strdup("Invalid port number");
       csp->http->host_ip_addr_str = strdup("unknown");
       return(JB_INVALID_SOCKET);
    }
@@ -178,8 +229,18 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
          "Can not resolve %s: %s", host, gai_strerror(retval));
       /* XXX: Should find a better way to propagate this error. */
       errno = EINVAL;
+      csp->error_message = strdup(gai_strerror(retval));
       csp->http->host_ip_addr_str = strdup("unknown");
       return(JB_INVALID_SOCKET);
+   }
+
+   csp->http->host_ip_addr_str = malloc(NI_MAXHOST);
+   if (NULL == csp->http->host_ip_addr_str)
+   {
+      freeaddrinfo(result);
+      log_error(LOG_LEVEL_ERROR,
+         "Out of memory while getting the server IP address.");
+      return JB_INVALID_SOCKET;
    }
 
    for (rp = result; rp != NULL; rp = rp->ai_next)
@@ -191,38 +252,29 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
       if (block_acl(dst, csp))
       {
 #ifdef __OS2__
-         errno = SOCEPERM;
+         socket_error = errno = SOCEPERM;
 #else
-         errno = EPERM;
+         socket_error = errno = EPERM;
 #endif
          continue;
       }
 #endif /* def FEATURE_ACL */
 
-      csp->http->host_ip_addr_str = malloc(NI_MAXHOST);
-      if (NULL == csp->http->host_ip_addr_str)
-      {
-         log_error(LOG_LEVEL_ERROR,
-            "Out of memory while getting the server IP address.");
-         return JB_INVALID_SOCKET;
-      }
       retval = getnameinfo(rp->ai_addr, rp->ai_addrlen,
          csp->http->host_ip_addr_str, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
-      if (!csp->http->host_ip_addr_str || retval)
+      if (retval)
       {
          log_error(LOG_LEVEL_ERROR,
-            "Can not save csp->http->host_ip_addr_str: %s",
-            (csp->http->host_ip_addr_str) ?
-            gai_strerror(retval) : "Insufficient memory");
-         freez(csp->http->host_ip_addr_str);
+            "Failed to get the host name from the socket structure: %s",
+            gai_strerror(retval));
          continue;
       }
 
+      fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 #ifdef _WIN32
-      if ((fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol)) ==
-            JB_INVALID_SOCKET)
+      if (fd == JB_INVALID_SOCKET)
 #else
-      if ((fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol)) < 0)
+      if (fd < 0)
 #endif
       {
          continue;
@@ -246,10 +298,12 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
       connect_failed = 0;
       while (connect(fd, rp->ai_addr, rp->ai_addrlen) == JB_INVALID_SOCKET)
       {
+#ifdef __OS2__
+         errno = sock_errno();
+#endif /* __OS2__ */
+
 #ifdef _WIN32
          if (errno == WSAEINPROGRESS)
-#elif __OS2__
-         if (sock_errno() == EINPROGRESS)
 #else /* ifndef _WIN32 */
          if (errno == EINPROGRESS)
 #endif /* ndef _WIN32 || __OS2__ */
@@ -257,12 +311,9 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
             break;
          }
 
-#ifdef __OS2__
-         if (sock_errno() != EINTR)
-#else
          if (errno != EINTR)
-#endif /* __OS2__ */
          {
+            socket_error = errno;
             close_socket(fd);
             connect_failed = 1;
             break;
@@ -285,31 +336,36 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
       FD_ZERO(&wfds);
       FD_SET(fd, &wfds);
 
-      tv->tv_sec  = 30;
-      tv->tv_usec = 0;
+      memset(&timeout, 0, sizeof(timeout));
+      timeout.tv_sec  = 30;
 
-      /* MS Windows uses int, not SOCKET, for the 1st arg of select(). Wierd! */
-      if ((select((int)fd + 1, NULL, &wfds, NULL, tv) > 0)
+      /* MS Windows uses int, not SOCKET, for the 1st arg of select(). Weird! */
+      if ((select((int)fd + 1, NULL, &wfds, NULL, &timeout) > 0)
          && FD_ISSET(fd, &wfds))
       {
-         /*
-          * See Linux connect(2) man page for more info
-          * about connecting on non-blocking socket.
-          */
-         int socket_in_error;
-         socklen_t optlen = sizeof(socket_in_error);
-         if (!getsockopt(fd, SOL_SOCKET, SO_ERROR, &socket_in_error, &optlen))
+         socklen_t optlen = sizeof(socket_error);
+         if (!getsockopt(fd, SOL_SOCKET, SO_ERROR, &socket_error, &optlen))
          {
-            if (!socket_in_error)
+            if (!socket_error)
             {
                /* Connection established, no need to try other addresses. */
                break;
             }
-            log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s: %s.",
-               csp->http->host_ip_addr_str, service, strerror(socket_in_error));
+            if (rp->ai_next != NULL)
+            {
+               /*
+                * There's another address we can try, so log that this
+                * one didn't work out. If the last one fails, too,
+                * it will get logged outside the loop body so we don't
+                * have to mention it here.
+                */
+               log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s: %s.",
+                  csp->http->host_ip_addr_str, service, strerror(socket_error));
+            }
          }
          else
          {
+            socket_error = errno;
             log_error(LOG_LEVEL_ERROR, "Could not get the state of "
                "the connection to [%s]:%s: %s; dropping connection.",
                csp->http->host_ip_addr_str, service, strerror(errno));
@@ -323,8 +379,9 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    freeaddrinfo(result);
    if (!rp)
    {
-      log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s.",
-         host, service);
+      log_error(LOG_LEVEL_CONNECT, "Could not connect to [%s]:%s: %s.",
+         host, service, strerror(socket_error));
+      csp->error_message = strdup(strerror(socket_error));
       return(JB_INVALID_SOCKET);
    }
    log_error(LOG_LEVEL_CONNECT, "Connected to %s[%s]:%s.",
@@ -337,7 +394,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
 #else /* ndef HAVE_RFC2553 */
 /* Pre-getaddrinfo implementation */
 
-jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
+static jb_socket no_rfc2553_connect_to(const char *host, int portnum, struct client_state *csp)
 {
    struct sockaddr_in inaddr;
    jb_socket fd;
@@ -351,6 +408,9 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
 #ifdef FEATURE_ACL
    struct access_control_addr dst[1];
 #endif /* def FEATURE_ACL */
+
+   /* Don't leak memory when retrying. */
+   freez(csp->http->host_ip_addr_str);
 
    memset((char *)&inaddr, 0, sizeof inaddr);
 
@@ -392,10 +452,11 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    }
 #endif /* ndef _WIN32 */
 
+   fd = socket(inaddr.sin_family, SOCK_STREAM, 0);
 #ifdef _WIN32
-   if ((fd = socket(inaddr.sin_family, SOCK_STREAM, 0)) == JB_INVALID_SOCKET)
+   if (fd == JB_INVALID_SOCKET)
 #else
-   if ((fd = socket(inaddr.sin_family, SOCK_STREAM, 0)) < 0)
+   if (fd < 0)
 #endif
    {
       return(JB_INVALID_SOCKET);
@@ -420,7 +481,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    {
 #ifdef _WIN32
       if (errno == WSAEINPROGRESS)
-#elif __OS2__ 
+#elif __OS2__
       if (sock_errno() == EINPROGRESS)
 #else /* ifndef _WIN32 */
       if (errno == EINPROGRESS)
@@ -429,7 +490,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
          break;
       }
 
-#ifdef __OS2__ 
+#ifdef __OS2__
       if (sock_errno() != EINTR)
 #else
       if (errno != EINTR)
@@ -455,7 +516,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    tv->tv_sec  = 30;
    tv->tv_usec = 0;
 
-   /* MS Windows uses int, not SOCKET, for the 1st arg of select(). Wierd! */
+   /* MS Windows uses int, not SOCKET, for the 1st arg of select(). Weird! */
    if (select((int)fd + 1, NULL, &wfds, NULL, tv) <= 0)
    {
       close_socket(fd);
@@ -491,11 +552,6 @@ int write_socket(jb_socket fd, const char *buf, size_t len)
    if (len == 0)
    {
       return 0;
-   }
-
-   if (len < 0) /* constant condition - size_t isn't ever negative */ 
-   {
-      return 1;
    }
 
    log_error(LOG_LEVEL_WRITING, "to socket %d: %N", fd, len, buf);
@@ -641,7 +697,7 @@ void close_socket(jb_socket fd)
 #if defined(_WIN32) || defined(__BEOS__)
    closesocket(fd);
 #elif defined(AMIGA)
-   CloseSocket(fd); 
+   CloseSocket(fd);
 #elif defined(__OS2__)
    soclose(fd);
 #else
@@ -717,10 +773,7 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    }
    hints.ai_socktype = SOCK_STREAM;
    hints.ai_flags = AI_PASSIVE;
-#ifdef AI_ADDRCONFIG
-   hints.ai_flags |= AI_ADDRCONFIG;
-#endif
-   hints.ai_protocol = 0; /* Realy any stream protocol or TCP only */
+   hints.ai_protocol = 0; /* Really any stream protocol or TCP only */
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;
    hints.ai_next = NULL;
@@ -871,14 +924,17 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
  *          1  :  afd = File descriptor returned from accept().
  *          2  :  ip_address = Pointer to return the pointer to
  *                             the ip address string.
- *          3  :  hostname =   Pointer to return the pointer to
+ *          3  :  port =       Pointer to return the pointer to
+ *                             the TCP port string.
+ *          4  :  hostname =   Pointer to return the pointer to
  *                             the hostname or NULL if the caller
  *                             isn't interested in it.
  *
  * Returns     :  void.
  *
  *********************************************************************/
-void get_host_information(jb_socket afd, char **ip_address, char **hostname)
+void get_host_information(jb_socket afd, char **ip_address, char **port,
+                          char **hostname)
 {
 #ifdef HAVE_RFC2553
    struct sockaddr_storage server;
@@ -911,6 +967,7 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
       *hostname = NULL;
    }
    *ip_address = NULL;
+   *port = NULL;
 
    if (!getsockname(afd, (struct sockaddr *) &server, &s_length))
    {
@@ -919,25 +976,36 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
          log_error(LOG_LEVEL_ERROR, "getsockname() truncated server address");
          return;
       }
+      *port = malloc(NI_MAXSERV);
+      if (NULL == *port)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while getting the client's port.");
+         return;
+      }
 #ifdef HAVE_RFC2553
       *ip_address = malloc(NI_MAXHOST);
       if (NULL == *ip_address)
       {
          log_error(LOG_LEVEL_ERROR,
             "Out of memory while getting the client's IP address.");
+         freez(*port);
          return;
       }
       retval = getnameinfo((struct sockaddr *) &server, s_length,
-         *ip_address, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+         *ip_address, NI_MAXHOST, *port, NI_MAXSERV,
+         NI_NUMERICHOST|NI_NUMERICSERV);
       if (retval)
       {
          log_error(LOG_LEVEL_ERROR,
             "Unable to print my own IP address: %s", gai_strerror(retval));
          freez(*ip_address);
+         freez(*port);
          return;
       }
 #else
       *ip_address = strdup(inet_ntoa(server.sin_addr));
+      snprintf(*port, NI_MAXSERV, "%hu", ntohs(server.sin_port));
 #endif /* HAVE_RFC2553 */
       if (NULL == hostname)
       {
@@ -987,11 +1055,11 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
       }
 #elif defined(MUTEX_LOCKS_AVAILABLE)
       privoxy_mutex_lock(&resolver_mutex);
-      host = gethostbyaddr((const char *)&server.sin_addr, 
+      host = gethostbyaddr((const char *)&server.sin_addr,
                            sizeof(server.sin_addr), AF_INET);
       privoxy_mutex_unlock(&resolver_mutex);
 #else
-      host = gethostbyaddr((const char *)&server.sin_addr, 
+      host = gethostbyaddr((const char *)&server.sin_addr,
                            sizeof(server.sin_addr), AF_INET);
 #endif
       if (host == NULL)
@@ -1013,24 +1081,24 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
  *
  * Function    :  accept_connection
  *
- * Description :  Accepts a connection on a socket.  Socket must have
- *                been created using bind_port().
+ * Description :  Accepts a connection on one of possibly multiple
+ *                sockets. The socket(s) to check must have been
+ *                created using bind_port().
  *
  * Parameters  :
- *          1  :  csp = Client state, cfd, ip_addr_str, and 
- *                ip_addr_long will be set by this routine.
- *          2  :  fd  = file descriptor returned from bind_port
+ *          1  :  csp = Client state, cfd, ip_addr_str, and
+ *                      ip_addr_long will be set by this routine.
+ *          2  :  fds = File descriptors returned from bind_port
  *
  * Returns     :  when a connection is accepted, it returns 1 (TRUE).
  *                On an error it returns 0 (FALSE).
  *
  *********************************************************************/
-int accept_connection(struct client_state * csp, jb_socket fd)
+int accept_connection(struct client_state * csp, jb_socket fds[])
 {
 #ifdef HAVE_RFC2553
    /* XXX: client is stored directly into csp->tcp_addr */
 #define client (csp->tcp_addr)
-   int retval;
 #else
    struct sockaddr_in client;
 #endif
@@ -1041,9 +1109,69 @@ int accept_connection(struct client_state * csp, jb_socket fd)
 #else
    socklen_t c_length;
 #endif
+   int retval;
+   int i;
+   int max_selected_socket;
+   fd_set selected_fds;
+   jb_socket fd;
 
    c_length = sizeof(client);
 
+   /*
+    * Wait for a connection on any socket.
+    * Return immediately if no socket is listening.
+    * XXX: Why not treat this as fatal error?
+    */
+   FD_ZERO(&selected_fds);
+   max_selected_socket = 0;
+   for (i = 0; i < MAX_LISTENING_SOCKETS; i++)
+   {
+      if (JB_INVALID_SOCKET != fds[i])
+      {
+         FD_SET(fds[i], &selected_fds);
+         if (max_selected_socket < fds[i] + 1)
+         {
+            max_selected_socket = fds[i] + 1;
+         }
+      }
+   }
+   if (0 == max_selected_socket)
+   {
+      return 0;
+   }
+   do
+   {
+      retval = select(max_selected_socket, &selected_fds, NULL, NULL, NULL);
+   } while (retval < 0 && errno == EINTR);
+   if (retval <= 0)
+   {
+      if (0 == retval)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Waiting on new client failed because select(2) returned 0."
+            " This should not happen.");
+      }
+      else
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Waiting on new client failed because of problems in select(2): "
+            "%s.", strerror(errno));
+      }
+      return 0;
+   }
+   for (i = 0; i < MAX_LISTENING_SOCKETS && !FD_ISSET(fds[i], &selected_fds);
+         i++);
+   if (i >= MAX_LISTENING_SOCKETS)
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "select(2) reported connected clients (number = %u, "
+         "descriptor boundary = %u), but none found.",
+         retval, max_selected_socket);
+      return 0;
+   }
+   fd = fds[i];
+
+   /* Accept selected connection */
 #ifdef _WIN32
    afd = accept (fd, (struct sockaddr *) &client, &c_length);
    if (afd == JB_INVALID_SOCKET)
@@ -1081,7 +1209,7 @@ int accept_connection(struct client_state * csp, jb_socket fd)
    if (!csp->ip_addr_str || retval)
    {
       log_error(LOG_LEVEL_ERROR, "Can not save csp->ip_addr_str: %s",
-            (csp->ip_addr_str) ? gai_strerror(retval) : "Insuffcient memory");
+         (csp->ip_addr_str) ? gai_strerror(retval) : "Insuffcient memory");
       freez(csp->ip_addr_str);
    }
 #undef client
@@ -1105,7 +1233,7 @@ int accept_connection(struct client_state * csp, jb_socket fd)
  * Parameters  :
  *          1  :  host = hostname to resolve
  *
- * Returns     :  INADDR_NONE => failure, INADDR_ANY or tcp/ip address if succesful.
+ * Returns     :  INADDR_NONE => failure, INADDR_ANY or tcp/ip address if successful.
  *
  *********************************************************************/
 unsigned long resolve_hostname_to_ip(const char *host)
@@ -1136,7 +1264,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
       while (gethostbyname_r(host, &result, hbuf,
                 HOSTENT_BUFFER_SIZE, &hostp, &thd_err)
              && (thd_err == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
-      {   
+      {
          log_error(LOG_LEVEL_ERROR,
             "Timeout #%u while trying to resolve %s. Trying again.",
             dns_retries, host);
@@ -1145,7 +1273,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
       while (NULL == (hostp = gethostbyname_r(host, &result,
                                  hbuf, HOSTENT_BUFFER_SIZE, &thd_err))
              && (thd_err == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
-      {   
+      {
          log_error(LOG_LEVEL_ERROR,
             "Timeout #%u while trying to resolve %s. Trying again.",
             dns_retries, host);
@@ -1167,7 +1295,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
       privoxy_mutex_lock(&resolver_mutex);
       while (NULL == (hostp = gethostbyname(host))
              && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
-      {   
+      {
          log_error(LOG_LEVEL_ERROR,
             "Timeout #%u while trying to resolve %s. Trying again.",
             dns_retries, host);
@@ -1200,7 +1328,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
          errno = WSAEPROTOTYPE;
 #else
          errno = EPROTOTYPE;
-#endif 
+#endif
          log_error(LOG_LEVEL_ERROR, "hostname %s resolves to unknown address type.", host);
          return(INADDR_NONE);
       }

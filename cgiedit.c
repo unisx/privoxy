@@ -1,4 +1,4 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.67 2009/05/19 17:46:24 fabiankeil Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.71 2011/11/18 16:47:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.c,v $
@@ -85,10 +85,10 @@ struct file_line
 {
    /** Next entry in the linked list */
    struct file_line * next;
-   
+
    /** The raw data, to write out if this line is unmodified. */
    char * raw;
-   
+
    /** Comments and/or whitespace to put before this line if it's modified
        and then written out. */
    char * prefix;
@@ -97,7 +97,7 @@ struct file_line
        are performed on the data read from file before it's stored here, so
        it will be a single line of data.  */
    char * unprocessed;
-   
+
    /** The type of data on this line.  One of the FILE_LINE_xxx constants. */
    int type;
 
@@ -321,15 +321,10 @@ static jb_err actions_from_radio(const struct map * parameters,
 static jb_err map_copy_parameter_html(struct map *out,
                                       const struct map *in,
                                       const char *name);
-#if 0 /* unused function */
-static jb_err map_copy_parameter_url(struct map *out,
-                                     const struct map *in,
-                                     const char *name);
-#endif /* unused function */
 
-static jb_err get_file_name_param(struct client_state *csp, 	 
-	                                   const struct map *parameters, 	 
-	                                   const char *param_name, 	 
+static jb_err get_file_name_param(struct client_state *csp,
+	                                   const struct map *parameters,
+	                                   const char *param_name,
 	                                   const char **pfilename);
 
 /* Internal convenience functions */
@@ -431,56 +426,6 @@ static jb_err map_copy_parameter_html(struct map *out,
       return JB_ERR_OK;
    }
 }
-
-
-#if 0 /* unused function */
-/*********************************************************************
- *
- * Function    :  map_copy_parameter_url
- *
- * Description :  Copy a CGI parameter from one map to another, URL
- *                encoding it.
- *
- * Parameters  :
- *          1  :  out = target map
- *          2  :  in = source map
- *          3  :  name = name of cgi parameter to copy
- *
- * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory
- *                JB_ERR_CGI_PARAMS if the parameter doesn't exist
- *                                  in the source map
- *
- *********************************************************************/
-static jb_err map_copy_parameter_url(struct map *out,
-                                     const struct map *in,
-                                     const char *name)
-{
-   const char * value;
-   jb_err err;
-
-   assert(out);
-   assert(in);
-   assert(name);
-
-   value = lookup(in, name);
-   err = map(out, name, 1, url_encode(value), 0);
-
-   if (err)
-   {
-      /* Out of memory */
-      return err;
-   }
-   else if (*value == '\0')
-   {
-      return JB_ERR_CGI_PARAMS;
-   }
-   else
-   {
-      return JB_ERR_OK;
-   }
-}
-#endif /* 0 - unused function */
 
 
 /*********************************************************************
@@ -707,7 +652,7 @@ jb_err cgi_edit_actions_remove_url_form(struct client_state *csp,
       if (cur_line->type == FILE_LINE_ACTION)
       {
          section_start_line_number = line_number;
-      }      
+      }
       cur_line = cur_line->next;
    }
 
@@ -1483,7 +1428,7 @@ jb_err edit_read_file_lines(FILE *fp, struct file_line ** pfile, int *newline)
    if (rval)
    {
       /* Out of memory or empty file. */
-      /* Note that empty file is not an error we propogate up */
+      /* Note that empty file is not an error we propagate up */
       free(cur_line);
       return ((rval == JB_ERR_FILE) ? JB_ERR_OK : rval);
    }
@@ -1734,7 +1679,7 @@ jb_err edit_read_actions_file(struct client_state *csp,
          {
             log_error(LOG_LEVEL_INFO,
                "Timestamp mismatch limit reached, turning CGI editor off. "
-               "Reload the configuration file to reenable it.");
+               "Reload the configuration file to re-enable it.");
             csp->config->feature_flags &= ~RUNTIME_FEATURE_CGI_EDIT_ACTIONS;
          }
       }
@@ -2873,7 +2818,7 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
    if (!err) err = actions_to_radio(exports, cur_line->data.action);
 
    /*
-    * XXX: Some browsers (at least IE6 and IE7) have an artifical URL
+    * XXX: Some browsers (at least IE6 and IE7) have an artificial URL
     * length limitation and ignore clicks on the Submit buttons if
     * the resulting GET URL would be longer than their limit.
     *
@@ -2882,7 +2827,7 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
     * browsers (BR #1570678).
     *
     * The config option split-large-forms works around this browser
-    * bug (HTTP has no URL lenght limitation) by deviding the action
+    * bug (HTTP has no URL length limitation) by deviding the action
     * list form into multiple smaller ones. It means the URLs are shorter
     * and work in broken browsers as well, but the user can no longer change
     * all actions with one submit.
@@ -3415,7 +3360,7 @@ jb_err cgi_edit_actions_url(struct client_state *csp,
       if (cur_line->type == FILE_LINE_ACTION)
       {
          section_start_line_number = line_number;
-      }      
+      }
       cur_line = cur_line->next;
       line_number++;
    }
@@ -4183,7 +4128,7 @@ jb_err cgi_edit_actions_section_swap(struct client_state *csp,
  *
  * Description :  Converts a string into a form JavaScript will like.
  *
- *                Netscape 4's JavaScript sucks - it doesn't use 
+ *                Netscape 4's JavaScript sucks - it doesn't use
  *                "id" parameters, so you have to set the "name"
  *                used to submit a form element to something JavaScript
  *                will like.  (Or access the elements by index in an
