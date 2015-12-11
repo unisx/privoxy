@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.5">
-<!entity p-status "BETA">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.6">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.8 2006/09/20 23:49:25 hal9 Exp $
+ $Id: readme.sgml,v 2.9 2006/11/14 01:57:47 hal9 Exp $
 
  Copyright (C) 2001 - 2006 Privoxy Developers http://privoxy.org
  See LICENSE.
@@ -128,12 +128,18 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
 <para>
- BIG NEWS! September 2006, Privoxy 3.0.5 is released. This is a significant
- upgrade with many new and enhanced features, and many bugs fixed. There are
- fifteen new actions available, and several actions have enhanced
- capabilities. Multiple filter files are now supported as well. See the
- "What's New" section and the "Upgrader's Notes" in <citetitle>the User
- Manual</citetitle> for details and specifics. 
+ NEWS! November 2006, Privoxy 3.0.6 is released. This is a significant upgrade
+ with many new and enhanced features, and many bugs fixed. It is also the
+ first stable release in quite some time. There are fifteen new actions
+ available, and several actions have enhanced capabilities. Multiple filter
+ files are now supported as well. There are many improvements and refinements.
+ See the "What's New" section and the "Upgrader's Notes" in <citetitle>the
+ User Manual</citetitle> for details and specifics. Preliminary work on 
+ 3.0.7 is already underway.
+</para>
+<para>
+ NEWS! September 2006, Privoxy 3.0.5 BETA is released. This is a significant
+ upgrade with many new and enhanced features, and many bugs fixed. 
 </para>
 <para>
  There was and will not be an official 3.0.4 release. This release cycle 
@@ -252,7 +258,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.8 2006/09/20 23:49:25 hal9 Exp $ -->
+<!--  $Id: readme.sgml,v 2.9 2006/11/14 01:57:47 hal9 Exp $ -->
 <!-- </para> -->
 
 </article>

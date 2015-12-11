@@ -39,6 +39,19 @@
 # 
 #  Revisions   :
 #     $Log: privoxy-generic.init,v $
+#     Revision 1.7  2006/10/14 14:12:22  fabiankeil
+#     Print warnings if the user tries to run Privoxy as root
+#     or if the script is run without root privileges;
+#     only use "--user" if run with root privileges and
+#     don't depend on $USER being set to root. Fixes BR 779781.
+#
+#     Apparently $USER isn't set on all systems,
+#     but it also didn't work if the user only
+#     increased her privileges with su or sudo,
+#     but still had her real uid in $USER.
+#
+#     Thanks to Florian Effenberger for reporting.
+#
 #     Revision 1.6  2006/07/18 14:48:47  david__schmidt
 #     Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
 #     with what was really the latest development (the v_3_0_branch branch)
@@ -86,7 +99,7 @@ P_DAEMON=privoxy
 # Full path to location of Privoxy config file. 
 P_CONF_FILE=/usr/local/etc/privoxy/config
 # Full path to PID file location. Location must be writable by 
-# whoever runs this script.
+# whoever runs this script and by Privoxy itself.
 P_PIDFILE=/var/run/privoxy.pid
 # If uncommented, this script will try to run as USER=privoxy, which
 # may require special handling of config, *.action, trust, logfile, 
@@ -95,10 +108,25 @@ P_USER=privoxy
 
 # If a privoxy user is specified, lets try that. /bin/sh does not seem to 
 # know about $UID.
-if [ "$USER" = "root" ] && [ -n "$P_USER" ] && id $P_USER >/dev/null; then
-  P_OWNER=$P_USER
-else 
-  P_OWNER=$USER
+if [ 0 = `id -u` ]; then
+  if [ -n "$P_USER" ]; then
+    id $P_USER 2>/dev/null >/dev/null
+    if [ $? -eq 0 ]; then
+      P_USER_SETTINGS="--user $P_USER"
+    else
+      echo "User $P_USER doesn't exist, exiting."
+      exit 1
+    fi 
+  else
+    # The user has sufficient rights, but $P_USER isn't set
+    echo "Running Privoxy as root is not recommended!" 
+    P_USER_SETTINGS=""
+  fi
+else
+  # The user has insufficient rights to run Privoxy as $P_USER
+  # and may not be able to write or delete the PID file.
+  echo "You aren't root, expect trouble!"
+  P_USER_SETTINGS=""
 fi
 
 if [ ! -f $P_CONF_FILE ]; then
@@ -118,7 +146,7 @@ case "$1" in
        fi
      fi
 
-	$P_DAEMON --pidfile $P_PIDFILE --user $P_OWNER $P_CONF_FILE 2>/dev/null
+	$P_DAEMON --pidfile $P_PIDFILE $P_USER_SETTINGS $P_CONF_FILE 2>/dev/null
      
      if [ $? -eq 0 ]; then
        echo "Starting $P_NAME, OK." 

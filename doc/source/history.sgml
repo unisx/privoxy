@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: history.sgml,v 2.5 2006/09/22 01:27:55 hal9 Exp $
+ $Id: history.sgml,v 2.6 2006/09/24 20:14:04 hal9 Exp $
 
   Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
   See LICENSE.
@@ -25,7 +25,7 @@
 -->
 
 <para>
- Along time ago, there was the
+ A long time ago, there was the
  <ulink url="http://www.junkbusters.com/ijb.html"><application>Internet Junkbuster</application></ulink>, 
  by Anonymous Coders and <ulink url="http://www.junkbusters.com/">Junkbusters
  Corporation</ulink>. This saved many users a lot of pain in the early days of

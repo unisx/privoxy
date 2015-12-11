@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.5">
-<!entity p-status "BETA">
+<!entity p-version "3.0.6">
+<!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -33,7 +33,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.22 2006/09/22 01:27:55 hal9 Exp $
+ $Id: user-manual.sgml,v 2.27 2006/11/14 01:57:47 hal9 Exp $
 
  Copyright (C) 2001- 2006 Privoxy Developers http://www.privoxy.org
  See LICENSE.
@@ -59,7 +59,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.22 2006/09/22 01:27:55 hal9 Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.27 2006/11/14 01:57:47 hal9 Exp $</pubdate>
 
 <!--
 
@@ -178,7 +178,7 @@ How to install the binary packages depends on your operating system:
 </para>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-pack-rpm"><title>Red Hat, SuSE and Conectiva RPMs</title>
+<sect3 id="installation-pack-rpm"><title>Red Hat and Fedora RPMs</title>
 
 <para>
  RPMs can be installed with <literal>rpm -Uvh privoxy-&p-version;-1.rpm</literal>,
@@ -363,7 +363,8 @@ How to install the binary packages depends on your operating system:
 
 <para>
  The most convenient way to obtain the <application>Privoxy</application> sources
- is to download the source tarball from our <ulink url="http://sf.net/projects/ijbswa/">project
+ is to download the source tarball from our 
+ <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118&amp;package_id=10571">project download
  page</ulink>.
 </para>
 
@@ -422,8 +423,7 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- There are many improvements and new features in <application>Privoxy</application> &p-version;
- :
+ There are many improvements and new features since <application>Privoxy 3.0.3</application>, the last stable release:
 </para>
 
 <para>
@@ -556,6 +556,12 @@ How to install the binary packages depends on your operating system:
     option, for placing documentation and help files on the local system.
    </para>
   </listitem>
+  
+  <listitem>
+   <para>
+    There are six new <link linkend="FILTER">filters</link>.
+   </para>
+  </listitem>
 
   <listitem>
    <para>
@@ -571,21 +577,11 @@ How to install the binary packages depends on your operating system:
    <para>
     In addition, there are numerous bug fixes and significant enhancements,
     including error pages should no longer be cached if the problem is fixed,
-    much better DNS error handling, and various logging improvements.
+    much better DNS error handling, various logging improvements, and 
+    configuration updates for better ad blocking and junk elimination.
    </para>
   </listitem>
 
-  <listitem>
-   <para>
-    The default actions setting is now <literal>Cautious</literal>. Previous
-    releases had a default setting of <literal>Medium</literal>. Experienced
-    users may want to adjust this, as it is fairly conservative by &my-app;
-    standards and past practices. See <ulink
-    url="http://config.privoxy.org/edit-actions-list?f=default">
-    http://config.privoxy.org/edit-actions-list?f=default</ulink>. New users
-    should try the default settings for a while before turning up the volume.
-   </para>
-  </listitem>
 
  </itemizedlist>
 </para>
@@ -649,11 +645,54 @@ How to install the binary packages depends on your operating system:
    and you may want to review which actions are <quote>on</quote> by 
    default. This is primarily a matter of emphasis, but some features 
    you may have been used to, may now be <quote>off</quote> by default.
-   There are also a number of new actions you may want to consider, most of
-   which are not incorporated into the default settings as yet (see above).
+   There are also a number of new actions and filters you may want to
+   consider, most of which are not fully incorporated into the default
+   settings as yet (see above).
   </para>
  </listitem>
- 
+
+  <listitem>
+   <para>
+    The default actions setting is now <literal>Cautious</literal>. Previous
+    releases had a default setting of <literal>Medium</literal>. Experienced
+    users may want to adjust this, as it is fairly conservative by &my-app;
+    standards and past practices. See <ulink
+    url="http://config.privoxy.org/edit-actions-list?f=default">
+    http://config.privoxy.org/edit-actions-list?f=default</ulink>. New users
+    should try the default settings for a while before turning up the volume.
+   </para>
+  </listitem>
+
+  <listitem>
+   <para>
+    The default setting has filtering turned <emphasis>off</emphasis>, which
+    subsequently means that compression is <emphasis>on</emphasis>. Remember
+    that filtering does not work on compressed pages, so if you use, or want to
+    use, filtering, you will need to force compression off. Example:
+   </para>
+   <para>
+ <screen>
+  { +<link linkend="filter">filter</link>{google}  +<link linkend="prevent-compression">prevent-compression</link> }
+   .google.</screen>
+   </para>
+   <para>
+    Or if you use a number of filters, or filter many sites, you may just want
+    to turn off compression for all sites in
+    <filename>default.action</filename> (or
+    <filename>user.action</filename>). 
+   </para>
+
+  </listitem>
+
+  <listitem>
+  <para>
+   Also, <link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> is 
+   off by default now. If you've liked this feature in the past, you may want 
+   to turn it back on in <filename>user.action</filename> now.
+  </para>
+  </listitem>
+
+
   <listitem>
   <para>
 <!-- I think it is best to keep this somewhat vague, in case  -->
@@ -662,6 +701,7 @@ How to install the binary packages depends on your operating system:
    <application>Privoxy</application> after installation.
   </para>
  </listitem> 
+
 
  </itemizedlist>
 </para>
@@ -746,7 +786,7 @@ How to install the binary packages depends on your operating system:
     helpful. You can also view and edit the actions files through the <ulink
     url="http://config.privoxy.org">web-based user interface</ulink>. The
     Appendix <quote><link linkend="actionsanat">Troubleshooting: Anatomy of an
-    Action</link></quote> has hints how to understand and debug actions that
+    Action</link></quote> has hints on how to understand and debug actions that
     <quote>misbehave</quote>.
   </para>
  </listitem> 
@@ -798,7 +838,8 @@ How to install the binary packages depends on your operating system:
 <para>
  First a bit of a warning ... blocking ads is much like blocking SPAM: the
  more aggressive you are about it, the more likely you are to block 
- things that were not intended. So there is a trade off here. If you want
+ things that were not intended. And the more likely that some things 
+ may not work as intended. So there is a trade off here. If you want
  extreme ad free browsing, be prepared to deal with more
  <quote>problem</quote> sites, and to spend more time adjusting the
  configuration to solve these unintended consequences. In short, there is 
@@ -811,7 +852,7 @@ How to install the binary packages depends on your operating system:
  Secondly, a brief explanation of <application>Privoxy's </application>
  <quote>actions</quote>. <quote>Actions</quote> in this context, are 
  the directives we use to tell <application>Privoxy</application> to perform
- some task relating to HTTP transactions (i.e. web browsing). We tell
+ some task relating to WWW transactions (i.e. web browsing). We tell
  <application>Privoxy</application> to take some <quote>action</quote>. Each
  action has a unique name and function. While there are many potential
  <application>actions</application> in <application>Privoxy's</application>
@@ -836,13 +877,17 @@ How to install the binary packages depends on your operating system:
  original page's HTML content. An ad image for instance, is just an URL
  embedded in the page somewhere. The image itself may be on the same server,
  or a server somewhere else on the Internet. Complex web pages will have many
- such embedded URLs.
+ such embedded URLs. &my-app; can deal with each URL individually, so, for
+ instance, the main page text is not touched, but images from such-and-such
+ server are blocked.
 </para>
 
 <para>
- The actions we need to know about for ad blocking are:  <literal><link
+ The most important actions for basic ad blocking are:  <literal><link
  linkend="block">block</link></literal>, <literal><link
- linkend="handle-as-image">handle-as-image</link></literal>, and
+ linkend="handle-as-image">handle-as-image</link></literal>, 
+ <literal><link
+ linkend="handle-as-empty-document">handle-as-empty-document</link></literal>,and
  <literal><link linkend="set-image-blocker">set-image-blocker</link></literal>:
 </para>
 
@@ -851,12 +896,14 @@ How to install the binary packages depends on your operating system:
   
  <listitem>
   <para>
-   <literal><link linkend="block">block</link></literal> - this action stops
-   any contact between your browser and any URL patterns that match this
-   action's configuration. It can be used for blocking ads, but also anything
-   that is determined to be unwanted. By itself, it simply stops any
-   communication with the remote server and sends <application>Privoxy</application>'s
-   own built-in BLOCKED page instead to let you now what has happened.
+   <literal><link linkend="block">block</link></literal> - this is perhaps 
+   the single most used action, and is particularly important for ad blocking.
+   This action stops any contact between your browser and any URL patterns
+   that match this action's configuration. It can be used for blocking ads,
+   but also anything that is determined to be unwanted. By itself, it simply
+   stops any communication with the remote server and sends
+   <application>Privoxy</application>'s own built-in BLOCKED page instead to
+   let you now what has happened (with some exceptions, see below).
   </para>
  </listitem> 
 
@@ -873,6 +920,15 @@ How to install the binary packages depends on your operating system:
    a <quote>broken image</quote> icon). There are some limitations to this
    though. For instance, you can't just brute-force an image substitution for
    an entire HTML page in most situations.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   <literal><link linkend="handle-as-empty-document">handle-as-empty-document</link></literal> - 
+   sends an empty document instead of <application>Privoxy's</application> 
+   normal BLOCKED HTML page. This is useful for file types that are neither 
+   HTML nor images, such as blocking JavaScript files.
   </para>
  </listitem> 
 
@@ -1016,6 +1072,13 @@ How to install the binary packages depends on your operating system:
  to now go to the <link linkend="act-examples">Actions Files Tutorial</link>.
  The ideas explained therein also apply to the web-based editor.
 </para>
+<para>
+ There are also various 
+ <link linkend="filter">filters</link> that can be used for ad blocking 
+ (filters are a special subset of actions). These 
+ fall into the <quote>advanced</quote> usage category, and are explained in
+ depth in later sections. 
+</para>
 
 </sect2>
 
@@ -1058,11 +1121,20 @@ How to install the binary packages depends on your operating system:
  
 
 <para> 
- With <application>Firefox</application>, this can be set under:
+ With <application>Firefox</application>, this is typically set under:
 </para>
  
 <literallayout>
  <guibutton>Tools</guibutton> -> <guibutton>Options</guibutton> -> <guibutton>General</guibutton> -> <guibutton>Connection Settings</guibutton> -> <guibutton>Manual Proxy Configuration</guibutton>
+
+</literallayout>
+
+<para> 
+ Or optionally on some platforms:
+</para>
+ 
+<literallayout>
+ <guibutton>Edit</guibutton> -> <guibutton>Preferences</guibutton> -> <guibutton>General</guibutton> -> <guibutton>Connection Settings</guibutton> -> <guibutton>Manual Proxy Configuration</guibutton>
 
 </literallayout>
 
@@ -1130,7 +1202,7 @@ How to install the binary packages depends on your operating system:
 </para>
 
 <sect2 id="start-redhat">
-<title>Red Hat, Fedora and Conectiva</title>
+<title>Red Hat and Fedora</title>
 <para>
  A default Red Hat installation may not start &my-app; upon boot. It will use
  the file <filename>/etc/privoxy/config</filename> as its main configuration
@@ -1166,6 +1238,9 @@ How to install the binary packages depends on your operating system:
 </para>
 </sect2>
 
+<!--
+ omitting 10/31/06 HB
+
 <sect2 id="start-suse">
 <title>SuSE</title>
 <para>
@@ -1179,7 +1254,7 @@ your PC.
 </screen>
 </para>
 </sect2>
-
+-->
 <sect2 id="start-windows">
 <title>Windows</title>
 <para>
@@ -1607,7 +1682,7 @@ for details.
     <filename>default.action</filename> (which you will most probably want
     to define sooner or later) are probably best applied in
     <filename>user.action</filename>, where you can preserve them across
-    upgrades. <filename>standard.action</filename> is for
+    upgrades. <filename>standard.action</filename> is only for
     <application>Privoxy's</application> internal use.
    </para>
    <para>    
@@ -1749,7 +1824,7 @@ for details.
   </listitem> 
    <listitem>
     <para>
-     <filename>standard.action</filename> - is used by the web based editor
+     <filename>standard.action</filename> - is used only by the web based editor
      at <ulink url="http://config.privoxy.org/edit-actions-list?f=default">
      http://config.privoxy.org/edit-actions-list?f=default</ulink>, 
      to set various pre-defined sets of rules for the default actions section
@@ -1764,20 +1839,23 @@ for details.
      editor</emphasis>. A default installation should be pre-set to 
      <literal>Cautious</literal> (versions prior to 3.0.5 were set to
      <literal>Medium</literal>). New users should try this for a while before
-     adjusting the settings to more aggressive levels.
+     adjusting the settings to more aggressive levels. The more aggressive 
+     the settings, then the more likelihood there is of problems such as sites 
+     not working as they should.
      </para>
      <para>
       The <guibutton>Edit</guibutton> button allows you to turn each 
       action on/off individually for fine-tuning. The <guibutton>Cautious</guibutton>
       button changes the actions list to low/safe settings which will activate 
-      a minimal set of &my-app;'s features, and subsequently there will be
-      less of a chance for accidental problems. The <guibutton>Medium</guibutton>
-      button sets the list to a medium level of ad blocking and a low level set of
-      privacy features. The <guibutton>Advanced</guibutton> button 
-      sets the list to a high level of ad blocking and medium level of
-      privacy. See the chart below. The latter three buttons over-ride 
-      any changes via with the <guibutton>Edit</guibutton> button. More 
-      fine-tuning can be done in the lower sections of this internal page.
+      ad blocking and a minimal set of &my-app;'s features, and subsequently
+      there will be less of a chance for accidental problems. The
+      <guibutton>Medium</guibutton> button sets the list to a medium level of
+      other features and a low level set of privacy features. The
+      <guibutton>Advanced</guibutton> button sets the list to a high level of
+      ad blocking and medium level of privacy. See the chart below. The latter
+      three buttons over-ride any changes via with the
+      <guibutton>Edit</guibutton> button. More fine-tuning can be done in the
+      lower sections of this internal page.
      </para>
      <para>
      It is not recommend to edit the <filename>standard.action</filename> file
@@ -1836,7 +1914,7 @@ for details.
       <entry>Pop-up killing</entry>
       <entry>blocks only</entry>
       <entry>blocks only</entry>
-      <entry>all</entry>
+      <entry>blocks only</entry>
     </row>
     
     <row>
@@ -1879,14 +1957,14 @@ for details.
     <row>
       <entry>HTML taming</entry>
       <entry>no</entry>
-      <entry>yes</entry>
+      <entry>no</entry>
       <entry>yes</entry>
     </row>
 
     <row>
       <entry>JavaScript taming</entry>
       <entry>no</entry>
-      <entry>yes</entry>
+      <entry>no</entry>
       <entry>yes</entry>
     </row>
 
@@ -2228,7 +2306,7 @@ for details.
 </variablelist>
 
 <para>
- While flexibile, this is not the sophistication of full regular expression based syntax.
+ While flexible, this is not the sophistication of full regular expression based syntax.
 </para>
 
 </sect3>
@@ -2450,8 +2528,9 @@ for details.
  are applied in the order they are specified. Actions files are processed in
  the order they are defined in <filename>config</filename> (the default
  installation has three actions files). It also quite possible for any given
- URL pattern to match more than one pattern and thus more than one set of
- actions! Last match wins.
+ URL to match more than one <quote>pattern</quote> (because of wildcards and
+ regular expressions), and thus to trigger more than one set of actions! Last
+ match wins.
 </para>
 
 <!-- start actions listing -->
@@ -2738,7 +2817,7 @@ new action
   <listitem>
     <para>
      <screen># Check if www.example.net/ really uses valid XHTML
-{+content-type-overwrite {application/xml}}
+{ +content-type-overwrite{application/xml} }
 www.example.net/
 
 # but leave the content type unmodified if the URL looks like a style sheet
@@ -2828,7 +2907,7 @@ new action
   <listitem>
     <para>
      <screen># Block the non-existent "Privacy-Violation:" client header 
-{+crunch-client-header {Privacy-Violation:}}
+{ +crunch-client-header{Privacy-Violation:} }
 /
     </screen>
    </para>
@@ -2910,9 +2989,9 @@ new action
   <listitem>
     <para>
      <screen># Let the browser revalidate cached documents without being tracked across sessions
-{+hide-if-modified-since {-60} \
-+overwrite-last-modified {randomize} \
-+crunch-if-none-match}
+{ +hide-if-modified-since{-60} \
+ +overwrite-last-modified{randomize} \
+ +crunch-if-none-match}
 /   </screen>
    </para>
   </listitem>
@@ -3064,7 +3143,7 @@ new action
   <listitem>
     <para>
      <screen># Crunch server headers that try to prevent caching
-{+crunch-server-header {no-cache}}
+{ +crunch-server-header{no-cache} }
 /   </screen>
    </para>
   </listitem>
@@ -3407,7 +3486,8 @@ problem-host.example.com</screen>
  <varlistentry>
   <term>Typical use:</term>
   <listitem>
-   <para>Get rid of HTML and JavaScript annoyances, banner advertisements (by size), do fun text replacements, etc.</para>
+   <para>Get rid of HTML and JavaScript annoyances, banner advertisements (by size), 
+         do fun text replacements, add personalized effects, etc.</para>
   </listitem>
  </varlistentry>
 
@@ -3415,13 +3495,14 @@ problem-host.example.com</screen>
   <term>Effect:</term>
   <listitem>
    <para>
-    All files of text-based type, most notably HTML and JavaScript, to which this
-    action applies, are filtered on-the-fly through the specified regular expression
-    based substitutions. (Note: as of version 3.0.3 plain text documents 
-    are exempted from filtering, because web servers often use the
-    <literal>text/plain</literal> MIME type for all files whose type they
-    don't know.) By default, filtering works only on the raw document content 
-    itself (that which can be seen with <literal>View Source</literal>), 
+    All files of text-based type, most notably HTML and
+    JavaScript, to which this action applies, can be filtered on-the-fly
+    through the specified regular expression based substitutions. (Note: as of
+    version 3.0.3 plain text documents are exempted from filtering, because
+    web servers often use the <literal>text/plain</literal> MIME type for all
+    files whose type they don't know.) By default, filtering works only on the
+    raw document content itself (that which can be seen with <literal>View
+    Source</literal>), 
     not the headers.
    </para>
   </listitem>
@@ -3475,8 +3556,9 @@ problem-host.example.com</screen>
      <ulink url="http://en.wikipedia.org/wiki/Regular_expressions"><quote>Regular
      Expressions</quote></ulink> and 
       <ulink url="http://en.wikipedia.org/wiki/Html"><quote>HTML</quote></ulink>.
-    This is very powerful feature, and potentially very intrusive. Use 
-    with caution.    
+    This is very powerful feature, and potentially very intrusive. 
+    Filters should be used with caution, and where an equivalent
+    <quote>action</quote> is not available.
    </para>
    <para>
     The amount of data that can be filtered is limited to the 
@@ -3496,7 +3578,7 @@ problem-host.example.com</screen>
    <para>
     At this time, <application>Privoxy</application> cannot uncompress compressed
     documents. If you want filtering to work on all documents, even those that
-    would normally be sent compressed, use the
+    would normally be sent compressed, you must use the
     <literal><link linkend="prevent-compression">prevent-compression</link></literal>
     action in conjunction with <literal>filter</literal>.
    </para>
@@ -3548,11 +3630,11 @@ problem-host.example.com</screen>
    </para>
    <para>
     <anchor id="filter-unsolicited-popups">
-    <screen>+filter{unsolicited-popups}  # Disable only unsolicited pop-up windows</screen>
+    <screen>+filter{unsolicited-popups}  # Disable only unsolicited pop-up windows. Useful if your browser lacks this ability.</screen>
    </para>
    <para>
     <anchor id="filter-all-popups">
-    <screen>+filter{all-popups}          # Kill all popups in JavaScript and HTML</screen>
+    <screen>+filter{all-popups}          # Kill all popups in JavaScript and HTML. Useful if your browser lacks this ability.</screen>
    </para>
    <para>
     <anchor id="filter-img-reorder">
@@ -3605,6 +3687,42 @@ problem-host.example.com</screen>
    <para>
     <anchor id="filter-ie-exploits">
     <screen>+filter{ie-exploits}         # Disable some known Internet Explorer bug exploits</screen>
+   </para>
+   <para>
+    <anchor id="filter-site-specifics">
+    <screen>+filter{site-specifics}      # Custom filters for specific site related problems</screen>
+   </para>
+   <para>
+    <anchor id="filter-google">
+    <screen>+filter{google}              # Removes text ads and other Google specific improvements</screen>
+   </para>
+   <para>
+    <anchor id="filter-yahoo">
+    <screen>+filter{yahoo}               # Removes text ads and other Yahoo specific improvements</screen>
+   </para>
+   <para>
+    <anchor id="filter-msn">
+    <screen>+filter{msn}                 # Removes text ads and other MSN specific improvements</screen>
+   </para>
+   <para>
+    <anchor id="filter-blogspot">
+    <screen>+filter{blogspot}            # Cleans up Blogspot blogs</screen>
+   </para>
+   <para>
+    <anchor id="filter-html-to-xml">
+    <screen>+filter{html-to-xml}         # Header filter to change the Content-Type from html to xml</screen>
+   </para>
+   <para>
+    <anchor id="filter-xml-to-html">
+    <screen>+filter{xml-to-html}         # Header filter to change the Content-Type from xml to html</screen>
+   </para>
+   <para>
+    <anchor id="filter-no-ping">
+    <screen>+filter{no-ping}             # Removes non-standard ping attributes from anchor and area tags</screen>
+   </para>
+   <para>
+    <anchor id="filter-hide-tor-exit-notation">
+    <screen>+filter{hide-tor-exit-notation} # Header filter to remove the Tor exit node notation in Host and Referer headers</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -3896,7 +4014,7 @@ new action
    <para>
     This action alone doesn't do anything noticeable. It just marks URLs.
     If the <literal><link linkend="block">block</link></literal> action <emphasis>also applies</emphasis>,
-    the presence or absence of this mark decides whether an HTML <quote>blocked</quote>
+    the presence or absence of this mark decides whether an HTML <quote>BLOCKED</quote>
     page, or an empty document will be sent to the client as a substitute for the blocked content.
     The <emphasis>empty</emphasis> document isn't literally empty, but actually contains a single space.
    </para>
@@ -3927,6 +4045,8 @@ new action
     Some browsers complain about syntax errors if JavaScript documents
     are blocked with <application>Privoxy's</application>
     default HTML page; this option can be used to silence them.
+    And of course this action can also be used to eliminate the &my-app;
+    BLOCKED message in frames.
    </para>
    <para>
     The content type for the empty document can be specified with
@@ -4203,10 +4323,10 @@ new action
   <listitem>
     <para>
      <screen># Disarm the download link in Sourceforge's patch tracker
-{-filter\
-+content-type-overwrite {text/plain}\
-+hide-content-disposition {block} }
-.sourceforge.net/tracker/download.php</screen>
+{ -filter \
+ +content-type-overwrite{text/plain}\
+ +hide-content-disposition{block} }
+ .sourceforge.net/tracker/download.php</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -4291,9 +4411,9 @@ new action
   <listitem>
     <para>
      <screen># Let the browser revalidate without being tracked across sessions
-{+hide-if-modified-since {-60}\
-+overwrite-last-modified {randomize}\
-+crunch-if-none-match}
+{ +hide-if-modified-since{-60} \
+ +overwrite-last-modified{randomize} \
+ +crunch-if-none-match}
 /</screen>
    </para>
   </listitem>
@@ -4760,7 +4880,7 @@ new action
     Killing all pop-ups unconditionally is problematic. Many shops and banks rely on
     pop-ups to display forms, shopping carts etc, and the <literal><link
     linkend="FILTER-UNSOLICITED-POPUPS">filter{<replaceable>unsolicited-popups</replaceable>}</link>
-    </literal> does a fairly good job of catching only the unwanted ones.
+    </literal> does a better job of catching only the unwanted ones.
    </para>
    <para>
     If the only kind of pop-ups that you want to kill are exit consoles (those
@@ -4769,6 +4889,10 @@ new action
     <literal><link
     linkend="filter">filter</link>{<replaceable>js-annoyances</replaceable>}</literal>
     instead. 
+   </para>
+   <para>
+    This action is most appropriate for browsers that don't have any controls 
+    for unwanted pop-ups. Not recommended for general usage.
    </para>
 
   <!-- 
@@ -4947,16 +5071,25 @@ new action
   <term>Example usage (sections):</term>
   <listitem>
    <para>
-    <screen># Set default:
+    <screen>
+# Selectively turn off compression, and enable a filter
 #
-{+prevent-compression}
-/ # Match all sites
+{ +filter{tiny-textforms} +prevent-compression }
+# Match only these sites
+ .google.
+ sourceforge.net
+ sf.net
 
-# Make exceptions for ill sites:
+# Or instead, we could set a universal default:
 #
-{-prevent-compression}
-www.debianhelp.org
-www.pclinuxonline.com</screen>
+{ +prevent-compression }
+ / # Match all sites
+
+# Then maybe make exceptions for ill-behaved sites:
+#
+{ -prevent-compression }
+ .debianhelp.org
+ www.pclinuxonline.com</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -5051,9 +5184,9 @@ new action
   <listitem>
     <para>
      <screen># Let the browser revalidate without being tracked across sessions
-{+hide-if-modified-since {-60}\
-+overwrite-last-modified {randomize}\
-+crunch-if-none-match}
+{ +hide-if-modified-since{-60} \
+ +overwrite-last-modified{randomize} \
+ +crunch-if-none-match}
 /</screen>
    </para>
   </listitem>
@@ -5624,7 +5757,6 @@ new action
  them before writing. So the effects of your aliases are of course preserved,
  but the aliases themselves are lost when you edit sections that use aliases
  with it.
- This is likely to change in future versions of <application>Privoxy</application>.
 </para>
 
 <para>
@@ -5646,12 +5778,13 @@ new action
  +crunch-all-cookies = +<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> +<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
  -crunch-all-cookies = -<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> -<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link>
  +block-as-image      = +block +handle-as-image
- mercy-for-cookies   = -crunch-all-cookies -<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link>
+ allow-all-cookies   = -crunch-all-cookies -<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link>
 
  # These aliases define combinations of actions
  # that are useful for certain types of sites:
  #
- fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link> -<link linkend="KILL-POPUPS">kill-popups</link>
+ fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link> -<link linkend="KILL-POPUPS">kill-popups</link> -<link linkend="PREVENT-COMPRESSION">prevent-compression</link>
+
  shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link> -<link linkend="KILL-POPUPS">kill-popups</link>
 
  # Short names for other aliases, for really lazy people ;-)
@@ -5674,7 +5807,8 @@ new action
  {fragile}
  .office.microsoft.com
  .windowsupdate.microsoft.com
- .nytimes.com
+ # Gmail is really mail.google.com, not gmail.com
+ mail.google.com
 
  # Shopping sites:
  # Allow cookies (for setting and retrieving your customer data)
@@ -5682,18 +5816,18 @@ new action
  {shop}
  .quietpc.com
  .worldpay.com   # for quietpc.com
- .scan.co.uk
+ mybank.example.com
 
  # These shops require pop-ups:
  #
- {shop -kill-popups -filter{all-popups}}
+ {-kill-popups -filter{all-popups} -filter{unsolicited-popups}}
   .dabs.com
   .overclockers.co.uk</screen>
 </para>
 
 <para>
- Aliases like <quote>shop</quote> and <quote>fragile</quote> are often used for 
- <quote>problem</quote> sites that require some actions to be disabled 
+ Aliases like <quote>shop</quote> and <quote>fragile</quote> are typically used for 
+ <quote>problem</quote> sites that require more than one action to be disabled 
  in order to function properly.
 </para>
 </sect2>
@@ -5810,20 +5944,20 @@ that also explains why and how aliases are used:
  -<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link> \
  +<link linkend="DEANIMATE-GIFS">deanimate-gifs</link> \
  -<link linkend="DOWNGRADE-HTTP-VERSION">downgrade-http-version</link> \
- +<link linkend="FAST-REDIRECTS">fast-redirects{check-decoded-url}</link> \
- +<link linkend="FILTER-JS-ANNOYANCES">filter{js-annoyances}</link> \
+ -<link linkend="FAST-REDIRECTS">fast-redirects{check-decoded-url}</link> \
+ -<link linkend="FILTER-JS-ANNOYANCES">filter{js-annoyances}</link> \
  -<link linkend="FILTER-JS-EVENTS">filter{js-events}</link> \
  +<link linkend="FILTER-HTML-ANNOYANCES">filter{html-annoyances}</link> \
  -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link> \
  +<link linkend="FILTER-REFRESH-TAGS">filter{refresh-tags}</link> \
- +<link linkend="FILTER-UNSOLICITED-POPUPS">filter{unsolicited-popups}</link> \
+ -<link linkend="FILTER-UNSOLICITED-POPUPS">filter{unsolicited-popups}</link> \
  -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link> \
- +<link linkend="FILTER-IMG-REORDER">filter{img-reorder}</link> \
- +<link linkend="FILTER-BANNERS-BY-SIZE">filter{banners-by-size}</link> \
+ -<link linkend="FILTER-IMG-REORDER">filter{img-reorder}</link> \
+ -<link linkend="FILTER-BANNERS-BY-SIZE">filter{banners-by-size}</link> \
  -<link linkend="FILTER-BANNERS-BY-LINK">filter{banners-by-link}</link> \
  +<link linkend="FILTER-WEBBUGS">filter{webbugs}</link> \
  -<link linkend="FILTER-TINY-TEXTFORMS">filter{tiny-textforms}</link> \
- +<link linkend="FILTER-JUMPING-WINDOWS">filter{jumping-windows}</link> \
+ -<link linkend="FILTER-JUMPING-WINDOWS">filter{jumping-windows}</link> \
  -<link linkend="FILTER-FRAMESET-BORDERS">filter{frameset-borders}</link> \
  -<link linkend="FILTER-DEMORONIZER">filter{demoronizer}</link> \
  -<link linkend="FILTER-SHOCKWAVE-FLASH">filter{shockwave-flash}</link> \
@@ -5833,6 +5967,14 @@ that also explains why and how aliases are used:
  +<link linkend="FILTER-IE-EXPLOITS">filter{ie-exploits}</link> \     
  -<link linkend="FILTER-CLIENT-HEADERS">filter-client-headers</link> \
  -<link linkend="FILTER-SERVER-HEADERS">filter-server-headers</link> \
+ -<link linkend="FILTER-GOOGLE">filter-google</link> \
+ -<link linkend="FILTER-YAHOO">filter-yahoo</link> \
+ -<link linkend="FILTER-MSN">filter-msn</link> \
+ -<link linkend="FILTER-BLOGSPOT">filter-blogspot</link> \
+ -<link linkend="FILTER-XML-TO-HTML">filter-xml-to-html</link> \
+ -<link linkend="FILTER-HTML-TO-XML">filter-html-to-xml</link> \
+ -<link linkend="FILTER-NO-PING">filter-no-ping</link> \
+ -<link linkend="FILTER-HIDE-TOR-EXIT-NOTATION">filter-hide-tor-exit-notation</link> \
  -<link linkend="FORCE-TEXT-MODE">force-text-mode</link> \
  -<link linkend="HANDLE-AS-EMPTY-DOCUMENT">handle-as-empty-document</link> \
  -<link linkend="HANDLE-AS-IMAGE">handle-as-image</link> \
@@ -5886,7 +6028,8 @@ that also explains why and how aliases are used:
 #
 { fragile }
 .office.microsoft.com           # surprise, surprise!
-.windowsupdate.microsoft.com</screen>
+.windowsupdate.microsoft.com
+mail.google.com</screen>
 </para>
 
 <para>
@@ -6002,13 +6145,12 @@ ar.atwola.com
 .a.yimg.com/(?:(?!/i/).)*$
 .a[0-9].yimg.com/(?:(?!/i/).)*$
 bs*.gsanet.com
-bs*.einets.com
 .qkimg.net</screen>
 </para>
 
 <para>
  One of the most important jobs of <application>Privoxy</application>
- is to block banners. A huge bunch of them can be <quote>blocked</quote>
+ is to block banners. Many of these can be <quote>blocked</quote>
  by the <literal><link linkend="filter">filter</link>{banners-by-size}</literal>
  action, which we enabled above, and which deletes the references to banner
  images from the pages while they are loaded, so the browser doesn't request
@@ -6018,7 +6160,7 @@ bs*.einets.com
  <literal><link linkend="block">block</link></literal> action to them.
 </para>
 <para>
- First comes a bunch of generic patterns, which do most of the work, by
+ First comes many generic patterns, which do most of the work, by
  matching typical domain and path name components of banners. Then comes
  a list of individual patterns for specific sites, which is omitted here
  to keep the example short:
@@ -6046,7 +6188,7 @@ count*.
 </para>
 
 <para>
- You wouldn't believe how many advertisers actually call their banner
+ It's quite remarkable how many advertisers actually call their banner
  servers ads.<replaceable>company</replaceable>.com, or call the directory
  in which the banners are stored simply <quote>banners</quote>. So the above
  generic patterns are surprisingly effective.
@@ -6084,6 +6226,7 @@ count*.
 { -<link linkend="BLOCK">block</link> }
 adv[io]*.  # (for advogato.org and advice.*)
 adsl.      # (has nothing to do with ads)
+adobe.     # (has nothing to do with ads either)
 ad[ud]*.   # (adult.* and add.*)
 .edu       # (universities don't host banners (yet!))
 .*loads.   # (downloads, uploads etc)
@@ -6111,7 +6254,10 @@ www.ugu.com/sui/ugu/adv</screen>
 # Don't filter code!
 #
 { -<link linkend="FILTER">filter</link> }
-/.*cvs
+/(.*/)?cvs
+bugzilla.
+developer.
+wiki.
 .sourceforge.net</screen>
 </para>
 
@@ -6292,7 +6438,7 @@ stupid-server.example.com/</screen>
 <screen>
 { fragile }
  .forbes.com
- mail.example.com
+ webmail.example.com
  .mybank.com</screen>
 </para>
 
@@ -6749,6 +6895,10 @@ pre-defined filters for your convenience:
     </listitem>
    </itemizedlist>
    </para>
+   <para>
+    Use with caution. This is an aggressive filter, and can break sites that 
+    rely heavily on JavaScript.
+   </para>
   </listitem>
  </varlistentry>
  
@@ -6758,7 +6908,7 @@ pre-defined filters for your convenience:
    <para>
     This is a very radical measure. It removes virtually all JavaScript event bindings, which
     means that scripts can not react to user actions such as mouse movements or clicks, window
-    resizing etc, anymore. 
+    resizing etc, anymore. Use with caution!
    </para>
    <para>
     We <emphasis>strongly discourage</emphasis> using this filter as a default since it breaks
@@ -6795,8 +6945,10 @@ pre-defined filters for your convenience:
     to sneak cookies to the browser on the content level.
    </para>
    <para>
-    This filter disables HTML and JavaScript code that reads or sets cookies. Use
-    it wherever you would also use the cookie crunch actions.
+    This filter disables most HTML and JavaScript code that reads or sets
+    cookies. It cannot detect all clever uses of these types of code, so it 
+    should not be relied on as an absolute fix. Use it wherever you would also
+    use the cookie crunch actions. 
    </para>
   </listitem>
  </varlistentry>
@@ -6824,8 +6976,14 @@ pre-defined filters for your convenience:
    </para>
    <para>
     Technical note: The filter works by redefining the window.open JavaScript
-    function to a dummy function during the loading and rendering phase of each
-    HTML page access, and restoring the function afterward.
+    function to a dummy function, <literal>PrivoxyWindowOpen()</literal>,
+    during the loading and rendering phase of each HTML page access, and
+    restoring the function afterward.
+   </para>
+   <para>
+    This is recommended only for browsers that cannot perform this function
+    reliably themselves. And be aware that some sites require such windows 
+    in order to function normally. Use with caution.
    </para>
   </listitem>
  </varlistentry>
@@ -6835,9 +6993,9 @@ pre-defined filters for your convenience:
   <listitem>
    <para>
     Attempt to prevent <emphasis>all</emphasis> pop-up windows from opening.
-    Note this should be used with more discretion than the above, since it is
-    more likely to break some sites that require pop-ups for normal usage. Use 
-    with caution.
+    Note this should be used with even more discretion than the above, since
+    it is more likely to break some sites that require pop-ups for normal
+    usage. Use with caution.
    </para>
   </listitem>
  </varlistentry>
@@ -6865,6 +7023,10 @@ pre-defined filters for your convenience:
     Occasionally this filter will cause false positives on images that are not ads,
     but just happen to be of one of the standard banner sizes.
    </para>
+   <para>
+    Recommended only for those who require extreme ad blocking. The default 
+    block rules should catch 95+% of all ads <emphasis>without</emphasis> this filter enabled.
+   </para>
   </listitem>
  </varlistentry>
 
@@ -6888,7 +7050,7 @@ pre-defined filters for your convenience:
     As an HTML page is loaded by the browser, an embedded image tag causes the
     browser to contact a third-party site, disclosing the tracking information
     through the requested URL and/or cookies for that third-party domain, without
-    the use ever becoming aware of the interaction with the third-party site.
+    the user ever becoming aware of the interaction with the third-party site.
     HTML-ized spam also uses a similar technique to verify email addresses.
    </para>
    <para>
@@ -6918,7 +7080,7 @@ pre-defined filters for your convenience:
    <para>
     Many consider windows that move, or resize themselves to be abusive. This filter
     neutralizes the related JavaScript code. Note that some sites might not display
-    or behave as intended when using this filter.
+    or behave as intended when using this filter. Use with caution.
    </para>
   </listitem>
  </varlistentry>
@@ -7010,7 +7172,7 @@ pre-defined filters for your convenience:
   <term><emphasis>ie-exploits</emphasis></term>
   <listitem>
    <para>
-    A collection of text replacements to disable malicious HTML and JavaScript
+    An experimental collection of text replacements to disable malicious HTML and JavaScript
     code that exploits known security holes in Internet Explorer.
    </para>
    <para>
@@ -7032,6 +7194,89 @@ pre-defined filters for your convenience:
     to the sites they were intended for, which is what the supplied
     <filename>default.action</filename> file does. Users shouldn't need to change
     anything regarding this filter.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis>google</emphasis></term>
+  <listitem>
+   <para>
+    A CSS based block for Google text ads. Also removes a width limitation
+    and the toolbar advertisement.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+  <varlistentry>
+  <term><emphasis>yahoo</emphasis></term>
+  <listitem>
+   <para>
+    Another CSS based block, this time for Yahoo text ads. And removes 
+    a width limitation as well.
+   </para>
+  </listitem>
+ </varlistentry>
+
+  <varlistentry>
+  <term><emphasis>msn</emphasis></term>
+  <listitem>
+   <para>
+    Another CSS based block, this time for MSN text ads. And removes 
+    tracking URLs, as well as a width limitation.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term><emphasis>blogspot</emphasis></term>
+  <listitem>
+   <para>
+    Cleans up some Blogspot blogs. Read the fine print before using this one!
+   </para>
+   <para>
+    This filter also intentionally removes some navigation stuff and sets the
+    page width to 100%. As a result, some rounded <quote>corners</quote> would
+    appear to early or not at all and as fixing this would require a browser
+    that understands background-size (CSS3), they are removed instead.
+   </para>
+  </listitem>
+ </varlistentry>
+
+  <varlistentry>
+  <term><emphasis>xml-to-html</emphasis></term>
+  <listitem>
+   <para>
+    Header filter to change the Content-Type from xml to html.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+  <varlistentry>
+  <term><emphasis>html-to-xml</emphasis></term>
+  <listitem>
+   <para>
+    Header filter to change the Content-Type from html to xml.
+   </para>
+  </listitem>
+ </varlistentry>
+
+  <varlistentry>
+  <term><emphasis>no-ping</emphasis></term>
+  <listitem>
+   <para>
+    Removes the non-standard <literal>ping</literal> attribute from
+    anchor and area HTML tags.
+   </para>
+  </listitem>
+ </varlistentry>
+
+  <varlistentry>
+  <term><emphasis>hide-tor-exit-notation</emphasis></term>
+  <listitem>
+   <para>
+    Header filter to remove the <command>Tor</command> exit node notation
+    found in Host and Referer headers.
    </para>
   </listitem>
  </varlistentry>
@@ -7636,8 +7881,9 @@ Requests</title>
 <sect2 id="chain">
 <title>Chain of Events</title>
 <para>
- Let's take a quick look at the basic sequence of events when a web page is 
- requested by your browser and <application>Privoxy</application> is on duty:
+ Let's take a quick look at how some of <application>Privoxy's</application> 
+ core features are triggered, and the ensuing sequence of events when a web
+ page is requested by your browser:
 </para>
 
 <para>
@@ -7663,10 +7909,13 @@ Requests</title>
    linkend="BLOCK"><quote>+block</quote></link> patterns. If
    so, the URL is then blocked, and the remote web server will not be contacted.
    <link linkend="HANDLE-AS-IMAGE"><quote>+handle-as-image</quote></link> 
-   is then checked and if it does not match, an 
-   HTML <quote>BLOCKED</quote> page is sent back. Otherwise, if it does match,
-   an image is returned. The type of image depends on the setting of <link
-   linkend="SET-IMAGE-BLOCKER"><quote>+set-image-blocker</quote></link>
+   and 
+   <link linkend="HANDLE-AS-EMPTY-DOCUMENT"><quote>+handle-as-empty-document</quote></link>
+   are then checked, and if there is no match, an 
+   HTML <quote>BLOCKED</quote> page is sent back to the browser. Otherwise, if
+   it does match, an image is returned for the former, and an empty text
+   document for the latter. The type of image would depend on the setting of
+   <link linkend="SET-IMAGE-BLOCKER"><quote>+set-image-blocker</quote></link>
    (blank, checkerboard pattern, or an HTTP redirect to an image elsewhere).
   </para>
  </listitem> 
@@ -7694,8 +7943,8 @@ Requests</title>
  </listitem> 
  <listitem>
   <para>
-   Now the web server starts sending its response back (i.e. typically a web page and related 
-   data).
+   Now the web server starts sending its response back (i.e. typically a web
+   page).
   </para>
  </listitem> 
  <listitem>
@@ -7718,7 +7967,7 @@ Requests</title>
  </listitem> 
  <listitem>
   <para>
-   If a <link linkend="FILTER"><quote>+filter</quote></link>
+   If any <link linkend="FILTER"><quote>+filter</quote></link> action
    or <link
    linkend="DEANIMATE-GIFS"><quote>+deanimate-gifs</quote></link>
    action applies (and the document type fits the action), the rest of the page is
@@ -7731,7 +7980,7 @@ Requests</title>
    <application>Privoxy</application> back to your browser. 
   </para>
   <para>
-   If neither <link linkend="FILTER"><quote>+filter</quote></link>
+   If neither a <link linkend="FILTER"><quote>+filter</quote></link> action
    or <link
    linkend="DEANIMATE-GIFS"><quote>+deanimate-gifs</quote></link>
    matches, then <application>Privoxy</application> passes the raw data through 
@@ -7743,13 +7992,21 @@ Requests</title>
    As the browser receives the now (possibly filtered) page content, it 
    reads and then requests any URLs that may be embedded within the page
    source, e.g. ad images, stylesheets, JavaScript, other HTML documents (e.g.
-   frames), sounds, etc. For each of these objects, the browser issues a new
-   request. And each such request is in turn processed as above. Note that a
-   complex web page may have many such embedded URLs.
+   frames), sounds, etc. For each of these objects, the browser issues a
+   separate request (this is easily viewable in <application>Privoxy's</application>
+   logs). And each such request is in turn processed just as above. Note that a
+   complex web page will have many, many such embedded URLs. If these 
+   secondary requests are to a different server, then quite possibly a very 
+   differing set of actions is triggered.
   </para>
  </listitem> 
  
  </itemizedlist>
+</para>
+<para>
+ NOTE: This is somewhat of a simplistic overview of what happens with each URL
+ request. For the sake of brevity and simplicity, we have focused on 
+ <application>Privoxy's</application> core features only.
 </para>
 
 </sect2>
@@ -7846,15 +8103,23 @@ Requests</title>
  -filter {fun}
  -filter {crude-parental}
  -filter {site-specifics}
- +filter {js-annoyances}
- +filter {html-annoyances}
+ -filter {js-annoyances}
+ -filter {html-annoyances}
  +filter {refresh-tags}
- +filter {unsolicited-popups}
+ -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
+ -filter {google}
+ -filter {yahoo}
+ -filter {msn}
+ -filter {blogspot}
+ -filter {xml-to-html}
+ -filter {html-to-xml}
+ -filter {no-ping}
+ -filter{hide-tor-exit-notation}
  -filter-client-headers
  -filter-server-headers
  -force-text-mode
@@ -7963,16 +8228,36 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -crunch-server-header
  +deanimate-gifs {last}
  -downgrade-http-version
- -fast-redirects
- +filter {js-annoyances}
- +filter {html-annoyances}
+ +fast-redirects {check-decoded-url}
+ -filter {js-events}
+ -filter {content-cookies}
+ -filter {all-popups}
+ -filter {banners-by-link}
+ -filter {tiny-textforms}
+ -filter {frameset-borders}
+ -filter {demoronizer}
+ -filter {shockwave-flash}
+ -filter {quicktime-kioskmode}
+ -filter {fun}
+ -filter {crude-parental}
+ -filter {site-specifics}
+ -filter {js-annoyances}
+ -filter {html-annoyances}
  +filter {refresh-tags}
- +filter {unsolicited-popups}
+ -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
+ -filter {google}
+ -filter {yahoo}
+ -filter {msn}
+ -filter {blogspot}
+ -filter {xml-to-html}
+ -filter {html-to-xml}
+ -filter {no-ping}
+ -filter{hide-tor-exit-notation}
  -filter-client-headers
  -filter-server-headers
  -force-text-mode
@@ -8070,15 +8355,36 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   -crunch-server-header
   +deanimate-gifs 
   -downgrade-http-version 
-  +fast-redirects{check-decoded-url}
-  +filter{html-annoyances} 
-  +filter{js-annoyances} 
-  +filter{kill-popups} 
-  +filter{webbugs} 
-  +filter{nimda} 
-  +filter{banners-by-size} 
-  +filter{hal} 
-  +filter{fun} 
+  +fast-redirects {check-decoded-url}
+  -filter {js-events}
+  -filter {content-cookies}
+  -filter {all-popups}
+  -filter {banners-by-link}
+  -filter {tiny-textforms}
+  -filter {frameset-borders}
+  -filter {demoronizer}
+  -filter {shockwave-flash}
+  -filter {quicktime-kioskmode}
+  -filter {fun}
+  -filter {crude-parental}
+  -filter {site-specifics}
+  -filter {js-annoyances}
+  -filter {html-annoyances}
+  +filter {refresh-tags}
+  -filter {unsolicited-popups}
+  +filter {img-reorder}
+  +filter {banners-by-size}
+  +filter {webbugs}
+  +filter {jumping-windows}
+  +filter {ie-exploits}
+  -filter {google}
+  -filter {yahoo}
+  -filter {msn}
+  -filter {blogspot}
+  -filter {xml-to-html}
+  -filter {html-to-xml}
+  -filter {no-ping}
+  -filter{hide-tor-exit-notation}
   -filter-client-headers
   -filter-server-headers
   -force-text-mode
@@ -8091,7 +8397,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   +hide-referer{forge} 
   -hide-user-agent 
   -inspect-jpegs
-  +kill-popups 
+  -kill-popups 
   -overwrite-last-modified
   +prevent-compression 
   -redirect
@@ -8196,7 +8502,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  put in <filename>user.action</filename>, for local site
  exceptions. Note that when a simple domain pattern is used by itself (without
  the subsequent path portion), all sub-pages within that domain are included 
- automatcially in the scope of the action.
+ automatically in the scope of the action.
 </para>
 
 <para>
@@ -8260,6 +8566,24 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.27  2006/11/14 01:57:47  hal9
+ Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
+ manual.
+
+ Revision 2.26  2006/10/24 11:16:44  hal9
+ Add new filters.
+
+ Revision 2.25  2006/10/18 10:50:33  hal9
+ Add note that since filters are off in Cautious, compression is ON. Turn off
+ compression to make filters work on all sites.
+
+ Revision 2.24  2006/10/03 11:13:54  hal9
+ More references to the new filters. Include html this time around.
+
+ Revision 2.23  2006/10/02 22:43:53  hal9
+ Contains new filter definitions from Fabian, and few other miscellaneous
+ touch-ups.
+
  Revision 2.22  2006/09/22 01:27:55  hal9
  Final commit of probably various minor changes here and there. Unless
  something changes this should be ready for pending release.

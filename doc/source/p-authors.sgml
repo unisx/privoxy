@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 2.16 2006/09/20 01:47:00 hal9 Exp $
+ $Id: p-authors.sgml,v 2.19 2006/11/14 01:57:47 hal9 Exp $
 
  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
@@ -36,7 +36,6 @@ Current Privoxy Team:
  
  Hal Burgiss
  Ian Cummings
- Félix Rauch
  Roland Rosenfeld
 <![%p-authors-formal;[
 </literallayout>
@@ -71,8 +70,9 @@ Current Privoxy Team:
 </literallayout>
 <![%p-authors-formal;[
 <para>
- Thanks to the many people who have tested Privoxy, reported bugs, made
- suggestions or contributed in some way. These include (in alphabetical order):
+ Thanks to the many people who have tested Privoxy, reported bugs, provided 
+ patches, made suggestions or contributed in some way. These include (in
+ alphabetical order):
 </para>
 <literallayout>
  Ken Arromdee
@@ -80,23 +80,33 @@ Current Privoxy Team:
  Reiner Buehl
  Andrew J. Caines
  Clifford Caoile
+ Frédéric Crozat
  Michael T. Davis
  Mattes Dolak 
- Ulrich Drepper
  Peter E
+ Florian Effenberger
+ Dean Gaudet
  Aaron Hamid
+ Darel Henman
  Magnus Holmgren
+ Derek Jennings
+ David Laight
  Don Libes  
  Paul Lieverse
  Jindrich Makovicka 
  David Mediavilla 
+ Raphael Moll
  Oliver Stoeneberg
+ Martin Thomas
  Roberto Ragusa
+ Félix Rauch
  Maynard Riley
+ Spinor S
  Bart Schelstraete
  Bobby G. Vinyard
- Darren Wiebe
  Jörg Weinmann 
+ Darren Wiebe
+ Anduin Withers
  Oliver Yeoh
  Jamie Zawinski
 </literallayout>
@@ -108,5 +118,7 @@ Current Privoxy Team:
 <literallayout>
  Junkbusters Corp.
  Anonymous Coders
+ Ulrich Drepper
+ Philip Hazel
 </literallayout>
 ]]>

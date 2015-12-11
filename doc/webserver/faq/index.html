@@ -45,7 +45,7 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.22 2006/09/22 10:54:34 hal9 Exp $<BR></P
+>$Id: index.html,v 1.24 2006/11/14 02:06:19 hal9 Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
@@ -96,7 +96,7 @@ TARGET="_top"
 > Privoxy is based on Internet Junkbuster (tm).</P
 ><P
 >  Please note that this document is a work in progress. This copy represents
-  the state at the release of version 3.0.5.
+  the state at the release of version 3.0.6.
   You can find the latest version of the document at <A
 HREF="http://www.privoxy.org/faq/"
 TARGET="_top"
@@ -149,6 +149,11 @@ Privoxy work?</A
 ></DT
 ><DT
 >1.4. <A
+HREF="general.html#OTHERSTUFF"
+>Does Privoxy do anything more than ad blocking?</A
+></DT
+><DT
+>1.5. <A
 HREF="general.html#NEWJB"
 >What is this new version of 
 <SPAN
@@ -157,8 +162,8 @@ CLASS="QUOTE"
 >?</A
 ></DT
 ><DT
->1.5. <A
-HREF="general.html#AEN74"
+>1.6. <A
+HREF="general.html#AEN78"
 >Why <SPAN
 CLASS="QUOTE"
 >"Privoxy"</SPAN
@@ -166,76 +171,80 @@ CLASS="QUOTE"
 Junkbuster at all?</A
 ></DT
 ><DT
->1.6. <A
+>1.7. <A
 HREF="general.html#DIFFERS"
 >How does Privoxy differ
 from the old Junkbuster?</A
 ></DT
 ><DT
->1.7. <A
+>1.8. <A
 HREF="general.html#WHATSANAD"
 >How does Privoxy know what is
 an ad, and what is not?</A
 ></DT
 ><DT
->1.8. <A
-HREF="general.html#AEN155"
+>1.9. <A
+HREF="general.html#AEN159"
 >Can Privoxy make mistakes? 
 This does not sound very scientific.</A
 ></DT
 ><DT
->1.9. <A
-HREF="general.html#AEN161"
+>1.10. <A
+HREF="general.html#AEN165"
 >Will I have to configure Privoxy
  before I can use it?</A
 ></DT
 ><DT
->1.10. <A
-HREF="general.html#BROWSERS2"
->My browser does the same things as
-Privoxy. Why should I use
-Privoxy at all?</A
+>1.11. <A
+HREF="general.html#LAN"
+>Can Privoxy run as a server on a network?</A
 ></DT
 ><DT
->1.11. <A
+>1.12. <A
+HREF="general.html#BROWSERS2"
+>My browser does the same things as
+Privoxy. Why should I use Privoxy at all?</A
+></DT
+><DT
+>1.13. <A
 HREF="general.html#WHYTRUST"
 >Why should I trust Privoxy?</A
 ></DT
 ><DT
->1.12. <A
+>1.14. <A
 HREF="general.html#LICENSE"
 >Is there is a license or fee? What about a 
 warranty? Registration?</A
 ></DT
 ><DT
->1.13. <A
+>1.15. <A
 HREF="general.html#SPYWARE"
 >Can Privoxy remove spyware? Adware? Viruses?</A
 ></DT
 ><DT
->1.14. <A
+>1.16. <A
 HREF="general.html#OTHERADS"
 >Can I use Privoxy with other ad-blocking software?</A
 ></DT
 ><DT
->1.15. <A
+>1.17. <A
 HREF="general.html#JOINTEAM"
 >I would like to help you, what can I do?</A
 ></DT
 ><DD
 ><DL
 ><DT
->1.15.1. <A
+>1.17.1. <A
 HREF="general.html#JOINTEAM-WORK"
 >Would you like to participate?</A
 ></DT
 ><DT
->1.15.2. <A
+>1.17.2. <A
 HREF="general.html#JOINTEAM-MONEY"
 >Contribute!</A
 ></DT
 ><DT
->1.15.3. <A
+>1.17.3. <A
 HREF="general.html#JOINTEAM-SOFTWARE"
 >Software</A
 ></DT
@@ -273,7 +282,7 @@ HREF="installation.html#NEWINSTALL"
 ></DT
 ><DT
 >2.5. <A
-HREF="installation.html#AEN263"
+HREF="installation.html#FIRSTSTEP"
 >I just installed Privoxy. Is there anything 
 special I have to do now?</A
 ></DT
@@ -308,24 +317,14 @@ HREF="configuration.html"
 ><DL
 ><DT
 >3.1. <A
-HREF="configuration.html#GETUPDATES"
->Where can I get updated Actions Files?</A
-></DT
-><DT
->3.2. <A
-HREF="configuration.html#NEWCONFIG"
->Can I use my old config files?</A
-></DT
-><DT
->3.3. <A
-HREF="configuration.html#AEN361"
+HREF="configuration.html#AEN351"
 >What exactly is an <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
 > file?</A
 ></DT
 ><DT
->3.4. <A
+>3.2. <A
 HREF="configuration.html#ACTIONSS"
 >The <SPAN
 CLASS="QUOTE"
@@ -337,14 +336,14 @@ CLASS="QUOTE"
 >.</A
 ></DT
 ><DT
->3.5. <A
-HREF="configuration.html#AEN381"
+>3.3. <A
+HREF="configuration.html#AEN374"
 >How are actions files configured? What is the easiest
 way to do this?</A
 ></DT
 ><DT
->3.6. <A
-HREF="configuration.html#AEN389"
+>3.4. <A
+HREF="configuration.html#AEN382"
 >There are several different <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -352,12 +351,27 @@ CLASS="QUOTE"
 the differences?</A
 ></DT
 ><DT
+>3.5. <A
+HREF="configuration.html#GETUPDATES"
+>Where can I get updated Actions Files?</A
+></DT
+><DT
+>3.6. <A
+HREF="configuration.html#NEWCONFIG"
+>Can I use my old config files?</A
+></DT
+><DT
 >3.7. <A
+HREF="configuration.html#DIFFICULT"
+>Why is the configuration so complicated?</A
+></DT
+><DT
+>3.8. <A
 HREF="configuration.html#YAHOO"
 >How can I make my Yahoo/Hotmail/Gmail account work?</A
 ></DT
 ><DT
->3.8. <A
+>3.9. <A
 HREF="configuration.html#CONFIGFILES"
 >What's the difference between the
 <SPAN
@@ -372,14 +386,14 @@ CLASS="QUOTE"
 > defaults?</A
 ></DT
 ><DT
->3.9. <A
+>3.10. <A
 HREF="configuration.html#BROWSECONFIG"
 >Why can I change the configuration 
 with a browser? Does that not raise security issues?</A
 ></DT
 ><DT
->3.10. <A
-HREF="configuration.html#AEN467"
+>3.11. <A
+HREF="configuration.html#AEN488"
 >What is the <TT
 CLASS="FILENAME"
 >default.filter</TT
@@ -389,47 +403,47 @@ CLASS="QUOTE"
 >?</A
 ></DT
 ><DT
->3.11. <A
-HREF="configuration.html#AEN485"
+>3.12. <A
+HREF="configuration.html#LANCONFIG"
 >How can I set up Privoxy to act as a proxy for my 
  LAN?</A
 ></DT
 ><DT
->3.12. <A
-HREF="configuration.html#AEN510"
+>3.13. <A
+HREF="configuration.html#AEN531"
 >Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
 ></DT
 ><DT
->3.13. <A
-HREF="configuration.html#AEN527"
+>3.14. <A
+HREF="configuration.html#AEN548"
 >Why would anybody want to see a checkerboard pattern?</A
 ></DT
 ><DT
->3.14. <A
-HREF="configuration.html#AEN532"
+>3.15. <A
+HREF="configuration.html#AEN554"
 >I see some images being replaced by a text
 instead of the checkerboard image. Why and how do I get rid of this?</A
 ></DT
 ><DT
->3.15. <A
+>3.16. <A
 HREF="configuration.html#SRVANY"
 >Can Privoxy run as a service 
 on Win2K/NT/XP?</A
 ></DT
 ><DT
->3.16. <A
+>3.17. <A
 HREF="configuration.html#OTHERPROXY"
 >How can I make Privoxy work with other 
 proxies like Squid or Tor?</A
 ></DT
 ><DT
->3.17. <A
+>3.18. <A
 HREF="configuration.html#PORT-80"
 >Can I just set Privoxy to use port 80
 and thus avoid individual browser configuration?</A
 ></DT
 ><DT
->3.18. <A
+>3.19. <A
 HREF="configuration.html#TRANSPARENT"
 >Can Privoxy run as a <SPAN
 CLASS="QUOTE"
@@ -437,44 +451,76 @@ CLASS="QUOTE"
 > proxy?</A
 ></DT
 ><DT
->3.19. <A
+>3.20. <A
 HREF="configuration.html#OUTLOOK"
 >How can I configure Privoxy for use with Outlook
  Express?</A
 ></DT
 ><DT
->3.20. <A
+>3.21. <A
 HREF="configuration.html#OUTLOOK-MORE"
 >How can I have separate rules just for HTML mail?</A
 ></DT
 ><DT
->3.21. <A
+>3.22. <A
 HREF="configuration.html#SNEAKY-COOKIES"
 >I sometimes notice cookies sneaking through. How?</A
 ></DT
 ><DT
->3.22. <A
+>3.23. <A
 HREF="configuration.html#EVIL-COOKIES"
 >Are all cookies bad? Why?</A
 ></DT
 ><DT
->3.23. <A
+>3.24. <A
 HREF="configuration.html#ALLOW-COOKIES"
 >How can I allow permanent cookies for my trusted sites?</A
 ></DT
 ><DT
->3.24. <A
+>3.25. <A
 HREF="configuration.html#MULTIPLES"
 >Can I have separate configurations for different users?</A
 ></DT
 ><DT
->3.25. <A
+>3.26. <A
 HREF="configuration.html#WHITELISTS"
 >Can I set-up Privoxy as a whitelist of
 <SPAN
 CLASS="QUOTE"
 >"good"</SPAN
 > sites?</A
+></DT
+><DT
+>3.27. <A
+HREF="configuration.html#NO-ADBLOCK"
+>How can I turn off ad-blocking?</A
+></DT
+><DT
+>3.28. <A
+HREF="configuration.html#TEMPLATES"
+>How can I have custom template pages, like the 
+<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>BLOCKED</I
+></SPAN
+> page?</A
+></DT
+><DT
+>3.29. <A
+HREF="configuration.html#BLOCKALL"
+>How can I remove the <SPAN
+CLASS="QUOTE"
+>"Go There Anyway"</SPAN
+> link from 
+the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>BLOCKED</I
+></SPAN
+> page?</A
 ></DT
 ></DL
 ></DD
@@ -487,7 +533,7 @@ HREF="misc.html"
 ><DL
 ><DT
 >4.1. <A
-HREF="misc.html#AEN640"
+HREF="misc.html#AEN712"
 >How much does Privoxy slow my browsing down? This 
 has to add extra time to browsing.</A
 ></DT
@@ -511,40 +557,46 @@ problems?</A
 ></DT
 ><DT
 >4.5. <A
+HREF="misc.html#NEWADS2"
+>If I do submit missed ads, will 
+they be included in future updates?</A
+></DT
+><DT
+>4.6. <A
 HREF="misc.html#NOONECARES"
 >Why doesn't anyone answer my support 
 request?</A
 ></DT
 ><DT
->4.6. <A
+>4.7. <A
 HREF="misc.html#IP"
 >How can I hide my IP address?</A
 ></DT
 ><DT
->4.7. <A
-HREF="misc.html#AEN702"
+>4.8. <A
+HREF="misc.html#AEN784"
 >Can Privoxy guarantee I am anonymous?</A
 ></DT
 ><DT
->4.8. <A
-HREF="misc.html#AEN720"
+>4.9. <A
+HREF="misc.html#AEN802"
 >A test site says I am not using a Proxy.</A
 ></DT
 ><DT
->4.9. <A
+>4.10. <A
 HREF="misc.html#TOR"
 >How do I use Privoxy
  together with Tor?</A
 ></DT
 ><DT
->4.10. <A
-HREF="misc.html#AEN774"
+>4.11. <A
+HREF="misc.html#AEN859"
 >Might some things break because header information or
 content is being altered?</A
 ></DT
 ><DT
->4.11. <A
-HREF="misc.html#AEN785"
+>4.12. <A
+HREF="misc.html#AEN873"
 >Can Privoxy act as a <SPAN
 CLASS="QUOTE"
 >"caching"</SPAN
@@ -552,24 +604,24 @@ CLASS="QUOTE"
 speed up web browsing?</A
 ></DT
 ><DT
->4.12. <A
-HREF="misc.html#AEN794"
+>4.13. <A
+HREF="misc.html#AEN882"
 >What about as a firewall? Can Privoxy protect me?</A
 ></DT
 ><DT
->4.13. <A
-HREF="misc.html#AEN799"
+>4.14. <A
+HREF="misc.html#AEN887"
 >I have large empty spaces / a checkerboard pattern now where
 ads used to be. Why?</A
 ></DT
 ><DT
->4.14. <A
-HREF="misc.html#AEN804"
+>4.15. <A
+HREF="misc.html#AEN895"
 >How can Privoxy filter Secure (HTTPS) URLs?</A
 ></DT
 ><DT
->4.15. <A
-HREF="misc.html#AEN818"
+>4.16. <A
+HREF="misc.html#AEN909"
 >Privoxy runs as a <SPAN
 CLASS="QUOTE"
 >"server"</SPAN
@@ -577,12 +629,12 @@ CLASS="QUOTE"
 secure is it? Do I need to take any special precautions?</A
 ></DT
 ><DT
->4.16. <A
+>4.17. <A
 HREF="misc.html#TURNOFF"
 >How can I temporarily disable Privoxy?</A
 ></DT
 ><DT
->4.17. <A
+>4.18. <A
 HREF="misc.html#REALLYOFF"
 >When <SPAN
 CLASS="QUOTE"
@@ -591,7 +643,12 @@ CLASS="QUOTE"
 out of the picture?</A
 ></DT
 ><DT
->4.18. <A
+>4.19. <A
+HREF="misc.html#TURNOFF2"
+>How can I tell Privoxy to totally ignore certain sites?</A
+></DT
+><DT
+>4.20. <A
 HREF="misc.html#CRUNCH"
 >My logs show Privoxy <SPAN
 CLASS="QUOTE"
@@ -603,19 +660,19 @@ CLASS="QUOTE"
 >?</A
 ></DT
 ><DT
->4.19. <A
+>4.21. <A
 HREF="misc.html#DOWNLOADS"
 >Can Privoxy effect files that I download
 from a webserver? FTP server?</A
 ></DT
 ><DT
->4.20. <A
+>4.22. <A
 HREF="misc.html#DOWNLOADS2"
 >I just downloaded a Perl script, and Privoxy
 altered it! Yikes, what is wrong!</A
 ></DT
 ><DT
->4.21. <A
+>4.23. <A
 HREF="misc.html#HOSTSFILE"
 >Should I continue to use a <SPAN
 CLASS="QUOTE"
@@ -623,13 +680,13 @@ CLASS="QUOTE"
 > file for ad-blocking?</A
 ></DT
 ><DT
->4.22. <A
+>4.24. <A
 HREF="misc.html#SEEALSO"
 >Where can I find more information about Privoxy
 and related issues?</A
 ></DT
 ><DT
->4.23. <A
+>4.25. <A
 HREF="misc.html#MICROSUCK"
 >I've noticed that Privoxy changes <SPAN
 CLASS="QUOTE"
@@ -651,52 +708,57 @@ HREF="trouble.html"
 ><DL
 ><DT
 >5.1. <A
-HREF="trouble.html#AEN967"
->I am getting <SPAN
+HREF="trouble.html#AEN1062"
+>I cannot connect to any websites. Or, I am getting
+<SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
->
-with every web page?</A
+> message with every web page. Why?</A
 ></DT
 ><DT
 >5.2. <A
-HREF="trouble.html#AEN979"
+HREF="trouble.html#ERROR503"
+>Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
+></DT
+><DT
+>5.3. <A
+HREF="trouble.html#AEN1085"
 >I just added a new rule, but the steenkin ad is 
 still getting through. How?</A
 ></DT
 ><DT
->5.3. <A
+>5.4. <A
 HREF="trouble.html#BADSITE"
 >One of my favorite sites does not work with Privoxy.
 What can I do?</A
 ></DT
 ><DT
->5.4. <A
+>5.5. <A
 HREF="trouble.html#DUN"
 >After installing Privoxy, I have to log in
 every time I start IE. What gives?</A
 ></DT
 ><DT
->5.5. <A
+>5.6. <A
 HREF="trouble.html#FTP"
 >I cannot connect to any FTP sites. Privoxy
  is blocking me.</A
 ></DT
 ><DT
->5.6. <A
+>5.7. <A
 HREF="trouble.html#OSXIE"
 >In Mac OSX, I can't configure Microsoft Internet Explorer to use 
  Privoxy as the HTTP proxy.</A
 ></DT
 ><DT
->5.7. <A
+>5.8. <A
 HREF="trouble.html#OSXUNINSTALL"
 >In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
  empty the trash.</A
 ></DT
 ><DT
->5.8. <A
+>5.9. <A
 HREF="trouble.html#OSXIMAGES"
 >In Mac OSX Panther (10.3), images often fail to load and/or I
  experience random delays in page loading. I'm using
@@ -706,7 +768,7 @@ CLASS="LITERAL"
 > as my browser's proxy setting.</A
 ></DT
 ><DT
->5.9. <A
+>5.10. <A
 HREF="trouble.html#BLANKPAGE"
 >I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
@@ -717,11 +779,6 @@ CLASS="MARKUP"
 >&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
 >. Without
  Privoxy the page loads fine.</A
-></DT
-><DT
->5.10. <A
-HREF="trouble.html#ERROR503"
->Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
 ></DT
 ><DT
 >5.11. <A
@@ -790,6 +847,11 @@ HREF="trouble.html#SLOWCRAWL"
 >I just installed Privoxy, and all my
 browsing has slowed to a crawl. What gives?</A
 ></DT
+><DT
+>5.20. <A
+HREF="trouble.html#PREVENTCOMP"
+>Why do my filters work on some sites but not on others?</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -844,12 +906,12 @@ HREF="copyright.html"
 ><DL
 ><DT
 >7.1. <A
-HREF="copyright.html#AEN1247"
+HREF="copyright.html#AEN1373"
 >License</A
 ></DT
 ><DT
 >7.2. <A
-HREF="copyright.html#AEN1263"
+HREF="copyright.html#AEN1389"
 >History</A
 ></DT
 ></DL

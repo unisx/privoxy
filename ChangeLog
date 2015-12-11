@@ -1,7 +1,22 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Since 3.0.3 ***
+*** Version 3.0.6 ***
+
+- New content filters: no-ping, google, msn, yahoo and blogspot.
+- New header filters:  x-httpd-php-to-html, html-to-xml, xml-to-html
+                       and hide-tor-exit-notation.
+- The special header "X-Filter: No" now disables header filtering as well.
+- Improved the filters img-reorder, js-annoyances, webbugs,
+  banners-by-size, banners-by-link and ie-exploits to make them
+  less likely to break anything.
+- Removed outdated URL patterns in default.action and added new ones. 
+- Added redirection from http://p.p/user-manual to http://p.p/user-manual/
+- Changed webinterface default values for hide-user-agent, hide-referrer
+  and set-image-blocker.
+	
+*** Version 3.0.5 ***
+
 - Windows version can be installed/started as a service.
 - Windows icon stays blue when Privoxy is idle, green when busy.
 - Integrated Fabian Keil's extensive patch.  See:

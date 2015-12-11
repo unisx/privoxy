@@ -1,4 +1,4 @@
-const char miscutil_rcs[] = "$Id: miscutil.c,v 1.43 2006/09/23 13:26:38 roro Exp $";
+const char miscutil_rcs[] = "$Id: miscutil.c,v 1.44 2006/11/07 12:46:43 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.c,v $
@@ -36,6 +36,9 @@ const char miscutil_rcs[] = "$Id: miscutil.c,v 1.43 2006/09/23 13:26:38 roro Exp
  *
  * Revisions   :
  *    $Log: miscutil.c,v $
+ *    Revision 1.44  2006/11/07 12:46:43  fabiankeil
+ *    Silence compiler warning on NetBSD 3.1.
+ *
  *    Revision 1.43  2006/09/23 13:26:38  roro
  *    Replace TABs by spaces in source code.
  *
@@ -770,7 +773,7 @@ char *string_toupper(const char *string)
 
    while (*q != '\0')
    {
-      *p++ = toupper(*q++);
+      *p++ = toupper((int) *q++);
    }
 
    return result;

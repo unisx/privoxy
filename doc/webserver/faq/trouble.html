@@ -81,58 +81,88 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN967"
+NAME="AEN1062"
 ></A
->5.1. I am getting <SPAN
+>5.1. I cannot connect to any websites. Or, I am getting
+<SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
->
-with every web page?</H3
+> message with every web page. Why?</H3
 ><P
-> Either <SPAN
+> There are several possibilities:</P
+><P
+><P
+></P
+><UL
+><LI
+><P
+><SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is not running, or your 
- browser is configured for a different port than what
+> is not running. Solution: verify 
+ that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is installed correctly, has not crashed, and is indeed running.
+ Look at <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> logs to see what they say.</P
+></LI
+><LI
+><P
+>Or your browser is configured for a different port than what
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is using, or, if using a forwarding 
- rule, you have a configuration problem or a problem with a host in the 
- forwarding chain.
- </P
-><P
-> You should verify that <SPAN
+> is using. Solution: verify that <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is indeed running and that the correct port is set,
- and matches what your browser is set to. See <A
-HREF="../user-manual/config.html#LISTEN-ADDRESS"
-TARGET="_top"
-><TT
+>
+ and your browser are set to the same port (<TT
 CLASS="LITERAL"
 >listen-address</TT
->
- option</A
-> in <SPAN
-CLASS="APPLICATION"
->Privoxy's</SPAN
-> <A
-HREF="../user-manual/config.html"
-TARGET="_top"
->main configuration file</A
->. If using 
- any forwarding rules, disable those to make sure the problem is not with 
- a forwarder.</P
+>).</P
+></LI
+><LI
+><P
+>Or if using a forwarding rule, you have a configuration problem or a
+ problem with a host in the forwarding chain. Solution: temporarily alter your
+ configuration and take the forwarders out of the equation.</P
+></LI
+><LI
+><P
+>  Or you have a firewall that is interfering and blocking you. Solution: 
+  try disabling or removing the firewall as a simple test.
+ </P
+></LI
+></UL
+></P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN979"
+NAME="ERROR503"
 ></A
->5.2. I just added a new rule, but the steenkin ad is 
+>5.2. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
+><P
+>  More than likely this is a problem with your TCP/IP networking. ZoneAlarm has
+  been reported to cause this symptom -- even if not running! The solution is
+  to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
+  something better behaved in its place. Other personal firewall type products
+  may cause similar type problems if not configured correctly.
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="AEN1085"
+></A
+>5.3. I just added a new rule, but the steenkin ad is 
 still getting through. How?</H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
@@ -141,8 +171,7 @@ still getting through. How?</H3
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
- will not be in the picture. The best thing to do is try flushing the browser's
- caches. And then try again.</P
+ will not be involved. Flush the browser's caches, and then try again.</P
 ><P
 > If this doesn't help, you probably have an error in the rule you
  applied. Try pasting the full URL of the offending ad into <A
@@ -151,7 +180,98 @@ TARGET="_top"
 >http://config.privoxy.org/show-url-info</A
 >
  and see if it really matches your new rule. Blocking ads is like blocking
- spam: a lot of tinkering is required to stay ahead of the game.</P
+ spam: a lot of tinkering is required to stay ahead of the game. And 
+ remember you need to block the URL of the ad in question, which may be 
+ entirely different from the site URL itself. Most ads are hosted on different
+ servers than the main site itself. If you right-click on the ad, you should
+ be able to get all the relevant information you need. Alternately, you can 
+ find the correct URL by looking at <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> logs.</P
+><P
+> Below is a slightly modified real-life log snippet that originates with one 
+ requested URL: <TT
+CLASS="LITERAL"
+>www.example.com</TT
+> (name of site was changed
+ for this example, the number of requests is real). You can see in this the
+ complexity of what goes into making up this one <SPAN
+CLASS="QUOTE"
+>"page"</SPAN
+>. There
+ are eight different domains involved here, with thirty two separate URLs
+ requested in all, making up all manner of images, Shockwave Flash,
+ JavaScript, CSS stylesheets, scripts, and other related content. Some of this
+ content is obviously <SPAN
+CLASS="QUOTE"
+>"good"</SPAN
+> or <SPAN
+CLASS="QUOTE"
+>"bad"</SPAN
+>, but not all.
+ Many of the more questionable looking requests, are going to outside domains
+ that seem to be identifying themselves with suspicious looking names, making
+ our job a little easier. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has <SPAN
+CLASS="QUOTE"
+>"crunched"</SPAN
+> (meaning caught 
+ and BLOCKED) quite a few items in this example, but perhaps missed a few as well. </P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>Request: www.example.com/
+Request: www.example.com/favicon.ico
+Request: img.example.com/main.css
+Request: img.example.com/sr.js
+Request: example.betamarker.com/example.html
+Request: www.lik-sang.com/Banners/bestsellers/skyscraper.php?likref=BSellers
+Request: img.example.com/pb.png
+Request: www.google-analytics.com/urchin.js crunch!
+Request: www.advertising-department.com/ats/switch.ps.php?26856 crunch!
+Request: img.example.com/p.gif
+Request: www.popuptraffic.com/assign.php?l=example&#38;mode=behind crunch!
+Request: www.popuptraffic.com/scripts/popup.php?hid=5c3cf&#38;tmpl=PBa.tmpl crunch!
+Request: www.popuptraffic.com/assign.php?l=example crunch!
+Request: www.lik-sang.com/Banners/best_sellers/best_sellers.css
+Request: www.adtrak.net/adx.js crunch!
+Request: img.example.com/hbg.gif
+Request: img.example.com/example.jpg
+Request: img.example.com/mt.png
+Request: img.example.com/mm.png
+Request: img.example.com/mb.png
+Request: www.popuptraffic.com/scripts/popup.php?hid=a71b91fa5&#38;tmpl=Ua.tmp crunch!
+Request: www.example.com/tracker.js
+Request: www.lik-sang.com/Banners/best_sellers/lsi_head.gif
+Request: www.adtrak.net/adjs.php?n=020548130&#38;what=zone:61 crunch!
+Request: www.adtrak.net/adjs.php?n=463594413&#38;what=zone:58&#38;source=Ua crunch!
+Request: www.lik-sang.com/Banners/best_sellers/bottomani.swf
+Request: mmm.elitemediagroup.net/install.php?allowpop=no&#38;popupmincook=0&#38;allowsp2=1 crunch!
+Request: www.example.com/tracker.js?screen=1400x1050&#38;win=962x693
+Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=61 crunch!
+Request: 66.70.21.80/scripts/click.php?hid=5c3cf599a9efd0320d26&#38;si
+Request: 66.70.21.80/img/pixel.gif
+Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=58&#38;source=Ua&#38;block=86400 crunch!
+Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&#38;si=Ua</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> Despite 12 out of 32 requests being blocked, the page looked, and seemed to
+ behave perfectly <SPAN
+CLASS="QUOTE"
+>"normal"</SPAN
+> (minus some ads, of course).</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -160,7 +280,7 @@ CLASS="SECT2"
 ><A
 NAME="BADSITE"
 ></A
->5.3. One of my favorite sites does not work with Privoxy.
+>5.4. One of my favorite sites does not work with Privoxy.
 What can I do?</H3
 ><P
 > First verify that it is indeed a <SPAN
@@ -179,19 +299,32 @@ TARGET="_top"
  while clicking reload. Alternatively, flush your browser's disk and memory
  caches).</P
 ><P
-> If still a problem, go to <A
+> If the problem went away, we know we have a configuration related problem.
+ Now go to <A
 HREF="http://config.privoxy.org/show-url-info"
 TARGET="_top"
 >http://config.privoxy.org/show-url-info</A
 >
- and paste the full URL of the page in question into the prompt. See which actions
- are being applied to the URL, and which matches in which actions files are
- responsible for that. Now, armed with this information, go to <A
+ and paste the full URL of the page in question into the prompt. See which
+ actions are being applied to the URL, and which matches in which actions
+ files are responsible for that. It might be helpful also to look at your logs
+ for this site too, to see what else might be happening. Many sites are
+ complex and require a number of related pages to help present their content.
+ Look at what else might be used by the page in question, and what of that
+ might be <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>required</I
+></SPAN
+>.
+ Now, armed with this information, go to
+ <A
 HREF="http://config.privoxy.org/show-status"
 TARGET="_top"
 >http://config.privoxy.org/show-status</A
 >
- and select the appropriate actions files for editing.</P
+ and select the appropriate actions files for editing. </P
 ><P
 > You can now either look for a section which disables the actions that
  you suspect to cause the problem and add a pattern for your site there,
@@ -230,6 +363,9 @@ TARGET="_top"
 >actions tutorial</A
 >
  with general configuration information and examples.</P
+><P
+> As a last resort, you can always see if your browser has a setting that will 
+ bypass the proxy setting for selective sites. Modern browsers can do this.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -238,7 +374,7 @@ CLASS="SECT2"
 ><A
 NAME="DUN"
 ></A
->5.4. After installing Privoxy, I have to log in
+>5.5. After installing Privoxy, I have to log in
 every time I start IE. What gives?</H3
 ><P
 > This is a quirk that effects the installation of
@@ -293,7 +429,7 @@ CLASS="SECT2"
 ><A
 NAME="FTP"
 ></A
->5.5. I cannot connect to any FTP sites. Privoxy
+>5.6. I cannot connect to any FTP sites. Privoxy
  is blocking me.</H3
 ><P
 >  <SPAN
@@ -331,7 +467,7 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"proxy"</SPAN
 >
-  setting, which will silently enable various protocols, including
+  setting, which will enable various protocols, including
   <SPAN
 CLASS="emphasis"
 ><I
@@ -364,7 +500,7 @@ CLASS="SECT2"
 ><A
 NAME="OSXIE"
 ></A
->5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+>5.7. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
  Privoxy as the HTTP proxy.</H3
 ><P
 >  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
@@ -389,7 +525,7 @@ CLASS="SECT2"
 ><A
 NAME="OSXUNINSTALL"
 ></A
->5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+>5.8. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
  empty the trash.</H3
 ><P
@@ -424,7 +560,7 @@ CLASS="SECT2"
 ><A
 NAME="OSXIMAGES"
 ></A
->5.8. In Mac OSX Panther (10.3), images often fail to load and/or I
+>5.9. In Mac OSX Panther (10.3), images often fail to load and/or I
  experience random delays in page loading. I'm using
  <TT
 CLASS="LITERAL"
@@ -450,7 +586,7 @@ CLASS="SECT2"
 ><A
 NAME="BLANKPAGE"
 ></A
->5.9. I get a completely blank page at one site. <SPAN
+>5.10. I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
 >"View Source"</SPAN
 >
@@ -514,22 +650,6 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="ERROR503"
-></A
->5.10. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
-><P
->  More than likely this is a problem with your TCP/IP networking. ZoneAlarm has
-  been reported to cause this symptom -- even if not running. The solution is
-  to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
-  something better behaved in its place. Other personal firewall type products
-  may cause similar type problems if not configured correctly.
- </P
-></DIV
-><DIV
-CLASS="SECT2"
-><H3
-CLASS="SECT2"
-><A
 NAME="NOHOSTNAME"
 ></A
 >5.11. My logs show many <SPAN
@@ -575,7 +695,8 @@ CLASS="FILENAME"
 >HOSTS</TT
 >
  file. If this file has been changed from the original, try reverting it to
- see if that helps.</P
+ see if that helps. Make sure whatever name(s) are used for the local system,
+ that they resolve both ways.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -603,14 +724,14 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > running, and
- you are actually trying to start a second <SPAN
+ your system is actually trying to start a second
+ <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> 
- on the same port, which will not work. (You can have multiple instances but
- they must be assigned different ports.) How and why this might happen varies
- from platform to platform, but you need to check your installation and
- start-up procedures.</P
+> on the same port, which will not work.
+ (You can have multiple instances but they must be assigned different ports.)
+ How and why this might happen varies from platform to platform, but you need
+ to check your installation and start-up procedures.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -804,7 +925,7 @@ CLASS="QUOTE"
 > which is reporting whatever problem occurred
  downstream, and not the root cause of the error.</P
 ><P
-> In any case, v. 3.0.5 includes various improvements to help
+> In any case, newer versions include various improvements to help
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -857,6 +978,35 @@ browsing has slowed to a crawl. What gives?</H3
  components such as anti-virus software, spyware protectors, personal
  firewalls or similar components. Try disabling (or uninstalling) these one
  at a time and see if that helps.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="PREVENTCOMP"
+></A
+>5.20. Why do my filters work on some sites but not on others?</H3
+><P
+> It's probably due to compression. It is a common practice for web servers to
+ send their content <SPAN
+CLASS="QUOTE"
+>"compressed"</SPAN
+> in order to speed things up, and
+ then let the browser <SPAN
+CLASS="QUOTE"
+>"uncompress"</SPAN
+> them. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> does not (yet)
+ support compression. But we can force the web server to bend to our will ;-) 
+ So for filtering, make sure you have <A
+HREF="../user-manual/actions-file.html#PREVENT-COMPRESSION"
+TARGET="_top"
+>prevent-compression</A
+>
+ turned ON!  </P
 ></DIV
 ></DIV
 ><DIV

@@ -32,9 +32,8 @@
  *
  *********************************************************************/
 
-This README is included with the development version of Privoxy 3.0.5. See
-http://www.privoxy.org/ for more information. The current code maturity level
-is "BETA", but seems stable to us :).
+This README is included with Privoxy 3.0.6. See http://www.privoxy.org/ for
+more information. The current code maturity level is "stable".
 
 -------------------------------------------------------------------------------
 
@@ -51,11 +50,16 @@ Privoxy is based on Internet Junkbuster (tm).
 
 1. IMPORTANT CHANGES
 
-BIG NEWS! September 2006, Privoxy 3.0.5 is released. This is a significant
-upgrade with many new and enhanced features, and many bugs fixed. There are
-fifteen new actions available, and several actions have enhanced capabilities.
-Multiple filter files are now supported as well. See the "What's New" section
-and the "Upgrader's Notes" in the User Manual for details and specifics.
+NEWS! November 2006, Privoxy 3.0.6 is released. This is a significant upgrade
+with many new and enhanced features, and many bugs fixed. It is also the first
+stable release in quite some time. There are fifteen new actions available, and
+several actions have enhanced capabilities. Multiple filter files are now
+supported as well. There are many improvements and refinements. See the "What's
+New" section and the "Upgrader's Notes" in the User Manual for details and
+specifics. Preliminary work on 3.0.7 is already underway.
+
+NEWS! September 2006, Privoxy 3.0.5 BETA is released. This is a significant
+upgrade with many new and enhanced features, and many bugs fixed.
 
 There was and will not be an official 3.0.4 release. This release cycle was
 used to gather our thoughts, play with some new ideas and refine some old ones.
@@ -114,22 +118,16 @@ with FTP or other protocols for the simple reason it does not work.
 The actions list can be configured via the web interface accessed via http://
 p.p/, as well other options.
 
-All configuration files are subject to unannounced changes during the
-development process.
-
 -------------------------------------------------------------------------------
 
 5. DOCUMENTATION
 
-There should be documentation in the 'doc' subdirectory, but it may not be
-completed at this point. In particular, see the User Manual there, the FAQ, and
-those interested in Privoxy development, should look at developer-manual.
+There should be documentation in the 'doc' subdirectory. In particular, see the
+User Manual there, the FAQ, and those interested in Privoxy development, should
+look at developer-manual.
 
-The most up to date source of information on the current development version,
-may still be either comments in the source code, or the included configuration
-files. The source and configuration files are all well commented. The main
-configuration files are: 'config', 'default.action', and 'default.filter' in
-the top-level source directory.
+The source and configuration files are all well commented. The main
+configuration files are: 'config', 'default.action', and 'default.filter'.
 
 Included documentation may vary according to platform and packager. All
 documentation is posted on http://www.privoxy.org, in case you don't have it,
@@ -188,7 +186,7 @@ tracker/?group_id=11118&atid=111118.
 Before doing so, please make sure that the bug has not already been submitted
 and observe the additional hints at the top of the submit form. If already
 submitted, please feel free to add any info to the original report that might
-help solve the issue.
+help to solve the issue.
 
 Please try to verify that it is a Privoxy bug, and not a browser or site bug
 first. If unsure, try toggling off Privoxy, and see if the problem persists. If
@@ -202,20 +200,23 @@ latest version (or even the latest CVS snapshot) and verify your bug.
 Please be sure to provide the following information:
 
   * The exact Privoxy version of the proxy software (if you got the source from
-    CVS, please also give the date).
+    CVS, please also provide the source code revisions as shown in http://
+    config.privoxy.org/show-version).
    
-  * The operating system and versions you run Privoxy on, (e.g. Windows XP).
+  * The operating system and versions you run Privoxy on, (e.g. Windows XP
+    SP2), if you are using a Unix flavor, sending the output of "uname -a"
+    should do.
    
   * The name, platform, and version of the browser you were using (e.g.
     Internet Explorer v5.5 for Mac).
    
   * The URL where the problem occurred, or some way for us to duplicate the
-    problem (e.g. http://somesite.example.com?somethingelse=123).
+    problem (e.g. http://somesite.example.com/?somethingelse=123).
    
   * Whether your version of Privoxy is one supplied by the developers of
     Privoxy via SourceForge, or somewhere else.
    
-  * Whether you are using Privoxy in tandem with another proxy such as TOR. If
+  * Whether you are using Privoxy in tandem with another proxy such as Tor. If
     so, please try disabling the other proxy.
    
   * Whether you are using a personal firewall product. If so, does Privoxy work

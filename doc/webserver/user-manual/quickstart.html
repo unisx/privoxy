@@ -7,7 +7,7 @@ NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.5 User Manual"
+TITLE="Privoxy 3.0.6 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="What's New in this Release"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.5 User Manual</TH
+>Privoxy 3.0.6 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -223,7 +223,7 @@ HREF="appendix.html#ACTIONSANAT"
 >Troubleshooting: Anatomy of an
     Action</A
 >"</SPAN
-> has hints how to understand and debug actions that
+> has hints on how to understand and debug actions that
     <SPAN
 CLASS="QUOTE"
 >"misbehave"</SPAN
@@ -283,7 +283,8 @@ CLASS="APPLICATION"
 ><P
 > First a bit of a warning ... blocking ads is much like blocking SPAM: the
  more aggressive you are about it, the more likely you are to block 
- things that were not intended. So there is a trade off here. If you want
+ things that were not intended. And the more likely that some things 
+ may not work as intended. So there is a trade off here. If you want
  extreme ad free browsing, be prepared to deal with more
  <SPAN
 CLASS="QUOTE"
@@ -322,7 +323,7 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to perform
- some task relating to HTTP transactions (i.e. web browsing). We tell
+ some task relating to WWW transactions (i.e. web browsing). We tell
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -374,9 +375,14 @@ CLASS="APPLICATION"
  original page's HTML content. An ad image for instance, is just an URL
  embedded in the page somewhere. The image itself may be on the same server,
  or a server somewhere else on the Internet. Complex web pages will have many
- such embedded URLs.</P
+ such embedded URLs. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> can deal with each URL individually, so, for
+ instance, the main page text is not touched, but images from such-and-such
+ server are blocked.</P
 ><P
-> The actions we need to know about for ad blocking are:  <TT
+> The most important actions for basic ad blocking are:  <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
@@ -388,7 +394,14 @@ CLASS="LITERAL"
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
 ></TT
->, and
+>, 
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+>handle-as-empty-document</A
+></TT
+>,and
  <TT
 CLASS="LITERAL"
 ><A
@@ -408,15 +421,17 @@ CLASS="LITERAL"
 HREF="actions-file.html#BLOCK"
 >block</A
 ></TT
-> - this action stops
-   any contact between your browser and any URL patterns that match this
-   action's configuration. It can be used for blocking ads, but also anything
-   that is determined to be unwanted. By itself, it simply stops any
-   communication with the remote server and sends <SPAN
+> - this is perhaps 
+   the single most used action, and is particularly important for ad blocking.
+   This action stops any contact between your browser and any URL patterns
+   that match this action's configuration. It can be used for blocking ads,
+   but also anything that is determined to be unwanted. By itself, it simply
+   stops any communication with the remote server and sends
+   <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->'s
-   own built-in BLOCKED page instead to let you now what has happened.
+>'s own built-in BLOCKED page instead to
+   let you now what has happened (with some exceptions, see below).
   </P
 ></LI
 ><LI
@@ -450,6 +465,23 @@ CLASS="QUOTE"
 > icon). There are some limitations to this
    though. For instance, you can't just brute-force an image substitution for
    an entire HTML page in most situations.
+  </P
+></LI
+><LI
+><P
+>   <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+>handle-as-empty-document</A
+></TT
+> - 
+   sends an empty document instead of <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> 
+   normal BLOCKED HTML page. This is useful for file types that are neither 
+   HTML nor images, such as blocking JavaScript files.
   </P
 ></LI
 ><LI
@@ -648,7 +680,7 @@ CLASS="GUIBUTTON"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN565"
+NAME="AEN599"
 ></A
 ><P
 ><B
@@ -787,6 +819,18 @@ HREF="actions-file.html#ACT-EXAMPLES"
 >Actions Files Tutorial</A
 >.
  The ideas explained therein also apply to the web-based editor.</P
+><P
+> There are also various 
+ <A
+HREF="actions-file.html#FILTER"
+>filters</A
+> that can be used for ad blocking 
+ (filters are a special subset of actions). These 
+ fall into the <SPAN
+CLASS="QUOTE"
+>"advanced"</SPAN
+> usage category, and are explained in
+ depth in later sections. </P
 ></DIV
 ></DIV
 ><DIV

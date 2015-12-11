@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.73 2006/09/23 13:26:38 roro Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.75 2006/11/13 19:05:51 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -40,6 +40,20 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.73 2006/09/23 13:26:38 roro Exp $
  *
  * Revisions   :
  *    $Log: parsers.c,v $
+ *    Revision 1.75  2006/11/13 19:05:51  fabiankeil
+ *    Make pthread mutex locking more generic. Instead of
+ *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
+ *    and use mutex locking unless there is an _r function
+ *    available. Better safe than sorry.
+ *
+ *    Fixes "./configure --disable-pthread" and should result
+ *    in less threading-related problems on pthread-using platforms,
+ *    but it still doesn't fix BR#1122404.
+ *
+ *    Revision 1.74  2006/10/02 16:59:12  fabiankeil
+ *    The special header "X-Filter: No" now disables
+ *    header filtering as well.
+ *
  *    Revision 1.73  2006/09/23 13:26:38  roro
  *    Replace TABs by spaces in source code.
  *
@@ -535,11 +549,10 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.73 2006/09/23 13:26:38 roro Exp $
 
 #include "project.h"
 
-#ifdef OSX_DARWIN
-#include <pthread.h>
+#ifdef FEATURE_PTHREAD
 #include "jcc.h"
 /* jcc.h is for mutex semapores only */
-#endif /* def OSX_DARWIN */
+#endif /* def FEATURE_PTHREAD */
 #include "list.h"
 #include "parsers.h"
 #include "encode.h"
@@ -1576,7 +1589,7 @@ jb_err server_last_modified(struct client_state *csp, char **header)
       now = time(NULL);
 #ifdef HAVE_GMTIME_R
       timeptr = gmtime_r(&now, &gmt);
-#elif OSX_DARWIN
+#elif FEATURE_PTHREAD
       pthread_mutex_lock(&gmtime_mutex);
       timeptr = gmtime(&now);
       pthread_mutex_unlock(&gmtime_mutex);
@@ -1597,7 +1610,7 @@ jb_err server_last_modified(struct client_state *csp, char **header)
             last_modified += rtime;
 #ifdef HAVE_GMTIME_R
             timeptr = gmtime_r(&last_modified, &gmt);
-#elif OSX_DARWIN
+#elif FEATURE_PTHREAD
             pthread_mutex_lock(&gmtime_mutex);
             timeptr = gmtime(&last_modified);
             pthread_mutex_unlock(&gmtime_mutex);
@@ -2346,7 +2359,7 @@ jb_err client_if_modified_since(struct client_state *csp, char **header)
             tm += rtime * (negative ? -1 : 1);
 #ifdef HAVE_GMTIME_R
             timeptr = gmtime_r(&tm, &gmt);
-#elif OSX_DARWIN
+#elif FEATURE_PTHREAD
             pthread_mutex_lock(&gmtime_mutex);
             timeptr = gmtime(&tm);
             pthread_mutex_unlock(&gmtime_mutex);
@@ -2444,6 +2457,8 @@ jb_err client_x_filter(struct client_state *csp, char **header)
          else
          {  
             csp->content_type = CT_TABOO;
+            csp->action->flags &= ~ACTION_FILTER_SERVER_HEADERS;
+            csp->action->flags &= ~ACTION_FILTER_CLIENT_HEADERS;
             log_error(LOG_LEVEL_HEADER, "Accepted the client's request to fetch without filtering.");
          }
          log_error(LOG_LEVEL_HEADER, "Crunching %s", *header);
@@ -2773,7 +2788,7 @@ jb_err server_set_cookie(struct client_state *csp, char **header)
       time (&now); 
 #ifdef HAVE_LOCALTIME_R
       tm_now = *localtime_r(&now, &tm_now);
-#elif OSX_DARWIN
+#elif FEATURE_PTHREAD
       pthread_mutex_lock(&localtime_mutex);
       tm_now = *localtime (&now); 
       pthread_mutex_unlock(&localtime_mutex);

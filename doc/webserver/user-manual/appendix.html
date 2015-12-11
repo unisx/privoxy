@@ -7,7 +7,7 @@ NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.5 User Manual"
+TITLE="Privoxy 3.0.6 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="See Also"
@@ -36,7 +36,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.5 User Manual</TH
+>Privoxy 3.0.6 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -745,7 +745,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN4920"
+NAME="AEN5046"
 ></A
 >14.2. Privoxy's Internal Pages</H2
 ><P
@@ -791,7 +791,7 @@ CLASS="APPLICATION"
    Privoxy main page: 
   </P
 ><A
-NAME="AEN4934"
+NAME="AEN5060"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -824,7 +824,7 @@ CLASS="APPLICATION"
     editing of actions files:
   </P
 ><A
-NAME="AEN4942"
+NAME="AEN5068"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -844,7 +844,7 @@ TARGET="_top"
     Show the source code version numbers:
   </P
 ><A
-NAME="AEN4947"
+NAME="AEN5073"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -864,7 +864,7 @@ TARGET="_top"
    Show the browser's request headers:
   </P
 ><A
-NAME="AEN4952"
+NAME="AEN5078"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -884,7 +884,7 @@ TARGET="_top"
    Show which actions apply to a URL and why:
   </P
 ><A
-NAME="AEN4957"
+NAME="AEN5083"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -908,7 +908,7 @@ CLASS="QUOTE"
    to run, but only as a pass-through proxy, with no actions taking place:
   </P
 ><A
-NAME="AEN4963"
+NAME="AEN5089"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -925,7 +925,7 @@ TARGET="_top"
 >   Short cuts. Turn off, then on: 
   </P
 ><A
-NAME="AEN4967"
+NAME="AEN5093"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -939,7 +939,7 @@ TARGET="_top"
    </P
 ></BLOCKQUOTE
 ><A
-NAME="AEN4970"
+NAME="AEN5096"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -1073,11 +1073,12 @@ NAME="CHAIN"
 ></A
 >14.3. Chain of Events</H2
 ><P
-> Let's take a quick look at the basic sequence of events when a web page is 
- requested by your browser and <SPAN
+> Let's take a quick look at how some of <SPAN
 CLASS="APPLICATION"
->Privoxy</SPAN
-> is on duty:</P
+>Privoxy's</SPAN
+> 
+ core features are triggered, and the ensuing sequence of events when a web
+ page is requested by your browser:</P
 ><P
 > <P
 ></P
@@ -1127,12 +1128,22 @@ CLASS="QUOTE"
 >"+handle-as-image"</SPAN
 ></A
 > 
-   is then checked and if it does not match, an 
+   and 
+   <A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+><SPAN
+CLASS="QUOTE"
+>"+handle-as-empty-document"</SPAN
+></A
+>
+   are then checked, and if there is no match, an 
    HTML <SPAN
 CLASS="QUOTE"
 >"BLOCKED"</SPAN
-> page is sent back. Otherwise, if it does match,
-   an image is returned. The type of image depends on the setting of <A
+> page is sent back to the browser. Otherwise, if
+   it does match, an image is returned for the former, and an empty text
+   document for the latter. The type of image would depend on the setting of
+   <A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 ><SPAN
 CLASS="QUOTE"
@@ -1179,8 +1190,8 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   Now the web server starts sending its response back (i.e. typically a web page and related 
-   data).
+>   Now the web server starts sending its response back (i.e. typically a web
+   page).
   </P
 ></LI
 ><LI
@@ -1227,13 +1238,13 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   If a <A
+>   If any <A
 HREF="actions-file.html#FILTER"
 ><SPAN
 CLASS="QUOTE"
 >"+filter"</SPAN
 ></A
->
+> action
    or <A
 HREF="actions-file.html#DEANIMATE-GIFS"
 ><SPAN
@@ -1257,13 +1268,13 @@ CLASS="APPLICATION"
 > back to your browser. 
   </P
 ><P
->   If neither <A
+>   If neither a <A
 HREF="actions-file.html#FILTER"
 ><SPAN
 CLASS="QUOTE"
 >"+filter"</SPAN
 ></A
->
+> action
    or <A
 HREF="actions-file.html#DEANIMATE-GIFS"
 ><SPAN
@@ -1283,13 +1294,26 @@ CLASS="APPLICATION"
 >   As the browser receives the now (possibly filtered) page content, it 
    reads and then requests any URLs that may be embedded within the page
    source, e.g. ad images, stylesheets, JavaScript, other HTML documents (e.g.
-   frames), sounds, etc. For each of these objects, the browser issues a new
-   request. And each such request is in turn processed as above. Note that a
-   complex web page may have many such embedded URLs.
+   frames), sounds, etc. For each of these objects, the browser issues a
+   separate request (this is easily viewable in <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+>
+   logs). And each such request is in turn processed just as above. Note that a
+   complex web page will have many, many such embedded URLs. If these 
+   secondary requests are to a different server, then quite possibly a very 
+   differing set of actions is triggered.
   </P
 ></LI
 ></UL
 ></P
+><P
+> NOTE: This is somewhat of a simplistic overview of what happens with each URL
+ request. For the sake of brevity and simplicity, we have focused on 
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> core features only.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -1443,15 +1467,23 @@ CLASS="GUIBUTTON"
  -filter {fun}
  -filter {crude-parental}
  -filter {site-specifics}
- +filter {js-annoyances}
- +filter {html-annoyances}
+ -filter {js-annoyances}
+ -filter {html-annoyances}
  +filter {refresh-tags}
- +filter {unsolicited-popups}
+ -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
+ -filter {google}
+ -filter {yahoo}
+ -filter {msn}
+ -filter {blogspot}
+ -filter {xml-to-html}
+ -filter {html-to-xml}
+ -filter {no-ping}
+ -filter{hide-tor-exit-notation}
  -filter-client-headers
  -filter-server-headers
  -force-text-mode
@@ -1657,16 +1689,36 @@ CLASS="SCREEN"
  -crunch-server-header
  +deanimate-gifs {last}
  -downgrade-http-version
- -fast-redirects
- +filter {js-annoyances}
- +filter {html-annoyances}
+ +fast-redirects {check-decoded-url}
+ -filter {js-events}
+ -filter {content-cookies}
+ -filter {all-popups}
+ -filter {banners-by-link}
+ -filter {tiny-textforms}
+ -filter {frameset-borders}
+ -filter {demoronizer}
+ -filter {shockwave-flash}
+ -filter {quicktime-kioskmode}
+ -filter {fun}
+ -filter {crude-parental}
+ -filter {site-specifics}
+ -filter {js-annoyances}
+ -filter {html-annoyances}
  +filter {refresh-tags}
- +filter {unsolicited-popups}
+ -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
+ -filter {google}
+ -filter {yahoo}
+ -filter {msn}
+ -filter {blogspot}
+ -filter {xml-to-html}
+ -filter {html-to-xml}
+ -filter {no-ping}
+ -filter{hide-tor-exit-notation}
  -filter-client-headers
  -filter-server-headers
  -force-text-mode
@@ -1830,15 +1882,36 @@ CLASS="GUIBUTTON"
   -crunch-server-header
   +deanimate-gifs 
   -downgrade-http-version 
-  +fast-redirects{check-decoded-url}
-  +filter{html-annoyances} 
-  +filter{js-annoyances} 
-  +filter{kill-popups} 
-  +filter{webbugs} 
-  +filter{nimda} 
-  +filter{banners-by-size} 
-  +filter{hal} 
-  +filter{fun} 
+  +fast-redirects {check-decoded-url}
+  -filter {js-events}
+  -filter {content-cookies}
+  -filter {all-popups}
+  -filter {banners-by-link}
+  -filter {tiny-textforms}
+  -filter {frameset-borders}
+  -filter {demoronizer}
+  -filter {shockwave-flash}
+  -filter {quicktime-kioskmode}
+  -filter {fun}
+  -filter {crude-parental}
+  -filter {site-specifics}
+  -filter {js-annoyances}
+  -filter {html-annoyances}
+  +filter {refresh-tags}
+  -filter {unsolicited-popups}
+  +filter {img-reorder}
+  +filter {banners-by-size}
+  +filter {webbugs}
+  +filter {jumping-windows}
+  +filter {ie-exploits}
+  -filter {google}
+  -filter {yahoo}
+  -filter {msn}
+  -filter {blogspot}
+  -filter {xml-to-html}
+  -filter {html-to-xml}
+  -filter {no-ping}
+  -filter{hide-tor-exit-notation}
   -filter-client-headers
   -filter-server-headers
   -force-text-mode
@@ -1851,7 +1924,7 @@ CLASS="GUIBUTTON"
   +hide-referer{forge} 
   -hide-user-agent 
   -inspect-jpegs
-  +kill-popups 
+  -kill-popups 
   -overwrite-last-modified
   +prevent-compression 
   -redirect
@@ -2037,7 +2110,7 @@ CLASS="FILENAME"
 >, for local site
  exceptions. Note that when a simple domain pattern is used by itself (without
  the subsequent path portion), all sub-pages within that domain are included 
- automatcially in the scope of the action.</P
+ automatically in the scope of the action.</P
 ><P
 > Images that are inexplicably being blocked, may well be hitting the 
 <A

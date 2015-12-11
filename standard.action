@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/standard.action,v $
 # 
-#  $Id: standard.action,v 1.15 2006/09/22 11:06:22 hal9 Exp $
+#  $Id: standard.action,v 1.17 2006/10/24 10:53:55 hal9 Exp $
 #
 #  Purpose     :  Provide prefedined sets of actions, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -60,6 +60,14 @@
 -filter{crude-parental} \
 -filter{ie-exploits} \
 -filter{site-specifics} \
+-filter{google} \
+-filter{yahoo} \
+-filter{msn} \
+-filter{blogspot} \
+-filter{xml-to-html} \
+-filter{html-to-xml} \
+-filter{no-ping} \
+-filter{hide-tor-exit-notation} \
 -filter-client-headers \
 -filter-server-headers \
 -force-text-mode \
@@ -123,6 +131,14 @@ standard.Cautious
 -filter{crude-parental} \
 +filter{ie-exploits} \
 -filter{site-specifics} \
+-filter{google} \
+-filter{yahoo} \
+-filter{msn} \
+-filter{blogspot} \
+-filter{xml-to-html} \
+-filter{html-to-xml} \
+-filter{no-ping} \
+-filter{hide-tor-exit-notation} \
 -filter-client-headers \
 -filter-server-headers \
 -force-text-mode \
@@ -193,6 +209,14 @@ standard.Medium
 -filter{crude-parental} \
 -filter{ie-exploits} \
 -filter{site-specifics} \
+-filter{google} \
+-filter{yahoo} \
+-filter{msn} \
+-filter{blogspot} \
+-filter{xml-to-html} \
+-filter{html-to-xml} \
+-filter{no-ping} \
+-filter{hide-tor-exit-notation} \
 -filter-client-headers \
 -filter-server-headers \
 -force-text-mode \

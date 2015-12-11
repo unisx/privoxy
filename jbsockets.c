@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.40 2006/09/02 15:36:42 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.41 2006/11/13 19:05:51 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -35,6 +35,16 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.40 2006/09/02 15:36:42 fabian
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.41  2006/11/13 19:05:51  fabiankeil
+ *    Make pthread mutex locking more generic. Instead of
+ *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
+ *    and use mutex locking unless there is an _r function
+ *    available. Better safe than sorry.
+ *
+ *    Fixes "./configure --disable-pthread" and should result
+ *    in less threading-related problems on pthread-using platforms,
+ *    but it still doesn't fix BR#1122404.
+ *
  *    Revision 1.40  2006/09/02 15:36:42  fabiankeil
  *    Follow the OpenBSD port's lead and protect the resolve
  *    functions on OpenBSD as well.
@@ -267,10 +277,10 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.40 2006/09/02 15:36:42 fabian
 
 #include "project.h"
 
-#if defined(OSX_DARWIN) || defined(__OpenBSD__)
+#ifdef FEATURE_PTHREAD
 #include "jcc.h"
 /* jcc.h is for mutex semaphores only */
-#endif /* defined(OSX_DARWIN) || defined(__OpenBSD__) */
+#endif /* def FEATURE_PTHREAD */
 
 #include "jbsockets.h"
 #include "filters.h"
@@ -752,7 +762,7 @@ int accept_connection(struct client_state * csp, jb_socket fd)
       {
          host = NULL;
       }
-#elif defined(OSX_DARWIN) || defined(__OpenBSD__)
+#elif FEATURE_PTHREAD
       pthread_mutex_lock(&gethostbyaddr_mutex);
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -837,7 +847,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
       {
          hostp = NULL;
       }
-#elif defined(OSX_DARWIN) || defined(__OpenBSD__)
+#elif FEATURE_PTHREAD
       pthread_mutex_lock(&gethostbyname_mutex);
       while ( NULL == (hostp = gethostbyname(host))
             && (h_errno == TRY_AGAIN) && (dns_retries++ < 10) )

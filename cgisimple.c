@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.40 2006/09/09 13:05:33 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.41 2006/10/09 19:18:28 roro Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -36,6 +36,10 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.40 2006/09/09 13:05:33 fabian
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.41  2006/10/09 19:18:28  roro
+ *    Redirect http://p.p/user-manual (without trailing slash) to
+ *    http://p.p/user-manual/ (with trailing slash), otherwise links will be broken.
+ *
  *    Revision 1.40  2006/09/09 13:05:33  fabiankeil
  *    Modified cgi_send_user_manual to serve binary
  *    content without destroying it first. Should also be
@@ -711,6 +715,12 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    assert(csp);
    assert(rsp);
    assert(parameters);
+
+   if (!parameters->first)
+   {
+      /* requested http://p.p/user-manual (without trailing slash) */
+      return cgi_redirect(rsp, CGI_PREFIX "user-manual/");
+   }
 
    get_string_param(parameters, "file", &filename);
    /* Check paramter for hack attempts */

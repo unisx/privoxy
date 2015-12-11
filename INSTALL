@@ -40,11 +40,11 @@ compiler like gcc are required.
 
 When building from a source tarball, first unpack the source:
 
- tar xzvf privoxy-3.0.5-beta-src* [.tgz or .tar.gz]                            
- cd privoxy-3.0.5-beta                                                         
+ tar xzvf privoxy-3.0.6-src* [.tgz or .tar.gz]                                 
+ cd privoxy-3.0.6                                                              
 
 For retrieving the current CVS sources, you'll need a CVS client installed.
-Note that sources from CVS are typicially development quality, and may not be
+Note that sources from CVS are typically development quality, and may not be
 stable, or well tested. To download CVS source, check the Sourceforge
 documentation, which might give commands like:
 
@@ -58,9 +58,11 @@ tree.
 You can also check out any Privoxy "branch", just exchange the current name
 with the wanted branch name (Example: v_3_0_branch for the 3.0 cvs tree).
 
-It is also strongly recommended to not run Privoxy as root, and instead it is
-suggested to create a "privoxy" user and group for this purpose. See your local
-documentation for the correct command line to do this.
+It is also strongly recommended to not run Privoxy as root. You should
+configure/install/run Privoxy as an unprivileged user, preferably by creating a
+"privoxy" user and group just for this purpose. See your local documentation
+for the correct command line to do add new users and groups (something like 
+adduser, but the command syntax may vary from platform to platform).
 
 /etc/passwd might then look like:
 
@@ -78,16 +80,24 @@ Then, to build from either unpacked tarball or CVS source:
  autoconf                                                                      
  ./configure      # (--help to see options)                                    
  make             # (the make from GNU, sometimes called gmake)                
- su                                                                            
+ su               # Possibly required                                          
  make -n install  # (to see where all the files will go)                       
  make -s install  # (to really install, -s to silence output)                  
 
-If you have GNU make, you can have the first four steps automatically done for
-you by just typing:
+Using GNU make, you can have the first four steps automatically done for you by
+just typing:
 
   make                                                                         
 
 in the freshly downloaded or unpacked source directory.
+
+To build an executable with security enhanced features so that users cannot
+easily bypass the proxy (e.g. "Go There Anyway"), or alter their own
+configurations, configure like this:
+
+ ./configure  --disable-toggle  --disable-editor  --disable-force              
+
+Then build as above.
 
 WARNING: If installing as root, the install will fail unless a non-root user or
 group is specified, or a privoxy user and group already exist on the system. If
@@ -98,9 +108,8 @@ owned by the user running the installation.
 
 configure accepts --with-user and --with-group options for setting user and
 group ownership of the configuration files (which need to be writable by the
-daemon). The specified user must already exist. When starting Privoxy, it
-should be run as this same user to insure write access to configuration and log
-files.
+daemon). The specified user must already exist. When starting Privoxy, it must
+be run as this same user to insure write access to configuration and log files!
 
 Alternately, you can specify user and group on the make command line, but be
 sure both already exist:
@@ -109,8 +118,10 @@ sure both already exist:
 
 The default installation path for make install is /usr/local. This may of
 course be customized with the various ./configure path options. If you are
-doing a root install to anywhere else besides /usr/local, be sure to set the
-appropriate paths with the correct configure options (./configure --help).
+doing an install to anywhere besides /usr/local, be sure to set the appropriate
+paths with the correct configure options (./configure --help). Non-privileged
+users must of course have write access permissions to wherever the target
+installation is going.
 
 If you do install to /usr/local, the install will use sysconfdir=$prefix/etc/
 privoxy by default. All other destinations, and the direct usage of
@@ -119,28 +130,29 @@ directory. This is for a safer install, as there may already exist another
 program that uses a file with the "config" name, and thus makes /usr/local/etc
 cleaner.
 
-If installing to /usr/local, the docs will go by default to $prefix/share/doc.
-But if this directory doesn't exist, it will then try $prefix/doc and install
-there before creating a new $prefix/share/doc just for Privoxy.
+If installing to /usr/local, the documentation will go by default to $prefix/
+share/doc. But if this directory doesn't exist, it will then try $prefix/doc
+and install there before creating a new $prefix/share/doc just for Privoxy.
 
 Again, if the installs goes to /usr/local, the localstatedir (ie: var/) will
 default to /var instead of $prefix/var so the logs will go to /var/log/privoxy
 /, and the pid file will be created in /var/run/privoxy.pid.
 
 make install will attempt to set the correct values in config (main
-configuration file). You may want to check this to make sure all values are
-correct. If appropriate, an init script will be installed, but it is up to the
-user to determine how and where to start Privoxy. The init script should be
-checked for correct paths and values, if anything other than a default install
-is done.
+configuration file). You should check this to make sure all values are correct.
+If appropriate, an init script will be installed, but it is up to the user to
+determine how and where to start Privoxy. The init script should be checked for
+correct paths and values, if anything other than a default install is done.
 
-If install finds previous versions of any local configuration files, these will
-not be overwritten, and the new ones will be installed with a "new" extension.
-default.action, default.filter, and standard.action will be overwritten. You
-will then need to manually update the other installed configuration files as
-needed. All template files will be overwritten. If you have customized, local
-templates, you should save these first. If a previous version of Privoxy is
-already running, you will have to restart it manually.
+If install finds previous versions of local configuration files, most of these
+will not be overwritten, and the new ones will be installed with a "new"
+extension. default.action, default.filter, and standard.action will be
+overwritten. You will then need to manually update the other installed
+configuration files as needed. All template files will be overwritten. If you
+have customized, local templates, you should save these first, and in fact it
+is wise to always save any important configuration files "just in case". If a
+previous version of Privoxy is already running, you will have to restart it
+manually.
 
 For more detailed instructions on how to build Redhat RPMs, Windows
 self-extracting installers, building on platforms with special requirements

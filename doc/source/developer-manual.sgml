@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.5">
-<!entity p-status "BETA">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.6">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -23,7 +23,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $
+ $Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $
 
  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
@@ -50,7 +50,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $</pubdate>
 
 <!--
 
@@ -503,7 +503,7 @@ Hal.
 
 <para>
  You might also find <quote><ulink
- url="http://www.bureau-cornavin.com/opensource/crash-course/">Writing Documentation
+ url="http://opensource.bureau-cornavin.com/crash-course/index.html">Writing Documentation
  Using DocBook - A Crash Course</ulink></quote> useful.
 </para>
 </sect2>
@@ -1832,7 +1832,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -1893,7 +1893,7 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -3025,6 +3025,13 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.12  2006/11/14 01:57:46  hal9
+  Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
+  manual.
+
+  Revision 2.11  2006/09/26 02:36:29  hal9
+  Fix broken link per bug tracker.
+
   Revision 2.10  2006/09/22 01:27:55  hal9
   Final commit of probably various minor changes here and there. Unless
   something changes this should be ready for pending release.

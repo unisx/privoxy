@@ -1,5 +1,9 @@
 #!/bin/sh
 #  ********************************************************************
+#  This script uses exit to return proper error codes,
+#  sourcing (. /path/to/rc.privoxy) it in your system's
+#  rc files is a bad idea.
+#  ********************************************************************
 
 RETVAL=1
 
@@ -19,14 +23,14 @@ if [ ! -f $PRIVOXY_CONF ] ; then exit 0 ;fi
 
 # See how we were called.
 
-PRIVOXY="$PRIVOXY_BIN $PRIVOXY_CONF"
+PRIVOXY="$PRIVOXY_BIN --user $PRIVOXY_USER.$PRIVOXY_GROUP --pidfile $PRIVOXY_PID $PRIVOXY_CONF"
 
 start () {
 	# start daemon
 	echo -n $"Starting $PRIVOXY_PRG: "
 
 	if [ ! -f $PRIVOXY_PID ]; then
-		($PRIVOXY --user $PRIVOXY_USER.$PRIVOXY_GROUP  --pidfile $PRIVOXY_PID 2>/dev/tty9 ) \
+		( $PRIVOXY 2>/dev/tty9 ) \
 			&& echo " OK" \
 			&& /bin/touch /var/lock/$PRIVOXY_PRG \
 			&& RETVAL=0

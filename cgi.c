@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.78 2006/09/21 19:22:07 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.79 2006/11/13 19:05:50 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -38,6 +38,16 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.78 2006/09/21 19:22:07 fabiankeil Exp $";
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.79  2006/11/13 19:05:50  fabiankeil
+ *    Make pthread mutex locking more generic. Instead of
+ *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
+ *    and use mutex locking unless there is an _r function
+ *    available. Better safe than sorry.
+ *
+ *    Fixes "./configure --disable-pthread" and should result
+ *    in less threading-related problems on pthread-using platforms,
+ *    but it still doesn't fix BR#1122404.
+ *
  *    Revision 1.78  2006/09/21 19:22:07  fabiankeil
  *    Use CGI_PREFIX to check the referrer.
  *    The check for "http://config.privoxy.org/" fails
@@ -518,7 +528,6 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.78 2006/09/21 19:22:07 fabiankeil Exp $";
 #include "loadcfg.h"
 /* loadcfg.h is for global_toggle_state only */
 #ifdef FEATURE_PTHREAD
-#include <pthread.h>
 #include "jcc.h"
 /* jcc.h is for mutex semaphore globals only */
 #endif /* def FEATURE_PTHREAD */
@@ -1693,7 +1702,7 @@ void get_http_time(int time_offset, char *buf)
 
    struct tm *t;
    time_t current_time;
-#if defined(HAVE_GMTIME_R) && !defined(OSX_DARWIN)
+#if defined(HAVE_GMTIME_R)
    /*
     * Declare dummy up here (instead of inside get/set gmt block) so it
     * doesn't go out of scope before it's potentially used in snprintf later.
@@ -1711,12 +1720,12 @@ void get_http_time(int time_offset, char *buf)
 
    /* get and save the gmt */
    {
-#ifdef OSX_DARWIN
+#if HAVE_GMTIME_R
+      t = gmtime_r(&current_time, &dummy);
+#elif FEATURE_PTHREAD
       pthread_mutex_lock(&gmtime_mutex);
       t = gmtime(&current_time);
       pthread_mutex_unlock(&gmtime_mutex);
-#elif HAVE_GMTIME_R
-      t = gmtime_r(&current_time, &dummy);
 #else
       t = gmtime(&current_time);
 #endif

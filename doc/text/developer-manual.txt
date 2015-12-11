@@ -2,7 +2,7 @@ Privoxy Developer Manual
 
 Copyright © 2001-2006 by Privoxy Developers
 
-$Id: developer-manual.txt,v 1.36 2006/09/22 22:33:03 hal9 Exp $
+$Id: developer-manual.txt,v 1.37 2006/11/14 02:02:25 hal9 Exp $
 
 The developer manual provides guidance on coding, testing, packaging,
 documentation and other issues of importance to those involved with Privoxy
@@ -10,7 +10,7 @@ development. It is mandatory (and helpful!) reading for anyone who wants to
 join the team.
 
 Please note that this document is constantly evolving. This copy represents the
-state at the release of version 3.0.5. You can find the latest version of the
+state at the release of version 3.0.6. You can find the latest version of the
 this manual at http://www.privoxy.org/developer-manual/. Please see the Contact
 section on how to contact the developers.
 
@@ -452,7 +452,7 @@ entities are listed below. See any of the main docs for examples.
    
   * Commonly used "internal entities":
    
-    p-version: the Privoxy version string, e.g. "3.0.5".                       
+    p-version: the Privoxy version string, e.g. "3.0.6".                       
     p-status: the project status, either "alpha", "beta", or "stable".         
     p-not-stable: use to conditionally include text in "not stable" releases   
     (e.g. "beta").                                                             
@@ -1406,7 +1406,7 @@ from the project).
 
 Example for file comments:
 
-const char FILENAME_rcs[] = "$Id: developer-manual.txt,v 1.36 2006/09/22 22:33:03 hal9 Exp $"; 
+const char FILENAME_rcs[] = "$Id: developer-manual.txt,v 1.37 2006/11/14 02:02:25 hal9 Exp $"; 
 /*********************************************************************                          
  *                                                                                              
  * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                      
@@ -1441,8 +1441,8 @@ const char FILENAME_rcs[] = "$Id: developer-manual.txt,v 1.36 2006/09/22 22:33:0
  *                                                                                              
  * Revisions   :                                                                                
  *    $Log: developer-manual.txt,v $
- *    Revision 1.36  2006/09/22 22:33:03  hal9
- *    Catchup with recent corrections (minor).
+ *    Revision 1.37  2006/11/14 02:02:25  hal9
+ *    All text docs for 3.0.6.
  *                                                                                     
  *                                                                                              
  *********************************************************************/                         
@@ -1467,7 +1467,7 @@ Example for file header comments:
 
 #ifndef _FILENAME_H                                                                           
 #define _FILENAME_H                                                                           
-#define FILENAME_H_VERSION "$Id: developer-manual.txt,v 1.36 2006/09/22 22:33:03 hal9 Exp $" 
+#define FILENAME_H_VERSION "$Id: developer-manual.txt,v 1.37 2006/11/14 02:02:25 hal9 Exp $" 
 /*********************************************************************                        
  *                                                                                            
  * File        :  $Source: /cvsroot/ijbswa/current/doc/text/developer-manual.txt,v $                                                                    
@@ -1502,8 +1502,8 @@ Example for file header comments:
  *                                                                                            
  * Revisions   :                                                                              
  *    $Log: developer-manual.txt,v $
- *    Revision 1.36  2006/09/22 22:33:03  hal9
- *    Catchup with recent corrections (minor).
+ *    Revision 1.37  2006/11/14 02:02:25  hal9
+ *    All text docs for 3.0.6.
  *                                                                                   
  *                                                                                            
  *********************************************************************/                       
@@ -1991,13 +1991,13 @@ First, make sure that you have freshly exported the right version into an empty
 directory. (See "Building and releasing packages" above). Then add a log entry
 to debian/changelog, if it is not already there, for example by running:
 
-  debchange -v 3.0.5-BETA-1 "New upstream version"                             
+  debchange -v 3.0.6-stable-1 "New upstream version"                           
 
 Then, run:
 
   dpkg-buildpackage -rfakeroot -us -uc -b                                      
 
-This will create ../privoxy_3.0.5-BETA-1_i386.deb which can be uploaded. To
+This will create ../privoxy_3.0.6-stable-1_i386.deb which can be uploaded. To
 upload the package to Sourceforge, simply issue
 
   make debian-upload                                                           
@@ -2123,7 +2123,7 @@ Once this done go to http://sourceforge.net/project/admin/editpackages.php?
 group_id=11118, making sure you are logged in. Find your target platform in the
 second column, and click Add Release. You will then need to create a new
 release for your package, using the format of $VERSION ($CODE_STATUS), e.g.
-3.0.5 (beta).
+3.0.6 (beta).
 
 Now just follow the prompts. Be sure to add any appropriate Release notes. You
 should see your freshly uploaded packages in "Step 2. Add Files To This
@@ -2257,8 +2257,8 @@ Please be sure to provide the following information:
     config.privoxy.org/show-version).
    
   * The operating system and versions you run Privoxy on, (e.g. Windows XP
-    SP2), if you are using some kind of Unix flavour, sending the output of
-    "uname -a" should do.
+    SP2), if you are using a Unix flavor, sending the output of "uname -a"
+    should do.
    
   * The name, platform, and version of the browser you were using (e.g.
     Internet Explorer v5.5 for Mac).
@@ -2339,7 +2339,7 @@ this program; if not, write to the
 
 9.2. History
 
-Along time ago, there was the Internet Junkbuster, by Anonymous Coders and 
+A long time ago, there was the Internet Junkbuster, by Anonymous Coders and 
 Junkbusters Corporation. This saved many users a lot of pain in the early days
 of web advertising and user tracking.
 

@@ -139,11 +139,14 @@ CLASS="QUOTE"
   Expressions"</SPAN
 ></A
 >
-  will be a big plus and will help you get the most out 
-  of <SPAN
+  will be a big plus and will help you get the most out of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->.
+>. 
+  A new installation just includes a very basic configuration. The user 
+  should take this as a starting point only, and enhance it as he or she 
+  sees fit. In fact, the user is encouraged, and expected to, fine-tune the 
+  configuration.
  </P
 ><P
 >  Much of <SPAN
@@ -216,8 +219,25 @@ CLASS="APPLICATION"
   it is in a perfect position to filter outbound personal information that your
   browser is leaking, as well as inbound junk. It uses a variety of techniques to do
   this, all of which are under your complete control via the various configuration
-  files and options.
+  files and options. Being a proxy also makes it easier to share
+  configurations among multiple browsers and/or users.
  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="OTHERSTUFF"
+></A
+>1.4. Does Privoxy do anything more than ad blocking?</H3
+><P
+> 
+  Yes, ad blocking is but one possible use. There are many, many ways <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> 
+  can be used to sanitize and customize web browsing. </P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -226,13 +246,13 @@ CLASS="SECT2"
 ><A
 NAME="NEWJB"
 ></A
->1.4. What is this new version of 
+>1.5. What is this new version of 
 <SPAN
 CLASS="QUOTE"
 >"Junkbuster"</SPAN
 >?</H3
 ><P
-> Along time ago, there was the
+> A long time ago, there was the
  <A
 HREF="http://www.junkbusters.com/ijb.html"
 TARGET="_top"
@@ -315,15 +335,15 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN74"
+NAME="AEN78"
 ></A
->1.5. Why <SPAN
+>1.6. Why <SPAN
 CLASS="QUOTE"
 >"Privoxy"</SPAN
 >? Why change the name from
 Junkbuster at all?</H3
 ><P
-> <A
+> Though outdated, <A
 HREF="http://junkbusters.com/"
 TARGET="_top"
 >Junkbusters Corporation</A
@@ -339,7 +359,7 @@ CLASS="APPLICATION"
 >-derived software under the same name
  led to confusion.</P
 ><P
-> There are also potential legal complications from the continued use of the 
+> There are also potential legal complications from our use of the 
  <SPAN
 CLASS="APPLICATION"
 >Junkbuster</SPAN
@@ -400,7 +420,7 @@ CLASS="SECT2"
 ><A
 NAME="DIFFERS"
 ></A
->1.6. How does Privoxy differ
+>1.7. How does Privoxy differ
 from the old Junkbuster?</H3
 ><P
 > <SPAN
@@ -476,11 +496,12 @@ TARGET="_top"
 ></LI
 ><LI
 ><P
->   Web page content filtering (removes banners based on size,
+>   Web page filtering (text replacements, removes banners based on size,
    invisible <SPAN
 CLASS="QUOTE"
 >"web-bugs"</SPAN
->, JavaScript and HTML annoyances, pop-up windows, etc.)
+>, JavaScript and HTML annoyances, 
+   pop-up windows, header manipulation, etc.)
   </P
 ></LI
 ><LI
@@ -558,7 +579,7 @@ CLASS="SECT2"
 ><A
 NAME="WHATSANAD"
 ></A
->1.7. How does Privoxy know what is
+>1.8. How does Privoxy know what is
 an ad, and what is not?</H3
 ><P
 > <SPAN
@@ -615,9 +636,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN155"
+NAME="AEN159"
 ></A
->1.8. Can Privoxy make mistakes? 
+>1.9. Can Privoxy make mistakes? 
 This does not sound very scientific.</H3
 ><P
 > Actually, it's a black art ;-) And yes, it is always possible to have a broad
@@ -642,9 +663,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN161"
+NAME="AEN165"
 ></A
->1.9. Will I have to configure Privoxy
+>1.10. Will I have to configure Privoxy
  before I can use it?</H3
 ><P
 > No, not really. The default installation should give you a good starting
@@ -654,9 +675,20 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >most</I
 ></SPAN
-> unwanted content.</P
+> ads and unwanted content. Many of
+ the more advanced features are off by default, and would require you to 
+ activate them. </P
 ><P
-> But you will certainly run into situations where there are false positives,
+> You do have to set up your browser to use
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> (see the <A
+HREF="installation.html#FIRSTSTEP"
+>Installation section below</A
+>). </P
+><P
+> And you will certainly run into situations where there are false positives,
  or ads not being blocked that you may not want to see. In these cases, you
  would certainly benefit by customizing <SPAN
 CLASS="APPLICATION"
@@ -668,12 +700,28 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > lies!</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="LAN"
+></A
+>1.11. Can Privoxy run as a server on a network?</H3
 ><P
-> You will have to tell your browser about <SPAN
+> 
+  Yes, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> 
- (see the Installation section below).</P
+> runs as a server already, and can easily be configured to
+  <SPAN
+CLASS="QUOTE"
+>"serve"</SPAN
+> more than one client. See <A
+HREF="configuration.html#LANCONFIG"
+>  How can I set up Privoxy to act as a proxy for my LAN</A
+> below.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -682,9 +730,8 @@ CLASS="SECT2"
 ><A
 NAME="BROWSERS2"
 ></A
->1.10. My browser does the same things as
-Privoxy. Why should I use
-Privoxy at all?</H3
+>1.12. My browser does the same things as
+Privoxy. Why should I use Privoxy at all?</H3
 ><P
 >  Modern browsers do indeed have <SPAN
 CLASS="emphasis"
@@ -705,9 +752,13 @@ CLASS="APPLICATION"
  </P
 ><P
 >  In addition, a proxy is good choice if you use multiple browsers, or 
-  have a LAN with multiple computers. This way all the configuration 
-  is in one place, and you don't have to maintain a similar configuration 
-  for possibly many browsers.
+  have a LAN with multiple computers since <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> can run as a server  
+  application. This way all the configuration is in one place, and you don't
+  have to maintain a similar configuration for possibly many browsers or
+  users.
  </P
 ></DIV
 ><DIV
@@ -717,7 +768,7 @@ CLASS="SECT2"
 ><A
 NAME="WHYTRUST"
 ></A
->1.11. Why should I trust Privoxy?</H3
+>1.13. Why should I trust Privoxy?</H3
 ><P
 >  The most important reason is because you have access to
   <SPAN
@@ -752,7 +803,7 @@ CLASS="SECT2"
 ><A
 NAME="LICENSE"
 ></A
->1.12. Is there is a license or fee? What about a 
+>1.14. Is there is a license or fee? What about a 
 warranty? Registration?</H3
 ><P
 >  <SPAN
@@ -803,7 +854,7 @@ CLASS="SECT2"
 ><A
 NAME="SPYWARE"
 ></A
->1.13. Can Privoxy remove spyware? Adware? Viruses?</H3
+>1.15. Can Privoxy remove spyware? Adware? Viruses?</H3
 ><P
 > No. <SPAN
 CLASS="APPLICATION"
@@ -812,9 +863,9 @@ CLASS="APPLICATION"
  preventative. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> can help prevent contact from sites 
- that use such tactics with approriate configuration rules, and thus could
- conceivably prevent contamination from such sites.</P
+> can help prevent contact from sites that use such
+ tactics with appropriate configuration rules, and thus could conceivably
+ prevent contamination from such sites.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -823,7 +874,7 @@ CLASS="SECT2"
 ><A
 NAME="OTHERADS"
 ></A
->1.14. Can I use Privoxy with other ad-blocking software?</H3
+>1.16. Can I use Privoxy with other ad-blocking software?</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -845,7 +896,7 @@ CLASS="SECT2"
 ><A
 NAME="JOINTEAM"
 ></A
->1.15. I would like to help you, what can I do?</H3
+>1.17. I would like to help you, what can I do?</H3
 ><DIV
 CLASS="SECT3"
 ><H4
@@ -853,7 +904,7 @@ CLASS="SECT3"
 ><A
 NAME="JOINTEAM-WORK"
 ></A
->1.15.1. Would you like to participate?</H4
+>1.17.1. Would you like to participate?</H4
 ><P
 >   Well, we <SPAN
 CLASS="emphasis"
@@ -896,13 +947,6 @@ TARGET="_top"
 >Developer's Manual</A
 >, at least
    the pertinent sections.</P
-><P
-> Once we have added you to the team, you'll have access to the <A
-HREF="http://sourceforge.net/cvs/?group_id=11118"
-TARGET="_top"
->CVS repository</A
->, and
- together we'll find a suitable task for you.</P
 ></DIV
 ><DIV
 CLASS="SECT3"
@@ -911,7 +955,7 @@ CLASS="SECT3"
 ><A
 NAME="JOINTEAM-MONEY"
 ></A
->1.15.2. Contribute!</H4
+>1.17.2. Contribute!</H4
 ><P
 > We, of course, welcome donations and could use money for domain registering,
  buying software to test <SPAN
@@ -932,7 +976,7 @@ CLASS="SECT3"
 ><A
 NAME="JOINTEAM-SOFTWARE"
 ></A
->1.15.3. Software</H4
+>1.17.3. Software</H4
 ><P
 > If you are a vendor of a web-related software like a browser, web server
  or proxy, and would like us to ensure that <SPAN

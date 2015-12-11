@@ -2,11 +2,11 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.19 2006/07/18 14:48:45 david__schmidt Exp $
+#  $Id: default.filter,v 1.33 2006/11/16 17:10:43 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
-#  Copyright   :  Written by and Copyright (C) 2001 - 2004 the
+#  Copyright   :  Written by and Copyright (C) 2001 - 2006 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 # We value your feedback. However, to provide you with the best support,
@@ -82,7 +82,7 @@ s|(?:\w+\.)+referrer|"Not Your Business!"|gisU
 
 # The status bar is for displaying link targets, not pointless blahblah
 # 
-s/(\W\s*)((this|window)\.(default)?status)\s*=\s*((['"]).*?\6)/$1if(typeof(this.href) != 'undefined') $2 = $5 + ' URL: ' + this.href;else return false/ig
+s/(\W\s*)((this|window)\.(default)?status)\s*=\s*((['"]).*?(?<!\\)\6)/$1if(typeof(this.href) != 'undefined') $2 = $5 + ' URL: ' + this.href;else return false/ig
 
 # Kill OnUnload popups. Yummy.
 # Test: http://www.zdnet.com/zdsubs/yahoo/tree/yfs.html
@@ -198,7 +198,7 @@ s/\starget\s*=\s*(['"]?)_?(blank|new)\1?/ notarget/ig        # HTML
 # img-reorder: Reorder attributes in <img> tags to make the banners-by-* filters more effective
 #
 #################################################################################
-FILTER: img-reorder Reorder attributes in <img> tags to make the banners-by-* filters more effective
+FILTER: img-reorder Reorder attributes in &lt;img> tags to make the banners-by-* filters more effective
 
 # In the first step src is moved to the start, then width is moved to the second
 # place to guarantee an order of src, width, height.
@@ -208,7 +208,7 @@ FILTER: img-reorder Reorder attributes in <img> tags to make the banners-by-* fi
 s|<img\s+?([^>]*) src\s*=\s*(['"])([^>\\\2]+)\2|<img src=$2$3$2 $1|siUg
 s|<img\s+?([^>]*) src\s*=\s*([^'">\\\s]+)|<img src=$2 $1|sig
 
-s|<img (src=(?:(['"])[^>\\\\2]+\2\|[^'">\\\s]+?))([^>]*)width\s*=\s*(["']?)(\d+?)\4|<img $1 width=$4$5$4$3|siUg
+s|<img (src=(?:(['"])[^>\\\\2]*\2\|[^'">\\\s]+?))([^>]*)\s+width\s*=\s*(["']?)(\d+?)\4|<img $1 width=$4$5$4$3|siUg
 
 
 #################################################################################
@@ -229,27 +229,27 @@ s|<img (src=(?:(['"])[^>\\\\2]+\2\|[^'">\\\s]+?))([^>]*)width\s*=\s*(["']?)(\d+?
 FILTER: banners-by-size Kill banners by size
 
 # 88*31
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)88\4)[^>]*?(height=(['"]?)31\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)88\4)[^>]*?(height=(['"]?)31\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 120*60, 120*90, 120*240, 120*600
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)120\4)[^>]*?(height=(['"]?)(?:600?|90|240)\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)120\4)[^>]*?(height=(['"]?)(?:600?|90|240)\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 125*125
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)125\4)[^>]*?(height=(['"]?)125\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)125\4)[^>]*?(height=(['"]?)125\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 160*600
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)160\4)[^>]*?(height=(['"]?)600\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)160\4)[^>]*?(height=(['"]?)600\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 180*150
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)180\4)[^>]*?(height=(['"]?)150\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)180\4)[^>]*?(height=(['"]?)150\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 234*60, 468*60 (Most Banners!)
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:234|468)\4)[^>]*?(height=(['"]?)60\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:234|468)\4)[^>]*?(height=(['"]?)60\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 240*400
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)240\4)[^>]*?(height=(['"]?)400\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)240\4)[^>]*?(height=(['"]?)400\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 250*250, 300*250
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:250|300)\4)[^>]*?(height=(['"]?)250\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:250|300)\4)[^>]*?(height=(['"]?)250\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 # 336*280
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)336\4)[^>]*?(height=(['"]?)280\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)336\4)[^>]*?(height=(['"]?)280\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 
 # Note: 200*50 was also proposed, but it probably causes too much collateral damage:
 #
-#s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)200\4)[^>]*?(height=(['"]?)50\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed-$2-by-size$1 $3 $5>@sig
+#s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)200\4)[^>]*?(height=(['"]?)50\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
 
 
 #################################################################################
@@ -268,11 +268,11 @@ s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:\
 | tracker | counter                   # common \
 | adlog\.pl                           # see sf.net \
 )[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\6)[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\8)[^>]*>\
-@<img $5 $7 src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed $4 by link to $2$1>@sigx
+@<img $5 $7 src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed $4 by link to $2$1>@sigx
 
 # Rare case w/o explicit dimensions:
 #
-s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:adclick|atwola\.com/(?:link|redir)|doubleclick\.net/jump/|tracker|counter|adlog\.pl)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border=$1\\0$1 title=$1Killed $4 by link to $2$1>@sig
+s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:adclick|atwola\.com/(?:link|redir)|doubleclick\.net/jump/|tracker|counter|adlog\.pl)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed $4 by link to $2$1>@sig
 
 
 ################################################################################
@@ -282,7 +282,7 @@ s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:adclick|atwola\.com/(?:link|redir)|double
 #################################################################################
 FILTER: webbugs Squish WebBugs (1x1 invisible GIFs used for user tracking)
 
-s/<img\s+[^>]*(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*?>//siUg
+s@<img[^>]*\s(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*\s(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*?>@@siUg
 
 
 #################################################################################
@@ -303,8 +303,7 @@ s/(<textarea[^>]*?)wrap=(['"]?)hard\2/$1/ig
 #################################################################################
 FILTER: jumping-windows Prevent windows from resizing and moving themselves
 
-s/(?:window|this|self)\.(?:move|resize)(?:to|by)\(/''.concat(/ig
-
+s/(?<=[\W])(?:window|this|self)\.(?:move|resize)(?:to|by)\(/''.concat(/ig
 
 #################################################################################
 #
@@ -390,7 +389,7 @@ FILTER: fun Text replacements for subversive browsing fun!
 
 # SCNR
 #
-s/microsoft(?!.com)/MicroSuck/ig
+s/microsoft(?!.[^\s])/MicroSuck/ig
 
 # Buzzword Bingo (example for extended regex syntax)
 #
@@ -442,7 +441,7 @@ s%f\("javascript:location.replace\('mk:@MSITStore:C:'\)"\);%alert\("This page lo
 
 # Address bar spoofing (http://www.secunia.com/advisories/10395/):
 #
-s/(<a[^>]*href[^>]*)(\x01|\x02|\x03|%0[012])/$1MALICIOUS-LINK/ig
+s/(<a[^>]*href[^>]*)(?:\x01|\x02|\x03|%0[012])@/$1MALICIOUS-LINK@/ig
 
 # Nimda:
 #
@@ -496,12 +495,257 @@ s|(<img [^>]*)onload|$1never|sig
 s|(<INPUT name="\d{2,4}" type="RADIO" value="0") CHECKED |$1|g
 s|<INPUT name="\d{2,4}" type="RADIO" value="3" |$0 checked|g
 
+#################################################################################
+#
+# no-ping: Removes non-standard ping attributes in <a> and <area> tags.
+#          
+#################################################################################
+FILTER: no-ping Removes non-standard ping attributes in &lt;a> and &lt;area> tags.
+s@(<a(?:rea)?[^>]*?)\sping=(['"]?)([^"'>]+)\2([>\s]?)@\
+<strong style="color:white; background-color:red;" title="Privoxy removed ping target '$3'">PING!</strong>\n$1$4@ig
+
+#################################################################################
+#
+# google: CSS-based block for Google text ads. Also removes
+#         a width limitation and the toolbar advertisement.
+#
+#################################################################################
+FILTER: google CSS-based block for Google text ads. Also removes a width limitation and the toolbar advertisement.
+s@</head>@<style type="text/css">\n\
+ /* Style sheet inserted by Privoxy's google filter. */\n\
+ \#fbc, \#fbl, \#ra, .rhh {visibility: hidden !important;}\n\
+ \#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, .ch, \#ads,\
+ \#toolbar, \#google_ads_frame{display: none !important;}\n\
+ .main_body, .j {width: 100%}\n</style>\n$0@
+s@<div style=\"padding-top:11px;min-width:500px\">@<div id="main_body">@
+s@(<table cellspacing=0 cellpadding=0 width=25% align=right bgcolor=\#ffffff border=0\
+|</font></td></tr></tbody></table><table align=\"right\" bgcolor=\"\#ffffff\"\
+|<table cellspacing=0 cellpadding=0 align=right bgcolor=\#ffffff border=0\
+|<table style=\"clear:both\" align=right width=25% cellspacing=\"0\" cellpadding=\"0\"\
+ border=\"0\" bgcolor=\"\#ffffff\")@$0 id="ads"@
+s@(<br clear=all><table)( border=0 cellpadding=9><tr><td)@$1 id="toolbar"$2@
+
+#################################################################################
+#
+# yahoo: CSS-based block for Yahoo text ads. Also removes a width limitation.
+#
+#################################################################################
+FILTER: yahoo CSS-based block for Yahoo text ads. Also removes a width limitation.
+s@</head>@\n<style type="text/css">\n\
+ /* Style sheet inserted by Privoxy's yahoo filter. */\n\
+ \#symadbn, \#ymadbn, .yschbox, \#yschsec, .yschhd, \#yschanswr, .yschftad,\
+ .yschspn, .yschspns, \#ygrp-sponsored-links {display: none !important;}\n\
+ \#yschpri, \#yschweb {width: 100% !important; max-width: 100% !important;}\n\
+ \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
+</style>\n$0@
+
+#################################################################################
+#
+# msn: CSS-based block for MSN text ads. Also removes tracking URLs
+#      and a width limitation.
+#
+#################################################################################
+FILTER: msn CSS-based block for MSN text ads. Also removes tracking URLs and a width limitation.
+s@</head>@<style type="text/css">\n\
+ /* Style sheet inserted by Privoxy's msn filter. */\n\
+ .msn_ads {display: none !important;}\n\
+ \#results, .flank, .results_area_flank, .results_area_stroke, .SearchSection .not\
+ {width: 99% /*!important*/; min-width: 99% !important;\
+ max-width: 100% !important; /* width:100% sometimes causes horizontal scrollbars */}\n\
+ /* Make continue links harder to miss */\n\
+ \#pagination_bottom a {padding: .3em .5em .3em .5em; border: 1px solid \#e6e6e6;}\n\
+ \#pagination_bottom li, \#pagination_bottom li .selected, li .nextPage \
+ {margin: 0 !important; cursor: auto; border: none; padding:.1em;}\n\
+ \#pagination_bottom li .prevPage {padding-right: 1.5em !important;}\n\
+ \#pagination_bottom li .selected {border: none;}\n\
+ .selected a {background-color: \#d2eaf6; border: 1px solid \#b7d8ee;}\n\
+ /* Remove "suggestions". They are next to worthless but partly overlap with the search results */\n\
+ .suggestion, \#nys_right {clear: both; display:none;}\n\
+ </style>\n$0@
+s@(<div[^>]*) id=(["']?)ads_[^\2]*\2@$1 class="msn_ads"@Uig
+s@(<a[^>]*href=\")http://g.msn.com/.*\?(http://.*)(&amp;&amp;DI=.*)(\")@$1$2$4@Ug
+s@(<a[^>]*)gping=\".*\"@$1 title="URL cleaned up by Privoxy's msn filter"@Ug
+
+#################################################################################
+#
+# blogspot: Cleans up some Blogspot blogs. Read the fine print before using this.
+#
+#           This filter also intentionally removes some navigation stuff and
+#           sets the page width to 100%. As a result, some rounded "corners" would
+#           appear to early or not at all and as fixing this would require a browser
+#           that understands background-size (CSS3), they are removed instead.
+#
+#################################################################################
+FILTER: blogspot Cleans up some Blogspot blogs. Read the fine print before using this.
+s@</head>@<style type="text/css">\n\
+ /* Style sheet inserted by Privoxy's blogspot filter. */\n\
+ \#powered-by {display: none !important;}\n\
+ \#wrap4, \#wrapper {margin-top: 0px }\n\
+ \#blogheader, \#header {margin-top: 0.5em !important}\n\
+ \#content {width: 98% }\n\
+ \#main {width: 70% }\n\
+ \#sidebar {width: 29% }\n\
+ .post-body {overflow: auto;}\n\
+ .blogComments {width: 100%; overflow: auto;}\n</style>\n$0@
+s@<body.*(?:<div id="space-for-ie"></div>|(<div id="(?:content|wrap4|wrapper)))@<body>\
+ <!-- Privoxy's blogspot filter ditched some garbage here -->$1@Us
+s@(<div style=\"[^\"]*width:)30em@$1 100%@
+s@background:url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;@/*$0*/@Ug
+s@(background:\#[a-f\d]{3})( url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;)@$1 ;/*$2*/@Ug
+
+#################################################################################
+#
+# x-httpd-php-to-html: Header filter to change the Content-Type from
+#                      x-httpd-php to html. "Content-Type: x-httpd-php"
+#                      is set by clueless PHP users and causes many
+#                      browsers do open a download menu instead of
+#                      rendering the page.
+#
+#################################################################################
+FILTER: x-httpd-php-to-html Header filter to change the Content-Type from x-httpd-php to html.
+s@^(Content-Type:) application/x-httpd-php@$1 text/html@
+
+#################################################################################
+#
+# html-to-xml: Header filter to change the Content-Type from html to xml.
+#
+#################################################################################
+FILTER: html-to-xml Header filter to change the Content-Type from html to xml.
+s@^(Content-Type:) text/html(;.*)?$@$1 application/xhtml+xml$2@
+
+#################################################################################
+#
+# xml-to-html: Header filter to change the Content-Type from xml to html.
+#
+#################################################################################
+FILTER: xml-to-html Header filter to change the Content-Type from xml to html.
+s@^(Content-Type:) (?:application|text)/(?:xhtml\+)?xml(;.*)?$@$1 text/html$2@
+
+#################################################################################
+#
+# hide-tor-exit-notation: Header filter to remove the Tor exit node notation
+#                         in Host and Referer headers.
+#
+#   Note: If Privoxy and Tor are chained and Privoxy is configured to
+#         use socks4a, one can use http://www.example.org.foobar.exit/
+#         to access the host www.example.org through Tor exit node foobar.
+#
+#         As the HTTP client isn't aware of this notation, it treats the
+#         whole string "www.example.org.foobar.exit" as host and uses it
+#         for the "Host" and "Referer" headers. From the server's point of
+#         view the resulting headers are invalid and can cause problems.
+#
+#         An invalid "Referer" header can trigger "hot-linking" protections,
+#         an invalid "Host" header will make it impossible for the server to
+#         find the right vhost (several domains hosted on the same IP address).
+#
+#         This filter removes the "foo.exit" part in those headers
+#         to prevent the mentioned problems. Note that it only modifies
+#         the HTTP headers, it doesn't make it impossible for the server
+#         to detect your Tor exit node based on the IP address the request is
+#         coming from.
+#
+#################################################################################
+FILTER: hide-tor-exit-notation Header filter to remove the Tor exit node notation in Host and Referer headers.
+s@^((?:Referer|Host):\s*(?:https?://)?[^/]*)\.[^\./]*?\.exit@$1@i
 
 
 ############################################################################## 
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.33  2006/11/16 17:10:43  fabiankeil
+#     Removed webbugs debugging comment again.
+#     The apostrophe could break JavaScript and
+#     the comment itself could mess up existing
+#     comments.
+#
+#     Revision 1.32  2006/11/10 18:04:04  fabiankeil
+#     Have no-ping print the ping warning in red.
+#
+#     Modified yahoo to keep in sync with recent
+#     CSS changes and to suppress a useless horizontal
+#     scrollbar.
+#
+#     msn now makes sure that the continue-link boxes
+#     act as links (the original CSS just changes the cursor).
+#
+#     Changed fun filter regex to leave microsoft links alone.
+#     Fixes BR 1019996.
+#
+#     Revision 1.31  2006/10/21 13:12:28  fabiankeil
+#     Added no-ping and hide-tor-exit-notation.
+#
+#     Adjusted jumping-windows to break less.
+#     Fixes BR 1146134.
+#
+#     Revision 1.30  2006/10/18 12:36:50  fabiankeil
+#     google filter now cleans Google groups as well.
+#
+#     Revision 1.29  2006/10/11 14:03:17  fabiankeil
+#     Changed img-reorder regex to only move width
+#     attributes if they are following at least one
+#     whitespace. Fixes BR 1328455.
+#
+#     Revision 1.28  2006/10/11 13:31:13  fabiankeil
+#     Added Anduin Withers' js-annoyances fix
+#     for not messing up escaped quotes. Fixes BR 999765.
+#
+#     Improved blogspot filter to make it less likely that
+#     the blogspot banner at the top of the page is missed.
+#
+#     Revision 1.27  2006/10/08 17:00:51  fabiankeil
+#     Modified webbugs filter to create a comment around the offending
+#     image instead of removing it entirely.
+#
+#     Adjusted regex to only match if there's at least one whitespace
+#     before the width and height attributes. Makes it more likely that
+#     they are indeed attributes, and not part of the value of another attribute.
+#     Solves BR 1035587.
+#
+#     Thanks to Martin Thomas for diagnosing the cause of the problem.
+#
+#     Revision 1.26  2006/10/06 18:06:16  fabiankeil
+#     Added header filter x-httpd-php-to-html
+#     and reverted another img-reorder whitespace
+#     problem.
+#
+#     Revision 1.25  2006/10/06 15:26:09  fabiankeil
+#     Bumped copyright year.
+#
+#     Reverted parts of the last img-reorder change
+#     which were intended to remove superfluous whitespace
+#     but had the side effect to mess up some tags.
+#
+#     Modified banners-by-size and banners-by-link to
+#     use border value "0" instead of "\0". Fixes BR 1100065.
+#
+#     Revision 1.24  2006/10/06 11:25:31  fabiankeil
+#     Taught img-reorder not to break img tags
+#     with empty src attributes. Fixes BR 1089474.
+#     Thanks to Raphael Moll for reporting.
+#
+#     Revision 1.23  2006/10/05 14:46:28  fabiankeil
+#     Replaced "<" in img-reorder's description with "&lt;".
+#
+#     Modified msn filter to tag ads with classes instead
+#     of ids. There may be more than one ad per page,
+#     but ids are required to be unique.
+#
+#     Revision 1.22  2006/10/04 19:17:14  fabiankeil
+#     Incorportated Frédéric Crozat's ie-exploits
+#     modification to make it less trigger-happy.
+#
+#     Modified blogspot filter to make .post-body
+#     scrollable if necessary.
+#
+#     Revision 1.21  2006/10/02 16:21:14  fabiankeil
+#     Adjusted yahoo filter to hide .yschspns as well.
+#     Added header filters: html-to-xml and xml-to-html.
+#
+#     Revision 1.20  2006/10/01 21:00:22  fabiankeil
+#     New site-specific filters: google, yahoo, msn and blogspot.
+#
 #     Revision 1.19  2006/07/18 14:48:45  david__schmidt
 #     Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
 #     with what was really the latest development (the v_3_0_branch branch)

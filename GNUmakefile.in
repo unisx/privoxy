@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.147 2006/09/13 01:25:16 hal9 Exp $
+# $Id: GNUmakefile.in,v 1.150 2006/10/25 11:55:45 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2004 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -153,7 +153,7 @@ DOC_STATUS = @DOC_STATUS@
 #DOSFILTER  = $(SED) -e $$'s,$$,\r,'
 #DOSFILTER  = gawk -v ORS='\r\n' '{print $0;}'
 DOSFILTER  = $(PERL) -p -e 's/\n/\r\n/'
-CVSROOT    = :pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa
+CVSROOT    = :pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa
 #TMPDIR     := $(shell mktemp -d /tmp/$(PROGRAM).XXXXXX)
 
 #############################################################################
@@ -333,12 +333,12 @@ dist-check:
 # This creates a tar.gz and spec-file for a Red Hat 6.x version.
 #############################################################################
 create-snapshot:
-	TMPDIR=$(shell mktemp -d /tmp/$(PROGRAM).XXXXXX)
 	@tag=`cvs -d $(CVSROOT) status Makefile | awk ' /Sticky Tag/ { print $$3 } '` 2> /dev/null; \
 	[ x"$$tag" = x"(none)" ] && tag=HEAD; \
 	echo "*** Creating package from $$tag!"; \
-	cd $(TMPDIR) ; cvs -Q -d $(CVSROOT) export -r $$tag current || echo "Um... export aborted."
-	@cd $(TMPDIR)/current; \
+	TMPDIR=$(shell mktemp -d /tmp/$(PROGRAM).XXXXXX); \
+	cd $$TMPDIR ; cvs -Q -d $(CVSROOT) export -r $$tag current || echo "Um... export aborted."; \
+	cd $$TMPDIR/current; \
 	TMPFILE=$$(mktemp -q /tmp/$(PROGRAM).XXXXXX); \
 	if $(SED) -e 's/^\(Version:\).*/\1 $(RPM_VERSION)/g' \
 		-e 's/^\(Release:\).*/\1 $(SNAPVERSION)/g' \
@@ -356,17 +356,12 @@ create-snapshot:
 		$(ECHO) "Could not set version info in specfile."; \
 		exit 1;\
 	fi; \
-	$(RM) $(TMPFILE); \
-	cd $(TMPDIR)/current; \
-	$(TAR) --exclude ".cvsignore" --exclude "CVS" --exclude \
-		"privoxy-suse.spec" -czf $(TMPDIR)/$(PROGRAM)-rh-$(VERSION).tar.gz .; \
-	$(TAR) --exclude ".cvsignore" --exclude "CVS" --exclude \
-		"privoxy-rh.spec" -czf $(TMPDIR)/$(PROGRAM)-suse-$(VERSION).tar.gz .
-	@$(MV) -f $(TMPDIR)/$(PROGRAM)-rh-$(VERSION).tar.gz .
-	@$(MV) -f $(TMPDIR)/$(PROGRAM)-suse-$(VERSION).tar.gz .
-	@$(RM) -rf $(TMPDIR)
-	@echo "Resulting files are $(PROGRAM)-rh-$(VERSION).tar.gz and"
-	@echo "                    $(PROGRAM)-suse-$(VERSION).tar.gz"
+	$(RM) $$TMPFILE; \
+	cd $$TMPDIR/current; \
+	$(TAR) --exclude ".cvsignore" --exclude "CVS" \
+		-czf /tmp/$(PROGRAM)-$(VERSION).tar.gz .; \
+	$(RM) -rf $$TMPDIR
+	@echo "Resulting file is /tmp/$(PROGRAM)-$(VERSION).tar.gz"
 
 
 #############################################################################
@@ -469,7 +464,6 @@ redhat-upload: check-release
 #############################################################################
 redhat-srpm: 
 	make create-archive
-	$(MV) $(PROGRAM)-rh-$(VERSION).tar.gz $(PROGRAM)-$(VERSION).tar.gz
 	$(RPMBUILD) -ts --nodeps $(PROGRAM)-$(VERSION).tar.gz
 
 
@@ -1138,8 +1132,8 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 		$(CAT) config >config~ ;\
 		$(MV) config.base config ;\
 	fi
-	$(SED) 's+confdir .+confdir $(CONF_DEST)+' config | \
-	$(SED) 's+logdir .+logdir $(LOG_DEST)+' >config.tmp
+	$(SED) 's+^confdir \.+confdir $(CONF_DEST)+' config | \
+	$(SED) 's+^logdir \.+logdir $(LOG_DEST)+' >config.tmp
 	-@if [ $(check_doc) = 0 ]; then \
       $(SED) 's+^#\?user-manual .*+user-manual $(DOC_DEST)/user-manual/+' config.tmp >config.updated ;\
 	else \
@@ -1193,7 +1187,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	fi ;\
 	$(ECHO) Installing configuration files to $(CONF_DEST);\
 	for i in $(CONFIGS); do \
-		if [ "$$i" == "default.action" ] || [ "$$i" == "default.filter" ] || [ "$$i" == "standard.action" ]; then \
+		if [ "$$i" = "default.action" ] || [ "$$i" = "default.filter" ] || [ "$$i" = "standard.action" ]; then \
 			$(RM) $(CONF_DEST)/$$i ;\
 			$(ECHO) Installing fresh $$i;\
 			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST) || exit 1;\
@@ -1361,6 +1355,16 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.150  2006/10/25 11:55:45  fabiankeil
+# Fix sed regexes for rewriting "confdir ." and "logdir .".
+# Thanks to Darel Henman for reporting this.
+#
+# Revision 1.149  2006/10/11 01:40:28  hal9
+# Apply patch from  Neil McCalden to fix syntax issue.
+#
+# Revision 1.148  2006/09/26 10:57:58  hal9
+# Including Karsten's patch to fix make create-snapshot.
+#
 # Revision 1.147  2006/09/13 01:25:16  hal9
 # Make sure install forces in new default.action, default.filter, and
 # standard.filter. These are privoxy files, not user files.

@@ -7,7 +7,7 @@ NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.5 User Manual"
+TITLE="Privoxy 3.0.6 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Actions Files"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.5 User Manual</TH
+>Privoxy 3.0.6 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -314,7 +314,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN4271"
+NAME="AEN4346"
 ></A
 >9.1. Filter File Tutorial</H2
 ><P
@@ -906,6 +906,10 @@ CLASS="QUOTE"
 ></UL
 >
    </P
+><P
+>    Use with caution. This is an aggressive filter, and can break sites that 
+    rely heavily on JavaScript.
+   </P
 ></DD
 ><DT
 ><SPAN
@@ -919,7 +923,7 @@ CLASS="EMPHASIS"
 ><P
 >    This is a very radical measure. It removes virtually all JavaScript event bindings, which
     means that scripts can not react to user actions such as mouse movements or clicks, window
-    resizing etc, anymore. 
+    resizing etc, anymore. Use with caution!
    </P
 ><P
 >    We <SPAN
@@ -988,8 +992,10 @@ HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
     to sneak cookies to the browser on the content level.
    </P
 ><P
->    This filter disables HTML and JavaScript code that reads or sets cookies. Use
-    it wherever you would also use the cookie crunch actions.
+>    This filter disables most HTML and JavaScript code that reads or sets
+    cookies. It cannot detect all clever uses of these types of code, so it 
+    should not be relied on as an absolute fix. Use it wherever you would also
+    use the cookie crunch actions. 
    </P
 ></DD
 ><DT
@@ -1028,8 +1034,17 @@ CLASS="QUOTE"
    </P
 ><P
 >    Technical note: The filter works by redefining the window.open JavaScript
-    function to a dummy function during the loading and rendering phase of each
-    HTML page access, and restoring the function afterward.
+    function to a dummy function, <TT
+CLASS="LITERAL"
+>PrivoxyWindowOpen()</TT
+>,
+    during the loading and rendering phase of each HTML page access, and
+    restoring the function afterward.
+   </P
+><P
+>    This is recommended only for browsers that cannot perform this function
+    reliably themselves. And be aware that some sites require such windows 
+    in order to function normally. Use with caution.
    </P
 ></DD
 ><DT
@@ -1049,9 +1064,9 @@ CLASS="EMPHASIS"
 >all</I
 ></SPAN
 > pop-up windows from opening.
-    Note this should be used with more discretion than the above, since it is
-    more likely to break some sites that require pop-ups for normal usage. Use 
-    with caution.
+    Note this should be used with even more discretion than the above, since
+    it is more likely to break some sites that require pop-ups for normal
+    usage. Use with caution.
    </P
 ></DD
 ><DT
@@ -1093,6 +1108,16 @@ CLASS="EMPHASIS"
 >    Occasionally this filter will cause false positives on images that are not ads,
     but just happen to be of one of the standard banner sizes.
    </P
+><P
+>    Recommended only for those who require extreme ad blocking. The default 
+    block rules should catch 95+% of all ads <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>without</I
+></SPAN
+> this filter enabled.
+   </P
 ></DD
 ><DT
 ><SPAN
@@ -1124,7 +1149,7 @@ CLASS="EMPHASIS"
     As an HTML page is loaded by the browser, an embedded image tag causes the
     browser to contact a third-party site, disclosing the tracking information
     through the requested URL and/or cookies for that third-party domain, without
-    the use ever becoming aware of the interaction with the third-party site.
+    the user ever becoming aware of the interaction with the third-party site.
     HTML-ized spam also uses a similar technique to verify email addresses.
    </P
 ><P
@@ -1165,7 +1190,7 @@ CLASS="EMPHASIS"
 ><P
 >    Many consider windows that move, or resize themselves to be abusive. This filter
     neutralizes the related JavaScript code. Note that some sites might not display
-    or behave as intended when using this filter.
+    or behave as intended when using this filter. Use with caution.
    </P
 ></DD
 ><DT
@@ -1284,7 +1309,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DD
 ><P
->    A collection of text replacements to disable malicious HTML and JavaScript
+>    An experimental collection of text replacements to disable malicious HTML and JavaScript
     code that exploits known security holes in Internet Explorer.
    </P
 ><P
@@ -1313,6 +1338,130 @@ CLASS="FILENAME"
 >default.action</TT
 > file does. Users shouldn't need to change
     anything regarding this filter.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>google</I
+></SPAN
+></DT
+><DD
+><P
+>    A CSS based block for Google text ads. Also removes a width limitation
+    and the toolbar advertisement.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>yahoo</I
+></SPAN
+></DT
+><DD
+><P
+>    Another CSS based block, this time for Yahoo text ads. And removes 
+    a width limitation as well.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>msn</I
+></SPAN
+></DT
+><DD
+><P
+>    Another CSS based block, this time for MSN text ads. And removes 
+    tracking URLs, as well as a width limitation.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>blogspot</I
+></SPAN
+></DT
+><DD
+><P
+>    Cleans up some Blogspot blogs. Read the fine print before using this one!
+   </P
+><P
+>    This filter also intentionally removes some navigation stuff and sets the
+    page width to 100%. As a result, some rounded <SPAN
+CLASS="QUOTE"
+>"corners"</SPAN
+> would
+    appear to early or not at all and as fixing this would require a browser
+    that understands background-size (CSS3), they are removed instead.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>xml-to-html</I
+></SPAN
+></DT
+><DD
+><P
+>    Header filter to change the Content-Type from xml to html.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>html-to-xml</I
+></SPAN
+></DT
+><DD
+><P
+>    Header filter to change the Content-Type from html to xml.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>no-ping</I
+></SPAN
+></DT
+><DD
+><P
+>    Removes the non-standard <TT
+CLASS="LITERAL"
+>ping</TT
+> attribute from
+    anchor and area HTML tags.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>hide-tor-exit-notation</I
+></SPAN
+></DT
+><DD
+><P
+>    Header filter to remove the <B
+CLASS="COMMAND"
+>Tor</B
+> exit node notation
+    found in Host and Referer headers.
    </P
 ></DD
 ></DL

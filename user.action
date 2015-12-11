@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/user.action,v $
 # 
-#  $Id: user.action,v 1.6 2006/09/10 13:59:29 hal9 Exp $
+#  $Id: user.action,v 1.7 2006/10/04 00:37:05 hal9 Exp $
 #
 #  Purpose     :  User-maintained actions file, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -39,14 +39,14 @@
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only -filter{content-cookies}
- allow-popups       = -filter{all-popups} -kill-popups
+ allow-popups       = -filter{all-popups} -kill-popups -filter{unsolicited-popups}
 +block-as-image     = +block +handle-as-image
 -block-as-image     = -block
 
 # These aliases define combinations of actions that are useful for
 # certain types of sites:
 #
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups -prevent-compression
 shop        = -crunch-all-cookies allow-popups
 
 # Your favourite blend of filters:

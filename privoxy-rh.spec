@@ -1,6 +1,6 @@
-# $Id: privoxy-rh.spec,v 1.49 2006/09/22 01:02:08 hal9 Exp $
+# $Id: privoxy-rh.spec,v 1.52 2006/11/18 17:36:53 hal9 Exp $
 #
-# Written by and Copyright (C) 2001 the SourceForge
+# Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated acordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.5
+Version: 3.0.6
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -69,7 +69,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=5
+VERSION_POINT=6
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -147,6 +147,7 @@ cat config | \
 #    sed 's/^forward.*/forward \/etc\/%{name}\/forward/g' | \
 #    sed 's/^aclfile.*/aclfile \/etc\/%{name}\/aclfile/g' > \
     sed 's@^logdir.*@logdir %{_localstatedir}/log/%{name}@g' | \
+    sed 's@#user-manual http://www.privoxy.org/user-manual/@user-manual %{_docdir}/%{name}-%{version}/user-manual/@g' | \
     sed -e 's/[[:cntrl:]]*$//' > \
     %{buildroot}%{privoxyconf}/config
 perl -pe 's/{-no-cookies}/{-no-cookies}\n\.redhat.com/' default.action >\
@@ -252,7 +253,7 @@ fi
 %doc doc/webserver/developer-manual
 %doc doc/webserver/user-manual
 %doc doc/webserver/faq
-%doc doc/webserver/p_doc.css doc/webserver/p_web.css doc/webserver/privoxy-index.html
+%doc doc/webserver/p_doc.css doc/webserver/privoxy-index.html
 %doc doc/webserver/images
 %doc doc/webserver/man-page
 
@@ -322,6 +323,12 @@ fi
 %{_mandir}/man1/%{name}.*
 
 %changelog
+* Sat Oct 18 2006 Hal Burgiss <hal@foobox.net>
+- Bump version to 3.0.6
+
+* Sat Sep 23 2006 Jochen Schlick <j.schlick_at_decagon_de> 3.0.5-1
+- let user-manual point to local documentation
+
 * Thu Sep 21 2006 Hal Burgiss <hal@foobox.net>
 - Fix user.filter install section and clean up CVS cruft in tarball.
 
@@ -752,6 +759,15 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.52  2006/11/18 17:36:53  hal9
+# Ooops, bumping version to 3.0.6
+#
+# Revision 1.51  2006/11/18 14:37:12  fabiankeil
+# Bump version to 3.0.6.
+#
+# Revision 1.50  2006/09/24 01:19:03  hal9
+# Add changes for user-manual directive by nfopd submitted via SF.
+#
 # Revision 1.49  2006/09/22 01:02:08  hal9
 # Fix user.filter installation and CVS files cruft per support request.
 #

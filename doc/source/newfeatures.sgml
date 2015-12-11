@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: newfeatures.sgml,v 2.4 2006/09/22 01:27:55 hal9 Exp $
+ $Id: newfeatures.sgml,v 2.5 2006/11/14 01:57:47 hal9 Exp $
 
  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
@@ -44,8 +44,9 @@
 
  <listitem>
   <para>
-   Web page content filtering (removes banners based on size,
-   invisible <quote>web-bugs</quote>, JavaScript and HTML annoyances, pop-up windows, etc.)
+   Web page filtering (text replacements, removes banners based on size,
+   invisible <quote>web-bugs</quote>, JavaScript and HTML annoyances, 
+   pop-up windows, header manipulation, etc.)
   </para>
  </listitem> 
 

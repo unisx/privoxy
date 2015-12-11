@@ -32,6 +32,9 @@
 #
 # Revisions   :
 #    $Log: edit-actions-for-url,v $
+#    Revision 1.39  2006/10/04 17:37:54  fabiankeil
+#    JavaScript fix for bug report #1570678.
+#
 #    Revision 1.38  2006/09/08 12:06:35  fabiankeil
 #    Have hide-if-modified-since interpret the random
 #    range value as minutes instead of hours. Allows
@@ -1261,7 +1264,7 @@ if (document.getElementById) {
     show_user_agent_opts    (document.getElementById("hide_user_agent_y").checked);
     show_set_image_blocker_opts (document.getElementById("set_image_blocker_y").checked);
     show_limit_connect_opts (document.getElementById("limit_connect_y").checked);
-    show_send_wafer_opts    (document.getElementById("wafer_y").checked);
+    show_send_wafer_opts    (document.getElementById("send_wafer_y").checked);
 } else if (document.all) {
     // alert("IE4");
     document.myform.hide_from_header_param.disabled = !(document.myform.hide_from_header_mode_set.checked);
@@ -1275,7 +1278,7 @@ if (document.getElementById) {
     show_user_agent_opts    (document.myform.hide_user_agent_y.checked);
     show_set_image_blocker_opts (document.myform.set_image_blocker_y.checked);
     show_limit_connect_opts (document.myform.limit_connect_y.checked);
-    show_send_wafer_opts    (document.myform.wafer_y.checked);
+    show_send_wafer_opts    (document.myform.send_wafer_y.checked);
 } else if (document.layers) {
     // alert("Netscape 4");
 }
