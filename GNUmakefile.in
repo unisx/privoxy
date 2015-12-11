@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.204 2011/09/06 18:45:28 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.205 2011/11/20 17:17:56 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2011 members of the
 # Privoxy team. http://www.privoxy.org/
@@ -157,6 +157,7 @@ CVSROOT    = :pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa
 # If your SF user name differs from your local one,
 # change this to "ssh -l sf-username"
 SSH	= ssh
+WWW_ROOT = /home/project-web/ijbswa
 
 #############################################################################
 # Setup for make distribution for now.
@@ -620,27 +621,27 @@ webserver: clean-editor-files
 	@$(ECHO) -------------------------------------------------------
 
 	@$(ECHO) Replacing the user-manual symlink
-	@$(SSH) shell.sourceforge.net "cd /home/groups/i/ij/ijbswa/htdocs && rm user-manual \
+	@$(SSH) shell.sourceforge.net "cd $(WWW_ROOT)/htdocs && rm user-manual \
 	 && mkdir -p $(VERSION)/user-manual && ln -s $(VERSION)/user-manual user-manual"
 
 	@$(ECHO) Uploading html
 	@cd doc/webserver; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
-          $(TAR) cf - $$upload | $(SSH) shell.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
+          $(TAR) cf - $$upload | $(SSH) shell.sourceforge.net 'cd $(WWW_ROOT)/htdocs/; tar xvm 2>&1 | grep -v timestamp'
 
 	@$(ECHO) Fixing permissions
-	@$(SSH) shell.sourceforge.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
-	@$(SSH) shell.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/ -type f | xargs chmod 664 2>/dev/null; true'
+	@$(SSH) shell.sourceforge.net 'chmod -R 775 $(WWW_ROOT)/htdocs 2>/dev/null; true'
+	@$(SSH) shell.sourceforge.net 'find $(WWW_ROOT)/htdocs/ -type f | xargs chmod 664 2>/dev/null; true'
 
 web-actions: clean-editor-files
 	@$(ECHO) Uploading
 	@cd doc/webserver/actions; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
-          $(TAR) cf - $$upload | $(SSH) ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/actions; tar xvm'
+          $(TAR) cf - $$upload | $(SSH) ijbswa.sourceforge.net 'cd $(WWW_ROOT)/htdocs/actions; tar xvm'
 
 	@$(ECHO) Fixing permissions
-	@$(SSH) ijbswa.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/actions/ -type f | xargs chmod 664 2>/dev/null'
-	@$(SSH) ijbswa.sourceforge.net 'chmod 666 /home/groups/i/ij/ijbswa/htdocs/actions/results/actions-feedback.txt 2>/dev/null'
+	@$(SSH) ijbswa.sourceforge.net 'find $(WWW_ROOT)/htdocs/actions/ -type f | xargs chmod 664 2>/dev/null'
+	@$(SSH) ijbswa.sourceforge.net 'chmod 666 $(WWW_ROOT)/htdocs/actions/results/actions-feedback.txt 2>/dev/null'
 
 ##
 dok-put:
@@ -649,8 +650,8 @@ dok-put:
 		doc/* INSTALL LICENSE AUTHORS README \
 		-czf $(DOC_FILE) ;\
 		$(ECHO) "Uploading doc package ..." ;\
-		scp $(DOC_FILE) ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/docs/
-		@$(SSH) ijbswa.sourceforge.net 'chmod 775 /home/groups/i/ij/ijbswa/htdocs/docs/*gz 2>/dev/null; true'
+		scp $(DOC_FILE) ijbswa.sourceforge.net:$(WWW_ROOT)/htdocs/docs/
+		@$(SSH) ijbswa.sourceforge.net 'chmod 775 $(WWW_ROOT)/htdocs/docs/*gz 2>/dev/null; true'
 		$(RM) $(DOC_FILE)
 
 dok-get:

@@ -9,7 +9,7 @@
   <title>What's New in this Release</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.18 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Installation" href="installation.html">
   <link rel="NEXT" title="Quickstart to Using Privoxy" href=
   "quickstart.html">
@@ -33,7 +33,7 @@ body {
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.18 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
       </tr>
 
       <tr>
@@ -53,8 +53,8 @@ body {
     <h1 class="SECT1"><a name="WHATSNEW" id="WHATSNEW">3. What's New in this
     Release</a></h1>
 
-    <p><span class="APPLICATION">Privoxy 3.0.18</span> is a stable release.
-    The changes since 3.0.17 stable are:</p>
+    <p><span class="APPLICATION">Privoxy 3.0.19</span> is a stable release.
+    The changes since 3.0.18 stable are:</p>
 
     <ul>
       <li>
@@ -62,10 +62,59 @@ body {
 
         <ul>
           <li>
-            <p>If the redirect URL contains characters RFC 3986 doesn't
-            permit, they are (re)encoded. Not doing this makes Privoxy
-            versions from 3.0.5 to 3.0.17 susceptible to HTTP response
-            splitting (CWE-113) attacks if the
+            <p>Prevent a segmentation fault when de-chunking buffered
+            content. It could be triggered by malicious web servers if
+            Privoxy was configured to filter the content and running on a
+            platform where SIZE_T_MAX isn't larger than UINT_MAX, which
+            probably includes most 32-bit systems. On those platforms, all
+            Privoxy versions before 3.0.19 appear to be affected. To be on
+            the safe side, this bug should be presumed to allow code
+            execution as proving that it doesn't seems unrealistic.</p>
+          </li>
+
+          <li>
+            <p>Do not expect a response from the SOCKS4/4A server until it
+            got something to respond to. This regression was introduced in
+            3.0.18 and prevented the SOCKS4/4A negotiation from working.
+            Reported by qqqqqw in #3459781.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>General improvements:</p>
+
+        <ul>
+          <li>
+            <p>Fix an off-by-one in an error message about connect
+            failures.</p>
+          </li>
+
+          <li>
+            <p>Use a GNUMakefile variable for the webserver root directory
+            and update the path. Sourceforge changed it which broke various
+            web-related targets.</p>
+          </li>
+
+          <li>
+            <p>Update the CODE_STATUS description.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <p>The following changes were made between 3.0.17 and 3.0.18:</p>
+
+    <ul>
+      <li>
+        <p>Bug fixes:</p>
+
+        <ul>
+          <li>
+            <p>If a generated redirect URL contains characters RFC 3986
+            doesn't permit, they are (re)encoded. Not doing this makes
+            Privoxy versions from 3.0.5 to 3.0.17 susceptible to HTTP
+            response splitting (CWE-113) attacks if the
             +fast-redirects{check-decoded-url} action is used.</p>
           </li>
 
@@ -96,7 +145,7 @@ body {
 
           <li>
             <p>Fix a subtle race condition between
-            prepare_csp_for_next_request() and sweep() A thread preparing
+            prepare_csp_for_next_request() and sweep(). A thread preparing
             itself for the next client request could briefly appear to be
             inactive. If all other threads were already using more recent
             files, the thread could get its files swept away under its feet.
@@ -200,9 +249,9 @@ body {
 
           <li>
             <p>Set socket_error to errno if connecting fails in
-            rfc2553_connect_to() Previously rejected direct connections could
-            be incorrectly reported as DNS issues if Privoxy was compiled
-            with IPv6 support.</p>
+            rfc2553_connect_to(). Previously rejected direct connections
+            could be incorrectly reported as DNS issues if Privoxy was
+            compiled with IPv6 support.</p>
           </li>
 
           <li>
@@ -254,16 +303,16 @@ body {
           </li>
 
           <li>
-            <p>Simplify the signal setup in main()</p>
+            <p>Simplify the signal setup in main().</p>
           </li>
 
           <li>
-            <p>Streamline socks5_connect() slightly</p>
+            <p>Streamline socks5_connect() slightly.</p>
           </li>
 
           <li>
             <p>In socks5_connect(), require a complete socks response from
-            the server Previously Privoxy didn't care how much data the
+            the server. Previously Privoxy didn't care how much data the
             server response contained as long as the first two bytes
             contained the expected values. While at it, shrink the buffer
             size so Privoxy can't read more than a whole socks response.</p>
@@ -385,7 +434,7 @@ body {
 
           <li>
             <p>In rfc2553_connect_to(), start setting cgi-&gt;error_message
-            on error</p>
+            on error.</p>
           </li>
 
           <li>
@@ -407,22 +456,22 @@ body {
 
           <li>
             <p>Don't enforce a logical line length limit in
-            read_config_line()</p>
+            read_config_line().</p>
           </li>
 
           <li>
             <p>Slightly refactor server_last_modified() to remove useless
-            gmtime*() calls</p>
+            gmtime*() calls.</p>
           </li>
 
           <li>
             <p>In get_content_type(), also recognize '.jpeg' as JPEG
-            extension</p>
+            extension.</p>
           </li>
 
           <li>
             <p>Add '.png' to the list of recognized file extensions in
-            get_content_type()</p>
+            get_content_type().</p>
           </li>
 
           <li>
@@ -479,24 +528,24 @@ body {
           </li>
 
           <li>
-            <p>Remove -prevent-compression from the fragile alias It's no
+            <p>Remove -prevent-compression from the fragile alias. It's no
             longer used anywhere by default and isn't known to break stuff
             anyway.</p>
           </li>
 
           <li>
             <p>Add a (disabled) section to block various Facebook tracking
-            URLs Reported by Dan Stahlke in #3421764.</p>
+            URLs. Reported by Dan Stahlke in #3421764.</p>
           </li>
 
           <li>
             <p>Add a (disabled) section to rewrite and redirect
-            click-tracking URLs used on news.google.com Reported by Dan
+            click-tracking URLs used on news.google.com. Reported by Dan
             Stahlke in #3421755.</p>
           </li>
 
           <li>
-            <p>Unblock linuxcounter.net/ Reported by Dan Stahlke in
+            <p>Unblock linuxcounter.net/. Reported by Dan Stahlke in
             #3422612.</p>
           </li>
 
@@ -516,7 +565,7 @@ body {
           </li>
 
           <li>
-            <p>Unblock and fast-redirect ".awin1.com/.*=http://" Reported by
+            <p>Unblock and fast-redirect ".awin1.com/.*=http://". Reported by
             Adam Piggott in #3170921.</p>
           </li>
 
@@ -537,32 +586,32 @@ body {
           </li>
 
           <li>
-            <p>Disable banners-by-size filters for '.thinkgeek.com/' The
+            <p>Disable banners-by-size filters for '.thinkgeek.com/'. The
             filter only seems to catch pictures of the inventory.</p>
           </li>
 
           <li>
-            <p>Block requests for 'go.idmnet.bbelements.com/please/showit/'
+            <p>Block requests for 'go.idmnet.bbelements.com/please/showit/'.
             Reported by kacperdominik in #3372959.</p>
           </li>
 
           <li>
-            <p>Unblock adainitiative.org/</p>
+            <p>Unblock adainitiative.org/.</p>
           </li>
 
           <li>
             <p>Add a fast-redirects exception for
-            '.googleusercontent.com/.*=cache'</p>
+            '.googleusercontent.com/.*=cache'.</p>
           </li>
 
           <li>
             <p>Add a fast-redirects exception for
-            webcache.googleusercontent.com/</p>
+            webcache.googleusercontent.com/.</p>
           </li>
 
           <li>
             <p>Unblock http://adassier.wordpress.com/ and
-            http://adassier.files.wordpress.com/</p>
+            http://adassier.files.wordpress.com/.</p>
           </li>
         </ul>
       </li>
@@ -572,7 +621,7 @@ body {
 
         <ul>
           <li>
-            <p>Let the yahoo filter hide '.ads'</p>
+            <p>Let the yahoo filter hide '.ads'.</p>
           </li>
 
           <li>
@@ -582,7 +631,7 @@ body {
           </li>
 
           <li>
-            <p>Let the js-events filter additionally disarm setInterval()
+            <p>Let the js-events filter additionally disarm setInterval().
             Suggested by dg1727 in #3423775.</p>
           </li>
         </ul>
@@ -593,7 +642,7 @@ body {
 
         <ul>
           <li>
-            <p>Clarify the effect of compiling Privoxy with zlib support
+            <p>Clarify the effect of compiling Privoxy with zlib support.
             Suggested by dg1727 in #3423782.</p>
           </li>
 
@@ -627,27 +676,27 @@ body {
           </li>
 
           <li>
-            <p>Remove a superfluous log message in forget_connection()</p>
+            <p>Remove a superfluous log message in forget_connection().</p>
           </li>
 
           <li>
             <p>In chat(), properly report missing server responses as such
-            instead of calling them empty</p>
+            instead of calling them empty.</p>
           </li>
 
           <li>
             <p>In forwarded_connect(), fix a log message nobody should ever
-            see</p>
+            see.</p>
           </li>
 
           <li>
             <p>Fix a log message in socks5_connect(), a failed write
-            operation was logged as failed read operation</p>
+            operation was logged as failed read operation.</p>
           </li>
 
           <li>
             <p>Let load_one_actions_file() properly complain about a missing
-            '{' at the beginning of the file Simply stating that a line is
+            '{' at the beginning of the file. Simply stating that a line is
             invalid isn't particularly helpful.</p>
           </li>
 
@@ -658,7 +707,7 @@ body {
 
           <li>
             <p>Prevent a duplicated LOG_LEVEL_CLF message when sending out
-            the "no-server-data" response</p>
+            the "no-server-data" response.</p>
           </li>
 
           <li>
@@ -673,7 +722,7 @@ body {
 
           <li>
             <p>Prevent a duplicated log message if none of the resolved IP
-            addresses were reachable</p>
+            addresses were reachable.</p>
           </li>
 
           <li>
@@ -692,12 +741,12 @@ body {
           </li>
 
           <li>
-            <p>Remove a useless log message in chat()</p>
+            <p>Remove a useless log message in chat().</p>
           </li>
 
           <li>
             <p>When retrying to connect, also log the maximum number of
-            connection attempts</p>
+            connection attempts.</p>
           </li>
 
           <li>
@@ -723,7 +772,7 @@ body {
           <li>
             <p>In compile_dynamic_pcrs_job_list(), also log the actual error
             code as pcrs_strerror() doesn't handle all errors reported by
-            pcre</p>
+            pcre.</p>
           </li>
 
           <li>
@@ -733,17 +782,17 @@ body {
 
           <li>
             <p>Make two fatal error message in load_one_actions_file() more
-            descriptive</p>
+            descriptive.</p>
           </li>
 
           <li>
             <p>In cgi_send_user_manual(), log when rejecting a file name due
-            to '/' or '..'</p>
+            to '/' or '..'.</p>
           </li>
 
           <li>
-            <p>In load_file(), log a message if opening a file failed The CGI
-            error message alone isn't too helpful.</p>
+            <p>In load_file(), log a message if opening a file failed. The
+            CGI error message alone isn't too helpful.</p>
           </li>
 
           <li>
@@ -815,16 +864,16 @@ body {
 
           <li>
             <p>Added a --local-test-file option that allows to use
-            Privoxy-Regression-Test without Privoxy</p>
+            Privoxy-Regression-Test without Privoxy.</p>
           </li>
 
           <li>
-            <p>Added tests for missing socks4 and socks4a forwarders</p>
+            <p>Added tests for missing socks4 and socks4a forwarders.</p>
           </li>
 
           <li>
             <p>The --privoxy-address option now works with IPv6 addresses
-            containing brackets, too</p>
+            containing brackets, too.</p>
           </li>
 
           <li>
@@ -839,7 +888,7 @@ body {
 
           <li>
             <p>Disable the range-requests tagger for tests that break if it's
-            enabled</p>
+            enabled.</p>
           </li>
 
           <li>
@@ -896,7 +945,7 @@ body {
           </li>
 
           <li>
-            <p>Accept log messages with ISO 8601 time stamps, too</p>
+            <p>Accept log messages with ISO 8601 time stamps, too.</p>
           </li>
         </ul>
       </li>
@@ -906,7 +955,7 @@ body {
 
         <ul>
           <li>
-            <p>Bump generated Firefox version to 8.0</p>
+            <p>Bump generated Firefox version to 8.0.</p>
           </li>
 
           <li>

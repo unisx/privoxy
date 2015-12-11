@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.160 2011/11/12 12:56:21 fabiankeil Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.163 2011/12/26 17:03:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -13,7 +13,7 @@ const char filters_rcs[] = "$Id: filters.c,v 1.160 2011/11/12 12:56:21 fabiankei
  *                   `execute_single_pcrs_command', `rewrite_url',
  *                   `get_last_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -1854,19 +1854,15 @@ static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size)
          return JB_ERR_PARSE;
       }
 
-      if ((newsize += chunksize) >= *size)
+      if (chunksize >= *size - newsize)
       {
-         /*
-          * XXX: The message is a bit confusing. Isn't the real problem that
-          *      the specified chunk size is greater than the number of bytes
-          *      left in the buffer? This probably means the connection got
-          *      closed prematurely. To be investigated after 3.0.17 is out.
-          */
          log_error(LOG_LEVEL_ERROR,
-            "Chunk size %d exceeds buffer size %d in \"chunked\" transfer coding",
-            chunksize, *size);
+            "Chunk size %u exceeds buffered data left. "
+            "Already digested %u of %u buffered bytes.",
+            chunksize, (unsigned int)newsize, (unsigned int)*size);
          return JB_ERR_PARSE;
       }
+      newsize += chunksize;
       from_p += 2;
 
       memmove(to_p, from_p, (size_t) chunksize);

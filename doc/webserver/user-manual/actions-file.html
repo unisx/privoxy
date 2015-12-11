@@ -9,7 +9,7 @@
   <title>Actions Files</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.18 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
   <link rel="PREVIOUS" title="The Main Configuration File" href=
   "config.html">
   <link rel="NEXT" title="Filter Files" href="filter-file.html">
@@ -38,7 +38,7 @@ body {
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.18 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
       </tr>
 
       <tr>
@@ -134,7 +134,7 @@ body {
         in <tt class="FILENAME">default.action</tt> are:</p>
 
         <div class="TABLE">
-          <a name="AEN2761" id="AEN2761"></a>
+          <a name="AEN2780" id="AEN2780"></a>
 
           <p class="c3">Table 1. Default Configurations</p>
 
@@ -330,7 +330,7 @@ body {
     actions</a>.</p>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2860" id="AEN2860">8.1. Finding the Right
+      <h2 class="SECT2"><a name="AEN2879" id="AEN2879">8.1. Finding the Right
       Mix</a></h2>
 
       <p>Note that some <a href="actions-file.html#ACTIONS">actions</a>, like
@@ -355,7 +355,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2867" id="AEN2867">8.2. How to
+      <h2 class="SECT2"><a name="AEN2886" id="AEN2886">8.2. How to
       Edit</a></h2>
 
       <p>The easiest way to edit the actions files is with a browser by using
@@ -544,7 +544,7 @@ body {
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN2979" id="AEN2979">8.4.1. The Domain
+        <h3 class="SECT3"><a name="AEN2998" id="AEN2998">8.4.1. The Domain
         Pattern</a></h3>
 
         <p>The matching of the domain part offers some flexible options: if
@@ -650,7 +650,7 @@ body {
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN3055" id="AEN3055">8.4.2. The Path
+        <h3 class="SECT3"><a name="AEN3074" id="AEN3074">8.4.2. The Path
         Pattern</a></h3>
 
         <p><span class="APPLICATION">Privoxy</span> uses <span class=
@@ -1931,9 +1931,19 @@ www.example.net/.*style
               <p>This is a left-over from the time when <span class=
               "APPLICATION">Privoxy</span> didn't support important HTTP/1.1
               features well. It is left here for the unlikely case that you
-              experience HTTP/1.1 related problems with some server out
-              there. Not all HTTP/1.1 features and requirements are supported
-              yet, so there is a chance you might need this action.</p>
+              experience HTTP/1.1-related problems with some server out
+              there.</p>
+
+              <p>Note that enabling this action is only a workaround. It
+              should not be enabled for sites that work without it. While it
+              shouldn't break any pages, it has an (usually negative)
+              performance impact.</p>
+
+              <p>If you come across a site where enabling this action helps,
+              please report it, so the cause of the problem can be analyzed.
+              If the problem turns out to be caused by a bug in <span class=
+              "APPLICATION">Privoxy</span> it should be fixed so the
+              following release works without the work around.</p>
             </dd>
 
             <dt>Example usage (section):</dt>
@@ -4217,7 +4227,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4684" id="AEN4684">8.5.34.
+        <h3 class="SECT3"><a name="AEN4706" id="AEN4706">8.5.34.
         Summary</a></h3>
 
         <p>Note that many of these actions have the potential to cause a page
@@ -4374,7 +4384,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       together:</p>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4748" id="AEN4748">8.7.1.
+        <h3 class="SECT3"><a name="AEN4770" id="AEN4770">8.7.1.
         match-all.action</a></h3>
 
         <p>Remember <span class="emphasis EMPHASIS c2">all actions are
@@ -4422,7 +4432,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4770" id="AEN4770">8.7.2.
+        <h3 class="SECT3"><a name="AEN4792" id="AEN4792">8.7.2.
         default.action</a></h3>
 
         <p>If you aren't a developer, there's no need for you to edit the
@@ -4765,7 +4775,7 @@ wiki.
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4883" id="AEN4883">8.7.3.
+        <h3 class="SECT3"><a name="AEN4905" id="AEN4905">8.7.3.
         user.action</a></h3>
 
         <p>So far we are painting with a broad brush by setting general

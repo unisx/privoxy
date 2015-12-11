@@ -8,7 +8,7 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.18">
+<!entity p-version "3.0.19">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: faq.sgml,v 2.84 2011/11/13 17:03:54 fabiankeil Exp $
+ $Id: faq.sgml,v 2.85 2011/12/26 17:05:40 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -78,7 +78,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.84 2011/11/13 17:03:54 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.85 2011/12/26 17:05:40 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -2992,6 +2992,9 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.85  2011/12/26 17:05:40  fabiankeil
+Bump entities for 3.0.19
+
 Revision 2.84  2011/11/13 17:03:54  fabiankeil
 Bump entities for 3.0.18 stable
 

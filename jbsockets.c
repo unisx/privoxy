@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.110 2011/11/18 23:53:26 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.111 2011/12/10 17:26:30 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -168,7 +168,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
       {
          log_error(LOG_LEVEL_ERROR,
             "Attempt %d of %d to connect to %s failed. Trying again.",
-            forwarded_connect_retries, csp->config->forwarded_connect_retries, host);
+            forwarded_connect_retries, csp->config->forwarded_connect_retries + 1, host);
       }
 
    } while (forwarded_connect_retries < csp->config->forwarded_connect_retries);

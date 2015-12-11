@@ -1,4 +1,4 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.82 2011/10/23 11:21:28 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.83 2011/12/24 15:28:45 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
@@ -808,6 +808,13 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
       /* The error an its reason have already been logged by connect_to()  */
       return(JB_INVALID_SOCKET);
    }
+   else if (write_socket(sfd, (char *)c, csiz))
+   {
+      errstr = "SOCKS4 negotiation write failed.";
+      log_error(LOG_LEVEL_CONNECT, "socks4_connect: %s", errstr);
+      err = 1;
+      close_socket(sfd);
+   }
    else if (!data_is_available(sfd, csp->config->socket_timeout))
    {
       if (socket_is_still_alive(sfd))
@@ -818,13 +825,6 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
       {
          errstr = "SOCKS4 negotiation got aborted by the server";
       }
-      log_error(LOG_LEVEL_CONNECT, "socks4_connect: %s", errstr);
-      err = 1;
-      close_socket(sfd);
-   }
-   else if (write_socket(sfd, (char *)c, csiz))
-   {
-      errstr = "SOCKS4 negotiation write failed.";
       log_error(LOG_LEVEL_CONNECT, "socks4_connect: %s", errstr);
       err = 1;
       close_socket(sfd);

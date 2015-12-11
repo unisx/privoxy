@@ -1,12 +1,35 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.19 Stable ***
+
+- Bug fixes:
+  - Prevent a segmentation fault when de-chunking buffered content.
+    It could be triggered by malicious web servers if Privoxy was
+    configured to filter the content and running on a platform
+    where SIZE_T_MAX isn't larger than UINT_MAX, which probably
+    includes most 32-bit systems. On those platforms, all Privoxy
+    versions before 3.0.19 appear to be affected.
+    To be on the safe side, this bug should be presumed to allow
+    code execution as proving that it doesn't seems unrealistic.
+  - Do not expect a response from the SOCKS4/4A server until it
+    got something to respond to. This regression was introduced
+    in 3.0.18 and prevented the SOCKS4/4A negotiation from working.
+    Reported by qqqqqw in #3459781.
+
+- General improvements:
+  - Fix an off-by-one in an error message about connect failures.
+  - Use a GNUMakefile variable for the webserver root directory and
+    update the path. Sourceforge changed it which broke various
+    web-related targets.
+  - Update the CODE_STATUS description.
+
 *** Version 3.0.18 Stable ***
 
 - Bug fixes:
-  - If the redirect URL contains characters RFC 3986 doesn't permit,
-    they are (re)encoded. Not doing this makes Privoxy versions from
-    3.0.5 to 3.0.17 susceptible to HTTP response splitting (CWE-113)
+  - If a generated redirect URL contains characters RFC 3986 doesn't
+    permit, they are (re)encoded. Not doing this makes Privoxy versions
+    from 3.0.5 to 3.0.17 susceptible to HTTP response splitting (CWE-113)
     attacks if the +fast-redirects{check-decoded-url} action is used.
   - Fix a logic bug that could cause Privoxy to reuse a server
     socket after it got tainted by a server-header-tagger-induced
@@ -29,7 +52,7 @@ ChangeLog for Privoxy
     but with clients that don't the connection would be kept open until
     it timed out.
   - Fix a subtle race condition between prepare_csp_for_next_request()
-    and sweep() A thread preparing itself for the next client request
+    and sweep(). A thread preparing itself for the next client request
     could briefly appear to be inactive.
     If all other threads were already using more recent files,
     the thread could get its files swept away under its feet.
@@ -81,7 +104,7 @@ ChangeLog for Privoxy
     but eventually the severity will be upgraded to fatal.
   - Allow to bind to multiple separate addresses.
     Patch set submitted by Petr Pisar in #3354485.
-  - Set socket_error to errno if connecting fails in rfc2553_connect_to()
+  - Set socket_error to errno if connecting fails in rfc2553_connect_to().
     Previously rejected direct connections could be incorrectly reported
     as DNS issues if Privoxy was compiled with IPv6 support.
   - Adjust url_code_map[] so spaces are replaced with %20 instead of '+'
@@ -109,9 +132,9 @@ ChangeLog for Privoxy
     not contain at least one '%' sign. It reduces the log noise and
     a number of unnecessary memory allocations.
   - In case of SOCKS5 failures, dump the socks response in the log message.
-  - Simplify the signal setup in main()
-  - Streamline socks5_connect() slightly
-  - In socks5_connect(), require a complete socks response from the server
+  - Simplify the signal setup in main().
+  - Streamline socks5_connect() slightly.
+  - In socks5_connect(), require a complete socks response from the server.
     Previously Privoxy didn't care how much data the server response
     contained as long as the first two bytes contained the expected
     values. While at it, shrink the buffer size so Privoxy can't read
@@ -153,7 +176,7 @@ ChangeLog for Privoxy
   - Add a warning that the statistics currently can't be trusted.
     Mention Privoxy-Log-Parser's --statistics option as
     an alternative for the time being.
-  - In rfc2553_connect_to(), start setting cgi->error_message on error
+  - In rfc2553_connect_to(), start setting cgi->error_message on error.
   - Change the expected status code returned for http://p.p/die depending
     on whether or not FEATURE_GRACEFUL_TERMINATION is available.
   - In cgi_die(), mark the client connection for closing.
@@ -161,10 +184,10 @@ ChangeLog for Privoxy
     it gets the main thread out of the accept() state and should thus
     trigger the actual shutdown.
   - Add a proper CGI message for cgi_die().
-  - Don't enforce a logical line length limit in read_config_line()
-  - Slightly refactor server_last_modified() to remove useless gmtime*() calls
-  - In get_content_type(), also recognize '.jpeg' as JPEG extension
-  - Add '.png' to the list of recognized file extensions in get_content_type()
+  - Don't enforce a logical line length limit in read_config_line().
+  - Slightly refactor server_last_modified() to remove useless gmtime*() calls.
+  - In get_content_type(), also recognize '.jpeg' as JPEG extension.
+  - Add '.png' to the list of recognized file extensions in get_content_type().
   - In block_url(), consistently use the block reason "Request blocked by Privoxy"
     In two places the reason was "Request for blocked URL" which hides the
     fact that the request got blocked by Privoxy and isn't necessarily
@@ -191,14 +214,14 @@ ChangeLog for Privoxy
     generic patterns so for requests that are matched in both, the block
     reason for the domain is shown which is usually more useful than showing
     the one for the generic pattern.
-  - Remove -prevent-compression from the fragile alias It's no longer
+  - Remove -prevent-compression from the fragile alias. It's no longer
     used anywhere by default and isn't known to break stuff anyway.
-  - Add a (disabled) section to block various Facebook tracking URLs
+  - Add a (disabled) section to block various Facebook tracking URLs.
     Reported by Dan Stahlke in #3421764.
   - Add a (disabled) section to rewrite and redirect click-tracking
-    URLs used on news.google.com
+    URLs used on news.google.com.
     Reported by Dan Stahlke in #3421755.
-  - Unblock linuxcounter.net/
+  - Unblock linuxcounter.net/.
     Reported by Dan Stahlke in #3422612.
   - Block 'www91.intel.com/' which is used by Omniture.
     Reported by Adam Piggott in #3167370.
@@ -206,32 +229,32 @@ ChangeLog for Privoxy
     Reminded by tceverling in #2790091.
   - Add ".ivwbox.de/" to the "Cross-site user tracking" section.
     Reported by Nettozahler in #3172525.
-  - Unblock and fast-redirect ".awin1.com/.*=http://"
+  - Unblock and fast-redirect ".awin1.com/.*=http://".
     Reported by Adam Piggott in #3170921.
   - Block "b.collective-media.net/".
   - Widen the Debian popcon exception to "qa.debian.org/popcon".
     Seen in Debian's 05_default_action.dpatch by Roland Rosenfeld.
   - Block ".gemius.pl/" which only seems to be used for user tracking.
     Reported by johnd16 in #3002731. Additional input from Lee and movax.
-  - Disable banners-by-size filters for '.thinkgeek.com/'
+  - Disable banners-by-size filters for '.thinkgeek.com/'.
     The filter only seems to catch pictures of the inventory.
-  - Block requests for 'go.idmnet.bbelements.com/please/showit/'
+  - Block requests for 'go.idmnet.bbelements.com/please/showit/'.
     Reported by kacperdominik in #3372959.
-  - Unblock adainitiative.org/
-  - Add a fast-redirects exception for '.googleusercontent.com/.*=cache'
-  - Add a fast-redirects exception for webcache.googleusercontent.com/
-  - Unblock http://adassier.wordpress.com/ and http://adassier.files.wordpress.com/
+  - Unblock adainitiative.org/.
+  - Add a fast-redirects exception for '.googleusercontent.com/.*=cache'.
+  - Add a fast-redirects exception for webcache.googleusercontent.com/.
+  - Unblock http://adassier.wordpress.com/ and http://adassier.files.wordpress.com/.
 
 - Filter file improvements:
-  - Let the yahoo filter hide '.ads'
+  - Let the yahoo filter hide '.ads'.
   - Let the msn filter hide overlay ads for Facebook 'likes' in search
     results and elements with the id 's_notf_div'. They only seem to be
     used to advertise site 'enhancements'.
-  - Let the js-events filter additionally disarm setInterval()
+  - Let the js-events filter additionally disarm setInterval().
     Suggested by dg1727 in #3423775.
 
 - Documentation improvements:
-  - Clarify the effect of compiling Privoxy with zlib support
+  - Clarify the effect of compiling Privoxy with zlib support.
     Suggested by dg1727 in #3423782.
   - Point out that the SourceForge messaging system works like a black
     hole and should thus not be used to contact individual developers.
@@ -245,33 +268,33 @@ ChangeLog for Privoxy
 - Log message improvements:
   - If only the server connection is kept alive, do not pretend to
     wait for a new client request.
-  - Remove a superfluous log message in forget_connection()
+  - Remove a superfluous log message in forget_connection().
   - In chat(), properly report missing server responses as such
-    instead of calling them empty
-  - In forwarded_connect(), fix a log message nobody should ever see
+    instead of calling them empty.
+  - In forwarded_connect(), fix a log message nobody should ever see.
   - Fix a log message in socks5_connect(), a failed write operation
-    was logged as failed read operation
+    was logged as failed read operation.
   - Let load_one_actions_file() properly complain about a missing
-    '{' at the beginning of the file
+    '{' at the beginning of the file.
     Simply stating that a line is invalid isn't particularly helpful.
   - Do not claim to listen on a socket until Privoxy actually does.
     Patch submitted by Petr Pisar #3354485
   - Prevent a duplicated LOG_LEVEL_CLF message when sending out
-    the "no-server-data" response
+    the "no-server-data" response.
   - Also log the client socket when dropping a connection.
   - Include the destination host in the 'Request ... marked for
     blocking. limit-connect{...} doesn't allow CONNECT ...' message
     Patch submitted by Saperski in #3296250.
   - Prevent a duplicated log message if none of the resolved IP
-    addresses were reachable
+    addresses were reachable.
   - In connect_to(), do not pretend to retry if forwarded-connect-retries
     is zero or unset.
   - When a specified user or group can't be found, put the name in
     single-quotes when logging it.
   - In rfc2553_connect_to(), explain getnameinfo() errors better.
-  - Remove a useless log message in chat()
+  - Remove a useless log message in chat().
   - When retrying to connect, also log the maximum number of connection
-    attempts
+    attempts.
   - Rephrase a log message in compile_dynamic_pcrs_job_list().
     Divide the error code and its meaning with a colon. Call the pcrs
     job dynamic and not the filter. Filters may contain dynamic and
@@ -283,12 +306,12 @@ ChangeLog for Privoxy
   - In pcrs_strerror(), properly report unknown positive error code
     values as such. Previously they were handled like 0 (no error).
   - In compile_dynamic_pcrs_job_list(), also log the actual error code as
-    pcrs_strerror() doesn't handle all errors reported by pcre
+    pcrs_strerror() doesn't handle all errors reported by pcre.
   - Don't bother trying to continue chatting if the client didn't ask for it.
     Reduces log noise a bit.
-  - Make two fatal error message in load_one_actions_file() more descriptive
-  - In cgi_send_user_manual(), log when rejecting a file name due to '/' or '..'
-  - In load_file(), log a message if opening a file failed
+  - Make two fatal error message in load_one_actions_file() more descriptive.
+  - In cgi_send_user_manual(), log when rejecting a file name due to '/' or '..'.
+  - In load_file(), log a message if opening a file failed.
     The CGI error message alone isn't too helpful.
   - In connection_destination_matches(), improve two log messages
     to help understand why the destinations don't match.
@@ -315,13 +338,13 @@ ChangeLog for Privoxy
 
 - Privoxy-Regression-Test:
   - Added --shuffle-tests option to increase the chances of detection race conditions.
-  - Added a --local-test-file option that allows to use Privoxy-Regression-Test without Privoxy
-  - Added tests for missing socks4 and socks4a forwarders
-  - The --privoxy-address option now works with IPv6 addresses containing brackets, too
+  - Added a --local-test-file option that allows to use Privoxy-Regression-Test without Privoxy.
+  - Added tests for missing socks4 and socks4a forwarders.
+  - The --privoxy-address option now works with IPv6 addresses containing brackets, too.
   - Perform limited sanity checks for parameters that are supposed to have numerical values.
   - Added a --sleep-time option to specify a number of seconds to
     sleep between tests, defaults to 0.
-  - Disable the range-requests tagger for tests that break if it's enabled
+  - Disable the range-requests tagger for tests that break if it's enabled.
   - Log messages use the ISO 8601 date format %Y-%m-%d.
   - Fix spelling in two error messages.
   - In the --help output, include a list of supported tests and their default levels.
@@ -335,10 +358,10 @@ ChangeLog for Privoxy
   - Accept and highlight: Compressed content from 29258 to 8630 bytes.
   - Accept and highlight: Client request arrived in time on socket 21.
   - Highlight: Didn't receive data in time: a.fsdn.com:443
-  - Accept log messages with ISO 8601 time stamps, too
+  - Accept log messages with ISO 8601 time stamps, too.
 
 - uagen:
-  - Bump generated Firefox version to 8.0
+  - Bump generated Firefox version to 8.0.
   - Only randomize the release date if the new --randomize-release-date
     option is enabled. Firefox versions after 4 use a fixed date string
     without meaning.
