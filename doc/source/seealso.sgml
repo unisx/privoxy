@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: seealso.sgml,v 2.11 2009/02/19 02:20:22 hal9 Exp $
+ $Id: seealso.sgml,v 2.12 2009/02/23 10:42:58 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -45,6 +45,13 @@
    <ulink
    url="http://www.privoxy.org/faq/">http://www.privoxy.org/faq/</ulink>, 
    the <application>Privoxy</application> FAQ. 
+  </member>
+ </simplelist>
+ <simplelist>
+  <member>
+   <ulink
+   url="http://www.privoxy.org/developer-manual/">http://www.privoxy.org/developer-manual/</ulink>, 
+   the <application>Privoxy</application> developer manual. 
   </member>
  </simplelist>
  <simplelist>
@@ -103,11 +110,4 @@
   </member>
  </simplelist>
  ]]>
- <simplelist>
-  <member>
-   <ulink
-   url="http://www.privoxy.org/developer-manual/">http://www.privoxy.org/developer-manual/</ulink>, 
-   the <application>Privoxy</application> developer manual. 
-  </member>
- </simplelist>
 </para>

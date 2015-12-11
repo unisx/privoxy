@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.89 2008/10/11 11:31:14 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.91 2009/03/08 14:19:23 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -36,6 +36,13 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.89 2008/10/11 11:31:14 fabian
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.91  2009/03/08 14:19:23  fabiankeil
+ *    Fix justified (but harmless) compiler warnings
+ *    on platforms where sizeof(int) < sizeof(long).
+ *
+ *    Revision 1.90  2009/03/01 18:43:09  fabiankeil
+ *    Fix cparser warnings.
+ *
  *    Revision 1.89  2008/10/11 11:31:14  fabiankeil
  *    Add FEATURE_CONNECTION_KEEP_ALIVE to the list
  *    of conditional defines on the show-status page.
@@ -498,6 +505,8 @@ jb_err cgi_default(struct client_state *csp,
 {
    struct map *exports;
 
+   (void)parameters;
+
    assert(csp);
    assert(rsp);
 
@@ -814,6 +823,9 @@ jb_err cgi_transparent_image(struct client_state *csp,
                              struct http_response *rsp,
                              const struct map *parameters)
 {
+   (void)csp;
+   (void)parameters;
+
    rsp->body = bindup(image_blank_data, image_blank_length);
    rsp->content_length = image_blank_length;
 
@@ -871,6 +883,9 @@ jb_err cgi_send_default_favicon(struct client_state *csp,
       "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
       "\017\000\000";
    static const size_t favicon_length = sizeof(default_favicon_data) - 1;
+
+   (void)csp;
+   (void)parameters;
 
    rsp->body = bindup(default_favicon_data, favicon_length);
    rsp->content_length = favicon_length;
@@ -930,6 +945,9 @@ jb_err cgi_send_error_favicon(struct client_state *csp,
       "\017\000\000";
    static const size_t favicon_length = sizeof(error_favicon_data) - 1;
 
+   (void)csp;
+   (void)parameters;
+
    rsp->body = bindup(error_favicon_data, favicon_length);
    rsp->content_length = favicon_length;
 
@@ -976,6 +994,8 @@ jb_err cgi_send_stylesheet(struct client_state *csp,
    
    assert(csp);
    assert(rsp);
+
+   (void)parameters;
 
    err = template_load(csp, &rsp->body, "cgi-style.css", 0);
 
@@ -1026,6 +1046,9 @@ jb_err cgi_send_url_info_osd(struct client_state *csp,
 {
    jb_err err = JB_ERR_MEMORY;
    struct map *exports = default_exports(csp, NULL);
+
+   (void)csp;
+   (void)parameters;
 
    if (NULL != exports)
    {
@@ -1305,7 +1328,7 @@ jb_err cgi_show_status(struct client_state *csp,
          if (!err) err = string_append(&s, "<tr><td>");
          if (!err) err = string_join(&s, html_encode(csp->actions_list[i]->filename));
          snprintf(buf, sizeof(buf),
-            "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&amp;index=%d\">View</a>", i);
+            "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&amp;index=%u\">View</a>", i);
          if (!err) err = string_append(&s, buf);
 
 #ifdef FEATURE_CGI_EDIT_ACTIONS
@@ -1317,7 +1340,7 @@ jb_err cgi_show_status(struct client_state *csp,
             if (access(csp->config->actions_file[i], W_OK) == 0)
             {
 #endif /* def HAVE_ACCESS */
-               snprintf(buf, sizeof(buf), "&nbsp;&nbsp;<a href=\"/edit-actions-list?f=%d\">Edit</a>", i);
+               snprintf(buf, sizeof(buf), "&nbsp;&nbsp;<a href=\"/edit-actions-list?f=%u\">Edit</a>", i);
                if (!err) err = string_append(&s, buf);
 #ifdef HAVE_ACCESS
             }
@@ -1352,8 +1375,8 @@ jb_err cgi_show_status(struct client_state *csp,
       {
          if (!err) err = string_append(&s, "<tr><td>");
          if (!err) err = string_join(&s, html_encode(csp->rlist[i]->filename));
-         snprintf(buf, 100,
-            "</td><td class=\"buttons\"><a href=\"/show-status?file=filter&amp;index=%d\">View</a>", i);
+         snprintf(buf, sizeof(buf),
+            "</td><td class=\"buttons\"><a href=\"/show-status?file=filter&amp;index=%u\">View</a>", i);
          if (!err) err = string_append(&s, buf);
          if (!err) err = string_append(&s, "</td></tr>\n");
       }
@@ -1830,6 +1853,9 @@ jb_err cgi_robots_txt(struct client_state *csp,
    char buf[100];
    jb_err err;
 
+   (void)csp;
+   (void)parameters;
+
    rsp->body = strdup(
       "# This is the Privoxy control interface.\n"
       "# It isn't very useful to index it, and you're likely to break stuff.\n"
@@ -2206,7 +2232,7 @@ static jb_err cgi_show_file(struct client_state *csp,
 static jb_err load_file(const char *filename, char **buffer, size_t *length)
 {
    FILE *fp;
-   int ret;
+   long ret;
    jb_err err = JB_ERR_OK;
 
    fp = fopen(filename, "rb");

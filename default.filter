@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.70 2009/02/21 13:01:51 fabiankeil Exp $
+#  $Id: default.filter,v 1.71 2009/03/01 18:33:17 ler762 Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -600,12 +600,14 @@ s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
  \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
- \#nwad, \
+ \#nwad, \#MWA2, \#MSCM, \#yregad, \
  \#ks-ypn-ads, .ad, \#east, \#ygrp-vital {display: none !important;}\n\
  \#yschpri, \#yschweb, \#pri, \#web, \#main {width: 100% !important; max-width: 100% !important;}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
- \#northbanner{min-height:1px !important; height:1px !important; display: none !important;}\n\
- </style>\n$0@
+ \#composebox \#compose_editorArea {width: 70% !important; /* reasonably sized reply textarea please */\n\
+ </style>\n$0\n@
+
+s@(<textarea\s+id="composeArea"[^>]*)width:545px;@$1width:70%;@isU
 
 #################################################################################
 #
@@ -838,6 +840,12 @@ s@^X-Privoxy-Control:.*@@i
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.71  2009/03/01 18:33:17  ler762
+#     couple of changes to the yahoo filter
+#     -get a bigger email message reply textarea
+#     -block a few more ads
+#     -remove the now useless northbanner css change
+#
 #     Revision 1.70  2009/02/21 13:01:51  fabiankeil
 #     Make blogspot's feed magic slightly more reliable.
 #

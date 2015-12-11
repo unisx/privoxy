@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.151 2009/02/15 14:46:35 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.154 2009/03/13 14:10:07 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -44,6 +44,19 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.151 2009/02/15 14:46:35 fabiankei
  *
  * Revisions   :
  *    $Log: parsers.c,v $
+ *    Revision 1.154  2009/03/13 14:10:07  fabiankeil
+ *    Fix some more harmless warnings on amd64.
+ *
+ *    Revision 1.153  2009/03/07 13:09:17  fabiankeil
+ *    Change csp->expected_content and_csp->expected_content_length from
+ *    size_t to unsigned long long to reduce the likelihood of integer
+ *    overflows that would let us close the connection prematurely.
+ *    Bug found while investigating #2669131, reported by cyberpatrol.
+ *
+ *    Revision 1.152  2009/03/01 18:43:48  fabiankeil
+ *    Help clang understand that we aren't dereferencing
+ *    NULL pointers here.
+ *
  *    Revision 1.151  2009/02/15 14:46:35  fabiankeil
  *    Don't let hide-referrer{conditional-*}} pass
  *    Referer headers without http URLs.
@@ -1079,9 +1092,9 @@ static const add_header_func_ptr add_server_headers[] = {
  *                file, the results are not portable.
  *
  *********************************************************************/
-int flush_socket(jb_socket fd, struct iob *iob)
+long flush_socket(jb_socket fd, struct iob *iob)
 {
-   int len = iob->eod - iob->cur;
+   long len = iob->eod - iob->cur;
 
    if (len <= 0)
    {
@@ -1114,7 +1127,7 @@ int flush_socket(jb_socket fd, struct iob *iob)
  *                or buffer limit reached.
  *
  *********************************************************************/
-jb_err add_to_iob(struct client_state *csp, char *buf, int n)
+jb_err add_to_iob(struct client_state *csp, char *buf, long n)
 {
    struct iob *iob = csp->iob;
    size_t used, offset, need, want;
@@ -1755,6 +1768,7 @@ static char *get_header_line(struct iob *iob)
       /* FIXME No way to handle error properly */
       log_error(LOG_LEVEL_FATAL, "Out of memory in get_header_line()");
    }
+   assert(ret != NULL);
 
    iob->cur = p+1;
 
@@ -2102,6 +2116,7 @@ static jb_err header_tagger(struct client_state *csp, char *header)
                      if (0 > hits)
                      {
                         /* Regex failure, log it but continue anyway. */
+                        assert(NULL != header);
                         log_error(LOG_LEVEL_ERROR,
                            "Problems with tagger \'%s\' and header \'%s\': %s",
                            b->name, *header, pcrs_strerror(hits));
@@ -2824,11 +2839,11 @@ static jb_err server_adjust_content_length(struct client_state *csp, char **head
  *********************************************************************/
 static jb_err server_save_content_length(struct client_state *csp, char **header)
 {
-   unsigned int content_length = 0;
+   unsigned long long content_length = 0;
 
    assert(*(*header+14) == ':');
 
-   if (1 != sscanf(*header+14, ": %u", &content_length))
+   if (1 != sscanf(*header+14, ": %llu", &content_length))
    {
       log_error(LOG_LEVEL_ERROR, "Crunching invalid header: %s", *header);
       freez(*header);

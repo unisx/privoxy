@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.11 User Manual"
+TITLE="Privoxy 3.0.12 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.11 User Manual</TH
+>Privoxy 3.0.12 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -82,153 +82,95 @@ NAME="WHATSNEW"
 >3. What's New in this Release</A
 ></H1
 ><P
-> There are only a few improvements and new features since
- <SPAN
+> <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.10</SPAN
->, the last stable release:</P
+>Privoxy 3.0.12</SPAN
+> is mainly a bugfix release:</P
 ><P
 > <P
 ></P
 ><UL
 ><LI
 ><P
->    On most platforms, outgoing connections can be kept alive and
-    reused if the server supports it. Whether or not this improves
-    things depends on the connection.
+>    The socket-timeout option now also works on platforms whose
+    select() implementation modifies the timeout structure.
+    Previously the timeout was triggered even if the connection
+    didn't stall. Reported by cyberpatrol.
    </P
 ></LI
 ><LI
 ><P
->    When dropping privileges, membership in supplementary groups
-    is given up as well. Not doing that can lead to Privoxy running
-    with more rights than necessary and violates the principle of
-    least privilege. Users of the --user option are advised to update.
-    Thanks to Matthias Drochner for reporting the problem,
-    providing the initial patch and testing the final version.
+>    The Connection: keep-alive code properly deals with files
+    larger than 2GB. Previously the connection was closed too
+    early.
    </P
 ></LI
 ><LI
 ><P
->    Passing invalid users or groups with the --user option
-    didn't lead to program exit. Regression introduced in 3.0.7.
+>    The content length for files above 2GB is logged correctly.
    </P
 ></LI
 ><LI
 ><P
->    The match all section has been moved from default.action
-    to a new file called match-all.action. As a result the
-    default.action no longer needs to be touched by the user
-    and can be safely overwritten by updates.
+>    The user-manual directive on the show-status page links to
+    the documentation location specified with the directive,
+    not to the Privoxy website.
    </P
 ></LI
 ><LI
 ><P
->    The standard.action file has been removed. Its content
-    is now part of the default.action file.
+>    When running in daemon mode, Privoxy doesn't log anything
+    to the console unless there are errors before the logfile
+    has been opened.
    </P
 ></LI
 ><LI
 ><P
->    In some situations the logged content length was slightly too low.
+>    The show-status page prints warnings about invalid directives
+    on the same line as the directives themselves.
    </P
 ></LI
 ><LI
 ><P
->    Crunched requests are logged with their own log level.
-    If you used "debug 1" in the past, you'll probably want
-    to additionally enable "debug 1024", otherwise only passed
-    requests will be logged. If you only care about crunched
-    requests, simply replace "debug 1" with "debug 1024".
+>    Fixed several justified (but harmless) compiler warnings,
+    mostly on 64 bit platforms.
    </P
 ></LI
 ><LI
 ><P
->    The crunch reason has been moved to the beginning of the
-    crunch message. For HTTP URLs, the protocol is logged as well.
+>    The mingw32 version explicitly requests the default charset
+    to prevent display problems with some fonts available on more
+    recent Windows versions. Patch by Burberry.
    </P
 ></LI
 ><LI
 ><P
->    Log messages are shortened by printing the thread id on its
-    own (as opposed to putting it inside the string "Privoxy()").
+>    The mingw32 version uses the Privoxy icon in the alt-tab
+    windows. Patch by Burberry.
    </P
 ></LI
 ><LI
 ><P
->    The config option socket-timeout has been added to control
-    the time Privoxy waits for data to arrive on a socket.
+>    The timestamp and the thread id is omitted in the "Fatal error"
+    message box on mingw32.
    </P
 ></LI
 ><LI
 ><P
->    Support for remote toggling is controlled by the configure
-    option --disable-toggle only. In previous versions it also
-    depended on the action editor and thus configuring with the
-    --disable-editor option would disable remote toggling support
-    as well.
+>    Fixed two related mingw32-only buffer overflows. Triggering
+    them required control over the configuration file, therefore
+    this isn't seen as a security issue.
    </P
 ></LI
 ><LI
 ><P
->    Requests with invalid HTTP versions are rejected.
-   </P
-></LI
-><LI
-><P
->    The template symbol @date@ can be used to include a date(1)-like
-    time string. Initial patch submitted by Endre Szabo.
-   </P
-></LI
-><LI
-><P
->    Responses from shoutcast servers are accepted again.
-    Problem reported and fix suggested by Stefan.
-   </P
-></LI
-><LI
-><P
->    The hide-forwarded-for-headers action has been replaced with
-    the change-x-forwarded-for{} action which can also be used to
-    add X-Forwarded-For headers. The latter functionality already
-    existed in Privoxy versions prior to 3.0.7 but has been removed
-    as it was often used unintentionally (by not using the
-    hide-forwarded-for-headers action).
-   </P
-></LI
-><LI
-><P
->    A "clear log" view option was added to the mingw32 version
-    to clear out all of the lines in the Privoxy log window.
-    Based on a patch submitted by T Ford.
-   </P
-></LI
-><LI
-><P
->    The mingw32 version uses "critical sections" now, which prevents
-    log message corruption under load. As a side effect, the
-    "no thread-safe PRNG" warning could be removed as well.
-   </P
-></LI
-><LI
-><P
->    The mingw32 version's task bar icon is crossed out and
-    the color changed to gray if Privoxy is toggled off.
+>    In verbose mode, or if the new option --show-skipped-tests
+    is used, Privoxy-Regression-Test logs skipped tests and the
+    skip reason.
    </P
 ></LI
 ></UL
 ></P
-><P
-> This release marks a departure for Privoxy development.</P
-><P
-> Previously, odd numbered releases were considered beta versions and
- were only released at the end of the development cycle when the code
- was already believed to be stable. Usually it was, so the stable release
- contained pretty much the same code, but got a higher version number.
- In the future we intend to release several snapshots between stable releases.
- There will probably still be about two stable releases per year,
- but hopefully about six snapshots instead of the two betas we have now.
- The intentions is to make testing without CVS access easier.</P
 ><DIV
 CLASS="SECT2"
 ><H2

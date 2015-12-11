@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.11
+#        Sample Configuration File for Privoxy v3.0.12
 #
-#  $Id: config,v 1.70 2009/01/13 16:44:32 fabiankeil Exp $
+#  $Id: config,v 1.75 2009/03/21 11:35:37 hal9 Exp $
 #
-#  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+#  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -130,7 +130,7 @@
 #          If set, this option should be the first option in the config
 #          file, because it is used while the config file is being read.
 #
-#user-manual http://www.privoxy.org/user-manual/
+user-manual /home/halb/privoxy/share/doc/privoxy/user-manual/
 #
 #
 #  1.2. trust-info-url
@@ -147,7 +147,7 @@
 #
 #  Default value:
 #
-#      Two example URLs are provided
+#      Unset
 #
 #  Effect if unset:
 #
@@ -166,8 +166,8 @@
 #      don't end up locked out from the information on why they were
 #      locked out in the first place!
 #
-trust-info-url  http://www.example.com/why_we_block.html
-trust-info-url  http://www.example.com/what_we_allow.html
+#trust-info-url  http://www.example.com/why_we_block.html
+#trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  1.3. admin-address
@@ -267,7 +267,7 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #      No trailing "/", please.
 #
-confdir .
+confdir /home/halb/privoxy/etc
 #
 #
 #  2.2. templdir
@@ -324,7 +324,7 @@ confdir .
 #
 #      No trailing "/", please.
 #
-logdir .
+logdir /home/halb/privoxy/var/log/privoxy
 #
 #
 #  2.4. actionsfile
@@ -340,9 +340,11 @@ logdir .
 #
 #  Default values:
 #
-#        default.action      # Main actions file
+#        match-all.action # Actions that are applied to all sites and maybe overruled later on.
 #
-#        user.action         # User customizations
+#        default.action   # Main actions file
+#
+#        user.action      # User customizations
 #
 #  Effect if unset:
 #
@@ -367,6 +369,7 @@ logdir .
 #      was necessary to be consistent with the other file options and
 #      to allow previously forbidden characters.
 #
+actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
 actionsfile default.action   # Main actions file
 actionsfile user.action      # User customizations
 #
@@ -1408,11 +1411,59 @@ split-large-forms 0
 #      This option has no effect if Privoxy has been compiled without
 #      keep-alive support.
 #
+#  Notes:
+#
+#      Note that reusing connections doesn't necessary cause
+#      speedups. There are also a few privacy implications you should
+#      be aware of.
+#
+#      Outgoing connections are shared between clients (if there are
+#      more than one) and closing the client that initiated the outgoing
+#      connection does not affect the connection between Privoxy and
+#      the server unless the client's request hasn't been completed
+#      yet. If the outgoing connection is idle, it will not be closed
+#      until either Privoxy's or the server's timeout is reached. While
+#      it's open, the server knows that the system running Privoxy is
+#      still there.
+#
 #  Examples:
 #
 #      keep-alive-timeout 300
 #
 keep-alive-timeout 300
+#
+#
+#  5.8. socket-timeout
+#  ====================
+#
+#  Specifies:
+#
+#      Number of seconds after which a socket times out if no data
+#      is received.
+#
+#  Type of value:
+#
+#      Time in seconds.
+#
+#  Default value:
+#
+#      None
+#
+#  Effect if unset:
+#
+#      A default value of 300 seconds is used.
+#
+#  Notes:
+#
+#      For SOCKS requests the timeout currently doesn't start until
+#      the SOCKS server accepted the request. This will be fixed in
+#      the next release.
+#
+#  Examples:
+#
+#      socket-timeout 300
+#
+socket-timeout 300
 #
 #
 #  6. WINDOWS GUI OPTIONS

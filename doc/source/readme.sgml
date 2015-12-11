@@ -4,7 +4,7 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.11">
+<!entity p-version "3.0.12">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.24 2009/02/18 18:55:34 fabiankeil Exp $
+ $Id: readme.sgml,v 2.26 2009/03/21 11:32:38 hal9 Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -127,6 +127,15 @@
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
+<para>
+ March 2009, Privoxy 3.0.12 is released.
+</para>
+<para>
+ This is primarily a bug fix release. See the "ChangeLog", and the "What's
+ New" section and the "Upgrader's Notes" in <citetitle>the User
+ Manual</citetitle> for details. 
+</para>
+
 <para>
  February 2009, Privoxy 3.0.11 is released.
 </para>
@@ -253,7 +262,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.24 2009/02/18 18:55:34 fabiankeil Exp $ -->
+<!--  $Id: readme.sgml,v 2.26 2009/03/21 11:32:38 hal9 Exp $ -->
 <!-- </para> -->
 
 </article>

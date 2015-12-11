@@ -8,7 +8,7 @@
 #
 # http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
 #
-# $Id: privoxy-log-parser.pl,v 1.22 2009/02/11 19:15:05 fabiankeil Exp $
+# $Id: privoxy-log-parser.pl,v 1.23 2009/03/14 15:31:58 fabiankeil Exp $
 #
 # TODO:
 #       - LOG_LEVEL_CGI, LOG_LEVEL_ERROR, LOG_LEVEL_WRITE content highlighting
@@ -1623,10 +1623,17 @@ sub handle_loglevel_info ($) {
         # Method HEAD implies no body.
         $c =~ s@(?<=Method )([^\s]+)@$h{'method'}$1$h{'Standard'}@;
 
+    } elsif ($c =~ m/^Buffer limit reached while extending /) {
+
+        # Buffer limit reached while extending the buffer (iob). Needed: 4197470. Limit: 4194304
+        $c =~ s@(?<=Needed: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Limit: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
     } elsif ($c =~ m/^No logfile configured/ or
              $c =~ m/^Malformerd HTTP headers detected and MS IIS5 hack enabled/ or
              $c =~ m/^Invalid \"chunked\" transfer/ or
-             $c =~ m/^Support for/
+             $c =~ m/^Support for/ or
+             $c =~ m/^Flushing header and buffers/
              ) {
 
         # No logfile configured. Please enable it before reporting any problems.
@@ -1636,6 +1643,7 @@ sub handle_loglevel_info ($) {
         # Invalid "chunked" transfer encoding detected and ignored.
         # Support for 'Connection: keep-alive' is experimental, incomplete and\
         #  known not to work properly in some situations.
+        # Flushing header and buffers. Stepping back from filtering.
 
     } else {
 

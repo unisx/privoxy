@@ -1,6 +1,6 @@
 #ifndef PARSERS_H_INCLUDED
 #define PARSERS_H_INCLUDED
-#define PARSERS_H_VERSION "$Id: parsers.h,v 1.48 2008/05/30 15:57:23 fabiankeil Exp $"
+#define PARSERS_H_VERSION "$Id: parsers.h,v 1.49 2009/03/13 14:10:07 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.h,v $
@@ -43,6 +43,9 @@
  *
  * Revisions   :
  *    $Log: parsers.h,v $
+ *    Revision 1.49  2009/03/13 14:10:07  fabiankeil
+ *    Fix some more harmless warnings on amd64.
+ *
  *    Revision 1.48  2008/05/30 15:57:23  fabiankeil
  *    Remove now-useless reference to debug.
  *
@@ -289,8 +292,8 @@ extern "C" {
 #define FILTER_CLIENT_HEADERS 0
 #define FILTER_SERVER_HEADERS 1
 
-extern int flush_socket(jb_socket fd, struct iob *iob);
-extern jb_err add_to_iob(struct client_state *csp, char *buf, int n);
+extern long flush_socket(jb_socket fd, struct iob *iob);
+extern jb_err add_to_iob(struct client_state *csp, char *buf, long n);
 extern jb_err decompress_iob(struct client_state *csp);
 extern char *get_header(struct iob *iob);
 extern char *get_header_value(const struct list *header_list, const char *header_name);

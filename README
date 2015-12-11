@@ -32,23 +32,31 @@
  *
  *********************************************************************/
 
-This README is included with Privoxy 3.0.11. See http://www.privoxy.org/ for
+This README is included with Privoxy 3.0.12. See http://www.privoxy.org/ for
 more information. The current code maturity level is "stable".
 
 -------------------------------------------------------------------------------
 
 Privoxy is a non-caching web proxy with advanced filtering capabilities for
-enhancing privacy, modifying web page data, managing HTTP cookies, controlling
-access, and removing ads, banners, pop-ups and other obnoxious Internet junk.
-Privoxy has a flexible configuration and can be customized to suit individual
-needs and tastes. Privoxy has application for both stand-alone systems and
-multi-user networks.
+enhancing privacy, modifying web page data and HTTP headers, controlling
+access, and removing ads and other obnoxious Internet junk. Privoxy has a
+flexible configuration and can be customized to suit individual needs and
+tastes. It has application for both stand-alone systems and multi-user
+networks.
 
-Privoxy is based on Internet Junkbuster (tm).
+Privoxy is Free Software and licensed under the GPL2.
+
+Privoxy is an associated project of Software in the Public Interest (SPI).
+Donations are welcome.
 
 -------------------------------------------------------------------------------
 
 1. IMPORTANT CHANGES
+
+March 2009, Privoxy 3.0.12 is released.
+
+This is primarily a bug fix release. See the "ChangeLog", and the "What's New"
+section and the "Upgrader's Notes" in the User Manual for details.
 
 February 2009, Privoxy 3.0.11 is released.
 

@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.56 2009/02/19 17:05:05 fabiankeil Exp $
+ $Id: faq.sgml,v 2.58 2009/03/21 12:27:44 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -78,7 +78,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.56 2009/02/19 17:05:05 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.58 2009/03/21 12:27:44 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -492,27 +492,43 @@ warranty? Registration?</title>
  </para>
 </sect3>
 
-<sect3 renderas="sect4" id="jointeam-money"><title>Contribute!</title>
+<sect3 renderas="sect4" id="donate"><title>Would you like to donate?</title>
 <para>
- We, of course, welcome donations and could use money for domain registering,
- buying software to test <application>Privoxy</application> with, and, of course,
- for regular world-wide get-togethers (hahaha). If you enjoy the software and feel
- like helping us with a donation, just <ulink
- url="mailto: ijbswa-developers@lists.sourceforge.net">drop us a note</ulink>
- and get your name on the list of contributors.
+ <application>Privoxy</application> is developed by unpaid volunteers
+ and thus our current running costs are pretty low. Nevertheless, we
+ have plans that will cost money in the future. We would like to get
+ this money through donations made by our users.
 </para>
-</sect3>
 
-<sect3 renderas="sect4" id="jointeam-software"><title>Software</title>
 <para>
- If you are a vendor of a web-related software like a browser, web server
- or proxy, and would like us to ensure that <application>Privoxy</application>
- runs smoothly with your product, you might consider supplying us with a
- copy or license. We can't, however, guarantee that we will fix all potential
- compatibility issues as a result.
+ <application>Privoxy</application> has therefore become an associated
+ project of <ulink url="http://www.spi-inc.org/about-spi/about-spi">Software
+ in the Public Interest (SPI)</ulink>, which allows us to receive tax-deductible
+ donations in most western countries.
 </para>
-</sect3>
 
+<para>
+ We intend to use the donations to pay for our domain after transfering
+ it to SPI. Our goal is to make sure there's no single point of failure
+ and the bill gets paid and the site keeps running even if a some of
+ the currently active developers were to suddenly disappear for a while.
+</para>
+
+<para>
+ We would also like to spend some money on more reliable hosting,
+ on hardware to help make sure <application>Privoxy</application>
+ keeps running on platforms the developers currently can't test on,
+ and on technical books to educate our developers about said platforms
+ or to improve their knowledge in general.
+</para>
+
+<para>
+ If you enjoy our software and feel like helping out with a donation,
+ please have a look at
+ <ulink url="http://www.spi-inc.org/donations">SPI's donation page</ulink>
+ to see what the options are.
+<para>
+</sect3>
 
 </sect2>
 
@@ -2919,6 +2935,13 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.58  2009/03/21 12:27:44  fabiankeil
+Turn the donation entry title into a question,
+also rephrase the content a bit.
+
+Revision 2.57  2009/03/19 19:07:49  fabiankeil
+First draft of a "Donating" entry. To be polished tomorrow.
+
 Revision 2.56  2009/02/19 17:05:05  fabiankeil
 Explain slowness when build with Gentoo's portage.
 

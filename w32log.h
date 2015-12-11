@@ -1,6 +1,6 @@
 #ifndef W32LOG_H_INCLUDED
 #define W32LOG_H_INCLUDED
-#define W32LOG_H_VERSION "$Id: w32log.h,v 1.12 2006/07/18 14:48:48 david__schmidt Exp $"
+#define W32LOG_H_VERSION "$Id: w32log.h,v 1.13 2009/03/07 17:58:02 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32log.h,v $
@@ -8,7 +8,7 @@
  * Purpose     :  Functions for creating and destroying the log window,
  *                ouputting strings, processing messages and so on.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2002 members of
+ * Copyright   :  Written by and Copyright (C) 2001-2009 members of
  *                the Privoxy team.  http://www.privoxy.org/
  *
  *                Written by and Copyright (C) 1999 Adam Lock
@@ -34,6 +34,11 @@
  *
  * Revisions   :
  *    $Log: w32log.h,v $
+ *    Revision 1.13  2009/03/07 17:58:02  fabiankeil
+ *    Fix two mingw32-only buffer overflows. Note that triggering
+ *    them requires control over the configuration file in which
+ *    case all bets are off anyway.
+ *
  *    Revision 1.12  2006/07/18 14:48:48  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -134,7 +139,7 @@ extern BOOL g_bLimitBufferSize;
 extern int g_nMaxBufferLines;
 
 /* Font to use */
-extern char g_szFontFaceName[255];
+extern char g_szFontFaceName[32];
 
 /* Size of font to use */
 extern int g_nFontSize;

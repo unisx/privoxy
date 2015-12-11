@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.127 2008/12/20 14:53:55 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.129 2009/03/08 14:12:51 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -10,7 +10,7 @@
  *                project.  Does not define any variables or functions
  *                (though it does declare some macros).
  *
- * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -37,6 +37,15 @@
  *
  * Revisions   :
  *    $Log: project.h,v $
+ *    Revision 1.129  2009/03/08 14:12:51  fabiankeil
+ *    All the CSP_FLAG_FOO bit masks should be unsigned ints.
+ *
+ *    Revision 1.128  2009/03/07 13:09:17  fabiankeil
+ *    Change csp->expected_content and_csp->expected_content_length from
+ *    size_t to unsigned long long to reduce the likelihood of integer
+ *    overflows that would let us close the connection prematurely.
+ *    Bug found while investigating #2669131, reported by cyberpatrol.
+ *
  *    Revision 1.127  2008/12/20 14:53:55  fabiankeil
  *    Add config option socket-timeout to control the time
  *    Privoxy waits for data to arrive on a socket. Useful
@@ -1323,51 +1332,51 @@ struct url_actions
  * Flag for csp->flags: Set if an acceptable Connection header
  * is already set.
  */
-#define CSP_FLAG_CLIENT_CONNECTION_HEADER_SET   0x00000040UL
+#define CSP_FLAG_CLIENT_CONNECTION_HEADER_SET  0x00000040U
 
 /**
  * Flag for csp->flags: Set if adding the 'Connection: close' header
  * for the server isn't necessary.
  */
-#define CSP_FLAG_SERVER_CONNECTION_CLOSE_SET   0x00000080UL
+#define CSP_FLAG_SERVER_CONNECTION_CLOSE_SET   0x00000080U
 
 /**
  * Flag for csp->flags: Signals header parsers whether they
  * are parsing server or client headers.
  */
-#define CSP_FLAG_CLIENT_HEADER_PARSING_DONE    0x00000100UL
+#define CSP_FLAG_CLIENT_HEADER_PARSING_DONE    0x00000100U
 
 /**
  * Flag for csp->flags: Set if adding the Host: header
  * isn't necessary.
  */
-#define CSP_FLAG_HOST_HEADER_IS_SET            0x00000200UL
+#define CSP_FLAG_HOST_HEADER_IS_SET            0x00000200U
 
 /**
  * Flag for csp->flags: Set if filtering is disabled by X-Filter: No
  * XXX: As we now have tags we might as well ditch this.
  */
-#define CSP_FLAG_NO_FILTERING                  0x00000400UL
+#define CSP_FLAG_NO_FILTERING                  0x00000400U
 
 /**
  * Flag for csp->flags: Set the client IP has appended to
  * an already existing X-Forwarded-For header in which case
  * no new header has to be generated.
  */
-#define CSP_FLAG_X_FORWARDED_FOR_APPENDED      0x00000800UL
+#define CSP_FLAG_X_FORWARDED_FOR_APPENDED      0x00000800U
 
 /**
  * Flag for csp->flags: Set if the server wants to keep
  * the connection alive.
  */
-#define CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE  0x00001000UL
+#define CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE  0x00001000U
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /**
  * Flag for csp->flags: Set if the server specified the
  * content length.
  */
-#define CSP_FLAG_CONTENT_LENGTH_SET            0x00002000UL
+#define CSP_FLAG_CONTENT_LENGTH_SET            0x00002000U
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 /*
@@ -1448,14 +1457,14 @@ struct client_state
    struct file_list *rlist[MAX_AF_FILES];
 
    /** Length after content modification. */
-   size_t content_length;
+   unsigned long long content_length;
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    /** Expected length of content after which we
     * should stop reading from the server socket.
     */
    /* XXX: is this the right location? */
-   size_t expected_content_length;
+   unsigned long long expected_content_length;
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 #ifdef FEATURE_TRUST

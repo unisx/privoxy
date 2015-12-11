@@ -1,4 +1,4 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.55 2008/12/04 18:18:56 fabiankeil Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.56 2009/03/08 14:19:21 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.c,v $
@@ -33,6 +33,10 @@ const char actions_rcs[] = "$Id: actions.c,v 1.55 2008/12/04 18:18:56 fabiankeil
  *
  * Revisions   :
  *    $Log: actions.c,v $
+ *    Revision 1.56  2009/03/08 14:19:21  fabiankeil
+ *    Fix justified (but harmless) compiler warnings
+ *    on platforms where sizeof(int) < sizeof(long).
+ *
  *    Revision 1.55  2008/12/04 18:18:56  fabiankeil
  *    Fix some cparser warnings.
  *
@@ -1745,9 +1749,9 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
  *********************************************************************/
 char * actions_to_text(const struct action_spec *action)
 {
-   unsigned mask = action->mask;
-   unsigned add  = action->add;
-   char * result = strdup("");
+   unsigned long mask = action->mask;
+   unsigned long add  = action->add;
+   char *result = strdup("");
    struct list_entry * lst;
 
    /* sanity - prevents "-feature +feature" */
@@ -1834,9 +1838,9 @@ char * actions_to_text(const struct action_spec *action)
 char * actions_to_html(const struct client_state *csp,
                        const struct action_spec *action)
 {
-   unsigned mask = action->mask;
-   unsigned add  = action->add;
-   char * result = strdup("");
+   unsigned long mask = action->mask;
+   unsigned long add  = action->add;
+   char *result = strdup("");
    struct list_entry * lst;
 
    /* sanity - prevents "-feature +feature" */

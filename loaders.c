@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.69 2008/09/21 13:36:52 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.71 2009/03/04 18:24:47 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -8,7 +8,7 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.69 2008/09/21 13:36:52 fabiankeil
  *                the list of active loaders, and to automatically
  *                unload files that are no longer in use.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,13 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.69 2008/09/21 13:36:52 fabiankeil
  *
  * Revisions   :
  *    $Log: loaders.c,v $
+ *    Revision 1.71  2009/03/04 18:24:47  fabiankeil
+ *    No need to create empty strings manually, strdup("") FTW.
+ *
+ *    Revision 1.70  2009/03/01 18:34:24  fabiankeil
+ *    Help clang understand that we aren't dereferencing
+ *    NULL pointers here.
+ *
  *    Revision 1.69  2008/09/21 13:36:52  fabiankeil
  *    If change-x-forwarded-for{add} is used and the client
  *    sends multiple X-Forwarded-For headers, append the client's
@@ -873,30 +880,30 @@ jb_err edit_read_line(FILE *fp,
 
    if (raw_out)
    {
-      if ((raw = malloc(1)) == NULL)
+      raw = strdup("");
+      if (NULL == raw)
       {
          return JB_ERR_MEMORY;
       }
-      *raw = '\0';
    }
    if (prefix_out)
    {
-      if ((prefix = malloc(1)) == NULL)
+      prefix = strdup("");
+      if (NULL == prefix)
       {
          freez(raw);
          return JB_ERR_MEMORY;
       }
-      *prefix = '\0';
    }
    if (data_out)
    {
-      if ((data = malloc(1)) == NULL)
+      data = strdup("");
+      if (NULL == data)
       {
          freez(raw);
          freez(prefix);
          return JB_ERR_MEMORY;
       }
-      *data = '\0';
    }
 
    /* Main loop.  Loop while we need more data & it's not EOF. */
@@ -930,6 +937,7 @@ jb_err edit_read_line(FILE *fp,
 
       /* Trim leading spaces if we're at the start of the line */
       linestart = linebuf;
+      assert(NULL != data);
       if (*data == '\0')
       {
          /* Trim leading spaces */
@@ -1569,6 +1577,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
          }
          else
          {
+            assert(NULL != bl);
             bl->next = new_bl;
          }
          bl = new_bl;
@@ -1632,7 +1641,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
             {
                bl->joblist = dummy;
             }
-            else
+            else if (NULL != lastjob)
             {
                lastjob->next = dummy;
             }

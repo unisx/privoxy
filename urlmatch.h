@@ -1,6 +1,6 @@
 #ifndef URLMATCH_H_INCLUDED
 #define URLMATCH_H_INCLUDED
-#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.12 2008/05/04 16:18:32 fabiankeil Exp $"
+#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.13 2009/03/02 19:18:11 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.h,v $
@@ -35,6 +35,10 @@
  *
  * Revisions   :
  *    $Log: urlmatch.h,v $
+ *    Revision 1.13  2009/03/02 19:18:11  fabiankeil
+ *    Streamline parse_http_request()'s prototype. As
+ *    cparser pointed out it doesn't actually use csp.
+ *
  *    Revision 1.12  2008/05/04 16:18:32  fabiankeil
  *    Provide parse_http_url() with a third parameter to specify
  *    whether or not URLs without protocol are acceptable.
@@ -101,9 +105,7 @@ extern "C" {
 
 extern void free_http_request(struct http_request *http);
 extern jb_err init_domain_components(struct http_request *http);
-extern jb_err parse_http_request(const char *req,
-                                 struct http_request *http,
-                                 const struct client_state *csp);
+extern jb_err parse_http_request(const char *req, struct http_request *http);
 extern jb_err parse_http_url(const char *url,
                              struct http_request *http,
                              int require_protocol);

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: buildsource.sgml,v 2.17 2009/02/21 13:27:58 hal9 Exp $
+ $Id: buildsource.sgml,v 2.18 2009/02/23 09:03:12 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -42,9 +42,8 @@
 
 <para>
  <screen>
- tar xzvf
- privoxy-&p-version;<![%p-not-stable;[-beta]]><![%p-stable;[-stable]]>-src* [.tgz or .tar.gz]
- cd privoxy-&p-version;<![%p-not-stable;[-beta]]>
+ tar xzvf privoxy-&p-version;<![%p-not-stable;[-beta]]><![%p-stable;[-stable]]>-src.tar.gz
+ cd privoxy-&p-version;<![%p-not-stable;[-beta]]><![%p-stable;[-stable]]>
 </screen>
 </para>
 
@@ -242,7 +241,7 @@ can also be disabled through the configuration file.
  For more detailed instructions on how to build Redhat RPMs,
  Windows self-extracting installers, building on platforms with
  special requirements etc, please consult the <ulink
- url="../developer-manual/newrelease.html">developer manual</ulink>.
+ url="http://www.privoxy.org/developer-manual/newrelease.html">developer manual</ulink>.
 </para>
 
 <!-- print for README only -->

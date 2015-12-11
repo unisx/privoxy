@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.86 2009/02/09 21:21:15 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.92 2009/03/20 03:39:31 ler762 Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -33,6 +33,32 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.86 2009/02/09 21:21:15 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.92  2009/03/20 03:39:31  ler762
+ *    I like having the version logged at startup and the Windows GUI stopped logging
+ *    it after LOG_LEVEL_INFO was removed from
+ *      static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);
+ *
+ *    Revision 1.91  2009/03/18 21:56:30  fabiankeil
+ *    In init_error_log(), suppress the "(Re-)Opening logfile" message if
+ *    we're still logging to stderr. This restores the "silent mode", but
+ *    with LOG_LEVEL_INFO enabled, the show_version() info is written to
+ *    the logfile as intended.
+ *
+ *    Revision 1.90  2009/03/18 20:43:19  fabiankeil
+ *    Don't enable LOG_LEVEL_INFO by default and don't apply the user's
+ *    debug settings until the logfile has been opened (if there is one).
+ *    Patch submitted by Roland in #2624120.
+ *
+ *    Revision 1.89  2009/03/07 12:56:12  fabiankeil
+ *    Add log_error() support for unsigned long long (%lld).
+ *
+ *    Revision 1.88  2009/03/07 11:34:36  fabiankeil
+ *    Omit timestamp and thread id in the mingw32 message box.
+ *
+ *    Revision 1.87  2009/03/01 18:28:24  fabiankeil
+ *    Help clang understand that we aren't dereferencing
+ *    NULL pointers here.
+ *
  *    Revision 1.86  2009/02/09 21:21:15  fabiankeil
  *    Now that init_log_module() is called earlier, call show_version()
  *    later on from main() directly so it doesn't get called for --help
@@ -468,7 +494,7 @@ const char errlog_h_rcs[] = ERRLOG_H_VERSION;
 static FILE *logfp = NULL;
 
 /* logging detail level. XXX: stupid name. */
-static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);  
+static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR);
 
 /* static functions */
 static void fatal_error(const char * error_message);
@@ -513,8 +539,8 @@ static inline void unlock_loginit() {}
  * Function    :  fatal_error
  *
  * Description :  Displays a fatal error to standard error (or, on 
- *                a WIN32 GUI, to a dialog box), and exits
- *                JunkBuster with status code 1.
+ *                a WIN32 GUI, to a dialog box), and exits Privoxy
+ *                with status code 1.
  *
  * Parameters  :
  *          1  :  error_message = The error message to display.
@@ -522,10 +548,17 @@ static inline void unlock_loginit() {}
  * Returns     :  Does not return.
  *
  *********************************************************************/
-static void fatal_error(const char * error_message)
+static void fatal_error(const char *error_message)
 {
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)
-   MessageBox(g_hwndLogFrame, error_message, "Privoxy Error", 
+   /* Skip timestamp and thread id for the message box. */
+   const char *box_message = strstr(error_message, "Fatal error");
+   if (NULL == box_message)
+   {
+      /* Shouldn't happen but ... */
+      box_message = error_message;
+   }
+   MessageBox(g_hwndLogFrame, box_message, "Privoxy Error", 
       MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);  
 
    /* Cleanup - remove taskbar icon etc. */
@@ -663,7 +696,7 @@ void init_error_log(const char *prog_name, const char *logfname)
 
    lock_loginit();
 
-   if (logfp != NULL)
+   if ((logfp != NULL) && (logfp != stderr))
    {
       log_error(LOG_LEVEL_INFO, "(Re-)Opening logfile \'%s\'", logfname);
    }
@@ -717,18 +750,7 @@ void init_error_log(const char *prog_name, const char *logfname)
    logfp = fp;
    unlock_logfile();
 
-#if !defined(_WIN32)
-   /*
-    * Prevent the Windows GUI from showing the version two
-    * times in a row on startup. It already displayed the show_version()
-    * call from main() that other systems write to stderr.
-    *
-    * This means mingw32 users will never see the version in their
-    * log file, but I assume they wouldn't look for it there anyway
-    * and simply use the "Help/About Privoxy" menu.
-    */
    show_version(prog_name);
-#endif /* def unix */
 
    unlock_loginit();
 
@@ -1058,6 +1080,7 @@ void log_error(int loglevel, const char *fmt, ...)
             "%s %08lx Fatal error: Out of memory in log_error().",
             timestamp, thread_id);
          fatal_error(tempbuf); /* Exit */
+         return;
       }
    }
    outbuf = outbuf_save;
@@ -1117,7 +1140,7 @@ void log_error(int loglevel, const char *fmt, ...)
             snprintf(tempbuf, sizeof(tempbuf), "%u", uval);
             break;
          case 'l':
-            /* this is a modifier that must be followed by u or d */
+            /* this is a modifier that must be followed by u, lu, or d */
             ch = *src++;
             if (ch == 'd')
             {
@@ -1128,6 +1151,12 @@ void log_error(int loglevel, const char *fmt, ...)
             {
                ulval = va_arg( ap, unsigned long );
                snprintf(tempbuf, sizeof(tempbuf), "%lu", ulval);
+            }
+            else if ((ch == 'l') && (*src == 'u'))
+            {
+               unsigned long long lluval = va_arg(ap, unsigned long long);
+               snprintf(tempbuf, sizeof(tempbuf), "%llu", lluval);
+               ch = *src++;
             }
             else
             {

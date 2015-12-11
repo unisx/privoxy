@@ -1,19 +1,19 @@
-#MASTER# COMMENT:   
+#MASTER# COMMENT:
 #MASTER# COMMENT:  Anyone adding specific rules to this file,
-#MASTER# COMMENT:  wherever possible please include a *full* URL 
+#MASTER# COMMENT:  wherever possible please include a *full* URL
 #MASTER# COMMENT:  which can be used to verify the problem, and if
-#MASTER# COMMENT:  the problem may not always be fully obvious, a 
+#MASTER# COMMENT:  the problem may not always be fully obvious, a
 #MASTER# COMMENT:  brief explanation. Please also add tests for
 #MASTER# COMMENT:  Privoxy-Regression-Test so we can automatically
-#MASTER# COMMENT:  verify that your rules are effective. Thanks. 
-#MASTER# COMMENT:   
+#MASTER# COMMENT:  verify that your rules are effective. Thanks.
+#MASTER# COMMENT:
 ######################################################################
-# 
-#  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
-# 
-#  $Id: default.action.master,v 1.166 2009/02/12 19:08:32 fabiankeil Exp $
 #
-#  Requires    :  This version requires Privoxy v3.0.11 or later due to 
+#  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
+#
+#  $Id: default.action.master,v 1.170 2009/03/04 15:05:00 ler762 Exp $
+#
+#  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
 #
 #  Purpose     :  Default actions file, see
@@ -34,14 +34,14 @@
 #
 # We value your feedback. However, to provide you with the best support,
 # please note:
-#  
+#
 #  * Use the support forum to get help:
 #    http://sourceforge.net/tracker/?group_id=11118&atid=211118
-#  * Submit feedback for this actions file only through the 
-#    SF actions file feedback tracker: 
+#  * Submit feedback for this actions file only through the
+#    SF actions file feedback tracker:
 #    http://sourceforge.net/tracker/?group_id=11118&atid=460288
 #  * Submit bugs only through our bug forum:
-#    http://sourceforge.net/tracker/?group_id=11118&atid=111118 
+#    http://sourceforge.net/tracker/?group_id=11118&atid=111118
 #    Make sure that the bug has not already been submitted. Please try
 #    to verify that it is a Privoxy bug, and not a browser or site
 #    bug first. If you are using your own custom configuration, please
@@ -49,22 +49,22 @@
 #    related bug. And if possible please try the latest CVS sources.
 #  * Submit feature requests only through our feature request forum:
 #    http://sourceforge.net/tracker/?atid=361118&group_id=11118&func=browse
-#      
+#
 # For any other issues, feel free to use the mailing lists:
 # http://sourceforge.net/mail/?group_id=11118
-#    
+#
 # Anyone interested in actively participating in development and related
 # discussions can join the appropriate mailing list here:
 # http://sourceforge.net/mail/?group_id=11118. Archives are available
-# here too. 
+# here too.
 #
-# The current development version of this file is located: 
+# The current development version of this file is located:
 # http://ijbswa.cvs.sourceforge.net/*checkout*/ijbswa/current/default.action.master
-# 
+#
 #############################################################################
 # Syntax
 #############################################################################
-# 
+#
 # A much better explanation can be found in the user manual which is
 # part of the distribution and can be found at http://www.privoxy.org/user-manual
 #
@@ -79,7 +79,7 @@
 #############################################################################
 # Pattern Syntax
 #############################################################################
-# 
+#
 # 1. On Domains and Paths
 # -----------------------
 #
@@ -87,77 +87,77 @@
 # and <path> part are optional. The pattern matching syntax is different for
 # each. If you only specify a domain part, the "/" can be left out, but it is
 # required for the path part.
-# 
-# www.example.com 
+#
+# www.example.com
 #   is a domain-only pattern and will match any request to www.example.com
-# 
+#
 # www.example.com/
 #   means exactly the same (but is slightly less efficient)
-# 
+#
 # www.example.com/index.html
 #   matches only the document /index.html on www.example.com
-# 
+#
 # /index.html
 #   matches the document /index.html, regardless of the domain
-# 
+#
 # index.html
 #   matches nothing, since it would be interpreted as a domain name and
 #   there is no top-level domain called ".html".
-# 
+#
 # 2. Domain Syntax
 # ----------------
-# 
+#
 # The matching of the domain part offers some flexible options: If the
 # domain starts or ends with a dot, it becomes unanchored at that end:
-# 
+#
 # www.example.com
 #   matches only www.example.com
-# 
+#
 # .example.com
 #   matches any domain that ENDS in .example.com
-# 
+#
 # www.
 #   matches any domain that STARTS with www.
 #
 # .example.
 #   matches any domain that CONTAINS example
 #
-# 
+#
 # Additionally, there are wildcards that you can use in the domain names
 # themselves. They work pretty similar to shell wildcards: "*" stands for
 # zero or more arbitrary characters, "?" stands for one, and you can define
 # character classes in square brackets and they can be freely mixed:
-# 
+#
 # ad*.example.com
 #   matches adserver.example.com, ads.example.com, etc but not sfads.example.com
-# 
+#
 # *ad*.example.com
 #   matches all of the above
-# 
+#
 # .?pix.com
 #   matches www.ipix.com, pictures.epix.com, a.b.c.d.e.upix.com etc
-# 
+#
 # www[1-9a-ez].example.com
-#   matches www1.example.com, www4.example.com, wwwd.example.com, 
+#   matches www1.example.com, www4.example.com, wwwd.example.com,
 #   wwwz.example.com etc, but not wwww.example.com
-# 
+#
 # You get the idea?
-# 
+#
 # 2. Path Syntax
 # --------------
-# 
+#
 # Paths are specified as full regular expressions, and are more flexible than
 # the domain syntax above. A comprehensive discussion of regular expressions
 # wouldn't fit here.
-# 
+#
 # Perl compatible regular expressions are used. See the pcre/docs/ direcory or
 # man perlre (also available at http://perldoc.perl.org/perlre.html) for
 # details. The appendix to our User Manual also has some detail.
-# 
+#
 # Please note that matching in the path is CASE INSENSITIVE by default, but
 # you can switch to case sensitive by starting the pattern with the "(?-i)"
 # switch:
-# 
+#
 # www.example.com/(?-i)PaTtErN.*
 #   will match only documents whose path starts with PaTtErN in exactly this
 #   capitalization.
@@ -165,7 +165,7 @@
 # Partially case-sensitive and partially case-insensitive patterns are
 # possible, but the rules about splitting them up are extremely complex
 # - see the PCRE documentation for more information.
-# 
+#
 #############################################################################
 # Action Syntax
 #############################################################################
@@ -188,7 +188,7 @@
 # The default (if you don't specify anything in this file) is not to take
 # any actions - i.e completely disabled, so Privoxy will just be a
 # normal, non-blocking, non-anonymizing proxy.  You must specifically
-# enable the privacy and blocking features you need (although the 
+# enable the privacy and blocking features you need (although the
 # provided default actions file will do that for you).
 #
 # Later actions always override earlier ones.  For multi-valued actions,
@@ -243,21 +243,21 @@
 #    download menus will not pop up, or changes the browser's rendering mode.
 #
 # +crunch-client-header{string}
-#    Deletes every header sent by the client that contains the string the 
-#    user supplied as parameter. 
-#    
+#    Deletes every header sent by the client that contains the string the
+#    user supplied as parameter.
+#
 # +crunch-if-none-match
-#     Deletes the "If-None-Match:" HTTP client header. 
+#     Deletes the "If-None-Match:" HTTP client header.
 #
 # +crunch-server-header{string}
-#    Deletes every header sent by the server that contains the string the 
-#    user supplied as a parameter. 
-# 
+#    Deletes every header sent by the server that contains the string the
+#    user supplied as a parameter.
+#
 # +deanimate-gifs{last}
 # +deanimate-gifs{first}
 #    Deanimate all animated GIF images, i.e. reduce them to their last
 #    frame. This will also shrink the images considerably. (In bytes,
-#    not pixels!) 
+#    not pixels!)
 #    If the option "first" is given, the first frame of the animation
 #    is used as the replacement. If "last" is given, the last frame of
 #    the animation is used instead, which propably makes more sense for
@@ -274,7 +274,7 @@
 #    Many sites, like yahoo.com, don't just link to other sites.
 #    Instead, they will link to some script on their own server,
 #    giving the destination as a parameter, which will then redirect
-#    you to the final target. 
+#    you to the final target.
 #
 #    URLs resulting from this scheme typically look like:
 #    http://some.place/some_script?http://some.where-else
@@ -286,8 +286,8 @@
 #    time is wasted, while your browser asks the server for one redirect
 #    after the other. Plus, it feeds the advertisers.
 #
-#    The +fast-redirects{check-decoded-url} option enables interception of 
-#    these requests by Privoxy, who will cut off all but the last valid URL 
+#    The +fast-redirects{check-decoded-url} option enables interception of
+#    these requests by Privoxy, who will cut off all but the last valid URL
 #    in the request and send a local redirect back to your browser without
 #    contacting the intermediate sites. NOTE: Syntax change as of v.3.0.4.
 #
@@ -300,7 +300,7 @@
 #    filtering works only on the raw document content itself (that which can
 #    be seen with View Source), not the headers. Repeat for multiple filters.
 #    Use with caution: filters can be very intrusive.
-#   
+#
 #    Filters predefined in the supplied default.filter include:
 #
 #     js-annoyances:       Get rid of particularly annoying JavaScript abuse.
@@ -331,8 +331,8 @@
 #     blogspot:            Cleans up some Blogspot blogs. Read the fine print before using this.
 #
 # +force-text-mode
-#    Declares a document as plain text, even if the "Content-Type:" isn't detected 
-#    as such. 
+#    Declares a document as plain text, even if the "Content-Type:" isn't detected
+#    as such.
 #
 # +forward-override{forward .}
 # +forward-override{forward 127.0.0.1:8123}
@@ -340,7 +340,7 @@
 # +forward-override{forward-socks4a 127.0.0.1:9050 proxy.example.org:8000}
 # +forward-override{forward-socks5 127.0.0.1:9050 .}
 # +forward-override{forward-socks5 127.0.0.1:9050 proxy.example.org:8000}
-#   This action overrules the forward directives in the configuration file. 
+#   This action overrules the forward directives in the configuration file.
 #
 # +handle-as-empty-document
 #   This action alone doesn't do anything noticeable. It just marks URLs. If
@@ -360,19 +360,19 @@
 #
 # +hide-content-disposition{block}
 # +hide-content-disposition{string}
-#   Deletes or replaces the "Content-Disposition:" HTTP header set by some 
-#   servers. This can be used to prevent download menus for content you 
+#   Deletes or replaces the "Content-Disposition:" HTTP header set by some
+#   servers. This can be used to prevent download menus for content you
 #   prefer to view inside the browser, for example.
 #
 # +hide-from-header{block}
 # +hide-from-header{spam@sittingduck.xqq}
-#   If the browser sends a "From:" header containing your e-mail address, 
+#   If the browser sends a "From:" header containing your e-mail address,
 #   either completely removes the header ("block"), or change it to the
 #   specified e-mail address.
 #
 # +hide-if-modified-since{block}
 # +hide-if-modified-since{-60}
-#   Deletes the "If-Modified-Since:" HTTP client header or modifies its 
+#   Deletes the "If-Modified-Since:" HTTP client header or modifies its
 #   value, preventing another way to track users.
 #
 # +hide-referer{block}
@@ -385,8 +385,8 @@
 #
 # +hide-referrer{...}
 #    Alternative spelling of +hide-referer.  Has the same parameters,
-#    and can be freely mixed with, "+hide-referer".  ("referrer" is the 
-#    correct English spelling, however the HTTP specification has a 
+#    and can be freely mixed with, "+hide-referer".  ("referrer" is the
+#    correct English spelling, however the HTTP specification has a
 #    bug - it requires it to be spelt "referer").
 #
 # +hide-user-agent{browser-type}
@@ -410,7 +410,7 @@
 #    CONNECT-enabled proxies can be used as TCP relays very easily. Privoxy
 #    relays HTTPS traffic without seeing the decoded content. Websites can
 #    leverage this limitation to circumvent Privoxy's filters. By specifying
-#    an invalid port range you can disable HTTPS entirely. 
+#    an invalid port range you can disable HTTPS entirely.
 #
 #    +limit-connect{443}                   # Only port 443 is OK.
 #    +limit-connect{80,443}                # Ports 80 and 443 are OK.
@@ -434,8 +434,8 @@
 #
 #    "reset-to-request-time" overwrites the value of the "Last-Modified:"
 #    header with the current time. You could use this option together with
-#    hided-if-modified-since to further customize your random range. 
-#  
+#    hide-if-modified-since to further customize your random range.
+#
 # +prevent-compression
 #    Prevent the website from compressing the data. Some websites do
 #    that, which is a problem for Privoxy when built without zlib support,
@@ -460,7 +460,7 @@
 #    is used as a tag. Server-header taggers are executed before all other
 #    header actions that modify server headers. Their tags can be used to
 #    control all of the other server-header actions, the content filters and
-#    the crunch actions (redirect and block). 
+#    the crunch actions (redirect and block).
 #
 #    Server-header taggers predefined in the supplied default.filter include:
 #
@@ -526,18 +526,18 @@ for-privoxy-version=3.0.11
 #
 # Alias names are not case sensitive.
 #
-# Aliases beginning with '+' or '-' may be used for system action names 
-# in future releases - so try to avoid alias names like this.  (e.g. 
+# Aliases beginning with '+' or '-' may be used for system action names
+# in future releases - so try to avoid alias names like this.  (e.g.
 # "+crunch-all-cookies" below is not a good name)
 #
 # Aliases must be defined before they are used.
-# 
+#
 
 # These aliases just save typing later:
 #
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
- allow-all-cookies  = -crunch-all-cookies -session-cookies-only 
+ allow-all-cookies  = -crunch-all-cookies -session-cookies-only
  allow-popups       = -filter{all-popups} -filter{unsolicited-popups}
 +block-as-image     = +block{Blocked image request.} +handle-as-image
 -block-as-image     = -block
@@ -717,7 +717,7 @@ support./(.*/)?track
 .uni-*.de
 .tu-*.de
 .gov
-.hs-*.de 
+.hs-*.de
 .fh-*.de
 #MASTER# REMARKS: Try to avoid harmless names in non-commercial organizations. Added 10/24/06
 # URL = http://www.gnu.org/graphics/gnu-head-banner.png
@@ -753,7 +753,7 @@ landing.trafficz.com/
 #MASTER# BLOCK-REFERRER: http://www.brooksbrothers.com/ 10/18/06
 #MASTER# BLOCK-REFERRER: http://www.autodesk.com/
 # Blocked URL = http://www.hitbox.com/foobar
-.hitbox.com 
+.hitbox.com
 #MASTER# BLOCK-REFERRER: http://www.the-gadgeteer.com/palmos.html 10/18/06
 # Blocked URL = http://www..the-gadgeteer.com/cgi-bin/getimage.cgi/
 .the-gadgeteer.com/cgi-bin/getimage.cgi/
@@ -773,7 +773,7 @@ rcm.amazon.com
 #MASTER# BLOCK-REFERRER: http://www.sharereactor.com/ 10/19/06
 #MASTER# BLOCK-REFERRER: http://www.popupad.net/
 #www.popupad.net/ats/
-.adtrak.net 
+.adtrak.net
 .elitemediagroup.net
 .popuptraffic.com
 #MASTER# BLOCK-REFERRER: http://www.famousbabes.com/gabrielleR/grpics1.htm 10/19/06
@@ -980,6 +980,8 @@ stats.reinvigorate.net/
 #MASTER# COMMENT: user tracking, and assorted 'junk'
 #MASTER# BLOCK-REFERRER: http://infoworld.com 2007-11-12
 .quantserve.com
+# Blocked URL = http://media.adrevolver.com/adrevolver/trace?sip=123&cpy=123
+media.adrevolver.com/
 
 #----------------------------------------------------------------------------
 # JavaScripts and Texts for ad and popup generation
@@ -1014,6 +1016,12 @@ js.adsonar.
 #MASTER# REMARKS: Actionsfile feedback item #1736879 2007-06-13, sponsored links. 2007-08-02, more hosts using this scheme, broadening scope.
 #bwp.zdnet.
 bwp.
+# Blocked URL = http://us.mc123.mail.yahoo.com/mc/stampNonJs
+.yahoo.com/mc/stampNonJs
+# Blocked URL = http://richmedia.yimg.com/js/123/personnals_banners/PER_happy_sara1_4_425x600/ad.js?q=123
+/.*/ad\.js\?
+# Blocked URL = http://ad.yieldmanager.com/st?ad_type=iframe&ad_size=728x90&site=123&section_code=123
+/.*\?ad_(type|size)=
 
 #############################################################################
 # Generic block-as-image patterns:
@@ -1056,7 +1064,7 @@ bwp.
 #MASTER# COMMENT: There are at least ar.atwola and pr.atwola. 10/01/06
 # Blocked URL = http://ar.atwola.com/
 # Blocked URL = http://pr.atwola.com/
-?r.atwola.com 
+?r.atwola.com
 #MASTER# BLOCK-REFERRER: http://www.altavista.com/
 #MASTER# BLOCK-REFERRER: http://www.tecchannel.de/
 #MASTER# BLOCK-REFERRER: http://www.whowhere.lycos.com/
@@ -1082,7 +1090,7 @@ bs*.einets.com
 #MASTER# REMARKS:   (Actionsfile feedback item #1888197)
 [abd-vx-z]*.atdmt.com/
 #MASTER# BLOCK-REFERRER: http://www.exactaudiocopy.de/ 09/11/06
-#MASTER# BLOCK-REFERRER: http://stanford.facebook.com/home.php 
+#MASTER# BLOCK-REFERRER: http://stanford.facebook.com/home.php
 # URL = http://www.fastclick.net/
 .fastclick.net
 #MASTER# BLOCK-REFERRER: http://www.math.com/school/subject2/lessons/S2U3L6DP.html 09/11/06
@@ -1158,7 +1166,7 @@ matrix.mediavantage.
 #MASTER# BLOCK-REFERRER: http://groups.yahoo.com/group/louisianaandmardigra/messages/1?viscount=100
 .belnk.com
 .euros4click.
-#MASTER# BLOCK-REFERRER: http://www.planet3dnow.de/cgi-bin/newspub/viewnews.cgi?id=1129904195 
+#MASTER# BLOCK-REFERRER: http://www.planet3dnow.de/cgi-bin/newspub/viewnews.cgi?id=1129904195
 ads-*.quarterserver.
 #MASTER# BLOCK-REFERRER: http://adrian.adrian.org/ 10/07/06
 searchportal.information.com/
@@ -1188,7 +1196,15 @@ img.directtrack.com
 .googleadservices.com/~
 #MASTER# REMARKS: Block yahoo email & ygroups banner ad
 # URL = http://ts.richmedia.yahoo.com/...hummingbird.jpg?adxq=NNN
-.richmedia.yahoo.com/.*\.(gif|jpe?g)\?ad 
+.richmedia.yahoo.com/.*\.(gif|jpe?g)\?ad
+# Blocked URL = http://this.content.served.by.adshuffle.com/p/a=/view.pxl
+.served.by.adshuffle.com/
+# Blocked URL = http://newsletter.adsonar.com/nwrss/imgs/nwr_123.PNG?placementId=123&plid=123&rotation=1&type=2&&url=NA
+.adsonar.com/.*/imgs/
+# Blocked URL = http://rtb.pclick.yahoo.com/images/nojs.gif?p=3
+.pclick.yahoo.com/images/
+# Blocked URL = http://rover.ebay.com/ar/1/2/3?mpt=123&adtype=1&size=728x90
+/.*\&adtype=
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1217,7 +1233,7 @@ log*.hit-parade.com/
 www.xml.eshop.msn.com/tracksponsorimpression.asp
 #MASTER# BLOCK-REFERRER: http://www.planetgamecube.com/ 10/07/06
 .imrworldwide.com
-#MASTER# REMARKS: Actionsfile feedback 1555719 09/10/06, and Debian Bug report 
+#MASTER# REMARKS: Actionsfile feedback 1555719 09/10/06, and Debian Bug report
 #MASTER# BLOCK-REFERRER: http://www.nrc.nl/ 09/12/06
 .clicktracks.com
 #MASTER# REMARK: Actionsfile tracker 1159072 09/12/06
@@ -1248,7 +1264,7 @@ stats.indextools.com
 tra*.measuremap.com
 .eurekster.com/sidebar
 tra*.mybloglog.com
-#MASTER# BLOCK-REFERRER:  http://www.polymervision.com/ 
+#MASTER# BLOCK-REFERRER:  http://www.polymervision.com/
 #MASTER# REMARKS: Actionsfile feedback item #1629370 01/16/07
 .guesttrace.
 #MASTER# BLOCK-REFERRER: http://dictionary.com
@@ -1339,7 +1355,7 @@ smartad.*.*.*
 #MASTER# REMARKS: Actionsfile feedback item #1764161 2007-07-31
 #MASTER# BLOCK-REFERRER: http://www.webster.com/dictionary/revering
 .google.com/afsonline
-  
+
 #############################################################################
 # Site-specific unblockers:
 #############################################################################
@@ -1483,11 +1499,11 @@ adbusters.org/
 #MASTER# REMARKS: New home? http://adiumx.cachefly.net/Adium_1.0.5.dmg
 adium*.*.
 #MASTER# UNBLOCK-REFERRER: http://google.com 10/01/06
-#MASTER# REMARKS: This allows many (but not all) Google "Sponsored Links" to function. 
+#MASTER# REMARKS: This allows many (but not all) Google "Sponsored Links" to function.
 #MASTER# REMARKS: Presumably if someone clicks these they want to go there.
 .googleadservices./pagead/adclick
 #MASTER# UNBLOCK-REFERRER: http://www.garaget.org
-#MASTER# REMARKS: These are "ads" from individuals selling cars per tracker. 10/06/06 
+#MASTER# REMARKS: These are "ads" from individuals selling cars per tracker. 10/06/06
 .garaget.org/annonser/
 #MASTER# UNBLOCK-REFERRER: http://www.macworld.com/ 10/07/06
 #MASTER# REMARKS: Without the unblock, the page layout is horribly broken 10/08/06
@@ -1498,7 +1514,7 @@ edge.macworld.com
 #MASTER# UNBLOCK-REFERRER: http://dawn.com
 #MASTER# REMARKS: SF Actionsfile tracker 10/19/06. These images are not ads.
 .dawn.com/.*/(9690dina|aurora_award)\.
-#MASTER# UNBLOCK-REFERRER: http://google.com/reader/ 
+#MASTER# UNBLOCK-REFERRER: http://google.com/reader/
 #MASTER# REMARKS: Initial page does not load, per Support request 10/27/06
 .google.com/reader/
 #MASTER# REMARKS: Actionsfile Tracker 1587079 10/30/06
@@ -1596,6 +1612,15 @@ qa.debian.org/popcon\.php
 #MASTER# REMARKS: The dutch newspaper site of Algemeen Dagblad (http://www.ad.nl) is blocked
 # URL = http://www.ad.nl/
 .ad.nl/
+#MASTER# REMARKS: yahoo groups self-promotion - and the page is uglier without it
+# URL = http://us.i1.yimg.com/us.yimg.com/i/yg/img/ads/bestofygroups.jpg
+.yimg.com/.*/ads/bestofygroups.jpg$
+#MASTER# REMARKS: NYT home page is messed up because .css files are blocked
+#MASTER# UNBLOCK-REFERRER: http://www.nytimes.com/
+# URL = http://graphics8.nytimes.com/css/0.1/screen/common/ads.css
+# URL = http://graphics8.nytimes.com/css/0.1/screen/homepage/ads.css
+.nytimes.com/.*/ads\.css$
+
 
 #############################################################################
 # Site-specific special rules:
@@ -1685,7 +1710,7 @@ i.cnn.net/cnn/.*/clickability/button
 #----------------------------------------------------------------------------
 #MASTER# REMARKS: This section NOT checked 10/13/06 HB
 {-fast-redirects}
-# Sticky Actions = -fast-redirects 
+# Sticky Actions = -fast-redirects
 www.ukc.ac.uk/cgi-bin/wac\.cgi\?
 #MASTER# PROBLEM-URL: http://www.google.com/search?q=foo
 .google.
@@ -2032,7 +2057,7 @@ schneegans.de/sv/\?url=referer
 .nasa.gov
 #MASTER# REMARKS: Exclude per Debian bug report #377843
 # URL = http://www2.cnrs.fr/presse/communique/900.htm
-.cnrs.fr 
+.cnrs.fr
 #MASTER# REMARKS: Exclude per Debian bug report #377843
 # URL = http://blogs.msdn.com/wga/archive/2006/07/16/667063.aspx
 blogs.msdn.com
@@ -2043,7 +2068,7 @@ blogs.msdn.com
 /.*mt.cgi$
 #MASTER# REMARKS: Exclude per Debian bug report #377843 09/17/06
 # URL = http://www2.cnrs.fr/presse/communique/900.htm
-.cnrs.fr 
+.cnrs.fr
 #MASTER# REMARKS: Exclude per Debian bug report #377843 09/17/06
 # URL = http://blogs.msdn.com/wga/archive/2006/07/16/667063.aspx
 blogs.msdn.com
@@ -2093,7 +2118,7 @@ www.skweezer.net/bloglines
 # URL = http://www.privoxy.org/config
 .privoxy.org/config
 
-#MASTER# REMARKS: Privoxy's "unsafe" CGI pages check the referrer 
+#MASTER# REMARKS: Privoxy's "unsafe" CGI pages check the referrer
 #MASTER# REMARKS: to make sure the user reached them intentionally.
 #MASTER# REMARKS: Disabling hide-referrer so there's a referrer left to check.
 #MASTER# REMARKS: Disabling fast-redirects because if CGI crunching gets

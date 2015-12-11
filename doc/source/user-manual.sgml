@@ -34,7 +34,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.100 2009/02/19 17:14:11 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.103 2009/03/21 10:49:05 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -60,7 +60,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.100 2009/02/19 17:14:11 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.103 2009/03/21 10:49:05 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -437,153 +437,93 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- There are only a few improvements and new features since
- <application>Privoxy 3.0.10</application>, the last stable release:
+ <application>Privoxy 3.0.12</application> is mainly a bugfix release:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    On most platforms, outgoing connections can be kept alive and
-    reused if the server supports it. Whether or not this improves
-    things depends on the connection.
+    The socket-timeout option now also works on platforms whose
+    select() implementation modifies the timeout structure.
+    Previously the timeout was triggered even if the connection
+    didn't stall. Reported by cyberpatrol.
    </para>
   </listitem>
   <listitem>
    <para>
-    When dropping privileges, membership in supplementary groups
-    is given up as well. Not doing that can lead to Privoxy running
-    with more rights than necessary and violates the principle of
-    least privilege. Users of the --user option are advised to update.
-    Thanks to Matthias Drochner for reporting the problem,
-    providing the initial patch and testing the final version.
+    The Connection: keep-alive code properly deals with files
+    larger than 2GB. Previously the connection was closed too
+    early.
    </para>
   </listitem>
   <listitem>
    <para>
-    Passing invalid users or groups with the --user option
-    didn't lead to program exit. Regression introduced in 3.0.7.
+    The content length for files above 2GB is logged correctly.
    </para>
   </listitem>
   <listitem>
    <para>
-    The match all section has been moved from default.action
-    to a new file called match-all.action. As a result the
-    default.action no longer needs to be touched by the user
-    and can be safely overwritten by updates.
+    The user-manual directive on the show-status page links to
+    the documentation location specified with the directive,
+    not to the Privoxy website.
    </para>
   </listitem>
   <listitem>
    <para>
-    The standard.action file has been removed. Its content
-    is now part of the default.action file.
+    When running in daemon mode, Privoxy doesn't log anything
+    to the console unless there are errors before the logfile
+    has been opened.
    </para>
   </listitem>
   <listitem>
    <para>
-    In some situations the logged content length was slightly too low.
+    The show-status page prints warnings about invalid directives
+    on the same line as the directives themselves.
    </para>
   </listitem>
   <listitem>
    <para>
-    Crunched requests are logged with their own log level.
-    If you used "debug 1" in the past, you'll probably want
-    to additionally enable "debug 1024", otherwise only passed
-    requests will be logged. If you only care about crunched
-    requests, simply replace "debug 1" with "debug 1024".
+    Fixed several justified (but harmless) compiler warnings,
+    mostly on 64 bit platforms.
    </para>
   </listitem>
   <listitem>
    <para>
-    The crunch reason has been moved to the beginning of the
-    crunch message. For HTTP URLs, the protocol is logged as well.
+    The mingw32 version explicitly requests the default charset
+    to prevent display problems with some fonts available on more
+    recent Windows versions. Patch by Burberry.
    </para>
   </listitem>
   <listitem>
    <para>
-    Log messages are shortened by printing the thread id on its
-    own (as opposed to putting it inside the string "Privoxy()").
+    The mingw32 version uses the Privoxy icon in the alt-tab
+    windows. Patch by Burberry.
    </para>
   </listitem>
   <listitem>
    <para>
-    The config option socket-timeout has been added to control
-    the time Privoxy waits for data to arrive on a socket.
+    The timestamp and the thread id is omitted in the "Fatal error"
+    message box on mingw32.
    </para>
   </listitem>
   <listitem>
    <para>
-    Support for remote toggling is controlled by the configure
-    option --disable-toggle only. In previous versions it also
-    depended on the action editor and thus configuring with the
-    --disable-editor option would disable remote toggling support
-    as well.
+    Fixed two related mingw32-only buffer overflows. Triggering
+    them required control over the configuration file, therefore
+    this isn't seen as a security issue.
    </para>
   </listitem>
   <listitem>
    <para>
-    Requests with invalid HTTP versions are rejected.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The template symbol @date@ can be used to include a date(1)-like
-    time string. Initial patch submitted by Endre Szabo.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Responses from shoutcast servers are accepted again.
-    Problem reported and fix suggested by Stefan.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The hide-forwarded-for-headers action has been replaced with
-    the change-x-forwarded-for{} action which can also be used to
-    add X-Forwarded-For headers. The latter functionality already
-    existed in Privoxy versions prior to 3.0.7 but has been removed
-    as it was often used unintentionally (by not using the
-    hide-forwarded-for-headers action).
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    A "clear log" view option was added to the mingw32 version
-    to clear out all of the lines in the Privoxy log window.
-    Based on a patch submitted by T Ford.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The mingw32 version uses "critical sections" now, which prevents
-    log message corruption under load. As a side effect, the
-    "no thread-safe PRNG" warning could be removed as well.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The mingw32 version's task bar icon is crossed out and
-    the color changed to gray if Privoxy is toggled off.
+    In verbose mode, or if the new option --show-skipped-tests
+    is used, Privoxy-Regression-Test logs skipped tests and the
+    skip reason.
    </para>
   </listitem>
  </itemizedlist>
 </para>
 
-<para>
- This release marks a departure for Privoxy development.
-</para>
-<para>
- Previously, odd numbered releases were considered beta versions and
- were only released at the end of the development cycle when the code
- was already believed to be stable. Usually it was, so the stable release
- contained pretty much the same code, but got a higher version number.
- In the future we intend to release several snapshots between stable releases.
- There will probably still be about two stable releases per year,
- but hopefully about six snapshots instead of the two betas we have now.
- The intentions is to make testing without CVS access easier.
-</para>
 
 <!--   ~~~~~       New section      ~~~~~     -->
 
@@ -5231,7 +5171,7 @@ new action
     <quote>reset-to-request-time</quote> overwrites the value of the
     <quote>Last-Modified:</quote> header with the current time. You could use
     this option together with
-    <literal><link linkend="hide-if-modified-since">hided-if-modified-since</link></literal>
+    <literal><link linkend="hide-if-modified-since">hide-if-modified-since</link></literal>
     to further customize your random range.
    </para>
    <para>
@@ -8513,6 +8453,15 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.103  2009/03/21 10:49:05  fabiankeil
+ Merge updated ChangeLog.
+
+ Revision 2.102  2009/03/15 19:31:36  fabiankeil
+ Update "What's New in this Release" section.
+
+ Revision 2.101  2009/02/25 19:01:56  fabiankeil
+ Fix typo.
+
  Revision 2.100  2009/02/19 17:14:11  fabiankeil
  - Copy the release cycle description from announce.txt into
    the "What's New" section.

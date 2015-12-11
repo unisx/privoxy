@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.21 2009/02/15 14:49:10 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.22 2009/02/22 15:07:58 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -31,7 +31,7 @@ for-privoxy-version=3.0.11
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
-# Level 9 needs  = config line user-manual\s+(/|[A-Za-z]:)
+# Level  9 needs = config line user-manual\s+(\.?\.?/|[A-Za-z]:)
 # Level 12 needs = config line enable-edit-actions\s+1
 # Level 13 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE Yes
 # Level 14 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE No

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: history.sgml,v 2.6 2006/09/24 20:14:04 hal9 Exp $
+ $Id: history.sgml,v 2.7 2009/02/22 11:05:21 fabiankeil Exp $
 
-  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
   See LICENSE.
 
  ======================================================================
@@ -34,21 +34,20 @@
 
 <para>
  But the web, its protocols and standards, and with it, the techniques for
- forcing  ads on users, give up autonomy over their browsing, and
+ forcing ads on users, give up autonomy over their browsing, and
  for tracking them, keeps evolving. Unfortunately, the <application>Internet
  Junkbuster</application> did not. Version 2.0.2, published in 1998, was 
  (and is) the last official
  <ulink url="http://www.junkbusters.com/ijbdist.html#release">release</ulink>
  available from <ulink url="http://www.junkbusters.com">Junkbusters Corporation</ulink>.
  Fortunately, it had been released under the GNU
- <ulink url="http://www.gnu.org/licenses/gpl.html"> GPL</ulink>, which allowed further
- development by others.
+ <ulink url="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL</ulink>,
+ which allowed further development by others.
 </para>
 
 <para>
- So Stefan Waldherr started maintaining an
- <ulink url="http://www.waldherr.org/junkbuster/">improved version of the
- software</ulink>, to which eventually a number of people contributed patches.
+ So Stefan Waldherr started maintaining an improved version of the
+ software, to which eventually a number of people contributed patches.
  It could already replace banners with a transparent image, and had a first
  version of pop-up killing, but it was still very closely based on the
  original, with all its limitations, such as the lack of HTTP/1.1 support,
@@ -70,4 +69,3 @@
  stable version, 3.0, was released August, 2002. 
  <!-- Cautious!!!!!!!!! ;) -->
 </para>
-

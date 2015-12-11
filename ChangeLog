@@ -1,6 +1,40 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.12 (UNRELEASED) ***
+
+- The socket-timeout option now also works on platforms whose
+  select() implementation modifies the timeout structure.
+  Previously the timeout was triggered even if the connection
+  didn't stall. Reported by cyberpatrol.
+- The Connection: keep-alive code properly deals with files
+  larger than 2GB. Previously the connection was closed too
+  early.
+- The content length for files above 2GB is logged correctly.
+- The user-manual directive on the show-status page links to
+  the documentation location specified with the directive,
+  not to the Privoxy website.
+- When running in daemon mode, Privoxy doesn't log anything
+  to the console unless there are errors before the logfile
+  has been opened.
+- The show-status page prints warnings about invalid directives
+  on the same line as the directives themselves.
+- Fixed several justified (but harmless) compiler warnings,
+  mostly on 64 bit platforms.
+- The mingw32 version explicitly requests the default charset
+  to prevent display problems with some fonts available on more
+  recent Windows versions. Patch by Burberry.
+- The mingw32 version uses the Privoxy icon in the alt-tab
+  windows. Patch by Burberry.
+- The timestamp and the thread id is omitted in the "Fatal error"
+  message box on mingw32.
+- Fixed two related mingw32-only buffer overflows. Triggering
+  them required control over the configuration file, therefore
+  this isn't seen as a security issue.
+- In verbose mode, or if the new option --show-skipped-tests
+  is used, Privoxy-Regression-Test logs skipped tests and the
+  skip reason.
+
 *** Version 3.0.11 ***
 	
 - On most platforms, outgoing connections can be kept alive and

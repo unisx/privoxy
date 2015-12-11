@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.178 2009/02/08 18:35:48 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.180 2009/02/28 08:28:14 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2008 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -851,20 +851,23 @@ config-file-alt:
 #############################################################################
 webserver: tidy
 	@$(ECHO) -------------------------------------------------------
-	@$(ECHO) You have run make dok/redhat-dok before, right?
-	@$(ECHO) Note that this command scps all stuff to the webserver,
-	@$(ECHO) it will not remove obsolete documents.
+	@$(ECHO) You will need to "create" a SF shell first:
+	@$(ECHO)    ssh -t USER,PROJECT@shell.sourceforge.net create
+	@$(ECHO) Please make sure your documentation files are up to date.
+	@$(ECHO) Note that this command updates the home page and scps 
+	@$(ECHO) all stuff to the webserver, it will not remove obsolete documents.
+	@$(ECHO) You will also need to change the user-manual symlink manually.
 	@$(ECHO) -------------------------------------------------------
 
 	@$(ECHO) Uploading html
 	@cd doc/webserver; \
           upload=`find . -type f -a -not \( -path "*/CVS*" -o -path "*/results*" \)`; \
-          $(TAR) c $$upload | ssh ijbswa.sourceforge.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
+          $(TAR) c $$upload | ssh shell.sf.net 'cd /home/groups/i/ij/ijbswa/htdocs/; tar xvm 2>&1 | grep -v timestamp'
 
 	@$(ECHO) Fixing permissions
-	@ssh ijbswa.sourceforge.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
-	@ssh ijbswa.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/ -type f | xargs chmod 664 2>/dev/null; true'
-	@ssh ijbswa.sourceforge.net 'chmod 666 /home/groups/i/ij/ijbswa/htdocs/actions/results/actions-feedback.txt 2>/dev/null; true'
+	@ssh shell.sf.net 'chmod -R 775 /home/groups/i/ij/ijbswa/htdocs 2>/dev/null; true'
+	@ssh shell.sf.net 'find /home/groups/i/ij/ijbswa/htdocs/ -type f | xargs chmod 664 2>/dev/null; true'
+	@ssh shell.sf.net 'chmod 666 /home/groups/i/ij/ijbswa/htdocs/actions/results/actions-feedback.txt 2>/dev/null; true'
 
 
 web-actions: tidy
@@ -921,7 +924,7 @@ urlmatch.@OBJEXT@:  urlmatch.c  urlmatch.h  config.h $(PROJECT_H_DEPS) errlog.h 
 gnu_regex.@OBJEXT@: gnu_regex.c gnu_regex.h config.h
 
 # PCRS
-pcrs.@OBJEXT@: pcrs.c pcrs.h config.h pcre/pcre.h 
+pcrs.@OBJEXT@: pcrs.c pcrs.h config.h @STATIC_PCRE_ONLY@pcre/pcre.h 
 
 # PCRE
 pcre/get.@OBJEXT@:        pcre/get.c        pcre/config.h pcre/internal.h pcre/pcre.h
@@ -1314,6 +1317,14 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.180  2009/02/28 08:28:14  fabiankeil
+# pcrs.o doesn't depend on pcre/pcre.h if we are linking
+# dynamically. Patch provided by drauh in #2056286.
+#
+# Revision 1.179  2009/02/22 14:48:31  hal9
+# Updates to the 'make webserver' target that recreates the home page and uploads
+# fresh documents to reflect new SF realities, and more explanation of process.
+#
 # Revision 1.178  2009/02/08 18:35:48  fabiankeil
 # Move the match-all section into a separate file
 # (match-all.action) so we can safely overwrite the
