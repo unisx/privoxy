@@ -705,7 +705,7 @@ CLASS="APPLICATION"
 ><P
 > This can be caused by a problem with the local <TT
 CLASS="FILENAME"
->HOSTS</TT
+>hosts</TT
 >
  file. If this file has been changed from the original, try reverting it to
  see if that helps. Make sure whatever name(s) are used for the local system,
@@ -1041,6 +1041,176 @@ TARGET="_top"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > 3.0.9, zlib support is enabled in the default builds.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="SSL-WARNINGS"
+>5.21. On some HTTPS sites my browser warns me about unauthenticated content,
+ the URL bar doesn't get highlighted and the lock symbol appears to be broken.
+ What's going on?</A
+></H3
+><P
+> Probably the browser is requesting ads through HTTPS and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ is blocking the requests. Privoxy's error messages are delivered
+ unencrypted and while it's obvious for the browser that the HTTPS
+ request is already blocked by the proxy, some warn about unauthenticated
+ content anyway.</P
+><P
+> To work around the problem you can redirect those requests to an invalid
+ local address instead of blocking them. While the redirects aren't
+ encrypted either, many browsers don't care. They simply follow the
+ redirect, fail to reach a server and display an error message instead
+ of the ad.</P
+><P
+> To do that, enable logging to figure out which requests get blocked by
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and add the hosts (no path patterns) to a section like this:</P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>{+redirect{http://127.0.0.1:0/} -block -limit-connect}
+.ivwbox.de:443/</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> Additionally you have to configure your browser to contact
+ <SPAN
+CLASS="QUOTE"
+>"127.0.0.1:0"</SPAN
+> directly (instead of through <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>).</P
+><P
+> To add a proxy exception in <SPAN
+CLASS="APPLICATION"
+>Mozilla Firefox</SPAN
+>
+ open the <SPAN
+CLASS="QUOTE"
+>"Preferences"</SPAN
+>, click the <SPAN
+CLASS="QUOTE"
+>"Settings"</SPAN
+>
+ button located on the <SPAN
+CLASS="QUOTE"
+>"Network"</SPAN
+> tab in the <SPAN
+CLASS="QUOTE"
+>"Advanced"</SPAN
+>
+ section, and add <SPAN
+CLASS="QUOTE"
+>"127.0.0.1:0"</SPAN
+> in the <SPAN
+CLASS="QUOTE"
+>"No Proxy for:"</SPAN
+>
+ field.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="SE-LINUX"
+>5.22. I get selinux error messages. How can I fix this?</A
+></H3
+><P
+> Please report the problem to the creator of your selinux policies.</P
+><P
+> The problem is that some selinux policy writers aren't familiar
+ with the application they are trying to <SPAN
+CLASS="QUOTE"
+>"secure"</SPAN
+> and
+ thus create policies that make no sense.</P
+><P
+> In <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> case the problem usually
+ is that the policy only allows outgoing connections for certain
+ destination ports (e.g. 80 and 443). While this may cover the
+ standard ports, websites occasionally use other ports as well.
+ This isn't a security problem and therefore <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+>
+ default configuration doesn't block these requests.</P
+><P
+> If you really want to block these ports (and don't be able
+ to load websites that don't use standard ports), you should
+ configure Privoxy to block these ports as well, so it doesn't
+ trigger the selinux warnings.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="GENTOO-RICERS"
+>5.23. I compiled <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with Gentoo's portage and it appears to be very slow. Why?</A
+></H3
+><P
+> Probably you unintentionally compiled <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> without threading support
+ in which case requests have to be serialized and only one can be served
+ at the same time.</P
+><P
+> Check your <SPAN
+CLASS="QUOTE"
+>"USE"</SPAN
+> flags and make sure they include
+ <SPAN
+CLASS="QUOTE"
+>"threads"</SPAN
+>. If they don't, add the flag and rebuild <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>.</P
+><P
+> If you compiled <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with threading support (on POSIX-based systems),
+ the <SPAN
+CLASS="QUOTE"
+>"Conditional #defines"</SPAN
+> section on <A
+HREF="http://config.privoxy.org/show-status"
+TARGET="_top"
+>http://config.privoxy.org/show-status</A
+>
+ will list <SPAN
+CLASS="QUOTE"
+>"FEATURE_PTHREAD"</SPAN
+> as <SPAN
+CLASS="QUOTE"
+>"enabled"</SPAN
+>. </P
 ></DIV
 ></DIV
 ><DIV

@@ -1,6 +1,6 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.20 2008/03/27 18:27:23 fabiankeil Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.22 2009/02/09 21:21:15 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
@@ -8,7 +8,7 @@
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,14 @@
  *
  * Revisions   :
  *    $Log: errlog.h,v $
+ *    Revision 1.22  2009/02/09 21:21:15  fabiankeil
+ *    Now that init_log_module() is called earlier, call show_version()
+ *    later on from main() directly so it doesn't get called for --help
+ *    or --version.
+ *
+ *    Revision 1.21  2008/12/14 15:46:22  fabiankeil
+ *    Give crunched requests their own log level.
+ *
  *    Revision 1.20  2008/03/27 18:27:23  fabiankeil
  *    Remove kill-popups action.
  *
@@ -160,6 +168,7 @@ extern "C" {
 
 /* Debug level for errors */
 
+/* XXX: Should be renamed. */
 #define LOG_LEVEL_GPC        0x0001
 #define LOG_LEVEL_CONNECT    0x0002
 #define LOG_LEVEL_IO         0x0004
@@ -172,6 +181,7 @@ extern "C" {
 #define LOG_LEVEL_REDIRECTS  0x0080
 #define LOG_LEVEL_DEANIMATE  0x0100
 #define LOG_LEVEL_CLF        0x0200 /* Common Log File format */
+#define LOG_LEVEL_CRUNCH     0x0400
 #define LOG_LEVEL_CGI        0x0800 /* CGI / templates */
 
 /* Following are always on: */
@@ -181,8 +191,9 @@ extern "C" {
 
 extern void init_error_log(const char *prog_name, const char *logfname);
 extern void set_debug_level(int debuglevel);
-void disable_logging(void);
-void init_log_module(const char *prog_name);
+extern void disable_logging(void);
+extern void init_log_module(void);
+extern void show_version(const char *prog_name);
 extern void log_error(int loglevel, const char *fmt, ...);
 extern const char *jb_err_to_string(int error);
 

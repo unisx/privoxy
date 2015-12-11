@@ -1,4 +1,4 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.53 2008/05/26 16:04:04 fabiankeil Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.55 2008/12/04 18:18:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.c,v $
@@ -33,6 +33,13 @@ const char actions_rcs[] = "$Id: actions.c,v 1.53 2008/05/26 16:04:04 fabiankeil
  *
  * Revisions   :
  *    $Log: actions.c,v $
+ *    Revision 1.55  2008/12/04 18:18:56  fabiankeil
+ *    Fix some cparser warnings.
+ *
+ *    Revision 1.54  2008/09/20 10:04:33  fabiankeil
+ *    Remove hide-forwarded-for-headers action which has
+ *    been obsoleted by change-x-forwarded-for{block}.
+ *
  *    Revision 1.53  2008/05/26 16:04:04  fabiankeil
  *    s@memorey@memory@
  *
@@ -683,7 +690,7 @@ static int action_used_to_be_valid(const char *action)
       "vanilla-wafer",
       "wafer"
    };
-   int i;
+   unsigned int i;
 
    for (i = 0; i < SZ(formerly_valid_actions); i++)
    {
@@ -870,10 +877,16 @@ jb_err get_actions(char *line,
                /* Found it */
                merge_actions(cur_action, alias->action);
             }
-            else if ((2 < strlen(option)) && action_used_to_be_valid(option+1))
+            else if (((size_t)2 < strlen(option)) && action_used_to_be_valid(option+1))
             {
                log_error(LOG_LEVEL_ERROR, "Action '%s' is no longer valid "
                   "in this Privoxy release. Ignored.", option+1);
+            }
+            else if (((size_t)2 < strlen(option)) && 0 == strcmpic(option+1, "hide-forwarded-for-headers"))
+            {
+               log_error(LOG_LEVEL_FATAL, "The action 'hide-forwarded-for-headers' "
+                  "is no longer valid in this Privoxy release. "
+                  "Use 'change-x-forwarded-for' instead.");
             }
             else
             {
@@ -1347,7 +1360,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             size_t len = strlen(buf);
             char * start = buf + 2;
             char * end = buf + len - 1;
-            if ((len < 5) || (*end-- != '}') || (*end-- != '}'))
+            if ((len < (size_t)5) || (*end-- != '}') || (*end-- != '}'))
             {
                /* too short */
                fclose(fp);

@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.116 2008/05/20 16:05:02 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.127 2008/12/20 14:53:55 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -37,6 +37,50 @@
  *
  * Revisions   :
  *    $Log: project.h,v $
+ *    Revision 1.127  2008/12/20 14:53:55  fabiankeil
+ *    Add config option socket-timeout to control the time
+ *    Privoxy waits for data to arrive on a socket. Useful
+ *    in case of stale ssh tunnels or when fuzz-testing.
+ *
+ *    Revision 1.126  2008/12/14 17:02:54  fabiankeil
+ *    Fix a cparser warning.
+ *
+ *    Revision 1.125  2008/11/20 08:22:28  fabiankeil
+ *    Remove an obsolete comment.
+ *
+ *    Revision 1.124  2008/11/16 12:43:49  fabiankeil
+ *    Turn keep-alive support into a runtime feature
+ *    that is disabled by setting keep-alive-timeout
+ *    to a negative value.
+ *
+ *    Revision 1.123  2008/11/10 16:55:59  fabiankeil
+ *    Fix a gcc44 warning (in filters.c).
+ *
+ *    Revision 1.122  2008/10/16 07:11:34  fabiankeil
+ *    Fix a bunch of gcc44 conversion warnings.
+ *
+ *    Revision 1.121  2008/10/09 18:21:41  fabiankeil
+ *    Flush work-in-progress changes to keep outgoing connections
+ *    alive where possible. Incomplete and mostly #ifdef'd out.
+ *
+ *    Revision 1.120  2008/09/21 13:36:52  fabiankeil
+ *    If change-x-forwarded-for{add} is used and the client
+ *    sends multiple X-Forwarded-For headers, append the client's
+ *    IP address to each one of them. "Traditionally" we would
+ *    lose all but the last one.
+ *
+ *    Revision 1.119  2008/09/20 10:04:33  fabiankeil
+ *    Remove hide-forwarded-for-headers action which has
+ *    been obsoleted by change-x-forwarded-for{block}.
+ *
+ *    Revision 1.118  2008/09/19 15:26:29  fabiankeil
+ *    Add change-x-forwarded-for{} action to block or add
+ *    X-Forwarded-For headers. Mostly based on code removed
+ *    before 3.0.7.
+ *
+ *    Revision 1.117  2008/08/30 12:03:07  fabiankeil
+ *    Remove FEATURE_COOKIE_JAR.
+ *
  *    Revision 1.116  2008/05/20 16:05:02  fabiankeil
  *    Move parsers structure definition from project.h to parsers.h.
  *
@@ -782,7 +826,7 @@ typedef int jb_err;
 /**
  * Max length of CGI parameters (arbitrary limit).
  */
-#define CGI_PARAM_LEN_MAX 500
+#define CGI_PARAM_LEN_MAX 500U
 
 /**
  * Buffer size for capturing struct hostent data in the
@@ -1059,8 +1103,8 @@ struct iob
 #define ACTION_DOWNGRADE                             0x00000004UL
 /** Action bitmap: Fast redirects. */
 #define ACTION_FAST_REDIRECTS                        0x00000008UL
-/** Action bitmap: Remove existing "Forwarded" header, and do not add another. */
-#define ACTION_HIDE_FORWARDED                        0x00000010UL
+/** Action bitmap: Remove or add "X-Forwarded-For" header. */
+#define ACTION_CHANGE_X_FORWARDED_FOR                0x00000010UL
 /** Action bitmap: Hide "From" header. */
 #define ACTION_HIDE_FROM                             0x00000020UL
 /** Action bitmap: Hide "Referer" header.  (sic - follow HTTP, not English). */
@@ -1141,8 +1185,10 @@ struct iob
 #define ACTION_STRING_FORWARD_OVERRIDE     15
 /** Action string index: Reason for the block. */
 #define ACTION_STRING_BLOCK                16
+/** Action string index: what to do with the "X-Forwarded-For" header. */
+#define ACTION_STRING_CHANGE_X_FORWARDED_FOR 17
 /** Number of string actions. */
-#define ACTION_STRING_COUNT                17
+#define ACTION_STRING_COUNT                18
 
 
 /* To make the ugly hack in sed easier to understand */
@@ -1244,40 +1290,40 @@ struct url_actions
  * Flag for csp->flags: Set if this client is processing data.
  * Cleared when the thread associated with this structure dies.
  */
-#define CSP_FLAG_ACTIVE     0x01
+#define CSP_FLAG_ACTIVE     0x01U
 
 /**
  * Flag for csp->flags: Set if the server's reply is in "chunked"
  * transfer encoding
  */
-#define CSP_FLAG_CHUNKED    0x02
+#define CSP_FLAG_CHUNKED    0x02U
 
 /**
  * Flag for csp->flags: Set if this request was enforced, although it would
  * normally have been blocked.
  */
-#define CSP_FLAG_FORCED     0x04
+#define CSP_FLAG_FORCED     0x04U
 
 /**
  * Flag for csp->flags: Set if any modification to the body was done.
  */
-#define CSP_FLAG_MODIFIED   0x08
+#define CSP_FLAG_MODIFIED   0x08U
 
 /**
  * Flag for csp->flags: Set if request was blocked.
  */
-#define CSP_FLAG_REJECTED   0x10
+#define CSP_FLAG_REJECTED   0x10U
 
 /**
  * Flag for csp->flags: Set if we are toggled on (FEATURE_TOGGLE).
  */
-#define CSP_FLAG_TOGGLED_ON 0x20
+#define CSP_FLAG_TOGGLED_ON 0x20U
 
 /**
- * Flag for csp->flags: Set if adding the 'Connection: close' header
- * for the client isn't necessary.
+ * Flag for csp->flags: Set if an acceptable Connection header
+ * is already set.
  */
-#define CSP_FLAG_CLIENT_CONNECTION_CLOSE_SET   0x00000040UL
+#define CSP_FLAG_CLIENT_CONNECTION_HEADER_SET   0x00000040UL
 
 /**
  * Flag for csp->flags: Set if adding the 'Connection: close' header
@@ -1303,6 +1349,26 @@ struct url_actions
  */
 #define CSP_FLAG_NO_FILTERING                  0x00000400UL
 
+/**
+ * Flag for csp->flags: Set the client IP has appended to
+ * an already existing X-Forwarded-For header in which case
+ * no new header has to be generated.
+ */
+#define CSP_FLAG_X_FORWARDED_FOR_APPENDED      0x00000800UL
+
+/**
+ * Flag for csp->flags: Set if the server wants to keep
+ * the connection alive.
+ */
+#define CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE  0x00001000UL
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+/**
+ * Flag for csp->flags: Set if the server specified the
+ * content length.
+ */
+#define CSP_FLAG_CONTENT_LENGTH_SET            0x00002000UL
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 /*
  * Flags for use in return codes of child processes
@@ -1351,7 +1417,7 @@ struct client_state
    char *ip_addr_str;
    /** Client PC's IP address, as reported by the accept() function.
        As a number. */
-   long  ip_addr_long;
+   unsigned long ip_addr_long;
 
    /** The URL that was requested */
    struct http_request http[1];
@@ -1383,6 +1449,14 @@ struct client_state
 
    /** Length after content modification. */
    size_t content_length;
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   /** Expected length of content after which we
+    * should stop reading from the server socket.
+    */
+   /* XXX: is this the right location? */
+   size_t expected_content_length;
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 #ifdef FEATURE_TRUST
 
@@ -1604,26 +1678,28 @@ struct access_control_list
 
 
 /** configuration_spec::feature_flags: CGI actions editor. */
-#define RUNTIME_FEATURE_CGI_EDIT_ACTIONS             1
+#define RUNTIME_FEATURE_CGI_EDIT_ACTIONS             1U
 
 /** configuration_spec::feature_flags: Web-based toggle. */
-#define RUNTIME_FEATURE_CGI_TOGGLE                   2
+#define RUNTIME_FEATURE_CGI_TOGGLE                   2U
 
 /** configuration_spec::feature_flags: HTTP-header-based toggle. */
-#define RUNTIME_FEATURE_HTTP_TOGGLE                  4
+#define RUNTIME_FEATURE_HTTP_TOGGLE                  4U
 
 /** configuration_spec::feature_flags: Split large forms to limit the number of GET arguments. */
-#define RUNTIME_FEATURE_SPLIT_LARGE_FORMS            8
+#define RUNTIME_FEATURE_SPLIT_LARGE_FORMS            8U
 
 /** configuration_spec::feature_flags: Check the host header for requests with host-less request lines. */
-#define RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS 16
+#define RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS 16U
 
 /** configuration_spec::feature_flags: Don't allow to circumvent blocks with the force prefix. */
-#define RUNTIME_FEATURE_ENFORCE_BLOCKS              32
+#define RUNTIME_FEATURE_ENFORCE_BLOCKS              32U
 
 /** configuration_spec::feature_flags: Allow to block or redirect CGI requests. */
-#define RUNTIME_FEATURE_CGI_CRUNCHING               64
+#define RUNTIME_FEATURE_CGI_CRUNCHING               64U
 
+/** configuration_spec::feature_flags: Try to keep the connection to the server alive. */
+#define RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE      128U
 
 /**
  * Data loaded from the configuration file.
@@ -1685,16 +1761,6 @@ struct configuration_spec
    /** The hostname to show on CGI pages, or NULL to use the real one. */
    const char *hostname;
 
-#ifdef FEATURE_COOKIE_JAR
-
-   /** The file name of the cookie jar file */
-   const char * jarfile;
-
-   /** The handle to the cookie jar file */
-   FILE * jar;
-
-#endif /* def FEATURE_COOKIE_JAR */
-
    /** IP address to bind to.  Defaults to HADDR_DEFAULT == 127.0.0.1. */
    const char *haddr;
 
@@ -1729,6 +1795,9 @@ struct configuration_spec
 
    /** Number of retries in case a forwarded connection attempt fails */
    int         forwarded_connect_retries;
+
+   /* Timeout when waiting on sockets for data to become available. */
+   int socket_timeout;
 
    /** All options from the config file, HTML-formatted. */
    char *proxy_args;

@@ -8,7 +8,7 @@
 #
 # http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
 #
-# $Id: privoxy-log-parser.pl,v 1.2 2008/08/13 16:28:06 fabiankeil Exp $
+# $Id: privoxy-log-parser.pl,v 1.22 2009/02/11 19:15:05 fabiankeil Exp $
 #
 # TODO:
 #       - LOG_LEVEL_CGI, LOG_LEVEL_ERROR, LOG_LEVEL_WRITE content highlighting
@@ -24,7 +24,7 @@
 #       - Use generic highlighting function that takes a regex and the
 #         hash key as input.
 #
-# Copyright (c) 2007-2008 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2009 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -44,7 +44,7 @@ use warnings;
 use Getopt::Long;
 
 use constant {
-    PRIVOXY_LOG_PARSER_VERSION => '0.4',
+    PRIVOXY_LOG_PARSER_VERSION => '0.5',
     # Feel free to mess with these ...
     DEFAULT_BACKGROUND => 'black',  # Choose registered colour (like 'black')
     DEFAULT_TEXT_COLOUR => 'white', # Choose registered colour (like 'black')
@@ -106,6 +106,7 @@ sub prepare_our_stuff () {
         CGI             => 'light_green',
         Redirect        => 'cyan',
         Error           => 'light_red',
+        Crunch          => 'cyan',
         'Fatal error'   => 'light_red',
         'Gif-Deanimate' => 'blue',
         Force           => 'red',
@@ -264,7 +265,6 @@ sub paint_it ($) {
 
     return $colour_code;
 }
-
 
 sub get_semantic_html_markup ($) {
 ###############################################################
@@ -438,7 +438,6 @@ sub print_outro () {
     }
 }
 
-
 sub get_line_end () {
 
     my $line_end = "\n";
@@ -466,7 +465,6 @@ sub get_colour_html_markup ($) {
 
     return $code;
 }
-
 
 sub default_colours () {
     # XXX: Properly
@@ -612,7 +610,7 @@ sub h ($) {
     return $result;
 }
 
-sub higlight_known_headers ($) {
+sub highlight_known_headers ($) {
 
     my $content = shift;
     our %header_colours;
@@ -630,7 +628,7 @@ sub higlight_known_headers ($) {
     return $content;
 }
 
-sub higlight_matched_request_line ($$) {
+sub highlight_matched_request_line ($$) {
 
     my $result = shift; # XXX: Stupid name;
     my $regex = shift;
@@ -657,9 +655,9 @@ sub highlight_request_line ($) {
         # XXX: save these: ($method, $path, $http_version) = ($1, $2, $3);
         $rl =~ s@^(\w+)@$h{'method'}$1$h{'Standard'}@;
         if ($rl =~ /http:\/\//) {
-            $rl = higlight_matched_url($rl, '[^\s]*(?=\sHTTP)');
+            $rl = highlight_matched_url($rl, '[^\s]*(?=\sHTTP)');
         } else {
-            $rl = higlight_matched_pattern($rl, 'request_', '[^\s]*(?=\sHTTP)');
+            $rl = highlight_matched_pattern($rl, 'request_', '[^\s]*(?=\sHTTP)');
         }
 
         $rl =~ s@(HTTP\/\d\.\d)$@$h{'http-version'}$1$h{'Standard'}@;
@@ -667,7 +665,7 @@ sub highlight_request_line ($) {
     } elsif ($rl =~ m/\.\.\. \[too long, truncated\]$/) {
 
         $rl =~ s@^(\w+)@$h{'method'}$1$h{'Standard'}@;
-        $rl = higlight_matched_url($rl, '[^\s]*(?=\.\.\.)');
+        $rl = highlight_matched_url($rl, '[^\s]*(?=\.\.\.)');
 
     } elsif ($rl =~ m/^ $/) {
 
@@ -688,10 +686,11 @@ sub highlight_response_line ($) {
     my ($http_version, $status_code, $status_message);
 
     #HTTP/1.1 200 OK
+    #ICY 200 OK
 
     # TODO: Mark different status codes differently
 
-    if ($rl =~ m/(HTTP\/\d\.\d) (\d+) (.*)/) {
+    if ($rl =~ m/((?:HTTP\/\d\.\d|ICY)) (\d+) (.*)/) {
         ($http_version, $status_code, $status_message) = ($1, $2, $3);
     } else {
         debug_message ("Can't parse response line: $rl") and die 'Fix this';
@@ -708,7 +707,7 @@ sub highlight_response_line ($) {
     return $rl;
 }
 
-sub higlight_matched_url ($$) {
+sub highlight_matched_url ($$) {
 
     my $result = shift; # XXX: Stupid name;
     my $regex = shift;
@@ -723,7 +722,7 @@ sub higlight_matched_url ($$) {
     return $result;
 }
 
-sub higlight_matched_host ($$) {
+sub highlight_matched_host ($$) {
 
     my $result = shift; # XXX: Stupid name;
     my $regex = shift;
@@ -735,7 +734,7 @@ sub higlight_matched_host ($$) {
     return $result;
 }
 
-sub higlight_matched_pattern ($$$) {
+sub highlight_matched_pattern ($$$) {
 
     our %h;
     my $result = shift; # XXX: Stupid name;
@@ -751,8 +750,7 @@ sub higlight_matched_pattern ($$$) {
     return $result;
 }
 
-
-sub higlight_matched_path ($$) {
+sub highlight_matched_path ($$) {
 
     my $result = shift; # XXX: Stupid name;
     my $regex = shift;
@@ -763,7 +761,6 @@ sub higlight_matched_path ($$) {
 
     return $result;
 }
-
 
 sub highlight_url ($) {
 
@@ -802,7 +799,7 @@ sub handle_loglevel_header ($) {
     # scan: Accept: image/png,image/*;q=0.8,*/*;q=0.5
     if ($c =~ m/^scan: ((?>[^:]+)):/) {
         my $header = $1;
-        if (!defined($header_colours{$header})) {
+        if (!defined($header_colours{$header}) and $header =~ /^[\d\w-]*$/) {
             debug_message "Registering previously unknown header $1" if DEBUG_HEADER_REGISTERING;
 
             if (REGISTER_HEADERS_WITH_THE_SAME_COLOUR) {
@@ -824,7 +821,7 @@ sub handle_loglevel_header ($) {
 
             $content = highlight_request_line($1);
 
-    } elsif ($c =~ m/^(scan: )(HTTP\/\d\.\d (\d+) (.*))/) {
+    } elsif ($c =~ m/^(scan: )((?:HTTP\/\d\.\d|ICY) (\d+) (.*))/) {
 
             # Server response line
             $req{$t}{'response_line'} = $2;
@@ -841,8 +838,8 @@ sub handle_loglevel_header ($) {
     } elsif ($c =~ m/^New host is: ([^\s]*)\./) {
 
         # New host is: trac.vidalia-project.net. Crunching Referer: http://www.vidalia-project.net/
-        $c = higlight_matched_host($c, '(?<=New host is: )[^\s]+');
-        $content = higlight_matched_url($c, '(?<=Crunching Referer: )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=New host is: )[^\s]+');
+        $content = highlight_matched_url($c, '(?<=Crunching Referer: )[^\s]+');
 
     } elsif ($c =~ m/^Text mode enabled by force. (Take cover)!/) {
 
@@ -859,12 +856,12 @@ sub handle_loglevel_header ($) {
         # Adjusted Content-Length to 2132
         # Adjust Content-Length to 33533
         $content =~ s@(?<=Content-Length to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
-        $content = higlight_known_headers($content);
+        $content = highlight_known_headers($content);
 
     } elsif ($c =~ m/^Destination extracted from "Host:" header. New request URL:/) {
 
         # Destination extracted from "Host:" header. New request URL: http://www.cccmz.de/~ridcully/blog/
-        $content = higlight_matched_url($content, '(?<=New request URL: ).*');
+        $content = highlight_matched_url($content, '(?<=New request URL: ).*');
 
     } elsif ($c =~ m/^Couldn\'t parse:/) {
 
@@ -913,13 +910,17 @@ sub handle_loglevel_header ($) {
           or $c =~ m/^Reducing white space in /
           or $c =~ m/^Ignoring single quote in /
           or $c =~ m/^Converting tab to space in /
+          or $c =~ m/A HTTP\/1\.1 response without/
+          or $c =~ m/Disabled filter mode on behalf of the client/
             )
     {
         # XXX: Some of these may need highlighting
 
         # Modified: User-Agent: Mozilla/5.0 (X11; U; SunOS i86pc; pl-PL; rv:1.8.1.1) Gecko/20070214 Firefox/2.0.0.1
         # Accept-Language header crunched and replaced with: Accept-Language: pl-pl
-        # cookie 'Set-Cookie: eZSessionCookie=07bfec287c197440d299f81580593c3d; expires=Thursday, 12-Apr-07 15:16:18 GMT; path=/' send by http://wirres.net/article/articleview/4265/1/6/ appears to be using time format 1 (XXX: gone with the wind)
+        # cookie 'Set-Cookie: eZSessionCookie=07bfec287c197440d299f81580593c3d; \
+        #  expires=Thursday, 12-Apr-07 15:16:18 GMT; path=/' send by \
+        #  http://wirres.net/article/articleview/4265/1/6/ appears to be using time format 1 (XXX: gone with the wind)
         # Cookie rewritten to a temporary one: Set-Cookie: NSC_gffe-iuuq-mc-wtfswfs=8efb33a53660;path=/
         # Text mode is already enabled
         # Denied request with NULL byte(s) turned into line break(s)
@@ -945,7 +946,10 @@ sub handle_loglevel_header ($) {
         # Content-Disposition header crunched and replaced with: content-disposition: filename=baz
         # Reducing white space in 'X-LWS-Test: "This  is  quoted" this is not "this  is  " but " this again   is  not'
         # Ignoring single quote in 'X-LWS-Test: "This  is  quoted" this is not "this  is  " but "  this again   is  not'
-        # Converting tab to space in 'X-LWS-Test:   "This  is  quoted" this   is  not "this  is  "  but  "  this again   is  not'
+        # Converting tab to space in 'X-LWS-Test:   "This  is  quoted" this   is  not "this  is  "  but  "\
+        #  this again   is  not'
+        # A HTTP/1.1 response without Connection header implies keep-alive.
+        # Disabled filter mode on behalf of the client.
 
     } elsif ($c =~ m/^scanning headers for:/) {
 
@@ -965,7 +969,8 @@ sub handle_loglevel_header ($) {
  
     } elsif ($c =~ m/^(Transforming \")(.*?)(\" to \")(.*?)(\")/) {
 
-        # Transforming "Proxy-Authenticate: Basic realm="Correos Proxy Server"" to "Proxy-Authenticate: Basic realm="Correos Proxy Server""
+        # Transforming "Proxy-Authenticate: Basic realm="Correos Proxy Server"" to\
+        #  "Proxy-Authenticate: Basic realm="Correos Proxy Server""
 
        $content =~ s@(?<=^Transforming \")(.*)(?=\" to)@$h{'Header'}$1$h{'Standard'}@;
        $content =~ s@(?<=to \")(.*)(?=\")@$h{'Header'}$1$h{'Standard'}@;
@@ -977,7 +982,8 @@ sub handle_loglevel_header ($) {
 
     } elsif ($c =~ m/^Content-Type: .* not replaced/) {
 
-        # Content-Type: application/octet-stream not replaced. It doesn't look like text. Enable force-text-mode if you know what you're doing.
+        # Content-Type: application/octet-stream not replaced. It doesn't look like text.\
+        #  Enable force-text-mode if you know what you're doing.
         # XXX: Could highlight more here.
         $content =~ s@(?<=^Content-Type: )(.*)(?= not replaced)@$h{'content-type'}$1$h{'Standard'}@;
 
@@ -988,7 +994,7 @@ sub handle_loglevel_header ($) {
 
     # Highlight headers   
     unless ($c =~ m/^Transforming/) {
-        $content = higlight_known_headers($content) unless $no_special_header_highlighting;
+        $content = highlight_known_headers($content) unless $no_special_header_highlighting;
     }
 
     return $content;
@@ -1107,7 +1113,7 @@ sub handle_loglevel_re_filter ($) {
         $c =~ s@(?<=produced )(\d+)(?= hits)@$h{'Number'}$1$h{'Standard'}@;
 
         $c =~ s@([^\s]+?)(\'? produced)@$h{'filter'}$1$h{'Standard'}$2@;
-        $c = higlight_matched_host($c, '(?<=filtering )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=filtering )[^\s]+');
 
         $c =~ s@\.$@ @;
         $c .= "(" . $h{'Number'};
@@ -1159,7 +1165,8 @@ sub handle_loglevel_re_filter ($) {
         return ''  if (SUPPRESS_SUCCEEDED_FILTER_ADDITIONS && m/succeeded/);
 
         # Adding re_filter job ...
-        # Adding dynamic re_filter job s@^(?:\w*)\s+.*\s+HTTP/\d\.\d\s*@IP-ADDRESS: $origin@D to filter client-ip-address succeeded.
+        # Adding dynamic re_filter job s@^(?:\w*)\s+.*\s+HTTP/\d\.\d\s*@IP-ADDRESS: $origin@D\
+        #  to filter client-ip-address succeeded.
 
     } elsif ($c =~ m/^Reading in filter/) {
 
@@ -1174,7 +1181,6 @@ sub handle_loglevel_re_filter ($) {
     return $content;
 }
 
-
 sub handle_loglevel_redirect ($) {
 
     my $c = shift;
@@ -1185,28 +1191,30 @@ sub handle_loglevel_redirect ($) {
     if ($c =~ m/^Decoding "([^""]*)"/) {
 
          $req{$t}{'original-destination'} = $1;
-         $c = higlight_matched_path($c, '(?<=Decoding ")[^"]*');
+         $c = highlight_matched_path($c, '(?<=Decoding ")[^"]*');
          $c =~ s@\"@@g;
 
     } elsif ($c =~ m/^Checking/) {
 
-         # Checking /_ylt=A0geu.Z76BRGR9kAH2RXNyoA/SIG=14gqhtscv/EXP=1175861755/**http://search.yahoo.com/search?p=view+odb+presentation+on+freebsd&ei=UTF-8&xargs=0&pstart=1&fr=moz2&b=11 for redirects.
+         # Checking /_ylt=A0geu.Z76BRGR9k/**http://search.yahoo.com/search?p=view+odb+presentation+on+freebsd\
+         #  &ei=UTF-8&xargs=0&pstart=1&fr=moz2&b=11 for redirects.
 
          # TODO: Change colour if really url-decoded
          $req{$t}{'decoded-original-destination'} = $1;
-         $c = higlight_matched_path($c, '(?<=Checking ")[^"]*');
+         $c = highlight_matched_path($c, '(?<=Checking ")[^"]*');
          $c =~ s@\"@@g;
 
     } elsif ($c =~ m/^pcrs command "([^""]*)" changed "([^""]*)" to "([^""]*)" \((\d+) hits?\)/) {
 
-        # pcrs command "s@&from=rss@@" changed "http://it.slashdot.org/article.pl?sid=07/03/02/1657247&from=rss" to "http://it.slashdot.org/article.pl?sid=07/03/02/1657247" (1 hit).
+        # pcrs command "s@&from=rss@@" changed "http://it.slashdot.org/article.pl?sid=07/03/02/1657247&from=rss"\
+        #  to "http://it.slashdot.org/article.pl?sid=07/03/02/1657247" (1 hit).
 
         my ($pcrs_command, $url_before, $url_after, $hits) = ($1, $2, $3, $4); # XXX: save these?
 
         $c =~ s@(?<=pcrs command )"([^""]*)"@$h{'filter'}$1$h{'Standard'}@;
-        $c = higlight_matched_url($c, '(?<=changed ")[^""]*');
+        $c = highlight_matched_url($c, '(?<=changed ")[^""]*');
         $c =~ s@(?<=changed )"([^""]*)"@$1@; # Remove quotes
-        $c = higlight_matched_url($c, '(?<=to ")[^""]*');
+        $c = highlight_matched_url($c, '(?<=to ")[^""]*');
         $c =~ s@(?<=to )"([^""]*)"@$1@; # Remove quotes
         $c =~ s@(\d+)(?= hits?)@$h{'hits'}$1$h{'Standard'}@;
 
@@ -1218,9 +1226,10 @@ sub handle_loglevel_redirect ($) {
         $c = $1 . h('rewritten-URL') . $2 . h('Standard');
 
     } elsif ($c =~ m/No pcrs command recognized, assuming that/) {
-        # No pcrs command recognized, assuming that "http://config.privoxy.org/user-manual/favicon.png" is already properly formatted.
+        # No pcrs command recognized, assuming that "http://config.privoxy.org/user-manual/favicon.png"\
+        #  is already properly formatted.
         # XXX: assume the same?
-        $c = higlight_matched_url($c, '(?<=assuming that \")[^"]*');
+        $c = highlight_matched_url($c, '(?<=assuming that \")[^"]*');
 
     } else {
 
@@ -1280,7 +1289,6 @@ sub handle_loglevel_gif_deanimate ($) {
     return $content;
 }
 
-
 sub handle_loglevel_request ($) {
 
     my $content = shift;
@@ -1298,13 +1306,13 @@ sub handle_loglevel_request ($) {
             $content =~ s@\(($reason)\)@$reason_colours{$reason}($1)$h{'Standard'}@g;
         }
         # Highlight request URL domain and ditch 'crunch!'
-        $content = higlight_matched_pattern($content, 'request_', '[^ ]*(?= crunch!)');
+        $content = highlight_matched_pattern($content, 'request_', '[^ ]*(?= crunch!)');
         $content =~ s@ crunch!@@;
 
     } elsif ($content =~ m/\[too long, truncated\]$/) {
 
         # config.privoxy.org/edit-actions-submit?f=3&v=1176116716&s=7&Submit=Submit[...]&filter... [too long, truncated]
-        $content = higlight_matched_pattern($content, 'request_', '^.*(?=\.\.\. \[too long, truncated\]$)');
+        $content = highlight_matched_pattern($content, 'request_', '^.*(?=\.\.\. \[too long, truncated\]$)');
 
     } elsif ($content =~ m/(.*)/) { # XXX: Pretty stupid
 
@@ -1320,6 +1328,32 @@ sub handle_loglevel_request ($) {
     return $content;
 }
 
+sub handle_loglevel_crunch ($) {
+
+    my $content = shift;
+    our %h;
+    our %reason_colours;
+
+    # Highlight crunch reason
+    foreach my $reason (keys %reason_colours) {
+        $content =~ s@($reason)@$reason_colours{$reason}$1$h{'Standard'}@g;
+    }
+
+    if ($content =~ m/\[too long, truncated\]$/) {
+
+        # Blocked: config.privoxy.org/edit-actions-submit?f=3&v=1176116716&s=7&Submit=Submit\
+        #  [...]&filter... [too long, truncated]
+        $content = highlight_matched_pattern($content, 'request_', '^.*(?=\.\.\. \[too long, truncated\]$)');
+
+    } else {
+
+        # Blocked: http://ads.example.org/
+        $content = highlight_matched_pattern($content, 'request_', '(?<=: ).*');
+    }
+
+    return $content;
+}
+
 sub handle_loglevel_connect ($) {
 
     my $c = shift;
@@ -1327,33 +1361,33 @@ sub handle_loglevel_connect ($) {
     our %req;
     our %h;
 
-    if ($c =~ m/via [^\s]+ to: [^\s]+/) {
+    if ($c =~ m/^via [^\s]+ to: [^\s]+/) {
 
         # Connect: via 10.0.0.1:8123 to: www.example.org.noconnect
 
-        $c = higlight_matched_host($c, '(?<=via )[^\s]+');
-        $c = higlight_matched_host($c, '(?<=to: )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=via )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=to: )[^\s]+');
 
-    } elsif ($c =~ m/connect to: .* failed: .*/) {
+    } elsif ($c =~ m/^connect to: .* failed: .*/) {
 
         # connect to: www.example.org.noconnect failed: Operation not permitted
 
-        $c = higlight_matched_host($c, '(?<=connect to: )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=connect to: )[^\s]+');
 
         $c =~ s@(?<=failed: )(.*)@$h{'error'}$1$h{'Standard'}@;
 
-    } elsif ($c =~ m/to ([^\s]*) successful$/) {
+    } elsif ($c =~ m/^to ([^\s]*) successful$/) {
 
         # Connect: to www.nzherald.co.nz successful
 
         return '' if SUPPRESS_SUCCESSFUL_CONNECTIONS;
-        $c = higlight_matched_host($c, '(?<=to )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=to )[^\s]+');
 
-    } elsif ($c =~ m/to ([^\s]*)$/) {
+    } elsif ($c =~ m/^to ([^\s]*)$/) {
 
         # Connect: to lists.sourceforge.net:443
 
-        $c = higlight_matched_host($c, '(?<=to )[^\s]+');
+        $c = highlight_matched_host($c, '(?<=to )[^\s]+');
 
     } elsif ($c =~ m/^accepted connection from .*/ or
              $c =~ m/^OK/) {
@@ -1362,13 +1396,13 @@ sub handle_loglevel_connect ($) {
         # Privoxy 3.0.6 and earlier just say:
         # OK
         return '' if SUPPRESS_ACCEPTED_CONNECTIONS;
-        $c = higlight_matched_host($c, '(?<=connection from ).*');
+        $c = highlight_matched_host($c, '(?<=connection from ).*');
 
     } elsif ($c =~ m/^write header to: .* failed:/) {
 
         # write header to: 10.0.0.1 failed: Broken pipe
 
-        $c = higlight_matched_host($c, '(?<=write header to: )[^\s]*');
+        $c = highlight_matched_host($c, '(?<=write header to: )[^\s]*');
         $c =~ s@(?<=failed: )(.*)@$h{'Error'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^write header to client failed:/) {
@@ -1403,11 +1437,104 @@ sub handle_loglevel_connect ($) {
     } elsif ($c =~ m/^Denying suspicious CONNECT request from/) {
 
         # Denying suspicious CONNECT request from 10.0.0.1
-        $c = higlight_matched_host($c, '(?<=from )[^\s]+'); # XXX: not an URL
+        $c = highlight_matched_host($c, '(?<=from )[^\s]+'); # XXX: not an URL
 
     } elsif ($c =~ m/^socks5_connect:/) {
     
         $c =~ s@(?<=socks5_connect: )(.*)@$h{'error'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Created new connection to/) {
+
+        # Created new connection to www.privoxy.org:80 on socket 11.
+        $c = highlight_matched_host($c, '(?<=connection to )[^\s]+');
+        $c =~ s@(?<=on socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^^Found reusable socket/) {
+
+        # Found reusable socket 9 for www.privoxy.org:80 in slot 0.
+        $c =~ s@(?<=Found reusable socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c = highlight_matched_host($c, '(?<=for )[^\s]+');
+        $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Marking open socket/) {
+
+        # Marking open socket 9 for www.privoxy.org:80 in slot 0 as unused.
+        $c =~ s@(?<=Marking open socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c = highlight_matched_host($c, '(?<=for )[^\s]+');
+        $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^No reusable/) {
+
+        # No reusable socket for addons.mozilla.org:443 found. Opening a new one.
+        $c = highlight_matched_host($c, '(?<=for )[^\s]+');
+
+    } elsif ($c =~ m/^(Remembering|Forgetting) socket/) {
+
+        # Remembering socket 13 for www.privoxy.org:80 in slot 0.
+        # Forgetting socket 38 for www.privoxy.org:80 in slot 5.
+        $c =~ s@(?<=socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c = highlight_matched_host($c, '(?<=for )[^\s]+');
+        $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Socket/) {
+
+        # Socket 16 already forgotten or never remembered.
+        $c =~ s@(?<=Socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^The connection to/) {
+
+        # The connection to www.privoxy.org:80 in slot 6 timed out. Closing socket 19. Timeout is: 61.
+        # The connection to 10.0.0.1:80 in slot 0 is no longer usable. Closing socket 4.
+        $c = highlight_matched_host($c, '(?<=connection to )[^\s]+');
+        $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Closing socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Timeout is: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Waiting for/) {
+
+        # Waiting for 1 connections to timeout.
+        $c =~ s@(?<=^Waiting for )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Initialized/) {
+
+        # Initialized 20 socket slots.
+        $c =~ s@(?<=Initialized )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Done reading from server/) {
+
+        # Done reading from server. Expected content length: 24892. \
+        #  Actual content length: 24892. Most recently received: 4412.
+        $c =~ s@(?<=Expected content length: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Actual content length: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=received: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Continuing buffering headers/) {
+
+        # Continuing buffering headers. byte_count: 19. header_offset: 517. len: 536.
+        $c =~ s@(?<=byte_count: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=header_offset: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=len: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Received \d+ bytes while/) {
+
+        # Received 206 bytes while expecting 12103.
+        $c =~ s@(?<=Received )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=expecting )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Connection from/) {
+
+        # Connection from 81.163.28.218 dropped due to ACL
+        $c =~ s@(?<=^Connection from )((?:\d+\.?){4})@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Looks like we rea/ or
+             $c =~ m/^Unsetting keep-alive flag/ or
+             $c =~ m/^No connections to wait/) {
+
+        # Looks like we reached the end of the last chunk. We better stop reading.
+        # Looks like we read the end of the last chunk together with the server \
+        #  headers. We better stop reading.
+        # Unsetting keep-alive flag.
+        # No connections to wait for left.
 
     } else {
 
@@ -1429,7 +1556,7 @@ sub handle_loglevel_info ($) {
     if ($c =~ m/^Rewrite detected:/) {
 
         # Rewrite detected: GET http://10.0.0.2:88/blah.txt HTTP/1.1
-        $c = higlight_matched_request_line($c, '(?<=^Rewrite detected: ).*');
+        $c = highlight_matched_request_line($c, '(?<=^Rewrite detected: ).*');
 
     } elsif ($c =~ m/^Decompress(ing deflated|ion didn)/ or
              $c =~ m/^Compressed content detected/ or
@@ -1437,7 +1564,8 @@ sub handle_loglevel_info ($) {
             ) {
         # Decompressing deflated iob: 117
         # Decompression didn't result in any content.
-        # Compressed content detected, content filtering disabled. Consider recompiling Privoxy with zlib support or enable the prevent-compression action.
+        # Compressed content detected, content filtering disabled. Consider recompiling Privoxy\
+        #  with zlib support or enable the prevent-compression action.
         # Tagger 'complete-url' created empty tag. Ignored.
 
         # Ignored for now
@@ -1485,15 +1613,29 @@ sub handle_loglevel_info ($) {
         $c =~ s@(CONNECT)@$h{'method'}$1$h{'Standard'}@;
         $c =~ s@(?<=to port )(\d+)@$h{'port'}$1$h{'Standard'}@;
 
+    } elsif ($c =~ m/^Status code/) {
+
+        # Status code 304 implies no body.
+        $c =~ s@(?<=Status code )(\d+)@$h{'status-code'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Method/) {
+
+        # Method HEAD implies no body.
+        $c =~ s@(?<=Method )([^\s]+)@$h{'method'}$1$h{'Standard'}@;
+
     } elsif ($c =~ m/^No logfile configured/ or
              $c =~ m/^Malformerd HTTP headers detected and MS IIS5 hack enabled/ or
-             $c =~ m/^Invalid \"chunked\" transfer/
+             $c =~ m/^Invalid \"chunked\" transfer/ or
+             $c =~ m/^Support for/
              ) {
 
         # No logfile configured. Please enable it before reporting any problems.
-        # Malformerd HTTP headers detected and MS IIS5 hack enabled. Expect an invalid response or even no response at all.
+        # Malformerd HTTP headers detected and MS IIS5 hack enabled. Expect an invalid \
+        #  response or even no response at all.
         # No logfile configured. Logging disabled.
         # Invalid "chunked" transfer encoding detected and ignored.
+        # Support for 'Connection: keep-alive' is experimental, incomplete and\
+        #  known not to work properly in some situations.
 
     } else {
 
@@ -1540,12 +1682,12 @@ sub handle_loglevel_force ($) {
       
         # Ignored force prefix in request: "GET http://10.0.0.1/PRIVOXY-FORCE/block HTTP/1.1"
         $c =~ s@^(Ignored)@$h{'ignored'}$1$h{'Standard'}@;
-        $c = higlight_matched_request_line($c, '(?<=request: ")[^"]*');
+        $c = highlight_matched_request_line($c, '(?<=request: ")[^"]*');
 
     } elsif ($c =~ m/^Enforcing request:/) {
       
         # Enforcing request: "GET http://10.0.0.1/block HTTP/1.1".
-        $c = higlight_matched_request_line($c, '(?<=request: ")[^"]*');
+        $c = highlight_matched_request_line($c, '(?<=request: ")[^"]*');
 
     } else {
 
@@ -1652,6 +1794,7 @@ sub parse_loop () {
         'Connect'       => \&handle_loglevel_connect,
         'Redirect'      => \&handle_loglevel_redirect,
         'Request'       => \&handle_loglevel_request,
+        'Crunch'        => \&handle_loglevel_crunch,
         'Gif-Deanimate' => \&handle_loglevel_gif_deanimate,
         'Info'          => \&handle_loglevel_info,
         'CGI'           => \&handle_loglevel_cgi,
@@ -1665,7 +1808,7 @@ sub parse_loop () {
  
         $output = '';
 
-        if (m/^(\w{3} \d{2}) (\d\d:\d\d:\d\d)\.?(\d+)? (?:Privoxy\(([^\)]*)\)) ([\w -]*): (.*)$/) {
+        if (m/^(\w{3} \d{2}) (\d\d:\d\d:\d\d)\.?(\d+)? (?:Privoxy\()?([^\)\s]*)[\)]? ([\w -]*): (.*)$/) {
             # XXX: Put in req hash?
             $day = $1;
             $time_stamp = $2;
@@ -1723,7 +1866,9 @@ sub parse_loop () {
         } elsif (m/^(\d+\.\d+\.\d+\.\d+) - - \[(.*)\] "(.*)" (\d+) (\d+)/) {
 
             # LOG_LEVEL_CLF lines look like this
-            # 61.152.239.32 - - [04/Mar/2007:18:28:23 +0100] "GET http://ad.yieldmanager.com/imp?z=1&Z=120x600&s=109339&u=http%3A%2F%2Fwww.365loan.co.uk%2F&r=1 HTTP/1.1" 403 1730
+            # 61.152.239.32 - - [04/Mar/2007:18:28:23 +0100] "GET \
+            #  http://ad.yieldmanager.com/imp?z=1&Z=120x600&s=109339&u=http%3A%2F%2Fwww.365loan.co.uk%2F&r=1\
+            #  HTTP/1.1" 403 1730
             our ($ip, $timestamp, $request_line, $status_code, $size) = ($1, $2, $3, $4, $5);
 
             print_clf_message();
@@ -1751,7 +1896,7 @@ sub VersionMessage {
     my $version_message;
 
     $version_message .= 'Privoxy-Log-Parser ' . PRIVOXY_LOG_PARSER_VERSION  . "\n";
-    $version_message .= 'Copyright (C) 2007-2008 Fabian Keil <fk@fabiankeil.de>' . "\n";
+    $version_message .= 'Copyright (C) 2007-2009 Fabian Keil <fk@fabiankeil.de>' . "\n";
     $version_message .= 'http://www.fabiankeil.de/sourcecode/privoxy-log-parser/' . "\n";
 
     print $version_message;

@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.59 2008/08/13 16:57:46 fabiankeil Exp $
+# $Id: privoxy-rh.spec,v 1.62 2009/02/15 17:17:23 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated accordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.10
+Version: 3.0.11
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -70,7 +70,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=10
+VERSION_POINT=11
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -144,7 +144,6 @@ cat config | \
 #    sed 's/^permissionsfile.*/permissionsfile \/etc\/%{name}\/permissionsfile/g' | \
 #    sed 's/^filterfile.*/default.filter \/etc\/%{name}\/default.filter/g' | \
 #    sed 's/^logfile.*/logfile \%{_localstatedir}\/log\/%{name}\/logfile/g' | \
-#    sed 's/^jarfile.*/jarfile \%{_localstatedir}\/log\/%{name}\/jarfile/g' | \
 #    sed 's/^forward.*/forward \/etc\/%{name}\/forward/g' | \
 #    sed 's/^aclfile.*/aclfile \/etc\/%{name}\/aclfile/g' > \
     sed 's@^logdir.*@logdir %{_localstatedir}/log/%{name}@g' | \
@@ -272,8 +271,8 @@ fi
 # -- morcego
 # WARNING ! WARNING ! WARNING ! WARNING ! WARNING ! WARNING ! WARNING !
 %config(noreplace) %{privoxyconf}/config
-%config %{privoxyconf}/standard.action
 %config(noreplace) %{privoxyconf}/user.action
+%config %{privoxyconf}/match-all.action
 %config %{privoxyconf}/default.action
 %config %{privoxyconf}/default.filter
 %config %{privoxyconf}/regression-tests.action
@@ -766,6 +765,16 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.62  2009/02/15 17:17:23  fabiankeil
+# - Bump version to 3.0.11.
+# - List match-all.action as %config file.
+#
+# Revision 1.61  2009/01/13 16:47:34  fabiankeil
+# The standard.action file is gone.
+#
+# Revision 1.60  2008/08/30 12:46:49  fabiankeil
+# The jarfile directive is gone. Update accordingly.
+#
 # Revision 1.59  2008/08/13 16:57:46  fabiankeil
 # Change version to 3.0.10.
 #

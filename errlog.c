@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.74 2008/08/06 18:33:36 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.86 2009/02/09 21:21:15 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -6,7 +6,7 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.74 2008/08/06 18:33:36 fabiankeil E
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,49 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.74 2008/08/06 18:33:36 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.86  2009/02/09 21:21:15  fabiankeil
+ *    Now that init_log_module() is called earlier, call show_version()
+ *    later on from main() directly so it doesn't get called for --help
+ *    or --version.
+ *
+ *    Revision 1.85  2009/02/06 17:51:38  fabiankeil
+ *    Be prepared if I break the log module initialization again.
+ *
+ *    Revision 1.84  2008/12/14 15:46:22  fabiankeil
+ *    Give crunched requests their own log level.
+ *
+ *    Revision 1.83  2008/12/04 18:14:32  fabiankeil
+ *    Fix some cparser warnings.
+ *
+ *    Revision 1.82  2008/11/23 16:06:58  fabiankeil
+ *    Update a log message I missed in 1.80.
+ *
+ *    Revision 1.81  2008/11/23 15:59:27  fabiankeil
+ *    - Update copyright range.
+ *    - Remove stray line breaks in a log message
+ *      nobody is supposed to see anyway.
+ *
+ *    Revision 1.80  2008/11/23 15:49:49  fabiankeil
+ *    In log_error(), don't surround the thread id with "Privoxy(" and ")".
+ *
+ *    Revision 1.79  2008/10/20 17:09:25  fabiankeil
+ *    Update init_error_log() description to match reality.
+ *
+ *    Revision 1.78  2008/09/07 16:59:31  fabiankeil
+ *    Update a comment to reflect that we
+ *    have mutex support on mingw32 now.
+ *
+ *    Revision 1.77  2008/09/07 12:43:44  fabiankeil
+ *    Move the LogPutString() call in log_error() into the locked
+ *    region so the Windows GUI log is consistent with the logfile.
+ *
+ *    Revision 1.76  2008/09/07 12:35:05  fabiankeil
+ *    Add mutex lock support for _WIN32.
+ *
+ *    Revision 1.75  2008/09/04 08:13:58  fabiankeil
+ *    Prepare for critical sections on Windows by adding a
+ *    layer of indirection before the pthread mutex functions.
+ *
  *    Revision 1.74  2008/08/06 18:33:36  fabiankeil
  *    If the "close fd first" workaround doesn't work,
  *    the fatal error message will be lost, so we better
@@ -436,24 +479,24 @@ static char *w32_socket_strerr(int errcode, char *tmp_buf);
 static char *os2_socket_strerr(int errcode, char *tmp_buf);
 #endif
 
-#ifdef FEATURE_PTHREAD
+#ifdef MUTEX_LOCKS_AVAILABLE
 static inline void lock_logfile(void)
 {
-   pthread_mutex_lock(&log_mutex);
+   privoxy_mutex_lock(&log_mutex);
 }
 static inline void unlock_logfile(void)
 {
-   pthread_mutex_unlock(&log_mutex);
+   privoxy_mutex_unlock(&log_mutex);
 }
 static inline void lock_loginit(void)
 {
-   pthread_mutex_lock(&log_init_mutex);
+   privoxy_mutex_lock(&log_init_mutex);
 }
 static inline void unlock_loginit(void)
 {
-   pthread_mutex_unlock(&log_init_mutex);
+   privoxy_mutex_unlock(&log_init_mutex);
 }
-#else /* ! FEATURE_PTHREAD */
+#else /* ! MUTEX_LOCKS_AVAILABLE */
 /*
  * FIXME we need a cross-platform locking mechanism.
  * The locking/unlocking functions below should be 
@@ -517,7 +560,7 @@ static void fatal_error(const char * error_message)
  * Returns     :  Nothing.
  *
  *********************************************************************/
-static void show_version(const char *prog_name)
+void show_version(const char *prog_name)
 {
    log_error(LOG_LEVEL_INFO, "Privoxy version " VERSION);
    if (prog_name != NULL)
@@ -541,13 +584,12 @@ static void show_version(const char *prog_name)
  * Returns     :  Nothing.
  *
  *********************************************************************/
-void init_log_module(const char *prog_name)
+void init_log_module(void)
 {
    lock_logfile();
    logfp = stderr;
    unlock_logfile();
    set_debug_level(debug);
-   show_version(prog_name);
 }
 
 
@@ -608,8 +650,7 @@ void disable_logging(void)
  *
  * Parameters  :
  *          1  :  prog_name  = The program name.
- *          2  :  logfname   = The logfile name, or NULL for stderr.
- *          3  :  debuglevel = The debugging level.
+ *          2  :  logfname   = The logfile to (re)open.
  *
  * Returns     :  N/A
  *
@@ -680,7 +721,7 @@ void init_error_log(const char *prog_name, const char *logfname)
    /*
     * Prevent the Windows GUI from showing the version two
     * times in a row on startup. It already displayed the show_version()
-    * call from init_log_module() that other systems write to stderr.
+    * call from main() that other systems write to stderr.
     *
     * This means mingw32 users will never see the version in their
     * log file, but I assume they wouldn't look for it there anyway
@@ -770,15 +811,15 @@ static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
 #ifdef HAVE_LOCALTIME_R
    tm_now = *localtime_r(&now, &tm_now);
 #elif FEATURE_PTHREAD
-   pthread_mutex_lock(&localtime_mutex);
+   privoxy_mutex_lock(&localtime_mutex);
    tm_now = *localtime(&now); 
-   pthread_mutex_unlock(&localtime_mutex);
+   privoxy_mutex_unlock(&localtime_mutex);
 #else
    tm_now = *localtime(&now); 
 #endif
 
    length = strftime(buffer, buffer_size, "%b %d %H:%M:%S", &tm_now);
-   if (length > 0)
+   if (length > (size_t)0)
    {
       msecs_length = snprintf(buffer+length, buffer_size - length, ".%.3ld", msecs);               
    }
@@ -828,18 +869,18 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
 #ifdef HAVE_GMTIME_R
    gmt = *gmtime_r(&now, &gmt);
 #elif FEATURE_PTHREAD
-   pthread_mutex_lock(&gmtime_mutex);
+   privoxy_mutex_lock(&gmtime_mutex);
    gmt = *gmtime(&now);
-   pthread_mutex_unlock(&gmtime_mutex);
+   privoxy_mutex_unlock(&gmtime_mutex);
 #else
    gmt = *gmtime(&now);
 #endif
 #ifdef HAVE_LOCALTIME_R
    tm_now = localtime_r(&now, &dummy);
 #elif FEATURE_PTHREAD
-   pthread_mutex_lock(&localtime_mutex);
+   privoxy_mutex_lock(&localtime_mutex);
    tm_now = localtime(&now); 
-   pthread_mutex_unlock(&localtime_mutex);
+   privoxy_mutex_unlock(&localtime_mutex);
 #else
    tm_now = localtime(&now); 
 #endif
@@ -849,7 +890,7 @@ static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
 
    length = strftime(buffer, buffer_size, "%d/%b/%Y:%H:%M:%S ", tm_now);
 
-   if (length > 0)
+   if (length > (size_t)0)
    {
       tz_length = snprintf(buffer+length, buffer_size-length,
                      "%+03d%02d", mins / 60, abs(mins) % 60);
@@ -924,6 +965,9 @@ static inline const char *get_log_level_string(int loglevel)
       case LOG_LEVEL_DEANIMATE:
          log_level_string = "Gif-Deanimate";
          break;
+      case LOG_LEVEL_CRUNCH:
+         log_level_string = "Crunch";
+         break;
       case LOG_LEVEL_CGI:
          log_level_string = "CGI";
          break;
@@ -974,7 +1018,7 @@ void log_error(int loglevel, const char *fmt, ...)
     * the taskbar icon animate.  (There is an option to disable
     * this but checking that is handled inside LogShowActivity()).
     */
-   if (loglevel == LOG_LEVEL_GPC)
+   if ((loglevel == LOG_LEVEL_GPC) || (loglevel == LOG_LEVEL_CRUNCH))
    {
       LogShowActivity();
    }
@@ -991,6 +1035,11 @@ void log_error(int loglevel, const char *fmt, ...)
 #endif
       )
    {
+      if (loglevel == LOG_LEVEL_FATAL)
+      {
+         fatal_error("Fatal error. You're not supposed to"
+            "see this message. Please file a bug report.");
+      }
       return;
    }
 
@@ -1006,8 +1055,8 @@ void log_error(int loglevel, const char *fmt, ...)
       if (NULL == outbuf_save)
       {
          snprintf(tempbuf, sizeof(tempbuf),
-            "%s Privoxy(%08lx) Fatal error: log_error() failed to allocate buffer memory.\n"
-            "\nExiting.", timestamp, thread_id);
+            "%s %08lx Fatal error: Out of memory in log_error().",
+            timestamp, thread_id);
          fatal_error(tempbuf); /* Exit */
       }
    }
@@ -1022,8 +1071,8 @@ void log_error(int loglevel, const char *fmt, ...)
    /* Add prefix for everything but Common Log Format messages */
    if (loglevel != LOG_LEVEL_CLF)
    {
-      length = (size_t)snprintf(outbuf, log_buffer_size, "%s Privoxy(%08lx) %s: ",
-                                timestamp, thread_id, get_log_level_string(loglevel));
+      length = (size_t)snprintf(outbuf, log_buffer_size, "%s %08lx %s: ",
+         timestamp, thread_id, get_log_level_string(loglevel));
    }
 
    /* get ready to scan var. args. */
@@ -1045,9 +1094,9 @@ void log_error(int loglevel, const char *fmt, ...)
       {
          outbuf[length++] = ch;
          /*
-          * XXX: Only necessary on platforms which don't use pthread
-          * mutexes (mingw32 for example), where multiple threads can
-          * write to the buffer at the same time.
+          * XXX: Only necessary on platforms where multiple threads
+          * can write to the buffer at the same time because we
+          * don't support mutexes (OS/2 for example).
           */
          outbuf[length] = '\0';
          continue;
@@ -1128,7 +1177,7 @@ void log_error(int loglevel, const char *fmt, ...)
                   format_string = "[counted string lenght < 0]";
                }
             }
-            else if (ival >= sizeof(tempbuf))
+            else if ((size_t)ival >= sizeof(tempbuf))
             {
                /*
                 * String is too long, copy as much as possible.
@@ -1220,8 +1269,9 @@ void log_error(int loglevel, const char *fmt, ...)
       assert(outbuf[log_buffer_size] == '\0');
 
       snprintf(outbuf, log_buffer_size,
-         "%s Privoxy(%08lx) Fatal error: log_error()'s sanity checks failed. length: %d\n"
-         "Exiting.", timestamp, thread_id, (int)length);
+         "%s %08lx Fatal error: log_error()'s sanity checks failed."
+         "length: %d. Exiting.",
+         timestamp, thread_id, (int)length);
       loglevel = LOG_LEVEL_FATAL;
    }
 
@@ -1242,12 +1292,13 @@ void log_error(int loglevel, const char *fmt, ...)
    {
       fputs(outbuf_save, logfp);
    }
-   unlock_logfile();
 
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)
    /* Write to display */
    LogPutString(outbuf_save);
 #endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
+
+   unlock_logfile();
 
 }
 

@@ -1,4 +1,4 @@
-const char miscutil_rcs[] = "$Id: miscutil.c,v 1.58 2008/04/17 14:53:30 fabiankeil Exp $";
+const char miscutil_rcs[] = "$Id: miscutil.c,v 1.62 2008/12/04 18:16:41 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.c,v $
@@ -44,6 +44,19 @@ const char miscutil_rcs[] = "$Id: miscutil.c,v 1.58 2008/04/17 14:53:30 fabianke
  *
  * Revisions   :
  *    $Log: miscutil.c,v $
+ *    Revision 1.62  2008/12/04 18:16:41  fabiankeil
+ *    Fix some cparser warnings.
+ *
+ *    Revision 1.61  2008/10/18 11:09:23  fabiankeil
+ *    Improve seed used by pick_from_range() on mingw32.
+ *
+ *    Revision 1.60  2008/09/07 12:35:05  fabiankeil
+ *    Add mutex lock support for _WIN32.
+ *
+ *    Revision 1.59  2008/09/04 08:13:58  fabiankeil
+ *    Prepare for critical sections on Windows by adding a
+ *    layer of indirection before the pthread mutex functions.
+ *
  *    Revision 1.58  2008/04/17 14:53:30  fabiankeil
  *    Move simplematch() into urlmatch.c as it's only
  *    used to match (old-school) domain patterns.
@@ -549,7 +562,7 @@ int strcmpic(const char *s1, const char *s2)
  *********************************************************************/
 int strncmpic(const char *s1, const char *s2, size_t n)
 {
-   if (n <= 0) return(0);
+   if (n <= (size_t)0) return(0);
    if (!s1) s1 = "";
    if (!s2) s2 = "";
    
@@ -560,7 +573,7 @@ int strncmpic(const char *s1, const char *s2, size_t n)
          break;
       }
 
-      if (--n <= 0) break;
+      if (--n <= (size_t)0) break;
 
       s1++, s2++;
    }
@@ -754,7 +767,7 @@ jb_err string_join(char **target_string, char *text_to_append)
 
    err = string_append(target_string, text_to_append);
 
-   free(text_to_append);
+   freez(text_to_append);
 
    return err;
 }
@@ -964,6 +977,9 @@ char * make_path(const char * dir, const char * file)
 long int pick_from_range(long int range)
 {
    long int number;
+#ifdef _WIN32
+   static unsigned long seed = 0;
+#endif /* def _WIN32 */
 
    assert(range != 0);
    assert(range > 0);
@@ -972,33 +988,27 @@ long int pick_from_range(long int range)
 
 #ifdef HAVE_RANDOM
    number = random() % range + 1; 
-#elif defined(FEATURE_PTHREAD)
-   pthread_mutex_lock(&rand_mutex);
-   number = rand() % (long int)(range + 1);
-   pthread_mutex_unlock(&rand_mutex);
-#else
+#elif defined(MUTEX_LOCKS_AVAILABLE)
+   privoxy_mutex_lock(&rand_mutex);
 #ifdef _WIN32
-   /*
-    * On Windows and mingw32 srand() has to be called in every
-    * rand()-using thread, but can cause crashes if it's not
-    * mutex protected.
-    *
-    * Currently we don't have mutexes for mingw32, and for
-    * our purpose this cludge is probably preferable to crashes.
-    *
-    * The warning is shown once on startup from jcc.c.
-    */
-   number = (range + GetCurrentThreadId() % range) / 2;
+   if (!seed)
+   {
+      seed = (unsigned long)(GetCurrentThreadId()+GetTickCount());
+   }
+   srand(seed);
+   seed = (unsigned long)((rand() << 16) + rand());
+#endif /* def _WIN32 */
+   number = (unsigned long)((rand() << 16) + (rand())) % (unsigned long)(range + 1);
+   privoxy_mutex_unlock(&rand_mutex);
 #else
    /*
     * XXX: Which platforms reach this and are there
     * better options than just using rand() and hoping
     * that it's safe?
     */
-   log_error(LOG_LEVEL_INFO, "No thread-safe PRNG available? Header time randomization might cause "
-      "crashes, predictable results or even combine these fine options.");
+   log_error(LOG_LEVEL_INFO, "No thread-safe PRNG available? Header time randomization "
+      "might cause crashes, predictable results or even combine these fine options.");
    number = rand() % (long int)(range + 1);
-#endif /* def _WIN32 */ 
 
 #endif /* (def HAVE_RANDOM) */
 

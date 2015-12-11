@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: seealso.sgml,v 2.8 2008/01/17 01:49:51 hal9 Exp $
+ $Id: seealso.sgml,v 2.11 2009/02/19 02:20:22 hal9 Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -49,7 +49,7 @@
  </simplelist>
  <simplelist>
   <member>
-   <ulink url="http://sourceforge.net/projects/ijbswa/">http://sourceforge.net/projects/ijbswa/</ulink>, 
+   <ulink url="https://sourceforge.net/projects/ijbswa/">https://sourceforge.net/projects/ijbswa/</ulink>, 
    the Project Page for <application>Privoxy</application> on 
    <ulink url="http://sourceforge.net">SourceForge</ulink>.
   </member>
@@ -63,20 +63,12 @@
  </simplelist>
  <simplelist>
   <member>
-   <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288</ulink>, to submit <quote>misses</quote> and other
+   <ulink url="https://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">https://sourceforge.net/tracker/?group_id=11118&amp;atid=460288</ulink>, to submit <quote>misses</quote> and other
    configuration related suggestions to the developers. 
   </member>
  </simplelist>
-<!-- 
-dead link 08/26/06
-
- <simplelist>
-  <member>
-   <ulink url="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/</ulink>, cool
-   and fun ideas from <application>Privoxy</application> users.
-  </member>
- </simplelist>
---> 
+ <![%seealso-extra;[
+ <!-- This part only goes into user-manual -->
  <simplelist>
   <member>
    <ulink url="http://www.junkbusters.com/ht/en/cookies.html">http://www.junkbusters.com/ht/en/cookies.html</ulink>,
@@ -87,12 +79,6 @@ dead link 08/26/06
   <member>
    <ulink url="http://www.junkbusters.com/ijb.html">http://www.junkbusters.com/ijb.html</ulink>,
    the original Internet Junkbuster.
-  </member>
- </simplelist>
- <simplelist>
-  <member>
-   <ulink url="http://privacy.net/">http://privacy.net/</ulink>, a useful site
-   to check what information about you is leaked while you browse the web.
   </member>
  </simplelist>
  <simplelist>
@@ -111,11 +97,12 @@ dead link 08/26/06
  </simplelist>
  <simplelist>
   <member>
-   <ulink url="http://tor.eff.org/">http://tor.eff.org/</ulink>, 
+   <ulink url="https://www.torproject.org/">https://www.torproject.org/</ulink>, 
    <application>Tor</application> can help anonymize web browsing, 
    web publishing, instant messaging, IRC, SSH, and other applications.
   </member>
  </simplelist>
+ ]]>
  <simplelist>
   <member>
    <ulink

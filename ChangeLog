@@ -1,7 +1,64 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.11 ***
+	
+- On most platforms, outgoing connections can be kept alive and
+  reused if the server supports it. Whether or not this improves
+  things depends on the connection.
+- When dropping privileges, membership in supplementary groups
+  is given up as well. Not doing that can lead to Privoxy running
+  with more rights than necessary and violates the principle of
+  least privilege. Users of the --user option are advised to update.
+  Thanks to Matthias Drochner for reporting the problem,
+  providing the initial patch and testing the final version.
+- Passing invalid users or groups with the --user option
+  didn't lead to program exit. Regression introduced in 3.0.7.
+- The match all section has been moved from default.action
+  to a new file called match-all.action. As a result the
+  default.action no longer needs to be touched by the user
+  and can be safely overwritten by updates.
+- The standard.action file has been removed. Its content
+  is now part of the default.action file.
+- In some situations the logged content length was slightly too low.
+- Crunched requests are logged with their own log level.
+  If you used "debug 1" in the past, you'll probably want
+  to additionally enable "debug 1024", otherwise only passed
+  requests will be logged. If you only care about crunched
+  requests, simply replace "debug 1" with "debug 1024".
+- The crunch reason has been moved to the beginning of the
+  crunch message. For HTTP URLs, the protocol is logged as well.
+- Log messages are shortened by printing the thread id on its
+  own (as opposed to putting it inside the string "Privoxy()").
+- The config option socket-timeout has been added to control
+  the time Privoxy waits for data to arrive on a socket.
+- Support for remote toggling is controlled by the configure
+  option --disable-toggle only. In previous versions it also
+  depended on the action editor and thus configuring with the
+  --disable-editor option would disable remote toggling support
+  as well.
+- Requests with invalid HTTP versions are rejected.
+- The template symbol @date@ can be used to include a date(1)-like
+  time string. Initial patch submitted by Endre Szabo.
+- Responses from shoutcast servers are accepted again.
+  Problem reported and fix suggested by Stefan.
+- The hide-forwarded-for-headers action has been replaced with
+  the change-x-forwarded-for{} action which can also be used to
+  add X-Forwarded-For headers. The latter functionality already
+  existed in Privoxy versions prior to 3.0.7 but has been removed
+  as it was often used unintentionally (by not using the
+  hide-forwarded-for-headers action).
+- A "clear log" view option was added to the mingw32 version
+  to clear out all of the lines in the Privoxy log window.
+  Based on a patch submitted by T Ford.
+- The mingw32 version uses "critical sections" now, which prevents
+  log message corruption under load. As a side effect, the
+  "no thread-safe PRNG" warning could be removed as well.
+- The mingw32 version's task bar icon is crossed out and
+  the color changed to gray if Privoxy is toggled off.
+
 *** Version 3.0.10 ***
+
 - Ordinary configuration file changes no longer cause program
   termination on OS/2 if the name of the logfile hasn't been
   changed as well. This regression probably crept in with the
@@ -624,12 +681,3 @@ Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
                http://www.gnu.org/copyleft/gpl.html
                or write to the Free Software Foundation, Inc., 59
                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-               Note that parts of Privoxy are under licenses that are
-               GPL-compatible but less restrictive - for details see
-               Privoxy's source code. The Privoxy team doesn't hold the
-               copyright for these parts and doesn't relicense them either.
-               You are free to extract them again to distribute them under
-               their own license.
-	
-set vi:tw=68

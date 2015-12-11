@@ -1,4 +1,4 @@
-# $Id: privoxy-suse.spec,v 1.30 2008/08/13 16:57:46 fabiankeil Exp $
+# $Id: privoxy-suse.spec,v 1.32 2009/02/15 17:18:14 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -36,7 +36,7 @@ Summary:      Privoxy - privacy enhancing proxy
 Vendor:       Privoxy.Org
 Name:         privoxy-suse
 Distribution: defineme
-Version: 3.0.10
+Version: 3.0.11
 Release: 1
 # Needs makefile change: Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}-%{status}-src.tar.gz
 Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}.tar.gz
@@ -120,7 +120,6 @@ cat config | \
 #    sed 's/^permissionsfile.*/permissionsfile \/etc\/privoxy\/permissionsfile/g' | \
 #    sed 's/^filterfile.*/default.filter \/etc\/privoxy\/default.filter/g' | \
 #    sed 's/^logfile.*/logfile \/var\/log\/privoxy\/logfile/g' | \
-#    sed 's/^jarfile.*/jarfile \/var\/log\/privoxy\/jarfile/g' | \
 #    sed 's/^forward.*/forward \/etc\/privoxy\/forward/g' | \
 #    sed 's/^aclfile.*/aclfile \/etc\/privoxy\/aclfile/g' > \
     sed 's/^logdir.*/logdir \/var\/log\/privoxy/g' > \
@@ -355,6 +354,12 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 - new package: version 2.0
 
 # $Log: privoxy-suse.spec,v $
+# Revision 1.32  2009/02/15 17:18:14  fabiankeil
+# - Bump version to 3.0.11.
+#
+# Revision 1.31  2008/08/30 12:46:49  fabiankeil
+# The jarfile directive is gone. Update accordingly.
+#
 # Revision 1.30  2008/08/13 16:57:46  fabiankeil
 # Change version to 3.0.10.
 #

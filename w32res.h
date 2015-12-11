@@ -1,6 +1,6 @@
 #ifndef W32RES_H_INCLUDED
 #define W32RES_H_INCLUDED
-#define W32RES_H_VERSION "$Id: w32res.h,v 1.15 2006/07/18 14:48:48 david__schmidt Exp $"
+#define W32RES_H_VERSION "$Id: w32res.h,v 1.17 2009/01/01 15:09:23 ler762 Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32res.h,v $
@@ -34,6 +34,20 @@
  *
  * Revisions   :
  *    $Log: w32res.h,v $
+ *    Revision 1.17  2009/01/01 15:09:23  ler762
+ *    Change the Windows taskbar icon when privoxy is toggled off.
+ *
+ *    Revision 1.16  2008/11/02 14:37:47  ler762
+ *    commit the part of the patches I've been using that were written by torford and gjmurphy
+ *      [ 1824315 ] Minor code cleanup
+ *      [ 1781135 ] Patch - Add clear log, select all, and Accelerators for w32
+ *        http://sourceforge.net/tracker/?func=detail&atid=311118&aid=1781135&group_id=11118
+ *    The full patch adds control keys A(select all), C(copy) and D(delete all) to the
+ *    Privoxy log window menu.  Select all and copy work for me without the patch
+ *    (albeit without showing the accelerator keys on the menu), so the only part of the
+ *    patch I've been using for the last year or so has been the ctrl-d to delete
+ *    everything in the Privoxy log window.
+ *
  *    Revision 1.15  2006/07/18 14:48:48  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -140,6 +154,7 @@
 #define IDI_ANIMATED6                     206
 #define IDI_ANIMATED7                     207
 #define IDI_ANIMATED8                     208
+#define IDI_OFF                           209
 
 #define ID_TOGGLE_SHOWWINDOW              4000
 #define ID_HELP_ABOUT                     4001
@@ -167,13 +182,6 @@
 #define ID_TOOLS_EDITTRUST                5004
 #endif /* def FEATURE_TRUST */
 
-/*
- * The following symbols are declared in <afxres.h> in VC++.
- * However, mingw32 doesn't have that header.  Let's 
- * always declare them here, for consistency.
- * These are the VC++ values.
- */
-#define IDC_STATIC      (-1)
 #define ID_EDIT_COPY  30000
 
 

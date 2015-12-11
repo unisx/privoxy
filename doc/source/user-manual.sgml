@@ -11,7 +11,7 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.10">
+<!entity p-version "3.0.11">
 <!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
 <!entity % p-not-stable "IGNORE">
@@ -24,6 +24,7 @@
 <!entity % p-supp-userman "IGNORE"> <!-- Omit some from supported.sgml    -->
 <!entity  my-copy "&copy;">         <!-- kludge for docbook2man           -->
 <!entity % draft "IGNORE">          <!-- WIP stuff    -->
+<!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
 <!entity  my-app "<application>Privoxy</application>">
 ]>
 <!--
@@ -33,9 +34,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.86 2008/08/16 10:12:23 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.100 2009/02/19 17:14:11 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -54,12 +55,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2008 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.86 2008/08/16 10:12:23 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.100 2009/02/19 17:14:11 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -358,7 +359,7 @@ How to install the binary packages depends on your operating system:
 </para>
 <para>
  Before installing <application>Privoxy</application> under Gentoo just do 
- first <literal>emerge rsync</literal> to get the latest changes from the 
+ first <literal>emerge --sync</literal> to get the latest changes from the 
  Portage tree. With <literal>emerge privoxy</literal> you install the latest 
  version.
 </para>
@@ -436,203 +437,152 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- There are many improvements and new features since <application>Privoxy 3.0.8</application>, the last stable release:
+ There are only a few improvements and new features since
+ <application>Privoxy 3.0.10</application>, the last stable release:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    Added SOCKS5 support (with address resolution done by
-    the SOCKS5 server). Patch provided by Eric M. Hopper.
+    On most platforms, outgoing connections can be kept alive and
+    reused if the server supports it. Whether or not this improves
+    things depends on the connection.
    </para>
   </listitem>
   <listitem>
    <para>
-    The "blocked" CGI pages include a block reason that was
-    provided as argument to the last-applying block action.
+    When dropping privileges, membership in supplementary groups
+    is given up as well. Not doing that can lead to Privoxy running
+    with more rights than necessary and violates the principle of
+    least privilege. Users of the --user option are advised to update.
+    Thanks to Matthias Drochner for reporting the problem,
+    providing the initial patch and testing the final version.
    </para>
   </listitem>
   <listitem>
    <para>
-    If enable-edit-actions is disabled (the default since 3.0.7 beta)
-    the show-status page hides the edit buttons and explains why.
-    Previously the user would get the "this feature has been disabled"
-    message after using the edit button.
+    Passing invalid users or groups with the --user option
+    didn't lead to program exit. Regression introduced in 3.0.7.
    </para>
   </listitem>
   <listitem>
    <para>
-    Forbidden CONNECT requests are treated like blocks by default.
-    The now-pointless treat-forbidden-connects-like-blocks action
-    has been removed.
+    The match all section has been moved from default.action
+    to a new file called match-all.action. As a result the
+    default.action no longer needs to be touched by the user
+    and can be safely overwritten by updates.
    </para>
   </listitem>
   <listitem>
    <para>
-    Not enabling limit-connect now allows CONNECT requests to all ports.
-    In previous versions it would only allow CONNECT requests to port 443.
-    Use +limit-connect{443} if you think you need the old default behaviour.
+    The standard.action file has been removed. Its content
+    is now part of the default.action file.
    </para>
   </listitem>
   <listitem>
    <para>
-    The CGI editor gets turned off after three edit requests with invalid
-    file modification timestamps. This makes life harder for attackers
-    who can leverage browser bugs to send fake Referers and intend to
-    brute-force edit URLs.
+    In some situations the logged content length was slightly too low.
    </para>
   </listitem>
   <listitem>
    <para>
-    Action settings for multiple patterns in the same section are
-    shared in memory. As a result these sections take up less space
-    (and are loaded slightly faster). Problem reported by Franz Schwartau.
+    Crunched requests are logged with their own log level.
+    If you used "debug 1" in the past, you'll probably want
+    to additionally enable "debug 1024", otherwise only passed
+    requests will be logged. If you only care about crunched
+    requests, simply replace "debug 1" with "debug 1024".
    </para>
   </listitem>
   <listitem>
    <para>
-    Linear white space in HTTP headers will be normalized to single
-    spaces before parsing the header's content, headers split across
-    multiple lines get merged first.
+    The crunch reason has been moved to the beginning of the
+    crunch message. For HTTP URLs, the protocol is logged as well.
    </para>
   </listitem>
   <listitem>
    <para>
-    Host information is gathered outside the main thread so it's less
-    likely to delay other incoming connections if the host is misconfigured.
+    Log messages are shortened by printing the thread id on its
+    own (as opposed to putting it inside the string "Privoxy()").
    </para>
   </listitem>
   <listitem>
    <para>
-    New config option "hostname" to use a hostname other than
-    the one returned by the operating system. Useful to speed-up responses
-    for CGI requests on misconfigured systems. Requested by Max Khon.
+    The config option socket-timeout has been added to control
+    the time Privoxy waits for data to arrive on a socket.
    </para>
   </listitem>
   <listitem>
    <para>
-    The CGI editor supports the "disable all filters of this type"
-    directives "-client-header-filter", "-server-header-filter",
-    "-client-header-tagger" and "-server-header-tagger".
+    Support for remote toggling is controlled by the configure
+    option --disable-toggle only. In previous versions it also
+    depended on the action editor and thus configuring with the
+    --disable-editor option would disable remote toggling support
+    as well.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed false-positives with the link-by-url filter and URLs that
-    contain the pattern "/jump/".
+    Requests with invalid HTTP versions are rejected.
    </para>
   </listitem>
   <listitem>
    <para>
-    The less-download-windows filter no longer messes
-    "Content-Type: application/x-shockwave-flash" headers up.
+    The template symbol @date@ can be used to include a date(1)-like
+    time string. Initial patch submitted by Endre Szabo.
    </para>
   </listitem>
   <listitem>
    <para>
-    In the show-url-info page's "Final results" section active and
-    inactive actions are listed separately. Patch provided by Lee.
+    Responses from shoutcast servers are accepted again.
+    Problem reported and fix suggested by Stefan.
    </para>
   </listitem>
   <listitem>
    <para>
-    The GNUmakefile supports the DESTDIR variable. Patch for
-    the install target submitted by Radoslaw Zielinski.
+    The hide-forwarded-for-headers action has been replaced with
+    the change-x-forwarded-for{} action which can also be used to
+    add X-Forwarded-For headers. The latter functionality already
+    existed in Privoxy versions prior to 3.0.7 but has been removed
+    as it was often used unintentionally (by not using the
+    hide-forwarded-for-headers action).
    </para>
   </listitem>
   <listitem>
    <para>
-    Embedding the content of configuration files in the show-status
-    page is significantly faster now. For a largish action file (1 MB)
-    a speedup of about 2450 times has been measured. This is mostly
-    interesting if you are using large action files or regularly use
-    Privoxy-Regression-Test while running Privoxy through Valgrind,
-    for stock configuration files it doesn't really matter.
+    A "clear log" view option was added to the mingw32 version
+    to clear out all of the lines in the Privoxy log window.
+    Based on a patch submitted by T Ford.
    </para>
   </listitem>
   <listitem>
    <para>
-    If zlib support is unavailable and there are content
-    filters active but the prevent-compression action is disabled,
-    the show-url-info page includes a warning that compression
-    might prevent filtering.
+    The mingw32 version uses "critical sections" now, which prevents
+    log message corruption under load. As a side effect, the
+    "no thread-safe PRNG" warning could be removed as well.
    </para>
   </listitem>
   <listitem>
    <para>
-    The show-url-info page provides an OpenSearch Description that
-    allows to access the page through browser search plugins.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The obsolete kill-popups action has been removed as the
-    PCRS-based popup filters can do the same and are slightly
-    less unreliable.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The inspect-jpegs action has been removed.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The send-wafer and send-vanilla-wafer actions have been removed.
-    They weren't particular useful and their behaviour could be emulated
-    with add-header anyway.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Privoxy-Regression-Test has been significantly improved.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Most sections in the default.action file contain tests for
-    Privoxy-Regression-Test to verify that they are working as intended.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Parts of Privoxy have been refactored to increase maintainability.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Building with zlib (if available) is done by default.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    Ordinary configuration file changes no longer cause program
-    termination on OS/2 if the name of the logfile hasn't been
-    changed as well. This regression probably crept in with the
-    logging improvements in 3.0.7. Reported by Maynard.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The img-reorder filter is less likely to mess up JavaScript code in
-    img tags. Problem and solution reported by Glenn Washburn in #2014552.
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    The source tar ball now includes Privoxy-Log-Parser,
-    a syntax-highlighter for Privoxy logs. Documentation is available
-    through perldoc(1), for fancy screenshots see:
-    <ulink url="http://www.fabiankeil.de/sourcecode/privoxy-log-parser/"
-     >http://www.fabiankeil.de/sourcecode/privoxy-log-parser/</ulink>.
+    The mingw32 version's task bar icon is crossed out and
+    the color changed to gray if Privoxy is toggled off.
    </para>
   </listitem>
  </itemizedlist>
 </para>
 
 <para>
- For a more detailed list of changes please have a look at the ChangeLog.
+ This release marks a departure for Privoxy development.
+</para>
+<para>
+ Previously, odd numbered releases were considered beta versions and
+ were only released at the end of the development cycle when the code
+ was already believed to be stable. Usually it was, so the stable release
+ contained pretty much the same code, but got a higher version number.
+ In the future we intend to release several snapshots between stable releases.
+ There will probably still be about two stable releases per year,
+ but hopefully about six snapshots instead of the two betas we have now.
+ The intentions is to make testing without CVS access easier.
 </para>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -678,8 +628,8 @@ How to install the binary packages depends on your operating system:
  </listitem>
  <listitem>
   <para>  
-   <filename>standard.action</filename> now only includes the enabled actions.
-   Not all actions as before.
+   <filename>standard.action</filename> has been merged into
+   the <filename>default.action</filename> file.
   </para>
  </listitem>
  <listitem>
@@ -702,18 +652,6 @@ How to install the binary packages depends on your operating system:
      be aware of the security issues involved. 
     </para>
   </listitem>
-
-  <listitem>
-   <para>
-    The <quote>filter-client-headers</quote> and
-    <quote>filter-server-headers</quote> actions that were introduced with
-    <application>Privoxy 3.0.5</application> to apply content filters to
-    the headers  have been removed and replaced with new actions.
-    See the <link
-          linkend="whatsnew">What's New section</link> above.
-   </para>
-  </listitem>
-
 
 <!--
  <listitem>
@@ -1795,22 +1733,23 @@ for details.
 
   <listitem>
    <para>
-    <filename>default.action</filename> (the main <link linkend="actions-file">actions file</link>)
-    is used to define which <quote>actions</quote> relating to banner-blocking, images, pop-ups,
-    content modification, cookie handling etc should be applied by default. It also defines many
-    exceptions (both positive and negative) from this default set of actions that enable 
-    <application>Privoxy</application> to selectively eliminate the junk, and only the junk, on
-    as many websites as possible.
+    <filename>match-all.action</filename> is used to define which <quote>actions</quote>
+    relating to banner-blocking, images, pop-ups, content modification, cookie handling
+    etc should be applied by default. It should be the first actions file loaded.
+   </para>
+   <para>
+    <filename>default.action</filename> defines many exceptions (both positive and negative)
+    from the default set of actions that's configured in <filename>match-all.action</filename>.
+    It should be the second actions file loaded and shouldn't be edited by the user.
    </para>
    <para>
     Multiple actions files may be defined in <filename>config</filename>. These 
     are processed in the order they are defined. Local customizations and locally 
-    preferred exceptions to the default policies  as defined in
-    <filename>default.action</filename> (which you will most probably want
-    to define sooner or later) are probably best applied in
-    <filename>user.action</filename>, where you can preserve them across
-    upgrades. <filename>standard.action</filename> is only for
-    <application>Privoxy's</application> internal use.
+    preferred exceptions to the default policies as defined in
+    <filename>match-all.action</filename> (which you will most probably want
+    to define sooner or later) are best applied in <filename>user.action</filename>,
+    where you can preserve them across upgrades. The file isn't installed by all
+    installers, but you can easily create it yourself with a text editor.
    </para>
    <para>    
     There is also a web based editor that can be accessed from
@@ -1904,6 +1843,11 @@ for details.
 
 <sect1 id="actions-file"><title>Actions Files</title>
 
+
+<!--
+  XXX: similar descriptions are in the Configuration Files sections.
+  We should only describe them at one place.
+-->
 <para>
  The actions files are used to define what <emphasis>actions</emphasis>
  <application>Privoxy</application> takes for which URLs, and thus determines
@@ -1919,77 +1863,71 @@ for details.
  There 
  are three action files included with <application>Privoxy</application> with
  differing purposes:
- </para>
- 
- <para>
-  <itemizedlist>
-   <listitem>
-    <para>
-     <filename>default.action</filename> - is the primary action file 
-     that sets the initial values for all actions. It is intended to 
-     provide a base level of functionality for
-     <application>Privoxy's</application> array of features. So it is 
-     a set of broad rules that should work reasonably well as-is for most users.
-     This is the file that the developers are keeping updated, and <link
-     linkend="installation-keepupdated">making available to users</link>.
-     The user's preferences as set in <filename>standard.action</filename>,
-     e.g. either <literal>Cautious</literal> (the default),
-     <literal>Medium</literal>, or <literal>Advanced</literal> (see
-     below).
-    </para>
-   </listitem> 
-   <listitem>
-    <para>
-     <filename>user.action</filename> - is intended to be for local site 
-     preferences and exceptions. As an example, if your ISP or your bank
-     has specific requirements, and need special handling, this kind of 
-     thing should go here. This file will not be upgraded.
-    </para>
+</para>
+<para>
+ <itemizedlist>
+  <listitem>
+   <para>
+    <filename>match-all.action</filename> - is used to define which
+    <quote>actions</quote> relating to banner-blocking, images, pop-ups,
+    content modification, cookie handling etc should be applied by default.
+    It should be the first actions file loaded
+   </para>
   </listitem> 
-   <listitem>
-    <para>
-     <filename>standard.action</filename> - is used only by the web based editor
-     at <ulink url="http://config.privoxy.org/edit-actions-list?f=default">
-     http://config.privoxy.org/edit-actions-list?f=default</ulink>, 
-     to set various pre-defined sets of rules for the default actions section
-     in <filename>default.action</filename>. 
-     </para>
-     <para>
-     <guibutton>Edit</guibutton>  <guibutton>Set to Cautious</guibutton> <guibutton>Set to Medium</guibutton>  <guibutton>Set to Advanced</guibutton>
-     </para>
-     <para>
-     These have increasing levels of aggressiveness <emphasis>and have no
-     influence on your browsing unless you select them explicitly in the
-     editor</emphasis>. A default installation should be pre-set to 
-     <literal>Cautious</literal> (versions prior to 3.0.5 were set to
-     <literal>Medium</literal>). New users should try this for a while before
-     adjusting the settings to more aggressive levels. The more aggressive 
-     the settings, then the more likelihood there is of problems such as sites 
-     not working as they should.
-     </para>
-     <para>
-      The <guibutton>Edit</guibutton> button allows you to turn each 
-      action on/off individually for fine-tuning. The <guibutton>Cautious</guibutton>
-      button changes the actions list to low/safe settings which will activate 
-      ad blocking and a minimal set of &my-app;'s features, and subsequently
-      there will be less of a chance for accidental problems. The
-      <guibutton>Medium</guibutton> button sets the list to a medium level of
-      other features and a low level set of privacy features. The
-      <guibutton>Advanced</guibutton> button sets the list to a high level of
-      ad blocking and medium level of privacy. See the chart below. The latter
-      three buttons over-ride any changes via with the
-      <guibutton>Edit</guibutton> button. More fine-tuning can be done in the
-      lower sections of this internal page.
-     </para>
-     <para>
-     It is not recommend to edit the <filename>standard.action</filename> file
-     itself.
-    </para>
-    <para>
-     The default profiles, and their associated actions, as pre-defined in
-     <filename>standard.action</filename> are:
-    </para>
-    <para>
+  <listitem>
+   <para>
+    <filename>default.action</filename> - defines many exceptions (both
+    positive and negative) from the default set of actions that's configured
+    in <filename>match-all.action</filename>. It is a set of rules that should
+    work reasonably well as-is for most users. This file is only supposed to
+    be edited by the developers. It should be the second actions file loaded.
+   </para>
+  </listitem> 
+  <listitem>
+   <para>
+    <filename>user.action</filename> - is intended to be for local site 
+    preferences and exceptions. As an example, if your ISP or your bank
+    has specific requirements, and need special handling, this kind of 
+    thing should go here. This file will not be upgraded.
+   </para>
+  </listitem> 
+  <listitem>
+   <para>
+    <guibutton>Edit</guibutton>  <guibutton>Set to Cautious</guibutton> <guibutton>Set to Medium</guibutton>  <guibutton>Set to Advanced</guibutton>
+   </para>
+   <para>
+    These have increasing levels of aggressiveness <emphasis>and have no
+    influence on your browsing unless you select them explicitly in the
+    editor</emphasis>. A default installation should be pre-set to 
+    <literal>Cautious</literal>. New users should try this for a while before
+    adjusting the settings to more aggressive levels. The more aggressive 
+    the settings, then the more likelihood there is of problems such as sites 
+    not working as they should.
+   </para>
+   <para>
+    The <guibutton>Edit</guibutton> button allows you to turn each 
+    action on/off individually for fine-tuning. The <guibutton>Cautious</guibutton>
+    button changes the actions list to low/safe settings which will activate 
+    ad blocking and a minimal set of &my-app;'s features, and subsequently
+    there will be less of a chance for accidental problems. The
+    <guibutton>Medium</guibutton> button sets the list to a medium level of
+    other features and a low level set of privacy features. The
+    <guibutton>Advanced</guibutton> button sets the list to a high level of
+    ad blocking and medium level of privacy. See the chart below. The latter
+    three buttons over-ride any changes via with the
+    <guibutton>Edit</guibutton> button. More fine-tuning can be done in the
+    lower sections of this internal page.
+   </para>
+   <para>
+    While the actions file editor allows to enable these settings in all
+    actions files, they are only supposed to be enabled in the first one
+    to make sure you don't unintentionally overrule earlier rules.
+   </para>
+   <para>
+    The default profiles, and their associated actions, as pre-defined in
+    <filename>default.action</filename> are:
+   </para>
+   <para>
     <table frame=all><title>Default Configurations</title>
     <tgroup cols=4 align=left colsep=1 rowsep=1>
     <colspec colname=c1>
@@ -2062,14 +2000,12 @@ for details.
       <entry>yes</entry>
     </row>
 
-
     <row>
       <entry>GIF de-animation</entry>
       <entry>no</entry>
       <entry>yes</entry>
       <entry>yes</entry>
     </row>
-
 
     <row>
       <entry>Fast redirects</entry>
@@ -2111,9 +2047,9 @@ for details.
     </table>
     </para>
 
-   </listitem> 
-  </itemizedlist>
- </para> 
+  </listitem> 
+ </itemizedlist>
+</para> 
 
 <para>
  The list of actions files to be used are defined in the main configuration 
@@ -2917,6 +2853,76 @@ for details.
 </variablelist>
 </sect3>
 
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="change-x-forwarded-for">
+<title>change-x-forwarded-for</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>Improve privacy by not forwarding the source of the request in the HTTP headers.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    Deletes the <quote>X-Forwarded-For:</quote> HTTP header from the client request,
+    or adds a new one.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- Boolean, Parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <itemizedlist>
+    <listitem>
+     <para><quote>block</quote> to delete the header.</para>
+    </listitem>
+    <listitem>
+     <para>
+       <quote>add</quote> to create the header (or append
+       the client's IP address to an already existing one).
+     </para>
+    </listitem>
+   </itemizedlist>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    It is safe and recommended to use <literal>block</literal>.
+   </para>
+   <para>
+    Forwarding the source address of the request may make
+    sense in some multi-user setups but is also a privacy risk.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Example usage:</term>
+  <listitem>
+    <para>
+     <screen>+change-x-forwarded-for{block}</screen>
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+</sect3>
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="client-header-filter">
@@ -4716,64 +4722,6 @@ new action
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="hide-forwarded-for-headers">
-<title>hide-forwarded-for-headers</title>
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>Improve privacy by not forwarding the source of the request in the HTTP headers.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    Deletes any existing <quote>X-Forwarded-for:</quote> HTTP header from client requests.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- Boolean, Parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    It is safe and recommended to leave this on.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage:</term>
-  <listitem>
-    <para>
-     <screen>+hide-forwarded-for-headers</screen>
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="hide-from-header">
 <title>hide-from-header</title>
 
@@ -5941,24 +5889,71 @@ hal stop here
  linkend="actions">specified</link> and <link linkend="actions-apply">applied
  to URLs</link>, how <link linkend="af-patterns">patterns</link> work, and how to
  define and use <link linkend="aliases">aliases</link>. Now, let's look at an
- example <filename>default.action</filename> and <filename>user.action</filename>
- file and see how all these pieces come together:
+ example <filename>match-all.action</filename>, <filename>default.action</filename>
+ and <filename>user.action</filename> file and see how all these pieces come together:
 </para>
 
-<sect3><title>default.action</title>
-
+<sect3>
+<title>match-all.action</title>
 <para>
-Every config file should start with a short comment stating its purpose:
-</para>
-
-<para>
- <screen># Sample default.action file &lt;ijbswa-developers@lists.sourceforge.net&gt;</screen>
+ Remember <emphasis>all actions are disabled when matching starts</emphasis>,
+ so we have to explicitly enable the ones we want.
 </para>
 
 <para>
-Then, since this is the <filename>default.action</filename> file, the
-first section is a special section for internal use that you needn't
-change or worry about:
+ While the <filename>match-all.action</filename> file only contains a
+ single section, it is probably the most important one. It has only one
+ pattern, <quote><literal>/</literal></quote>, but this pattern
+ <link linkend="af-patterns">matches all URLs</link>. Therefore, the set of
+ actions used in this <quote>default</quote> section <emphasis>will
+ be applied to all requests as a start</emphasis>. It can  be partly or
+ wholly overridden by other actions files like <filename>default.action</filename>
+ and <filename>user.action</filename>, but it will still be largely responsible
+ for your overall browsing experience.
+</para>
+
+<para>
+ Again, at the start of matching, all actions are disabled, so there is
+ no need to disable any actions here. (Remember: a <quote>+</quote>
+ preceding the action name enables the action, a <quote>-</quote> disables!).
+ Also note how this long line has been made more readable by splitting it into
+ multiple lines with line continuation.
+</para> 
+
+<para>
+ <screen>
+{ \
+ +<link linkend="CHANGE-X-FORWARDED-FOR">change-x-forwarded-for{block}</link> \
+ +<link linkend="HIDE-FROM-HEADER">hide-from-header{block}</link> \
+ +<link linkend="SET-IMAGE-BLOCKER">set-image-blocker{pattern}</link> \
+}
+/ # Match all URLs
+ </screen>
+</para>
+
+<para>
+ The default behavior is now set.
+</para>
+</sect3>
+
+<sect3>
+<title>default.action</title>
+
+<para>
+ If you aren't a developer, there's no need for you to edit the
+ <filename>default.action</filename> file. It is maintained by
+ the &my-app; developers and if you disagree with some of the
+ sections, you should overrule them in your <filename>user.action</filename>.
+</para>
+
+<para>
+ Understanding the <filename>default.action</filename> file can
+ help you with your <filename>user.action</filename>, though.
+</para>
+
+<para>
+ The first section in this file is a special section for internal use
+ that prevents older &my-app; versions from reading the file:
 </para>
 
 <para>
@@ -5966,15 +5961,14 @@ change or worry about:
 ##########################################################################
 # Settings -- Don't change! For internal Privoxy use ONLY.
 ##########################################################################
-
 {{settings}}
-for-privoxy-version=3.0</screen>
+for-privoxy-version=3.0.11</screen>
 </para>
 
 <para>
-After that comes the (optional) alias section. We'll use the example
-section from the above <link linkend="aliases">chapter on aliases</link>,
-that also explains why and how aliases are used:
+ After that comes the (optional) alias section. We'll use the example
+ section from the above <link linkend="aliases">chapter on aliases</link>,
+ that also explains why and how aliases are used:
 </para>
 
 <para>
@@ -5997,68 +5991,6 @@ that also explains why and how aliases are used:
  #
  fragile     = -<link linkend="BLOCK">block</link> -<link linkend="FILTER">filter</link> -crunch-all-cookies -<link linkend="FAST-REDIRECTS">fast-redirects</link> -<link linkend="HIDE-REFERER">hide-referrer</link>
  shop        = -crunch-all-cookies -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link></screen>
-</para>
-
-<para>
- Now come the regular sections, i.e. sets of actions, accompanied
- by URL patterns to which they apply. Remember <emphasis>all actions
- are disabled when matching starts</emphasis>, so we have to explicitly
- enable the ones we want.
-</para>
-
-<para>
- The first regular section is probably the most important. It has only
- one pattern, <quote><literal>/</literal></quote>, but this pattern
- <link linkend="af-patterns">matches all URLs</link>. Therefore, the
- set of actions used in this <quote>default</quote> section <emphasis>will
- be applied to all requests as a start</emphasis>. It can  be partly or
- wholly overridden by later matches further down this file, or in user.action,
- but it will still be largely responsible for your overall browsing
- experience.
-</para>
-
-<para>
- Again, at the start of matching, all actions are disabled, so there is
- no need to disable any actions here. (Remember: a <quote>+</quote>
- preceding the action name enables the action, a <quote>-</quote> disables!).
- Also note how this long line has been made more readable by splitting it into
- multiple lines with line continuation.
-</para> 
-
-<para>
- <screen>
-##########################################################################
-# "Defaults" section:
-##########################################################################
- { \
- +<link linkend="DEANIMATE-GIFS">deanimate-gifs</link> \
- +<link linkend="FILTER-HTML-ANNOYANCES">filter{html-annoyances}</link> \
- +<link linkend="FILTER-REFRESH-TAGS">filter{refresh-tags}</link> \
- +<link linkend="FILTER-WEBBUGS">filter{webbugs}</link> \
- +<link linkend="FILTER-IE-EXPLOITS">filter{ie-exploits}</link> \     
- +<link linkend="HIDE-FORWARDED-FOR-HEADERS">hide-forwarded-for-headers</link> \
- +<link linkend="HIDE-FROM-HEADER">hide-from-header{block}</link> \
- +<link linkend="HIDE-REFERER">hide-referrer{forge}</link> \
- +<link linkend="PREVENT-COMPRESSION">prevent-compression</link> \
- +<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> \
- +<link linkend="SET-IMAGE-BLOCKER">set-image-blocker{pattern}</link> \
- }
- / # forward slash will match *all* potential URL patterns.</screen>
-</para>
-
-<para>
- The default behavior is now set.
- <!--
- This needs rewording, but it can wait for now.
- fk 2007-11-17
-
- Note that some actions, like not hiding
- the user agent, are part of a <quote>general policy</quote> that applies
- universally and won't get any exceptions defined later. Other choices,
- like not blocking (which is <emphasis>understandably</emphasis> the
- default!) need exceptions, i.e. we need to specify explicitly what we
- want to block in later sections.
- -->
 </para>
 
 <para>
@@ -6101,36 +6033,10 @@ mail.google.com</screen>
 .scan.co.uk</screen>
 </para>
 
-<!-- No longer needed BEGIN OF COMMENTED OUT BLOCK 
-
-<para>
- Then, there are sites which rely on pop-up windows (yuck!) to work.
- Since we made pop-up-killing our default above, we need to make exceptions
- now. <ulink url="http://www.mozilla.org/">Mozilla</ulink> users, who
- can turn on smart handling of unwanted pop-ups in their browsers, can
- safely choose
- -<literal><link linkend="FILTER-ALL-POPUPS">filter{popups}</link></literal> above
- and hence don't need this section. Anyway, disabling an already disabled
- action doesn't hurt, so we'll define our exceptions regardless of what was
- chosen in the defaults section:
-</para>
-
-<para>
- <screen>
-# These sites require pop-ups too :( 
-#
-{ -<link linkend="FILTER-ALL-POPUPS">filter{popups}</link> }
-.dabs.com
-.overclockers.co.uk
-.deutsche-bank-24.de</screen>
-</para>
-
- END OF COMMENTED OUT BLOCK -->
-
 <para>
  The <literal><link linkend="FAST-REDIRECTS">fast-redirects</link></literal>
- action, which we enabled per default above,  breaks some sites. So disable
- it for popular sites where we know it misbehaves:
+ action, which may have been enabled in <filename>match-all.action</filename>,
+ breaks some sites. So disable it for popular sites where we know it misbehaves:
 </para>
 
 <para>
@@ -6150,8 +6056,8 @@ edit.*.yahoo.com
  be blocked, a substitute image can be sent, rather than an HTML page.
  Contacting the remote site to find out is not an option, since it
  would destroy the loading time advantage of banner blocking, and it
- would feed the advertisers (in terms of money <emphasis>and</emphasis>
- information). We can mark any URL as an image with the <literal><link
+ would feed the advertisers information about you. We can mark any
+ URL as an image with the <literal><link
  linkend="handle-as-image">handle-as-image</link></literal> action,
  and marking all URLs that end in a known image file extension is a
  good start:
@@ -8185,7 +8091,8 @@ Requests</title>
 
  In file: default.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibutton>
 
- {+deanimate-gifs {last}
+ {+change-x-forwarded-for{block}
+ +deanimate-gifs {last}
  +fast-redirects {check-decoded-url}
  +filter {refresh-tags}
  +filter {img-reorder}
@@ -8193,7 +8100,6 @@ Requests</title>
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
- +hide-forwarded-for-headers
  +hide-from-header {block}
  +hide-referrer {forge}
  +session-cookies-only
@@ -8275,6 +8181,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  
  -add-header
  -block
+ +change-x-forwarded-for{block} 
  -client-header-filter{hide-tor-exit-notation}
  -content-type-overwrite
  -crunch-client-header
@@ -8316,7 +8223,6 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -handle-as-image
  -hide-accept-language
  -hide-content-disposition
- +hide-forwarded-for-headers
  +hide-from-header {block}
  -hide-if-modified-since
  +hide-referrer {forge}
@@ -8395,6 +8301,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 
  {-add-header 
   -block
+  +change-x-forwarded-for{block} 
   -client-header-filter{hide-tor-exit-notation}
   -content-type-overwrite
   -crunch-client-header
@@ -8436,7 +8343,6 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   -handle-as-image 
   -hide-accept-language
   -hide-content-disposition  
-  +hide-forwarded-for-headers 
   +hide-from-header{block} 
   +hide-referer{forge} 
   -hide-user-agent 
@@ -8607,6 +8513,53 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.100  2009/02/19 17:14:11  fabiankeil
+ - Copy the release cycle description from announce.txt into
+   the "What's New" section.
+ - Stop referring to the ChangeLog for a "complete list of changes".
+   The "What's New" section already contains the complete list.
+
+ Revision 2.99  2009/02/19 02:20:22  hal9
+ Make some links in seealso conditional. Man page is now privoxy only links.
+
+ Revision 2.98  2009/02/16 17:10:33  fabiankeil
+ Fix entry about shortened log messages. Noticed by Lee.
+
+ Revision 2.97  2009/02/14 18:01:00  fabiankeil
+ Import ChangeLog.
+
+ Revision 2.96  2009/02/14 13:14:03  fabiankeil
+ Unbreak syntax.
+
+ Revision 2.95  2009/02/14 12:51:26  fabiankeil
+ Mention match-all.action in the "Actions Files Tutorial" section.
+
+ Revision 2.94  2009/02/14 11:50:31  fabiankeil
+ Some indentation fixes.
+
+ Revision 2.93  2009/02/14 10:14:42  fabiankeil
+ Mention match-all.action in the action file descriptions.
+
+ Revision 2.92  2009/02/12 16:08:26  fabiankeil
+ Declare the code stable.
+
+ Revision 2.91  2009/01/13 16:50:35  fabiankeil
+ The standard.action file is gone.
+
+ Revision 2.90  2008/09/26 16:53:09  fabiankeil
+ Update "What's new" section.
+
+ Revision 2.89  2008/09/21 15:38:56  fabiankeil
+ Fix Portage tree sync instructions in Gentoo section.
+ Anonymously reported at ijbswa-developers@.
+
+ Revision 2.88  2008/09/21 14:42:52  fabiankeil
+ Add documentation for change-x-forwarded-for{},
+ remove documentation for hide-forwarded-for-headers.
+
+ Revision 2.87  2008/08/30 15:37:35  fabiankeil
+ Update entities.
+
  Revision 2.86  2008/08/16 10:12:23  fabiankeil
  Merge two sentences and move the URL to the end of the item.
 

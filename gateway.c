@@ -1,13 +1,13 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.25 2008/02/07 18:09:46 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.48 2009/02/13 17:20:36 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
  *
  * Purpose     :  Contains functions to connect to a server, possibly
  *                using a "forwarder" (i.e. HTTP proxy and/or a SOCKS4
- *                proxy).
+ *                or SOCKS5 proxy).
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -34,6 +34,94 @@ const char gateway_rcs[] = "$Id: gateway.c,v 1.25 2008/02/07 18:09:46 fabiankeil
  *
  * Revisions   :
  *    $Log: gateway.c,v $
+ *    Revision 1.48  2009/02/13 17:20:36  fabiankeil
+ *    Reword keep-alive support warning and only show
+ *    it #if !defined(HAVE_POLL) && !defined(_WIN32).
+ *
+ *    Revision 1.47  2008/12/24 17:06:19  fabiankeil
+ *    Keep a thread around to timeout alive connections
+ *    even if no new requests are coming in.
+ *
+ *    Revision 1.46  2008/12/13 11:07:23  fabiankeil
+ *    Remove duplicated debugging checks
+ *    in connection_destination_matches().
+ *
+ *    Revision 1.45  2008/12/04 18:17:07  fabiankeil
+ *    Fix some cparser warnings.
+ *
+ *    Revision 1.44  2008/11/22 11:54:04  fabiankeil
+ *    Move log message around to include the socket number.
+ *
+ *    Revision 1.43  2008/11/13 09:15:51  fabiankeil
+ *    Make keep_alive_timeout static.
+ *
+ *    Revision 1.42  2008/11/13 09:08:42  fabiankeil
+ *    Add new config option: keep-alive-timeout.
+ *
+ *    Revision 1.41  2008/11/08 15:29:58  fabiankeil
+ *    Unify two debug messages.
+ *
+ *    Revision 1.40  2008/11/08 15:14:05  fabiankeil
+ *    Fix duplicated debugging check.
+ *
+ *    Revision 1.39  2008/10/25 11:33:01  fabiankeil
+ *    Remove already out-commented line left over from debugging.
+ *
+ *    Revision 1.38  2008/10/24 17:33:00  fabiankeil
+ *    - Tone the "keep-alive support is experimental" warning
+ *      down a bit as hackish 0-chunk detection has been
+ *      implemented recently.
+ *    - Only show the "ndef HAVE_POLL" warning once on start-up.
+ *
+ *    Revision 1.37  2008/10/23 17:40:53  fabiankeil
+ *    Fix forget_connection() and mark_connection_unused(),
+ *    which would both under certain circumstances access
+ *    reusable_connection[MAX_REUSABLE_CONNECTIONS]. Oops.
+ *
+ *    Revision 1.36  2008/10/18 19:49:15  fabiankeil
+ *    - Factor close_unusable_connections() out of
+ *      get_reusable_connection() to make sure we really check
+ *      all the remembered connections, not just the ones before
+ *      the next reusable one.
+ *    - Plug two file descriptor leaks. Internally marking
+ *      connections as closed doesn't cut it.
+ *
+ *    Revision 1.35  2008/10/17 17:12:01  fabiankeil
+ *    In socket_is_still_usable(), use select()
+ *    and FD_ISSET() if poll() isn't available.
+ *
+ *    Revision 1.34  2008/10/17 17:07:13  fabiankeil
+ *    Add preliminary timeout support.
+ *
+ *    Revision 1.33  2008/10/16 16:34:21  fabiankeil
+ *    Fix two gcc44 warnings.
+ *
+ *    Revision 1.32  2008/10/16 16:27:22  fabiankeil
+ *    Fix compiler warning.
+ *
+ *    Revision 1.31  2008/10/16 07:31:11  fabiankeil
+ *    - Factor socket_is_still_usable() out of get_reusable_connection().
+ *    - If poll() isn't available, show a warning and assume the socket
+ *      is still usable.
+ *
+ *    Revision 1.30  2008/10/13 17:31:03  fabiankeil
+ *    If a remembered connection is no longer usable and
+ *    has been marked closed, don't bother checking if the
+ *    destination matches.
+ *
+ *    Revision 1.29  2008/10/11 16:59:41  fabiankeil
+ *    Add missing dots for two log messages.
+ *
+ *    Revision 1.28  2008/10/09 18:21:41  fabiankeil
+ *    Flush work-in-progress changes to keep outgoing connections
+ *    alive where possible. Incomplete and mostly #ifdef'd out.
+ *
+ *    Revision 1.27  2008/09/27 15:05:51  fabiankeil
+ *    Return only once in forwarded_connect().
+ *
+ *    Revision 1.26  2008/08/18 17:42:06  fabiankeil
+ *    Fix typo in macro name.
+ *
  *    Revision 1.25  2008/02/07 18:09:46  fabiankeil
  *    In socks5_connect:
  *    - make the buffers quite a bit smaller.
@@ -187,6 +275,15 @@ const char gateway_rcs[] = "$Id: gateway.c,v 1.25 2008/02/07 18:09:46 fabiankeil
 #include "jbsockets.h"
 #include "gateway.h"
 #include "miscutil.h"
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef HAVE_POLL
+#ifdef __GLIBC__ 
+#include <sys/poll.h>
+#else
+#include <poll.h>
+#endif /* def __GLIBC__ */
+#endif /* HAVE_POLL */
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 const char gateway_h_rcs[] = GATEWAY_H_VERSION;
 
@@ -211,7 +308,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
 #define SOCKS5_REQUEST_DENIED              2
 #define SOCKS5_REQUEST_NETWORK_UNREACHABLE 3
 #define SOCKS5_REQUEST_HOST_UNREACHABLE    4
-#define SOCKS5_REQUEST_CONNECTION_REFUSEDD 5
+#define SOCKS5_REQUEST_CONNECTION_REFUSED  5
 #define SOCKS5_REQUEST_TTL_EXPIRED         6
 #define SOCKS5_REQUEST_PROTOCOL_ERROR      7
 #define SOCKS5_REQUEST_BAD_ADDRESS_TYPE    8
@@ -237,6 +334,527 @@ struct socks_reply {
 
 static const char socks_userid[] = "anonymous";
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+
+#define MAX_REUSABLE_CONNECTIONS 100
+static int keep_alive_timeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+
+struct reusable_connection
+{
+   jb_socket sfd;
+   int       in_use;
+   char      *host;
+   int       port;
+   time_t    timestamp;
+
+   int       forwarder_type;
+   char      *gateway_host;
+   int       gateway_port;
+   char      *forward_host;
+   int       forward_port;
+};
+
+static struct reusable_connection reusable_connection[MAX_REUSABLE_CONNECTIONS];
+
+static int mark_connection_unused(jb_socket sfd);
+static void mark_connection_closed(struct reusable_connection *closed_connection);
+static int socket_is_still_usable(jb_socket sfd);
+
+
+/*********************************************************************
+ *
+ * Function    :  initialize_reusable_connections
+ *
+ * Description :  Initializes the reusable_connection structures.
+ *                Must be called with connection_reuse_mutex locked.
+ *
+ * Parameters  : N/A
+ *
+ * Returns     : void
+ *
+ *********************************************************************/
+extern void initialize_reusable_connections(void)
+{
+   unsigned int slot = 0;
+
+#if !defined(HAVE_POLL) && !defined(_WIN32)
+   log_error(LOG_LEVEL_INFO,
+      "Detecting already dead connections might not work "
+      "correctly on your platform. In case of problems, "
+      "unset the keep-alive-timeout option.");
+#endif
+
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      mark_connection_closed(&reusable_connection[slot]);
+   }
+
+   log_error(LOG_LEVEL_CONNECT, "Initialized %d socket slots.", slot);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  remember_connection
+ *
+ * Description :  Remembers a connection for reuse later on.
+ *
+ * Parameters  :
+ *          1  :  sfd  = Open socket to remember.
+ *          2  :  http = The destination for the connection.
+ *          3  :  fwd  = The forwarder settings used.
+ *
+ * Returns     : void
+ *
+ *********************************************************************/
+void remember_connection(jb_socket sfd, const struct http_request *http,
+                                        const struct forward_spec *fwd)
+{
+   unsigned int slot = 0;
+   int free_slot_found = FALSE;
+
+   assert(sfd != JB_INVALID_SOCKET);
+
+   if (mark_connection_unused(sfd))
+   {
+      return;
+   }
+
+   privoxy_mutex_lock(&connection_reuse_mutex);
+
+   /* Find free socket slot. */
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      if (reusable_connection[slot].sfd == JB_INVALID_SOCKET)
+      {
+         assert(reusable_connection[slot].in_use == 0);
+         log_error(LOG_LEVEL_CONNECT,
+            "Remembering socket %d for %s:%d in slot %d.",
+            sfd, http->host, http->port, slot);
+         free_slot_found = TRUE;
+         break;
+      }
+   }
+
+   if (!free_slot_found)
+   {
+      log_error(LOG_LEVEL_CONNECT,
+        "No free slots found to remembering socket for %s:%d. Last slot %d.",
+        http->host, http->port, slot);
+      privoxy_mutex_unlock(&connection_reuse_mutex);
+      close_socket(sfd);
+      return;
+   }
+
+   assert(NULL != http->host);
+   reusable_connection[slot].host = strdup(http->host);
+   if (NULL == reusable_connection[slot].host)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory saving socket.");
+   }
+   reusable_connection[slot].sfd = sfd;
+   reusable_connection[slot].port = http->port;
+   reusable_connection[slot].in_use = 0;
+   reusable_connection[slot].timestamp = time(NULL);
+
+   assert(NULL != fwd);
+   assert(reusable_connection[slot].gateway_host == NULL);
+   assert(reusable_connection[slot].gateway_port == 0);
+   assert(reusable_connection[slot].forwarder_type == SOCKS_NONE);
+   assert(reusable_connection[slot].forward_host == NULL);
+   assert(reusable_connection[slot].forward_port == 0);
+
+   reusable_connection[slot].forwarder_type = fwd->type;
+   if (NULL != fwd->gateway_host)
+   {
+      reusable_connection[slot].gateway_host = strdup(fwd->gateway_host);
+      if (NULL == reusable_connection[slot].gateway_host)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory saving gateway_host.");
+      }
+   }
+   else
+   {
+      reusable_connection[slot].gateway_host = NULL;
+   }
+   reusable_connection[slot].gateway_port = fwd->gateway_port;
+
+   if (NULL != fwd->forward_host)
+   {
+      reusable_connection[slot].forward_host = strdup(fwd->forward_host);
+      if (NULL == reusable_connection[slot].forward_host)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory saving forward_host.");
+      }
+   }
+   else
+   {
+      reusable_connection[slot].forward_host = NULL;
+   }
+   reusable_connection[slot].forward_port = fwd->forward_port;
+
+   privoxy_mutex_unlock(&connection_reuse_mutex);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  mark_connection_closed
+ *
+ * Description : Marks a reused connection closed.
+ *               Must be called with connection_reuse_mutex locked.
+ *
+ * Parameters  :
+ *          1  :  closed_connection = The connection to mark as closed.
+ *
+ * Returns     : void
+ *
+ *********************************************************************/
+static void mark_connection_closed(struct reusable_connection *closed_connection)
+{
+   closed_connection->in_use = FALSE;
+   closed_connection->sfd = JB_INVALID_SOCKET;
+   freez(closed_connection->host);
+   closed_connection->port = 0;
+   closed_connection->timestamp = 0;
+   closed_connection->forwarder_type = SOCKS_NONE;
+   freez(closed_connection->gateway_host);
+   closed_connection->gateway_port = 0;
+   freez(closed_connection->forward_host);
+   closed_connection->forward_port = 0;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  forget_connection
+ *
+ * Description :  Removes a previously remembered connection from
+ *                the list of reusable connections.
+ *
+ * Parameters  :
+ *          1  :  sfd = The socket belonging to the connection in question.
+ *
+ * Returns     : void
+ *
+ *********************************************************************/
+void forget_connection(jb_socket sfd)
+{
+   unsigned int slot = 0;
+
+   assert(sfd != JB_INVALID_SOCKET);
+
+   privoxy_mutex_lock(&connection_reuse_mutex);
+
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      if (reusable_connection[slot].sfd == sfd)
+      {
+         assert(reusable_connection[slot].in_use);
+
+         log_error(LOG_LEVEL_CONNECT,
+            "Forgetting socket %d for %s:%d in slot %d.",
+            sfd, reusable_connection[slot].host,
+            reusable_connection[slot].port, slot);
+         mark_connection_closed(&reusable_connection[slot]);
+         privoxy_mutex_unlock(&connection_reuse_mutex);
+
+         return;
+      }
+   }
+
+   log_error(LOG_LEVEL_CONNECT,
+      "Socket %d already forgotten or never remembered.", sfd);
+
+   privoxy_mutex_unlock(&connection_reuse_mutex);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  connection_destination_matches
+ *
+ * Description :  Determines whether a remembered connection can
+ *                be reused. That is, whether the destination and
+ *                the forwarding settings match.
+ *
+ * Parameters  :
+ *          1  :  connection = The connection to check.
+ *          2  :  http = The destination for the connection.
+ *          3  :  fwd  = The forwarder settings.
+ *
+ * Returns     :  TRUE for yes, FALSE otherwise.
+ *
+ *********************************************************************/
+static int connection_destination_matches(const struct reusable_connection *connection,
+                                          const struct http_request *http,
+                                          const struct forward_spec *fwd)
+{
+   if ((connection->forwarder_type != fwd->type)
+    || (connection->gateway_port   != fwd->gateway_port)
+    || (connection->forward_port   != fwd->forward_port)
+    || (connection->port           != http->port))
+   {
+      return FALSE;
+   }
+
+   if ((    (NULL != connection->gateway_host)
+         && (NULL != fwd->gateway_host)
+         && strcmpic(connection->gateway_host, fwd->gateway_host))
+       && (connection->gateway_host != fwd->gateway_host))
+   {
+      log_error(LOG_LEVEL_CONNECT, "Gateway mismatch.");
+      return FALSE;
+   }
+
+   if ((    (NULL != connection->forward_host)
+         && (NULL != fwd->forward_host)
+         && strcmpic(connection->forward_host, fwd->forward_host))
+      && (connection->forward_host != fwd->forward_host))
+   {
+      log_error(LOG_LEVEL_CONNECT, "Forwarding proxy mismatch.");
+      return FALSE;
+   }
+
+   return (!strcmpic(connection->host, http->host));
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  close_unusable_connections
+ *
+ * Description :  Closes remembered connections that have timed
+ *                out or have been closed on the other side.
+ *
+ * Parameters  :  none
+ *
+ * Returns     :  Number of connections that are still alive.
+ *
+ *********************************************************************/
+int close_unusable_connections(void)
+{
+   unsigned int slot = 0;
+   int connections_alive = 0;
+
+   privoxy_mutex_lock(&connection_reuse_mutex);
+
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      if (!reusable_connection[slot].in_use
+         && (JB_INVALID_SOCKET != reusable_connection[slot].sfd))
+      {
+         time_t time_open = time(NULL) - reusable_connection[slot].timestamp;
+
+         if (keep_alive_timeout < time_open)
+         {
+            log_error(LOG_LEVEL_CONNECT,
+               "The connection to %s:%d in slot %d timed out. "
+               "Closing socket %d. Timeout is: %d.",
+               reusable_connection[slot].host,
+               reusable_connection[slot].port, slot,
+               reusable_connection[slot].sfd, keep_alive_timeout);
+            close_socket(reusable_connection[slot].sfd);
+            mark_connection_closed(&reusable_connection[slot]);
+         }
+         else if (!socket_is_still_usable(reusable_connection[slot].sfd))
+         {
+            log_error(LOG_LEVEL_CONNECT,
+               "The connection to %s:%d in slot %d is no longer usable. "
+               "Closing socket %d.", reusable_connection[slot].host,
+               reusable_connection[slot].port, slot,
+               reusable_connection[slot].sfd);
+            close_socket(reusable_connection[slot].sfd);
+            mark_connection_closed(&reusable_connection[slot]);
+         }
+         else
+         {
+            connections_alive++;
+         }
+      }
+   }
+
+   privoxy_mutex_unlock(&connection_reuse_mutex);
+
+   return connections_alive;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  socket_is_still_usable
+ *
+ * Description :  Decides whether or not an open socket is still usable.
+ *
+ * Parameters  :
+ *          1  :  sfd = The socket to check.
+ *
+ * Returns     :  TRUE for yes, otherwise FALSE.
+ *
+ *********************************************************************/
+static int socket_is_still_usable(jb_socket sfd)
+{
+#ifdef HAVE_POLL
+   int poll_result;
+   struct pollfd poll_fd[1];
+
+   memset(poll_fd, 0, sizeof(poll_fd));
+   poll_fd[0].fd = sfd;
+   poll_fd[0].events = POLLIN;
+
+   poll_result = poll(poll_fd, 1, 0);
+
+   if (-1 != poll_result)
+   {
+      return !(poll_fd[0].revents & POLLIN);
+   }
+   else
+   {
+      log_error(LOG_LEVEL_CONNECT, "Polling socket %d failed.", sfd);
+      return FALSE;
+   }
+#else
+   fd_set readable_fds;
+   struct timeval timeout;
+   int ret;
+   int socket_is_alive = 0;
+
+   memset(&timeout, '\0', sizeof(timeout));
+   FD_ZERO(&readable_fds);
+   FD_SET(sfd, &readable_fds);
+
+   ret = select((int)sfd+1, &readable_fds, NULL, NULL, &timeout);
+   if (ret < 0)
+   {
+      log_error(LOG_LEVEL_ERROR, "select() failed!: %E");
+   }
+
+   /*
+    * XXX: I'm not sure why !FD_ISSET() works,
+    * but apparently it does.
+    */
+   socket_is_alive = !FD_ISSET(sfd, &readable_fds);
+
+   return socket_is_alive;
+#endif /* def HAVE_POLL */
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_reusable_connection
+ *
+ * Description :  Returns an open socket to a previously remembered
+ *                open connection (if there is one).
+ *
+ * Parameters  :
+ *          1  :  http = The destination for the connection.
+ *          2  :  fwd  = The forwarder settings.
+ *
+ * Returns     :  JB_INVALID_SOCKET => No reusable connection found,
+ *                otherwise a usable socket.
+ *
+ *********************************************************************/
+static jb_socket get_reusable_connection(const struct http_request *http,
+                                         const struct forward_spec *fwd)
+{
+   jb_socket sfd = JB_INVALID_SOCKET;
+   unsigned int slot = 0;
+
+   close_unusable_connections();
+
+   privoxy_mutex_lock(&connection_reuse_mutex);
+
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      if (!reusable_connection[slot].in_use
+         && (JB_INVALID_SOCKET != reusable_connection[slot].sfd))
+      {
+         if (connection_destination_matches(&reusable_connection[slot], http, fwd))
+         {
+            reusable_connection[slot].in_use = TRUE;
+            sfd = reusable_connection[slot].sfd;
+            log_error(LOG_LEVEL_CONNECT,
+               "Found reusable socket %d for %s:%d in slot %d.",
+               sfd, reusable_connection[slot].host, reusable_connection[slot].port, slot);
+            break;
+         }
+      }
+   }
+
+   privoxy_mutex_unlock(&connection_reuse_mutex);
+
+   return sfd;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  mark_connection_unused
+ *
+ * Description :  Gives a remembered connection free for reuse.
+ *
+ * Parameters  :
+ *          1  :  sfd = The socket belonging to the connection in question.
+ *
+ * Returns     :  TRUE => Socket found and marked as unused.
+ *                FALSE => Socket not found.
+ *
+ *********************************************************************/
+static int mark_connection_unused(jb_socket sfd)
+{
+   unsigned int slot = 0;
+   int socket_found = FALSE;
+
+   assert(sfd != JB_INVALID_SOCKET);
+
+   privoxy_mutex_lock(&connection_reuse_mutex);
+
+   for (slot = 0; slot < SZ(reusable_connection); slot++)
+   {
+      if (reusable_connection[slot].sfd == sfd)
+      {
+         assert(reusable_connection[slot].in_use);
+         socket_found = TRUE;
+         log_error(LOG_LEVEL_CONNECT,
+            "Marking open socket %d for %s:%d in slot %d as unused.",
+            sfd, reusable_connection[slot].host,
+            reusable_connection[slot].port, slot);
+         reusable_connection[slot].in_use = 0;
+         reusable_connection[slot].timestamp = time(NULL);
+         break;
+      }
+   }
+
+   privoxy_mutex_unlock(&connection_reuse_mutex);
+
+   return socket_found;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  set_keep_alive_timeout
+ *
+ * Description :  Sets the timeout after which open
+ *                connections will no longer be reused.
+ *
+ * Parameters  :
+ *          1  :  timeout = The timeout in seconds.
+ *
+ * Returns     :  void
+ *
+ *********************************************************************/
+void set_keep_alive_timeout(int timeout)
+{
+   keep_alive_timeout = timeout;
+}
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
 
 /*********************************************************************
  *
@@ -259,6 +877,15 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
 {
    const char * dest_host;
    int dest_port;
+   jb_socket sfd = JB_INVALID_SOCKET;
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   sfd = get_reusable_connection(http, fwd);
+   if (JB_INVALID_SOCKET != sfd)
+   {
+      return sfd;
+   }
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
    /* Figure out if we need to connect to the web server or a HTTP proxy. */
    if (fwd->forward_host)
@@ -278,21 +905,30 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
    switch (fwd->type)
    {
       case SOCKS_NONE:
-         return (connect_to(dest_host, dest_port, csp));
-
+         sfd = connect_to(dest_host, dest_port, csp);
+         break;
       case SOCKS_4:
       case SOCKS_4A:
-         return (socks4_connect(fwd, dest_host, dest_port, csp));
-
+         sfd = socks4_connect(fwd, dest_host, dest_port, csp);
+         break;
       case SOCKS_5:
-         return (socks5_connect(fwd, dest_host, dest_port, csp));
-
+         sfd = socks5_connect(fwd, dest_host, dest_port, csp);
+         break;
       default:
          /* Should never get here */
-         log_error(LOG_LEVEL_FATAL, "SOCKS4 impossible internal error - bad SOCKS type.");
-         errno = EINVAL;
-         return(JB_INVALID_SOCKET);
+         log_error(LOG_LEVEL_FATAL,
+            "SOCKS4 impossible internal error - bad SOCKS type.");
    }
+
+   if (JB_INVALID_SOCKET != sfd)
+   {
+      log_error(LOG_LEVEL_CONNECT,
+         "Created new connection to %s:%d on socket %d.",
+         http->host, http->port, sfd);
+   }
+
+   return sfd;
+
 }
 
 
@@ -463,7 +1099,6 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
    {
       case SOCKS_REQUEST_GRANTED:
          return(sfd);
-         break;
       case SOCKS_REQUEST_REJECT:
          errstr = "SOCKS request rejected or failed.";
          errno = EINVAL;
@@ -519,7 +1154,7 @@ static const char *translate_socks5_error(int socks_error)
          return "SOCKS5 network unreachable";
       case SOCKS5_REQUEST_HOST_UNREACHABLE:
          return "SOCKS5 host unreachable";
-      case SOCKS5_REQUEST_CONNECTION_REFUSEDD:
+      case SOCKS5_REQUEST_CONNECTION_REFUSED:
          return "SOCKS5 connection refused";
       case SOCKS5_REQUEST_TTL_EXPIRED:
          return "SOCKS5 TTL expired";
@@ -586,7 +1221,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
    }
 
    hostlen = strlen(target_host);
-   if (hostlen > 255)
+   if (hostlen > (size_t)255)
    {
       errstr = "target host name is longer than 255 characters";
       err = 1;
@@ -674,12 +1309,12 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
    cbuf[client_pos++] = '\x00'; /* Reserved, must be 0x00 */
    cbuf[client_pos++] = '\x03'; /* Address is domain name */
    cbuf[client_pos++] = (char)(hostlen & 0xffu);
-   assert(sizeof(cbuf) - client_pos > 255);
+   assert(sizeof(cbuf) - client_pos > (size_t)255);
    /* Using strncpy because we really want the nul byte padding. */
    strncpy(cbuf + client_pos, target_host, sizeof(cbuf) - client_pos);
    client_pos += (hostlen & 0xffu);
-   cbuf[client_pos++] = (char)((target_port >> 8) & 0xffu);
-   cbuf[client_pos++] = (char)((target_port     ) & 0xffu);
+   cbuf[client_pos++] = (char)((target_port >> 8) & 0xff);
+   cbuf[client_pos++] = (char)((target_port     ) & 0xff);
 
    if (write_socket(sfd, cbuf, client_pos))
    {

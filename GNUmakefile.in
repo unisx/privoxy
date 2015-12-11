@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.174 2008/07/18 17:50:47 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.178 2009/02/08 18:35:48 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2008 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -167,7 +167,7 @@ RPM_BASE = @RPM_BASE@
 #############################################################################
 # We include these files in our distributions
 #############################################################################
-CONFIGS = config trust default.action standard.action user.action default.filter user.filter
+CONFIGS = config trust default.action match-all.action user.action default.filter user.filter
 # take care that no CVS .cvsignore or other crappy files
 # are included here
 # and escape every '#' in the find. doh.
@@ -285,7 +285,6 @@ inifiles: $(W32_INIS)
 
 config.txt: config
 	$(SED) -e 's!\trustfile trust!trustfile trust.txt!' \
-	       -e 's!\jarfile jarfile!jarfile jar.log!' \
 	       -e 's!\logfile logfile!logfile privoxy.log!' \
 	       -e 's!#Win32-only: !!' \
 	       < $< | \
@@ -700,6 +699,11 @@ man: dok-release
 	mkdir -p doc/source/temp && cd doc/source/temp && $(RM) * ;\
 	nsgmls ../privoxy-man-page.sgml  | sgmlspl ../../../utils/docbook2man/docbook2man-spec.pl &&\
 	perl -pi.bak -e 's/ <URL:.*>//; s/\[ /\[/g' privoxy.1 ;\
+	perl -pi.bak -e "s/\[ /\[/g;s/á/\\\\['a]/g;s/é/\\\\['e]/g" privoxy.1; \
+	perl -pi.bak -e "s/ö/\\\\[:o]/g" privoxy.1; \
+	perl -pi.bak -e 's/([ {])-([a-z])/$$1\\-$$2/g' privoxy.1; \
+	perl -pi.bak -e 's/ --([a-z])/ \\-\\-$$1/g' privoxy.1; \
+	perl -pi.bak -e 's/\\fB--/\\fB\\-\\-/g' privoxy.1; \
 	$(DB) ../privoxy-man-page.sgml && $(MV) -f privoxy.1 ../../../privoxy.1
 
 # For those with man2html ala RH7s.
@@ -712,6 +716,7 @@ ifneq ($(MAN2HTML),false)
 # Twice because my version of man2html is pulling in commas and periods in URLs.
 	$(PERL) -pi.bak -e 's/(<A.*),(">)/$$1$$2/g' tmp.html
 	$(PERL) -pi.bak -e 's,\.">,">,g' tmp.html
+	$(PERL) -pi.bak -e "s/\['a\]/\&aacute;/g;s/\['e\]/\&eacute;/g" tmp.html
 # Get rid of spurious  from conversion. (How to do this with perl?)
 	$(SED) -e 's///g' tmp.html > doc/webserver/man-page/privoxy-man-page.html && $(RM) tmp.*
 else
@@ -1135,7 +1140,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	fi ;\
 	$(ECHO) Installing configuration files to $(DESTDIR)$(CONF_DEST);\
 	for i in $(CONFIGS); do \
-		if [ "$$i" = "default.action" ] || [ "$$i" = "default.filter" ] || [ "$$i" = "standard.action" ]; then \
+		if [ "$$i" = "default.action" ] || [ "$$i" = "default.filter" ] ; then \
 			$(RM) $(DESTDIR)$(CONF_DEST)/$$i ;\
 			$(ECHO) Installing fresh $$i;\
 			$(INSTALL) $$INSTALL_CONF $$i $(DESTDIR)$(CONF_DEST) || exit 1;\
@@ -1153,16 +1158,16 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	fi ;\
 	[ ! -f $(DESTDIR)$(LOG_DEST)/logfile ] && $(ECHO) Creating logfiles in $(DESTDIR)$(LOG_DEST) || \
 		$(ECHO) Checking logfiles in $(DESTDIR)$(LOG_DEST) ;\
-		$(TOUCH) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || exit 1 ;\
+		$(TOUCH) $(DESTDIR)$(LOG_DEST)/logfile || exit 1 ;\
 	if [ x$$USER != x ]; then \
-		$(CHOWN) $$USER $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || \
+		$(CHOWN) $$USER $(DESTDIR)$(LOG_DEST)/logfile || \
 		$(ECHO) "** WARNING ** current install user different from configured user. Logging may fail!!" ;\
 	fi ;\
 	if [ x$$GROUP_T != x ]; then \
-		$(CHGRP) $$GROUP_T $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || \
+		$(CHGRP) $$GROUP_T $(DESTDIR)$(LOG_DEST)/logfile || \
 		$(ECHO) "** WARNING ** current install user different from configured user. Logging may fail!!" ;\
 	fi ;\
-	$(CHMOD) $(RWD_MODE) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(LOG_DEST)/jarfile || exit 1 ;\
+	$(CHMOD) $(RWD_MODE) $(DESTDIR)$(LOG_DEST)/logfile || exit 1 ;\
 	if [ "$(prefix)" = "/usr/local" ] || [ "$(prefix)" = "/usr" ]; then \
 		if [ -f /etc/slackware-version ] && [ -d /etc/rc.d/ ] && [ -w /etc/rc.d/ ] ; then \
                $(SED) 's+%PROGRAM%+$(PROGRAM)+' slackware/rc.privoxy.orig | \
@@ -1236,9 +1241,9 @@ uninstall: CONF_DEST LOG_DEST PID_DEST check_doc
 	-$(RM) $(DESTDIR)$(MAN_DEST)/privoxy.1*
 	-$(RM) -r $(DESTDIR)$(DOC_DEST) || $(RM) -r $(DESTDIR)$(prefix)/doc/privoxy
 
-	@# Log and jarfile and pidfile
+	@# Log and pidfile
 	@$(ECHO) Removing $(PROGRAM) logs
-	-$(RM) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(PID_DEST)/privoxy.pid $(DESTDIR)$(LOG_DEST)/jarfile
+	-$(RM) $(DESTDIR)$(LOG_DEST)/logfile $(DESTDIR)$(PID_DEST)/privoxy.pid
 
 	@# Final clean up of unused directories. Special handling of CONF and LOG
      # destinations.
@@ -1309,6 +1314,22 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.178  2009/02/08 18:35:48  fabiankeil
+# Move the match-all section into a separate file
+# (match-all.action) so we can safely overwrite the
+# default actions when updating. Based on Roland's
+# patch #1563977.
+#
+# Revision 1.177  2009/01/13 16:44:32  fabiankeil
+# Delete the standard.action file after moving
+# the pre-settings over to the default actions.
+#
+# Revision 1.176  2008/09/21 13:24:37  fabiankeil
+# Add Roland's man page fixes from 19_manpage_fixup.dpatch.
+#
+# Revision 1.175  2008/08/30 12:03:07  fabiankeil
+# Remove FEATURE_COOKIE_JAR.
+#
 # Revision 1.174  2008/07/18 17:50:47  fabiankeil
 # Fix whitespace.
 #

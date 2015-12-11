@@ -18,7 +18,7 @@
 # Only convert your files once, or, as RoboCop used to say,
 # there will be... trouble.
 #
-# $Id: url-pattern-translator.pl,v 1.2 2008/08/10 16:35:47 fabiankeil Exp $
+# $Id: url-pattern-translator.pl,v 1.3 2009/01/13 17:01:04 fabiankeil Exp $
 #
 # Copyright (c) 2008 Fabian Keil <fk@fabiankeil.de>
 #
@@ -101,9 +101,13 @@ sub looks_interesting($) {
 
         $type_to_skip = "macro or version definition";
 
+    } elsif (m@^\s*standard\.@) {
+
+        $type_to_skip = "predefined settings";
+
     }
 
-    #p("Skipping " . $type_to_skip . ": " . $_);
+    #p("Skipping " . $type_to_skip . ": " . $_) if defined $type_to_skip;
 
     return not defined $type_to_skip;
 }

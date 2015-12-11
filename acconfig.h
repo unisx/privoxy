@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: acconfig.h,v $
+ *    Revision 1.36  2008/10/18 11:17:52  fabiankeil
+ *    Connection keep-alive support is ready for testing,
+ *    allow enabling it through the configure script.
+ *
  *    Revision 1.35  2008/04/06 15:18:33  fabiankeil
  *    Oh well, rename the --enable-pcre-host-patterns option to
  *    --enable-extended-host-patterns as it's not really PCRE syntax.
@@ -364,6 +368,11 @@
  * Allow PCRE syntax in host patterns.
  */
 #undef FEATURE_EXTENDED_HOST_PATTERNS
+
+/*
+ * Keep outgoing connections alive if possible.
+ */
+#undef FEATURE_CONNECTION_KEEP_ALIVE
 
 /*
  * Use POSIX threads instead of native threads.

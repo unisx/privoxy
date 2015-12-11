@@ -5,7 +5,7 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.10">
+<!entity p-version "3.0.11">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -20,9 +20,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 2.6 2008/08/16 08:51:28 fabiankeil Exp $
+ $Id: index.sgml,v 2.9 2009/02/19 14:12:02 fabiankeil Exp $
 
- Copyright (C) 2001 - 2008 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2009 Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
  See LICENSE.
 
  ========================================================================
@@ -157,7 +157,7 @@
   </listitem>
   <listitem>
    <para>
-    <ulink url="http://sourceforge.net/projects/ijbswa/">The project page</ulink> at <ulink url="http://sourceforge.net/">SourceForge</ulink>
+    <ulink url="https://sourceforge.net/projects/ijbswa/">The project page</ulink>
    </para>
   </listitem>
   <listitem>
@@ -222,7 +222,7 @@
 <!-- GNUMakefile is inserting this now -->
 <para>
  <subscript>
-  Copyright __copy 2001 - 2008 by Privoxy Developers
+  Copyright __copy 2001-2009 by Privoxy Developers
  </subscript>
 </para>
 
@@ -249,6 +249,15 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 2.9  2009/02/19 14:12:02  fabiankeil
+ Change link to the project page to https://.
+
+ Revision 2.8  2009/02/12 16:09:44  fabiankeil
+ Declare the code stable.
+
+ Revision 2.7  2009/01/13 16:50:36  fabiankeil
+ The standard.action file is gone.
+
  Revision 2.6  2008/08/16 08:51:28  fabiankeil
  Update version-related entities.
 

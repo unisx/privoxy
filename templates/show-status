@@ -230,9 +230,12 @@
                  editor@if-FEATURE_CGI_EDIT_ACTIONS-then@</a>@else-not-FEATURE_CGI_EDIT_ACTIONS@@endif-FEATURE_CGI_EDIT_ACTIONS@.</td>
             </tr>
             <tr>
-              <td><code>FEATURE_COOKIE_JAR</code></td>
-              <td>@if-FEATURE_COOKIE_JAR-then@ Yes @else-not-FEATURE_COOKIE_JAR@ No @endif-FEATURE_COOKIE_JAR@</td>
-              <td>Allows the use of a <q>cookie jar</q> file to capture cookies.</td>
+              <td><code>FEATURE_CONNECTION_KEEP_ALIVE</code></td>
+              <td>@if-FEATURE_CONNECTION_KEEP_ALIVE-then@ Yes @else-not-FEATURE_CONNECTION_KEEP_ALIVE@ No @endif-FEATURE_CONNECTION_KEEP_ALIVE@</td>
+              <td>
+               Allows to reuse outgoing connections if the server supports it.
+               Requires the keep-alive-timeout config directive to be set.
+              </td>
             </tr>
             <tr>
               <td><code>FEATURE_FAST_REDIRECTS</code></td>

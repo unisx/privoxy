@@ -7,7 +7,7 @@
 # A regression test "framework" for Privoxy. For documentation see:
 # perldoc privoxy-regression-test.pl
 #
-# $Id: privoxy-regression-test.pl,v 1.27 2008/07/23 18:49:18 fabiankeil Exp $
+# $Id: privoxy-regression-test.pl,v 1.31 2009/02/14 10:13:20 fabiankeil Exp $
 #
 # Wish list:
 #
@@ -19,7 +19,7 @@
 # - Document magic Expect Header values
 # - Internal fuzz support?
 #
-# Copyright (c) 2007-2008 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2009 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -49,7 +49,8 @@ use constant {
                CLI_LOOPS     => 1,
                CLI_MAX_TIME  => 5,
                CLI_MIN_LEVEL => 0,
-               CLI_MAX_LEVEL => 25,
+               # XXX: why limit at all.
+               CLI_MAX_LEVEL => 100,
                CLI_FORKS     => 0,
 
                PRIVOXY_CGI_URL => 'http://p.p/',
@@ -155,9 +156,11 @@ sub load_regressions_tests () {
 
     our $privoxy_cgi_url;
     our @privoxy_config;
+    our %privoxy_features;
     my @actionfiles;
     my $curl_url = '';
     my $file_number = 0;
+    my $feature;
 
     $curl_url .= $privoxy_cgi_url;
     $curl_url .= 'show-status';
@@ -176,6 +179,15 @@ sub load_regressions_tests () {
 
             my $directive = $1 . " " . $2;
             push (@privoxy_config, $directive);
+
+        } elsif (m@<td><code>([^<]*)</code></td>@) {
+
+            $feature = $1;
+
+        } elsif (m@<td> (Yes|No) </td>@) {
+
+            $privoxy_features{$feature} = $1 if defined $feature;
+            $feature = undef;
         }
     }
 
@@ -507,8 +519,8 @@ sub execute_regression_tests () {
             'Skipped ' . $skipped . '. ' . 
             $successes . " successes, " . $failures . " failures.");
 
-        $all_tests    += $tests;
-        $all_failures += $failures;
+        $all_tests     += $tests;
+        $all_failures  += $failures;
         $all_successes += $successes;
 
     }
@@ -539,6 +551,8 @@ sub dependency_unsatisfied ($) {
     my $level = shift;
     our %dependencies;
     our @privoxy_config;
+    our %privoxy_features;
+
     my $dependency_problem = 0;
 
     if (defined ($dependencies{$level}{'config line'})) {
@@ -549,6 +563,20 @@ sub dependency_unsatisfied ($) {
         foreach (@privoxy_config) {
 
              $dependency_problem = 0 if (/$dependency/);
+             last; # XXX: this looks ... interesting.
+        }
+
+    } elsif (defined ($dependencies{$level}{'feature status'})) {
+
+        my $dependency = $dependencies{$level}{'feature status'};
+        my ($feature, $status) = $dependency =~ /([^\s]*)\s+(Yes|No)/;
+
+        $dependency_problem = 1;
+
+        if (defined($privoxy_features{$feature})
+            and ($privoxy_features{$feature} eq $status))
+        {
+            $dependency_problem = 0;
         }
     }
 
@@ -563,7 +591,12 @@ sub register_dependency ($$) {
 
     if ($dependency =~ /config line\s+(.*)/) {
 
-       $dependencies{$level}{'config line'} = $1;
+        $dependencies{$level}{'config line'} = $1;
+
+    } elsif ($dependency =~ /feature status\s+(.*)/) {
+
+        $dependencies{$level}{'feature status'} = $1;
+
     }
 }
 
@@ -1243,9 +1276,7 @@ sub log_message ($) {
         $message = $time_stamp . ": " . $message;
     }
 
-
     printf(STDERR "%s\n", $message);
-
 }
 
 sub log_result ($$) {
@@ -1336,7 +1367,7 @@ sub quote ($) {
 }
 
 sub print_version () {
-    printf PRT_VERSION . "\n" . 'Copyright (C) 2007-2008 Fabian Keil <fk@fabiankeil.de>' . "\n";
+    printf PRT_VERSION . "\n" . 'Copyright (C) 2007-2009 Fabian Keil <fk@fabiankeil.de>' . "\n";
 }
 
 sub help () {
@@ -1361,6 +1392,7 @@ Options and their default values if they have any:
     [--min-level $cli_options{'min-level'}]
     [--privoxy-address]
     [--retries $cli_options{'retries'}]
+    [--test-number]
     [--verbose]
     [--version]
 see "perldoc $0" for more information
@@ -1485,7 +1517,8 @@ B<privoxy-regression-test> [B<--debug bitmask>] [B<--forks> forks]
 [B<--fuzzer-feeding>] [B<--fuzzer-feeding>] [B<--help>] [B<--level level>]
 [B<--loops count>] [B<--max-level max-level>] [B<--max-time max-time>]
 [B<--min-level min-level>] B<--privoxy-address proxy-address>
-[B<--retries retries>] [B<--verbose>] [B<--version>]
+[B<--retries retries>] [B<--test-number test-number>] [B<--verbose>]
+[B<--version>]
 
 =head1 DESCRIPTION
 
@@ -1629,6 +1662,9 @@ will be used. B<proxy-address> has to be specified in http_proxy
 syntax.
 
 B<--retries retries> Retry B<retries> times.
+
+B<--test-number test-number> Only run the test with the specified
+number.
 
 B<--verbose> Also log succesful test runs.
 

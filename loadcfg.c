@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.78 2008/08/02 08:23:22 fabiankeil Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.87 2009/02/15 07:56:13 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -35,6 +35,43 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.78 2008/08/02 08:23:22 fabiankeil
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.87  2009/02/15 07:56:13  fabiankeil
+ *    Increase default socket timeout to 300 seconds.
+ *
+ *    Revision 1.86  2009/02/08 19:18:57  fabiankeil
+ *    Now that we have the match-all.action file, the other action
+ *    files changed their position in config->actions_file[] back
+ *    to the way it was before standard.action got removed and the
+ *    changes from revision 1.84 have to be reverted.
+ *
+ *    Revision 1.85  2009/01/22 12:06:26  fabiankeil
+ *    Don't keep connections alive when running single-threaded.
+ *
+ *    Revision 1.84  2009/01/14 16:14:36  fabiankeil
+ *    Due to the standard.action file removal, the other action
+ *    files changed their position in config->actions_file[].
+ *    Update mingw32 kludge accordingly.
+ *
+ *    Revision 1.83  2008/12/20 14:53:55  fabiankeil
+ *    Add config option socket-timeout to control the time
+ *    Privoxy waits for data to arrive on a socket. Useful
+ *    in case of stale ssh tunnels or when fuzz-testing.
+ *
+ *    Revision 1.82  2008/11/16 12:43:49  fabiankeil
+ *    Turn keep-alive support into a runtime feature
+ *    that is disabled by setting keep-alive-timeout
+ *    to a negative value.
+ *
+ *    Revision 1.81  2008/11/13 09:08:42  fabiankeil
+ *    Add new config option: keep-alive-timeout.
+ *
+ *    Revision 1.80  2008/08/31 15:59:03  fabiankeil
+ *    There's no reason to let remote toggling support depend
+ *    on FEATURE_CGI_EDIT_ACTIONS, so make sure it doesn't.
+ *
+ *    Revision 1.79  2008/08/30 12:03:07  fabiankeil
+ *    Remove FEATURE_COOKIE_JAR.
+ *
  *    Revision 1.78  2008/08/02 08:23:22  fabiankeil
  *    If the enforce-blocks directive is used with FEATURE_FORCE_LOAD
  *    disabled, log a message that blocks will always be enforced
@@ -501,6 +538,7 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.78 2008/08/02 08:23:22 fabiankeil
 #include "encode.h"
 #include "urlmatch.h"
 #include "cgi.h"
+#include "gateway.h"
 
 const char loadcfg_h_rcs[] = LOADCFG_H_VERSION;
 
@@ -564,13 +602,14 @@ static struct file_list *current_configfile = NULL;
 #define hash_forward_socks5              3963965522ul /* "forward-socks5" */
 #define hash_forwarded_connect_retries    101465292ul /* "forwarded-connect-retries" */
 #define hash_hostname                      10308071ul /* "hostname" */
-#define hash_jarfile                        2046641ul /* "jarfile" */
+#define hash_keep_alive_timeout          3878599515ul /* "keep-alive-timeout" */
 #define hash_listen_address              1255650842ul /* "listen-address" */
 #define hash_logdir                          422889ul /* "logdir" */
 #define hash_logfile                        2114766ul /* "logfile" */
 #define hash_permit_access               3587953268ul /* "permit-access" */
 #define hash_proxy_info_url              3903079059ul /* "proxy-info-url" */
 #define hash_single_threaded             4250084780ul /* "single-threaded" */
+#define hash_socket_timeout              1809001761ul /* "socket-timeout" */
 #define hash_split_large_cgi_forms        671658948ul /* "split-large-cgi-forms" */
 #define hash_suppress_blocklists         1948693308ul /* "suppress-blocklists" */
 #define hash_templdir                      11067889ul /* "templdir" */
@@ -634,14 +673,6 @@ static void unload_configfile (void * data)
    }
    config->forward = NULL;
 
-#ifdef FEATURE_COOKIE_JAR
-   if ( NULL != config->jar )
-   {
-      fclose( config->jar );
-      config->jar = NULL;
-   }
-#endif /* def FEATURE_COOKIE_JAR */
-
    freez(config->confdir);
    freez(config->logdir);
    freez(config->templdir);
@@ -662,10 +693,6 @@ static void unload_configfile (void * data)
    freez(config->proxy_info_url);
    freez(config->proxy_args);
    freez(config->usermanual);
-
-#ifdef FEATURE_COOKIE_JAR
-   freez(config->jarfile);
-#endif /* def FEATURE_COOKIE_JAR */
 
 #ifdef FEATURE_TRUST
    freez(config->trustfile);
@@ -730,6 +757,9 @@ struct configuration_spec * load_config(void)
    unsigned long linenum = 0;
    int i;
    char *logfile = NULL;
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   int keep_alive_timeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+#endif
 
    if ( !check_file_changed(current_configfile, configfile, &fs))
    {
@@ -781,6 +811,7 @@ struct configuration_spec * load_config(void)
    config->usermanual                = strdup(USER_MANUAL_URL);
    config->proxy_args                = strdup("");
    config->forwarded_connect_retries = 0;
+   config->socket_timeout            = 300; /* XXX: Should be a macro. */
    config->feature_flags            &= ~RUNTIME_FEATURE_CGI_TOGGLE;
    config->feature_flags            &= ~RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
    config->feature_flags            &= ~RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
@@ -1020,7 +1051,7 @@ struct configuration_spec * load_config(void)
 /* *************************************************************************
  * enable-remote-toggle 0|1
  * *************************************************************************/
-#ifdef FEATURE_CGI_EDIT_ACTIONS
+#ifdef FEATURE_TOGGLE
          case hash_enable_remote_toggle:
             if ((*arg != '\0') && (0 != atoi(arg)))
             {
@@ -1031,7 +1062,7 @@ struct configuration_spec * load_config(void)
                config->feature_flags &= ~RUNTIME_FEATURE_CGI_TOGGLE;
             }
             continue;
-#endif /* def FEATURE_CGI_EDIT_ACTIONS */
+#endif /* def FEATURE_TOGGLE */
 
 /* *************************************************************************
  * enable-remote-http-toggle 0|1
@@ -1338,15 +1369,25 @@ struct configuration_spec * load_config(void)
             continue;
 
 /* *************************************************************************
- * jarfile jar-file-name
- * In logdir by default
+ * keep-alive-timeout timeout
  * *************************************************************************/
-#ifdef FEATURE_COOKIE_JAR
-         case hash_jarfile :
-            freez(config->jarfile);
-            config->jarfile = make_path(config->logdir, arg);
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+         case hash_keep_alive_timeout :
+            if (*arg != '\0')
+            {
+               int timeout = atoi(arg);
+               if (0 <= timeout)
+               {
+                  config->feature_flags |= RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE;
+                  keep_alive_timeout = timeout;
+               }
+               else
+               {
+                  config->feature_flags &= ~RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE;
+               }
+            }
             continue;
-#endif /* def FEATURE_COOKIE_JAR */
+#endif
 
 /* *************************************************************************
  * listen-address [ip][:port]
@@ -1468,6 +1509,25 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_single_threaded :
             config->multi_threaded = 0;
+            continue;
+
+/* *************************************************************************
+ * socket-timeout numer_of_seconds
+ * *************************************************************************/
+         case hash_socket_timeout :
+            if (*arg != '\0')
+            {
+               int socket_timeout = atoi(arg);
+               if (0 < socket_timeout)
+               {
+                  config->socket_timeout = socket_timeout;
+               }
+               else
+               {
+                  log_error(LOG_LEVEL_FATAL,
+                     "Invalid socket-timeout: '%s'", arg);
+               }
+            }
             continue;
 
 /* *************************************************************************
@@ -1622,11 +1682,10 @@ struct configuration_spec * load_config(void)
 #endif /* ndef FEATURE_ACL */
 #ifndef FEATURE_CGI_EDIT_ACTIONS
          case hash_enable_edit_actions:
+#endif /* ndef FEATURE_CGI_EDIT_ACTIONS */
+#ifndef FEATURE_TOGGLE
          case hash_enable_remote_toggle:
-#endif /* def FEATURE_CGI_EDIT_ACTIONS */
-#ifndef FEATURE_COOKIE_JAR
-         case hash_jarfile :
-#endif /* ndef FEATURE_COOKIE_JAR */
+#endif /* ndef FEATURE_TOGGLE */
 #ifndef FEATURE_ACL
          case hash_permit_access:
 #endif /* ndef FEATURE_ACL */
@@ -1694,6 +1753,28 @@ struct configuration_spec * load_config(void)
       }
    }
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   if (config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
+   {
+      if (config->multi_threaded)
+      {
+         set_keep_alive_timeout(keep_alive_timeout);
+      }
+      else
+      {
+         /*
+          * While we could use keep-alive without multiple threads
+          * if we didn't bother with enforcing the connection timeout,
+          * that might make Tor users sad, even though they shouldn't
+          * enable the single-threaded option anyway.
+          */
+         config->feature_flags &= ~RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE;
+         log_error(LOG_LEVEL_ERROR,
+            "Config option single-threaded disables connection keep-alive.");
+      }
+   }
+#endif
+
    if (NULL == config->proxy_args)
    {
       log_error(LOG_LEVEL_FATAL, "Out of memory loading config - insufficient memory for config->proxy_args");
@@ -1715,18 +1796,6 @@ struct configuration_spec * load_config(void)
       add_loader(load_trustfile, config);
    }
 #endif /* def FEATURE_TRUST */
-
-#ifdef FEATURE_COOKIE_JAR
-   if ( NULL != config->jarfile )
-   {
-      if ( NULL == (config->jar = fopen(config->jarfile, "a")) )
-      {
-         log_error(LOG_LEVEL_FATAL, "can't open jarfile '%s': %E", config->jarfile);
-         /* Never get here - LOG_LEVEL_FATAL causes program exit */
-      }
-      setbuf(config->jar, NULL);
-   }
-#endif /* def FEATURE_COOKIE_JAR */
 
    if ( NULL == config->haddr )
    {
@@ -1779,7 +1848,7 @@ struct configuration_spec * load_config(void)
 /* FIXME: this is a kludge for win32 */
 #if defined(_WIN32) && !defined (_WIN_CONSOLE)
 
-   g_default_actions_file  = config->actions_file[1]; /* FIXME Hope this is default.action */
+   g_default_actions_file = config->actions_file[1]; /* FIXME Hope this is default.action */
    g_user_actions_file = config->actions_file[2]; /* FIXME Hope this is user.action */
    g_re_filterfile    = config->re_filterfile[0]; /* FIXME Hope this is default.filter */
 

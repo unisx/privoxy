@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.67 2008/03/30 14:52:08 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.69 2008/09/21 13:36:52 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -35,6 +35,17 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.67 2008/03/30 14:52:08 fabiankeil
  *
  * Revisions   :
  *    $Log: loaders.c,v $
+ *    Revision 1.69  2008/09/21 13:36:52  fabiankeil
+ *    If change-x-forwarded-for{add} is used and the client
+ *    sends multiple X-Forwarded-For headers, append the client's
+ *    IP address to each one of them. "Traditionally" we would
+ *    lose all but the last one.
+ *
+ *    Revision 1.68  2008/09/19 15:26:28  fabiankeil
+ *    Add change-x-forwarded-for{} action to block or add
+ *    X-Forwarded-For headers. Mostly based on code removed
+ *    before 3.0.7.
+ *
  *    Revision 1.67  2008/03/30 14:52:08  fabiankeil
  *    Rename load_actions_file() and load_re_filterfile()
  *    as they load multiple files "now".

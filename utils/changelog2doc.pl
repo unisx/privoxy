@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: changelog2doc.pl,v 1.1 2008/06/09 17:53:02 fabiankeil Exp $
+# $Id: changelog2doc.pl,v 1.2 2008/09/26 16:49:09 fabiankeil Exp $
 # $Source: /cvsroot/ijbswa/current/utils/changelog2doc.pl,v $
 
 # Filter to parse the ChangeLog and translate the changes for
@@ -33,7 +33,7 @@ sub read_entries() {
 
         $entries[$i] .= $_;
     }
-    print "Parsed $i entries.\n";
+    print "Parsed " . @entries . " entries.\n";
 }
 
 sub generate_markup() {

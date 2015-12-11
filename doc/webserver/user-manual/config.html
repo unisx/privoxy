@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.10 User Manual"
+TITLE="Privoxy 3.0.11 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.10 User Manual</TH
+>Privoxy 3.0.11 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -363,7 +363,13 @@ CLASS="VARIABLELIST"
 >Default value:</DT
 ><DD
 ><P
->Two example URLs are provided</P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Unset</I
+></SPAN
+></P
 ></DD
 ><DT
 >Effect if unset:</DT
@@ -708,14 +714,10 @@ CLASS="VARIABLELIST"
 ><DD
 ><P
 >    The directory where all logging takes place
-    (i.e. where <TT
+    (i.e. where the <TT
 CLASS="FILENAME"
 >logfile</TT
-> and
-    <TT
-CLASS="FILENAME"
->jarfile</TT
-> are located).
+> is located).
    </P
 ></DD
 ><DT
@@ -820,7 +822,7 @@ BORDER="0"
 ><TD
 >     <P
 CLASS="LITERALLAYOUT"
->&nbsp;&nbsp;standard.action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Internal&nbsp;purposes,&nbsp;no&nbsp;editing&nbsp;recommended</P
+>&nbsp;&nbsp;match-all.action&nbsp;#&nbsp;Actions&nbsp;that&nbsp;are&nbsp;applied&nbsp;to&nbsp;all&nbsp;sites&nbsp;and&nbsp;maybe&nbsp;overruled&nbsp;later&nbsp;on.</P
 >
     </TD
 ></TR
@@ -828,7 +830,7 @@ CLASS="LITERALLAYOUT"
 ><TD
 >     <P
 CLASS="LITERALLAYOUT"
->&nbsp;&nbsp;default.action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Main&nbsp;actions&nbsp;file</P
+>&nbsp;&nbsp;default.action&nbsp;&nbsp;&nbsp;#&nbsp;Main&nbsp;actions&nbsp;file</P
 >
     </TD
 ></TR
@@ -836,7 +838,7 @@ CLASS="LITERALLAYOUT"
 ><TD
 >     <P
 CLASS="LITERALLAYOUT"
->&nbsp;&nbsp;user.action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;User&nbsp;customizations</P
+>&nbsp;&nbsp;user.action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;User&nbsp;customizations</P
 >
     </TD
 ></TR
@@ -863,15 +865,11 @@ CLASS="LITERAL"
    </P
 ><P
 > 
-    The default values include <TT
-CLASS="FILENAME"
->standard.action</TT
->, which is used
-    for internal purposes and should be loaded, <TT
+    The default values are <TT
 CLASS="FILENAME"
 >default.action</TT
->,
-    which is the <SPAN
+>, which is the
+    <SPAN
 CLASS="QUOTE"
 >"main"</SPAN
 > actions file maintained by the developers, and
@@ -1155,79 +1153,8 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="JARFILE"
->7.2.7. jarfile</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Specifies:</DT
-><DD
-><P
->    The file to store intercepted cookies in
-   </P
-></DD
-><DT
->Type of value:</DT
-><DD
-><P
->File name, relative to <TT
-CLASS="LITERAL"
->logdir</TT
-></P
-></DD
-><DT
->Default value:</DT
-><DD
-><P
-><SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->Unset (commented out)</I
-></SPAN
->. When activated: jarfile (Unix) <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->or</I
-></SPAN
-> privoxy.jar (Windows).</P
-></DD
-><DT
->Effect if unset:</DT
-><DD
-><P
->    Intercepted cookies are not stored in a dedicated log file.
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    The jarfile may grow to ridiculous sizes over time.
-   </P
-><P
->    If debug 8 (show header parsing) is enabled, cookies are
-    also written to the logfile with the rest of the headers.
-    Therefore this option isn't very useful and may be removed
-    in future releases. Please report to the developers if you
-    are still using it.
-   </P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
 NAME="TRUSTFILE"
->7.2.8. trustfile</A
+>7.2.7. trustfile</A
 ></H4
 ><P
 ></P
@@ -1444,10 +1371,10 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  debug     1 # log each request destination (and the crunch reason if <SPAN
+>  debug     1 # Log the destination for each request <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> intercepted the request)
+> let through. See also debug 1024.
   debug     2 # show each connection status
   debug     4 # show I/O status
   debug     8 # show header parsing
@@ -1457,6 +1384,10 @@ CLASS="APPLICATION"
   debug   128 # debug redirects
   debug   256 # debug GIF de-animation
   debug   512 # Common Log Format
+  debug  1024 # Log the destination for requests <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> didn't let through, and the reason why.
   debug  2048 # CGI user interface
   debug  4096 # Startup banner and warnings.
   debug  8192 # Non-fatal errors</PRE
@@ -3666,6 +3597,163 @@ CLASS="APPLICATION"
 ><DD
 ><P
 >    split-large-forms 1
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="KEEP-ALIVE-TIMEOUT"
+>7.5.8. keep-alive-timeout</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Number of seconds after which an open connection will no longer be reused.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>Time in seconds.</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>None</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Connections are not reused.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This option has no effect if <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    has been compiled without keep-alive support.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Note that reusing connections doesn't necessary cause speedups.
+    There are also a few privacy implications you should be aware of.
+   </P
+><P
+>    Outgoing connections are shared between clients (if there are more
+    than one) and closing the client that initiated the outgoing connection
+    does not affect the connection between <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and the server unless
+    the client's request hasn't been completed yet. If the outgoing connection
+    is idle, it will not be closed until either <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+>
+    or the server's timeout is reached. While it's open, the server knows
+    that the system running <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is still there.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    keep-alive-timeout 300
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="SOCKET-TIMEOUT"
+>7.5.9. socket-timeout</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Number of seconds after which a socket times out if
+    no data is received.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>Time in seconds.</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>None</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    A default value of 300 seconds is used.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    For SOCKS requests the timeout currently doesn't start until
+    the SOCKS server accepted the request. This will be fixed in
+    the next release.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    socket-timeout 300
    </P
 ></DD
 ></DL

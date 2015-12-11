@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.10 User Manual"
+TITLE="Privoxy 3.0.11 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.10 User Manual</TH
+>Privoxy 3.0.11 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -106,77 +106,54 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > with
- differing purposes:
- </P
+ differing purposes:</P
 ><P
->  <P
+> <P
 ></P
 ><UL
 ><LI
 ><P
->     <TT
+>    <TT
 CLASS="FILENAME"
->default.action</TT
-> - is the primary action file 
-     that sets the initial values for all actions. It is intended to 
-     provide a base level of functionality for
-     <SPAN
-CLASS="APPLICATION"
->Privoxy's</SPAN
-> array of features. So it is 
-     a set of broad rules that should work reasonably well as-is for most users.
-     This is the file that the developers are keeping updated, and <A
-HREF="installation.html#INSTALLATION-KEEPUPDATED"
->making available to users</A
->.
-     The user's preferences as set in <TT
-CLASS="FILENAME"
->standard.action</TT
->,
-     e.g. either <TT
-CLASS="LITERAL"
->Cautious</TT
-> (the default),
-     <TT
-CLASS="LITERAL"
->Medium</TT
->, or <TT
-CLASS="LITERAL"
->Advanced</TT
-> (see
-     below).
-    </P
+>match-all.action</TT
+> - is used to define which
+    <SPAN
+CLASS="QUOTE"
+>"actions"</SPAN
+> relating to banner-blocking, images, pop-ups,
+    content modification, cookie handling etc should be applied by default.
+    It should be the first actions file loaded
+   </P
 ></LI
 ><LI
 ><P
->     <TT
+>    <TT
+CLASS="FILENAME"
+>default.action</TT
+> - defines many exceptions (both
+    positive and negative) from the default set of actions that's configured
+    in <TT
+CLASS="FILENAME"
+>match-all.action</TT
+>. It is a set of rules that should
+    work reasonably well as-is for most users. This file is only supposed to
+    be edited by the developers. It should be the second actions file loaded.
+   </P
+></LI
+><LI
+><P
+>    <TT
 CLASS="FILENAME"
 >user.action</TT
 > - is intended to be for local site 
-     preferences and exceptions. As an example, if your ISP or your bank
-     has specific requirements, and need special handling, this kind of 
-     thing should go here. This file will not be upgraded.
-    </P
+    preferences and exceptions. As an example, if your ISP or your bank
+    has specific requirements, and need special handling, this kind of 
+    thing should go here. This file will not be upgraded.
+   </P
 ></LI
 ><LI
 ><P
->     <TT
-CLASS="FILENAME"
->standard.action</TT
-> - is used only by the web based editor
-     at <A
-HREF="http://config.privoxy.org/edit-actions-list?f=default"
-TARGET="_top"
->     http://config.privoxy.org/edit-actions-list?f=default</A
->, 
-     to set various pre-defined sets of rules for the default actions section
-     in <TT
-CLASS="FILENAME"
->default.action</TT
->. 
-     </P
-><P
->     <SPAN
+>    <SPAN
 CLASS="GUIBUTTON"
 >Edit</SPAN
 >  <SPAN
@@ -189,80 +166,74 @@ CLASS="GUIBUTTON"
 CLASS="GUIBUTTON"
 >Set to Advanced</SPAN
 >
-     </P
+   </P
 ><P
->     These have increasing levels of aggressiveness <SPAN
+>    These have increasing levels of aggressiveness <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >and have no
-     influence on your browsing unless you select them explicitly in the
-     editor</I
+    influence on your browsing unless you select them explicitly in the
+    editor</I
 ></SPAN
 >. A default installation should be pre-set to 
-     <TT
+    <TT
 CLASS="LITERAL"
 >Cautious</TT
-> (versions prior to 3.0.5 were set to
-     <TT
-CLASS="LITERAL"
->Medium</TT
->). New users should try this for a while before
-     adjusting the settings to more aggressive levels. The more aggressive 
-     the settings, then the more likelihood there is of problems such as sites 
-     not working as they should.
-     </P
+>. New users should try this for a while before
+    adjusting the settings to more aggressive levels. The more aggressive 
+    the settings, then the more likelihood there is of problems such as sites 
+    not working as they should.
+   </P
 ><P
->      The <SPAN
+>    The <SPAN
 CLASS="GUIBUTTON"
 >Edit</SPAN
 > button allows you to turn each 
-      action on/off individually for fine-tuning. The <SPAN
+    action on/off individually for fine-tuning. The <SPAN
 CLASS="GUIBUTTON"
 >Cautious</SPAN
 >
-      button changes the actions list to low/safe settings which will activate 
-      ad blocking and a minimal set of <SPAN
+    button changes the actions list to low/safe settings which will activate 
+    ad blocking and a minimal set of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >'s features, and subsequently
-      there will be less of a chance for accidental problems. The
-      <SPAN
+    there will be less of a chance for accidental problems. The
+    <SPAN
 CLASS="GUIBUTTON"
 >Medium</SPAN
 > button sets the list to a medium level of
-      other features and a low level set of privacy features. The
-      <SPAN
+    other features and a low level set of privacy features. The
+    <SPAN
 CLASS="GUIBUTTON"
 >Advanced</SPAN
 > button sets the list to a high level of
-      ad blocking and medium level of privacy. See the chart below. The latter
-      three buttons over-ride any changes via with the
-      <SPAN
+    ad blocking and medium level of privacy. See the chart below. The latter
+    three buttons over-ride any changes via with the
+    <SPAN
 CLASS="GUIBUTTON"
 >Edit</SPAN
 > button. More fine-tuning can be done in the
-      lower sections of this internal page.
-     </P
+    lower sections of this internal page.
+   </P
 ><P
->     It is not recommend to edit the <TT
-CLASS="FILENAME"
->standard.action</TT
-> file
-     itself.
-    </P
+>    While the actions file editor allows to enable these settings in all
+    actions files, they are only supposed to be enabled in the first one
+    to make sure you don't unintentionally overrule earlier rules.
+   </P
 ><P
->     The default profiles, and their associated actions, as pre-defined in
-     <TT
+>    The default profiles, and their associated actions, as pre-defined in
+    <TT
 CLASS="FILENAME"
->standard.action</TT
+>default.action</TT
 > are:
-    </P
+   </P
 ><P
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2194"
+NAME="AEN2203"
 ></A
 ><P
 ><B
@@ -431,8 +402,7 @@ TITLE="C4"><THEAD
     </P
 ></LI
 ></UL
->
- </P
+></P
 ><P
 > The list of actions files to be used are defined in the main configuration 
  file, and are processed in the order they are defined (e.g.
@@ -531,7 +501,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2293"
+NAME="AEN2302"
 >8.1. Finding the Right Mix</A
 ></H2
 ><P
@@ -566,7 +536,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2300"
+NAME="AEN2309"
 >8.2. How to Edit</A
 ></H2
 ><P
@@ -896,7 +866,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2391"
+NAME="AEN2400"
 >8.4.1. The Domain Pattern</A
 ></H3
 ><P
@@ -1136,7 +1106,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2467"
+NAME="AEN2476"
 >8.4.2. The Path Pattern</A
 ></H3
 ><P
@@ -1997,8 +1967,104 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="CHANGE-X-FORWARDED-FOR"
+>8.5.3. change-x-forwarded-for</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Improve privacy by not forwarding the source of the request in the HTTP headers.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes the <SPAN
+CLASS="QUOTE"
+>"X-Forwarded-For:"</SPAN
+> HTTP header from the client request,
+    or adds a new one.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+> to delete the header.</P
+></LI
+><LI
+><P
+>       <SPAN
+CLASS="QUOTE"
+>"add"</SPAN
+> to create the header (or append
+       the client's IP address to an already existing one).
+     </P
+></LI
+></UL
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    It is safe and recommended to use <TT
+CLASS="LITERAL"
+>block</TT
+>.
+   </P
+><P
+>    Forwarding the source address of the request may make
+    sense in some multi-user setups but is also a privacy risk.
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+change-x-forwarded-for{block}</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="CLIENT-HEADER-FILTER"
->8.5.3. client-header-filter</A
+>8.5.4. client-header-filter</A
 ></H4
 ><P
 ></P
@@ -2098,7 +2164,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CLIENT-HEADER-TAGGER"
->8.5.4. client-header-tagger</A
+>8.5.5. client-header-tagger</A
 ></H4
 ><P
 ></P
@@ -2204,7 +2270,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CONTENT-TYPE-OVERWRITE"
->8.5.5. content-type-overwrite</A
+>8.5.6. content-type-overwrite</A
 ></H4
 ><P
 ></P
@@ -2366,7 +2432,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CRUNCH-CLIENT-HEADER"
->8.5.6. crunch-client-header</A
+>8.5.7. crunch-client-header</A
 ></H4
 ><P
 ></P
@@ -2500,7 +2566,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CRUNCH-IF-NONE-MATCH"
->8.5.7. crunch-if-none-match</A
+>8.5.8. crunch-if-none-match</A
 ></H4
 ><P
 ></P
@@ -2618,7 +2684,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CRUNCH-INCOMING-COOKIES"
->8.5.8. crunch-incoming-cookies</A
+>8.5.9. crunch-incoming-cookies</A
 ></H4
 ><P
 ></P
@@ -2741,7 +2807,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CRUNCH-SERVER-HEADER"
->8.5.9. crunch-server-header</A
+>8.5.10. crunch-server-header</A
 ></H4
 ><P
 ></P
@@ -2873,7 +2939,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CRUNCH-OUTGOING-COOKIES"
->8.5.10. crunch-outgoing-cookies</A
+>8.5.11. crunch-outgoing-cookies</A
 ></H4
 ><P
 ></P
@@ -2989,7 +3055,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="DEANIMATE-GIFS"
->8.5.11. deanimate-gifs</A
+>8.5.12. deanimate-gifs</A
 ></H4
 ><P
 ></P
@@ -3079,7 +3145,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="DOWNGRADE-HTTP-VERSION"
->8.5.12. downgrade-http-version</A
+>8.5.13. downgrade-http-version</A
 ></H4
 ><P
 ></P
@@ -3155,7 +3221,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FAST-REDIRECTS"
->8.5.13. fast-redirects</A
+>8.5.14. fast-redirects</A
 ></H4
 ><P
 ></P
@@ -3337,7 +3403,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FILTER"
->8.5.14. filter</A
+>8.5.15. filter</A
 ></H4
 ><P
 ></P
@@ -4065,7 +4131,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FORCE-TEXT-MODE"
->8.5.15. force-text-mode</A
+>8.5.16. force-text-mode</A
 ></H4
 ><P
 ></P
@@ -4198,7 +4264,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FORWARD-OVERRIDE"
->8.5.16. forward-override</A
+>8.5.17. forward-override</A
 ></H4
 ><P
 ></P
@@ -4388,7 +4454,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HANDLE-AS-EMPTY-DOCUMENT"
->8.5.17. handle-as-empty-document</A
+>8.5.18. handle-as-empty-document</A
 ></H4
 ><P
 ></P
@@ -4512,7 +4578,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HANDLE-AS-IMAGE"
->8.5.18. handle-as-image</A
+>8.5.19. handle-as-image</A
 ></H4
 ><P
 ></P
@@ -4645,7 +4711,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-ACCEPT-LANGUAGE"
->8.5.19. hide-accept-language</A
+>8.5.20. hide-accept-language</A
 ></H4
 ><P
 ></P
@@ -4762,7 +4828,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-CONTENT-DISPOSITION"
->8.5.20. hide-content-disposition</A
+>8.5.21. hide-content-disposition</A
 ></H4
 ><P
 ></P
@@ -4883,7 +4949,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-IF-MODIFIED-SINCE"
->8.5.21. hide-if-modified-since</A
+>8.5.22. hide-if-modified-since</A
 ></H4
 ><P
 ></P
@@ -4994,77 +5060,6 @@ CLASS="SCREEN"
  +overwrite-last-modified{randomize} \
  +crunch-if-none-match}
 /</PRE
-></TD
-></TR
-></TABLE
->
-   </P
-></DD
-></DL
-></DIV
-></DIV
-><DIV
-CLASS="SECT3"
-><H4
-CLASS="SECT3"
-><A
-NAME="HIDE-FORWARDED-FOR-HEADERS"
->8.5.22. hide-forwarded-for-headers</A
-></H4
-><P
-></P
-><DIV
-CLASS="VARIABLELIST"
-><DL
-><DT
->Typical use:</DT
-><DD
-><P
->Improve privacy by not forwarding the source of the request in the HTTP headers.</P
-></DD
-><DT
->Effect:</DT
-><DD
-><P
->    Deletes any existing <SPAN
-CLASS="QUOTE"
->"X-Forwarded-for:"</SPAN
-> HTTP header from client requests.
-   </P
-></DD
-><DT
->Type:</DT
-><DD
-><P
->Boolean.</P
-></DD
-><DT
->Parameter:</DT
-><DD
-><P
->    N/A
-   </P
-></DD
-><DT
->Notes:</DT
-><DD
-><P
->    It is safe and recommended to leave this on.
-   </P
-></DD
-><DT
->Example usage:</DT
-><DD
-><P
->     <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="90%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->+hide-forwarded-for-headers</PRE
 ></TD
 ></TR
 ></TABLE
@@ -6679,7 +6674,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4090"
+NAME="AEN4107"
 >8.5.34. Summary</A
 ></H3
 ><P
@@ -6967,22 +6962,81 @@ HREF="actions-file.html#ALIASES"
 >. Now, let's look at an
  example <TT
 CLASS="FILENAME"
+>match-all.action</TT
+>, <TT
+CLASS="FILENAME"
 >default.action</TT
-> and <TT
+>
+ and <TT
 CLASS="FILENAME"
 >user.action</TT
->
- file and see how all these pieces come together:</P
+> file and see how all these pieces come together:</P
 ><DIV
 CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4153"
->8.7.1. default.action</A
+NAME="AEN4171"
+>8.7.1. match-all.action</A
 ></H3
 ><P
->Every config file should start with a short comment stating its purpose:</P
+> Remember <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all actions are disabled when matching starts</I
+></SPAN
+>,
+ so we have to explicitly enable the ones we want.</P
+><P
+> While the <TT
+CLASS="FILENAME"
+>match-all.action</TT
+> file only contains a
+ single section, it is probably the most important one. It has only one
+ pattern, <SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="LITERAL"
+>/</TT
+>"</SPAN
+>, but this pattern
+ <A
+HREF="actions-file.html#AF-PATTERNS"
+>matches all URLs</A
+>. Therefore, the set of
+ actions used in this <SPAN
+CLASS="QUOTE"
+>"default"</SPAN
+> section <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>will
+ be applied to all requests as a start</I
+></SPAN
+>. It can  be partly or
+ wholly overridden by other actions files like <TT
+CLASS="FILENAME"
+>default.action</TT
+>
+ and <TT
+CLASS="FILENAME"
+>user.action</TT
+>, but it will still be largely responsible
+ for your overall browsing experience.</P
+><P
+> Again, at the start of matching, all actions are disabled, so there is
+ no need to disable any actions here. (Remember: a <SPAN
+CLASS="QUOTE"
+>"+"</SPAN
+>
+ preceding the action name enables the action, a <SPAN
+CLASS="QUOTE"
+>"-"</SPAN
+> disables!).
+ Also note how this long line has been made more readable by splitting it into
+ multiple lines with line continuation.</P
 ><P
 > <TABLE
 BORDER="0"
@@ -6992,18 +7046,66 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-># Sample default.action file &#60;ijbswa-developers@lists.sourceforge.net&#62;</PRE
+>{ \
+ +<A
+HREF="actions-file.html#CHANGE-X-FORWARDED-FOR"
+>change-x-forwarded-for{block}</A
+> \
+ +<A
+HREF="actions-file.html#HIDE-FROM-HEADER"
+>hide-from-header{block}</A
+> \
+ +<A
+HREF="actions-file.html#SET-IMAGE-BLOCKER"
+>set-image-blocker{pattern}</A
+> \
+}
+/ # Match all URLs
+ </PRE
 ></TD
 ></TR
 ></TABLE
 ></P
 ><P
->Then, since this is the <TT
+> The default behavior is now set.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN4193"
+>8.7.2. default.action</A
+></H3
+><P
+> If you aren't a developer, there's no need for you to edit the
+ <TT
 CLASS="FILENAME"
 >default.action</TT
-> file, the
-first section is a special section for internal use that you needn't
-change or worry about:</P
+> file. It is maintained by
+ the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> developers and if you disagree with some of the
+ sections, you should overrule them in your <TT
+CLASS="FILENAME"
+>user.action</TT
+>.</P
+><P
+> Understanding the <TT
+CLASS="FILENAME"
+>default.action</TT
+> file can
+ help you with your <TT
+CLASS="FILENAME"
+>user.action</TT
+>, though.</P
+><P
+> The first section in this file is a special section for internal use
+ that prevents older <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> versions from reading the file:</P
 ><P
 > <TABLE
 BORDER="0"
@@ -7016,20 +7118,19 @@ CLASS="SCREEN"
 >##########################################################################
 # Settings -- Don't change! For internal Privoxy use ONLY.
 ##########################################################################
-
 {{settings}}
-for-privoxy-version=3.0</PRE
+for-privoxy-version=3.0.11</PRE
 ></TD
 ></TR
 ></TABLE
 ></P
 ><P
->After that comes the (optional) alias section. We'll use the example
-section from the above <A
+> After that comes the (optional) alias section. We'll use the example
+ section from the above <A
 HREF="actions-file.html#ALIASES"
 >chapter on aliases</A
 >,
-that also explains why and how aliases are used:</P
+ that also explains why and how aliases are used:</P
 ><P
 > <TABLE
 BORDER="0"
@@ -7094,122 +7195,6 @@ HREF="actions-file.html#FILTER-ALL-POPUPS"
 ></TR
 ></TABLE
 ></P
-><P
-> Now come the regular sections, i.e. sets of actions, accompanied
- by URL patterns to which they apply. Remember <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->all actions
- are disabled when matching starts</I
-></SPAN
->, so we have to explicitly
- enable the ones we want.</P
-><P
-> The first regular section is probably the most important. It has only
- one pattern, <SPAN
-CLASS="QUOTE"
->"<TT
-CLASS="LITERAL"
->/</TT
->"</SPAN
->, but this pattern
- <A
-HREF="actions-file.html#AF-PATTERNS"
->matches all URLs</A
->. Therefore, the
- set of actions used in this <SPAN
-CLASS="QUOTE"
->"default"</SPAN
-> section <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->will
- be applied to all requests as a start</I
-></SPAN
->. It can  be partly or
- wholly overridden by later matches further down this file, or in user.action,
- but it will still be largely responsible for your overall browsing
- experience.</P
-><P
-> Again, at the start of matching, all actions are disabled, so there is
- no need to disable any actions here. (Remember: a <SPAN
-CLASS="QUOTE"
->"+"</SPAN
->
- preceding the action name enables the action, a <SPAN
-CLASS="QUOTE"
->"-"</SPAN
-> disables!).
- Also note how this long line has been made more readable by splitting it into
- multiple lines with line continuation.</P
-><P
-> <TABLE
-BORDER="0"
-BGCOLOR="#E0E0E0"
-WIDTH="100%"
-><TR
-><TD
-><PRE
-CLASS="SCREEN"
->##########################################################################
-# "Defaults" section:
-##########################################################################
- { \
- +<A
-HREF="actions-file.html#DEANIMATE-GIFS"
->deanimate-gifs</A
-> \
- +<A
-HREF="actions-file.html#FILTER-HTML-ANNOYANCES"
->filter{html-annoyances}</A
-> \
- +<A
-HREF="actions-file.html#FILTER-REFRESH-TAGS"
->filter{refresh-tags}</A
-> \
- +<A
-HREF="actions-file.html#FILTER-WEBBUGS"
->filter{webbugs}</A
-> \
- +<A
-HREF="actions-file.html#FILTER-IE-EXPLOITS"
->filter{ie-exploits}</A
-> \     
- +<A
-HREF="actions-file.html#HIDE-FORWARDED-FOR-HEADERS"
->hide-forwarded-for-headers</A
-> \
- +<A
-HREF="actions-file.html#HIDE-FROM-HEADER"
->hide-from-header{block}</A
-> \
- +<A
-HREF="actions-file.html#HIDE-REFERER"
->hide-referrer{forge}</A
-> \
- +<A
-HREF="actions-file.html#PREVENT-COMPRESSION"
->prevent-compression</A
-> \
- +<A
-HREF="actions-file.html#SESSION-COOKIES-ONLY"
->session-cookies-only</A
-> \
- +<A
-HREF="actions-file.html#SET-IMAGE-BLOCKER"
->set-image-blocker{pattern}</A
-> \
- }
- / # forward slash will match *all* potential URL patterns.</PRE
-></TD
-></TR
-></TABLE
-></P
-><P
-> The default behavior is now set.
- </P
 ><P
 > The first of our specialized sections is concerned with <SPAN
 CLASS="QUOTE"
@@ -7278,8 +7263,11 @@ HREF="actions-file.html#FAST-REDIRECTS"
 >fast-redirects</A
 ></TT
 >
- action, which we enabled per default above,  breaks some sites. So disable
- it for popular sites where we know it misbehaves:</P
+ action, which may have been enabled in <TT
+CLASS="FILENAME"
+>match-all.action</TT
+>,
+ breaks some sites. So disable it for popular sites where we know it misbehaves:</P
 ><P
 > <TABLE
 BORDER="0"
@@ -7318,14 +7306,8 @@ CLASS="EMPHASIS"
  be blocked, a substitute image can be sent, rather than an HTML page.
  Contacting the remote site to find out is not an option, since it
  would destroy the loading time advantage of banner blocking, and it
- would feed the advertisers (in terms of money <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->and</I
-></SPAN
->
- information). We can mark any URL as an image with the <TT
+ would feed the advertisers information about you. We can mark any
+ URL as an image with the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
@@ -7693,8 +7675,8 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4287"
->8.7.2. user.action</A
+NAME="AEN4306"
+>8.7.3. user.action</A
 ></H3
 ><P
 > So far we are painting with a broad brush by setting general policies,

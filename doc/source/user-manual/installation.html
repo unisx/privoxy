@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.10 User Manual"
+TITLE="Privoxy 3.0.11 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Introduction"
@@ -40,7 +40,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.10 User Manual</TH
+>Privoxy 3.0.11 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -127,7 +127,7 @@ NAME="INSTALLATION-PACK-RPM"
 ><P
 > RPMs can be installed with <TT
 CLASS="LITERAL"
->rpm -Uvh privoxy-3.0.10-1.rpm</TT
+>rpm -Uvh privoxy-3.0.11-1.rpm</TT
 >,
  and will use <TT
 CLASS="FILENAME"
@@ -158,7 +158,7 @@ CLASS="COMMAND"
 > If you have problems with failed dependencies, try rebuilding the SRC RPM: 
  <TT
 CLASS="LITERAL"
->rpm --rebuild privoxy-3.0.10-1.src.rpm</TT
+>rpm --rebuild privoxy-3.0.11-1.src.rpm</TT
 >. This 
  will use your locally installed libraries and RPM version. </P
 ><P
@@ -462,7 +462,7 @@ CLASS="APPLICATION"
 > under Gentoo just do 
  first <TT
 CLASS="LITERAL"
->emerge rsync</TT
+>emerge --sync</TT
 > to get the latest changes from the 
  Portage tree. With <TT
 CLASS="LITERAL"
@@ -476,7 +476,7 @@ CLASS="FILENAME"
 >, the 
  documentation is in <TT
 CLASS="FILENAME"
->/usr/share/doc/privoxy-3.0.10</TT
+>/usr/share/doc/privoxy-3.0.11</TT
 >
  and the Log directory is in <TT
 CLASS="FILENAME"
@@ -545,8 +545,8 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-> tar xzvf privoxy-3.0.10-src* [.tgz or .tar.gz]
- cd privoxy-3.0.10</PRE
+> tar xzvf privoxy-3.0.11-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.11</PRE
 ></TD
 ></TR
 ></TABLE
@@ -914,8 +914,8 @@ CLASS="APPLICATION"
  <SPAN
 CLASS="QUOTE"
 >"new"</SPAN
-> extension. default.action, default.filter, and 
- standard.action <SPAN
+> extension. default.action and default.filter
+ <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"

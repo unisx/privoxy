@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.108 2008/05/21 15:35:08 fabiankeil Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.111 2008/12/04 18:13:46 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -40,6 +40,16 @@ const char filters_rcs[] = "$Id: filters.c,v 1.108 2008/05/21 15:35:08 fabiankei
  *
  * Revisions   :
  *    $Log: filters.c,v $
+ *    Revision 1.111  2008/12/04 18:13:46  fabiankeil
+ *    Fix a cparser warning.
+ *
+ *    Revision 1.110  2008/11/10 16:40:25  fabiankeil
+ *    Fix a gcc44 warning.
+ *
+ *    Revision 1.109  2008/11/08 15:48:41  fabiankeil
+ *    Mention actual values when complaining about
+ *    the chunk size exceeding the buffer size.
+ *
  *    Revision 1.108  2008/05/21 15:35:08  fabiankeil
  *    - Mark csp as immutable for block_acl().
  *    - Remove an obsolete complaint about filter_popups().
@@ -834,7 +844,7 @@ int acl_addr(const char *aspec, struct access_control_addr *aca)
    aca->mask = 0;
    for (i=1; i <= masklength ; i++)
    {
-      aca->mask |= (1 << (32 - i));
+      aca->mask |= (1U << (32 - i));
    }
 
    /* now mask off the host portion of the ip address
@@ -2178,7 +2188,7 @@ static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size)
       return JB_ERR_PARSE;
    }
 
-   while (chunksize > 0)
+   while (chunksize > 0U)
    {
       if (NULL == (from_p = strstr(from_p, "\r\n")))
       {
@@ -2188,7 +2198,9 @@ static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size)
 
       if ((newsize += chunksize) >= *size)
       {
-         log_error(LOG_LEVEL_ERROR, "Chunksize exceeds buffer in  \"chunked\" transfer coding");
+         log_error(LOG_LEVEL_ERROR,
+            "Chunk size %d exceeds buffer size %d in  \"chunked\" transfer coding",
+            chunksize, *size);
          return JB_ERR_PARSE;
       }
       from_p += 2;

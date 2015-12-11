@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.10
+#        Sample Configuration File for Privoxy v3.0.11
 #
-#  $Id: config,v 1.66 2008/08/14 10:35:28 hal9 Exp $
+#  $Id: config,v 1.74 2009/02/19 17:26:26 fabiankeil Exp $
 #
-#  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+#  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -147,7 +147,7 @@
 #
 #  Default value:
 #
-#      Two example URLs are provided
+#      Unset
 #
 #  Effect if unset:
 #
@@ -166,8 +166,8 @@
 #      don't end up locked out from the information on why they were
 #      locked out in the first place!
 #
-trust-info-url  http://www.example.com/why_we_block.html
-trust-info-url  http://www.example.com/what_we_allow.html
+#trust-info-url  http://www.example.com/why_we_block.html
+#trust-info-url  http://www.example.com/what_we_allow.html
 #
 #
 #  1.3. admin-address
@@ -305,8 +305,8 @@ confdir .
 #
 #  Specifies:
 #
-#      The directory where all logging takes place (i.e. where logfile
-#      and jarfile are located).
+#      The directory where all logging takes place (i.e. where the
+#      logfile is located).
 #
 #  Type of value:
 #
@@ -340,11 +340,11 @@ logdir .
 #
 #  Default values:
 #
-#        standard.action     # Internal purposes, no editing recommended
+#        match-all.action # Actions that are applied to all sites and maybe overruled later on.
 #
-#        default.action      # Main actions file
+#        default.action   # Main actions file
 #
-#        user.action         # User customizations
+#        user.action      # User customizations
 #
 #  Effect if unset:
 #
@@ -355,10 +355,9 @@ logdir .
 #      Multiple actionsfile lines are permitted, and are in fact
 #      recommended!
 #
-#      The default values include standard.action, which is used
-#      for internal purposes and should be loaded, default.action,
-#      which is the "main" actions file maintained by the developers,
-#      and user.action, where you can make your personal additions.
+#      The default values are default.action, which is the "main"
+#      actions file maintained by the developers, and user.action,
+#      where you can make your personal additions.
 #
 #      Actions files contain all the per site and per URL configuration
 #      for ad blocking, cookie management, privacy considerations,
@@ -370,7 +369,7 @@ logdir .
 #      was necessary to be consistent with the other file options and
 #      to allow previously forbidden characters.
 #
-actionsfile standard.action  # Internal purpose, recommended
+actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
 actionsfile default.action   # Main actions file
 actionsfile user.action      # User customizations
 #
@@ -468,40 +467,7 @@ filterfile default.filter
 logfile logfile
 #
 #
-#  2.7. jarfile
-#  =============
-#
-#  Specifies:
-#
-#      The file to store intercepted cookies in
-#
-#  Type of value:
-#
-#      File name, relative to logdir
-#
-#  Default value:
-#
-#      Unset (commented out). When activated: jarfile (Unix) or
-#      privoxy.jar (Windows).
-#
-#  Effect if unset:
-#
-#      Intercepted cookies are not stored in a dedicated log file.
-#
-#  Notes:
-#
-#      The jarfile may grow to ridiculous sizes over time.
-#
-#      If debug 8 (show header parsing) is enabled, cookies are also
-#      written to the logfile with the rest of the headers. Therefore
-#      this option isn't very useful and may be removed in future
-#      releases. Please report to the developers if you are still
-#      using it.
-#
-#jarfile jarfile
-#
-#
-#  2.8. trustfile
+#  2.7. trustfile
 #  ===============
 #
 #  Specifies:
@@ -590,7 +556,7 @@ logfile logfile
 #
 #      The available debug levels are:
 #
-#        debug         1 # log each request destination (and the crunch reason if Privoxy intercepted the request)
+#        debug         1 # Log the destination for each request Privoxy let through. See also debug 1024.
 #        debug         2 # show each connection status
 #        debug         4 # show I/O status
 #        debug         8 # show header parsing
@@ -600,7 +566,7 @@ logfile logfile
 #        debug       128 # debug redirects
 #        debug       256 # debug GIF de-animation
 #        debug       512 # Common Log Format
-#        debug      1024 # Unused
+#        debug      1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
 #        debug      2048 # CGI user interface
 #        debug      4096 # Startup banner and warnings.
 #        debug      8192 # Non-fatal errors
@@ -634,7 +600,8 @@ logfile logfile
 #      you read the log messages, you may even be able to solve the
 #      problem on your own.
 #
-#debug      1 # log each request destination (and the crunch reason if Privoxy intercepted the request)
+#debug      1 # Log the destination for each request Privoxy let through.
+#debug   1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
 #debug   4096 # Startup banner and warnings
 #debug   8192 # Non-fatal errors
 #
@@ -1417,6 +1384,86 @@ allow-cgi-request-crunching 0
 #      split-large-forms 1
 #
 split-large-forms 0
+#
+#
+#  5.7. keep-alive-timeout
+#  ========================
+#
+#  Specifies:
+#
+#      Number of seconds after which an open connection will no longer
+#      be reused.
+#
+#  Type of value:
+#
+#      Time in seconds.
+#
+#  Default value:
+#
+#      None
+#
+#  Effect if unset:
+#
+#      Connections are not reused.
+#
+#  Notes:
+#
+#      This option has no effect if Privoxy has been compiled without
+#      keep-alive support.
+#
+#  Notes:
+#
+#      Note that reusing connections doesn't necessary cause
+#      speedups. There are also a few privacy implications you should
+#      be aware of.
+#
+#      Outgoing connections are shared between clients (if there are
+#      more than one) and closing the client that initiated the outgoing
+#      connection does not affect the connection between Privoxy and
+#      the server unless the client's request hasn't been completed
+#      yet. If the outgoing connection is idle, it will not be closed
+#      until either Privoxy's or the server's timeout is reached. While
+#      it's open, the server knows that the system running Privoxy is
+#      still there.
+#
+#  Examples:
+#
+#      keep-alive-timeout 300
+#
+keep-alive-timeout 300
+#
+#
+#  5.8. socket-timeout
+#  ====================
+#
+#  Specifies:
+#
+#      Number of seconds after which a socket times out if no data
+#      is received.
+#
+#  Type of value:
+#
+#      Time in seconds.
+#
+#  Default value:
+#
+#      None
+#
+#  Effect if unset:
+#
+#      A default value of 300 seconds is used.
+#
+#  Notes:
+#
+#      For SOCKS requests the timeout currently doesn't start until
+#      the SOCKS server accepted the request. This will be fixed in
+#      the next release.
+#
+#  Examples:
+#
+#      socket-timeout 300
+#
+socket-timeout 300
 #
 #
 #  6. WINDOWS GUI OPTIONS

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 2.32 2008/07/23 18:07:07 fabiankeil Exp $
+ $Id: p-authors.sgml,v 2.34 2009/02/08 18:13:26 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -33,7 +33,7 @@ Current Privoxy Team:
  David Schmidt, developer
 <![%p-authors-formal;[
 ]]>
- 
+
  Hal Burgiss
  Mark Miller
  Gerry Murphy
@@ -48,7 +48,7 @@ Current Privoxy Team:
 </para>
 
 <literallayout>
- Johny Agotnes 
+ Johny Agotnes
  Rodrigo Barbosa
  Moritz Barsnick
  Ian Cummings
@@ -60,7 +60,6 @@ Current Privoxy Team:
  Gábor Lipták
  Adam Lock
  Guy Laroche
- Mark Martinec 
  Justin McMurtry
  Andreas Oesterhelt
  Haroon Rafique
@@ -74,7 +73,7 @@ Current Privoxy Team:
 </literallayout>
 <![%p-authors-formal;[
 <para>
- Thanks to the many people who have tested Privoxy, reported bugs, provided 
+ Thanks to the many people who have tested Privoxy, reported bugs, provided
  patches, made suggestions or contributed in some way. These include (in
  alphabetical order):
 </para>
@@ -87,7 +86,8 @@ Current Privoxy Team:
  Clifford Caoile
  Frédéric Crozat
  Michael T. Davis
- Mattes Dolak 
+ Mattes Dolak
+ Matthias Drochner
  Peter E.
  Florian Effenberger
  Markus Elfring
@@ -100,18 +100,18 @@ Current Privoxy Team:
  Magnus Holmgren
  Eric M. Hopper
  Ralf Horstmann
- Stefan Huehner 
+ Stefan Huehner
  Peter Hyman
  Derek Jennings
  Petr Kadlec
  David Laight
  Bert van Leeuwen
- Don Libes  
+ Don Libes
  Paul Lieverse
  Toby Lyward
  Wil Mahan
- Jindrich Makovicka 
- David Mediavilla 
+ Jindrich Makovicka
+ David Mediavilla
  Raphael Moll
  Amuro Namie
  Adam Piggott
@@ -129,7 +129,7 @@ Current Privoxy Team:
  Jochen Voss
  Glenn Washburn
  Song Weijia
- Jörg Weinmann 
+ Jörg Weinmann
  Darren Wiebe
  Anduin Withers
  Oliver Yeoh

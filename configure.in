@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.119 2008/08/13 16:53:50 fabiankeil Exp $
+dnl $Id: configure.in,v 1.124 2009/02/12 15:42:00 fabiankeil Exp $
 dnl 
-dnl Written by and Copyright (C) 2001-2008 the SourceForge
+dnl Written by and Copyright (C) 2001-2009 the
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
@@ -28,6 +28,22 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.124  2009/02/12 15:42:00  fabiankeil
+dnl Declare the code stable.
+dnl
+dnl Revision 1.123  2009/02/06 18:17:32  fabiankeil
+dnl Boldly enable keep-alive support where possible.
+dnl
+dnl Revision 1.122  2008/10/18 11:17:52  fabiankeil
+dnl Connection keep-alive support is ready for testing,
+dnl allow enabling it through the configure script.
+dnl
+dnl Revision 1.121  2008/08/30 12:03:07  fabiankeil
+dnl Remove FEATURE_COOKIE_JAR.
+dnl
+dnl Revision 1.120  2008/08/21 17:19:50  fabiankeil
+dnl Change version to 3.0.11 UNRELEASED.
+dnl
 dnl Revision 1.119  2008/08/13 16:53:50  fabiankeil
 dnl Change version to 3.0.10 stable.
 dnl
@@ -544,7 +560,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.119 $)
+AC_REVISION($Revision: 1.124 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -590,7 +606,7 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=10
+VERSION_POINT=11
 CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
@@ -1215,7 +1231,7 @@ AC_FUNC_SETPGRP
 AC_TYPE_SIGNAL
 dnl uncommenting does not work for swa. suse linux
 dnl AC_FUNC_STAT
-AC_CHECK_FUNCS([access atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r gettimeofday inet_ntoa localtime_r memchr memmove memset putenv random regcomp select setlocale snprintf socket strchr strdup strerror strftime strlcat strlcpy strptime strstr strtoul timegm tzset])
+AC_CHECK_FUNCS([access atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r gettimeofday inet_ntoa localtime_r memchr memmove memset poll putenv random regcomp select setlocale snprintf socket strchr strdup strerror strftime strlcat strlcpy strptime strstr strtoul timegm tzset])
 
 
 dnl =================================================================
@@ -1319,13 +1335,6 @@ AC_ARG_ENABLE(trust-files,
 fi],
 AC_DEFINE(FEATURE_TRUST))
 
-AC_ARG_ENABLE(jar-files,
-[  --disable-jar-files             Prevents the use of jar files to capture cookies.],
-[if test $enableval = yes; then
-  AC_DEFINE(FEATURE_COOKIE_JAR)
-fi],
-AC_DEFINE(FEATURE_COOKIE_JAR))
-
 AC_ARG_ENABLE(editor,
 [  --disable-editor                Prevents the use of the web-based actions file
                                   editor and web-based temporary disable setting.],
@@ -1406,6 +1415,11 @@ else
   pcre_dyn=no
   AC_DEFINE(STATIC_PCRE)
   STATIC_PCRE_ONLY=
+fi
+
+if test $have_pthread = "yes" -o $target_type = "mingw"; then
+  echo Enabling keep-alive support for outgoing connections.
+  AC_DEFINE(FEATURE_CONNECTION_KEEP_ALIVE)
 fi
 
 dnl =================================================

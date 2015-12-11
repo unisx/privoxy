@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.10 User Manual"
+TITLE="Privoxy 3.0.11 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="See Also"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.10 User Manual</TH
+>Privoxy 3.0.11 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -746,7 +746,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN5173"
+NAME="AEN5189"
 >14.2. Privoxy's Internal Pages</A
 ></H2
 ><P
@@ -792,7 +792,7 @@ CLASS="APPLICATION"
    Privoxy main page: 
   </P
 ><A
-NAME="AEN5187"
+NAME="AEN5203"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -825,7 +825,7 @@ CLASS="APPLICATION"
     editing of actions files:
   </P
 ><A
-NAME="AEN5195"
+NAME="AEN5211"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -845,7 +845,7 @@ TARGET="_top"
     Show the source code version numbers:
   </P
 ><A
-NAME="AEN5200"
+NAME="AEN5216"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -865,7 +865,7 @@ TARGET="_top"
    Show the browser's request headers:
   </P
 ><A
-NAME="AEN5205"
+NAME="AEN5221"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -885,7 +885,7 @@ TARGET="_top"
    Show which actions apply to a URL and why:
   </P
 ><A
-NAME="AEN5210"
+NAME="AEN5226"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -917,7 +917,7 @@ CLASS="QUOTE"
    place:
   </P
 ><A
-NAME="AEN5218"
+NAME="AEN5234"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -934,7 +934,7 @@ TARGET="_top"
 >   Short cuts. Turn off, then on: 
   </P
 ><A
-NAME="AEN5222"
+NAME="AEN5238"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -948,7 +948,7 @@ TARGET="_top"
    </P
 ></BLOCKQUOTE
 ><A
-NAME="AEN5225"
+NAME="AEN5241"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -1448,7 +1448,8 @@ CLASS="GUIBUTTON"
 >[ Edit ]</SPAN
 >
 
- {+deanimate-gifs {last}
+ {+change-x-forwarded-for{block}
+ +deanimate-gifs {last}
  +fast-redirects {check-decoded-url}
  +filter {refresh-tags}
  +filter {img-reorder}
@@ -1456,7 +1457,6 @@ CLASS="GUIBUTTON"
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
- +hide-forwarded-for-headers
  +hide-from-header {block}
  +hide-referrer {forge}
  +session-cookies-only
@@ -1635,6 +1635,7 @@ CLASS="SCREEN"
  
  -add-header
  -block
+ +change-x-forwarded-for{block} 
  -client-header-filter{hide-tor-exit-notation}
  -content-type-overwrite
  -crunch-client-header
@@ -1676,7 +1677,6 @@ CLASS="SCREEN"
  -handle-as-image
  -hide-accept-language
  -hide-content-disposition
- +hide-forwarded-for-headers
  +hide-from-header {block}
  -hide-if-modified-since
  +hide-referrer {forge}
@@ -1821,6 +1821,7 @@ CLASS="GUIBUTTON"
 
  {-add-header 
   -block
+  +change-x-forwarded-for{block} 
   -client-header-filter{hide-tor-exit-notation}
   -content-type-overwrite
   -crunch-client-header
@@ -1862,7 +1863,6 @@ CLASS="GUIBUTTON"
   -handle-as-image 
   -hide-accept-language
   -hide-content-disposition  
-  +hide-forwarded-for-headers 
   +hide-from-header{block} 
   +hide-referer{forge} 
   -hide-user-agent 

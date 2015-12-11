@@ -8,12 +8,13 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.10">
+<!entity p-version "3.0.11">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
+<!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
 ]>
 <!--
@@ -23,9 +24,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.27 2009/02/19 02:20:22 hal9 Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -44,13 +45,13 @@
      <subscript>
     <!-- Completely the wrong markup, but very little is allowed  -->
     <!-- in this part of an article. FIXME -->
-      <link linkend="copyright">Copyright</link> &my-copy; 2001-2008 by 
+      <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by 
       <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
      </subscript>
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.27 2009/02/19 02:20:22 hal9 Exp $</pubdate>
 
 <!--
 
@@ -135,15 +136,6 @@ Hal.
 
   <!--   ~~~~~       New section      ~~~~~     -->
   <sect2 id="quickstart"><title>Quickstart to Privoxy Development</title>
-   <!-- 
-    <para>
-      You'll need an account on <ulink
-      url="http://sourceforge.net/">Sourceforge</ulink> to support our
-      development.  Mail your ID to <ulink
-      url="mailto:developers@privoxy.org">the list</ulink> and wait until a
-      project manager has added you.
-    </para>
-   --> 
    <para>
     The first step is to join the <ulink
       url="mailto:ijbswa-developers@lists.sourceforge.net">developer's mailing list</ulink>.
@@ -1833,19 +1825,15 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $";
+const char FILENAME_rcs[] = "$I<!-- Break CVS Substitution -->d$";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
- *                Privoxy team. http://www.privoxy.org/
- *
- *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and
- *                Junkbusters Corporation.  http://www.junkbusters.com
+ * Copyright   :  Written by and Copyright (C) 2001-2009
+ *                the Privoxy team. http://www.privoxy.org/
  *
  *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
@@ -1861,7 +1849,7 @@ const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:
  *
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
- *                http://www.gnu.org/copyleft/gpl.html
+ *                http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *                or write to the Free Software Foundation, Inc., 
  *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
  *                USA
@@ -1894,19 +1882,15 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $"
+#define FILENAME_H_VERSION "$I<!-- Break CVS Substitution -->d$"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
- *                Privoxy team. http://www.privoxy.org/
- *
- *                Based on the Internet Junkbuster originally written
- *                by and Copyright (C) 1997 Anonymous Coders and
- *                Junkbusters Corporation.  http://www.junkbusters.com
+ * Copyright   :  Written by and Copyright (C) 2001-2009
+ *                the Privoxy team. http://www.privoxy.org/
  *
  *                This program is free software; you can redistribute it
  *                and/or modify it under the terms of the GNU General
@@ -1922,7 +1906,7 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
  *
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
- *                http://www.gnu.org/copyleft/gpl.html
+ *                http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *                or write to the Free Software Foundation, Inc., 
  *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
  *                USA
@@ -2391,9 +2375,8 @@ at sourceforge. Three simple steps:
       </listitem> 
       <listitem>
        <para>
-        Other configuration files (<filename>default.action</filename>,
-        <filename>default.filter</filename> and
-        <filename>standard.action</filename>) should be installed as the new
+        Other configuration files (<filename>default.action</filename> and
+        <filename>default.filter</filename>) should be installed as the new
         defaults, but all previously installed configuration files should be
         preserved as backups. This is just good manners :-) These files are
         likely to change between releases and contain important new features
@@ -3028,6 +3011,26 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.27  2009/02/19 02:20:22  hal9
+  Make some links in seealso conditional. Man page is now privoxy only links.
+
+  Revision 2.26  2009/02/12 16:08:26  fabiankeil
+  Declare the code stable.
+
+  Revision 2.25  2009/02/12 15:37:05  fabiankeil
+  Update templates.
+
+  Revision 2.24  2009/01/13 16:50:35  fabiankeil
+  The standard.action file is gone.
+
+  Revision 2.23  2008/09/26 17:02:01  fabiankeil
+  - Break some more CVS substitutions in examples.
+  - Remove Junkbusters reference in example header
+    for new files.
+
+  Revision 2.22  2008/08/30 15:37:35  fabiankeil
+  Update entities.
+
   Revision 2.21  2008/08/16 08:51:28  fabiankeil
   Update version-related entities.
 

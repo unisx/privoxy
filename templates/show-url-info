@@ -27,6 +27,12 @@
 #
 # Revisions   :
 #    $Log: show-url-info,v $
+#    Revision 1.29  2009/01/01 17:36:41  ler762
+#    remove non-standard <nobr> tags
+#
+#    Revision 1.28  2009/01/01 14:51:21  ler762
+#    keep the input field and 'go' button on the same line.
+#
 #    Revision 1.27  2008/05/26 17:30:58  fabiankeil
 #    Provide an OpenSearch Description to access the
 #    show-url-info page through "search engine plugins".

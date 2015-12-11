@@ -8,7 +8,7 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.10">
+<!entity p-version "3.0.11">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -17,6 +17,7 @@
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
 <!entity  my-copy "&copy;">          <!-- kludge for docbook2man          -->
 <!entity % p-newstuff "INCLUDE">      <!-- exclude stuff from devel versions -->
+<!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
 <!entity  my-app "<application>Privoxy</application>">
 ]>
 <!--
@@ -26,9 +27,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.45 2008/08/16 08:51:28 fabiankeil Exp $
+ $Id: faq.sgml,v 2.56 2009/02/19 17:05:05 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  Based partially on the Internet Junkbuster FAQ originally written by and
@@ -72,12 +73,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001-2008 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.45 2008/08/16 08:51:28 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.56 2009/02/19 17:05:05 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -553,7 +554,7 @@ Include supported.sgml here:
  <quote>browser</quote> or not. Though this may not be the best approach for
  dealing with some of the common abuses of HTML in email. See <link
  linkend="outlook">How can I configure <application>Privoxy</application>
- with <application>Outlook Express</application>?</link> below for more on
+ with <application>Outlook</application>?</link> below for more on
  this. 
 </para>
 <para>
@@ -786,9 +787,8 @@ the differences?</title>
  different purposes: These are 
  <filename>default.action</filename>, the <quote>main</quote> actions file
  which is actively maintained by the <application>Privoxy</application>
- developers and typically sets the default policies, <filename>user.action</filename>, where users are encouraged
- to make their private customizations, and <filename>standard.action</filename>, 
- which is for internal <application>Privoxy</application> use only.
+ developers and typically sets the default policies, <filename>user.action</filename>,
+ where users are encouraged to make their private customizations.
  Please see <ulink url="../user-manual/actions-file.html">the actions chapter</ulink>
  in the <ulink url="../user-manual/index.html">User Manual</ulink> for a more
  detailed explanation.
@@ -1220,13 +1220,20 @@ and thus avoid individual browser configuration?</title>
 </sect2>
 
 <sect2 renderas="sect3" id="outlook">
-<title>How can I configure Privoxy for use with Outlook
- Express?</title>
+<title>How can I configure Privoxy for use with Outlook?</title>
 <para>
- <application>Outlook Express</application> uses <application>Internet Explorer</application> 
- components to both render HTML, and fetch any HTTP requests that may be embedded in an HTML email.
- So however you have <application>Privoxy</application> configured to work
- with IE, this configuration should automatically be shared.
+ Versions of <application>Outlook</application> prior to Office 2007, use
+ <application>Internet Explorer</application> components to both render HTML,
+ and fetch any HTTP requests that may be embedded in an HTML email. So however
+ you have <application>Privoxy</application> configured to work with IE, this
+ configuration should automatically be shared, at least with older version of
+ Internet Explorer.
+</para>
+<para>
+ Starting with Office 2007, Microsoft is instead using the MS-Word rendering
+ engine with Outlook. It is unknown whether this can be configured to use a
+ proxy.
+ <!-- FIXME HB 2009-02-15 -->
 </para>
 </sect2>
 
@@ -1655,7 +1662,7 @@ us help you. Your efforts are not wasted, and we do appreciate them.
 <para>
  If you want to hide your IP address from most adversaries,
  you should consider chaining <application>Privoxy</application>
- with <ulink url="http://tor.eff.org/">Tor</ulink>.
+ with <ulink url="https://www.torproject.org/">Tor</ulink>.
  The configuration details can be found in
  <ulink url="#TOR">How do I use <application>Privoxy</application> together
  with <application>Tor</application> section</ulink>
@@ -1800,7 +1807,7 @@ us help you. Your efforts are not wasted, and we do appreciate them.
  in your browser, confirm that <application>Privoxy</application> has reloaded its configuration
  and that there are no other forward lines, unless you know that you need them. If everything looks good,
  refer to
- <ulink url="https://wiki.torproject.org/wiki/TheOnionRouter/TorFAQ#head-0e1cc2ac330ede8c6ad1ac0d0db0ac163b0e6143">Tor
+ <ulink url="https://wiki.torproject.org/noreply/TheOnionRouter/TorFAQ#IsMyConnectionPrivate">Tor
  Faq 4.2</ulink> to learn how to verify that you are really using <application>Tor</application>.
 </para>
 <para>
@@ -2511,6 +2518,7 @@ every time I start IE. What gives?</title>
 </sect2>
 
 <!--   ~~~~~       New section      ~~~~~     -->
+<!-- XXX: Is this still relevant now that we have gzip support? -->
 <sect2 renderas="sect3" id="blankpage">
 <title>I get a completely blank page at one site. <quote>View Source</quote>
  shows only: <markup><![CDATA[<html><body></body></html>]]></markup>. Without
@@ -2557,7 +2565,7 @@ Why?</title>
  some platforms due to DNS timeouts.
 </para>
 <para>
- This can be caused by a problem with the local <filename>HOSTS</filename>
+ This can be caused by a problem with the local <filename>hosts</filename>
  file. If this file has been changed from the original, try reverting it to
  see if that helps. Make sure whatever name(s) are used for the local system,
  that they resolve both ways.
@@ -2742,6 +2750,97 @@ browsing has slowed to a crawl. What gives? </title>
 </sect2>
 
 
+<sect2 renderas="sect3" id="ssl-warnings">
+<title>On some HTTPS sites my browser warns me about unauthenticated content,
+ the URL bar doesn't get highlighted and the lock symbol appears to be broken.
+ What's going on?</title>
+<para>
+ Probably the browser is requesting ads through HTTPS and &my-app;
+ is blocking the requests. Privoxy's error messages are delivered
+ unencrypted and while it's obvious for the browser that the HTTPS
+ request is already blocked by the proxy, some warn about unauthenticated
+ content anyway.
+</para>
+<para>
+ To work around the problem you can redirect those requests to an invalid
+ local address instead of blocking them. While the redirects aren't
+ encrypted either, many browsers don't care. They simply follow the
+ redirect, fail to reach a server and display an error message instead
+ of the ad.
+</para>
+<para>
+ To do that, enable logging to figure out which requests get blocked by
+ &my-app; and add the hosts (no path patterns) to a section like this:
+</para>
+<para>
+<screen>
+<![CDATA[
+{+redirect{http://127.0.0.1:0/} -block -limit-connect}
+.ivwbox.de:443/
+]]>
+</screen>
+</para>
+<para>
+ Additionally you have to configure your browser to contact
+ <quote>127.0.0.1:0</quote> directly (instead of through &my-app;).
+</para>
+<para>
+ To add a proxy exception in <application>Mozilla Firefox</application>
+ open the <quote>Preferences</quote>, click the <quote>Settings</quote>
+ button located on the <quote>Network</quote> tab in the <quote>Advanced</quote>
+ section, and add <quote>127.0.0.1:0</quote> in the <quote>No Proxy for:</quote>
+ field.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="se-linux">
+<title>I get selinux error messages. How can I fix this?</title>
+<para>
+ Please report the problem to the creator of your selinux policies.
+</para>
+<para>
+ The problem is that some selinux policy writers aren't familiar
+ with the application they are trying to <quote>secure</quote> and
+ thus create policies that make no sense.
+</para>
+<para>
+ In <application>Privoxy's</application> case the problem usually
+ is that the policy only allows outgoing connections for certain
+ destination ports (e.g. 80 and 443). While this may cover the
+ standard ports, websites occasionally use other ports as well.
+ This isn't a security problem and therefore <application>Privoxy's</application>
+ default configuration doesn't block these requests.
+</para>
+<para>
+ If you really want to block these ports (and don't be able
+ to load websites that don't use standard ports), you should
+ configure Privoxy to block these ports as well, so it doesn't
+ trigger the selinux warnings.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="gentoo-ricers">
+<title>I compiled &my-app; with Gentoo's portage and it appears to be very slow. Why?</title>
+<para>
+ Probably you unintentionally compiled &my-app; without threading support
+ in which case requests have to be serialized and only one can be served
+ at the same time.
+</para>
+<para>
+ Check your <quote>USE</quote> flags and make sure they include
+ <quote>threads</quote>. If they don't, add the flag and rebuild &my-app;.
+</para>
+<para>
+ If you compiled &my-app; with threading support (on POSIX-based systems),
+ the <quote>Conditional #defines</quote> section on <ulink
+ url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>
+ will list <quote>FEATURE_PTHREAD</quote> as <quote>enabled</quote>. 
+</para>
+</sect2>
+
+
 </sect1>
 
   <!--   ~~~~~       New section      ~~~~~     -->
@@ -2820,6 +2919,43 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.56  2009/02/19 17:05:05  fabiankeil
+Explain slowness when build with Gentoo's portage.
+
+Revision 2.55  2009/02/19 02:20:21  hal9
+Make some links in seealso conditional. Man page is now privoxy only links.
+
+Revision 2.54  2009/02/15 20:47:12  hal9
+Fix small typo.
+
+Revision 2.53  2009/02/15 20:46:13  hal9
+Update Outlook HTML rendering engine comments re: Office 2007.
+
+Revision 2.52  2009/02/14 10:27:52  fabiankeil
+Finish last paragraph in the selinux entry which
+I unintentionally committed with the last commit.
+
+Revision 2.51  2009/02/12 16:08:26  fabiankeil
+Declare the code stable.
+
+Revision 2.50  2009/02/11 18:13:36  fabiankeil
+State the obvious.
+
+Revision 2.49  2009/02/10 16:30:20  fabiankeil
+Add a workaround for "unauthenticated content" warnings on HTTPS sites.
+
+Revision 2.48  2009/01/13 16:50:35  fabiankeil
+The standard.action file is gone.
+
+Revision 2.47  2008/11/24 18:29:39  fabiankeil
+Two changes suggested by Roger Dingledine:
+- Use https://www.torproject.org/ in section 4.7, too.
+- Replace the Tor wiki URL in section 4.10 with one
+  with a more useful anchor name.
+
+Revision 2.46  2008/08/30 15:37:35  fabiankeil
+Update entities.
+
 Revision 2.45  2008/08/16 08:51:28  fabiankeil
 Update version-related entities.
 

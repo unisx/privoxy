@@ -4,7 +4,7 @@
  *
  * Purpose     :  INSTALL file to help with installing from source.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -25,7 +25,7 @@
  *
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
- *                http://www.gnu.org/copyleft/gpl.html
+ *                http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *                or write to the Free Software Foundation, Inc., 
  *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, 
  *                USA
@@ -40,8 +40,9 @@ compiler like gcc are required.
 
 When building from a source tarball, first unpack the source:
 
- tar xzvf privoxy-3.0.10-src* [.tgz or .tar.gz]
- cd privoxy-3.0.10
+ tar xzvf
+ privoxy-3.0.11-stable-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.11
 
 
 For retrieving the current CVS sources, you'll need a CVS client installed.
@@ -155,14 +156,13 @@ correct paths and values, if anything other than a default install is done.
 
 If install finds previous versions of local configuration files, most of these
 will not be overwritten, and the new ones will be installed with a "new"
-extension. default.action, default.filter, and standard.action will be
-overwritten. You will then need to manually update the other installed
-configuration files as needed. The default template files will be overwritten.
-If you have customized, local templates, these should be stored safely in a
-separate directory and defined in config by the "templdir" directive. It is of
-course wise to always back-up any important configuration files "just in case".
-If a previous version of Privoxy is already running, you will have to restart
-it manually.
+extension. default.action and default.filter will be overwritten. You will then
+need to manually update the other installed configuration files as needed. The
+default template files will be overwritten. If you have customized, local
+templates, these should be stored safely in a separate directory and defined in
+config by the "templdir" directive. It is of course wise to always back-up any
+important configuration files "just in case". If a previous version of Privoxy
+is already running, you will have to restart it manually.
 
 For more detailed instructions on how to build Redhat RPMs, Windows
 self-extracting installers, building on platforms with special requirements

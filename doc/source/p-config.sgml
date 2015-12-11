@@ -3,9 +3,9 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.31 2008/06/14 13:16:40 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.41 2009/02/19 16:59:41 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -95,10 +95,10 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.31 2008/06/14 13:16:40 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.41 2009/02/19 16:59:41 fabiankeil Exp $
 </para>
 <para>
-Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
 </para>
 
 <para>
@@ -338,7 +338,7 @@ II. FORMAT OF THE CONFIGURATION FILE
  <varlistentry>
   <term>Default value:</term>
   <listitem>
-   <para>Two example URLs are provided</para>
+   <para><emphasis>Unset</emphasis></para>
   </listitem>
  </varlistentry>
  <varlistentry>
@@ -369,8 +369,8 @@ II. FORMAT OF THE CONFIGURATION FILE
  </varlistentry>
 </variablelist>
 
-<![%config-file;[<literallayout>@@trust-info-url  http://www.example.com/why_we_block.html</literallayout>]]>
-<![%config-file;[<literallayout>@@trust-info-url  http://www.example.com/what_we_allow.html</literallayout>]]>
+<![%config-file;[<literallayout>@@#trust-info-url  http://www.example.com/why_we_block.html</literallayout>]]>
+<![%config-file;[<literallayout>@@#trust-info-url  http://www.example.com/what_we_allow.html</literallayout>]]>
 </sect3>
 
 
@@ -604,8 +604,7 @@ II. FORMAT OF THE CONFIGURATION FILE
   <listitem>
    <para>
     The directory where all logging takes place
-    (i.e. where <filename>logfile</filename> and
-    <filename>jarfile</filename> are located).
+    (i.e. where the <filename>logfile</filename> is located).
    </para>
   </listitem>
  </varlistentry>
@@ -669,13 +668,13 @@ actionsfile
   <listitem>
    <simplelist>
     <member>
-     <msgtext><literallayout>  standard.action     # Internal purposes, no editing recommended</literallayout></msgtext>
+     <msgtext><literallayout>  match-all.action # Actions that are applied to all sites and maybe overruled later on.</literallayout></msgtext>
     </member>
     <member>
-     <msgtext><literallayout>  default.action      # Main actions file</literallayout></msgtext>
+     <msgtext><literallayout>  default.action   # Main actions file</literallayout></msgtext>
     </member>
     <member>
-     <msgtext><literallayout>  user.action         # User customizations</literallayout></msgtext>
+     <msgtext><literallayout>  user.action      # User customizations</literallayout></msgtext>
     </member>
    </simplelist>
   </listitem>
@@ -695,9 +694,8 @@ actionsfile
     Multiple <literal>actionsfile</literal> lines are permitted, and are in fact recommended!
    </para>
    <para> 
-    The default values include <filename>standard.action</filename>, which is used
-    for internal purposes and should be loaded, <filename>default.action</filename>,
-    which is the <quote>main</quote> actions file maintained by the developers, and
+    The default values are <filename>default.action</filename>, which is the
+    <quote>main</quote> actions file maintained by the developers, and
     <filename>user.action</filename>, where you can make your personal additions.
    </para>
    <para> 
@@ -717,7 +715,7 @@ actionsfile
 
 <!-- NOTE: alternate markup to make a simpler list doesn't work due to -->
 <!-- html -> text conversion, blah -->
-<![%config-file;[<literallayout>@@actionsfile standard.action  # Internal purpose, recommended</literallayout>]]>
+<![%config-file;[<literallayout>@@actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.</literallayout>]]>
 <![%config-file;[<literallayout>@@actionsfile default.action   # Main actions file</literallayout>]]>
 <!--
  XXX: Like user.filter, user.action should probably be commented out
@@ -872,59 +870,6 @@ actionsfile
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="jarfile"><title>jarfile</title>
-
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The file to store intercepted cookies in
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>logdir</literal></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para><emphasis>Unset (commented out)</emphasis>. When activated: jarfile (Unix) <emphasis>or</emphasis> privoxy.jar (Windows).</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    Intercepted cookies are not stored in a dedicated log file.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    The jarfile may grow to ridiculous sizes over time.
-   </para>
-   <para>
-    If debug 8 (show header parsing) is enabled, cookies are
-    also written to the logfile with the rest of the headers.
-    Therefore this option isn't very useful and may be removed
-    in future releases. Please report to the developers if you
-    are still using it.
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@#jarfile jarfile</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="trustfile"><title>trustfile</title>
 <variablelist>
  <varlistentry>
@@ -1058,7 +1003,7 @@ actionsfile
    </para>
    <para>
     <programlisting>
-  debug     1 # log each request destination (and the crunch reason if &my-app; intercepted the request)
+  debug     1 # Log the destination for each request &my-app; let through. See also debug 1024.
   debug     2 # show each connection status
   debug     4 # show I/O status
   debug     8 # show header parsing
@@ -1068,6 +1013,7 @@ actionsfile
   debug   128 # debug redirects
   debug   256 # debug GIF de-animation
   debug   512 # Common Log Format
+  debug  1024 # Log the destination for requests &my-app; didn't let through, and the reason why.
   debug  2048 # CGI user interface
   debug  4096 # Startup banner and warnings.
   debug  8192 # Non-fatal errors
@@ -1112,7 +1058,8 @@ actionsfile
  </varlistentry>
 </variablelist>
 
-<![%config-file;[<literallayout>@@#debug     1 # log each request destination (and the crunch reason if &my-app; intercepted the request)</literallayout>]]>
+<![%config-file;[<literallayout>@@#debug     1 # Log the destination for each request &my-app; let through.</literallayout>]]>
+<![%config-file;[<literallayout>@@#debug  1024 # Log the destination for requests &my-app; didn't let through, and the reason why.</literallayout>]]>
 <![%config-file;[<literallayout>@@#debug  4096 # Startup banner and warnings</literallayout>]]>
 <![%config-file;[<literallayout>@@#debug  8192 # Non-fatal errors</literallayout>]]>
 </sect3>
@@ -2434,6 +2381,134 @@ forward-socks4, forward-socks4a and forward-socks5</title>
 </variablelist>
 <![%config-file;[<literallayout>@@split-large-forms 0</literallayout>]]>
 </sect3>
+
+<sect3 renderas="sect4" id="keep-alive-timeout"><title>keep-alive-timeout</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Number of seconds after which an open connection will no longer be reused.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>Time in seconds.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Connections are not reused.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    This option has no effect if <application>Privoxy</application>
+    has been compiled without keep-alive support.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Note that reusing connections doesn't necessary cause speedups.
+    There are also a few privacy implications you should be aware of.
+   </para>
+   <para>
+    Outgoing connections are shared between clients (if there are more
+    than one) and closing the client that initiated the outgoing connection
+    does not affect the connection between &my-app; and the server unless
+    the client's request hasn't been completed yet. If the outgoing connection
+    is idle, it will not be closed until either <application>Privoxy's</application>
+    or the server's timeout is reached. While it's open, the server knows
+    that the system running &my-app; is still there.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    keep-alive-timeout 300
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@keep-alive-timeout 300</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="socket-timeout"><title>socket-timeout</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Number of seconds after which a socket times out if
+    no data is received.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>Time in seconds.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    A default value of 300 seconds is used.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    For SOCKS requests the timeout currently doesn't start until
+    the SOCKS server accepted the request. This will be fixed in
+    the next release.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    socket-timeout 300
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@socket-timeout 300</literallayout>]]>
+</sect3>
+
 
 </sect2>
 

@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.15 2008/08/14 18:33:37 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.21 2009/02/15 14:49:10 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -10,7 +10,7 @@
 #
 #############################################################################
 #
-# Copyright (c) 2007-2008 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2009 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -27,12 +27,14 @@
 #############################################################################
 
 {{settings}}
-for-privoxy-version=3.0.9
+for-privoxy-version=3.0.11
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
 # Level 9 needs  = config line user-manual\s+(/|[A-Za-z]:)
 # Level 12 needs = config line enable-edit-actions\s+1
+# Level 13 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE Yes
+# Level 14 needs = feature status FEATURE_CONNECTION_KEEP_ALIVE No
 
 #######################################################
 # Enable taggers to activate the tests on demand
@@ -81,6 +83,18 @@ TAG:^hide-accept-language\{block\}$
 #
 # Set Header    = Referer: http://p.p/foo
 # Expect Header = NO CHANGE
+#
+# Set Header    = Referer: p.p/
+# Expect Header = REMOVAL
+#
+# Set Header    = Referer: p
+# Expect Header = REMOVAL
+#
+# Set Header    = Referer: http://
+# Expect Header = REMOVAL
+#
+# Set Header    = Referer: https://p.p/
+# Expect Header = REMOVAL
 {+hide-referrer{conditional-block}}
 TAG:^hide-referrer\{conditional-block\}$
 
@@ -89,6 +103,18 @@ TAG:^hide-referrer\{conditional-block\}$
 #
 # Set Header    = Referer: http://p.p/foo
 # Expect Header = NO CHANGE
+#
+# Set Header    = Referer: p.p/
+# Expect Header = Referer: http://p.p/
+#
+# Set Header    = Referer: p
+# Expect Header = Referer: http://p.p/
+#
+# Set Header    = Referer: http://
+# Expect Header = Referer: http://p.p/
+#
+# Set Header    = Referer: https://p.p/
+# Expect Header = Referer: http://p.p/
 {+hide-referrer{conditional-forge}}
 TAG:^hide-referrer\{conditional-forge\}$
 
@@ -315,22 +341,29 @@ TAG:^crunch-outgoing-cookies$
 TAG:^session-cookies-only$
 
 #######################################################
-# Test hide-forwarded-for-headers
+# Test change-x-forwarded-for
 #######################################################
-
-# Set Header    = X-Forwarded-For: 10.0.0.1
-# Expect Header = REMOVAL
-{\
- +hide-forwarded-for-headers    \
-}
-TAG:^hide-forwarded-for-headers$
 
 # Set Header    = X-Forwarded-For: 10.0.0.1
 # Expect Header = NO CHANGE
 {\
- -hide-forwarded-for-headers    \
+ -change-x-forwarded-for \
 }
-TAG:^-hide-forwarded-for-headers$
+TAG:^-change-x-forwarded-for$
+
+# Set Header    = X-Forwarded-For: 10.0.0.1
+# Expect Header = REMOVAL
+{\
+ +change-x-forwarded-for{block} \
+}
+TAG:^change-x-forwarded-for\{block\}$
+
+# Set Header    = X-Forwarded-For: 10.0.0.1
+# Expect Header = SOME CHANGE
+{\
+ +change-x-forwarded-for{add} \
+}
+TAG:^change-x-forwarded-for\{add\}$
 
 #######################################################
 # Test hide-from-header
@@ -408,10 +441,24 @@ TAG:^filter\{banners-by-size\}$
 }
 TAG:^no-content-filter$
 
+# Set Header    = Connection: close
+# Expect Header = Connection: keep-alive
+# Level = 13
+# Set Header    = Connection: keep-alive
+# Expect Header = NO CHANGE
+# Level = 13
+# Set Header    = Connection:
+# Expect Header = Connection: keep-alive
+# Level = 13
+{}
+TAG:^Connection: keep-alive$
+
 # Set Header    = Connection: keep-alive
 # Expect Header = Connection: close
+# Level = 14
 # Set Header    = Connection:
 # Expect Header = Connection: close
+# Level = 14
 {}
 TAG:^Connection: close$
 

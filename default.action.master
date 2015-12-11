@@ -1,25 +1,29 @@
 #MASTER# COMMENT:   
-#MASTER# COMMENT:   Anyone adding specific rules to this file,
-#MASTER# COMMENT:   wherever possible please include a *full* URL 
-#MASTER# COMMENT:   which can be used to verify the problem, and if
-#MASTER# COMMENT:   the problem may not always be fully obvious, a 
-#MASTER# COMMENT:   brief explanation. Thanks.
+#MASTER# COMMENT:  Anyone adding specific rules to this file,
+#MASTER# COMMENT:  wherever possible please include a *full* URL 
+#MASTER# COMMENT:  which can be used to verify the problem, and if
+#MASTER# COMMENT:  the problem may not always be fully obvious, a 
+#MASTER# COMMENT:  brief explanation. Please also add tests for
+#MASTER# COMMENT:  Privoxy-Regression-Test so we can automatically
+#MASTER# COMMENT:  verify that your rules are effective. Thanks. 
 #MASTER# COMMENT:   
 ######################################################################
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.144 2008/08/15 16:46:51 fabiankeil Exp $
+#  $Id: default.action.master,v 1.166 2009/02/12 19:08:32 fabiankeil Exp $
 #
-#  Requires    :  This version requires Privoxy v3.0.9 or later due to 
+#  Requires    :  This version requires Privoxy v3.0.11 or later due to 
 #                 syntax changes.
 #
 #  Purpose     :  Default actions file, see
 #                 http://www.privoxy.org/user-manual/actions-file.html.
-#                 This file is subject to periodic updating. Local exceptions
-#                 and enhancements are better placed in user.action. 
+#                 This file is subject to periodic updating. It is
+#                 not supposed to be edited by the user. Local exceptions
+#                 and enhancements are better placed in user.action,
+#                 the match-all section has been moved to match-all.action.
 #
-#  Copyright   :  Written by and Copyright (C) 2001-2008 the
+#  Copyright   :  Written by and Copyright (C) 2001-2009 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 #  Note: Updated versions of this file will be made available from time
@@ -202,6 +206,11 @@
 #    Block this URL. Instead of forwarding the request, Privoxy will
 #    send a "block" page containing the specified reason.
 #
+# +change-x-forwarded-for{add}
+# +change-x-forwarded-for{block}
+#   Adds or blocks the "X-Forwarded-For:" HTTP header in client
+#   requests.
+#
 # +client-header-filter{name}
 #    All client headers to which this action applies are filtered on-the-fly
 #    through the specified regular expression based substitutions.
@@ -355,9 +364,6 @@
 #   servers. This can be used to prevent download menus for content you 
 #   prefer to view inside the browser, for example.
 #
-# +hide-forwarded-for-headers
-#   Block any existing X-Forwarded-for header.
-#
 # +hide-from-header{block}
 # +hide-from-header{spam@sittingduck.xqq}
 #   If the browser sends a "From:" header containing your e-mail address, 
@@ -393,22 +399,24 @@
 #    (Don't change the version number from 1.0 - after all, why tell them?)
 #
 # +limit-connect{portlist}
-#   The CONNECT methods exists in HTTP to allow access to secure websites
-#   (https:// URLs) through proxies. It works very simply: The proxy
-#   connects to the server on the specified port, and then short-circuits
-#   its connections to the client and to the remote proxy.
-#   This can be a big security hole, since CONNECT-enabled proxies can
-#   be abused as TCP relays very easily.
-#   By default, i.e. in the absence of a +limit-connect action, Privoxy
-#   will only allow CONNECT requests to port 443, which is the standard port
-#   for https.
-#   If you want to allow CONNECT for more ports than that, or want to forbid
-#   CONNECT altogether, you can specify a comma separated list of ports and port
-#   ranges (the latter using dashes, with the minimum defaulting to 0 and max to 65K):
 #
-#   +limit-connect{443} # This is the default and need no be specified.
-#   +limit-connect{80,443} # Ports 80 and 443 are OK.
-#   +limit-connect{-3, 7, 20-100, 500-} # Port less than 3, 7, 20 to 100, and above 500 are OK.
+#    By default, i.e. if no limit-connect action applies, Privoxy
+#    allows HTTP CONNECT requests to all ports. Use limit-connect
+#    if fine-grained control is desired for some or all destinations.
+#    The CONNECT methods exists in HTTP to allow access to secure websites
+#    ("https://" URLs) through proxies. It works very simply: the proxy
+#    connects to the server on the specified port, and then short-circuits
+#    its connections to the client and to the remote server. This means
+#    CONNECT-enabled proxies can be used as TCP relays very easily. Privoxy
+#    relays HTTPS traffic without seeing the decoded content. Websites can
+#    leverage this limitation to circumvent Privoxy's filters. By specifying
+#    an invalid port range you can disable HTTPS entirely. 
+#
+#    +limit-connect{443}                   # Only port 443 is OK.
+#    +limit-connect{80,443}                # Ports 80 and 443 are OK.
+#    +limit-connect{-3, 7, 20-100, 500-}   # Ports less than 3, 7, 20 to 100 and above 500 are OK.
+#    +limit-connect{-}                     # All ports are OK
+#    +limit-connect{,}                     # No HTTPS/SSL traffic is allowed
 #
 # +overwrite-last-modified{block}
 # +overwrite-last-modified{reset-to-request-time}
@@ -500,7 +508,7 @@
 {{settings}}
 #############################################################################
 #MASTER# COMMENT: The minimum Privoxy version:
-for-privoxy-version=3.0.9
+for-privoxy-version=3.0.11
 
 #############################################################################
 # Aliases
@@ -549,15 +557,75 @@ myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{all-popups
 #
 allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 
-#############################################################################
-# Defaults
-#############################################################################
+################
+#
+# Cautious settings -- safe for all sites, but offer little privacy protection
+#
 { \
-+hide-forwarded-for-headers \
++change-x-forwarded-for{block} \
 +hide-from-header{block} \
 +set-image-blocker{pattern} \
 }
-/ # Match all URLs
+standard.Cautious
+
+################
+#
+# Medium settings -- safe for most sites, with reasonable protection/damage tradeoff
+#
+{ \
++change-x-forwarded-for{block} \
++deanimate-gifs{last} \
++filter{refresh-tags} \
++filter{img-reorder} \
++filter{banners-by-size} \
++filter{webbugs} \
++filter{jumping-windows} \
++filter{ie-exploits} \
++hide-from-header{block} \
++hide-referrer{conditional-block} \
++session-cookies-only \
++set-image-blocker{pattern} \
+}
+standard.Medium
+
+################
+#
+# Advanced settings -- reasonable privacy protection but
+# require some exceptions for trusted sites, most likely
+# because of cookies or SSL. Also testing ground for
+# new options.
+#
+# CAUTION: These settings can still be subverted by a
+# misconfigured client that executes code from untrusted
+# sources.
+#
+{ \
++change-x-forwarded-for{block} \
++client-header-tagger{css-requests} \
++client-header-tagger{image-requests} \
++crunch-if-none-match \
++crunch-outgoing-cookies \
++crunch-incoming-cookies \
++deanimate-gifs{last} \
++fast-redirects{check-decoded-url} \
++filter{html-annoyances} \
++filter{content-cookies} \
++filter{refresh-tags} \
++filter{img-reorder} \
++filter{banners-by-size} \
++filter{banners-by-link} \
++filter{webbugs} \
++filter{jumping-windows} \
++filter{frameset-borders} \
++filter{quicktime-kioskmode} \
++hide-if-modified-since{-60} \
++hide-from-header{block} \
++hide-referrer{conditional-block} \
++limit-connect{,} \
++overwrite-last-modified{randomize} \
++set-image-blocker{pattern} \
+}
+standard.Advanced
 
 #############################################################################
 # These extensions belong to images:
@@ -672,6 +740,15 @@ support./(.*/)?track
 #############################################################################
 # Site-specific block patterns;
 #############################################################################
+{+block{Domain parking site}}
+#MASTER# BLOCK-REFERRER: http://www.inetcat.org
+# Blocked URL = http://www.sedoparking.com/www.inetcat.org
+.sedoparking.com/
+# Blocked URL = http://landing.trafficz.com/index.php?domain=www.inetcat.org
+landing.trafficz.com/
+# Blocked URL = http://www.searchnut.com/?domain=www.inetcat.org
+.searchnut.com/\?domain
+
 {+block{Site-specific block pattern matches.}}
 #MASTER# BLOCK-REFERRER: http://www.brooksbrothers.com/ 10/18/06
 #MASTER# BLOCK-REFERRER: http://www.autodesk.com/
@@ -815,7 +892,6 @@ static.lycos-europe.net
 #MASTER# BLOCK-REFERRER: http://www.networkworld.com/resourcelibrary/?tid=4&type=special%20report
 # Blocked URL = http://clk.atdmt.com/
 .atdmt.com/
-
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -1107,6 +1183,12 @@ img.directtrack.com
 #MASTER# BLOCK-REFERRER: http://www.thinkbroadband.com/news/3621-complaint-about-orange-broadband-advertising-upheld.html
 # URL = http://eas.apm.emediate.eu/media.5/1/1228/19193/ACT1215_120x600_v3.gif
 .emediate.eu/
+# URL = http://feedads.googleadservices.com/~a/dPlpGU767u4D4kVO8EGuUlnf1Q0/i
+# URL = http://feedads.googleadservices.com/~at/EpX-FnAXxwdaBSq-GRze37-rG0M/i
+.googleadservices.com/~
+#MASTER# REMARKS: Block yahoo email & ygroups banner ad
+# URL = http://ts.richmedia.yahoo.com/...hummingbird.jpg?adxq=NNN
+.richmedia.yahoo.com/.*\.(gif|jpe?g)\?ad 
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1191,6 +1273,8 @@ rss.slashdot.org/~r/Slashdot/slashdot/~4/
 # Blocked URL = http://feeds.feedburner.com/~r/PCLoadLetter/~4/270448381
 #MASTER# REMAKRKS: This seem to be a common pattern for web bugs in feedburner feeds.
 feeds.feedburner.com/~r/.*/~4/
+# Blocked URL = http://feedproxy.google.com/~r/DilbertDailyStrip/~4/y_kXD1z1HO0
+feedproxy.google.com/~r/.*/~4/
 # Blocked URL = http://feeds.feedburner.com/~a/DilbertDailyStrip?a=Ebzxel
 #MASTER# REMAKRKS: This looks like a pattern as well, maybe we should block feeds.feedburner.com/~a/ here.
 feeds.feedburner.com/~a/DilbertDailyStrip\?
@@ -1459,6 +1543,9 @@ switch.atdmt.com/action/
 .wikimedia.org/
 # URL = http://en.wikipedia.org/wiki/Advertisement
 .wikipedia.org/
+#MASTER# REMARKS Actionsfile feedback item #2299717 2008-11-16
+# URL = http://en.wiktionary.org/wiki/advertisement
+.wiktionary.org/
 # URL = http://curl.haxx.se/docs/adv_20070710.html
 .haxx.se/docs/adv_
 # URL = http://www.google.com/adsense/
@@ -1490,6 +1577,25 @@ fritz.box/
 #MASTER# REMARKS: Actionsfile feedback item #2043327 2008-08-08
 # URL = http://kb.adobe.com/selfservice/viewContent.do?externalId=kb402747&sliceId=1
 .adobe.com
+# URL = http://qa.debian.org/popcon.php
+qa.debian.org/popcon\.php
+#MASTER# REMARKS: Support Requests item #2432535 2008-12-16
+# URL = http://www.mta.info/bandt/traffic/advmain.htm
+.mta.info/.*advmain.htm$
+#MASTER# REMARKS: We also use this as a light character class test, therefore the additional URL directives.
+# URL = http://www.proaurum.de/bannerA2/image/pro_master_r3_01_04.gif
+# URL = http://www.proaurum.de/bannerA1/image/limitorder2.gif
+# URL = http://www.proaurum.de/bannerA3/image/pro_master_r5_banken_01_01+.gif
+# URL = http://www.proaurum.de/bannerB2/image/pro_banner_mitte.gif
+# URL = http://www.proaurum.de/bannerB1_/image/pro_banner_links.gif
+# URL = http://www.proaurum.de/bannerC1/image/partner1.png
+.proaurum.de/banner[ABC]\d_?/
+# URL = http://www.goldmoney.com/en/images/home/banner_r4_c1.gif
+.goldmoney.com/
+#MASTER# REMARKS: Actionsfile feedback item #2017126  2008-07-13
+#MASTER# REMARKS: The dutch newspaper site of Algemeen Dagblad (http://www.ad.nl) is blocked
+# URL = http://www.ad.nl/
+.ad.nl/
 
 #############################################################################
 # Site-specific special rules:
@@ -1657,6 +1763,12 @@ view.samurajdata.se/ps\.php\?url=
 #MASTER# REMARKS: While this is a redirect, the token isn't part of the URL redirected to.
 # URL = http://www.amazon.com/gp/redirect.html/ref=cm_plog_item_link/105-3659773-0844420?ie=UTF8&location=http%3A%2F%2Fjoltawards.com%2F2007%2F&token=A07736D870C02EF10CB13BCC8A33C302F689BBBA
 .amazon.com/gp/redirect.html/.*location.*&token
+# URL = http://en.groundspring.org/EmailNow/pub.php?module=WebSignup&cmd=thankyou&gotoUrl=http%3A%2F%2Fwww.freebsdfoundation.org&gotoText=Return+to+Home+Page&listNames=The+FreeBSD+Foundation+Mailing+List
+.groundspring.org/
+# URL = http://www1.landsend.de/pp/undefined/images/error.gif?onerr=true&ts=1227969386837&file=http%3A//s7.landsend.com/is-viewers/dhtml/include/sj_textloader.js%3Fver%3Dle.1&line=0&msg=Script%20error.&sid=
+.landsend.de/
+# URL = http://www.youtube.com/swf/l.swf?swf=http%3A//s.ytimg.com/yt/swf/cps-vfl68942.swf&video_id=2cpd6rHIfyA&rel=1&showsearch=1&eurl=&iurl=http%3A//i3.ytimg.com/vi/2cpd6rHIfyA/hqdefault.jpg&sk=5E3I2RCcOLknk1qyI_JgVVnb8FKwgpHzC&use_get_video_info=1&load_modules=1&fs=1&hl=en
+.youtube.com/swf/.*swf=
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode or other automatically parsed content
@@ -1698,6 +1810,9 @@ webmail.
 .wiki*.
 .*wiki.
 /.*wiki/
+#MASTER# REMARKS Actionsfile feedback item #2299717 2008-11-16
+# URL = http://en.wiktionary.org/
+.wiktionary.org/
 #MASTER# REMARKS: protect some google projects from accidental JS/HTML tampering, etc
 maps.google.
 .google.com/(calendar|reader)
@@ -1794,6 +1909,10 @@ javabog.dk/ijk/
 .ikea.com/
 # URL = http://www.froscon.de/en/projects.html
 .froscon.de/
+# URL = http://www.fsfe.org/en/supporters
+.fsfe.org/
+# URL = http://www.couchsurfing.com/mapsurf.html
+.couchsurfing.com/
 
 {-filter{banners-by-link}}
 # Sticky Actions = -filter{banners-by-link}

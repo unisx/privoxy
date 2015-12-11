@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.47 2008/03/26 18:07:07 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.50 2008/12/20 14:53:55 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -35,6 +35,18 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.47 2008/03/26 18:07:07 fabian
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.50  2008/12/20 14:53:55  fabiankeil
+ *    Add config option socket-timeout to control the time
+ *    Privoxy waits for data to arrive on a socket. Useful
+ *    in case of stale ssh tunnels or when fuzz-testing.
+ *
+ *    Revision 1.49  2008/11/10 17:03:57  fabiankeil
+ *    Fix a gcc44 warning and remove a now-obsolete cast.
+ *
+ *    Revision 1.48  2008/09/04 08:13:58  fabiankeil
+ *    Prepare for critical sections on Windows by adding a
+ *    layer of indirection before the pthread mutex functions.
+ *
  *    Revision 1.47  2008/03/26 18:07:07  fabiankeil
  *    Add hostname directive. Closes PR#1918189.
  *
@@ -335,7 +347,7 @@ const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
  *
  * Parameters  :
  *          1  :  host = hostname to connect to
- *          2  :  portnum = port to connent on
+ *          2  :  portnum = port to connent on (XXX: should be unsigned)
  *          3  :  csp = Current client state (buffers, headers, etc...)
  *                      Not modified, only used for source IP and ACL.
  *
@@ -347,7 +359,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
 {
    struct sockaddr_in inaddr;
    jb_socket fd;
-   int addr;
+   unsigned int addr;
    fd_set wfds;
    struct timeval tv[1];
 #if !defined(_WIN32) && !defined(__BEOS__) && !defined(AMIGA)
@@ -367,7 +379,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    }
 
 #ifdef FEATURE_ACL
-   dst->addr = ntohl((unsigned long) addr);
+   dst->addr = ntohl(addr);
    dst->port = portnum;
 
    if (block_acl(dst, csp))
@@ -576,6 +588,46 @@ int read_socket(jb_socket fd, char *buf, int len)
 #else
    return(read(fd, buf, (size_t)len));
 #endif
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  data_is_available
+ *
+ * Description :  Waits for data to arrive on a socket.
+ *
+ * Parameters  :
+ *          1  :  fd = file descriptor of the socket to read
+ *          2  :  seconds_to_wait = number of seconds after which we give up.
+ *
+ * Returns     :  TRUE if data arrived in time,
+ *                FALSE otherwise.
+ *
+ *********************************************************************/
+int data_is_available(jb_socket fd, int seconds_to_wait)
+{
+   fd_set rfds;
+   struct timeval timeout;
+   int n;
+
+   memset(&timeout, 0, sizeof(timeout));
+   timeout.tv_sec = seconds_to_wait;
+
+#ifdef __OS2__
+   /* Copy and pasted from jcc.c ... */
+   memset(&rfds, 0, sizeof(fd_set));
+#else
+   FD_ZERO(&rfds);
+#endif
+   FD_SET(fd, &rfds);
+
+   n = select(fd+1, &rfds, NULL, NULL, &timeout);
+
+   /*
+    * XXX: Do we care about the different error conditions?
+    */
+   return (n == 1);
 }
 
 
@@ -798,10 +850,10 @@ void get_host_information(jb_socket afd, char **ip_address, char **hostname)
          host = NULL;
       }
 #elif FEATURE_PTHREAD
-      pthread_mutex_lock(&resolver_mutex);
+      privoxy_mutex_lock(&resolver_mutex);
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
-      pthread_mutex_unlock(&resolver_mutex);
+      privoxy_mutex_unlock(&resolver_mutex);
 #else
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -944,7 +996,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
          hostp = NULL;
       }
 #elif FEATURE_PTHREAD
-      pthread_mutex_lock(&resolver_mutex);
+      privoxy_mutex_lock(&resolver_mutex);
       while (NULL == (hostp = gethostbyname(host))
              && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
       {   
@@ -952,7 +1004,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
             "Timeout #%u while trying to resolve %s. Trying again.",
             dns_retries, host);
       }
-      pthread_mutex_unlock(&resolver_mutex);
+      privoxy_mutex_unlock(&resolver_mutex);
 #else
       while (NULL == (hostp = gethostbyname(host))
              && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))

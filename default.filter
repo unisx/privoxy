@@ -2,11 +2,11 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.67 2008/08/06 17:38:06 fabiankeil Exp $
+#  $Id: default.filter,v 1.70 2009/02/21 13:01:51 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
-#  Copyright   :  Written by and Copyright (C) 2001-2008 the
+#  Copyright   :  Written by and Copyright (C) 2001-2009 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 # We value your feedback. However, to provide you with the best support,
@@ -461,7 +461,7 @@ s+^.*warez.*$+<html><head><title>No Warez</title></head><body><h3>You're not sea
 
 # Remove by description
 s/^.*\
-(?:(suck|lick|tounge|rub|fuck|fingering|finger|chicks?)\s*)?\
+(?:(suck|lick|tongue|rub|fuck|fingering|finger|chicks?)\s*)?\
 (?:(her|your|my|hard|with|big|wet|tight|pink|hot|moist|young|teen)\s*)+\
 (dicks?|penis|cocks?|balls?|tits?|pussy|cunt|clit|ass|mouth).*$\
 /This page has been blocked by Privoxy's crude-parental content filter\
@@ -600,10 +600,12 @@ s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
  \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
+ \#nwad, \
  \#ks-ypn-ads, .ad, \#east, \#ygrp-vital {display: none !important;}\n\
  \#yschpri, \#yschweb, \#pri, \#web, \#main {width: 100% !important; max-width: 100% !important;}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
-</style>\n$0@
+ \#northbanner{min-height:1px !important; height:1px !important; display: none !important;}\n\
+ </style>\n$0@
 
 #################################################################################
 #
@@ -662,7 +664,8 @@ s@(<div style=\"[^\"]*width:)30em@$1 100%@
 s@background:url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;@/*$0*/@Ug
 s@(background:\#[a-f\d]{3})( url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;)@$1 ;/*$2*/@Ug
 # Do the feed filtering magic as described above.
-s@<title\s+type=\'text\'>([^\s]*).*?\.\.\.</title>\s*(<content type=\'html\'>\1)@$2@ig
+s@<title(?:\s+type=\'text\')?>([^<]*)(?:\.\.\.)?\s*</title>\s*\
+(<content(?:\s+type=\'(?:html|text)\')?>\s*\1)@<title></title>$2@ig
 
 #################################################################################
 #
@@ -835,6 +838,15 @@ s@^X-Privoxy-Control:.*@@i
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.70  2009/02/21 13:01:51  fabiankeil
+#     Make blogspot's feed magic slightly more reliable.
+#
+#     Revision 1.69  2009/02/12 15:40:11  ler762
+#     more yahoo email ad blocking
+#
+#     Revision 1.68  2008/09/19 13:26:04  fabiankeil
+#     s@tounge@tongue@. Anonymously reported in #1648657.
+#
 #     Revision 1.67  2008/08/06 17:38:06  fabiankeil
 #     In banners-by-size, make sure white-space around the height
 #     attribute is removed as well and replace two spaces with

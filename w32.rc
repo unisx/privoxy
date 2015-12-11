@@ -31,6 +31,20 @@
  *
  * Revisions   :
  *    $Log: w32.rc,v $
+ *    Revision 1.22  2009/01/01 15:09:23  ler762
+ *    Change the Windows taskbar icon when privoxy is toggled off.
+ *
+ *    Revision 1.21  2008/11/02 14:37:47  ler762
+ *    commit the part of the patches I've been using that were written by torford and gjmurphy
+ *      [ 1824315 ] Minor code cleanup
+ *      [ 1781135 ] Patch - Add clear log, select all, and Accelerators for w32
+ *        http://sourceforge.net/tracker/?func=detail&atid=311118&aid=1781135&group_id=11118
+ *    The full patch adds control keys A(select all), C(copy) and D(delete all) to the
+ *    Privoxy log window menu.  Select all and copy work for me without the patch
+ *    (albeit without showing the accelerator keys on the menu), so the only part of the
+ *    patch I've been using for the last year or so has been the ctrl-d to delete
+ *    everything in the Privoxy log window.
+ *
  *    Revision 1.20  2006/08/18 02:06:25  david__schmidt
  *    Making icon go back to blue when idle.
  *    See: bug #967648.
@@ -178,6 +192,7 @@ IDI_ANIMATED6           ICON    DISCARDABLE     "icons/ico00006.ico"
 IDI_ANIMATED7           ICON    DISCARDABLE     "icons/ico00007.ico"
 IDI_ANIMATED8           ICON    DISCARDABLE     "icons/ico00008.ico"
 IDI_IDLE                ICON    DISCARDABLE     "icons/privoxy.ico"
+IDI_OFF                 ICON    DISCARDABLE     "icons/off.ico"
 
 #endif /* Neutral resources */
 
@@ -273,7 +288,7 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Clear Log",                  ID_VIEW_CLEARLOG
+        MENUITEM "&Clear Log\tCtrl+D",          ID_VIEW_CLEARLOG
         MENUITEM                                SEPARATOR
         MENUITEM "&Log Messages",               ID_VIEW_LOGMESSAGES, CHECKED
         MENUITEM "Message &Highlighting",       ID_VIEW_MESSAGEHIGHLIGHTING, CHECKED
@@ -322,6 +337,7 @@ END
 IDR_ACCELERATOR ACCELERATORS DISCARDABLE
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_VIEW_CLEARLOG,       VIRTKEY, CONTROL, NOINVERT
 END
 
 #endif /* English (U.S.) resources */

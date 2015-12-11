@@ -1,6 +1,6 @@
 #ifndef CGIEDIT_H_INCLUDED
 #define CGIEDIT_H_INCLUDED
-#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.9 2006/07/18 14:48:45 david__schmidt Exp $"
+#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.10 2008/08/31 15:59:03 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.h,v $
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: cgiedit.h,v $
+ *    Revision 1.10  2008/08/31 15:59:03  fabiankeil
+ *    There's no reason to let remote toggling support depend
+ *    on FEATURE_CGI_EDIT_ACTIONS, so make sure it doesn't.
+ *
  *    Revision 1.9  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -147,11 +151,12 @@ extern jb_err cgi_edit_actions_section_add   (struct client_state *csp,
 extern jb_err cgi_edit_actions_section_swap  (struct client_state *csp,
                                               struct http_response *rsp,
                                               const struct map *parameters);
-extern jb_err cgi_toggle        (struct client_state *csp,
-                                 struct http_response *rsp,
-                                 const struct map *parameters);
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
-
+#ifdef FEATURE_TOGGLE
+extern jb_err cgi_toggle(struct client_state *csp,
+                         struct http_response *rsp,
+                         const struct map *parameters);
+#endif /* def FEATURE_TOGGLE */
 
 /* Revision control strings from this header and associated .c file */
 extern const char cgiedit_rcs[];

@@ -84,7 +84,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN347"
+NAME="AEN351"
 >3.1. What exactly is an <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -186,7 +186,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN370"
+NAME="AEN374"
 >3.3. How are actions files configured? What is the easiest
 way to do this?</A
 ></H3
@@ -228,7 +228,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN379"
+NAME="AEN383"
 >3.4. There are several different <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -253,15 +253,8 @@ CLASS="APPLICATION"
  developers and typically sets the default policies, <TT
 CLASS="FILENAME"
 >user.action</TT
->, where users are encouraged
- to make their private customizations, and <TT
-CLASS="FILENAME"
->standard.action</TT
->, 
- which is for internal <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> use only.
+>,
+ where users are encouraged to make their private customizations.
  Please see <A
 HREF="../user-manual/actions-file.html"
 TARGET="_top"
@@ -650,7 +643,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN476"
+NAME="AEN478"
 >3.11. What is the <TT
 CLASS="FILENAME"
 >default.filter</TT
@@ -877,7 +870,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN527"
+NAME="AEN529"
 >3.13. Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
 ></H3
 ><P
@@ -944,7 +937,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN544"
+NAME="AEN546"
 >3.14. Why would anybody want to see a checkerboard pattern?</A
 ></H3
 ><P
@@ -974,7 +967,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN550"
+NAME="AEN552"
 >3.15. I see some images being replaced with text
 instead of the checkerboard image. Why and how do I get rid of this?</A
 ></H3
@@ -1179,23 +1172,29 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OUTLOOK"
->3.21. How can I configure Privoxy for use with Outlook
- Express?</A
+>3.21. How can I configure Privoxy for use with Outlook?</A
 ></H3
 ><P
-> <SPAN
+> Versions of <SPAN
 CLASS="APPLICATION"
->Outlook Express</SPAN
-> uses <SPAN
+>Outlook</SPAN
+> prior to Office 2007, use
+ <SPAN
 CLASS="APPLICATION"
 >Internet Explorer</SPAN
-> 
- components to both render HTML, and fetch any HTTP requests that may be embedded in an HTML email.
- So however you have <SPAN
+> components to both render HTML,
+ and fetch any HTTP requests that may be embedded in an HTML email. So however
+ you have <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> configured to work
- with IE, this configuration should automatically be shared.</P
+> configured to work with IE, this
+ configuration should automatically be shared, at least with older version of
+ Internet Explorer.</P
+><P
+> Starting with Office 2007, Microsoft is instead using the MS-Word rendering
+ engine with Outlook. It is unknown whether this can be configured to use a
+ proxy.
+ </P
 ></DIV
 ><DIV
 CLASS="SECT2"

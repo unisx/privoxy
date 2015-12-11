@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Privoxy 3.0.10 User Manual</TITLE
+>Privoxy 3.0.11 User Manual</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -32,7 +32,7 @@ CLASS="TITLEPAGE"
 CLASS="TITLE"
 ><A
 NAME="AEN2"
->Privoxy 3.0.10 User Manual</A
+>Privoxy 3.0.11 User Manual</A
 ></H1
 ><P
 CLASS="PUBDATE"
@@ -40,7 +40,7 @@ CLASS="PUBDATE"
 > <A
 HREF="copyright.html"
 >Copyright</A
-> © 2001 - 2008 by 
+> © 2001-2009 by 
  <A
 HREF="http://www.privoxy.org/"
 TARGET="_top"
@@ -50,7 +50,7 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.49 2008/08/16 10:21:15 fabiankeil Exp $<BR></P
+>$Id: index.html,v 1.58 2009/02/21 14:33:45 fabiankeil Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
@@ -295,7 +295,7 @@ HREF="configuration.html"
 ><DL
 ><DT
 >6.1. <A
-HREF="configuration.html#AEN811"
+HREF="configuration.html#AEN790"
 >Controlling Privoxy with Your Web Browser</A
 ></DT
 ><DT
@@ -380,11 +380,6 @@ HREF="config.html#LOGFILE"
 ></DT
 ><DT
 >7.2.7. <A
-HREF="config.html#JARFILE"
->jarfile</A
-></DT
-><DT
->7.2.8. <A
 HREF="config.html#TRUSTFILE"
 >trustfile</A
 ></DT
@@ -505,6 +500,16 @@ HREF="config.html#ALLOW-CGI-REQUEST-CRUNCHING"
 HREF="config.html#SPLIT-LARGE-FORMS"
 >split-large-forms</A
 ></DT
+><DT
+>7.5.8. <A
+HREF="config.html#KEEP-ALIVE-TIMEOUT"
+>keep-alive-timeout</A
+></DT
+><DT
+>7.5.9. <A
+HREF="config.html#SOCKET-TIMEOUT"
+>socket-timeout</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -523,12 +528,12 @@ HREF="actions-file.html"
 ><DL
 ><DT
 >8.1. <A
-HREF="actions-file.html#AEN2293"
+HREF="actions-file.html#AEN2302"
 >Finding the Right Mix</A
 ></DT
 ><DT
 >8.2. <A
-HREF="actions-file.html#AEN2300"
+HREF="actions-file.html#AEN2309"
 >How to Edit</A
 ></DT
 ><DT
@@ -545,12 +550,12 @@ HREF="actions-file.html#AF-PATTERNS"
 ><DL
 ><DT
 >8.4.1. <A
-HREF="actions-file.html#AEN2391"
+HREF="actions-file.html#AEN2400"
 >The Domain Pattern</A
 ></DT
 ><DT
 >8.4.2. <A
-HREF="actions-file.html#AEN2467"
+HREF="actions-file.html#AEN2476"
 >The Path Pattern</A
 ></DT
 ><DT
@@ -579,103 +584,103 @@ HREF="actions-file.html#BLOCK"
 ></DT
 ><DT
 >8.5.3. <A
+HREF="actions-file.html#CHANGE-X-FORWARDED-FOR"
+>change-x-forwarded-for</A
+></DT
+><DT
+>8.5.4. <A
 HREF="actions-file.html#CLIENT-HEADER-FILTER"
 >client-header-filter</A
 ></DT
 ><DT
->8.5.4. <A
+>8.5.5. <A
 HREF="actions-file.html#CLIENT-HEADER-TAGGER"
 >client-header-tagger</A
 ></DT
 ><DT
->8.5.5. <A
+>8.5.6. <A
 HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
 >content-type-overwrite</A
 ></DT
 ><DT
->8.5.6. <A
+>8.5.7. <A
 HREF="actions-file.html#CRUNCH-CLIENT-HEADER"
 >crunch-client-header</A
 ></DT
 ><DT
->8.5.7. <A
+>8.5.8. <A
 HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
 >crunch-if-none-match</A
 ></DT
 ><DT
->8.5.8. <A
+>8.5.9. <A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
 ></DT
 ><DT
->8.5.9. <A
+>8.5.10. <A
 HREF="actions-file.html#CRUNCH-SERVER-HEADER"
 >crunch-server-header</A
 ></DT
 ><DT
->8.5.10. <A
+>8.5.11. <A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 ></DT
 ><DT
->8.5.11. <A
+>8.5.12. <A
 HREF="actions-file.html#DEANIMATE-GIFS"
 >deanimate-gifs</A
 ></DT
 ><DT
->8.5.12. <A
+>8.5.13. <A
 HREF="actions-file.html#DOWNGRADE-HTTP-VERSION"
 >downgrade-http-version</A
 ></DT
 ><DT
->8.5.13. <A
+>8.5.14. <A
 HREF="actions-file.html#FAST-REDIRECTS"
 >fast-redirects</A
 ></DT
 ><DT
->8.5.14. <A
+>8.5.15. <A
 HREF="actions-file.html#FILTER"
 >filter</A
 ></DT
 ><DT
->8.5.15. <A
+>8.5.16. <A
 HREF="actions-file.html#FORCE-TEXT-MODE"
 >force-text-mode</A
 ></DT
 ><DT
->8.5.16. <A
+>8.5.17. <A
 HREF="actions-file.html#FORWARD-OVERRIDE"
 >forward-override</A
 ></DT
 ><DT
->8.5.17. <A
+>8.5.18. <A
 HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
 >handle-as-empty-document</A
 ></DT
 ><DT
->8.5.18. <A
+>8.5.19. <A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
 ></DT
 ><DT
->8.5.19. <A
+>8.5.20. <A
 HREF="actions-file.html#HIDE-ACCEPT-LANGUAGE"
 >hide-accept-language</A
 ></DT
 ><DT
->8.5.20. <A
+>8.5.21. <A
 HREF="actions-file.html#HIDE-CONTENT-DISPOSITION"
 >hide-content-disposition</A
 ></DT
 ><DT
->8.5.21. <A
+>8.5.22. <A
 HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
 >hide-if-modified-since</A
-></DT
-><DT
->8.5.22. <A
-HREF="actions-file.html#HIDE-FORWARDED-FOR-HEADERS"
->hide-forwarded-for-headers</A
 ></DT
 ><DT
 >8.5.23. <A
@@ -734,7 +739,7 @@ HREF="actions-file.html#SET-IMAGE-BLOCKER"
 ></DT
 ><DT
 >8.5.34. <A
-HREF="actions-file.html#AEN4090"
+HREF="actions-file.html#AEN4107"
 >Summary</A
 ></DT
 ></DL
@@ -753,12 +758,17 @@ HREF="actions-file.html#ACT-EXAMPLES"
 ><DL
 ><DT
 >8.7.1. <A
-HREF="actions-file.html#AEN4153"
->default.action</A
+HREF="actions-file.html#AEN4171"
+>match-all.action</A
 ></DT
 ><DT
 >8.7.2. <A
-HREF="actions-file.html#AEN4287"
+HREF="actions-file.html#AEN4193"
+>default.action</A
+></DT
+><DT
+>8.7.3. <A
+HREF="actions-file.html#AEN4306"
 >user.action</A
 ></DT
 ></DL
@@ -774,7 +784,7 @@ HREF="filter-file.html"
 ><DL
 ><DT
 >9.1. <A
-HREF="filter-file.html#AEN4442"
+HREF="filter-file.html#AEN4461"
 >Filter File Tutorial</A
 ></DT
 ><DT
@@ -842,7 +852,7 @@ HREF="copyright.html"
 ><DL
 ><DT
 >12.1. <A
-HREF="copyright.html#AEN4916"
+HREF="copyright.html#AEN4935"
 >License</A
 ></DT
 ><DT
@@ -876,7 +886,7 @@ HREF="appendix.html#REGEX"
 ></DT
 ><DT
 >14.2. <A
-HREF="appendix.html#AEN5173"
+HREF="appendix.html#AEN5189"
 >Privoxy's Internal Pages</A
 ></DT
 ><DD

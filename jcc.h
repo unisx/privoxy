@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.22 2007/06/01 18:16:36 fabiankeil Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.25 2008/10/09 18:21:41 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
@@ -35,6 +35,17 @@
  *
  * Revisions   :
  *    $Log: jcc.h,v $
+ *    Revision 1.25  2008/10/09 18:21:41  fabiankeil
+ *    Flush work-in-progress changes to keep outgoing connections
+ *    alive where possible. Incomplete and mostly #ifdef'd out.
+ *
+ *    Revision 1.24  2008/09/07 12:35:05  fabiankeil
+ *    Add mutex lock support for _WIN32.
+ *
+ *    Revision 1.23  2008/09/04 08:13:58  fabiankeil
+ *    Prepare for critical sections on Windows by adding a
+ *    layer of indirection before the pthread mutex functions.
+ *
  *    Revision 1.22  2007/06/01 18:16:36  fabiankeil
  *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
  *    deadlocks and crashes on OpenBSD and possibly other OS with neither
@@ -186,25 +197,41 @@ extern int no_daemon;
 extern int g_terminate;
 #endif
 
+#if defined(FEATURE_PTHREAD) || defined(_WIN32)
+#define MUTEX_LOCKS_AVAILABLE
+
 #ifdef FEATURE_PTHREAD
 #include <pthread.h>
-extern pthread_mutex_t log_mutex;
-extern pthread_mutex_t log_init_mutex;
+
+typedef pthread_mutex_t privoxy_mutex_t;
+
+#else
+
+typedef CRITICAL_SECTION privoxy_mutex_t;
+
+#endif
+
+extern void privoxy_mutex_lock(privoxy_mutex_t *mutex);
+extern void privoxy_mutex_unlock(privoxy_mutex_t *mutex);
+
+extern privoxy_mutex_t log_mutex;
+extern privoxy_mutex_t log_init_mutex;
+extern privoxy_mutex_t connection_reuse_mutex;
 
 #ifndef HAVE_GMTIME_R
-extern pthread_mutex_t gmtime_mutex;
+extern privoxy_mutex_t gmtime_mutex;
 #endif /* ndef HAVE_GMTIME_R */
 
 #ifndef HAVE_LOCALTIME_R
-extern pthread_mutex_t localtime_mutex;
+extern privoxy_mutex_t localtime_mutex;
 #endif /* ndef HAVE_GMTIME_R */
 
 #if !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R)
-extern pthread_mutex_t resolver_mutex;
+extern privoxy_mutex_t resolver_mutex;
 #endif /* !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R) */
 
 #ifndef HAVE_RANDOM
-extern pthread_mutex_t rand_mutex;
+extern privoxy_mutex_t rand_mutex;
 #endif /* ndef HAVE_RANDOM */
 
 #endif /* FEATURE_PTHREAD */
