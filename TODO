@@ -1,4 +1,4 @@
-$Id: TODO,v 1.60 2011/10/16 17:34:26 fabiankeil Exp $
+$Id: TODO,v 1.77 2013/01/05 18:39:35 fabiankeil Exp $
 
 Some Privoxy-related tasks, sorted by the time they
 have been added, not by priority.
@@ -8,11 +8,10 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
 
 1)  Add some regression tests. Filters should be tested automatically
     (variables too). Could probably reuse large parts of Privoxy-Filter-Test.
+    Note that there is currently work in progress to leverage curl's
+    test suite which could be used for this as well.
 
 3)  Fix some more XXX: comments.
-
-4)  Fix some more compiler warnings. (Especially on amd64)
-    Partly done.
 
 6)  Remove actions that aren't needed anymore:
 
@@ -43,7 +42,7 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
 11) CGI templates should use semantically-correct HTML
     and scale properly.
 
-12) Improve pipelining support.
+12) Support pipelining for outgoing connections.
 
 14) Allow to filter POST parameters.
 
@@ -108,8 +107,6 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
 44) Privoxy-Log-Parser: Consider highlighting "Connection" in:
     23:13:03.506 283b6100 Header: Replaced: 'Connection: Keep-Alive' with 'Connection: close'
 
-49) Add FAQ for NTLM proxies. Still necessary?
-
 50) Investigate possible PCRS template speedup when searching
     macros with strstr() before compiling pcrs commands.
     Investigated, needs some restructuring but is probably worth it.
@@ -155,10 +152,10 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
     is no legal entity.
 
 65) Polish Website. Probably involves ditching the Docbook
-    mess in favour of wml. There should be already some threads
-    in the mailinglists archives about this. See also #41.
+    mess in favour of wml. There are already several threads
+    in the mailinglist archives about this. See also #41.
 
-66) Increase maximum number of action and filter files.
+66) Stop hard-coding the number of action and filter files.
 
 67) Clean up source code directory layout. Depends on 54 so
     we don't lose the revision history.
@@ -226,7 +223,8 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
     trivial, though.
 
 88) Investigate if there's a Perl module that Privoxy-Regression-Test
-    could optionally use to keep connections alive.
+    could optionally use to keep connections alive, preferably while
+    requiring less forks at the same time.
 
 89) When multiple block actions apply, consider showing all the block
     reasons on the blocked page that haven't been overruled, not just
@@ -272,9 +270,6 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
     filters by type instead of filter file would reduce the lookup-code
     quite a bit.
 
-97) Add support for Tor's 'optimistic data' socks extension.
-    Mostly done, not yet pushed to CVS.
-
 98) When showing action section on the CGI pages, properly escape
     line breaks so they can be copy&pasted into action files without
     adjustments.
@@ -288,3 +283,26 @@ http://ijbswa.cvs.sourceforge.net/viewvc/ijbswa/current/TODO
 100) Create a cross-platform Privoxy control program and retire
      the win32 GUI. Integrate support for Privoxy-Regression-Test,
      Privoxy-Log-Parser, Privoxy-Filter-Test, uagen and similar tools.
+
+102) Add an include directive to split the config file into several parts.
+
+103) Potential performance improvement for large action files:
+     when figuring out which actions apply, check the action bitmask
+     before pattern matching and skip section that wouldn't modify the
+     actions already set. To increase the impact the sections would have
+     to be applied in reverse.
+
+104) The code to modify global_toggle_state should be factored out into
+     a separate function. Currently we mess with it in three different
+     files, but only in w32log.c the tray icon is explicitly set.
+     The logging is inconsistent as well. For details see #3525694.
+
+105) Add support for socks authentication.
+
+106) actionlist.h should be embedded in a way that causes less text
+     segment bloat.
+
+107) Support more pcrs variables, for example $destination-ip-address
+     and $source-ip-address.
+
+108) Allow to use a somewhat random string intead of PRIVOXY-FORCE.

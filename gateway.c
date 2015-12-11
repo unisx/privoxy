@@ -1,4 +1,4 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.83 2011/12/24 15:28:45 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.93 2012/12/07 12:45:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
@@ -66,6 +66,8 @@ const char gateway_rcs[] = "$Id: gateway.c,v 1.83 2011/12/24 15:28:45 fabiankeil
 #include "jbsockets.h"
 #include "gateway.h"
 #include "miscutil.h"
+#include "list.h"
+
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 #ifdef HAVE_POLL
 #ifdef __GLIBC__
@@ -212,7 +214,7 @@ void remember_connection(const struct reusable_connection *connection)
    if (!free_slot_found)
    {
       log_error(LOG_LEVEL_CONNECT,
-        "No free slots found to remembering socket for %s:%d. Last slot %d.",
+        "No free slots found to remember socket for %s:%d. Last slot %d.",
         connection->host, connection->port, slot);
       privoxy_mutex_unlock(&connection_reuse_mutex);
       close_socket(connection->sfd);
@@ -220,18 +222,15 @@ void remember_connection(const struct reusable_connection *connection)
    }
 
    assert(NULL != connection->host);
-   reusable_connection[slot].host = strdup(connection->host);
-   if (NULL == reusable_connection[slot].host)
-   {
-      log_error(LOG_LEVEL_FATAL, "Out of memory saving socket.");
-   }
+   reusable_connection[slot].host = strdup_or_die(connection->host);
    reusable_connection[slot].sfd = connection->sfd;
    reusable_connection[slot].port = connection->port;
    reusable_connection[slot].in_use = 0;
    reusable_connection[slot].timestamp = connection->timestamp;
-   reusable_connection->request_sent = connection->request_sent;
-   reusable_connection->response_received = connection->response_received;
+   reusable_connection[slot].request_sent = connection->request_sent;
+   reusable_connection[slot].response_received = connection->response_received;
    reusable_connection[slot].keep_alive_timeout = connection->keep_alive_timeout;
+   reusable_connection[slot].requests_sent_total = connection->requests_sent_total;
 
    assert(reusable_connection[slot].gateway_host == NULL);
    assert(reusable_connection[slot].gateway_port == 0);
@@ -242,11 +241,7 @@ void remember_connection(const struct reusable_connection *connection)
    reusable_connection[slot].forwarder_type = connection->forwarder_type;
    if (NULL != connection->gateway_host)
    {
-      reusable_connection[slot].gateway_host = strdup(connection->gateway_host);
-      if (NULL == reusable_connection[slot].gateway_host)
-      {
-         log_error(LOG_LEVEL_FATAL, "Out of memory saving gateway_host.");
-      }
+      reusable_connection[slot].gateway_host = strdup_or_die(connection->gateway_host);
    }
    else
    {
@@ -256,11 +251,7 @@ void remember_connection(const struct reusable_connection *connection)
 
    if (NULL != connection->forward_host)
    {
-      reusable_connection[slot].forward_host = strdup(connection->forward_host);
-      if (NULL == reusable_connection[slot].forward_host)
-      {
-         log_error(LOG_LEVEL_FATAL, "Out of memory saving forward_host.");
-      }
+      reusable_connection[slot].forward_host = strdup_or_die(connection->forward_host);
    }
    else
    {
@@ -273,7 +264,6 @@ void remember_connection(const struct reusable_connection *connection)
 #endif /* def FEATURE_CONNECTION_SHARING */
 
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /*********************************************************************
  *
  * Function    :  mark_connection_closed
@@ -296,13 +286,13 @@ void mark_connection_closed(struct reusable_connection *closed_connection)
    closed_connection->request_sent = 0;
    closed_connection->response_received = 0;
    closed_connection->keep_alive_timeout = 0;
+   closed_connection->requests_sent_total = 0;
    closed_connection->forwarder_type = SOCKS_NONE;
    freez(closed_connection->gateway_host);
    closed_connection->gateway_port = 0;
    freez(closed_connection->forward_host);
    closed_connection->forward_port = 0;
 }
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 
 #ifdef FEATURE_CONNECTION_SHARING
@@ -506,13 +496,14 @@ static jb_socket get_reusable_connection(const struct http_request *http,
             reusable_connection[slot].in_use = TRUE;
             sfd = reusable_connection[slot].sfd;
             log_error(LOG_LEVEL_CONNECT,
-               "Found reusable socket %d for %s:%d in slot %d. "
-               "Timestamp made %d seconds ago. Timeout: %d. Latency: %d.",
+               "Found reusable socket %d for %s:%d in slot %d. Timestamp made %d "
+               "seconds ago. Timeout: %d. Latency: %d. Requests served: %d",
                sfd, reusable_connection[slot].host, reusable_connection[slot].port,
                slot, time(NULL) - reusable_connection[slot].timestamp,
                reusable_connection[slot].keep_alive_timeout,
                (int)(reusable_connection[slot].response_received -
-               reusable_connection[slot].request_sent));
+               reusable_connection[slot].request_sent),
+               reusable_connection[slot].requests_sent_total);
             break;
          }
       }
@@ -650,6 +641,7 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
          sfd = socks4_connect(fwd, dest_host, dest_port, csp);
          break;
       case SOCKS_5:
+      case SOCKS_5T:
          sfd = socks5_connect(fwd, dest_host, dest_port, csp);
          break;
       default:
@@ -793,12 +785,12 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
 
    c->vn          = 4;
    c->cd          = 1;
-   c->dstport[0]  = (unsigned char)((target_port       >> 8  ) & 0xff);
-   c->dstport[1]  = (unsigned char)((target_port             ) & 0xff);
-   c->dstip[0]    = (unsigned char)((web_server_addr   >> 24 ) & 0xff);
-   c->dstip[1]    = (unsigned char)((web_server_addr   >> 16 ) & 0xff);
-   c->dstip[2]    = (unsigned char)((web_server_addr   >>  8 ) & 0xff);
-   c->dstip[3]    = (unsigned char)((web_server_addr         ) & 0xff);
+   c->dstport[0]  = (unsigned char)((target_port       >> 8 ) & 0xff);
+   c->dstport[1]  = (unsigned char)((target_port            ) & 0xff);
+   c->dstip[0]    = (unsigned char)((web_server_addr   >> 24) & 0xff);
+   c->dstip[1]    = (unsigned char)((web_server_addr   >> 16) & 0xff);
+   c->dstip[2]    = (unsigned char)((web_server_addr   >>  8) & 0xff);
+   c->dstip[3]    = (unsigned char)((web_server_addr        ) & 0xff);
 
    /* pass the request to the socks server */
    sfd = connect_to(fwd->gateway_host, fwd->gateway_port, csp);
@@ -975,7 +967,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
       err = 1;
    }
 
-   if (fwd->type != SOCKS_5)
+   if ((fwd->type != SOCKS_5) && (fwd->type != SOCKS_5T))
    {
       /* Should never get here */
       log_error(LOG_LEVEL_FATAL,
@@ -1089,6 +1081,43 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
       return(JB_INVALID_SOCKET);
    }
 
+   /*
+    * Optimistically send the request headers with the initial
+    * request if the user requested use of Tor extensions, the
+    * CONNECT method isn't being used (in which case the client
+    * doesn't send data until it gets our 200 response) and the
+    * client request has been already read completely.
+    *
+    * Not optimistically sending the request body (if there is one)
+    * makes it easier to implement, but isn't an actual requirement.
+    */
+   if ((fwd->type == SOCKS_5T) && (csp->http->ssl == 0)
+      && (csp->flags & CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ))
+   {
+      char *client_headers = list_to_text(csp->headers);
+      size_t header_length;
+
+      if (client_headers == NULL)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory rebuilding client headers");
+      }
+      list_remove_all(csp->headers);
+      header_length= strlen(client_headers);
+
+      log_error(LOG_LEVEL_CONNECT,
+         "Optimistically sending %d bytes of client headers intended for %s",
+         header_length, csp->http->hostport);
+
+      if (write_socket(sfd, client_headers, header_length))
+      {
+         log_error(LOG_LEVEL_CONNECT,
+            "optimistically writing header to: %s failed: %E", csp->http->hostport);
+         freez(client_headers);
+         return(JB_INVALID_SOCKET);
+      }
+      freez(client_headers);
+   }
+
    server_size = read_socket(sfd, sbuf, sizeof(sbuf));
    if (server_size != sizeof(sbuf))
    {
@@ -1116,7 +1145,7 @@ static jb_socket socks5_connect(const struct forward_spec *fwd,
 
    assert(errstr != NULL);
    csp->error_message = strdup(errstr);
-   log_error(LOG_LEVEL_CONNECT, "socks5_connect: %s: %N", errstr, server_size, sbuf);
+   log_error(LOG_LEVEL_CONNECT, "socks5_connect: %s", errstr);
    close_socket(sfd);
    errno = EINVAL;
 

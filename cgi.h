@@ -1,6 +1,6 @@
 #ifndef CGI_H_INCLUDED
 #define CGI_H_INCLUDED
-#define CGI_H_VERSION "$Id: cgi.h,v 1.41 2011/09/04 11:10:56 fabiankeil Exp $"
+#define CGI_H_VERSION "$Id: cgi.h,v 1.42 2012/11/09 10:47:42 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.h,v $
@@ -60,7 +60,7 @@ extern struct http_response *error_response(struct client_state *csp,
 extern struct http_response * alloc_http_response(void);
 extern void free_http_response(struct http_response *rsp);
 
-extern struct http_response *finish_http_response(const struct client_state *csp,
+extern struct http_response *finish_http_response(struct client_state *csp,
                                                   struct http_response *rsp);
 
 extern struct map * default_exports(const struct client_state *csp, const char *caller);

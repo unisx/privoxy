@@ -3,9 +3,6 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Releasing a New Version</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
@@ -14,23 +11,10 @@
   <link rel="NEXT" title="Update the Webserver" href="webserver-update.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  tt.c5 {font-style: italic}
-  td.c4 {font-weight: bold}
-  table.c3 {background-color: #E0E0E0}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
@@ -48,7 +32,7 @@ body {
         "webserver-update.html" accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -124,9 +108,9 @@ body {
           being committed. Stable branches will then have their version
           reported as <tt class="LITERAL">0.0.0</tt>, during that period
           between releases when changes are being added. This is to denote
-          that this code is <span class="emphasis EMPHASIS c2">not for
-          release</span>. Then as the release nears, the version is bumped
-          according: e.g. <tt class="LITERAL">3.0.1 -&gt; 0.0.0 -&gt;
+          that this code is <span class="emphasis"><i class="EMPHASIS">not
+          for release</i></span>. Then as the release nears, the version is
+          bumped according: e.g. <tt class="LITERAL">3.0.1 -&gt; 0.0.0 -&gt;
           3.0.2</tt>.</p>
         </li>
       </ul>
@@ -143,15 +127,15 @@ body {
       -&gt; 3.0.1 -&gt; 3.0.2, etc are all stable releases from within the
       stable branch. 3.1.x is currently the main trunk, and where work on
       3.2.x is taking place. If any questions, please post to the devel list
-      <span class="emphasis EMPHASIS c2">before</span> committing to a stable
-      branch!</p>
+      <span class="emphasis"><i class="EMPHASIS">before</i></span> committing
+      to a stable branch!</p>
 
       <p>Developers should remember too that if they commit a bugfix to the
       stable branch, this will more than likely require a separate submission
       to the main trunk, since these are separate development trees within
       CVS. If you are working on both, then this would require at least two
-      separate check outs (i.e main trunk, <span class=
-      "emphasis EMPHASIS c2">and</span> the stable release branch, which is
+      separate check outs (i.e main trunk, <span class="emphasis"><i class=
+      "EMPHASIS">and</i></span> the stable release branch, which is
       <tt class="LITERAL">v_3_0_branch</tt> at the moment).</p>
     </div>
 
@@ -159,8 +143,8 @@ body {
       <h2 class="SECT2"><a name="BEFORERELEASE" id="BEFORERELEASE">6.2.
       Before the Release: Freeze</a></h2>
 
-      <p>The following <span class="emphasis EMPHASIS c2">must be done by one
-      of the developers</span> prior to each new release.</p>
+      <p>The following <span class="emphasis"><i class="EMPHASIS">must be
+      done by one of the developers</i></span> prior to each new release.</p>
 
       <ul>
         <li>
@@ -182,7 +166,7 @@ body {
           last release (i.e. software release or standalone actions file
           release), bump up its version info to A.B in this line:</p>
 
-          <table class="c3" border="0" width="90%">
+          <table border="0" bgcolor="#E0E0E0" width="90%">
             <tr>
               <td>
                 <pre class="PROGRAMLISTING">
@@ -229,8 +213,8 @@ body {
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">Commit all files that were
-          changed in the above steps!</span></p>
+          <p><span class="emphasis"><i class="EMPHASIS">Commit all files that
+          were changed in the above steps!</i></span></p>
         </li>
 
         <li>
@@ -266,13 +250,13 @@ body {
       GPL reasons the first package to be released is always the source
       tarball.</p>
 
-      <p>For <span class="emphasis EMPHASIS c2">all</span> types of packages,
-      including the source tarball, <span class="emphasis EMPHASIS c2">you
-      must make sure that you build from clean sources by exporting the right
-      version from CVS into an empty directory</span> (just press return when
-      asked for a password):</p>
+      <p>For <span class="emphasis"><i class="EMPHASIS">all</i></span> types
+      of packages, including the source tarball, <span class=
+      "emphasis"><i class="EMPHASIS">you must make sure that you build from
+      clean sources by exporting the right version from CVS into an empty
+      directory</i></span> (just press return when asked for a password):</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="PROGRAMLISTING">
@@ -285,15 +269,16 @@ body {
         </tr>
       </table>
 
-      <p><span class="emphasis EMPHASIS c2">Do NOT change</span> a single
-      bit, including, but not limited to version information after export
-      from CVS. This is to make sure that all release packages, and with
-      them, all future bug reports, are based on exactly the same code.</p>
+      <p><span class="emphasis"><i class="EMPHASIS">Do NOT change</i></span>
+      a single bit, including, but not limited to version information after
+      export from CVS. This is to make sure that all release packages, and
+      with them, all future bug reports, are based on exactly the same
+      code.</p>
 
       <div class="WARNING">
         <table class="WARNING" border="1" width="100%">
           <tr>
-            <td class="c4" align="center">Warning</td>
+            <td align="center"><b>Warning</b></td>
           </tr>
 
           <tr>
@@ -318,16 +303,16 @@ body {
         "PACK-GUIDELINES">6.3.1. Note on Privoxy Packaging</a></h3>
 
         <p>Please keep these general guidelines in mind when putting together
-        your package. These apply to <span class=
-        "emphasis EMPHASIS c2">all</span> platforms!</p>
+        your package. These apply to <span class="emphasis"><i class=
+        "EMPHASIS">all</i></span> platforms!</p>
 
         <ul>
           <li>
             <p><span class="APPLICATION">Privoxy</span> <span class=
-            "emphasis EMPHASIS c2">requires</span> write access to: all
-            <tt class="FILENAME">*.action</tt> files, all logfiles, and the
-            <tt class="FILENAME">trust</tt> file. You will need to determine
-            the best way to do this for your platform.</p>
+            "emphasis"><i class="EMPHASIS">requires</i></span> write access
+            to: all <tt class="FILENAME">*.action</tt> files, all logfiles,
+            and the <tt class="FILENAME">trust</tt> file. You will need to
+            determine the best way to do this for your platform.</p>
           </li>
 
           <li>
@@ -451,11 +436,12 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-TARBALL" id=
         "NEWRELEASE-TARBALL">6.3.2. Source Tarball</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then run:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -468,7 +454,7 @@ body {
 
         <p>Then do:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -480,7 +466,7 @@ body {
 
         <p>To upload the package to Sourceforge, simply issue</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -499,29 +485,31 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-RPM" id="NEWRELEASE-RPM">6.3.3.
         SuSE, Conectiva or Red Hat RPM</a></h3>
 
-        <p>In following text, replace <tt class="REPLACEABLE c5">dist</tt>
-        with either <span class="QUOTE">"rh"</span> for Red Hat or
-        <span class="QUOTE">"suse"</span> for SuSE.</p>
+        <p>In following text, replace <tt class=
+        "REPLACEABLE"><i>dist</i></tt> with either <span class=
+        "QUOTE">"rh"</span> for Red Hat or <span class="QUOTE">"suse"</span>
+        for SuSE.</p>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above).</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages"
+        above).</p>
 
         <p>As the only exception to not changing anything after export from
         CVS, now examine the file <tt class=
-        "FILENAME">privoxy-</tt><tt class="REPLACEABLE c5">dist</tt><tt class="FILENAME">.spec</tt>
+        "FILENAME">privoxy-</tt><tt class="REPLACEABLE"><i>dist</i></tt><tt class="FILENAME">.spec</tt>
         and make sure that the version information and the RPM release number
         are correct. The RPM release numbers for each version start at one.
         Hence it must be reset to one if this is the first RPM for <tt class=
-        "REPLACEABLE c5">dist</tt> which is built from version X.Y.Z. Check
-        the <a href=
+        "REPLACEABLE"><i>dist</i></tt> which is built from version X.Y.Z.
+        Check the <a href=
         "http://sourceforge.net/project/showfiles.php?group_id=11118" target=
         "_top">file list</a> if unsure. Else, it must be set to the highest
         already available RPM release number for that version plus one.</p>
 
         <p>Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -534,11 +522,11 @@ body {
 
         <p>Then do</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
-  make <tt class="REPLACEABLE c5">dist</tt>-dist
+  make <tt class="REPLACEABLE"><i>dist</i></tt>-dist
 </pre>
             </td>
           </tr>
@@ -546,19 +534,19 @@ body {
 
         <p>To upload the package to Sourceforge, simply issue</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
-  make <tt class="REPLACEABLE c5">dist</tt>-upload <tt class=
-"REPLACEABLE c5">rpm_packagerev</tt>
+  make <tt class="REPLACEABLE"><i>dist</i></tt>-upload <tt class=
+"REPLACEABLE"><i>rpm_packagerev</i></tt>
 </pre>
             </td>
           </tr>
         </table>
 
-        <p>where <tt class="REPLACEABLE c5">rpm_packagerev</tt> is the RPM
-        release number as determined above. Go to the displayed URL and
+        <p>where <tt class="REPLACEABLE"><i>rpm_packagerev</i></tt> is the
+        RPM release number as determined above. Go to the displayed URL and
         release the file publicly on Sourceforge. Use the release notes and
         change log from the source tarball package.</p>
       </div>
@@ -567,12 +555,12 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-OS2" id="NEWRELEASE-OS2">6.3.4.
         OS/2</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then get the OS/2
-        Setup module:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then get the OS/2 Setup module:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -595,7 +583,7 @@ body {
         directory. Edit the os2build.cmd file to set the final executable
         filename. For example,</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -609,7 +597,7 @@ body {
         release number matches in the <tt class="FILENAME">PACKAGEID</tt>
         section:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -621,7 +609,7 @@ body {
 
         <p>You're now ready to build. Run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -644,7 +632,7 @@ body {
 
         <p>Login to Sourceforge's compilefarm via ssh:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -655,11 +643,12 @@ body {
         </table>
 
         <p>Choose the right operating system (not the Debian one). When
-        logged in, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then run:</p>
+        logged in, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -672,7 +661,7 @@ body {
 
         <p>Then run</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -698,12 +687,12 @@ body {
         "_top">http://www.cygwin.com/</a>). Run the following commands from
         within a Cygwin bash shell.</p>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then get the Windows
-        setup module:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then get the Windows setup module:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -717,7 +706,7 @@ body {
         controlled by <tt class="FILENAME">winsetup/GNUmakefile</tt>. All you
         need to do is:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -739,17 +728,17 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-DEBIAN" id=
         "NEWRELEASE-DEBIAN">6.3.7. Debian</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then add a log entry
-        to <tt class="FILENAME">debian/changelog</tt>, if it is not already
-        there, for example by running:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then add a log entry to <tt class="FILENAME">debian/changelog</tt>,
+        if it is not already there, for example by running:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
-  debchange -v 3.0.19-stable-1 "New upstream version"
+  debchange -v 3.0.20-beta-1 "New upstream version"
 </pre>
             </td>
           </tr>
@@ -757,7 +746,7 @@ body {
 
         <p>Then, run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -768,10 +757,10 @@ body {
         </table>
 
         <p>This will create <tt class=
-        "FILENAME">../privoxy_3.0.19-stable-1_i386.deb</tt> which can be
+        "FILENAME">../privoxy_3.0.20-beta-1_i386.deb</tt> which can be
         uploaded. To upload the package to Sourceforge, simply issue</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -786,61 +775,136 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-MACOSX" id=
         "NEWRELEASE-MACOSX">6.3.8. Mac OS X</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then get the Mac OS X
-        setup module:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages"
+        above).</p>
 
-        <table class="c3" border="0" width="100%">
-          <tr>
-            <td>
-              <pre class="PROGRAMLISTING">
+        <p>There are three modules available in the CVS repository for use on
+        Mac OS X, though technically only two of them generate a release (the
+        other can be used to install from source).</p>
+
+        <div class="SECT4">
+          <h4 class="SECT4"><a name="OS-X-OSXPACKAGEBUILDER-MODULE" id=
+          "OS-X-OSXPACKAGEBUILDER-MODULE">6.3.8.1. OSXPackageBuilder
+          module</a></h4>
+
+          <p>The OSXPackageBuilder module generates OS X installer packages
+          supporting all Macs running OS X 10.4 and above. Obtain it from CVS
+          as follows into a folder parallel to the exported privoxy
+          source:</p>
+
+          <table border="0" bgcolor="#E0E0E0" width="100%">
+            <tr>
+              <td>
+                <pre class="PROGRAMLISTING">
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co OSXPackageBuilder
+</pre>
+              </td>
+            </tr>
+          </table>
+
+          <p>The module contains complete instructions on its usage in the
+          file <tt class="FILENAME">OS X Package Builder HOWTO.txt</tt>.</p>
+
+          <p>Once the package(s) have been generated, you can then upload
+          them directly to the Files section of the Sourceforge project in
+          the Macintosh (OS X) folder. Each new version release of Privoxy
+          should have a new subfolder created in which to store its files.
+          Please ensure that the folder contains a readme file that makes it
+          clear which package is for whichversion of OS X.</p>
+        </div>
+
+        <div class="SECT4">
+          <h4 class="SECT4"><a name="OS-X-OSXSETUP-MODULE" id=
+          "OS-X-OSXSETUP-MODULE">6.3.8.2. osxsetup module
+          (DEPRECATED)</a></h4>
+
+          <p><span class="emphasis"><i class="EMPHASIS">This module is
+          deprecated since the installer it generates places all Privoxy
+          files in one folder in a non-standard location, and supports only
+          Intel Macs running OS X 10.6 or higher.</i></span></p>
+
+          <p>Check out the module from CVS as follows into a folder parallel
+          to the exported privoxy source:</p>
+
+          <table border="0" bgcolor="#E0E0E0" width="100%">
+            <tr>
+              <td>
+                <pre class="PROGRAMLISTING">
   cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co osxsetup
 </pre>
-            </td>
-          </tr>
-        </table>
+              </td>
+            </tr>
+          </table>
 
-        <p>Then run:</p>
+          <p>Then run:</p>
 
-        <table class="c3" border="0" width="100%">
-          <tr>
-            <td>
-              <pre class="PROGRAMLISTING">
+          <table border="0" bgcolor="#E0E0E0" width="100%">
+            <tr>
+              <td>
+                <pre class="PROGRAMLISTING">
   cd osxsetup
   build
 </pre>
-            </td>
-          </tr>
-        </table>
+              </td>
+            </tr>
+          </table>
 
-        <p>This will run <tt class="FILENAME">autoheader</tt>, <tt class=
-        "FILENAME">autoconf</tt> and <tt class="FILENAME">configure</tt> as
-        well as <tt class="FILENAME">make</tt>. Finally, it will copy over
-        the necessary files to the ./osxsetup/files directory for further
-        processing by <tt class="FILENAME">PackageMaker</tt>.</p>
+          <p>This will run <tt class="FILENAME">autoheader</tt>, <tt class=
+          "FILENAME">autoconf</tt> and <tt class="FILENAME">configure</tt> as
+          well as <tt class="FILENAME">make</tt>. Finally, it will copy over
+          the necessary files to the ./osxsetup/files directory for further
+          processing by <tt class="FILENAME">PackageMaker</tt>.</p>
 
-        <p>Bring up PackageMaker with the PrivoxyPackage.pmsp definition
-        file, modify the package name to match the release, and hit the
-        "Create package" button. If you specify ./Privoxy.pkg as the output
-        package name, you can then create the distributable zip file with the
-        command:</p>
+          <p>Bring up PackageMaker with the PrivoxyPackage.pmsp definition
+          file, modify the package name to match the release, and hit the
+          "Create package" button. If you specify ./Privoxy.pkg as the output
+          package name, you can then create the distributable zip file with
+          the command:</p>
 
-        <table class="c3" border="0" width="100%">
-          <tr>
-            <td>
-              <pre class="PROGRAMLISTING">
+          <table border="0" bgcolor="#E0E0E0" width="100%">
+            <tr>
+              <td>
+                <pre class="PROGRAMLISTING">
   zip -r privoxyosx_setup_x.y.z.zip Privoxy.pkg
 </pre>
-            </td>
-          </tr>
-        </table>
+              </td>
+            </tr>
+          </table>
 
-        <p>You can then upload <tt class=
-        "FILENAME">privoxyosx_setup_x.y.z.zip</tt> anonymously to <tt class=
-        "FILENAME">uploads.sourceforge.net/incoming</tt>, create a release
-        for it, and you're done. Use the release notes and Change Log from
-        the source tarball package.</p>
+          <p>You can then upload this file directly to the Files section of
+          the Sourceforge project in the Macintosh (OS X) folder. Each new
+          version release of Privoxy should have a new subfolder created in
+          which to store its files. Please ensure that the folder contains a
+          readme file that makes it clear which version(s) of OS X the
+          package supports.</p>
+        </div>
+
+        <div class="SECT4">
+          <h4 class="SECT4"><a name="OS-X-MACSETUP-MODULE" id=
+          "OS-X-MACSETUP-MODULE">6.3.8.3. macsetup module</a></h4>
+
+          <p>The macsetup module is ideal if you wish to build and install
+          Privoxy from source on a single machine.</p>
+
+          <p>Check out the module from CVS as follows into a folder parallel
+          to the exported privoxy source:</p>
+
+          <table border="0" bgcolor="#E0E0E0" width="100%">
+            <tr>
+              <td>
+                <pre class="PROGRAMLISTING">
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co macsetup
+</pre>
+              </td>
+            </tr>
+          </table>
+
+          <p>The module contains complete instructions on its usage in its
+          <tt class="FILENAME">README</tt> file. The end result will be the
+          exported version of Privoxy installed on the build machine.</p>
+        </div>
       </div>
 
       <div class="SECT3">
@@ -849,7 +913,7 @@ body {
 
         <p>Login to Sourceforge's compile-farm via ssh:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -860,11 +924,11 @@ body {
         </table>
 
         <p>Choose the right operating system. When logged in, <span class=
-        "emphasis EMPHASIS c2">make sure that you have freshly exported the
-        right version into an empty directory</span>. (See "Building and
-        releasing packages" above). Then run:</p>
+        "emphasis"><i class="EMPHASIS">make sure that you have freshly
+        exported the right version into an empty directory</i></span>. (See
+        "Building and releasing packages" above). Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -877,7 +941,7 @@ body {
 
         <p>Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -898,11 +962,12 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-HPUX" id=
         "NEWRELEASE-HPUX">6.3.10. HP-UX 11</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then run:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -920,11 +985,12 @@ body {
         <h3 class="SECT3"><a name="NEWRELEASE-AMIGA" id=
         "NEWRELEASE-AMIGA">6.3.11. Amiga OS</a></h3>
 
-        <p>First, <span class="emphasis EMPHASIS c2">make sure that you have
-        freshly exported the right version into an empty directory</span>.
-        (See "Building and releasing packages" above). Then run:</p>
+        <p>First, <span class="emphasis"><i class="EMPHASIS">make sure that
+        you have freshly exported the right version into an empty
+        directory</i></span>. (See "Building and releasing packages" above).
+        Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -944,7 +1010,7 @@ body {
 
         <p>Login to Sourceforge's compilefarm via ssh:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -955,11 +1021,11 @@ body {
         </table>
 
         <p>Choose the right operating system. When logged in, <span class=
-        "emphasis EMPHASIS c2">make sure that you have freshly exported the
-        right version into an empty directory</span>. (See "Building and
-        releasing packages" above). Then run:</p>
+        "emphasis"><i class="EMPHASIS">make sure that you have freshly
+        exported the right version into an empty directory</i></span>. (See
+        "Building and releasing packages" above). Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -972,7 +1038,7 @@ body {
 
         <p>Then run:</p>
 
-        <table class="c3" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="PROGRAMLISTING">
@@ -1024,7 +1090,7 @@ body {
       column, and click <tt class="LITERAL">Add Release</tt>. You will then
       need to create a new release for your package, using the format of
       <tt class="LITERAL">$VERSION ($CODE_STATUS)</tt>, e.g. <span class=
-      "emphasis EMPHASIS c2">3.0.19 (beta)</span>.</p>
+      "emphasis"><i class="EMPHASIS">3.0.20 (beta)</i></span>.</p>
 
       <p>Now just follow the prompts. Be sure to add any appropriate Release
       notes. You should see your freshly uploaded packages in <span class=
@@ -1061,7 +1127,7 @@ body {
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

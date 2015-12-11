@@ -1,6 +1,6 @@
 #ifndef LOADERS_H_INCLUDED
 #define LOADERS_H_INCLUDED
-#define LOADERS_H_VERSION "$Id: loaders.h,v 1.29 2011/09/04 11:10:56 fabiankeil Exp $"
+#define LOADERS_H_VERSION "$Id: loaders.h,v 1.30 2012/12/07 12:43:05 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.h,v $
@@ -102,7 +102,7 @@ extern void add_loader(int (*loader)(struct client_state *),
                        struct configuration_spec * config);
 extern int run_loader(struct client_state *csp);
 
-extern int any_loaded_file_changed(const struct file_list *files_to_check);
+extern int any_loaded_file_changed(const struct client_state *csp);
 
 /* Revision control strings from this header and associated .c file */
 extern const char loaders_rcs[];

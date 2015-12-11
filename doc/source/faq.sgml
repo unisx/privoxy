@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: faq.sgml,v 2.85 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: faq.sgml,v 2.90 2013/01/06 11:25:52 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -78,7 +78,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.85 2011/12/26 17:05:40 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.90 2013/01/06 11:25:52 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -240,24 +240,23 @@ Privoxy work? </title>
 <title id="whyprivoxy">Why <quote>Privoxy</quote>? Why change the name from
 Junkbuster at all?</title>
 <para>
- Though outdated, <ulink url="http://junkbusters.com/">Junkbusters Corporation</ulink>
- continues to offer their original version of the <application>Internet
- Junkbuster</application>, so publishing our
- <application> Junkbuster</application>-derived software under the same name
- led to confusion.
+ Though outdated, Junkbusters Corporation continued to offer their original
+ version of the <application>Internet Junkbuster</application> for a while,
+ so publishing our <application> Junkbuster</application>-derived software
+ under the same name would have led to confusion.
 </para>
 <para>
- There are also potential legal complications from our use of the
- <application>Junkbuster</application> name, which is a registered trademark of
- <ulink url="http://junkbusters.com/">Junkbusters Corporation</ulink>.
- There are, however, no objections from Junkbusters Corporation to the
- <application>Privoxy</application> project itself, and they, in fact, still
- share our ideals and goals.
+ There were also potential legal reasons not to use the
+ <application>Junkbuster</application> name, as it was (and maybe still is)
+ a registered trademark of Junkbusters Corporation.
+ There were, however, no objections from Junkbusters Corporation to the
+ <application>Privoxy</application> project itself, and they, in fact,
+ shared our ideals and goals.
 </para>
 <para>
- The developers also believed that there are so many improvements over the original
- code, that it was time to make a clean break from the past and make
- a name in their own right.
+ The Privoxy developers also believed that there were so many improvements
+ over the original code, that it was time to make a clean break from the past
+ and make a name in their own right.
 </para>
 <para>
  <application>Privoxy</application> is the
@@ -273,7 +272,7 @@ from the old Junkbuster?</title>
 <para>
  <application>Privoxy</application> picks up where
  <application>Junkbuster</application> left off.
- The new <application>Privoxy</application> still blocks ads and banners,
+ <application>Privoxy</application> still blocks ads and banners,
  still manages <ulink
  url="http://en.wikipedia.org/wiki/Browser_cookie">cookies</ulink>, and still
  helps protect your privacy. But, most of these features have been enhanced,
@@ -1793,7 +1792,6 @@ us help you. Your efforts are not wasted, and we do appreciate them.
  messages.
 </para>
 
-<![%p-newstuff;[
 <para>
  Since <application>Privoxy</application> 3.0.5, its
  <ulink url="../user-manual/config.html">main configuration file</ulink>
@@ -1840,7 +1838,7 @@ us help you. Your efforts are not wasted, and we do appreciate them.
 </para>
 <para>
  Save the modified configuration file and open
- <ulink url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status/</ulink>
+ <ulink url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>
  in your browser, confirm that <application>Privoxy</application> has reloaded its configuration
  and that there are no other forward lines, unless you know that you need them. If everything looks good,
  refer to
@@ -1853,7 +1851,7 @@ us help you. Your efforts are not wasted, and we do appreciate them.
  what <application>Tor</application> does, why it is no replacement for
  application level security, and why you probably don't want to
  use it for unencrypted logins.
-</para> ]]>
+</para>
 </sect2>
 
 <sect2 renderas="sect3">
@@ -2992,6 +2990,24 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.90  2013/01/06 11:25:52  fabiankeil
+Set entities to 3.0.20 beta
+
+Revision 2.89  2012/06/19 12:49:48  fabiankeil
+Update Junkbuster-related FAQ sections
+
+Remove the dead links and use the past tense as
+the fork happened years ago.
+
+Revision 2.88  2012/04/22 12:16:24  fabiankeil
+Remove an obsolete newstuff marker
+
+Revision 2.87  2012/04/22 12:16:09  fabiankeil
+Fix an URL in the "Privoxy with Tor" FAQ
+
+Revision 2.86  2012/03/18 15:41:49  fabiankeil
+Bump entities to 3.0.20 UNRELEASED
+
 Revision 2.85  2011/12/26 17:05:40  fabiankeil
 Bump entities for 3.0.19
 

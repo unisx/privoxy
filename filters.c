@@ -1,17 +1,9 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.163 2011/12/26 17:03:08 fabiankeil Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.176 2012/12/07 12:45:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
  *
  * Purpose     :  Declares functions to parse/crunch headers and pages.
- *                Functions declared include:
- *                   `acl_addr', `add_stats', `block_acl', `block_imageurl',
- *                   `block_url', `url_actions', `domain_split',
- *                   `filter_popups', `forward_url', 'redirect_url',
- *                   `ij_untrusted_url', `intercept_url', `pcrs_filter_respose',
- *                   `ijb_send_banner', `trust_url', `gif_deanimate_response',
- *                   `execute_single_pcrs_command', `rewrite_url',
- *                   `get_last_url'
  *
  * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
@@ -83,15 +75,6 @@ const char filters_rcs[] = "$Id: filters.c,v 1.163 2011/12/26 17:03:08 fabiankei
 #endif
 
 const char filters_h_rcs[] = FILTERS_H_VERSION;
-
-/* Fix a problem with Solaris.  There should be no effect on other
- * platforms.
- * Solaris's isspace() is a macro which uses it's argument directly
- * as an array index.  Therefore we need to make sure that high-bit
- * characters generate +ve values, and ideally we also want to make
- * the argument match the declared parameter type of "int".
- */
-#define ijb_isdigit(__X) isdigit((int)(unsigned char)(__X))
 
 typedef char *(*filter_function_ptr)();
 static filter_function_ptr get_filter_function(const struct client_state *csp);
@@ -193,10 +176,8 @@ static int match_sockaddr(const struct sockaddr_storage *network,
    if (network->ss_family != netmask->ss_family)
    {
       /* This should never happen */
-      log_error(LOG_LEVEL_ERROR,
-         "Internal error at %s:%llu: network and netmask differ in family",
-         __FILE__, __LINE__);
-      return 0;
+      assert(network->ss_family == netmask->ss_family);
+      log_error(LOG_LEVEL_FATAL, "Network and netmask differ in family.");
    }
 
    sockaddr_storage_to_ip(network, &network_addr, &addr_len, &network_port);
@@ -379,7 +360,7 @@ int acl_addr(const char *aspec, struct access_control_addr *aca)
    if ((p = strchr(acl_spec, '/')) != NULL)
    {
       *p++ = '\0';
-      if (ijb_isdigit(*p) == 0)
+      if (privoxy_isdigit(*p) == 0)
       {
          freez(acl_spec);
          return(-1);
@@ -596,7 +577,7 @@ struct http_response *block_url(struct client_state *csp)
       /* determine HOW images should be blocked */
       p = csp->action->string[ACTION_STRING_IMAGE_BLOCKER];
 
-      if(csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
+      if (csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
       {
          log_error(LOG_LEVEL_ERROR, "handle-as-empty-document overruled by handle-as-image.");
       }
@@ -665,7 +646,7 @@ struct http_response *block_url(struct client_state *csp)
    }
    else
 #endif /* def FEATURE_IMAGE_BLOCKING */
-   if(csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
+   if (csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
    {
      /*
       *  Send empty document.
@@ -1107,6 +1088,11 @@ char *get_last_url(char *subject, const char *redirect_mode)
 
    if (0 == strcmpic(redirect_mode, "check-decoded-url") && strchr(subject, '%'))
    {  
+      char *url_segment = NULL;
+      char **url_segments;
+      size_t max_segments;
+      int segments;
+
       log_error(LOG_LEVEL_REDIRECTS,
          "Checking \"%s\" for encoded redirects.", subject);
 
@@ -1116,24 +1102,22 @@ char *get_last_url(char *subject, const char *redirect_mode)
        * go backwards through the segments, URL-decode them
        * and look for a URL in the decoded result.
        * Stop the search after the first match.
-       */
-      char *url_segment = NULL;
-      /*
+       *
        * XXX: This estimate is guaranteed to be high enough as we
        *      let ssplit() ignore empty fields, but also a bit wasteful.
        */
-      size_t max_segments = strlen(subject) / 2;
-      char **url_segments = malloc(max_segments * sizeof(char *));
-      int segments;
+      max_segments = strlen(subject) / 2;
+      url_segments = malloc(max_segments * sizeof(char *));
 
       if (NULL == url_segments)
       {
-         log_error(LOG_LEVEL_ERROR, "Out of memory while decoding URL: %s", new_url);
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while decoding URL: %s", subject);
          freez(subject);
          return NULL;
       }
 
-      segments = ssplit(subject, "?&", url_segments, max_segments, 1, 1);
+      segments = ssplit(subject, "?&", url_segments, max_segments);
 
       while (segments-- > 0)
       {
@@ -1708,7 +1692,7 @@ static char *pcrs_filter_response(struct client_state *csp)
 
    csp->flags |= CSP_FLAG_MODIFIED;
    csp->content_length = size;
-   IOB_RESET(csp);
+   clear_iob(csp->iob);
 
    return(new);
 
@@ -2146,7 +2130,7 @@ const static struct forward_spec *get_forward_override_settings(struct client_st
       return NULL;
    }
 
-   vec_count = ssplit(forward_settings, " \t", vec, SZ(vec), 1, 1);
+   vec_count = ssplit(forward_settings, " \t", vec, SZ(vec));
    if ((vec_count == 2) && !strcasecmp(vec[0], "forward"))
    {
       fwd->type = SOCKS_NONE;
@@ -2172,6 +2156,11 @@ const static struct forward_spec *get_forward_override_settings(struct client_st
       else if (!strcasecmp(vec[0], "forward-socks5"))
       {
          fwd->type = SOCKS_5;
+         socks_proxy = vec[1];
+      }
+      else if (!strcasecmp(vec[0], "forward-socks5t"))
+      {
+         fwd->type = SOCKS_5T;
          socks_proxy = vec[1];
       }
 

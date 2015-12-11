@@ -1,4 +1,4 @@
-const char win32_rcs[] = "$Id: win32.c,v 1.18 2011/09/04 11:10:56 fabiankeil Exp $";
+const char win32_rcs[] = "$Id: win32.c,v 1.19 2012/03/09 16:23:50 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/win32.c,v $
@@ -141,7 +141,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
    /* Visual C++ Heap debugging */
 
    /* Get current flag*/
-   int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+   int tmpFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 
    /* Turn on leak-checking bit */
    tmpFlag |= _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF;
@@ -150,7 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
    tmpFlag &= ~(_CRTDBG_CHECK_CRT_DF | _CRTDBG_DELAY_FREE_MEM_DF);
 
    /* Set flag to the new value */
-   _CrtSetDbgFlag( tmpFlag );
+   _CrtSetDbgFlag(tmpFlag);
 #endif
 #endif /* defined(_WIN32) && defined(_MSC_VER) && defined(_DEBUG) */
 
@@ -208,9 +208,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 #ifdef __MINGW32__
-   res = real_main( __argc, __argv );
+   res = real_main(__argc, __argv);
 #else
-   res = main( __argc, __argv );
+   res = main(__argc, __argv);
 #endif
 
    return res;

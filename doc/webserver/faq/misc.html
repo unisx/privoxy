@@ -3,9 +3,6 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Miscellaneous</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
@@ -15,21 +12,10 @@
   <link rel="NEXT" title="Troubleshooting" href="trouble.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  table.c3 {background-color: #E0E0E0}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
@@ -48,14 +34,14 @@ body {
         accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
     <h1 class="SECT1"><a name="MISC" id="MISC">4. Miscellaneous</a></h1>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN738" id="AEN738">4.1. How much does
+      <h3 class="SECT2"><a name="AEN735" id="AEN735">4.1. How much does
       Privoxy slow my browsing down? This has to add extra time to
       browsing.</a></h3>
 
@@ -143,8 +129,8 @@ body {
       you get a page saying <span class="QUOTE">"Privoxy is not
       working"</span> instead, then your browser didn't use <span class=
       "APPLICATION">Privoxy</span> for the request, hence it could not be
-      intercepted, and you have accessed the <span class=
-      "emphasis EMPHASIS c2">real</span> web site at config.privoxy.org.</p>
+      intercepted, and you have accessed the <span class="emphasis"><i class=
+      "EMPHASIS">real</i></span> web site at config.privoxy.org.</p>
     </div>
 
     <div class="SECT2">
@@ -215,7 +201,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN803" id="AEN803">4.8. Can Privoxy
+      <h3 class="SECT2"><a name="AEN800" id="AEN800">4.8. Can Privoxy
       guarantee I am anonymous?</a></h3>
 
       <p>No. Your chances of remaining anonymous are improved, but unless you
@@ -226,12 +212,12 @@ body {
       assume that everything you do on the Web can be traced back to you.</p>
 
       <p><span class="APPLICATION">Privoxy</span> can remove various
-      information about you, and allows <span class=
-      "emphasis EMPHASIS c2">you</span> more freedom to decide which sites
-      you can trust, and what details you want to reveal. But it neither
-      hides your IP address, nor can it guarantee that the rest of the system
-      behaves correctly. There are several possibilities how a web sites can
-      find out who you are, even if you are using a strict <span class=
+      information about you, and allows <span class="emphasis"><i class=
+      "EMPHASIS">you</i></span> more freedom to decide which sites you can
+      trust, and what details you want to reveal. But it neither hides your
+      IP address, nor can it guarantee that the rest of the system behaves
+      correctly. There are several possibilities how a web sites can find out
+      who you are, even if you are using a strict <span class=
       "APPLICATION">Privoxy</span> configuration and chained it with
       <span class="APPLICATION">Tor</span>.</p>
 
@@ -260,7 +246,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN821" id="AEN821">4.9. A test site says I
+      <h3 class="SECT2"><a name="AEN818" id="AEN818">4.9. A test site says I
       am not using a Proxy.</a></h3>
 
       <p>Good! Actually, they are probably testing for some other kinds of
@@ -316,7 +302,7 @@ body {
       "../user-manual/config.html#FORWARDING" target="_top">forwarding
       section</a> and uncomment the line:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -331,7 +317,7 @@ body {
       want to uncomment the following forward rules, to make sure your local
       network is still reachable through Privoxy:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -354,7 +340,7 @@ body {
       network by using their names, you will need additional exceptions that
       look like this:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -367,7 +353,7 @@ body {
 
       <p>Save the modified configuration file and open <a href=
       "http://config.privoxy.org/show-status" target=
-      "_top">http://config.privoxy.org/show-status/</a> in your browser,
+      "_top">http://config.privoxy.org/show-status</a> in your browser,
       confirm that <span class="APPLICATION">Privoxy</span> has reloaded its
       configuration and that there are no other forward lines, unless you
       know that you need them. If everything looks good, refer to <a href=
@@ -383,7 +369,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN877" id="AEN877">4.11. Might some things
+      <h3 class="SECT2"><a name="AEN874" id="AEN874">4.11. Might some things
       break because header information or content is being altered?</a></h3>
 
       <p>Definitely. It is common for sites to use browser type, browser
@@ -410,9 +396,9 @@ body {
       server. The results of which could inadvertently cause pages to load
       incorrectly, partially, or even not at all. And there may be no obvious
       clues as to just what went wrong, or why. Nowhere will there be a
-      message that says <span class="QUOTE">"<span class=
-      "emphasis EMPHASIS c2">Turn off <tt class="LITERAL">fast-redirects</tt>
-      or else!</span> "</span></p>
+      message that says <span class="QUOTE">"<span class="emphasis"><i class=
+      "EMPHASIS">Turn off <tt class="LITERAL">fast-redirects</tt> or
+      else!</i></span> "</span></p>
 
       <p>Similar thoughts apply to modifying JavaScript, and, to a lesser
       degree, HTML elements.</p>
@@ -423,7 +409,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN891" id="AEN891">4.12. Can Privoxy act as
+      <h3 class="SECT2"><a name="AEN888" id="AEN888">4.12. Can Privoxy act as
       a <span class="QUOTE">"caching"</span> proxy to speed up web
       browsing?</a></h3>
 
@@ -439,25 +425,26 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN901" id="AEN901">4.13. What about as a
+      <h3 class="SECT2"><a name="AEN898" id="AEN898">4.13. What about as a
       firewall? Can Privoxy protect me?</a></h3>
 
       <p>Not in the way you mean, or in the way some firewall vendors claim
       they can. <span class="APPLICATION">Privoxy</span> can help protect
       your privacy, but can't protect your system from intrusion attempts. It
       is, of course, perfectly possible to use <span class=
-      "emphasis EMPHASIS c2">both</span>.</p>
+      "emphasis"><i class="EMPHASIS">both</i></span>.</p>
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN906" id="AEN906">4.14. I have large empty
+      <h3 class="SECT2"><a name="AEN903" id="AEN903">4.14. I have large empty
       spaces / a checkerboard pattern now where ads used to be. Why?</a></h3>
 
       <p>It is technically possible to eliminate banners and ads in a way
       that frees their allocated page space. This could easily be done by
       blocking with <span class="APPLICATION">Privoxy's</span> filters, and
-      eliminating the <span class="emphasis EMPHASIS c2">entire</span> image
-      references from the HTML page source.</p>
+      eliminating the <span class="emphasis"><i class=
+      "EMPHASIS">entire</i></span> image references from the HTML page
+      source.</p>
 
       <p>But, this would consume considerably more CPU resources (IOW, slow
       things down), would likely destroy the layout of some web pages which
@@ -477,14 +464,15 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN914" id="AEN914">4.15. How can Privoxy
+      <h3 class="SECT2"><a name="AEN911" id="AEN911">4.15. How can Privoxy
       filter Secure (HTTPS) URLs?</a></h3>
 
       <p>Since secure HTTP connections are encrypted SSL sessions between
       your browser and the secure site, and are meant to be reliably
-      <span class="emphasis EMPHASIS c2">secure</span>, there is little that
-      <span class="APPLICATION">Privoxy</span> can do but hand the raw
-      gibberish data though from one end to the other unprocessed.</p>
+      <span class="emphasis"><i class="EMPHASIS">secure</i></span>, there is
+      little that <span class="APPLICATION">Privoxy</span> can do but hand
+      the raw gibberish data though from one end to the other
+      unprocessed.</p>
 
       <p>The only exception to this is blocking by host patterns, as the
       client needs to tell <span class="APPLICATION">Privoxy</span> the name
@@ -510,7 +498,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN928" id="AEN928">4.16. Privoxy runs as a
+      <h3 class="SECT2"><a name="AEN925" id="AEN925">4.16. Privoxy runs as a
       <span class="QUOTE">"server"</span>. How secure is it? Do I need to
       take any special precautions?</a></h3>
 
@@ -584,12 +572,12 @@ body {
 
       <p>A <span class="QUOTE">"crunch"</span> simply means <span class=
       "APPLICATION">Privoxy</span> intercepted <span class=
-      "emphasis EMPHASIS c2">something</span>, nothing more. Often this is
-      indeed ads or banners, but <span class="APPLICATION">Privoxy</span>
-      uses the same mechanism for trapping requests for its own internal
-      pages. For instance, a request for <span class=
-      "APPLICATION">Privoxy's</span> configuration page at: <a href=
-      "http://config.privoxy.org" target=
+      "emphasis"><i class="EMPHASIS">something</i></span>, nothing more.
+      Often this is indeed ads or banners, but <span class=
+      "APPLICATION">Privoxy</span> uses the same mechanism for trapping
+      requests for its own internal pages. For instance, a request for
+      <span class="APPLICATION">Privoxy's</span> configuration page at:
+      <a href="http://config.privoxy.org" target=
       "_top">http://config.privoxy.org</a>, is intercepted (i.e. it does not
       go out to the 'net), and the familiar CGI configuration is returned to
       the browser, and the log consequently will show a <span class=
@@ -619,8 +607,8 @@ body {
       <span class="QUOTE">"good"</span> content that we do want. <span class=
       "APPLICATION">Privoxy</span> is blind to the differences, and can only
       distinguish <span class="QUOTE">"good from bad"</span> by the
-      configuration parameters <span class="emphasis EMPHASIS c2">we</span>
-      give it.</p>
+      configuration parameters <span class="emphasis"><i class=
+      "EMPHASIS">we</i></span> give it.</p>
 
       <p><span class="APPLICATION">Privoxy</span> knows the differences in
       files according to the <span class="QUOTE">"Content Type"</span> as
@@ -643,11 +631,11 @@ body {
 
       <p>In short, filtering is <span class="QUOTE">"ON"</span> if a) the
       content type as reported by the webserver is appropriate <span class=
-      "emphasis EMPHASIS c2">and</span> b) the configuration allows it (or at
-      least does not disallow it). That's it. There is no magic cookie
-      anywhere to say this is <span class="QUOTE">"good"</span> and this is
-      <span class="QUOTE">"bad"</span>. It's the configuration that lets it
-      all happen or not.</p>
+      "emphasis"><i class="EMPHASIS">and</i></span> b) the configuration
+      allows it (or at least does not disallow it). That's it. There is no
+      magic cookie anywhere to say this is <span class="QUOTE">"good"</span>
+      and this is <span class="QUOTE">"bad"</span>. It's the configuration
+      that lets it all happen or not.</p>
 
       <p>If you download text files, you probably do not want these to be
       filtered, particularly if the content is source code, or other critical
@@ -656,8 +644,9 @@ body {
       off filtering for download sites (particularly if the content may be
       plain text files and you are using version 3.0.2 or earlier) in your
       <tt class="FILENAME">user.action</tt> file. And also, for any site or
-      page where making <span class="emphasis EMPHASIS c2">any</span> changes
-      at all to the content is to be avoided.</p>
+      page where making <span class="emphasis"><i class=
+      "EMPHASIS">any</i></span> changes at all to the content is to be
+      avoided.</p>
 
       <p><span class="APPLICATION">Privoxy</span> does not do FTP at all,
       only HTTP and HTTPS (SSL) protocols.</p>
@@ -694,7 +683,7 @@ body {
       adding your list to your <tt class="FILENAME">user.action</tt>
       file:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -778,26 +767,6 @@ body {
             "_top">https://sourceforge.net/tracker/?group_id=11118&amp;atid=460288</a>,
             to submit <span class="QUOTE">"misses"</span> and other
             configuration related suggestions to the developers.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table border="0">
-        <tbody>
-          <tr>
-            <td><a href="http://www.junkbusters.com/ht/en/cookies.html"
-            target="_top">http://www.junkbusters.com/ht/en/cookies.html</a>,
-            an explanation how cookies are used to track web users.</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table border="0">
-        <tbody>
-          <tr>
-            <td><a href="http://www.junkbusters.com/ijb.html" target=
-            "_top">http://www.junkbusters.com/ijb.html</a>, the original
-            Internet Junkbuster.</td>
           </tr>
         </tbody>
       </table>
@@ -901,7 +870,7 @@ body {
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

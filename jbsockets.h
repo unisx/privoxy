@@ -1,6 +1,6 @@
 #ifndef JBSOCKETS_H_INCLUDED
 #define JBSOCKETS_H_INCLUDED
-#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.20 2011/09/04 11:10:56 fabiankeil Exp $"
+#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.21 2012/10/12 11:17:48 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.h,v $
@@ -55,6 +55,7 @@ extern int write_socket(jb_socket fd, const char *buf, size_t n);
 extern int read_socket(jb_socket fd, char *buf, int n);
 extern int data_is_available(jb_socket fd, int seconds_to_wait);
 extern void close_socket(jb_socket fd);
+extern void drain_and_close_socket(jb_socket fd);
 
 extern int bind_port(const char *hostnam, int portnum, jb_socket *pfd);
 extern int accept_connection(struct client_state * csp, jb_socket fds[]);

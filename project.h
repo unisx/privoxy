@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.171 2011/09/04 11:10:56 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.195 2012/12/07 12:45:20 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -10,7 +10,7 @@
  *                project.  Does not define any variables or functions
  *                (though it does declare some macros).
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ * Copyright   :  Written by and Copyright (C) 2001-2012 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -161,19 +161,17 @@ typedef int jb_err;
 
 
 /**
- * Fix a problem with Solaris.  There should be no effect on other
- * platforms.
- *
- * Solaris's isspace() is a macro which uses it's argument directly
- * as an array index.  Therefore we need to make sure that high-bit
- * characters generate +ve values, and ideally we also want to make
- * the argument match the declared parameter type of "int".
- *
+ * Macro definitions for platforms where isspace() and friends
+ * are macros that use their argument directly as an array index
+ * and thus better be positive. Supposedly that's the case on
+ * some unspecified Solaris versions.
  * Note: Remember to #include <ctype.h> if you use these macros.
  */
-#define ijb_toupper(__X) toupper((int)(unsigned char)(__X))
-#define ijb_tolower(__X) tolower((int)(unsigned char)(__X))
-#define ijb_isspace(__X) isspace((int)(unsigned char)(__X))
+#define privoxy_isdigit(__X) isdigit((int)(unsigned char)(__X))
+#define privoxy_isupper(__X) isupper((int)(unsigned char)(__X))
+#define privoxy_toupper(__X) toupper((int)(unsigned char)(__X))
+#define privoxy_tolower(__X) tolower((int)(unsigned char)(__X))
+#define privoxy_isspace(__X) isspace((int)(unsigned char)(__X))
 
 /**
  * Use for statically allocated buffers if you have no other choice.
@@ -414,17 +412,10 @@ struct iob
 
 /**
  * Return the number of bytes in the I/O buffer associated with the passed
- * client_state pointer.
- * May be zero.
+ * I/O buffer. May be zero.
  */
-#define IOB_PEEK(CSP) ((CSP->iob->cur > CSP->iob->eod) ? (CSP->iob->eod - CSP->iob->cur) : 0)
+#define IOB_PEEK(IOB) ((IOB->cur > IOB->eod) ? (IOB->eod - IOB->cur) : 0)
 
-
-/**
- * Remove any data in the I/O buffer associated with the passed
- * client_state pointer.
- */
-#define IOB_RESET(CSP) if(CSP->iob->buf) free(CSP->iob->buf); memset(CSP->iob, '\0', sizeof(CSP->iob));
 
 /* Bits for csp->content_type bitmask: */
 #define CT_TEXT    0x0001U /**< Suitable for pcrs filtering. */
@@ -478,11 +469,11 @@ struct iob
 /** Action bitmap: Prevent compression. */
 #define ACTION_NO_COMPRESSION                        0x00000400UL
 /** Action bitmap: Change cookies to session only cookies. */
-#define ACTION_NO_COOKIE_KEEP                        0x00000800UL
-/** Action bitmap: Block rending cookies. */
-#define ACTION_NO_COOKIE_READ                        0x00001000UL
-/** Action bitmap: Block setting cookies. */
-#define ACTION_NO_COOKIE_SET                         0x00002000UL
+#define ACTION_SESSION_COOKIES_ONLY                  0x00000800UL
+/** Action bitmap: Block cookies coming from the client. */
+#define ACTION_CRUNCH_OUTGOING_COOKIES               0x00001000UL
+/** Action bitmap: Block cookies coming from the server. */
+#define ACTION_CRUNCH_INCOMING_COOKIES               0x00002000UL
 /** Action bitmap: Override the forward settings in the config file */
 #define ACTION_FORWARD_OVERRIDE                      0x00004000UL
 /** Action bitmap: Block as empty document */
@@ -509,6 +500,8 @@ struct iob
 #define ACTION_OVERWRITE_LAST_MODIFIED               0x02000000UL
 /** Action bitmap: Replace or block Accept-Language header */
 #define ACTION_HIDE_ACCEPT_LANGUAGE                  0x04000000UL
+/** Action bitmap: Limit the cookie lifetime */
+#define ACTION_LIMIT_COOKIE_LIFETIME                 0x08000000UL
 
 
 /** Action string index: How to deanimate GIFs */
@@ -547,8 +540,10 @@ struct iob
 #define ACTION_STRING_BLOCK                16
 /** Action string index: what to do with the "X-Forwarded-For" header. */
 #define ACTION_STRING_CHANGE_X_FORWARDED_FOR 17
+/** Action string index: how many minutes cookies should be valid. */
+#define ACTION_STRING_LIMIT_COOKIE_LIFETIME 18
 /** Number of string actions. */
-#define ACTION_STRING_COUNT                18
+#define ACTION_STRING_COUNT                19
 
 
 /* To make the ugly hack in sed easier to understand */
@@ -641,6 +636,18 @@ struct url_actions
    struct url_actions *next;   /**< Next action section in file, or NULL. */
 };
 
+enum forwarder_type {
+   /**< Don't use a SOCKS server               */
+   SOCKS_NONE =  0,
+   /**< original SOCKS 4 protocol              */
+   SOCKS_4    = 40,
+   /**< SOCKS 4A, DNS resolution is done by the SOCKS server */
+   SOCKS_4A   = 41,
+   /**< SOCKS 5 with hostnames, DNS resolution is done by the SOCKS server */
+   SOCKS_5    = 50,
+   /**< Like SOCKS5, but uses non-standard Tor extensions (currently only optimistic data) */
+   SOCKS_5T,
+};
 
 /*
  * Structure to hold the server socket and the information
@@ -661,10 +668,15 @@ struct reusable_connection
     * connection will no longer be reused.
     */
    unsigned int keep_alive_timeout;
+   /*
+    * Number of requests that were sent to this connection.
+    * This is currently only for debugging purposes.
+    */
+   unsigned int requests_sent_total;
 
    char *host;
    int  port;
-   int  forwarder_type;
+   enum forwarder_type forwarder_type;
    char *gateway_host;
    int  gateway_port;
    char *forward_host;
@@ -757,7 +769,6 @@ struct reusable_connection
  */
 #define CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE  0x00001000U
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /**
  * Flag for csp->flags: Set if the server specified the
  * content length.
@@ -791,11 +802,11 @@ struct reusable_connection
  */
 #define CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET  0x00020000U
 
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
-
 /**
  * Flag for csp->flags: Set if we think we can't reuse
- * the server socket.
+ * the server socket. XXX: It's also set after sabotaging
+ * pipelining attempts which is somewhat inconsistent with
+ * the name.
  */
 #define CSP_FLAG_SERVER_SOCKET_TAINTED          0x00040000U
 
@@ -820,6 +831,18 @@ struct reusable_connection
  */
 #define CSP_FLAG_BUFFERED_CONTENT_DEFLATED          0x00400000U
 
+/**
+ * Flag for csp->flags: Set if we already read (parts of)
+ * a pipelined request in which case the client obviously
+ * isn't done talking.
+ */
+#define CSP_FLAG_PIPELINED_REQUEST_WAITING          0x00800000U
+
+/**
+ * Flag for csp->flags: Set if the client body is chunk-encoded
+ */
+#define CSP_FLAG_CHUNKED_CLIENT_BODY                0x01000000U
+
 
 /*
  * Flags for use in return codes of child processes
@@ -841,7 +864,7 @@ struct reusable_connection
  * Maximum number of actions/filter files.  This limit is arbitrary - it's just used
  * to size an array.
  */
-#define MAX_AF_FILES 10
+#define MAX_AF_FILES 30
 
 /**
  * Maximum number of sockets to listen to.  This limit is arbitrary - it's just used
@@ -862,6 +885,9 @@ struct client_state
 
    /** socket to talk to client (web browser) */
    jb_socket cfd;
+
+   /** Number of requests received on the client socket. */
+   unsigned int requests_received_total;
 
    /** current connection to the server (may go through a proxy) */
    struct reusable_connection server_connection;
@@ -892,8 +918,12 @@ struct client_state
     */
    struct forward_spec * fwd;
 
-   /** An I/O buffer used for buffering data read from the network */
+   /** An I/O buffer used for buffering data read from the server */
+   /* XXX: should be renamed to server_iob */
    struct iob iob[1];
+
+   /** An I/O buffer used for buffering data read from the client */
+   struct iob client_iob[1];
 
    /** List of all headers for this request */
    struct list headers[1];
@@ -913,7 +943,6 @@ struct client_state
    /** Length after content modification. */
    unsigned long long content_length;
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
    /* XXX: is this the right location? */
 
    /** Expected length of content after which we
@@ -925,7 +954,6 @@ struct client_state
     *  should stop reading from the client socket.
     */
    unsigned long long expected_client_content_length;
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 #ifdef FEATURE_TRUST
 
@@ -1048,17 +1076,6 @@ struct block_spec
 
 #endif /* def FEATURE_TRUST */
 
-enum forwarder_type {
-   /**< Don't use a SOCKS server               */
-   SOCKS_NONE =  0,
-   /**< original SOCKS 4 protocol              */
-   SOCKS_4    = 40,
-   /**< SOCKS 4A, DNS resolution is done by the SOCKS server */
-   SOCKS_4A   = 41,
-   /**< SOCKS 5 with hostnames, DNS resolution is done by the SOCKS server */
-   SOCKS_5    = 50,
-};
-
 /**
  * How to forward a connection to a parent proxy.
  */
@@ -1100,6 +1117,7 @@ enum filter_type
    FT_SERVER_HEADER_FILTER = 2,
    FT_CLIENT_HEADER_TAGGER = 3,
    FT_SERVER_HEADER_TAGGER = 4,
+   FT_INVALID_FILTER       = 42,
 };
 #define MAX_FILTER_TYPES        5
 
@@ -1199,6 +1217,9 @@ struct access_control_list
 /** configuration_spec::feature_flags: Buffered content is sent compressed if the client supports it. */
 #define RUNTIME_FEATURE_COMPRESSION               1024U
 
+/** configuration_spec::feature_flags: Pipelined requests are served instead of being discarded. */
+#define RUNTIME_FEATURE_TOLERATE_PIPELINING       2048U
+
 /**
  * Data loaded from the configuration file.
  *
@@ -1261,6 +1282,9 @@ struct configuration_spec
 
    /** The short names of the pcre filter files. */
    const char *re_filterfile_short[MAX_AF_FILES];
+
+   /**< List of ordered client header names. */
+   struct list ordered_client_headers[1];
 
    /** The hostname to show on CGI pages, or NULL to use the real one. */
    const char *hostname;

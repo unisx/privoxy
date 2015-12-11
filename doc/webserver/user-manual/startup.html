@@ -3,40 +3,25 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Starting Privoxy</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Quickstart to Using Privoxy" href=
   "quickstart.html">
   <link rel="NEXT" title="Privoxy Configuration" href="configuration.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  table.c4 {background-color: #E0E0E0}
-  p.c3 {font-weight: bold}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -49,7 +34,7 @@ body {
         "configuration.html" accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -62,18 +47,18 @@ body {
     <a href="http://en.wikipedia.org/wiki/Proxy_server" target=
     "_top">proxy</a>. The default is 127.0.0.1 (or localhost) for the proxy
     address, and port 8118 (earlier versions used port 8000). This is the one
-    configuration step <span class="emphasis EMPHASIS c2">that must be
-    done</span>!</p>
+    configuration step <span class="emphasis"><i class="EMPHASIS">that must
+    be done</i></span>!</p>
 
     <p>Please note that <span class="APPLICATION">Privoxy</span> can only
     proxy HTTP and HTTPS traffic. It will not work with FTP or other
     protocols.</p>
 
     <div class="FIGURE">
-      <a name="AEN899" id="AEN899"></a>
+      <a name="AEN858" id="AEN858"></a>
 
-      <p class="c3">Figure 2. Proxy Configuration Showing Mozilla/Netscape
-      HTTP and HTTPS (SSL) Settings</p>
+      <p><b>Figure 2. Proxy Configuration Showing Mozilla/Netscape HTTP and
+      HTTPS (SSL) Settings</b></p>
 
       <div class="MEDIAOBJECT">
         <p><img src="proxy_setup.jpg"></p>
@@ -123,14 +108,14 @@ body {
     if you want HTTPS proxy support too (sometimes labeled <span class=
     "QUOTE">"Secure"</span>). Make sure any checkboxes like <span class=
     "QUOTE">"Use the same proxy server for all protocols"</span> is
-    <span class="emphasis EMPHASIS c2">UNCHECKED</span>. You want only HTTP
-    and HTTPS (SSL)!</p>
+    <span class="emphasis"><i class="EMPHASIS">UNCHECKED</i></span>. You want
+    only HTTP and HTTPS (SSL)!</p>
 
     <div class="FIGURE">
-      <a name="AEN944" id="AEN944"></a>
+      <a name="AEN903" id="AEN903"></a>
 
-      <p class="c3">Figure 3. Proxy Configuration Showing Internet Explorer
-      HTTP and HTTPS (Secure) Settings</p>
+      <p><b>Figure 3. Proxy Configuration Showing Internet Explorer HTTP and
+      HTTPS (Secure) Settings</b></p>
 
       <div class="MEDIAOBJECT">
         <p><img src="proxy2.jpg"></p>
@@ -159,7 +144,7 @@ body {
       "APPLICATION">Privoxy</span> upon boot. It will use the file <tt class=
       "FILENAME">/etc/privoxy/config</tt> as its main configuration file.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -171,7 +156,7 @@ body {
 
       <p>Or ...</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -191,7 +176,7 @@ body {
       file <tt class="FILENAME">/etc/privoxy/config</tt> as its main
       configuration file.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -229,7 +214,7 @@ body {
 
       <p>Example Unix startup command:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -299,7 +284,7 @@ body {
       <p>A script is again used. It will use the file <tt class=
       "FILENAME">/etc/privoxy/config</tt> as its main configuration file.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -314,7 +299,7 @@ body {
       automatically started at boot time by default. You can change this with
       the <tt class="LITERAL">rc-update</tt> command.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -335,60 +320,84 @@ body {
 
       <ul>
         <li>
-          <p><span class="emphasis EMPHASIS c2">--version</span></p>
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">--config-test</i></span></p>
+
+          <p>Exit after loading the configuration files before binding to the
+          listen address. The exit code signals whether or not the
+          configuration files have been successfully loaded.</p>
+
+          <p>If the exit code is 1, at least one of the configuration files
+          is invalid, if it is 0, all the configuration files have been
+          successfully loaded (but may still contain errors that can
+          currently only be detected at run time).</p>
+
+          <p>This option doesn't affect the log setting, combination with
+          <span class="emphasis"><i class="EMPHASIS">--no-daemon</i></span>
+          is recommended if a configured log file shouldn't be used.</p>
+        </li>
+
+        <li>
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">--version</i></span></p>
 
           <p>Print version info and exit. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--help</span></p>
+          <p><span class="emphasis"><i class="EMPHASIS">--help</i></span></p>
 
           <p>Print short usage info and exit. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--no-daemon</span></p>
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">--no-daemon</i></span></p>
 
           <p>Don't become a daemon, i.e. don't fork and become process group
           leader, and don't detach from controlling tty. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--pidfile FILE</span></p>
+          <p><span class="emphasis"><i class="EMPHASIS">--pidfile
+          FILE</i></span></p>
 
           <p>On startup, write the process ID to <span class=
-          "emphasis EMPHASIS c2">FILE</span>. Delete the <span class=
-          "emphasis EMPHASIS c2">FILE</span> on exit. Failure to create or
-          delete the <span class="emphasis EMPHASIS c2">FILE</span> is
-          non-fatal. If no <span class="emphasis EMPHASIS c2">FILE</span>
-          option is given, no PID file will be used. Unix only.</p>
+          "emphasis"><i class="EMPHASIS">FILE</i></span>. Delete the
+          <span class="emphasis"><i class="EMPHASIS">FILE</i></span> on exit.
+          Failure to create or delete the <span class="emphasis"><i class=
+          "EMPHASIS">FILE</i></span> is non-fatal. If no <span class=
+          "emphasis"><i class="EMPHASIS">FILE</i></span> option is given, no
+          PID file will be used. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--user
-          USER[.GROUP]</span></p>
+          <p><span class="emphasis"><i class="EMPHASIS">--user
+          USER[.GROUP]</i></span></p>
 
           <p>After (optionally) writing the PID file, assume the user ID of
-          <span class="emphasis EMPHASIS c2">USER</span>, and if included the
-          GID of GROUP. Exit if the privileges are not sufficient to do so.
-          Unix only.</p>
+          <span class="emphasis"><i class="EMPHASIS">USER</i></span>, and if
+          included the GID of GROUP. Exit if the privileges are not
+          sufficient to do so. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--chroot</span></p>
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">--chroot</i></span></p>
 
           <p>Before changing to the user ID given in the <span class=
-          "emphasis EMPHASIS c2">--user</span> option, chroot to that user's
-          home directory, i.e. make the kernel pretend to the <span class=
-          "APPLICATION">Privoxy</span> process that the directory tree starts
-          there. If set up carefully, this can limit the impact of possible
-          vulnerabilities in <span class="APPLICATION">Privoxy</span> to the
-          files contained in that hierarchy. Unix only.</p>
+          "emphasis"><i class="EMPHASIS">--user</i></span> option, chroot to
+          that user's home directory, i.e. make the kernel pretend to the
+          <span class="APPLICATION">Privoxy</span> process that the directory
+          tree starts there. If set up carefully, this can limit the impact
+          of possible vulnerabilities in <span class=
+          "APPLICATION">Privoxy</span> to the files contained in that
+          hierarchy. Unix only.</p>
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">--pre-chroot-nslookup
-          hostname</span></p>
+          <p><span class="emphasis"><i class="EMPHASIS">--pre-chroot-nslookup
+          hostname</i></span></p>
 
           <p>Specifies a hostname to look up before doing a chroot. On some
           systems, initializing the resolver library involves reading config
@@ -406,11 +415,12 @@ body {
         </li>
 
         <li>
-          <p><span class="emphasis EMPHASIS c2">configfile</span></p>
+          <p><span class="emphasis"><i class=
+          "EMPHASIS">configfile</i></span></p>
 
-          <p>If no <span class="emphasis EMPHASIS c2">configfile</span> is
-          included on the command line, <span class=
-          "APPLICATION">Privoxy</span> will look for a file named
+          <p>If no <span class="emphasis"><i class=
+          "EMPHASIS">configfile</i></span> is included on the command line,
+          <span class="APPLICATION">Privoxy</span> will look for a file named
           <span class="QUOTE">"config"</span> in the current directory
           (except on Win32 where it will look for <span class=
           "QUOTE">"config.txt"</span> instead). Specify full path to avoid
@@ -422,14 +432,14 @@ body {
       <p>On <span class="APPLICATION">MS Windows</span> only there are two
       additional command-line options to allow <span class=
       "APPLICATION">Privoxy</span> to install and run as a <span class=
-      "emphasis EMPHASIS c2">service</span>. See the <a href=
+      "emphasis"><i class="EMPHASIS">service</i></span>. See the <a href=
       "installation.html#INSTALLATION-PACK-WIN">Window Installation
       section</a> for details.</p>
     </div>
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

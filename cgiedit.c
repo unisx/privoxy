@@ -1,11 +1,9 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.71 2011/11/18 16:47:08 fabiankeil Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.76 2012/07/23 12:42:53 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.c,v $
  *
  * Purpose     :  CGI-based actionsfile editor.
- *
- *                Functions declared include: cgi_edit_*
  *
  *                NOTE: The CGIs in this file use parameter names
  *                such as "f" and "s" which are really *BAD* choices.
@@ -767,12 +765,7 @@ jb_err edit_write_file(struct editable_file * file)
 
                /* Allocate new memory for string */
                len = strlen(cur_line->unprocessed) + (size_t)numhash;
-               if (NULL == (str = malloc(len + 1)))
-               {
-                  /* Uh oh, just trashed file! */
-                  fclose(fp);
-                  return JB_ERR_MEMORY;
-               }
+               str = malloc_or_die(len + 1);
 
                /* Copy string but quote hashes */
                src  = cur_line->unprocessed;
@@ -980,7 +973,7 @@ static int match_actions_file_header_line(const char * line, const char * name)
    line += 2;
 
    /* Look for optional whitespace */
-   while ( (*line == ' ') || (*line == '\t') )
+   while ((*line == ' ') || (*line == '\t'))
    {
       line++;
    }
@@ -994,7 +987,7 @@ static int match_actions_file_header_line(const char * line, const char * name)
    line += len;
 
    /* Look for optional whitespace */
-   while ( (*line == ' ') || (*line == '\t') )
+   while ((*line == ' ') || (*line == '\t'))
    {
       line++;
    }
@@ -1063,10 +1056,7 @@ static jb_err split_line_on_equals(const char * line, char ** pname, char ** pva
    }
 
    name_len = (size_t)(name_end - line) + 1; /* Length excluding \0 */
-   if (NULL == (*pname = (char *) malloc(name_len + 1)))
-   {
-      return JB_ERR_MEMORY;
-   }
+   *pname = malloc_or_die(name_len + 1);
    strncpy(*pname, line, name_len);
    (*pname)[name_len] = '\0';
 
@@ -1136,16 +1126,16 @@ jb_err edit_parse_actions_file(struct editable_file * file)
    /* Skip leading blanks.  Should only happen if file is
     * empty (which is valid, but pointless).
     */
-   while ( (cur_line != NULL)
-        && (cur_line->unprocessed[0] == '\0') )
+   while ((cur_line != NULL)
+       && (cur_line->unprocessed[0] == '\0'))
    {
       /* Blank line */
       cur_line->type = FILE_LINE_BLANK;
       cur_line = cur_line->next;
    }
 
-   if ( (cur_line != NULL)
-     && (cur_line->unprocessed[0] != '{') )
+   if ((cur_line != NULL)
+    && (cur_line->unprocessed[0] != '{'))
    {
       /* File doesn't start with a header */
       file->parse_error = cur_line;
@@ -1153,8 +1143,8 @@ jb_err edit_parse_actions_file(struct editable_file * file)
       return JB_ERR_PARSE;
    }
 
-   if ( (cur_line != NULL) && (0 ==
-      match_actions_file_header_line(cur_line->unprocessed, "settings") ) )
+   if ((cur_line != NULL) && (0 ==
+      match_actions_file_header_line(cur_line->unprocessed, "settings")))
    {
       cur_line->type = FILE_LINE_SETTINGS_HEADER;
 
@@ -1188,8 +1178,8 @@ jb_err edit_parse_actions_file(struct editable_file * file)
       }
    }
 
-   if ( (cur_line != NULL) && (0 ==
-      match_actions_file_header_line(cur_line->unprocessed, "description") ) )
+   if ((cur_line != NULL) && (0 ==
+      match_actions_file_header_line(cur_line->unprocessed, "description")))
    {
       cur_line->type = FILE_LINE_DESCRIPTION_HEADER;
 
@@ -1208,8 +1198,8 @@ jb_err edit_parse_actions_file(struct editable_file * file)
       }
    }
 
-   if ( (cur_line != NULL) && (0 ==
-      match_actions_file_header_line(cur_line->unprocessed, "alias") ) )
+   if ((cur_line != NULL) && (0 ==
+      match_actions_file_header_line(cur_line->unprocessed, "alias")))
    {
       cur_line->type = FILE_LINE_ALIAS_HEADER;
 
@@ -1313,14 +1303,14 @@ jb_err edit_parse_actions_file(struct editable_file * file)
          return JB_ERR_PARSE;
       }
 
-      while ( (*text == ' ') || (*text == '\t') )
+      while ((*text == ' ') || (*text == '\t'))
       {
          text++;
          len--;
       }
-      while ( (len > (size_t)0)
-           && ( (text[len - 1] == ' ')
-             || (text[len - 1] == '\t') ) )
+      while ((len > (size_t)0)
+           && ((text[len - 1] == ' ')
+            || (text[len - 1] == '\t')))
       {
          len--;
       }
@@ -1328,12 +1318,7 @@ jb_err edit_parse_actions_file(struct editable_file * file)
       cur_line->type = FILE_LINE_ACTION;
 
       /* Remove {} and make copy */
-      if (NULL == (value = (char *) malloc(len + 1)))
-      {
-         /* Out of memory */
-         free_alias_list(alias_list);
-         return JB_ERR_MEMORY;
-      }
+      value = malloc_or_die(len + 1);
       strncpy(value, text, len);
       value[len] = '\0';
 
@@ -1785,7 +1770,7 @@ static jb_err get_file_name_param(struct client_state *csp,
         && ((ch < 'a') || (ch > 'z'))
         && ((ch < '0') || (ch > '9'))
         && (ch != '-')
-        && (ch != '_') )
+        && (ch != '_'))
       {
          /* Probable hack attempt. */
          return JB_ERR_CGI_PARAMS;
@@ -1794,11 +1779,7 @@ static jb_err get_file_name_param(struct client_state *csp,
 
    /* Append extension */
    name_size = len + strlen(suffix) + 1;
-   name = malloc(name_size);
-   if (name == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
+   name = malloc_or_die(name_size);
    strlcpy(name, param, name_size);
    strlcat(name, suffix, name_size);
 
@@ -1998,11 +1979,7 @@ static jb_err map_radio(struct map * exports,
    assert(optionname);
    assert(values);
 
-   buf = malloc(buf_size);
-   if (buf == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
+   buf = malloc_or_die(buf_size);
 
    strlcpy(buf, optionname, buf_size);
 
@@ -2532,7 +2509,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
       if (!err) err = map(section_exports, "actions", 1,
                           actions_to_html(csp, cur_line->data.action), 0);
 
-      if ( (!err)
+      if ((!err)
         && (cur_line->next != NULL)
         && (cur_line->next->type == FILE_LINE_URL))
       {
@@ -2670,8 +2647,8 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
       snprintf(buf, sizeof(buf), "%d", line_number);
       if (!err) err = map(section_exports, "s-next", 1, buf, 1);
 
-      if ( (cur_line != NULL)
-        && (cur_line->type == FILE_LINE_ACTION))
+      if ((cur_line != NULL)
+       && (cur_line->type == FILE_LINE_ACTION))
       {
          /* Not last section */
          if (!err) err = map_block_keep(section_exports, "s-next-exists");
@@ -2835,7 +2812,7 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
     * A better solution would be to switch to POST requests,
     * but this will do for now.
     */
-   if(!err && (csp->config->feature_flags & RUNTIME_FEATURE_SPLIT_LARGE_FORMS))
+   if (!err && (csp->config->feature_flags & RUNTIME_FEATURE_SPLIT_LARGE_FORMS))
    {
       /* Generate multiple smaller form by killing the big one. */
       err = map_block_killer(exports, "one-form-only");
@@ -3217,7 +3194,7 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
       }
    }
 
-   if(err)
+   if (err)
    {
       /* Out of memory */
       edit_free_file(file);
@@ -3242,13 +3219,7 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
    }
 
    newtext_size = len + 2;
-   if (NULL == (newtext = malloc(newtext_size)))
-   {
-      /* Out of memory */
-      free(actiontext);
-      edit_free_file(file);
-      return JB_ERR_MEMORY;
-   }
+   newtext = malloc_or_die(newtext_size);
    strlcpy(newtext, actiontext, newtext_size);
    free(actiontext);
    newtext[0]       = '{';
@@ -3365,8 +3336,8 @@ jb_err cgi_edit_actions_url(struct client_state *csp,
       line_number++;
    }
 
-   if ( (cur_line == NULL)
-     || (cur_line->type != FILE_LINE_URL))
+   if ((cur_line == NULL)
+    || (cur_line->type != FILE_LINE_URL))
    {
       /* Invalid "patternid" parameter */
       free(new_pattern);
@@ -3477,8 +3448,8 @@ jb_err cgi_edit_actions_add_url(struct client_state *csp,
       line_number++;
    }
 
-   if ( (cur_line == NULL)
-     || (cur_line->type != FILE_LINE_ACTION))
+   if ((cur_line == NULL)
+    || (cur_line->type != FILE_LINE_ACTION))
    {
       /* Invalid "sectionid" parameter */
       free(new_pattern);
@@ -3707,16 +3678,16 @@ jb_err cgi_edit_actions_section_remove(struct client_state *csp,
       line_number++;
    }
 
-   if ( (cur_line == NULL)
-     || (cur_line->type != FILE_LINE_ACTION) )
+   if ((cur_line == NULL)
+    || (cur_line->type != FILE_LINE_ACTION))
    {
       /* Invalid "sectionid" parameter */
       edit_free_file(file);
       return JB_ERR_CGI_PARAMS;
    }
 
-   if ( (cur_line->next != NULL)
-     && (cur_line->next->type == FILE_LINE_URL) )
+   if ((cur_line->next != NULL)
+    && (cur_line->next->type == FILE_LINE_URL))
    {
       /* Section not empty. */
       edit_free_file(file);
@@ -3830,8 +3801,8 @@ jb_err cgi_edit_actions_section_add(struct client_state *csp,
          /* There's something in the file, find the line before the first
           * action.
           */
-         while ( (cur_line->next != NULL)
-              && (cur_line->next->type != FILE_LINE_ACTION) )
+         while ((cur_line->next != NULL)
+              && (cur_line->next->type != FILE_LINE_ACTION))
          {
             cur_line = cur_line->next;
             line_number++;
@@ -3852,8 +3823,8 @@ jb_err cgi_edit_actions_section_add(struct client_state *csp,
          line_number++;
       }
 
-      if ( (cur_line == NULL)
-        || (cur_line->type != FILE_LINE_ACTION))
+      if ((cur_line == NULL)
+       || (cur_line->type != FILE_LINE_ACTION))
       {
          /* Invalid "sectionid" parameter */
          edit_free_file(file);
@@ -3861,8 +3832,8 @@ jb_err cgi_edit_actions_section_add(struct client_state *csp,
       }
 
       /* Skip through the section to find the last line in it. */
-      while ( (cur_line->next != NULL)
-           && (cur_line->next->type != FILE_LINE_ACTION) )
+      while ((cur_line->next != NULL)
+          && (cur_line->next->type != FILE_LINE_ACTION))
       {
          cur_line = cur_line->next;
          line_number++;
@@ -4020,8 +3991,8 @@ jb_err cgi_edit_actions_section_swap(struct client_state *csp,
       line_number++;
    }
 
-   if ( (cur_line == NULL)
-     || (cur_line->type != FILE_LINE_ACTION) )
+   if ((cur_line == NULL)
+    || (cur_line->type != FILE_LINE_ACTION))
    {
       /* Invalid "section1" parameter */
       edit_free_file(file);
@@ -4052,8 +4023,8 @@ jb_err cgi_edit_actions_section_swap(struct client_state *csp,
          line_number++;
       }
 
-      if ( (cur_line == NULL)
-        || (cur_line->type != FILE_LINE_ACTION) )
+      if ((cur_line == NULL)
+       || (cur_line->type != FILE_LINE_ACTION))
       {
          /* Invalid "section2" parameter */
          edit_free_file(file);

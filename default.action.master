@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.242 2011/10/16 13:13:50 fabiankeil Exp $
+#  $Id: default.action.master,v 1.279 2012/12/19 11:45:03 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -23,14 +23,8 @@
 #                 and enhancements are better placed in user.action,
 #                 the match-all section has been moved to match-all.action.
 #
-#  Copyright   :  Written by and Copyright (C) 2001-2010 the
+#  Copyright   :  Written by and Copyright (C) 2001-2012 the
 #                 Privoxy team. http://www.privoxy.org/
-#
-#  Note: Updated versions of this file will be made available from time
-#        to time. Check http://sourceforge.net/project/showfiles.php?group_id=11118
-#        for updates and/or subscribe to the announce mailing list
-#        (http://lists.sourceforge.net/lists/listinfo/ijbswa-announce) if you
-#        wish to receive an email notice whenever updates are released.
 #
 # We value your feedback. However, to provide you with the best support,
 # please note:
@@ -718,6 +712,11 @@ linuxcounter.net/
 /(.*/)?clicktrack
 /(.*/)?(full)?pop[-_]?(up|over|under|open(er)?)?s?(/|\.)
 /(.*/)?((flash)?pop|live(cnt|count(er)?)).*\.(js|php|cgi)
+#MASTER# BLOCK-REFERRER: http://thequietus.com/articles/10512-jo-dunne-fuzzbox-dies
+# Blocked URL = http://thequietus.com/openx/www/delivery/ck.php?n=ae777ee2&cb=INSERT_RANDOM_NUMBER_HERE
+/openx/www/delivery/
+# Blocked URL = http://mem.brandreachsys.com/www/delivery/lg.php?bannerid=13783&campaignid=0&zoneid=550&cb=f22df9acaa
+/.*bannerid=
 
 #############################################################################
 # Generic unblockers by path:
@@ -730,6 +729,8 @@ linuxcounter.net/
 support./(.*/)?track
 # URL = http://repo.or.cz/r/vlc.git/objects/ad/1d316efd83157217fdf9b5d417dddca54bbf41
 /.*\.git/objects/
+# URL = http://code.google.com/p/sm-ssc/wiki/Bugtracker?tm=3
+/.*Bugtracker
 
 #############################################################################
 # Exceptions for academia and non-profits
@@ -766,10 +767,20 @@ support./(.*/)?track
 # Sticky Actions = -block
 
 #MASTER# REMARKS: Actionsfile feedback item #2933856  2010-01-17 16:59
-#MASTER# REMARKS: Allow URLs containing DektopAdmin (matches .*top_?ad)
+#MASTER# REMARKS: Allow URLs containing DesktopAdmin (matches .*top_?ad)
 # URL = http://support.apple.com/downloads/DL985/en_US/RemoteDesktopAdmin332.dmg
 /.*desktopadmin
-
+# URL = http://www.rai.it/dl/RaiTV/popup/player_radio.html?v=9
+# URL = http://www.rai.tv/dl/RaiTV/popup/player_radio.html?v=9
+#MASTER# UNBLOCK-REFERRER: http://www.bbc.co.uk/programmes/b01mnyzd
+# URL = http://static.bbci.co.uk/radio/player/popup.js
+/(.*/)?(player|radio|tv|television).?pop
+/(.*/)?pop[-_]?(up|over|under|open(er)?)?s?(/|\.)(player|radio|tv|television)
+#MASTER# REMARKS: Actionsfile feedback item #3498129  2012-03-06 17:14
+#MASTER# REMARKS: Allows URLs containing the word 'download'
+#MASTER# UNBLOCK-REFERRER: http://munirihsparrow.bandcamp.com/track/lamp-lighted
+# URL = http://popplers5.bandcamp.com/download/track?enc=mp3-128&fsig=bad421a4c31dda49faceefb0f3923630&id=342903379&stream=1&ts=1355881937.0
+/.*download
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -808,9 +819,10 @@ x*.alexa.com
 #MASTER# BLOCK-REFERRER: http://mplayernetwork.com 11/07/06
 #MASTER# BLOCK-REFERRER: http://eetimes.com 09/26/06
 /event.ng/
-#MASTER# BLOCK-REFERRER: http://www.homedepot.com/ 11/08/06
-#MASTER# BLOCK-REFERRER: http://www.williams-sonoma.com/ 11/08/06
-/cm\?[tc]
+# MASTER# BLOCK-REFERRER: http://www.play.com/PC/PCs/-/653/860/-/12068815/Asus-VK192S-19-Widescreen-LCD-Monitor-With-Webcam-White/Product.html
+# Blocked URL = http://sd.play.com/eluminate?ci=90121638&st=1296424516858&vn1=4.3.1&ec=UTF-8&vn...
+# Blocked URL = http://data.coremetrics.com/cm?ci=90121638&st=1296435164623&vn1=4.3.1&ec=UTF-8&vn...
+/(eluminate|cm)\?[tc]i=\d+&st=\d+&
 #MASTER# BLOCK-REFERRER: http://www.snapfiles.com/feedback/ 12/13/06 SF tracker
 .snapfiles.net/rotation/.*\.asp
 #MASTER# BLOCK-REFERRER: not provided. SF tracker #1616034 12/16/06
@@ -867,7 +879,25 @@ scripts.chitika.net/.*\.js
 # Blocked URL = http://gadk.hit.gemius.pl/*/_1274097577014/rexdot.gif?l=30&id=..DlR.vCLZGB56RmfkYNSWZVLSqB3ueYOP.Oec5WWiv.h7&fr=1&fv=WIN%2010%2C0%2C45%2C2&tz=-120&href=http%3A//www.baadgalleri.dk/&ref=&screen=1440x900&col=32
 #MASTER# BLOCK-REFERRER: http://www.baadgalleri.dk/
 .gemius.pl/
-
+# Blocked URL = http://farm.plista.com/widgetdata.php?clientrev=12&domainid=4211&publickey=fdc5a7f9d15be004aa03fc4d&cb=PLISTA5_7ed57c93e0d17&requestID=5&5=widgetintegration%3A%02pictureads%03&6=pictureads%3A%1Cpictureid%1F%026716%03%1Eimgdim%1F%1Cx%1F547%1Ey%1F410%1D%1Ewidgetname%1F%02pictureads%03%1D
+farm.plista.com/widgetdata.php
+#MASTER# BLOCK-REFERRER: http://www.notebooksbilliger.de/lenovo+thinkpad+l420+business+notebook
+# Blocked URL = http://ib.adnxs.com/bounce?%2Fseg%3Fadd%3D279412
+.adnxs.com/
+#MASTER# BLOCK-REFERRER: http://www.zoover.nl/
+# Blocked URL = http://service.maxymiser.net/cdn/zoover/js/mmcore.js
+service.maxymiser.net/
+#MASTER# BLOCK-REFERRER: http://www.newyorker.com/reporting/2010/05/31/100531fa_fact_groopman
+# Blocked URL = http://tcr.tynt.com/javascripts/Tracer.js?user=cT9yCKGeer3PWlab7jrHtB&amp;s=62
+.tynt.com/
+# Blocked URL = http://pool.sanoma.adhese.com/tag/tag.js
+pool.*.adhese.com/
+#MASTER# BLOCK-REFERRER: http://www.canon.nl/Search/index.asp
+# Blocked URL = http://www.canon.nl/scripts/webtrends.js
+/scripts/webtrends\.js
+#MASTER# BLOCK-REFERRER: http://www.tradera.com/
+# Blocked URL = http://oskar.tradera.com/script.js
+oskar.tradera.com/
 
 {+block{Might be a web-bug.} -handle-as-empty-document +handle-as-image}
 #MASTER# BLOCK-REFERRER: http://versiontracker.com and many others. 10/20/06
@@ -904,6 +934,8 @@ stats./.*\.gif\?
 #MASTER# BLOCK-REFERRER: http://www.aktivist.pl/
 # Blocked URL = http://go.idmnet.bbelements.com/please/showit/46/1/1/1/?typkodu=img&keywords=
 go.idmnet.bbelements.com/please/showit/
+# Blocked URL = http://gm-link.com/tm_image.asp?c=12345&x=0&u=email@address.tld&orc.gif
+gm-link.com/
 
 #############################################################################
 # Site-specific block patterns;
@@ -1090,7 +1122,20 @@ fusion.adtoma.com/
 .omtrdc.net/
 # Blocked URL = http://www91.intel.com/b/ss/intelcorp,intelcorpdc/...ONDataProvider.aspx%3FDownloadType%3DDrivers&ot=A&AQE=1
 www91.intel.com/
-
+#MASTER# BLOCK-REFERRER: http://www.sport.pl/pilka/1,65080,10189388,Premier_League__Angielskie_media__Szaleni_United_zniszczyli.html
+# Blocked URL = http://reklamy.sfd.pl/sportpl.ashx?clickTag=http://gazeta.hit.gemius.pl/hitredir/id=ApuVHydwkYW81VSL0PZYqnXoDosBucMur1zZqGEAJa7.X7/stparam=sifgmrnlfi/url=http://reklamy.sfd.pl/sportpl_redirect.ashx
+reklamy.sfd.pl/
+#MASTER# BLOCK-REFERRER: http://lwn.net/Articles/478657/
+# Blocked URL = http://rotation.linuxnewmedia.com/www/delivery/avw.php?zoneid=26&n=aa584766
+rotation.linuxnewmedia.com/
+# Blocked URL = http://de17a.com/a/33039/26891.swf
+de17a.com/
+#MASTER# BLOCK-REFERRER: http://thepiratebay.se/
+# Blocked URL = http://cltomedia.info/delivery/afr.php?zoneid=7&amp;cb=1279946132
+cltomedia.info/delivery/
+#MASTER# BLOCK-REFERRER: http://thepiratebay.se/
+# Blocked URL = http://cdn2.adexprt.com/clkads/sky2.html
+.adexprt.com/
 
 #----------------------------------------------------------------------------
 # JavaScripts and Texts for ad and popup generation
@@ -1109,8 +1154,7 @@ jlinks.industrybrains.com/
 #MASTER# REMARKS: Actionsfile feedback item #1736794 2007-06-13
 js.adsonar.
 #MASTER# BLOCK-REFERRER: http://news.zdnet.co.uk/software/0,1000000121,39209666,00.htm
-#MASTER# REMARKS: Actionsfile feedback item #1736879 2007-06-13, sponsored links. 2007-08-02, more hosts using this scheme, broadening scope.
-#bwp.zdnet.
+# Blocked URL = http://bwp.zdnet.com/search?dw-siteid=2&dw-ptid=2100&dw-edid=2&dw-ontid=800004
 bwp.
 # Blocked URL = http://us.mc123.mail.yahoo.com/mc/stampNonJs
 .yahoo.com/mc/stampNonJs
@@ -1314,6 +1358,17 @@ hstse.tradedoubler.com/.*\.swf
 www.zdnetasia.com/.*/sponsor/.*\.gif$
 # Blocked URL = http://pagead2.googlesyndication.com/pagead/imgad?id=CPjtipDs9taquQEQoAEYwgQyCIvo2PNnQywb
 .googlesyndication.com/.*/imgad\?
+#MASTER# BLOCK-REFERRER: http://textsfromlastnight.com/texts/page:19
+# Blocked URL = http://optimize.indieclick.com/www/delivery/avw.php?zoneid=337501&cb=4147152&n=a530d6f1
+#MASTER# BLOCK-REFERRER: http://textsfromlastnight.com/texts/page:19
+optimize.indieclick.com/
+# Blocked URL = http://optimized-by.rubiconproject.com/a/8327/13451/26301-2.img
+optimized-by.rubiconproject.com/
+# Blocked URL = http://g.adspeed.net/ad.php?do=html&zid=14678&wd=728&ht=90&target=_top
+#MASTER# BLOCK-REFERRER: http://seclists.org/fulldisclosure/2012/Aug/4
+g.adspeed.net/
+# Blocked URL = http://imp.double.net/?5463;234;4505;0;39296
+imp.double.net/
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1692,7 +1747,7 @@ www.google.com/adsense/
 # URL = http://images.encyclopediadramatica.com/images/b/b5/Advertising-Dierentuin.jpg
 .encyclopediadramatica.com/
 #MASTER# UNBLOCK-REFERRER: http://lifehacker.com 2008-04-18 HB
-# URL = tags.gawker.com/assets/minify.php?files=/assets/base.v6/css/global.css,/assets/base.v6/css/header.css,/assets/base.v6/css/sidebar.css,/assets/base.v6/css/content.css,/assets/base.v6/css/images.css,/assets/base.v6/css/ads.css,/assets/base.v6/css/community.css,/assets/base.v6/css/comments.css,/assets/base.v6/css/messages.css,/assets/base.v6/css/ui.css
+# URL = http://tags.gawker.com/assets/minify.php?files=/assets/base.v6/.../comments.css,/assets/base.v6/css/messages.css,/assets/base.v6/css/ui.css
 tags.gawker.com/.*css$
 # URL = http://cgi.tnt.co.uk/TrackNTrace/quicktrack.asp
 .tnt.co.uk/TrackNTrace/
@@ -1810,6 +1865,20 @@ adassier.wordpress.com/
 adassier.files.wordpress.com
 # URL = http://adainitiative.org/about-us/
 adainitiative.org/
+# URL = http://adjamblog.wordpress.com/
+adjamblog.wordpress.com/
+# URL = http://adjamblog.files.wordpress.com/2011/12/cropped-terra.jpg
+adjamblog.files.wordpress.com/
+# URL = http://www.urbandictionary.com/popular.php?character=C
+.urbandictionary.com/popular
+# URL = http://websupport.wdc.com/sfclickcount.asp?s1=2&s2=1&s3=2&s4=6&lang=en&url=https%3A%2F%2Fwesterndigital.secure.force.com%2F%3Flang%3Den
+websupport.wdc.com/
+#MASTER# UNBLOCK-REFERRER: http://conradelektronik.m13.mailplus.nl/genericservice/code/servlet/React?encId=xSgAxBFNnFrne8j&actId=357685&command=openhtml
+# URL = http://content.conrad.se/newsletter/banners/OFFER_750987_exk.jpg
+.conrad.se/newsletter/banners/
+#MASTER# REMARKS: Actionsfile feedback item #3413827  2011-09-25 12:11
+#MASTER# REMARKS: This domain hosts JS, images and CSS upon which hotmail.com depends
+.wlxrs.com/
 
 
 #############################################################################
@@ -1888,7 +1957,6 @@ i.cnn.net/cnn/.*/clickability/button
 #----------------------------------------------------------------------------
 # Sometimes (i.e. often!) fast-redirects catches things by mistake
 #----------------------------------------------------------------------------
-#MASTER# REMARKS: This section NOT checked 10/13/06 HB
 {-fast-redirects}
 # Sticky Actions = -fast-redirects
 www.ukc.ac.uk/cgi-bin/wac\.cgi\?
@@ -1980,6 +2048,10 @@ view.samurajdata.se/ps\.php\?url=
 webcache.googleusercontent.com/
 # URL = http://webcache.googleusercontent.com/search?q=cache:kZYcDFibjHcJ:https://grepular.com/Abusing_HTTP_Status_Codes_to_Expose_Private_Information+inurl:https://grepular.com/Abusing_HTTP_Status_Codes_to_Expose_Private_Information&hl=en&strip=1
 .googleusercontent.com/.*=cache:
+# URL = http://maps.googleapis.com/maps/api/js/AuthenticationService.Authenticate?1shttp%3A%2F%2Fwww.wunderground.com%2Fcgi-bin%2Ffindweather%2FgetForecast%3Fbrand%3Dwxmap%26query%3D42.649601%2C-88.298500%26zoom%3D8%26theprefset%3D531051599999WS%26theprefvalue%3DME0041&2sgme-weatherunderground&3swxmap&5e1&callback=_xdc_._9er073&token=129358
+.googleapis.com/
+# URL = http://www.google.com.au/sorry/?continue=http://www.google.com.au/search%3Fhl%3Den%26tbo%3Dd%26output%3Dsearch%26sclient%3Dpsy-ab%26q%3Dnew%2Bcars%26btnG%3D
+.google./sorry/\?continue?=
 
 {+redirect{s@.*url=@http://@} -block}
 # Sticky Actions = +redirect -block
@@ -2066,7 +2138,9 @@ javascript.internet.com
 javascriptkit.com
 .xulplanet.com
 .perl.com/language/newdocs
+# URL = http://svnweb.freebsd.org/base/head/cddl/contrib/opensolaris/lib/libzfs/common/libzfs_dataset.c?revision=238391&view=markup
 .freebsd.org
+# URL = http://fxr.watson.org/fxr/source/geom/geom_event.c
 .watson.org
 .netbsd.org
 .openbsd.org
@@ -2302,6 +2376,11 @@ www.skweezer.net/bloglines
 # Redirected URL = http://www.awin1.com/cread.php?awinmid=2891&awinaffid=43305&clickref=&p=http://www.groupon.co.uk/
 # Redirect Destination = http://www.groupon.co.uk/
 .awin1.com/.*=http://
+# Redirected URL = http://tr.anp.se/track?t=c&mid=1132291&uid=328397249&&&http:%2F%2Fwww%2Eresume%2Ese%2F%2Fnyheter%2F2011%2F03%2F31%2Fexpressen%2Dkampanjen%2Danmald%2F
+# Redirect Destination = http://www.resume.se//nyheter/2011/03/31/expressen-kampanjen-anmald/
+# Redirected URL = http://tr.anp.se/track?t=c&mid=1129528&uid=328397249&&&http:%2F%2Fwww%2Eresume%2Ese%2F%2Fnyheter%2F2011%2F03%2F29%2Fanstalt%2Dforbjod%2Dskurk%2F
+# Redirect Destination = http://www.resume.se//nyheter/2011/03/29/anstalt-forbjod-skurk/
+tr.anp.se/
 
 {+block{Looks like an anti-leech trigger URL.}}
 #MASTER# COMMENTS: This section not checked 10/17/06 HB. Still out there?

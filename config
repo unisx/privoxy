@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.19
+#        Sample Configuration File for Privoxy v3.0.20
 #
-#  $Id: config,v 1.98 2011/12/26 17:04:50 fabiankeil Exp $
+#  $Id: config,v 1.101 2013/01/09 15:19:47 fabiankeil Exp $
 #
-#  Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
+#  Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -30,14 +30,14 @@
 #
 #  The configuration will be reloaded with the first request after
 #  the change was done, this request itself will still use the old
-#  configuration, though. In other words: it takes two requests before
-#  you see the result of your changes.  Requests that are dropped due
-#  to ACL don't trigger reloads.
+#  configuration, though. In other words: it takes two requests
+#  before you see the result of your changes. Requests that are
+#  dropped due to ACL don't trigger reloads.
 #
 #  When starting Privoxy on Unix systems, give the location of this
 #  file as last argument. On Windows systems, Privoxy will look for
-#  this file with the name 'config.txt' in the current working directory
-#  of the Privoxy process.
+#  this file with the name 'config.txt' in the current working
+#  directory of the Privoxy process.
 #
 #
 #  II. FORMAT OF THE CONFIGURATION FILE
@@ -51,8 +51,8 @@
 #
 #  Indicates that the actionsfile is named 'default.action'.
 #
-#  The '#' indicates a comment. Any part of a line following a '#'
-#  is ignored, except if the '#' is preceded by a '\'.
+#  The '#' indicates a comment. Any part of a line following a '#' is
+#  ignored, except if the '#' is preceded by a '\'.
 #
 #  Thus, by placing a # at the start of an existing configuration
 #  line, you can make it a comment and it will be treated as if it
@@ -61,7 +61,7 @@
 #
 #  Note that commenting out an option and leaving it at its default
 #  are two completely different things! Most options behave very
-#  differently when unset.  See the "Effect if unset" explanation in
+#  differently when unset. See the "Effect if unset" explanation in
 #  each option's description for details.
 #
 #  Long lines can be continued on the next line by using a `\' as the
@@ -72,9 +72,9 @@
 #  1. LOCAL SET-UP DOCUMENTATION
 #  ==============================
 #
-#  If you intend to operate Privoxy for more users than just yourself,
-#  it might be a good idea to let them know how to reach you, what
-#  you block and why you do that, your policies, etc.
+#  If you intend to operate Privoxy for more users than just
+#  yourself, it might be a good idea to let them know how to reach
+#  you, what you block and why you do that, your policies, etc.
 #
 #
 #
@@ -100,11 +100,11 @@
 #
 #  Notes:
 #
-#      The User Manual URI is the single best source of information on
-#      Privoxy, and is used for help links from some of the internal
-#      CGI pages. The manual itself is normally packaged with the
-#      binary distributions, so you probably want to set this to a
-#      locally installed copy.
+#      The User Manual URI is the single best source of information
+#      on Privoxy, and is used for help links from some of the
+#      internal CGI pages. The manual itself is normally packaged
+#      with the binary distributions, so you probably want to set
+#      this to a locally installed copy.
 #
 #      Examples:
 #
@@ -113,10 +113,10 @@
 #
 #        user-manual  /usr/share/doc/privoxy/user-manual
 #
-#      The User Manual is then available to anyone with
-#      access to Privoxy, by following the built-in URL:
-#      http://config.privoxy.org/user-manual/ (or the shortcut:
-#      http://p.p/user-manual/).
+#      The User Manual is then available to anyone with access to
+#      Privoxy, by following the built-in URL: http://
+#      config.privoxy.org/user-manual/ (or the shortcut: http://p.p/
+#      user-manual/).
 #
 #      If the documentation is not on the local system, it can be
 #      accessed from a remote server, as:
@@ -125,8 +125,9 @@
 #
 #      WARNING!!!
 #
-#          If set, this option should be the first option in the config
-#          file, because it is used while the config file is being read.
+#          If set, this option should be the first option in the
+#          config file, because it is used while the config file is
+#          being read.
 #
 #user-manual http://www.privoxy.org/user-manual/
 #
@@ -153,11 +154,11 @@
 #
 #  Notes:
 #
-#      The value of this option only matters if the experimental trust
-#      mechanism has been activated. (See trustfile below.)
+#      The value of this option only matters if the experimental
+#      trust mechanism has been activated. (See trustfile below.)
 #
-#      If you use the trust mechanism, it is a good idea to write
-#      up some on-line documentation about your trust policy and to
+#      If you use the trust mechanism, it is a good idea to write up
+#      some on-line documentation about your trust policy and to
 #      specify the URL(s) here. Use multiple times for multiple URLs.
 #
 #      The URL(s) should be added to the trustfile as well, so users
@@ -191,8 +192,8 @@
 #  Notes:
 #
 #      If both admin-address and proxy-info-url are unset, the whole
-#      "Local Privoxy Support" box on all generated pages will not
-#      be shown.
+#      "Local Privoxy Support" box on all generated pages will not be
+#      shown.
 #
 #admin-address privoxy-admin@example.com
 #
@@ -221,8 +222,8 @@
 #  Notes:
 #
 #      If both admin-address and proxy-info-url are unset, the whole
-#      "Local Privoxy Support" box on all generated pages will not
-#      be shown.
+#      "Local Privoxy Support" box on all generated pages will not be
+#      shown.
 #
 #      This URL shouldn't be blocked ;-)
 #
@@ -357,15 +358,15 @@ logdir .
 #      actions file maintained by the developers, and user.action,
 #      where you can make your personal additions.
 #
-#      Actions files contain all the per site and per URL configuration
-#      for ad blocking, cookie management, privacy considerations,
-#      etc. There is no point in using Privoxy without at least one
-#      actions file.
+#      Actions files contain all the per site and per URL
+#      configuration for ad blocking, cookie management, privacy
+#      considerations, etc. There is no point in using Privoxy
+#      without at least one actions file.
 #
-#      Note that since Privoxy 3.0.7, the complete filename, including
-#      the ".action" extension has to be specified. The syntax change
-#      was necessary to be consistent with the other file options and
-#      to allow previously forbidden characters.
+#      Note that since Privoxy 3.0.7, the complete filename,
+#      including the ".action" extension has to be specified. The
+#      syntax change was necessary to be consistent with the other
+#      file options and to allow previously forbidden characters.
 #
 actionsfile match-all.action # Actions that are applied to all sites and maybe overruled later on.
 actionsfile default.action   # Main actions file
@@ -397,18 +398,19 @@ actionsfile user.action      # User customizations
 #      Multiple filterfile lines are permitted.
 #
 #      The filter files contain content modification rules that use
-#      regular expressions. These rules permit powerful changes on the
-#      content of Web pages, and optionally the headers as well, e.g.,
-#      you could try to disable your favorite JavaScript annoyances,
-#      re-write the actual displayed text, or just have some fun
-#      playing buzzword bingo with web pages.
+#      regular expressions. These rules permit powerful changes on
+#      the content of Web pages, and optionally the headers as well,
+#      e.g., you could try to disable your favorite JavaScript
+#      annoyances, re-write the actual displayed text, or just have
+#      some fun playing buzzword bingo with web pages.
 #
 #      The +filter{name} actions rely on the relevant filter (name)
 #      to be defined in a filter file!
 #
-#      A pre-defined filter file called default.filter that contains a
-#      number of useful filters for common problems is included in the
-#      distribution. See the section on the filter action for a list.
+#      A pre-defined filter file called default.filter that contains
+#      a number of useful filters for common problems is included in
+#      the distribution. See the section on the filter action for a
+#      list.
 #
 #      It is recommended to place any locally adapted filters into a
 #      separate file, such as user.filter.
@@ -440,24 +442,23 @@ filterfile user.filter      # User customizations
 #  Notes:
 #
 #      The logfile is where all logging and error messages are
-#      written. The level of detail and number of messages are set with
-#      the debug option (see below).  The logfile can be useful for
-#      tracking down a problem with Privoxy (e.g., it's not blocking
-#      an ad you think it should block) and it can help you to monitor
-#      what your browser is doing.
+#      written. The level of detail and number of messages are set
+#      with the debug option (see below). The logfile can be useful
+#      for tracking down a problem with Privoxy (e.g., it's not
+#      blocking an ad you think it should block) and it can help you
+#      to monitor what your browser is doing.
 #
 #      Depending on the debug options below, the logfile may be a
 #      privacy risk if third parties can get access to it. As most
 #      users will never look at it, Privoxy 3.0.7 and later only log
 #      fatal errors by default.
 #
-#      For most troubleshooting purposes, you will have to change that,
-#      please refer to the debugging section for details.
+#      For most troubleshooting purposes, you will have to change
+#      that, please refer to the debugging section for details.
 #
 #      Your logfile will grow indefinitely, and you will probably
 #      want to periodically remove it. On Unix systems, you can do
-#      this with a cron job (see "man cron"). For Red Hat based Linux
-#      distributions, a logrotate script has been included.
+#      this with a cron job (see "man cron").
 #
 #      Any log files must be writable by whatever user Privoxy is
 #      being run as (on Unix, default user id is "privoxy").
@@ -478,8 +479,8 @@ logfile logfile
 #
 #  Default value:
 #
-#      Unset (commented out). When activated: trust (Unix) or trust.txt
-#      (Windows)
+#      Unset (commented out). When activated: trust (Unix) or
+#      trust.txt (Windows)
 #
 #  Effect if unset:
 #
@@ -488,8 +489,8 @@ logfile logfile
 #  Notes:
 #
 #      The trust mechanism is an experimental feature for building
-#      white-lists and should be used with care. It is NOT recommended
-#      for the casual user.
+#      white-lists and should be used with care. It is NOT
+#      recommended for the casual user.
 #
 #      If you specify a trust file, Privoxy will only allow access to
 #      sites that are specified in the trustfile. Sites can be listed
@@ -497,24 +498,24 @@ logfile logfile
 #
 #      Prepending a ~ character limits access to this site only (and
 #      any sub-paths within this site), e.g. ~www.example.com allows
-#      access to ~www.example.com/ features/news.html, etc.
+#      access to ~www.example.com/features/news.html, etc.
 #
-#      Or, you can designate sites as trusted referrers, by prepending
-#      the name with a + character. The effect is that access to
-#      untrusted sites will be granted -- but only if a link from
-#      this trusted referrer was used to get there. The link target
-#      will then be added to the "trustfile" so that future, direct
-#      accesses will be granted. Sites added via this mechanism do
-#      not become trusted referrers themselves (i.e. they are added
-#      with a ~ designation). There is a limit of 512 such entries,
-#      after which new entries will not be made.
+#      Or, you can designate sites as trusted referrers, by
+#      prepending the name with a + character. The effect is that
+#      access to untrusted sites will be granted -- but only if a
+#      link from this trusted referrer was used to get there. The
+#      link target will then be added to the "trustfile" so that
+#      future, direct accesses will be granted. Sites added via this
+#      mechanism do not become trusted referrers themselves (i.e.
+#      they are added with a ~ designation). There is a limit of 512
+#      such entries, after which new entries will not be made.
 #
 #      If you use the + operator in the trust file, it may grow
 #      considerably over time.
 #
 #      It is recommended that Privoxy be compiled with the
-#      --disable-force, --disable-toggle and --disable-editor options,
-#      if this feature is to be used.
+#      --disable-force, --disable-toggle and --disable-editor
+#      options, if this feature is to be used.
 #
 #      Possible applications include limiting Internet access for
 #      children.
@@ -544,7 +545,8 @@ logfile logfile
 #
 #  Default value:
 #
-#      0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)
+#      0 (i.e.: only fatal errors (that cause Privoxy to exit) are
+#      logged)
 #
 #  Effect if unset:
 #
@@ -554,44 +556,45 @@ logfile logfile
 #
 #      The available debug levels are:
 #
-#        debug         1 # Log the destination for each request Privoxy let through. See also debug 1024.
-#        debug         2 # show each connection status
-#        debug         4 # show I/O status
-#        debug         8 # show header parsing
-#        debug        16 # log all data written to the network
-#        debug        32 # debug force feature
-#        debug        64 # debug regular expression filters
-#        debug       128 # debug redirects
-#        debug       256 # debug GIF de-animation
-#        debug       512 # Common Log Format
-#        debug      1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
-#        debug      2048 # CGI user interface
-#        debug      4096 # Startup banner and warnings.
-#        debug      8192 # Non-fatal errors
-#        debug     32768 # log all data read from the network
-#
+#        debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
+#        debug     2 # show each connection status
+#        debug     4 # show I/O status
+#        debug     8 # show header parsing
+#        debug    16 # log all data written to the network
+#        debug    32 # debug force feature
+#        debug    64 # debug regular expression filters
+#        debug   128 # debug redirects
+#        debug   256 # debug GIF de-animation
+#        debug   512 # Common Log Format
+#        debug  1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
+#        debug  2048 # CGI user interface
+#        debug  4096 # Startup banner and warnings.
+#        debug  8192 # Non-fatal errors
+#        debug 32768 # log all data read from the network
+#        debug 65536 # Log the applying actions
 #
 #      To select multiple debug levels, you can either add them or
 #      use multiple debug lines.
 #
-#      A debug level of 1 is informative because it will show you each
-#      request as it happens. 1, 1024, 4096 and 8192 are recommended
-#      so that you will notice when things go wrong. The other levels
-#      are probably only of interest if you are hunting down a specific
-#      problem. They can produce a hell of an output (especially 16).
+#      A debug level of 1 is informative because it will show you
+#      each request as it happens. 1, 1024, 4096 and 8192 are
+#      recommended so that you will notice when things go wrong. The
+#      other levels are probably only of interest if you are hunting
+#      down a specific problem. They can produce a hell of an output
+#      (especially 16).
 #
 #      Privoxy used to ship with the debug levels recommended above
-#      enabled by default, but due to privacy concerns 3.0.7 and later
-#      are configured to only log fatal errors.
+#      enabled by default, but due to privacy concerns 3.0.7 and
+#      later are configured to only log fatal errors.
 #
 #      If you are used to the more verbose settings, simply enable
 #      the debug lines below again.
 #
-#      If you want to use pure CLF (Common Log Format), you should set
-#      "debug 512" ONLY and not enable anything else.
+#      If you want to use pure CLF (Common Log Format), you should
+#      set "debug 512" ONLY and not enable anything else.
 #
-#      Privoxy has a hard-coded limit for the length of log messages. If
-#      it's reached, messages are logged truncated and marked with
+#      Privoxy has a hard-coded limit for the length of log messages.
+#      If it's reached, messages are logged truncated and marked with
 #      "... [too long, truncated]".
 #
 #      Please don't file any support requests without trying to
@@ -599,10 +602,10 @@ logfile logfile
 #      you read the log messages, you may even be able to solve the
 #      problem on your own.
 #
-#debug      1 # Log the destination for each request Privoxy let through.
-#debug   1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
-#debug   4096 # Startup banner and warnings
-#debug   8192 # Non-fatal errors
+#debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
+#debug  1024 # Actions that are applied to all sites and maybe overruled later on.
+#debug  4096 # Startup banner and warnings
+#debug  8192 # Non-fatal errors
 #
 #
 #  3.2. single-threaded
@@ -622,8 +625,8 @@ logfile logfile
 #
 #  Effect if unset:
 #
-#      Multi-threaded (or, where unavailable: forked) operation,
-#      i.e. the ability to serve multiple requests simultaneously.
+#      Multi-threaded (or, where unavailable: forked) operation, i.e.
+#      the ability to serve multiple requests simultaneously.
 #
 #  Notes:
 #
@@ -658,12 +661,13 @@ logfile logfile
 #      takes too much time and slows Privoxy down. Setting a fixed
 #      hostname works around the problem.
 #
-#      In other circumstances it might be desirable to show a hostname
-#      other than the one returned by the operating system. For example
-#      if the system has several different hostnames and you don't
-#      want to use the first one.
+#      In other circumstances it might be desirable to show a
+#      hostname other than the one returned by the operating system.
+#      For example if the system has several different hostnames and
+#      you don't want to use the first one.
 #
-#      Note that Privoxy does not validate the specified hostname value.
+#      Note that Privoxy does not validate the specified hostname
+#      value.
 #
 #hostname hostname.example.org
 #
@@ -696,23 +700,24 @@ logfile logfile
 #
 #  Effect if unset:
 #
-#      Bind to 127.0.0.1 (IPv4 localhost), port 8118. This is suitable
-#      and recommended for home users who run Privoxy on the same
-#      machine as their browser.
+#      Bind to 127.0.0.1 (IPv4 localhost), port 8118. This is
+#      suitable and recommended for home users who run Privoxy on the
+#      same machine as their browser.
 #
 #  Notes:
 #
-#      You will need to configure your browser(s) to this proxy address
-#      and port.
+#      You will need to configure your browser(s) to this proxy
+#      address and port.
 #
 #      If you already have another service running on port 8118, or
-#      if you want to serve requests from other machines (e.g. on your
-#      local network) as well, you will need to override the default.
+#      if you want to serve requests from other machines (e.g. on
+#      your local network) as well, you will need to override the
+#      default.
 #
-#      You can use this statement multiple times to make Privoxy listen
-#      on more ports or more IP addresses. Suitable if your operating
-#      system does not support sharing IPv6 and IPv4 protocols on the
-#      same socket.
+#      You can use this statement multiple times to make Privoxy
+#      listen on more ports or more IP addresses. Suitable if your
+#      operating system does not support sharing IPv6 and IPv4
+#      protocols on the same socket.
 #
 #      If a hostname is used instead of an IP address, Privoxy will
 #      try to resolve it to an IP address and if there are multiple,
@@ -728,48 +733,46 @@ logfile logfile
 #      IPv6 addresses containing colons have to be quoted by
 #      brackets. They can only be used if Privoxy has been compiled
 #      with IPv6 support. If you aren't sure if your version supports
-#      it, have a look at http://config.privoxy.org/ show-status.
+#      it, have a look at http://config.privoxy.org/show-status.
 #
-#      Some operating systems will prefer IPv6 to IPv4 addresses even if
-#      the system has no IPv6 connectivity which is usually not expected
-#      by the user.  Some even rely on DNS to resolve localhost which
-#      mean the "localhost" address used may not actually be local.
+#      Some operating systems will prefer IPv6 to IPv4 addresses even
+#      if the system has no IPv6 connectivity which is usually not
+#      expected by the user. Some even rely on DNS to resolve
+#      localhost which mean the "localhost" address used may not
+#      actually be local.
 #
-#      It is therefore recommended to explicitly configure the intended
-#      IP address instead of relying on the operating system, unless
-#      there's a strong reason not to.
+#      It is therefore recommended to explicitly configure the
+#      intended IP address instead of relying on the operating
+#      system, unless there's a strong reason not to.
 #
 #      If you leave out the address, Privoxy will bind to all IPv4
-#      interfaces (addresses) on your machine and may become reachable
-#      from the Internet and/ or the local network. Be aware that
-#      some GNU/Linux distributions modify that behaviour without
-#      updating the documentation. Check for non-standard patches if
-#      your Privoxyversion behaves differently.
+#      interfaces (addresses) on your machine and may become
+#      reachable from the Internet and/or the local network. Be aware
+#      that some GNU/Linux distributions modify that behaviour
+#      without updating the documentation. Check for non-standard
+#      patches if your Privoxy version behaves differently.
 #
-#      If you configure Privoxyto be reachable from the network,
+#      If you configure Privoxy to be reachable from the network,
 #      consider using access control lists (ACL's, see below), and/or
 #      a firewall.
 #
-#      If you open Privoxy to untrusted users, you will also
-#      want to make sure that the following actions are disabled:
+#      If you open Privoxy to untrusted users, you will also want to
+#      make sure that the following actions are disabled:
 #      enable-edit-actions and enable-remote-toggle
-#
-#      With the exception noted above, listening on multiple addresses
-#      is currently not supported by Privoxy directly. It can be done
-#      on most operating systems by letting a packet filter redirect
-#      request for certain addresses to Privoxy, though.
 #
 #  Example:
 #
 #      Suppose you are running Privoxy on a machine which has the
-#      address 192.168.0.1 on your local private network (192.168.0.0)
-#      and has another outside connection with a different address. You
-#      want it to serve requests from inside only:
+#      address 192.168.0.1 on your local private network
+#      (192.168.0.0) and has another outside connection with a
+#      different address. You want it to serve requests from inside
+#      only:
 #
 #        listen-address  192.168.0.1:8118
 #
 #      Suppose you are running Privoxy on an IPv6-capable machine and
-#      you want it to listen on the IPv6 address of the loopback device:
+#      you want it to listen on the IPv6 address of the loopback
+#      device:
 #
 #        listen-address [::1]:8118
 #
@@ -797,13 +800,10 @@ listen-address  127.0.0.1:8118
 #
 #  Notes:
 #
-#      If set to 0, Privoxy will start in "toggled off" mode,
-#      i.e. mostly behave like a normal, content-neutral proxy
-#      with both ad blocking and content filtering disabled. See
+#      If set to 0, Privoxy will start in "toggled off" mode, i.e.
+#      mostly behave like a normal, content-neutral proxy with both
+#      ad blocking and content filtering disabled. See
 #      enable-remote-toggle below.
-#
-#      The windows version will only display the toggle icon in the
-#      system tray if this option is present.
 #
 toggle  1
 #
@@ -830,19 +830,20 @@ toggle  1
 #  Notes:
 #
 #      When toggled off, Privoxy mostly acts like a normal,
-#      content-neutral proxy, i.e. doesn't block ads or filter content.
+#      content-neutral proxy, i.e. doesn't block ads or filter
+#      content.
 #
-#      Access to the toggle feature can not be controlled separately by
-#      "ACLs" or HTTP authentication, so that everybody who can access
-#      Privoxy (see "ACLs" and listen-address above) can toggle it
-#      for all users. So this option is not recommended for multi-user
-#      environments with untrusted users.
+#      Access to the toggle feature can not be controlled separately
+#      by "ACLs" or HTTP authentication, so that everybody who can
+#      access Privoxy (see "ACLs" and listen-address above) can
+#      toggle it for all users. So this option is not recommended for
+#      multi-user environments with untrusted users.
 #
-#      Note that malicious client side code (e.g Java) is also capable
-#      of using this option.
+#      Note that malicious client side code (e.g Java) is also
+#      capable of using this option.
 #
-#      As a lot of Privoxy users don't read documentation, this feature
-#      is disabled by default.
+#      As a lot of Privoxy users don't read documentation, this
+#      feature is disabled by default.
 #
 #      Note that you must have compiled Privoxy with support for this
 #      feature, otherwise this option has no effect.
@@ -855,8 +856,8 @@ enable-remote-toggle  0
 #
 #  Specifies:
 #
-#      Whether or not Privoxy recognizes special HTTP headers to change
-#      its behaviour.
+#      Whether or not Privoxy recognizes special HTTP headers to
+#      change its behaviour.
 #
 #  Type of value:
 #
@@ -874,14 +875,14 @@ enable-remote-toggle  0
 #
 #      When toggled on, the client can change Privoxy's behaviour by
 #      setting special HTTP headers. Currently the only supported
-#      special header is "X-Filter: No", to disable filtering for
-#      the ongoing request, even if it is enabled in one of the
-#      action files.
+#      special header is "X-Filter: No", to disable filtering for the
+#      ongoing request, even if it is enabled in one of the action
+#      files.
 #
-#      This feature is disabled by default. If you are using Privoxy in
-#      a environment with trusted clients, you may enable this feature
-#      at your discretion. Note that malicious client side code (e.g
-#      Java) is also capable of using this feature.
+#      This feature is disabled by default. If you are using Privoxy
+#      in a environment with trusted clients, you may enable this
+#      feature at your discretion. Note that malicious client side
+#      code (e.g Java) is also capable of using this feature.
 #
 #      This option will be removed in future releases as it has been
 #      obsoleted by the more general header taggers.
@@ -911,18 +912,18 @@ enable-remote-http-toggle  0
 #  Notes:
 #
 #      Access to the editor can not be controlled separately by
-#      "ACLs" or HTTP authentication, so that everybody who can access
-#      Privoxy (see "ACLs" and listen-address above) can modify its
-#      configuration for all users.
+#      "ACLs" or HTTP authentication, so that everybody who can
+#      access Privoxy (see "ACLs" and listen-address above) can
+#      modify its configuration for all users.
 #
 #      This option is not recommended for environments with untrusted
 #      users and as a lot of Privoxy users don't read documentation,
 #      this feature is disabled by default.
 #
-#      Note that malicious client side code (e.g Java) is also capable
-#      of using the actions editor and you shouldn't enable this
-#      options unless you understand the consequences and are sure
-#      your browser is configured correctly.
+#      Note that malicious client side code (e.g Java) is also
+#      capable of using the actions editor and you shouldn't enable
+#      this options unless you understand the consequences and are
+#      sure your browser is configured correctly.
 #
 #      Note that you must have compiled Privoxy with support for this
 #      feature, otherwise this option has no effect.
@@ -952,18 +953,18 @@ enable-edit-actions 0
 #
 #  Notes:
 #
-#      Privoxy is mainly used to block and filter requests as a service
-#      to the user, for example to block ads and other junk that clogs
-#      the pipes.  Privoxy's configuration isn't perfect and sometimes
-#      innocent pages are blocked. In this situation it makes sense to
-#      allow the user to enforce the request and have Privoxy ignore
-#      the block.
+#      Privoxy is mainly used to block and filter requests as a
+#      service to the user, for example to block ads and other junk
+#      that clogs the pipes. Privoxy's configuration isn't perfect
+#      and sometimes innocent pages are blocked. In this situation it
+#      makes sense to allow the user to enforce the request and have
+#      Privoxy ignore the block.
 #
 #      In the default configuration Privoxy's "Blocked" page contains
 #      a "go there anyway" link to adds a special string (the force
-#      prefix) to the request URL. If that link is used, Privoxy
-#      will detect the force prefix, remove it again and let the
-#      request pass.
+#      prefix) to the request URL. If that link is used, Privoxy will
+#      detect the force prefix, remove it again and let the request
+#      pass.
 #
 #      Of course Privoxy can also be used to enforce a network
 #      policy. In that case the user obviously should not be able to
@@ -991,11 +992,11 @@ enforce-blocks 0
 #      src_addr[:port][/src_masklen] [dst_addr[:port][/dst_masklen]]
 #
 #      Where src_addr and dst_addr are IPv4 addresses in dotted
-#      decimal notation or valid DNS names, port is a port number, and
-#      src_masklen and dst_masklen are subnet masks in CIDR notation,
-#      i.e. integer values from 2 to 30 representing the length
-#      (in bits) of the network address. The masks and the whole
-#      destination part are optional.
+#      decimal notation or valid DNS names, port is a port number,
+#      and src_masklen and dst_masklen are subnet masks in CIDR
+#      notation, i.e. integer values from 2 to 30 representing the
+#      length (in bits) of the network address. The masks and the
+#      whole destination part are optional.
 #
 #      If your system implements RFC 3493, then src_addr and dst_addr
 #      can be IPv6 addresses delimeted by brackets, port can be a
@@ -1006,9 +1007,9 @@ enforce-blocks 0
 #
 #      Unset
 #
-#      If no port is specified, any port will match. If no src_masklen
-#      or src_masklen is given, the complete IP address has to match
-#      (i.e. 32 bits for IPv4 and 128 bits for IPv6).
+#      If no port is specified, any port will match. If no
+#      src_masklen or src_masklen is given, the complete IP address
+#      has to match (i.e. 32 bits for IPv4 and 128 bits for IPv6).
 #
 #  Effect if unset:
 #
@@ -1016,28 +1017,30 @@ enforce-blocks 0
 #
 #  Notes:
 #
-#      Access controls are included at the request of ISPs and systems
-#      administrators, and are not usually needed by individual
-#      users. For a typical home user, it will normally suffice to
-#      ensure that Privoxy only listens on the localhost (127.0.0.1)
-#      or internal (home) network address by means of the listen-address
-#      option.
+#      Access controls are included at the request of ISPs and
+#      systems administrators, and are not usually needed by
+#      individual users. For a typical home user, it will normally
+#      suffice to ensure that Privoxy only listens on the localhost
+#      (127.0.0.1) or internal (home) network address by means of the
+#      listen-address option.
 #
-#      Please see the warnings in the FAQ that Privoxy is not intended
-#      to be a substitute for a firewall or to encourage anyone to
-#      defer addressing basic security weaknesses.
+#      Please see the warnings in the FAQ that Privoxy is not
+#      intended to be a substitute for a firewall or to encourage
+#      anyone to defer addressing basic security weaknesses.
 #
 #      Multiple ACL lines are OK. If any ACLs are specified, Privoxy
-#      only talks to IP addresses that match at least one permit-access
-#      line and don't match any subsequent deny-access line. In other
-#      words, the last match wins, with the default being deny-access.
+#      only talks to IP addresses that match at least one
+#      permit-access line and don't match any subsequent deny-access
+#      line. In other words, the last match wins, with the default
+#      being deny-access.
 #
 #      If Privoxy is using a forwarder (see forward below) for a
 #      particular destination URL, the dst_addr that is examined is
-#      the address of the forwarder and NOT the address of the ultimate
-#      target. This is necessary because it may be impossible for the
-#      local Privoxy to determine the IP address of the ultimate target
-#      (that's often what gateways are used for).
+#      the address of the forwarder and NOT the address of the
+#      ultimate target. This is necessary because it may be
+#      impossible for the local Privoxy to determine the IP address
+#      of the ultimate target (that's often what gateways are used
+#      for).
 #
 #      You should prefer using IP addresses over DNS names, because
 #      the address lookups take time. All DNS names must resolve! You
@@ -1046,10 +1049,10 @@ enforce-blocks 0
 #      the first one is used.
 #
 #      Some systems allow IPv4 clients to connect to IPv6 server
-#      sockets. Then the client's IPv4 address will be translated by the
-#      system into IPv6 address space with special prefix ::ffff:0:0/96
-#      (so called IPv4 mapped IPv6 address). Privoxy can handle it
-#      and maps such ACL addresses automatically.
+#      sockets. Then the client's IPv4 address will be translated by
+#      the system into IPv6 address space with special prefix
+#      ::ffff:0:0/96 (so called IPv4 mapped IPv6 address). Privoxy
+#      can handle it and maps such ACL addresses automatically.
 #
 #      Denying access to particular sites by ACL may have undesired
 #      side effects if the site in question is hosted on a machine
@@ -1063,31 +1066,30 @@ enforce-blocks 0
 #
 #        permit-access  localhost
 #
-#
 #      Allow any host on the same class C subnet as www.privoxy.org
 #      access to nothing but www.example.com (or other domains hosted
 #      on the same system):
 #
 #        permit-access  www.privoxy.org/24 www.example.com/32
 #
+#      Allow access from any host on the 26-bit subnet 192.168.45.64
+#      to anywhere, with the exception that 192.168.45.73 may not
+#      access the IP address behind www.dirty-stuff.example.com:
 #
-#      Allow access from any host on the 26-bit subnet 192.168.45.64 to
-#      anywhere, with the exception that 192.168.45.73 may not access
-#      the IP address behind www.dirty-stuff.example.com:
+#        permit-access  192.168.45.64/26
+#        deny-access    192.168.45.73    www.dirty-stuff.example.com
 #
-#        permit-access  192.168.45.64/26 
-#        deny-access   192.168.45.73  www.dirty-stuff.example.com
-#
-#      Allow access from the IPv4 network 192.0.2.0/24 even if listening
-#      on an IPv6 wild card address (not supported on all platforms):
+#      Allow access from the IPv4 network 192.0.2.0/24 even if
+#      listening on an IPv6 wild card address (not supported on all
+#      platforms):
 #
 #        permit-access  192.0.2.0/24
-#
 #
 #      This is equivalent to the following line even if listening on
 #      an IPv4 address (not supported on all platforms):
 #
 #        permit-access  [::ffff:192.0.2.0]/120
+#
 #
 #
 #  4.8. buffer-limit
@@ -1112,16 +1114,18 @@ enforce-blocks 0
 #  Notes:
 #
 #      For content filtering, i.e. the +filter and +deanimate-gif
-#      actions, it is necessary that Privoxy buffers the entire document
-#      body. This can be potentially dangerous, since a server could
-#      just keep sending data indefinitely and wait for your RAM to
-#      exhaust -- with nasty consequences.  Hence this option.
+#      actions, it is necessary that Privoxy buffers the entire
+#      document body. This can be potentially dangerous, since a
+#      server could just keep sending data indefinitely and wait for
+#      your RAM to exhaust -- with nasty consequences. Hence this
+#      option.
 #
 #      When a document buffer size reaches the buffer-limit, it is
-#      flushed to the client unfiltered and no further attempt to filter
-#      the rest of the document is made. Remember that there may be
-#      multiple threads running, which might require up to buffer-limit
-#      Kbytes each, unless you have enabled "single-threaded" above.
+#      flushed to the client unfiltered and no further attempt to
+#      filter the rest of the document is made. Remember that there
+#      may be multiple threads running, which might require up to
+#      buffer-limit Kbytes each, unless you have enabled
+#      "single-threaded" above.
 #
 buffer-limit 4096
 #
@@ -1136,13 +1140,14 @@ buffer-limit 4096
 #  speed up browsing. Using a parent proxy may also be necessary if
 #  the machine that Privoxy runs on has no direct Internet access.
 #
-#  Note that parent proxies can severely decrease your privacy
-#  level. For example a parent proxy could add your IP address to the
+#  Note that parent proxies can severely decrease your privacy level.
+#  For example a parent proxy could add your IP address to the
 #  request headers and if it's a caching proxy it may add the "Etag"
 #  header to revalidation requests again, even though you configured
 #  Privoxy to remove it. It may also ignore Privoxy's header time
 #  randomization and use the original values which could be used by
-#  the server as cookie replacement to track your steps between visits.
+#  the server as cookie replacement to track your steps between
+#  visits.
 #
 #  Also specified here are SOCKS proxies. Privoxy supports the SOCKS
 #  4 and SOCKS 4A protocols.
@@ -1161,11 +1166,12 @@ buffer-limit 4096
 #      target_pattern http_parent[:port]
 #
 #      where target_pattern is a URL pattern that specifies to which
-#      requests (i.e. URLs) this forward rule shall apply. Use /
-#      to denote "all URLs".  http_parent[:port] is the DNS name or
-#      IP address of the parent HTTP proxy through which the requests
+#      requests (i.e. URLs) this forward rule shall apply. Use / to
+#      denote "all URLs". http_parent[:port] is the DNS name or IP
+#      address of the parent HTTP proxy through which the requests
 #      should be forwarded, optionally followed by its listening port
-#      (default: 8000). Use a single dot (.) to denote "no forwarding".
+#      (default: 8000). Use a single dot (.) to denote "no
+#      forwarding".
 #
 #  Default value:
 #
@@ -1181,8 +1187,8 @@ buffer-limit 4096
 #      another HTTP proxy but are made directly to the web servers.
 #
 #      http_parent can be a numerical IPv6 address (if RFC 3493 is
-#      implemented).  To prevent clashes with the port delimiter,
-#      the whole IP address has to be put into brackets. On the other
+#      implemented). To prevent clashes with the port delimiter, the
+#      whole IP address has to be put into brackets. On the other
 #      hand a target_pattern containing an IPv6 address has to be put
 #      into angle brackets (normal brackets are reserved for regular
 #      expressions already).
@@ -1195,9 +1201,8 @@ buffer-limit 4096
 #      Everything goes to an example parent proxy, except SSL on port
 #      443 (which it doesn't handle):
 #
-#        forward   /      parent-proxy.example.org:8080 
+#        forward   /      parent-proxy.example.org:8080
 #        forward   :443   .
-#
 #
 #      Everything goes to our example ISP's caching proxy, except for
 #      requests to that ISP's sites:
@@ -1205,11 +1210,9 @@ buffer-limit 4096
 #        forward   /                  caching-proxy.isp.example.net:8000
 #        forward   .isp.example.net   .
 #
-#
 #      Parent proxy specified by an IPv6 address:
 #
 #        forward   /                   [2001:DB8::1]:8000
-#
 #
 #      Suppose your parent proxy doesn't support IPv6:
 #
@@ -1218,8 +1221,9 @@ buffer-limit 4096
 #        forward  <[2-3][0-9a-f][0-9a-f][0-9a-f]:*>   .
 #
 #
-#  5.2. forward-socks4, forward-socks4a and forward-socks5
-#  ========================================================
+#
+#  5.2. forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t
+#  =========================================================================
 #
 #  Specifies:
 #
@@ -1232,10 +1236,11 @@ buffer-limit 4096
 #
 #      where target_pattern is a URL pattern that specifies to which
 #      requests (i.e. URLs) this forward rule shall apply. Use / to
-#      denote "all URLs".  http_parent and socks_proxy are IP addresses
-#      in dotted decimal notation or valid DNS names (http_parent may
-#      be "." to denote "no HTTP forwarding"), and the optional port
-#      parameters are TCP ports, i.e. integer values from 1 to 65535
+#      denote "all URLs". http_parent and socks_proxy are IP
+#      addresses in dotted decimal notation or valid DNS names (
+#      http_parent may be "." to denote "no HTTP forwarding"), and
+#      the optional port parameters are TCP ports, i.e. integer
+#      values from 1 to 65535
 #
 #  Default value:
 #
@@ -1250,66 +1255,69 @@ buffer-limit 4096
 #      Multiple lines are OK, they are checked in sequence, and the
 #      last match wins.
 #
-#      The difference between forward-socks4 and forward-socks4a
-#      is that in the SOCKS 4A protocol, the DNS resolution of the
+#      The difference between forward-socks4 and forward-socks4a is
+#      that in the SOCKS 4A protocol, the DNS resolution of the
 #      target hostname happens on the SOCKS server, while in SOCKS 4
 #      it happens locally.
 #
-#      With forward-socks5 the DNS resolution will happen on the remote
-#      server as well.
+#      With forward-socks5 the DNS resolution will happen on the
+#      remote server as well.
+#
+#      forward-socks5t works like vanilla forward-socks5 but lets
+#      Privoxy additionally use Tor-specific SOCKS extensions.
+#      Currently the only supported SOCKS extension is optimistic
+#      data which can reduce the latency for the first request made
+#      on a newly created connection.
 #
 #      socks_proxy and http_parent can be a numerical IPv6 address
 #      (if RFC 3493 is implemented). To prevent clashes with the port
-#      delimiter, the whole IP address has to be put into brackets. On
-#      the other hand a target_pattern containing an IPv6 address has
-#      to be put into angle brackets (normal brackets are reserved
-#      for regular expressions already).
+#      delimiter, the whole IP address has to be put into brackets.
+#      On the other hand a target_pattern containing an IPv6 address
+#      has to be put into angle brackets (normal brackets are
+#      reserved for regular expressions already).
 #
-#      If http_parent is ".", then requests are not forwarded to another
-#      HTTP proxy but are made (HTTP-wise) directly to the web servers,
-#      albeit through a SOCKS proxy.
+#      If http_parent is ".", then requests are not forwarded to
+#      another HTTP proxy but are made (HTTP-wise) directly to the
+#      web servers, albeit through a SOCKS proxy.
 #
 #  Examples:
 #
-#      From the company example.com, direct connections are made to all
-#      "internal" domains, but everything outbound goes through their
-#      ISP's proxy by way of example.com's corporate SOCKS 4A gateway
-#      to the Internet.
+#      From the company example.com, direct connections are made to
+#      all "internal" domains, but everything outbound goes through
+#      their ISP's proxy by way of example.com's corporate SOCKS 4A
+#      gateway to the Internet.
 #
-#        forward-socks4a   /       socks-gw.example.com:1080    www-cache.isp.example.net:8080 
-#        forward           .example.com        .
-#
+#        forward-socks4a   /              socks-gw.example.com:1080  www-cache.isp.example.net:8080
+#        forward           .example.com   .
 #
 #      A rule that uses a SOCKS 4 gateway for all destinations but no
 #      HTTP parent looks like this:
 #
 #        forward-socks4   /               socks-gw.example.com:1080  .
 #
-#
-#      To chain Privoxy and Tor, both running on the same system,
-#      you would use something like:
+#      To chain Privoxy and Tor, both running on the same system, you
+#      would use something like:
 #
 #        forward-socks5   /               127.0.0.1:9050 .
 #
+#      The public Tor network can't be used to reach your local
+#      network, if you need to access local servers you therefore
+#      might want to make some exceptions:
 #
-#      The public Tor network can't be used to reach your local network,
-#      if you need to access local servers you therefore might want
-#      to make some exceptions:
+#        forward         192.168.*.*/     .
+#        forward            10.*.*.*/     .
+#        forward           127.*.*.*/     .
 #
-#        forward         192.168.*.*/     .  
-#        forward         10.*.*.*/        .  
-#        forward         127.*.*.*/       .
-#
-#
-#      Unencrypted connections to systems in these address ranges will
-#      be as (un) secure as the local network is, but the alternative
-#      is that you can't reach the local network through Privoxy at
-#      all. Of course this may actually be desired and there is no
-#      reason to make these exceptions if you aren't sure you need them.
+#      Unencrypted connections to systems in these address ranges
+#      will be as (un)secure as the local network is, but the
+#      alternative is that you can't reach the local network through
+#      Privoxy at all. Of course this may actually be desired and
+#      there is no reason to make these exceptions if you aren't sure
+#      you need them.
 #
 #      If you also want to be able to reach servers in your local
-#      network by using their names, you will need additional exceptions
-#      that look like this:
+#      network by using their names, you will need additional
+#      exceptions that look like this:
 #
 #       forward           localhost/     .
 #
@@ -1340,23 +1348,22 @@ buffer-limit 4096
 #
 #      forwarded-connect-retries is mainly interesting for socks4a
 #      connections, where Privoxy can't detect why the connections
-#      failed. The connection might have failed because of a DNS timeout
-#      in which case a retry makes sense, but it might also have failed
-#      because the server doesn't exist or isn't reachable. In this
-#      case the retry will just delay the appearance of Privoxy's
-#      error message.
+#      failed. The connection might have failed because of a DNS
+#      timeout in which case a retry makes sense, but it might also
+#      have failed because the server doesn't exist or isn't
+#      reachable. In this case the retry will just delay the
+#      appearance of Privoxy's error message.
 #
-#      Note that in the context of this option, "forwarded connections"
-#      includes all connections that Privoxy forwards through other
-#      proxies. This option is not limited to the HTTP CONNECT method.
+#      Note that in the context of this option, "forwarded
+#      connections" includes all connections that Privoxy forwards
+#      through other proxies. This option is not limited to the HTTP
+#      CONNECT method.
 #
 #      Only use this option, if you are getting lots of
-#      forwarding-related error messages that go away when you try again
-#      manually. Start with a small value and check Privoxy's logfile
-#      from time to time, to see how many retries are usually needed.
-#
-#      Due to a bug, this option currently also causes Privoxy to
-#      retry in case of certain problems with direct connections.
+#      forwarding-related error messages that go away when you try
+#      again manually. Start with a small value and check Privoxy's
+#      logfile from time to time, to see how many retries are usually
+#      needed.
 #
 #  Examples:
 #
@@ -1367,6 +1374,7 @@ forwarded-connect-retries  0
 #
 #  6. MISCELLANEOUS
 #  =================
+#
 #
 #  6.1. accept-intercepted-requests
 #  =================================
@@ -1394,11 +1402,11 @@ forwarded-connect-retries  0
 #      Privoxy, enable this option and configure your packet filter
 #      to redirect outgoing HTTP connections into Privoxy.
 #
-#      Make sure that Privoxy's own requests aren't redirected as well.
-#      Additionally take care that Privoxy can't intentionally connect
-#      to itself, otherwise you could run into redirection loops if
-#      Privoxy's listening port is reachable by the outside or an
-#      attacker has access to the pages you visit.
+#      Make sure that Privoxy's own requests aren't redirected as
+#      well. Additionally take care that Privoxy can't intentionally
+#      connect to itself, otherwise you could run into redirection
+#      loops if Privoxy's listening port is reachable by the outside
+#      or an attacker has access to the pages you visit.
 #
 #  Examples:
 #
@@ -1429,8 +1437,8 @@ accept-intercepted-requests 0
 #
 #  Notes:
 #
-#      By default Privoxy ignores block or redirect actions for
-#      its CGI pages.  Intercepting these requests can be useful in
+#      By default Privoxy ignores block or redirect actions for its
+#      CGI pages. Intercepting these requests can be useful in
 #      multi-user setups to implement fine-grained access control,
 #      but it can also render the complete web interface useless and
 #      make debugging problems painful if done without care.
@@ -1467,18 +1475,19 @@ allow-cgi-request-crunching 0
 #
 #  Notes:
 #
-#      Privoxy's CGI forms can lead to rather long URLs. This isn't
-#      a problem as far as the HTTP standard is concerned, but it can
+#      Privoxy's CGI forms can lead to rather long URLs. This isn't a
+#      problem as far as the HTTP standard is concerned, but it can
 #      confuse clients with arbitrary URL length limitations.
 #
 #      Enabling split-large-forms causes Privoxy to divide big forms
-#      into smaller ones to keep the URL length down. It makes editing
-#      a lot less convenient and you can no longer submit all changes
-#      at once, but at least it works around this browser bug.
+#      into smaller ones to keep the URL length down. It makes
+#      editing a lot less convenient and you can no longer submit all
+#      changes at once, but at least it works around this browser
+#      bug.
 #
 #      If you don't notice any editing problems, there is no reason
-#      to enable this option, but if one of the submit buttons appears
-#      to be broken, you should give it a try.
+#      to enable this option, but if one of the submit buttons
+#      appears to be broken, you should give it a try.
 #
 #  Examples:
 #
@@ -1492,8 +1501,8 @@ split-large-forms 0
 #
 #  Specifies:
 #
-#      Number of seconds after which an open connection will no longer
-#      be reused.
+#      Number of seconds after which an open connection will no
+#      longer be reused.
 #
 #  Type of value:
 #
@@ -1516,25 +1525,26 @@ split-large-forms 0
 #
 #      By default, Privoxy will close the connection to the server if
 #      the client connection gets closed, or if the specified timeout
-#      has been reached without a new request coming in. This behaviour
-#      can be changed with the connection-sharing option.
+#      has been reached without a new request coming in. This
+#      behaviour can be changed with the connection-sharing option.
 #
 #      This option has no effect if Privoxy has been compiled without
 #      keep-alive support.
 #
 #      Note that a timeout of five seconds as used in the default
 #      configuration file significantly decreases the number of
-#      connections that will be reused.  The value is used because some
-#      browsers limit the number of connections they open to a single
-#      host and apply the same limit to proxies. This can result in a
-#      single website "grabbing" all the connections the browser allows,
-#      which means connections to other websites can't be opened until
-#      the connections currently in use time out.
+#      connections that will be reused. The value is used because
+#      some browsers limit the number of connections they open to a
+#      single host and apply the same limit to proxies. This can
+#      result in a single website "grabbing" all the connections the
+#      browser allows, which means connections to other websites
+#      can't be opened until the connections currently in use time
+#      out.
 #
-#      Several users have reported this as a Privoxy bug, so the default
-#      value has been reduced. Consider increasing it to 300 seconds
-#      or even more if you think your browser can handle it. If your
-#      browser appears to be hanging it can't.
+#      Several users have reported this as a Privoxy bug, so the
+#      default value has been reduced. Consider increasing it to 300
+#      seconds or even more if you think your browser can handle it.
+#      If your browser appears to be hanging, it probably can't.
 #
 #  Examples:
 #
@@ -1543,13 +1553,57 @@ split-large-forms 0
 keep-alive-timeout 5
 #
 #
-#  6.5. default-server-timeout
+#  6.5. tolerate-pipelining
+#  =========================
+#
+#  Specifies:
+#
+#      Whether or not pipelined requests should be served.
+#
+#  Type of value:
+#
+#      0 or 1.
+#
+#  Default value:
+#
+#      None
+#
+#  Effect if unset:
+#
+#      If Privoxy receives more than one request at once, it
+#      terminates the client connection after serving the first one.
+#
+#  Notes:
+#
+#      Privoxy currently doesn't pipeline outgoing requests, thus
+#      allowing pipelining on the client connection is not guaranteed
+#      to improve the performance.
+#
+#      By default Privoxy tries to discourage clients from pipelining
+#      by discarding aggressively pipelined requests, which forces
+#      the client to resend them through a new connection.
+#
+#      This option lets Privoxy tolerate pipelining. Whether or not
+#      that improves performance mainly depends on the client
+#      configuration.
+#
+#      If you are seeing problems with pages not properly loading,
+#      disabling this option could work around the problem.
+#
+#  Examples:
+#
+#      tolerate-pipelining 1
+#
+tolerate-pipelining 1
+#
+#
+#  6.6. default-server-timeout
 #  ============================
 #
 #  Specifies:
 #
-#      Assumed server-side keep-alive timeout if not specified by
-#      the server.
+#      Assumed server-side keep-alive timeout if not specified by the
+#      server.
 #
 #  Type of value:
 #
@@ -1570,14 +1624,14 @@ keep-alive-timeout 5
 #      connections that are reused, provided the keep-alive-timeout
 #      option is also enabled.
 #
-#      While it also increases the number of connections problems when
-#      Privoxy tries to reuse a connection that already has been closed
-#      on the server side, or is closed while Privoxy is trying to
-#      reuse it, this should only be a problem if it happens for the
-#      first request sent by the client. If it happens for requests
-#      on reused client connections, Privoxy will simply close the
-#      connection and the client is supposed to retry the request
-#      without bothering the user.
+#      While it also increases the number of connections problems
+#      when Privoxy tries to reuse a connection that already has been
+#      closed on the server side, or is closed while Privoxy is
+#      trying to reuse it, this should only be a problem if it
+#      happens for the first request sent by the client. If it
+#      happens for requests on reused client connections, Privoxy
+#      will simply close the connection and the client is supposed to
+#      retry the request without bothering the user.
 #
 #      Enabling this option is therefore only recommended if the
 #      connection-sharing option is disabled.
@@ -1595,7 +1649,7 @@ keep-alive-timeout 5
 #default-server-timeout 60
 #
 #
-#  6.6. connection-sharing
+#  6.7. connection-sharing
 #  ========================
 #
 #  Specifies:
@@ -1632,24 +1686,24 @@ keep-alive-timeout 5
 #      affect the connection between Privoxy and the server unless
 #      the client's request hasn't been completed yet.
 #
-#      If the outgoing connection is idle, it will not be closed until
-#      either Privoxy's or the server's timeout is reached. While
-#      it's open, the server knows that the system running Privoxy is
-#      still there.
+#      If the outgoing connection is idle, it will not be closed
+#      until either Privoxy's or the server's timeout is reached.
+#      While it's open, the server knows that the system running
+#      Privoxy is still there.
 #
 #      If there are more than one client (maybe even belonging to
 #      multiple users), they will be able to reuse each others
 #      connections. This is potentially dangerous in case of
-#      authentication schemes like NTLM where only the connection
-#      is authenticated, instead of requiring authentication for
-#      each request.
+#      authentication schemes like NTLM where only the connection is
+#      authenticated, instead of requiring authentication for each
+#      request.
 #
 #      If there is only a single client, and if said client can keep
 #      connections alive on its own, enabling this option has next to
-#      no effect. If the client doesn't support connection keep-alive,
-#      enabling this option may make sense as it allows Privoxy to keep
-#      outgoing connections alive even if the client itself doesn't
-#      support it.
+#      no effect. If the client doesn't support connection
+#      keep-alive, enabling this option may make sense as it allows
+#      Privoxy to keep outgoing connections alive even if the client
+#      itself doesn't support it.
 #
 #      You should also be aware that enabling this option increases
 #      the likelihood of getting the "No server or forwarder data"
@@ -1666,13 +1720,13 @@ keep-alive-timeout 5
 #connection-sharing 1
 #
 #
-#  6.7. socket-timeout
+#  6.8. socket-timeout
 #  ====================
 #
 #  Specifies:
 #
-#      Number of seconds after which a socket times out if no data
-#      is received.
+#      Number of seconds after which a socket times out if no data is
+#      received.
 #
 #  Type of value:
 #
@@ -1688,9 +1742,9 @@ keep-alive-timeout 5
 #
 #  Notes:
 #
-#      For SOCKS requests the timeout currently doesn't start until
-#      the SOCKS server accepted the request. This will be fixed in
-#      the next release.
+#      The default is quite high and you probably want to reduce it.
+#      If you aren't using an occasionally slow proxy like Tor,
+#      reducing it to a few seconds should be fine.
 #
 #  Examples:
 #
@@ -1699,7 +1753,7 @@ keep-alive-timeout 5
 socket-timeout 300
 #
 #
-#  6.8. max-client-connections
+#  6.9. max-client-connections
 #  ============================
 #
 #  Specifies:
@@ -1724,15 +1778,15 @@ socket-timeout 300
 #      client connection that isn't rejected based on the access
 #      control settings.
 #
-#      If the system is powerful enough, Privoxy can theoretically deal
-#      with several hundred (or thousand) connections at the same time,
-#      but some operating systems enforce resource limits by shutting
-#      down offending processes and their default limits may be below
-#      the ones Privoxy would require under heavy load.
+#      If the system is powerful enough, Privoxy can theoretically
+#      deal with several hundred (or thousand) connections at the
+#      same time, but some operating systems enforce resource limits
+#      by shutting down offending processes and their default limits
+#      may be below the ones Privoxy would require under heavy load.
 #
 #      Configuring Privoxy to enforce a connection limit below the
 #      thread or process limit used by the operating system makes
-#      sure this doesn't happen.  Simply increasing the operating
+#      sure this doesn't happen. Simply increasing the operating
 #      system's limit would work too, but if Privoxy isn't the only
 #      application running on the system, you may actually want to
 #      limit the resources used by Privoxy.
@@ -1740,10 +1794,10 @@ socket-timeout 300
 #      If Privoxy is only used by a single trusted user, limiting the
 #      number of client connections is probably unnecessary. If there
 #      are multiple possibly untrusted users you probably still want
-#      to additionally use a packet filter to limit the maximal number
-#      of incoming connections per client. Otherwise a malicious user
-#      could intentionally create a high number of connections to
-#      prevent other users from using Privoxy.
+#      to additionally use a packet filter to limit the maximal
+#      number of incoming connections per client. Otherwise a
+#      malicious user could intentionally create a high number of
+#      connections to prevent other users from using Privoxy.
 #
 #      Obviously using this option only makes sense if you choose a
 #      limit below the one enforced by the operating system.
@@ -1753,10 +1807,8 @@ socket-timeout 300
 #      max-client-connections 256
 #
 #max-client-connections 256
-
 #
-#  6.9. handle-as-empty-doc-returns-ok
-#  ====================================
+#  1.6.10. handle-as-empty-doc-returns-ok
 #
 #  Specifies:
 #
@@ -1783,18 +1835,17 @@ socket-timeout 300
 #
 #  Notes:
 #
-#      This is a work-around for Firefox bug 492459: " Websites are no
-#      longer rendered if SSL requests for JavaScripts are blocked by a
-#      proxy. " (https:/ /bugzilla.mozilla.org/show_bug.cgi?id=492459)
-#      As the bug has been fixed for quite some time this option
-#      should no longer be needed and will be removed in a future
-#      release. Please speak up if you have a reason why the option
-#      should be kept around.
+#      This is a work-around for Firefox bug 492459: " Websites are
+#      no longer rendered if SSL requests for JavaScripts are blocked
+#      by a proxy. " (https://bugzilla.mozilla.org/show_bug.cgi?id=
+#      492459) As the bug has been fixed for quite some time this
+#      option should no longer be needed and will be removed in a
+#      future release. Please speak up if you have a reason why the
+#      option should be kept around.
 #
 #handle-as-empty-doc-returns-ok 1
 #
-#
-#  1.6.10. enable-compression
+#  1.6.11. enable-compression
 #
 #  Specifies:
 #
@@ -1820,22 +1871,21 @@ socket-timeout 300
 #  Notes:
 #
 #      This directive is only supported if Privoxy has been compiled
-#      with FEATURE_COMPRESSION, which should not to be confused
-#      with FEATURE_ZLIB.
+#      with FEATURE_COMPRESSION, which should not to be confused with
+#      FEATURE_ZLIB.
 #
-#      Compressing buffered content is mainly useful if Privoxy and the
-#      client are running on different systems. If they are running on
-#      the same system, enabling compression is likely to slow things
-#      down. If you didn't measure otherwise, you should assume that
-#      it does and keep this option disabled.
+#      Compressing buffered content is mainly useful if Privoxy and
+#      the client are running on different systems. If they are
+#      running on the same system, enabling compression is likely to
+#      slow things down. If you didn't measure otherwise, you should
+#      assume that it does and keep this option disabled.
 #
 #      Privoxy will not compress buffered content below a certain
 #      length.
 #
 #enable-compression 1
 #
-#
-#  1.6.11. compression-level
+#  1.6.12. compression-level
 #
 #  Specifies:
 #
@@ -1852,13 +1902,15 @@ socket-timeout 300
 #
 #  Notes:
 #
-#      Compressing the data more takes usually longer than compressing
-#      it less or not compressing it at all. Which level is best
-#      depends on the connection between Privoxy and the client. If
-#      you can't be bothered to benchmark it for yourself, you should
-#      stick with the default and keep compression disabled.
+#      Compressing the data more takes usually longer than
+#      compressing it less or not compressing it at all. Which level
+#      is best depends on the connection between Privoxy and the
+#      client. If you can't be bothered to benchmark it for yourself,
+#      you should stick with the default and keep compression
+#      disabled.
 #
-#      If compression is disabled, the compression level is irrelevant.
+#      If compression is disabled, the compression level is
+#      irrelevant.
 #
 #  Examples:
 #
@@ -1866,7 +1918,7 @@ socket-timeout 300
 #          compression-level 1
 #
 #          # Best compression
-#	   compression-level 9
+#          compression-level 9
 #
 #          # No compression. Only useful for testing as the added header
 #          # slightly increases the amount of data that has to be sent.
@@ -1878,6 +1930,52 @@ socket-timeout 300
 #
 #compression-level 1
 #
+#  1.6.13. client-header-order
+#
+#  Specifies:
+#
+#      The order in which client headers are sorted before forwarding
+#      them.
+#
+#  Type of value:
+#
+#      Client header names delimited by spaces or tabs
+#
+#  Default value:
+#
+#      None
+#
+#  Notes:
+#
+#      By default Privoxy leaves the client headers in the order they
+#      were sent by the client. Headers are modified in-place, new
+#      headers are added at the end of the already existing headers.
+#
+#      The header order can be used to fingerprint client requests
+#      independently of other headers like the User-Agent.
+#
+#      This directive allows to sort the headers differently to
+#      better mimic a different User-Agent. Client headers will be
+#      emitted in the order given, headers whose name isn't
+#      explicitly specified are added at the end.
+#
+#      Note that sorting headers in an uncommon way will make
+#      fingerprinting actually easier. Encrypted headers are not
+#      affected by this directive.
+#
+#client-header-order Host \
+#   Accept \
+#   Accept-Language \
+#   Accept-Encoding \
+#   Proxy-Connection \
+#   Referer \
+#   Cookie \
+#   If-Modified-Since \
+#   Cache-Control \
+#   Content-Length \
+#   Content-Type
+#
+#
 #
 #  7. WINDOWS GUI OPTIONS
 #  =======================
@@ -1886,47 +1984,64 @@ socket-timeout 300
 #  interface:
 #
 #
+#
 #  If "activity-animation" is set to 1, the Privoxy icon will animate
 #  when "Privoxy" is active. To turn off, set to 0.
 #
 #activity-animation   1
 #
-#  If "log-messages" is set to 1, Privoxy will log messages to the
-#  console window:
+#
+#
+#  If "log-messages" is set to 1, Privoxy copies log messages to the
+#  console window. The log detail depends on the debug directive.
 #
 #log-messages   1
 #
-#  If "log-buffer-size" is set to 1, the size of the log buffer,
-#  i.e. the amount of memory used for the log messages displayed in
-#  the console window, will be limited to "log-max-lines" (see below).
+#
+#
+#  If "log-buffer-size" is set to 1, the size of the log buffer, i.e.
+#  the amount of memory used for the log messages displayed in the
+#  console window, will be limited to "log-max-lines" (see below).
 #
 #  Warning: Setting this to 0 will result in the buffer to grow
 #  infinitely and eat up all your memory!
 #
 #log-buffer-size 1
 #
+#
+#
 #  log-max-lines is the maximum number of lines held in the log
 #  buffer. See above.
 #
 #log-max-lines 200
+#
+#
 #
 #  If "log-highlight-messages" is set to 1, Privoxy will highlight
 #  portions of the log messages with a bold-faced font:
 #
 #log-highlight-messages 1
 #
+#
+#
 #  The font used in the console window:
 #
 #log-font-name Comic Sans MS
+#
+#
 #
 #  Font size used in the console window:
 #
 #log-font-size 8
 #
+#
+#
 #  "show-on-task-bar" controls whether or not Privoxy will appear as
 #  a button on the Task bar when minimized:
 #
 #show-on-task-bar 0
+#
+#
 #
 #  If "close-button-minimizes" is set to 1, the Windows close button
 #  will minimize Privoxy instead of closing the program (close with
@@ -1934,10 +2049,13 @@ socket-timeout 300
 #
 #close-button-minimizes 1
 #
-#  The "hide-console" option is specific to the MS-Win console version
-#  of Privoxy.  If this option is used, Privoxy will disconnect from
-#  and hide the command console.
+#
+#
+#  The "hide-console" option is specific to the MS-Win console
+#  version of Privoxy. If this option is used, Privoxy will
+#  disconnect from and hide the command console.
 #
 #hide-console
+#
 #
 #

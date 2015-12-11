@@ -1,6 +1,6 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.27 2011/09/04 11:10:56 fabiankeil Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.29 2012/07/27 17:39:57 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
@@ -58,6 +58,7 @@ extern "C" {
 #define LOG_LEVEL_CRUNCH     0x0400
 #define LOG_LEVEL_CGI        0x0800 /* CGI / templates */
 #define LOG_LEVEL_RECEIVED   0x8000
+#define LOG_LEVEL_ACTIONS   0x10000
 
 /* Following are always on: */
 #define LOG_LEVEL_INFO    0x1000
@@ -66,6 +67,7 @@ extern "C" {
 
 extern void init_error_log(const char *prog_name, const char *logfname);
 extern void set_debug_level(int debuglevel);
+extern int  debug_level_is_enabled(int debuglevel);
 extern void disable_logging(void);
 extern void init_log_module(void);
 extern void show_version(const char *prog_name);

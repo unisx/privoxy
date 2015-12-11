@@ -3,90 +3,80 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
-  <title>Privoxy 3.0.19 User Manual</title>
+  <title>Privoxy 3.0.20 User Manual</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
   <link rel="NEXT" title="Introduction" href="introduction.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  hr.c2 {text-align: left}
-  dt.c1 {font-weight: bold}
-  </style>
 </head>
 
-<body class="ARTICLE">
+<body class="ARTICLE" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="ARTICLE">
     <div class="TITLEPAGE">
-      <h1 class="TITLE"><a name="AEN2" id="AEN2">Privoxy 3.0.19 User
+      <h1 class="TITLE"><a name="AEN2" id="AEN2">Privoxy 3.0.20 User
       Manual</a></h1>
 
       <p class="PUBDATE"><sub><a href="copyright.html">Copyright</a> &copy;
-      2001-2011 by <a href="http://www.privoxy.org/" target="_top">Privoxy
+      2001-2013 by <a href="http://www.privoxy.org/" target="_top">Privoxy
       Developers</a></sub><br></p>
 
-      <p class="PUBDATE">$Id: user-manual.sgml,v 2.143 2011/11/20 17:16:36
+      <p class="PUBDATE">$Id: user-manual.sgml,v 2.163 2013/01/18 12:31:41
       fabiankeil Exp $<br></p>
 
-      <div class="ABSTRACT">
-        <a name="AEN9" id="AEN9"></a>
+      <div>
+        <div class="ABSTRACT">
+          <a name="AEN9" id="AEN9"></a>
 
-        <p>The <i class="CITETITLE">Privoxy User Manual</i> gives users
-        information on how to install, configure and use <a href=
-        "http://www.privoxy.org/" target="_top">Privoxy</a>.</p>
+          <p>The <i class="CITETITLE">Privoxy User Manual</i> gives users
+          information on how to install, configure and use <a href=
+          "http://www.privoxy.org/" target="_top">Privoxy</a>.</p>
 
-        <p>Privoxy is a non-caching web proxy with advanced filtering
-        capabilities for enhancing privacy, modifying web page data and HTTP
-        headers, controlling access, and removing ads and other obnoxious
-        Internet junk. Privoxy has a flexible configuration and can be
-        customized to suit individual needs and tastes. It has application
-        for both stand-alone systems and multi-user networks.</p>
+          <p>Privoxy is a non-caching web proxy with advanced filtering
+          capabilities for enhancing privacy, modifying web page data and
+          HTTP headers, controlling access, and removing ads and other
+          obnoxious Internet junk. Privoxy has a flexible configuration and
+          can be customized to suit individual needs and tastes. It has
+          application for both stand-alone systems and multi-user
+          networks.</p>
 
-        <p>Privoxy is Free Software and licensed under the GNU GPLv2.</p>
+          <p>Privoxy is Free Software and licensed under the GNU GPLv2.</p>
 
-        <p>Privoxy is an associated project of Software in the Public
-        Interest (SPI).</p>
+          <p>Privoxy is an associated project of Software in the Public
+          Interest (SPI).</p>
 
-        <p>Helping hands and donations are welcome:</p>
+          <p>Helping hands and donations are welcome:</p>
 
-        <ul>
-          <li>
-            <p><a href="http://www.privoxy.org/faq/general.html#PARTICIPATE"
-            target=
-            "_top">http://www.privoxy.org/faq/general.html#PARTICIPATE</a></p>
-          </li>
+          <ul>
+            <li>
+              <p><a href=
+              "http://www.privoxy.org/faq/general.html#PARTICIPATE" target=
+              "_top">http://www.privoxy.org/faq/general.html#PARTICIPATE</a></p>
+            </li>
 
-          <li>
-            <p><a href="http://www.privoxy.org/faq/general.html#DONATE"
-            target=
-            "_top">http://www.privoxy.org/faq/general.html#DONATE</a></p>
-          </li>
-        </ul>
+            <li>
+              <p><a href="http://www.privoxy.org/faq/general.html#DONATE"
+              target=
+              "_top">http://www.privoxy.org/faq/general.html#DONATE</a></p>
+            </li>
+          </ul>
 
-        <p>You can find the latest version of the <i class=
-        "CITETITLE">Privoxy User Manual</i> at <a href=
-        "http://www.privoxy.org/user-manual/" target=
-        "_top">http://www.privoxy.org/user-manual/</a>. Please see the
-        <a href="contact.html">Contact section</a> on how to contact the
-        developers.</p>
+          <p>You can find the latest version of the <i class=
+          "CITETITLE">Privoxy User Manual</i> at <a href=
+          "http://www.privoxy.org/user-manual/" target=
+          "_top">http://www.privoxy.org/user-manual/</a>. Please see the
+          <a href="contact.html">Contact section</a> on how to contact the
+          developers.</p>
+        </div>
       </div>
       <hr>
     </div>
 
     <div class="TOC">
       <dl>
-        <dt class="c1">Table of Contents</dt>
+        <dt><b>Table of Contents</b></dt>
 
         <dt>1. <a href="introduction.html">Introduction</a></dt>
 
@@ -106,33 +96,28 @@ body {
             <dd>
               <dl>
                 <dt>2.1.1. <a href=
-                "installation.html#INSTALLATION-PACK-RPM">Red Hat and Fedora
-                RPMs</a></dt>
-
-                <dt>2.1.2. <a href=
                 "installation.html#INSTALLATION-DEB">Debian and
                 Ubuntu</a></dt>
 
-                <dt>2.1.3. <a href=
+                <dt>2.1.2. <a href=
                 "installation.html#INSTALLATION-PACK-WIN">Windows</a></dt>
 
-                <dt>2.1.4. <a href=
-                "installation.html#INSTALLATION-PACK-BINTGZ">Solaris</a></dt>
-
-                <dt>2.1.5. <a href=
+                <dt>2.1.3. <a href=
                 "installation.html#INSTALLATION-OS2">OS/2</a></dt>
 
-                <dt>2.1.6. <a href="installation.html#INSTALLATION-MAC">Mac
+                <dt>2.1.4. <a href="installation.html#INSTALLATION-MAC">Mac
                 OS X</a></dt>
 
+                <dt>2.1.5. <a href=
+                "installation.html#OS-X-INSTALL-FROM-PACKAGE">Installation
+                from ready-built package</a></dt>
+
+                <dt>2.1.6. <a href=
+                "installation.html#OS-X-INSTALL-FROM-SOURCE">Installation
+                from source</a></dt>
+
                 <dt>2.1.7. <a href=
-                "installation.html#INSTALLATION-AMIGA">AmigaOS</a></dt>
-
-                <dt>2.1.8. <a href=
                 "installation.html#INSTALLATION-TBZ">FreeBSD</a></dt>
-
-                <dt>2.1.9. <a href=
-                "installation.html#INSTALLATTION-GENTOO">Gentoo</a></dt>
               </dl>
             </dd>
 
@@ -195,7 +180,7 @@ body {
 
         <dd>
           <dl>
-            <dt>6.1. <a href="configuration.html#AEN1090">Controlling Privoxy
+            <dt>6.1. <a href="configuration.html#AEN1056">Controlling Privoxy
             with Your Web Browser</a></dt>
 
             <dt>6.2. <a href="configuration.html#CONFOVERVIEW">Configuration
@@ -299,7 +284,7 @@ body {
                 <dt>7.5.1. <a href="config.html#FORWARD">forward</a></dt>
 
                 <dt>7.5.2. <a href="config.html#SOCKS">forward-socks4,
-                forward-socks4a and forward-socks5</a></dt>
+                forward-socks4a, forward-socks5 and forward-socks5t</a></dt>
 
                 <dt>7.5.3. <a href=
                 "config.html#ADVANCED-FORWARDING-EXAMPLES">Advanced
@@ -327,25 +312,31 @@ body {
                 "config.html#KEEP-ALIVE-TIMEOUT">keep-alive-timeout</a></dt>
 
                 <dt>7.6.5. <a href=
-                "config.html#DEFAULT-SERVER-TIMEOUT">default-server-timeout</a></dt>
+                "config.html#TOLERATE-PIPELINING">tolerate-pipelining</a></dt>
 
                 <dt>7.6.6. <a href=
-                "config.html#CONNECTION-SHARING">connection-sharing</a></dt>
+                "config.html#DEFAULT-SERVER-TIMEOUT">default-server-timeout</a></dt>
 
                 <dt>7.6.7. <a href=
-                "config.html#SOCKET-TIMEOUT">socket-timeout</a></dt>
+                "config.html#CONNECTION-SHARING">connection-sharing</a></dt>
 
                 <dt>7.6.8. <a href=
-                "config.html#MAX-CLIENT-CONNECTIONS">max-client-connections</a></dt>
+                "config.html#SOCKET-TIMEOUT">socket-timeout</a></dt>
 
                 <dt>7.6.9. <a href=
-                "config.html#HANDLE-AS-EMPTY-DOC-RETURNS-OK">handle-as-empty-doc-returns-ok</a></dt>
+                "config.html#MAX-CLIENT-CONNECTIONS">max-client-connections</a></dt>
 
                 <dt>7.6.10. <a href=
-                "config.html#ENABLE-COMPRESSION">enable-compression</a></dt>
+                "config.html#HANDLE-AS-EMPTY-DOC-RETURNS-OK">handle-as-empty-doc-returns-ok</a></dt>
 
                 <dt>7.6.11. <a href=
+                "config.html#ENABLE-COMPRESSION">enable-compression</a></dt>
+
+                <dt>7.6.12. <a href=
                 "config.html#COMPRESSION-LEVEL">compression-level</a></dt>
+
+                <dt>7.6.13. <a href=
+                "config.html#CLIENT-HEADER-ORDER">client-header-order</a></dt>
               </dl>
             </dd>
 
@@ -358,10 +349,10 @@ body {
 
         <dd>
           <dl>
-            <dt>8.1. <a href="actions-file.html#AEN2879">Finding the Right
+            <dt>8.1. <a href="actions-file.html#AEN2906">Finding the Right
             Mix</a></dt>
 
-            <dt>8.2. <a href="actions-file.html#AEN2886">How to Edit</a></dt>
+            <dt>8.2. <a href="actions-file.html#AEN2913">How to Edit</a></dt>
 
             <dt>8.3. <a href="actions-file.html#ACTIONS-APPLY">How Actions
             are Applied to Requests</a></dt>
@@ -371,10 +362,10 @@ body {
 
             <dd>
               <dl>
-                <dt>8.4.1. <a href="actions-file.html#AEN2998">The Domain
+                <dt>8.4.1. <a href="actions-file.html#AEN3025">The Domain
                 Pattern</a></dt>
 
-                <dt>8.4.2. <a href="actions-file.html#AEN3074">The Path
+                <dt>8.4.2. <a href="actions-file.html#AEN3101">The Path
                 Pattern</a></dt>
 
                 <dt>8.4.3. <a href="actions-file.html#TAG-PATTERN">The Tag
@@ -464,28 +455,31 @@ body {
                 "actions-file.html#LIMIT-CONNECT">limit-connect</a></dt>
 
                 <dt>8.5.27. <a href=
-                "actions-file.html#PREVENT-COMPRESSION">prevent-compression</a></dt>
+                "actions-file.html#LIMIT-COOKIE-LIFETIME">limit-cookie-lifetime</a></dt>
 
                 <dt>8.5.28. <a href=
-                "actions-file.html#OVERWRITE-LAST-MODIFIED">overwrite-last-modified</a></dt>
+                "actions-file.html#PREVENT-COMPRESSION">prevent-compression</a></dt>
 
                 <dt>8.5.29. <a href=
-                "actions-file.html#REDIRECT">redirect</a></dt>
+                "actions-file.html#OVERWRITE-LAST-MODIFIED">overwrite-last-modified</a></dt>
 
                 <dt>8.5.30. <a href=
-                "actions-file.html#SERVER-HEADER-FILTER">server-header-filter</a></dt>
+                "actions-file.html#REDIRECT">redirect</a></dt>
 
                 <dt>8.5.31. <a href=
-                "actions-file.html#SERVER-HEADER-TAGGER">server-header-tagger</a></dt>
+                "actions-file.html#SERVER-HEADER-FILTER">server-header-filter</a></dt>
 
                 <dt>8.5.32. <a href=
-                "actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</a></dt>
+                "actions-file.html#SERVER-HEADER-TAGGER">server-header-tagger</a></dt>
 
                 <dt>8.5.33. <a href=
-                "actions-file.html#SET-IMAGE-BLOCKER">set-image-blocker</a></dt>
+                "actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</a></dt>
 
                 <dt>8.5.34. <a href=
-                "actions-file.html#AEN4706">Summary</a></dt>
+                "actions-file.html#SET-IMAGE-BLOCKER">set-image-blocker</a></dt>
+
+                <dt>8.5.35. <a href=
+                "actions-file.html#AEN4773">Summary</a></dt>
               </dl>
             </dd>
 
@@ -497,13 +491,13 @@ body {
             <dd>
               <dl>
                 <dt>8.7.1. <a href=
-                "actions-file.html#AEN4770">match-all.action</a></dt>
+                "actions-file.html#AEN4837">match-all.action</a></dt>
 
                 <dt>8.7.2. <a href=
-                "actions-file.html#AEN4792">default.action</a></dt>
+                "actions-file.html#AEN4859">default.action</a></dt>
 
                 <dt>8.7.3. <a href=
-                "actions-file.html#AEN4905">user.action</a></dt>
+                "actions-file.html#AEN4972">user.action</a></dt>
               </dl>
             </dd>
           </dl>
@@ -513,7 +507,7 @@ body {
 
         <dd>
           <dl>
-            <dt>9.1. <a href="filter-file.html#AEN5060">Filter File
+            <dt>9.1. <a href="filter-file.html#AEN5127">Filter File
             Tutorial</a></dt>
 
             <dt>9.2. <a href="filter-file.html#PREDEFINED-FILTERS">The
@@ -557,7 +551,7 @@ body {
 
         <dd>
           <dl>
-            <dt>12.1. <a href="copyright.html#AEN5542">License</a></dt>
+            <dt>12.1. <a href="copyright.html#AEN5609">License</a></dt>
 
             <dt>12.2. <a href="copyright.html#HISTORY">History</a></dt>
 
@@ -574,7 +568,7 @@ body {
             <dt>14.1. <a href="appendix.html#REGEX">Regular
             Expressions</a></dt>
 
-            <dt>14.2. <a href="appendix.html#AEN5795">Privoxy's Internal
+            <dt>14.2. <a href="appendix.html#AEN5853">Privoxy's Internal
             Pages</a></dt>
 
             <dd>
@@ -595,7 +589,7 @@ body {
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c2" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

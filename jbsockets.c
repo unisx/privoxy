@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.111 2011/12/10 17:26:30 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.120 2013/01/01 22:11:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -83,7 +83,6 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.111 2011/12/10 17:26:30 fabia
 
 #endif
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 #ifdef HAVE_POLL
 #ifdef __GLIBC__
 #include <sys/poll.h>
@@ -91,7 +90,6 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.111 2011/12/10 17:26:30 fabia
 #include <poll.h>
 #endif /* def __GLIBC__ */
 #endif /* HAVE_POLL */
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 #include "project.h"
 
@@ -703,6 +701,77 @@ void close_socket(jb_socket fd)
 #else
    close(fd);
 #endif
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  drain_and_close_socket
+ *
+ * Description :  Closes a TCP/IP socket after draining unread data
+ *
+ * Parameters  :
+ *          1  :  fd = file descriptor of the socket to be closed
+ *
+ * Returns     :  void
+ *
+ *********************************************************************/
+void drain_and_close_socket(jb_socket fd)
+{
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   if (socket_is_still_alive(fd))
+#endif
+   {
+      int bytes_drained_total = 0;
+      int bytes_drained;
+
+#ifdef HAVE_SHUTDOWN
+/* Apparently Windows has shutdown() but not SHUT_WR. */
+#ifndef SHUT_WR
+#define SHUT_WR 1
+#endif
+      if (0 != shutdown(fd, SHUT_WR))
+      {
+         log_error(LOG_LEVEL_CONNECT, "Failed to shutdown socket %d: %E", fd);
+      }
+#endif
+#define ARBITRARY_DRAIN_LIMIT 10000
+      do
+      {
+         char drainage[500];
+
+         if (!data_is_available(fd, 0))
+         {
+            /*
+             * If there is no data available right now, don't try
+             * to drain the socket as read_socket() could block.
+             */
+            break;
+         }
+
+         bytes_drained = read_socket(fd, drainage, sizeof(drainage));
+         if (bytes_drained < 0)
+         {
+            log_error(LOG_LEVEL_CONNECT, "Failed to drain socket %d: %E", fd);
+         }
+         else if (bytes_drained > 0)
+         {
+            bytes_drained_total += bytes_drained;
+            if (bytes_drained_total > ARBITRARY_DRAIN_LIMIT)
+            {
+               log_error(LOG_LEVEL_CONNECT, "Giving up draining socket %d", fd);
+               break;
+            }
+         }
+      } while (bytes_drained > 0);
+      if (bytes_drained_total != 0)
+      {
+         log_error(LOG_LEVEL_CONNECT,
+            "Drained %d bytes before closing socket %d", bytes_drained_total, fd);
+      }
+   }
+
+   close_socket(fd);
 
 }
 
@@ -976,6 +1045,16 @@ void get_host_information(jb_socket afd, char **ip_address, char **port,
          log_error(LOG_LEVEL_ERROR, "getsockname() truncated server address");
          return;
       }
+/*
+ * XXX: Workaround for missing header on Windows when
+ *      configured with --disable-ipv6-support.
+ *      The proper fix is to not use NI_MAXSERV in
+ *      that case. It works by accident on other platforms
+ *      as <netdb.h> in included unconditionally there.
+ */
+#ifndef NI_MAXSERV
+#define NI_MAXSERV 32
+#endif
       *port = malloc(NI_MAXSERV);
       if (NULL == *port)
       {
@@ -1195,6 +1274,18 @@ int accept_connection(struct client_state * csp, jb_socket fds[])
    }
 #endif
 
+#ifdef SO_LINGER
+   {
+      struct linger linger_options;
+      linger_options.l_onoff  = 1;
+      linger_options.l_linger = 5;
+      if (0 != setsockopt(fd, SOL_SOCKET, SO_LINGER, &linger_options, sizeof(linger_options)))
+      {
+         log_error(LOG_LEVEL_ERROR, "Setting SO_LINGER on socket %d failed.", afd);
+      }
+   }
+#endif
+
    csp->cfd = afd;
 #ifdef HAVE_RFC2553
    csp->ip_addr_str = malloc(NI_MAXHOST);
@@ -1332,18 +1423,13 @@ unsigned long resolve_hostname_to_ip(const char *host)
          log_error(LOG_LEVEL_ERROR, "hostname %s resolves to unknown address type.", host);
          return(INADDR_NONE);
       }
-      memcpy(
-         (char *) &inaddr.sin_addr,
-         (char *) hostp->h_addr,
-         sizeof(inaddr.sin_addr)
-      );
+      memcpy((char *)&inaddr.sin_addr, (char *)hostp->h_addr, sizeof(inaddr.sin_addr));
    }
    return(inaddr.sin_addr.s_addr);
 
 }
 
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /*********************************************************************
  *
  * Function    :  socket_is_still_alive
@@ -1397,7 +1483,6 @@ int socket_is_still_alive(jb_socket sfd)
 
    return (no_data_waiting || (1 == recv(sfd, buf, 1, MSG_PEEK)));
 }
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 
 /*

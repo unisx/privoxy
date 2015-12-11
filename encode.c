@@ -1,4 +1,4 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.24 2011/11/06 11:51:57 fabiankeil Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.28 2012/12/27 15:48:53 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
@@ -47,7 +47,7 @@ const char encode_rcs[] = "$Id: encode.c,v 1.24 2011/11/06 11:51:57 fabiankeil E
 const char encode_h_rcs[] = ENCODE_H_VERSION;
 
 /* Maps special characters in a URL to their equivalent % codes. */
-static const char const url_code_map[256][4] = {
+static const char url_code_map[256][4] = {
    "",    "%01", "%02", "%03", "%04", "%05", "%06", "%07", "%08", "%09",
    "%0A", "%0B", "%0C", "%0D", "%0E", "%0F", "%10", "%11", "%12", "%13",
    "%14", "%15", "%16", "%17", "%18", "%19", "%1A", "%1B", "%1C", "%1D",
@@ -142,10 +142,10 @@ char * html_encode(const char *s)
    {
       char c;
       char * p = buf;
-      while ( (c = *s++) != '\0')
+      while ((c = *s++) != '\0')
       {
          const char * replace_with = html_code_map[(unsigned char) c];
-         if(replace_with != NULL)
+         if (replace_with != NULL)
          {
             const size_t bytes_written = (size_t)(p - buf);
             assert(bytes_written < buf_size);
@@ -236,7 +236,7 @@ char * url_encode(const char *s)
    {
       char c;
       char * p = buf;
-      while( (c = *s++) != '\0')
+      while((c = *s++) != '\0')
       {
          const char *replace_with = url_code_map[(unsigned char) c];
          if (*replace_with != '\0')
@@ -311,10 +311,10 @@ int xtoi(const char *s)
    int d1;
 
    d1 = xdtoi(*s);
-   if(d1 >= 0)
+   if (d1 >= 0)
    {
       int d2 = xdtoi(*(s+1));
-      if(d2 >= 0)
+      if (d2 >= 0)
       {
          return (d1 << 4) + d2;
       }
@@ -428,7 +428,7 @@ char *percent_encode_url(const char *s)
    {
       char c;
       char *p = buf;
-      while((c = *s++) != '\0')
+      while ((c = *s++) != '\0')
       {
          const unsigned int i = (unsigned char)c;
          if (i >= sizeof(allowed_characters) || '\0' == allowed_characters[i])

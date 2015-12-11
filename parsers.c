@@ -1,23 +1,11 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.237 2011/11/06 11:36:27 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.274 2013/01/04 12:20:31 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
  *
  * Purpose     :  Declares functions to parse/crunch headers and pages.
- *                Functions declared include:
- *                   `add_to_iob', `client_cookie_adder', `client_from',
- *                   `client_referrer', `client_send_cookie', `client_ua',
- *                   `client_uagent', `client_x_forwarded',
- *                   `client_x_forwarded_adder', `client_xtra_adder',
- *                   `content_type', `crumble', `destroy_list', `enlist',
- *                   `flush_socket', ``get_header', `sed', `filter_header'
- *                   `server_content_encoding', `server_content_disposition',
- *                   `server_last_modified', `client_accept_language',
- *                   `crunch_client_header', `client_if_modified_since',
- *                   `client_if_none_match', `get_destination_from_headers',
- *                   `parse_header_time', `decompress_iob' and `server_set_cookie'.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2012 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -104,19 +92,6 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.237 2011/11/06 11:36:27 fabiankei
 
 const char parsers_h_rcs[] = PARSERS_H_VERSION;
 
-/* Fix a problem with Solaris.  There should be no effect on other
- * platforms.
- * Solaris's isspace() is a macro which uses its argument directly
- * as an array index.  Therefore we need to make sure that high-bit
- * characters generate +ve values, and ideally we also want to make
- * the argument match the declared parameter type of "int".
- *
- * Why did they write a character function that can't take a simple
- * "char" argument?  Doh!
- */
-#define ijb_isupper(__X) isupper((int)(unsigned char)(__X))
-#define ijb_tolower(__X) tolower((int)(unsigned char)(__X))
-
 static char *get_header_line(struct iob *iob);
 static jb_err scan_headers(struct client_state *csp);
 static jb_err header_tagger(struct client_state *csp, char *header);
@@ -162,6 +137,7 @@ static jb_err server_keep_alive(struct client_state *csp, char **header);
 static jb_err server_proxy_connection(struct client_state *csp, char **header);
 static jb_err client_keep_alive(struct client_state *csp, char **header);
 static jb_err client_save_content_length(struct client_state *csp, char **header);
+static jb_err client_proxy_connection(struct client_state *csp, char **header);
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 static jb_err client_host_adder       (struct client_state *csp);
@@ -209,11 +185,12 @@ static const struct parsers client_patterns[] = {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    { "Keep-Alive:",              11,   client_keep_alive },
    { "Content-Length:",          15,   client_save_content_length },
+   { "Proxy-Connection:",        17,   client_proxy_connection },
 #else
    { "Keep-Alive:",              11,   crumble },
+   { "Proxy-Connection:",        17,   crumble },
 #endif
    { "connection:",              11,   client_connection },
-   { "proxy-connection:",        17,   crumble },
    { "max-forwards:",            13,   client_max_forwards },
    { "Accept-Language:",         16,   client_accept_language },
    { "if-none-match:",           14,   client_if_none_match },
@@ -221,6 +198,9 @@ static const struct parsers client_patterns[] = {
    { "Request-Range:",           14,   client_range },
    { "If-Range:",                 9,   client_range },
    { "X-Filter:",                 9,   client_x_filter },
+#if 0
+   { "Transfer-Encoding:",       18,   client_transfer_encoding },
+#endif
    { "*",                         0,   crunch_client_header },
    { "*",                         0,   filter_header },
    { NULL,                        0,   NULL }
@@ -305,21 +285,21 @@ long flush_socket(jb_socket fd, struct iob *iob)
  *
  * Function    :  add_to_iob
  *
- * Description :  Add content to the buffered page, expanding the
+ * Description :  Add content to the buffer, expanding the
  *                buffer if necessary.
  *
  * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  buf = holds the content to be added to the page
- *          3  :  n = number of bytes to be added
+ *          1  :  iob = Destination buffer.
+ *          2  :  buffer_limit = Limit to which the destination may grow
+ *          3  :  src = holds the content to be added
+ *          4  :  n = number of bytes to be added
  *
  * Returns     :  JB_ERR_OK on success, JB_ERR_MEMORY if out-of-memory
  *                or buffer limit reached.
  *
  *********************************************************************/
-jb_err add_to_iob(struct client_state *csp, char *buf, long n)
+jb_err add_to_iob(struct iob *iob, const size_t buffer_limit, char *src, long n)
 {
-   struct iob *iob = csp->iob;
    size_t used, offset, need;
    char *p;
 
@@ -333,24 +313,24 @@ jb_err add_to_iob(struct client_state *csp, char *buf, long n)
     * If the buffer can't hold the new data, extend it first.
     * Use the next power of two if possible, else use the actual need.
     */
-   if (need > csp->config->buffer_limit)
+   if (need > buffer_limit)
    {
       log_error(LOG_LEVEL_INFO,
          "Buffer limit reached while extending the buffer (iob). Needed: %d. Limit: %d",
-         need, csp->config->buffer_limit);
+         need, buffer_limit);
       return JB_ERR_MEMORY;
    }
 
    if (need > iob->size)
    {
-      size_t want = csp->iob->size ? csp->iob->size : 512;
+      size_t want = iob->size ? iob->size : 512;
 
       while (want <= need)
       {
          want *= 2;
       }
 
-      if (want <= csp->config->buffer_limit && NULL != (p = (char *)realloc(iob->buf, want)))
+      if (want <= buffer_limit && NULL != (p = (char *)realloc(iob->buf, want)))
       {
          iob->size = want;
       }
@@ -371,7 +351,7 @@ jb_err add_to_iob(struct client_state *csp, char *buf, long n)
    }
 
    /* copy the new data into the iob buffer */
-   memcpy(iob->eod, buf, (size_t)n);
+   memcpy(iob->eod, src, (size_t)n);
 
    /* point to the end of the data */
    iob->eod += n;
@@ -381,6 +361,27 @@ jb_err add_to_iob(struct client_state *csp, char *buf, long n)
 
    return JB_ERR_OK;
 
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  clear_iob
+ *
+ * Description :  Frees the memory allocated for an I/O buffer and
+ *                resets the structure.
+ *
+ * Parameters  :
+ *          1  :  iob = I/O buffer to clear.
+ *
+ * Returns     :  JB_ERR_OK on success, JB_ERR_MEMORY if out-of-memory
+ *                or buffer limit reached.
+ *
+ *********************************************************************/
+void clear_iob(struct iob *iob)
+{
+   free(iob->buf);
+   memset(iob, '\0', sizeof(*iob));;
 }
 
 
@@ -535,11 +536,6 @@ jb_err decompress_iob(struct client_state *csp)
    }
    else if (csp->content_type & CT_DEFLATE)
    {
-      /*
-       * XXX: The debug level should be lowered
-       * before the next stable release.
-       */
-      log_error(LOG_LEVEL_INFO, "Decompressing deflated iob: %d", *cur);
       /*
        * In theory (that is, according to RFC 1950), deflate-compressed
        * data should begin with a two-byte zlib header and have an
@@ -749,31 +745,6 @@ jb_err decompress_iob(struct client_state *csp)
 
 /*********************************************************************
  *
- * Function    :  string_move
- *
- * Description :  memmove wrapper to move the last part of a string
- *                towards the beginning, overwriting the part in
- *                the middle. strlcpy() can't be used here as the
- *                strings overlap.
- *
- * Parameters  :
- *          1  :  dst = Destination to overwrite
- *          2  :  src = Source to move.
- *
- * Returns     :  N/A
- *
- *********************************************************************/
-static void string_move(char *dst, char *src)
-{
-   assert(dst < src);
-
-   /* +1 to copy the terminating nul as well. */
-   memmove(dst, src, strlen(src)+1);
-}
-
-
-/*********************************************************************
- *
  * Function    :  normalize_lws
  *
  * Description :  Reduces unquoted linear white space in headers
@@ -795,11 +766,11 @@ static void normalize_lws(char *header)
 
    while (*p != '\0')
    {
-      if (ijb_isspace(*p) && ijb_isspace(*(p+1)))
+      if (privoxy_isspace(*p) && privoxy_isspace(*(p+1)))
       {
          char *q = p+1;
 
-         while (ijb_isspace(*q))
+         while (privoxy_isspace(*q))
          {
             q++;
          }
@@ -832,7 +803,7 @@ static void normalize_lws(char *header)
    }
 
    p = strchr(header, ':');
-   if ((p != NULL) && (p != header) && ijb_isspace(*(p-1)))
+   if ((p != NULL) && (p != header) && privoxy_isspace(*(p-1)))
    {
       /*
        * There's still space before the colon.
@@ -1007,7 +978,7 @@ char *get_header_value(const struct list *header_list, const char *header_name)
              * Found: return pointer to start of value
              */
             ret = cur_entry->str + length;
-            while (*ret && ijb_isspace(*ret)) ret++;
+            while (*ret && privoxy_isspace(*ret)) ret++;
             return ret;
          }
       }
@@ -1049,6 +1020,79 @@ static jb_err scan_headers(struct client_state *csp)
    return err;
 }
 
+
+/*********************************************************************
+ *
+ * Function    :  enforce_header_order
+ *
+ * Description :  Enforces a given header order.
+ *
+ * Parameters  :
+ *          1  :  headers         = List of headers to order.
+ *          2  :  ordered_headers = List of ordered header names.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void enforce_header_order(struct list *headers, const struct list *ordered_headers)
+{
+   struct list_entry *sorted_header;
+   struct list new_headers[1];
+   struct list_entry *header;
+
+   init_list(new_headers);
+
+   /* The request line is always the first "header" */
+
+   assert(NULL != headers->first->str);
+   enlist(new_headers, headers->first->str);
+   freez(headers->first->str)
+
+   /* Enlist the specified headers in the given order */
+
+   for (sorted_header = ordered_headers->first; sorted_header != NULL;
+        sorted_header = sorted_header->next)
+   {
+      const size_t sorted_header_length = strlen(sorted_header->str);
+      for (header = headers->first; header != NULL; header = header->next)
+      {
+         /* Header enlisted in previous run? -> ignore */
+         if (header->str == NULL) continue;
+
+         if (0 == strncmpic(sorted_header->str, header->str, sorted_header_length)
+            && (header->str[sorted_header_length] == ':'))
+         {
+            log_error(LOG_LEVEL_HEADER, "Enlisting sorted header %s", header->str);
+            if (JB_ERR_OK != enlist(new_headers, header->str))
+            {
+               log_error(LOG_LEVEL_HEADER, "Failed to enlist %s", header->str);
+            }
+            freez(header->str);
+         }
+      }
+   }
+
+   /* Enlist the rest of the headers behind the ordered ones */
+   for (header = headers->first; header != NULL; header = header->next)
+   {
+      /* Header enlisted in previous run? -> ignore */
+      if (header->str == NULL) continue;
+
+      log_error(LOG_LEVEL_HEADER,
+         "Enlisting left-over header %s", header->str);
+      if (JB_ERR_OK != enlist(new_headers, header->str))
+      {
+         log_error(LOG_LEVEL_HEADER, "Failed to enlist %s", header->str);
+      }
+      freez(header->str);
+   }
+
+   list_remove_all(headers);
+   list_duplicate(headers, new_headers);
+   list_remove_all(new_headers);
+
+   return;
+}
 
 /*********************************************************************
  *
@@ -1114,6 +1158,11 @@ jb_err sed(struct client_state *csp, int filter_server_headers)
    {
       err = (*f)(csp);
       f++;
+   }
+
+   if (!filter_server_headers && !list_is_empty(csp->config->ordered_client_headers))
+   {
+      enforce_header_order(csp->headers, csp->config->ordered_client_headers);
    }
 
    return err;
@@ -1182,6 +1231,7 @@ jb_err update_server_headers(struct client_state *csp)
          log_error(LOG_LEVEL_HEADER,
             "Content modified with no Content-Length header set. "
             "Created: %s.", header);
+         csp->flags |= CSP_FLAG_SERVER_CONTENT_LENGTH_SET;
       }
    }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
@@ -1505,14 +1555,14 @@ static jb_err filter_header(struct client_state *csp, char **header)
                for (job = joblist; NULL != job; job = job->next)
                {
                   matches = pcrs_execute(job, *header, size, &newheader, &size);
-                  if ( 0 < matches )
+                  if (0 < matches)
                   {
                      current_hits += matches;
                      log_error(LOG_LEVEL_HEADER, "Transforming \"%s\" to \"%s\"", *header, newheader);
                      freez(*header);
                      *header = newheader;
                   }
-                  else if ( 0 == matches )
+                  else if (0 == matches)
                   {
                      /* Filter doesn't change header */
                      freez(newheader);
@@ -1569,8 +1619,7 @@ static jb_err filter_header(struct client_state *csp, char **header)
  *                to remove the header.  This function frees the
  *                original string if necessary.
  *
- * Returns     :  JB_ERR_OK on success, or
- *                JB_ERR_MEMORY on out-of-memory error.
+ * Returns     :  JB_ERR_OK on success.
  *
  *********************************************************************/
 static jb_err server_connection(struct client_state *csp, char **header)
@@ -1579,7 +1628,7 @@ static jb_err server_connection(struct client_state *csp, char **header)
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
     && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
 #endif
-      )
+     )
    {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
       if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE))
@@ -1597,11 +1646,7 @@ static jb_err server_connection(struct client_state *csp, char **header)
       {
          char *old_header = *header;
 
-         *header = strdup("Connection: close");
-         if (header == NULL)
-         {
-            return JB_ERR_MEMORY;
-         }
+         *header = strdup_or_die("Connection: close");
          log_error(LOG_LEVEL_HEADER, "Replaced: \'%s\' with \'%s\'", old_header, *header);
          freez(old_header);
       }
@@ -1752,22 +1797,20 @@ static jb_err client_keep_alive(struct client_state *csp, char **header)
  *                Content-Length header.
  *
  * Parameters  :
- *          1  :  header = The Content-Length header.
+ *          1  :  header_value = The Content-Length header value.
  *          2  :  length = Storage to return the value.
  *
  * Returns     :  JB_ERR_OK on success, or
  *                JB_ERR_PARSE if no value is recognized.
  *
  *********************************************************************/
-static jb_err get_content_length(const char *header, unsigned long long *length)
+static jb_err get_content_length(const char *header_value, unsigned long long *length)
 {
-   assert(header[14] == ':');
-
 #ifdef _WIN32
    assert(sizeof(unsigned long long) > 4);
-   if (1 != sscanf(header+14, ": %I64u", length))
+   if (1 != sscanf(header_value, "%I64u", length))
 #else
-   if (1 != sscanf(header+14, ": %llu", length))
+   if (1 != sscanf(header_value, "%llu", length))
 #endif
    {
       return JB_ERR_PARSE;
@@ -1797,10 +1840,12 @@ static jb_err get_content_length(const char *header, unsigned long long *length)
 static jb_err client_save_content_length(struct client_state *csp, char **header)
 {
    unsigned long long content_length = 0;
+   const char *header_value;
 
    assert(*(*header+14) == ':');
 
-   if (JB_ERR_OK != get_content_length(*header, &content_length))
+   header_value = *header + 15;
+   if (JB_ERR_OK != get_content_length(header_value, &content_length))
    {
       log_error(LOG_LEVEL_ERROR, "Crunching invalid header: %s", *header);
       freez(*header);
@@ -1831,8 +1876,7 @@ static jb_err client_save_content_length(struct client_state *csp, char **header
  *                to remove the header.  This function frees the
  *                original string if necessary.
  *
- * Returns     :  JB_ERR_OK on success, or
- *                JB_ERR_MEMORY on out-of-memory error.
+ * Returns     :  JB_ERR_OK on success.
  *
  *********************************************************************/
 static jb_err client_connection(struct client_state *csp, char **header)
@@ -1842,7 +1886,8 @@ static jb_err client_connection(struct client_state *csp, char **header)
    if (!strcmpic(*header, connection_close))
    {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING))
+      if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
+        && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
       {
           if (!strcmpic(csp->http->ver, "HTTP/1.1"))
           {
@@ -1859,11 +1904,7 @@ static jb_err client_connection(struct client_state *csp, char **header)
           {
              char *old_header = *header;
 
-             *header = strdup("Connection: keep-alive");
-             if (header == NULL)
-             {
-                return JB_ERR_MEMORY;
-             }
+             *header = strdup_or_die("Connection: keep-alive");
              log_error(LOG_LEVEL_HEADER,
                 "Replaced: \'%s\' with \'%s\'", old_header, *header);
              freez(old_header);
@@ -1878,7 +1919,8 @@ static jb_err client_connection(struct client_state *csp, char **header)
          csp->flags &= ~CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
       }
    }
-   else if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE))
+   else if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
+        && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
    {
       log_error(LOG_LEVEL_HEADER,
          "Keeping the client header '%s' around. "
@@ -1891,18 +1933,82 @@ static jb_err client_connection(struct client_state *csp, char **header)
    {
       char *old_header = *header;
 
-      *header = strdup(connection_close);
-      if (header == NULL)
-      {
-         return JB_ERR_MEMORY;
-      }
+      *header = strdup_or_die(connection_close);
       log_error(LOG_LEVEL_HEADER,
          "Replaced: \'%s\' with \'%s\'", old_header, *header);
       freez(old_header);
    }
 
-   /* Signal client_connection_adder() to return early. */
+   /* Signal client_connection_header_adder() to return early. */
    csp->flags |= CSP_FLAG_CLIENT_CONNECTION_HEADER_SET;
+
+   return JB_ERR_OK;
+}
+
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+/*********************************************************************
+ *
+ * Function    :  client_proxy_connection
+ *
+ * Description :  Sets the CLIENT_CONNECTION_KEEP_ALIVE flag when
+ *                appropriate and removes the Proxy-Connection
+ *                header.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  header = On input, pointer to header to modify.
+ *                On output, pointer to the modified header, or NULL
+ *                to remove the header.  This function frees the
+ *                original string if necessary.
+ *
+ * Returns     :  JB_ERR_OK
+ *
+ *********************************************************************/
+static jb_err client_proxy_connection(struct client_state *csp, char **header)
+{
+   if (0 == (csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
+      && (csp->http->ssl == 0)
+      && (NULL == strstr(*header, "close")))
+   {
+      log_error(LOG_LEVEL_HEADER,
+         "The client connection can be kept alive due to: %s", *header);
+      csp->flags |= CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE;
+   }
+   crumble(csp, header);
+
+   return JB_ERR_OK;
+}
+#endif  /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+
+/*********************************************************************
+ *
+ * Function    :  client_transfer_encoding
+ *
+ * Description :  Raise the CSP_FLAG_CHUNKED_CLIENT_BODY flag if
+ *                the request body is "chunked"
+ *
+ *                XXX: Currently not called through sed() as we
+ *                     need the flag earlier on. Should be fixed.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  header = On input, pointer to header to modify.
+ *                On output, pointer to the modified header, or NULL
+ *                to remove the header.  This function frees the
+ *                original string if necessary.
+ *
+ * Returns     :  JB_ERR_OK on success, or
+ *
+ *********************************************************************/
+jb_err client_transfer_encoding(struct client_state *csp, char **header)
+{
+   if (strstr(*header, "chunked"))
+   {
+      csp->flags |= CSP_FLAG_CHUNKED_CLIENT_BODY;
+      log_error(LOG_LEVEL_HEADER, "Expecting chunked client body");
+   }
 
    return JB_ERR_OK;
 }
@@ -1999,17 +2105,25 @@ static jb_err server_content_type(struct client_state *csp, char **header)
    /* Remove header if it isn't the first Content-Type header */
    if ((csp->content_type & CT_DECLARED))
    {
-     /*
-      * Another, slightly slower, way to see if
-      * we already parsed another Content-Type header.
-      */
-      assert(NULL != get_header_value(csp->headers, "Content-Type:"));
-
-      log_error(LOG_LEVEL_ERROR,
-         "Multiple Content-Type headers. Removing and ignoring: \'%s\'",
-         *header);
-      freez(*header);
-
+      if (content_filters_enabled(csp->action))
+      {
+         /*
+          * Making sure the client interprets the content the same way
+          * Privoxy did is only relevant if Privoxy modified it.
+          *
+          * Checking for this is "hard" as it's not yet known when
+          * this function is called, thus go shopping and and just
+          * check if Privoxy could filter it.
+          *
+          * The main thing is that we don't mess with the headers
+          * unless the user signalled that it's acceptable.
+          */
+         log_error(LOG_LEVEL_HEADER,
+            "Multiple Content-Type headers detected. "
+            "Removing and ignoring: %s",
+            *header);
+         freez(*header);
+      }
       return JB_ERR_OK;
    }
 
@@ -2049,7 +2163,7 @@ static jb_err server_content_type(struct client_state *csp, char **header)
       if ((csp->content_type & CT_TEXT) || (csp->action->flags & ACTION_FORCE_TEXT_MODE))
       {
          freez(*header);
-         *header = strdup("Content-Type: ");
+         *header = strdup_or_die("Content-Type: ");
          string_append(header, csp->action->string[ACTION_STRING_CONTENT_TYPE]);
 
          if (header == NULL)
@@ -2339,10 +2453,12 @@ static jb_err server_adjust_content_length(struct client_state *csp, char **head
 static jb_err server_save_content_length(struct client_state *csp, char **header)
 {
    unsigned long long content_length = 0;
+   const char *header_value;
 
    assert(*(*header+14) == ':');
 
-   if (JB_ERR_OK != get_content_length(*header, &content_length))
+   header_value = *header + 15;
+   if (JB_ERR_OK != get_content_length(header_value, &content_length))
    {
       log_error(LOG_LEVEL_ERROR, "Crunching invalid header: %s", *header);
       freez(*header);
@@ -2486,7 +2602,7 @@ static jb_err server_last_modified(struct client_state *csp, char **header)
 
    newval = csp->action->string[ACTION_STRING_LAST_MODIFIED];
 
-   if (0 == strcmpic(newval, "block") )
+   if (0 == strcmpic(newval, "block"))
    {
       /*
        * Blocking Last-Modified header. Useless but why not.
@@ -2782,7 +2898,7 @@ static jb_err client_accept_language(struct client_state *csp, char **header)
 
    newval = csp->action->string[ACTION_STRING_LANGUAGE];
 
-   if ((newval == NULL) || (0 == strcmpic(newval, "block")) )
+   if ((newval == NULL) || (0 == strcmpic(newval, "block")))
    {
       /*
        * Blocking Accept-Language header
@@ -2959,7 +3075,7 @@ static jb_err client_from(struct client_state *csp, char **header)
    /*
     * Are we blocking the e-mail address?
     */
-   if ((newval == NULL) || (0 == strcmpic(newval, "block")) )
+   if ((newval == NULL) || (0 == strcmpic(newval, "block")))
    {
       log_error(LOG_LEVEL_HEADER, "crunched From!");
       return JB_ERR_OK;
@@ -2996,7 +3112,7 @@ static jb_err client_from(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err client_send_cookie(struct client_state *csp, char **header)
 {
-   if (csp->action->flags & ACTION_NO_COOKIE_READ)
+   if (csp->action->flags & ACTION_CRUNCH_OUTGOING_COOKIES)
    {
       log_error(LOG_LEVEL_HEADER, "Crunched outgoing cookie: %s", *header);
       freez(*header);
@@ -3153,16 +3269,9 @@ static jb_err client_host(struct client_state *csp, char **header)
        *csp->http->hostport == ' ' || *csp->http->hostport == '\0')
    {
 
-      if (NULL == (p = strdup((*header)+6)))
-      {
-         return JB_ERR_MEMORY;
-      }
+      p = strdup_or_die((*header)+6);
       chomp(p);
-      if (NULL == (q = strdup(p)))
-      {
-         freez(p);
-         return JB_ERR_MEMORY;
-      }
+      q = strdup_or_die(p);
 
       freez(csp->http->hostport);
       csp->http->hostport = p;
@@ -3219,7 +3328,7 @@ static jb_err client_if_modified_since(struct client_state *csp, char **header)
    const char *newval;
    char * endptr;
 
-   if ( 0 == strcmpic(*header, "If-Modified-Since: Wed, 08 Jun 1955 12:00:00 GMT"))
+   if (0 == strcmpic(*header, "If-Modified-Since: Wed, 08 Jun 1955 12:00:00 GMT"))
    {
       /*
        * The client got an error message because of a temporary problem,
@@ -3366,7 +3475,7 @@ static jb_err client_if_none_match(struct client_state *csp, char **header)
  *********************************************************************/
 jb_err client_x_filter(struct client_state *csp, char **header)
 {
-   if ( 0 == strcmpic(*header, "X-Filter: No"))
+   if (0 == strcmpic(*header, "X-Filter: No"))
    {
       if (!(csp->config->feature_flags & RUNTIME_FEATURE_HTTP_TOGGLE))
       {
@@ -3398,11 +3507,25 @@ jb_err client_x_filter(struct client_state *csp, char **header)
  * Function    :  client_range
  *
  * Description :  Removes Range, Request-Range and If-Range headers if
- *                content filtering is enabled. If the client's version
- *                of the document has been altered by Privoxy, the server
- *                could interpret the range differently than the client
- *                intended in which case the user could end up with
- *                corrupted content.
+ *                content filtering is enabled and the range doesn't
+ *                start at byte 0.
+ *
+ *                If the client's version of the document has been
+ *                altered by Privoxy, the server could interpret the
+ *                range differently than the client intended in which
+ *                case the user could end up with corrupted content.
+ *
+ *                If the range starts at byte 0 this isn't an issue
+ *                so the header can pass. Partial requests like this
+ *                are used to render preview images for videos without
+ *                downloading the whole video.
+ *
+ *                While HTTP doesn't require that range requests are
+ *                honoured and the client could simply abort the download
+ *                after receiving a sufficient amount of data, various
+ *                clients don't handle complete responses to range
+ *                requests gracefully and emit misleading error messages
+ *                instead.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -3416,7 +3539,8 @@ jb_err client_x_filter(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err client_range(struct client_state *csp, char **header)
 {
-   if (content_filters_enabled(csp->action))
+   if (content_filters_enabled(csp->action)
+      && (0 != strncmpic(strstr(*header, ":"), ": bytes=0-", 10)))
    {
       log_error(LOG_LEVEL_HEADER, "Content filtering is enabled."
          " Crunching: \'%s\' to prevent range-mismatch problems.", *header);
@@ -3453,7 +3577,7 @@ static jb_err client_host_adder(struct client_state *csp)
       return JB_ERR_OK;
    }
 
-   if ( !csp->http->hostport || !*(csp->http->hostport))
+   if (!csp->http->hostport || !*(csp->http->hostport))
    {
       /* XXX: When does this happen and why is it OK? */
       log_error(LOG_LEVEL_INFO, "Weirdness in client_host_adder detected and ignored.");
@@ -3463,7 +3587,7 @@ static jb_err client_host_adder(struct client_state *csp)
    /*
     * remove 'user:pass@' from 'proto://user:pass@host'
     */
-   if ( (p = strchr( csp->http->hostport, '@')) != NULL )
+   if ((p = strchr( csp->http->hostport, '@')) != NULL)
    {
       p++;
    }
@@ -3596,7 +3720,7 @@ static jb_err server_connection_adder(struct client_state *csp)
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
     && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
 #endif
-       )
+      )
    {
       log_error(LOG_LEVEL_HEADER, "A HTTP/1.1 response "
          "without Connection header implies keep-alive.");
@@ -3616,8 +3740,7 @@ static jb_err server_connection_adder(struct client_state *csp)
  * Function    :  server_proxy_connection_adder
  *
  * Description :  Adds a "Proxy-Connection: keep-alive" header to
- *                csp->headers if the client asked for keep-alive.
- *                XXX: We should reuse existent ones.
+ *                csp->headers when appropriate.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -3633,7 +3756,9 @@ static jb_err server_proxy_connection_adder(struct client_state *csp)
 
    if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
     && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
-    && !(csp->flags & CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET))
+    && !(csp->flags & CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET)
+    && ((csp->flags & CSP_FLAG_SERVER_CONTENT_LENGTH_SET)
+       || (csp->flags & CSP_FLAG_CHUNKED)))
    {
       log_error(LOG_LEVEL_HEADER, "Adding: %s", proxy_connection_header);
       err = enlist(csp->headers, proxy_connection_header);
@@ -3670,6 +3795,7 @@ static jb_err client_connection_header_adder(struct client_state *csp)
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
+      && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
       && (csp->http->ssl == 0)
       && !strcmpic(csp->http->ver, "HTTP/1.1"))
    {
@@ -3735,6 +3861,50 @@ static jb_err server_http(struct client_state *csp, char **header)
    return JB_ERR_OK;
 }
 
+/*********************************************************************
+ *
+ * Function    :  add_cooky_expiry_date
+ *
+ * Description :  Adds a cookie expiry date to a string.
+ *
+ * Parameters  :
+ *          1  :  cookie = On input, pointer to cookie to modify.
+ *                         On output, pointer to the modified header.
+ *                         The original string is freed.
+ *          2  :  lifetime = Seconds the cookie should be valid
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void add_cookie_expiry_date(char **cookie, time_t lifetime)
+{
+   char tmp[50];
+   struct tm *timeptr = NULL;
+   time_t expiry_date = time(NULL) + lifetime;
+#ifdef HAVE_GMTIME_R
+   struct tm gmt;
+
+   timeptr = gmtime_r(&expiry_date, &gmt);
+#elif defined(MUTEX_LOCKS_AVAILABLE)
+   privoxy_mutex_lock(&gmtime_mutex);
+   timeptr = gmtime(&expiry_date);
+   privoxy_mutex_unlock(&gmtime_mutex);
+#else
+   timeptr = gmtime(&expiry_date);
+#endif
+
+   if (NULL == timeptr)
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Failed to get the time in add_cooky_expiry_date()");
+   }
+   strftime(tmp, sizeof(tmp), "; expires=%a, %d-%b-%Y %H:%M:%S GMT", timeptr);
+   if (JB_ERR_OK != string_append(cookie, tmp))
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory in add_cooky_expiry()");
+   }
+}
+
 
 /*********************************************************************
  *
@@ -3743,10 +3913,6 @@ static jb_err server_http(struct client_state *csp, char **header)
  * Description :  Handle the server "cookie" header properly.
  *                Crunch, accept or rewrite it to a session cookie.
  *                Called from `sed'.
- *
- *                TODO: Allow the user to specify a new expiration
- *                time to cause the cookie to expire even before the
- *                browser is closed.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -3761,20 +3927,23 @@ static jb_err server_http(struct client_state *csp, char **header)
  *********************************************************************/
 static jb_err server_set_cookie(struct client_state *csp, char **header)
 {
-   time_t now;
-   time_t cookie_time;
-
-   time(&now);
-
-   if ((csp->action->flags & ACTION_NO_COOKIE_SET) != 0)
+   if ((csp->action->flags & ACTION_CRUNCH_INCOMING_COOKIES) != 0)
    {
       log_error(LOG_LEVEL_HEADER, "Crunching incoming cookie: %s", *header);
       freez(*header);
    }
-   else if ((csp->action->flags & ACTION_NO_COOKIE_KEEP) != 0)
+   else if ((0 != (csp->action->flags & ACTION_SESSION_COOKIES_ONLY))
+         || (0 != (csp->action->flags & ACTION_LIMIT_COOKIE_LIFETIME)))
    {
-      /* Flag whether or not to log a message */
-      int changed = 0;
+      time_t now;
+      time_t cookie_time;
+      long cookie_lifetime = 0;
+      enum
+      {
+         NO_EXPIRY_DATE_SPECIFIED,
+         EXPIRY_DATE_ACCEPTABLE,
+         EXPIRY_DATE_UNACCEPTABLE
+      } expiry_date_status = NO_EXPIRY_DATE_SPECIFIED;
 
       /* A variable to store the tag we're working on */
       char *cur_tag;
@@ -3783,9 +3952,23 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
       cur_tag = *header + 11;
 
       /* skip whitespace between "Set-Cookie:" and value */
-      while (*cur_tag && ijb_isspace(*cur_tag))
+      while (*cur_tag && privoxy_isspace(*cur_tag))
       {
          cur_tag++;
+      }
+
+      time(&now);
+
+      if ((csp->action->flags & ACTION_LIMIT_COOKIE_LIFETIME) != 0)
+      {
+         const char *param = csp->action->string[ACTION_STRING_LIMIT_COOKIE_LIFETIME];
+
+         cookie_lifetime = strtol(param, NULL, 0);
+         if (cookie_lifetime < 0)
+         {
+            log_error(LOG_LEVEL_FATAL, "Invalid cookie lifetime limit: %s", param);
+         }
+         cookie_lifetime *= 60;
       }
 
       /* Loop through each tag in the cookie */
@@ -3799,7 +3982,7 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
             next_tag++;
 
             /* skip whitespace ";" and start of tag */
-            while (*next_tag && ijb_isspace(*next_tag))
+            while (*next_tag && privoxy_isspace(*next_tag))
             {
                next_tag++;
             }
@@ -3841,7 +4024,7 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
                log_error(LOG_LEVEL_ERROR,
                   "Can't parse \'%s\', send by %s. Unsupported time format?", cur_tag, csp->http->url);
                string_move(cur_tag, next_tag);
-               changed = 1;
+               expiry_date_status = EXPIRY_DATE_UNACCEPTABLE;
             }
             else
             {
@@ -3879,12 +4062,21 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
                 *   anyway, which in many cases will be shorter
                 *   than a browser session.
                 */
-               if (cookie_time - now < 0)
+               if (cookie_time < now)
                {
                   log_error(LOG_LEVEL_HEADER,
                      "Cookie \'%s\' is already expired and can pass unmodified.", *header);
                   /* Just in case some clown sets more then one expiration date */
                   cur_tag = next_tag;
+                  expiry_date_status = EXPIRY_DATE_ACCEPTABLE;
+               }
+               else if ((cookie_lifetime != 0) && (cookie_time < (now + cookie_lifetime)))
+               {
+                  log_error(LOG_LEVEL_HEADER, "Cookie \'%s\' can pass unmodified. "
+                     "Its lifetime is below the limit.", *header);
+                  /* Just in case some clown sets more then one expiration date */
+                  cur_tag = next_tag;
+                  expiry_date_status = EXPIRY_DATE_ACCEPTABLE;
                }
                else
                {
@@ -3895,7 +4087,7 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
                   string_move(cur_tag, next_tag);
 
                   /* That changed the header, need to issue a log message */
-                  changed = 1;
+                  expiry_date_status = EXPIRY_DATE_UNACCEPTABLE;
 
                   /*
                    * Note that the next tag has now been moved to *cur_tag,
@@ -3912,11 +4104,19 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
          }
       }
 
-      if (changed)
+      if (expiry_date_status != EXPIRY_DATE_ACCEPTABLE)
       {
          assert(NULL != *header);
-         log_error(LOG_LEVEL_HEADER, "Cookie rewritten to a temporary one: %s",
-            *header);
+         if (cookie_lifetime != 0)
+         {
+            add_cookie_expiry_date(header, cookie_lifetime);
+            log_error(LOG_LEVEL_HEADER, "Cookie rewritten to: %s", *header);
+         }
+         else if (expiry_date_status != NO_EXPIRY_DATE_SPECIFIED)
+         {
+            log_error(LOG_LEVEL_HEADER,
+               "Cookie rewritten to a temporary one: %s", *header);
+         }
       }
    }
 
@@ -3987,7 +4187,7 @@ static jb_err parse_header_time(const char *header_time, time_t *result)
     * attempt to work around GNU libc's strptime()
     * reporting negative year values when using %Y.
     */
-   static const char * const time_formats[] = {
+   static const char time_formats[][22] = {
       /* Tue, 02-Jun-37 20:00:00 */
       "%a, %d-%b-%y %H:%M:%S",
       /* Tue, 02 Jun 2037 20:00:00 */
@@ -4020,6 +4220,44 @@ static jb_err parse_header_time(const char *header_time, time_t *result)
             continue;
          }
          *result = timegm(&gmt);
+
+#ifdef FEATURE_STRPTIME_SANITY_CHECKS
+         /*
+          * Verify that parsing the date recreated from the first
+          * parse operation gets the previous result. If it doesn't,
+          * either strptime() or strftime() are malfunctioning.
+          *
+          * We could string-compare the recreated date with the original
+          * header date, but this leads to false positives as strptime()
+          * may let %a accept all day formats while strftime() will only
+          * create one.
+          */
+         {
+            char recreated_date[100];
+            struct tm *tm;
+            time_t result2;
+
+            tm = gmtime(result);
+            strftime(recreated_date, sizeof(recreated_date), time_formats[i], tm);
+            memset(&gmt, 0, sizeof(gmt));
+            if (NULL == strptime(recreated_date, time_formats[i], &gmt))
+            {
+               log_error(LOG_LEVEL_ERROR,
+                  "Failed to parse '%s' generated with '%s' to recreate '%s'.",
+                  recreated_date, time_formats[i], header_time);
+               continue;
+            }
+            result2 = timegm(&gmt);
+            if (*result != result2)
+            {
+               log_error(LOG_LEVEL_ERROR, "strftime() and strptime() disagree. "
+                  "Format: '%s'. In: '%s', out: '%s'. %d != %d. Rejecting.",
+                  time_formats[i], header_time, recreated_date, *result, result2);
+               continue;
+            }
+         }
+#endif
+
          return JB_ERR_OK;
       }
    }
@@ -4045,7 +4283,7 @@ static jb_err parse_header_time(const char *header_time, time_t *result)
  *                the "Host:" header)
  *          2  :  http = storage for the result (host, port and hostport).
  *
- * Returns     :  JB_ERR_MEMORY in case of memory problems,
+ * Returns     :  JB_ERR_MEMORY (or terminates) in case of memory problems,
  *                JB_ERR_PARSE if the host header couldn't be found,
  *                JB_ERR_OK otherwise.
  *
@@ -4064,19 +4302,9 @@ jb_err get_destination_from_headers(const struct list *headers, struct http_requ
       return JB_ERR_PARSE;
    }
 
-   p = strdup(host);
-   if (NULL == p)
-   {
-      log_error(LOG_LEVEL_ERROR, "Out of memory while parsing \"Host:\" header");
-      return JB_ERR_MEMORY;
-   }
+   p = strdup_or_die(host);
    chomp(p);
-   if (NULL == (q = strdup(p)))
-   {
-      freez(p);
-      log_error(LOG_LEVEL_ERROR, "Out of memory while parsing \"Host:\" header");
-      return JB_ERR_MEMORY;
-   }
+   q = strdup_or_die(p);
 
    freez(http->hostport);
    http->hostport = p;
@@ -4117,7 +4345,7 @@ jb_err get_destination_from_headers(const struct list *headers, struct http_requ
  * Function    :  create_forged_referrer
  *
  * Description :  Helper for client_referrer to forge a referer as
- *                'http://[hostname:port/' to fool stupid
+ *                'http://hostname[:port]/' to fool stupid
  *                checks for in-site links
  *
  * Parameters  :
@@ -4208,15 +4436,9 @@ static jb_err create_fake_referrer(char **header, const char *fake_referrer)
 static jb_err handle_conditional_hide_referrer_parameter(char **header,
    const char *host, const int parameter_conditional_block)
 {
-   char *referer = strdup(*header);
+   char *referer = strdup_or_die(*header);
    const size_t hostlength = strlen(host);
    const char *referer_url = NULL;
-
-   if (NULL == referer)
-   {
-      freez(*header);
-      return JB_ERR_MEMORY;
-   }
 
    /* referer begins with 'Referer: http[s]://' */
    if ((hostlength+17) < strlen(referer))
@@ -4271,6 +4493,40 @@ static void create_content_length_header(unsigned long long content_length,
    snprintf(header, buffer_length, "Content-Length: %llu", content_length);
 }
 
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+/*********************************************************************
+ *
+ * Function    :  get_expected_content_length
+ *
+ * Description :  Figures out the content length from a list of headers.
+ *
+ * Parameters  :
+ *          1  :  headers = List of headers
+ *
+ * Returns     :  Number of bytes to expect
+ *
+ *********************************************************************/
+unsigned long long get_expected_content_length(struct list *headers)
+{
+   const char *content_length_header;
+   unsigned long long content_length = 0;
+
+   content_length_header = get_header_value(headers, "Content-Length:");
+   if (content_length_header != NULL)
+   {
+      if (JB_ERR_OK != get_content_length(content_length_header, &content_length))
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Failed to get the Content-Length in %s", content_length_header);
+         /* XXX: The header will be removed later on */
+         return 0;
+      }
+   }
+
+   return content_length;
+}
+#endif
 
 /*
   Local Variables:

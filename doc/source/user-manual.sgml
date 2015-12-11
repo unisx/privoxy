@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -34,9 +34,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.146 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.164 2013/01/18 18:45:21 fabiankeil Exp $
 
- Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -55,12 +55,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001-2011 by
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2013 by
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.146 2011/12/26 17:05:40 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.164 2013/01/18 18:45:21 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -181,36 +181,6 @@ How to install the binary packages depends on your operating system:
 <!-- XXX: The installation sections should be sorted -->
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-pack-rpm"><title>Red Hat and Fedora RPMs</title>
-
-<para>
- RPMs can be installed with <literal>rpm -Uvh privoxy-&p-version;-1.rpm</literal>,
- and will use <filename>/etc/privoxy</filename> for the location
- of configuration files.
-</para>
-
-<para>
- Note that on Red Hat, <application>Privoxy</application> will
- <emphasis>not</emphasis> be automatically started on system boot. You will
- need to enable that using <command>chkconfig</command>,
- <command>ntsysv</command>, or similar methods.
-</para>
-
-<para>
- If you have problems with failed dependencies, try rebuilding the SRC RPM:
- <literal>rpm --rebuild privoxy-&p-version;-1.src.rpm</literal>. This
- will use your locally installed libraries and RPM version.
-</para>
-
-<para>
- Also note that if you have a <application>Junkbuster</application> RPM installed
- on your system, you need to remove it first, because the packages conflict.
- Otherwise, RPM will try to remove <application>Junkbuster</application>
- automatically if found, before installing <application>Privoxy</application>.
-</para>
-</sect3>
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 id="installation-deb"><title>Debian and Ubuntu</title>
 <para>
  DEBs can be installed with <literal>apt-get install privoxy</literal>,
@@ -263,16 +233,6 @@ How to install the binary packages depends on your operating system:
 </sect3>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-pack-bintgz"><title>Solaris <!--, NetBSD, HP-UX--></title>
-
-<para>
- Create a new directory, <literal>cd</literal> to it, then unzip and
- untar the archive. For the most part, you'll have to figure out where
- things go. <!-- FIXME, more info needed? -->
-</para>
-</sect3>
-
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 id="installation-os2"><title>OS/2</title>
 
 <para>
@@ -301,32 +261,74 @@ How to install the binary packages depends on your operating system:
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 id="installation-mac"><title>Mac OS X</title>
 <para>
- Unzip the downloaded file (you can either double-click on the zip file
- icon from the Finder, or from the desktop if you downloaded it there).
- Then, double-click on the package installer icon and follow the
- installation process.
+ Installation instructions for the OS X platform depend upon whether
+ you downloaded a ready-built installation package (.pkg or .mpkg) or have
+ downloaded the source code.
+</para>
+</sect3>
+<sect3 renderas="sect4" id="OS-X-install-from-package">
+<title>Installation from ready-built package</title>
+<para>
+ The downloaded file will either be a .pkg (for OS X 10.5 upwards) or a bzipped
+ .mpkg file (for OS X 10.4). The former can be double-clicked as is and the
+ installation will start; double-clicking the latter will unzip the .mpkg file
+ which can then be double-clicked to commence the installation.
 </para>
 <para>
- The privoxy service will automatically start after a successful
- installation (in addition to every time your computer starts up).  To
- prevent the privoxy service from automatically starting when your
- computer starts up, remove or rename the folder named
- <literal>/Library/StartupItems/Privoxy</literal>.
+ The privoxy service will automatically start after a successful installation
+ (and thereafter every time your computer starts up) however you will need to
+ configure your web browser(s) to use it. To do so, configure them to use a
+ proxy for HTTP and HTTPS at the address 127.0.0.1:8118.
+</para>
+<para>
+ To prevent the privoxy service from automatically starting when your computer
+ starts up, remove or rename the file <literal>/Library/LaunchDaemons/org.ijbswa.privoxy.plist</literal>
+ (on OS X 10.5 and higher) or the folder named
+ <literal>/Library/StartupItems/Privoxy</literal> (on OS X 10.4 'Tiger').
+</para>
+<para>
+ To manually start or stop the privoxy service, use the scripts startPrivoxy.sh
+ and stopPrivoxy.sh supplied in /Applications/Privoxy. They must be run from an
+ administrator account, using sudo.
+</para>
+<para>
+ To uninstall, run /Applications/Privoxy/uninstall.command as sudo from an
+ administrator account.
+</para>
+</sect3>
+<sect3 renderas="sect4" id="OS-X-install-from-source">
+<title>Installation from source</title>
+<para>
+ To build and install the Privoxy source code on OS X you will need to obtain
+ the macsetup module from the Privoxy Sourceforge CVS repository (refer to
+ Sourceforge help for details of how to set up a CVS client to have read-only
+ access to the repository). This module contains scripts that leverage the usual
+ open-source tools (available as part of Apple's free of charge Xcode
+ distribution or via the usual open-source software package managers for OS X
+ (MacPorts, Homebrew, Fink etc.) to build and then install the privoxy binary
+ and associated files. The macsetup module's README file contains complete
+ instructions for its use.
+</para>
+<para>
+ The privoxy service will automatically start after a successful installation
+ (and thereafter every time your computer starts up) however you will need to
+ configure your web browser(s) to use it. To do so, configure them to use a
+ proxy for HTTP and HTTPS at the address 127.0.0.1:8118.
+</para>
+<para>
+ To prevent the privoxy service from automatically starting when your computer
+ starts up, remove or rename the file <literal>/Library/LaunchDaemons/org.ijbswa.privoxy.plist</literal>
+ (on OS X 10.5 and higher) or the folder named
+ <literal>/Library/StartupItems/Privoxy</literal> (on OS X 10.4 'Tiger').
 </para>
 <para>
  To manually start or stop the privoxy service, use the Privoxy Utility
- for Mac OS X.  This application controls the privoxy service (e.g.
- starting and stopping the service as well as uninstalling the software).
+ for Mac OS X (also part of the macsetup module).  This application can start
+ and stop the privoxy service and display its log and configuration files.
 </para>
-</sect3>
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-amiga"><title>AmigaOS</title>
 <para>
- Copy and then unpack the <filename>lha</filename> archive to a suitable location.
- All necessary files will be installed into <application>Privoxy</application>
- directory, including all configuration and log files. To uninstall, just
- remove this directory.
+ To uninstall, run the macsetup module's uninstall.sh as sudo from an
+ administrator account.
 </para>
 </sect3>
 
@@ -346,27 +348,6 @@ How to install the binary packages depends on your operating system:
  <ulink url="https://sourceforge.net/project/showfiles.php?group_id=11118">File Release
  Page</ulink>, but there's no reason to use them unless you're interested in the
  beta releases which are only available there.
-</para>
-</sect3>
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installattion-gentoo"><title>Gentoo</title>
-<para>
- Gentoo source packages (Ebuilds) for <application>Privoxy</application> are
- contained in the Gentoo  Portage Tree (they are not on the download page,
- but there is a Gentoo section, where you can see when a new
- <application>Privoxy</application> Version is added to the  Portage Tree).
-</para>
-<para>
- Before installing <application>Privoxy</application> under Gentoo just do
- first <literal>emerge --sync</literal> to get the latest changes from the
- Portage tree. With <literal>emerge privoxy</literal> you install the latest
- version.
-</para>
-<para>
- Configuration files are in <filename>/etc/privoxy</filename>, the
- documentation is in <filename>/usr/share/doc/privoxy-&p-version;</filename>
- and the Log directory is in <filename>/var/log/privoxy</filename>.
 </para>
 </sect3>
 
@@ -402,13 +383,6 @@ How to install the binary packages depends on your operating system:
 </sect2>
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect2 id="installation-keepupdated"><title>Keeping your Installation Up-to-Date</title>
-<para>
- As user feedback comes in and development continues, we will make updated versions
- of both the main <link linkend="actions-file">actions file</link> (as a <ulink
- url="http://sourceforge.net/project/showfiles.php?group_id=11118&amp;release_id=103670">separate
- package</ulink>) and the software itself (including the actions file) available for
- download.
-</para>
 
 <para>
  If you wish to receive an email notification whenever we release updates of
@@ -437,8 +411,8 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- <application>Privoxy 3.0.19</application> is a stable release.
- The changes since 3.0.18 stable are:
+ <application>Privoxy 3.0.20</application> is a beta release.
+ The changes since 3.0.19 stable are:
 </para>
 
 <para>
@@ -449,22 +423,57 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Prevent a segmentation fault when de-chunking buffered content.
-      It could be triggered by malicious web servers if Privoxy was
-      configured to filter the content and running on a platform
-      where SIZE_T_MAX isn't larger than UINT_MAX, which probably
-      includes most 32-bit systems. On those platforms, all Privoxy
-      versions before 3.0.19 appear to be affected.
-      To be on the safe side, this bug should be presumed to allow
-      code execution as proving that it doesn't seems unrealistic.
+      Client sockets are now properly shutdown and drained before being
+      closed. This fixes page truncation issues with clients that aggressively
+      pipeline data on platforms that otherwise discard already written data.
+      The issue mainly affected Opera users and was initially reported
+      by Kevin in #3464439, szotsaki provided additional information to track
+      down the cause.
      </para>
     </listitem>
     <listitem>
      <para>
-      Do not expect a response from the SOCKS4/4A server until it
-      got something to respond to. This regression was introduced
-      in 3.0.18 and prevented the SOCKS4/4A negotiation from working.
-      Reported by qqqqqw in #3459781.
+      Fix latency calculation for shared connections (disabled by default).
+      It was broken since their introduction in 2009. The calculated latency
+      for most connections would be 0 in which case the timeout detection
+      failed to account for the real latency.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Reject URLs with invalid port. Previously they were parsed incorrectly and
+      characters between the port number and the first slash were silently
+      dropped as shown by curl test 187.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The default-server-timeout and socket-timeout directives accept 0 as
+      valid value.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix a race condition on Windows that could cause Privoxy to become
+      unresponsive after toggling it on or off through the taskbar icon.
+      Reported by Tim H. in #3525694.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix the compilation on Windows when configured without IPv6 support.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix an assertion that could cause debug builds to abort() in case of
+      socks5 connection failures with "debug 2" enabled.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix an assertion that could cause debug builds to abort() if a filter
+      contained nul bytes in the replacement text.
      </para>
      </listitem>
     </itemizedlist>
@@ -476,481 +485,157 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Fix an off-by-one in an error message about connect failures.
+      Significantly improved keep-alive support for both client and server
+      connections.
      </para>
     </listitem>
     <listitem>
      <para>
-      Use a GNUMakefile variable for the webserver root directory and
-      update the path. Sourceforge changed it which broke various
-      web-related targets.
+      New debug log level 65536 which logs all actions that were applied to
+      the request.
      </para>
     </listitem>
     <listitem>
      <para>
-      Update the CODE_STATUS description.
+      New directive client-header-order to forward client headers in a
+      different order than the one in which they arrived.
      </para>
-     </listitem>
-    </itemizedlist>
-   </para>
-  </listitem>
- </itemizedlist>
-</para>
-
-<para>
- The following changes were made between 3.0.17 and 3.0.18:
-</para>
-
-<para>
- <itemizedlist>
-  <listitem>
-   <para>
-    Bug fixes:
-    <itemizedlist>
-    <listitem>
-     <para>
-      If a generated redirect URL contains characters RFC 3986 doesn't
-      permit, they are (re)encoded. Not doing this makes Privoxy versions
-      from 3.0.5 to 3.0.17 susceptible to HTTP response splitting (CWE-113)
-      attacks if the +fast-redirects{check-decoded-url} action is used.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fix a logic bug that could cause Privoxy to reuse a server
-      socket after it got tainted by a server-header-tagger-induced
-      block that was triggered before the whole server response had
-      been read. If keep-alive was enabled and the request following
-      the blocked one was to the same host and using the same forwarding
-      settings, Privoxy would send it on the tainted server socket.
-      While the server would simply treat it as a pipelined request,
-      Privoxy would later on fail to properly parse the server's
-      response as it would try to parse the unread data from the
-      first response as server headers for the second one.
-      Regression introduced in 3.0.17.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      When implying keep-alive in client_connection(), remember that
-      the client didn't. Fixes a regression introduced in 3.0.13 that
-      would cause Privoxy to wait for additional client requests after
-      receiving a HTTP/1.1 request with "Connection: close" set
-      and connection sharing enabled.
-      With clients which terminates the client connection after detecting
-      that the whole body has been received it doesn't really matter,
-      but with clients that don't the connection would be kept open until
-      it timed out.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fix a subtle race condition between prepare_csp_for_next_request()
-      and sweep(). A thread preparing itself for the next client request
-      could briefly appear to be inactive.
-      If all other threads were already using more recent files,
-      the thread could get its files swept away under its feet.
-      So far this has only been reproduced while stress testing in
-      valgrind while touching action files in a loop. It's unlikely
-      to have caused any actual problems in the real world.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Disable filters if SDCH compression is used unless filtering is forced.
-      If SDCH was combined with a supported compression algorithm, Privoxy
-      previously could try to decompress it and ditch the Content-Encoding
-      header even though the SDCH compression wasn't dealt with.
-      Reported by zebul666 in #3225863.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Make a copy of the --user value and only mess with that when splitting
-      user and group. On some operating systems modifying the value directly
-      is reflected in the output of ps and friends and can be misleading.
-      Reported by zepard in #3292710.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      If forwarded-connect-retries is set, only retry if Privoxy is actually
-      forwarding the request. Previously direct connections would be retried
-      as well.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fixed a small memory leak when retrying connections with IPv6
-      support enabled.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Remove an incorrect assertion in compile_dynamic_pcrs_job_list()
-      It could be triggered by a pcrs job with an invalid pcre
-      pattern (for example one that contains a lone quantifier).
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      If the --user argument user[.group] contains a dot, always bail out
-      if no group has been specified. Previously the intended, but undocumented
-      (and apparently untested), behaviour was to try interpreting the whole
-      argument as user name, but the detection was flawed and checked for '0'
-      instead of '\0', thus merely preventing group names beginning with a zero.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In html_code_map[], use a numeric character reference instead of &apos;
-      which wasn't standardized before XHTML 1.0.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fix an invalid free when compiled with FEATURE_GRACEFUL_TERMINATION
-      and shut down through http://config.privoxy.org/die
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In get_actions(), fix the "temporary" backwards compatibility hack
-      to accept block actions without reason.
-      It also covered other actions that should be rejected as invalid.
-      Reported by Billy Crook.
-     </para>
-     </listitem>
-    </itemizedlist>
-   </para>
-  </listitem>
-  <listitem>
-   <para>
-    General improvements:
-    <itemizedlist>
-    <listitem>
-     <para>
-      Privoxy can (re)compress buffered content before delivering
-      it to the client. Disabled by default as most users wouldn't
-      benefit from it.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      The +fast-redirects{check-decoded-url} action checks URL
-      segments separately. If there are other parameters behind
-      the redirect URL, this makes it unnecessary to cut them off
-      by additionally using a +redirect{} pcrs command.
-      Initial patch submitted by Jamie Zawinski in #3429848.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      When loading action sections, verify that the referenced filters
-      exist. Currently missing filters only result in an error message,
-      but eventually the severity will be upgraded to fatal.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Allow to bind to multiple separate addresses.
-      Patch set submitted by Petr Pisar in #3354485.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Set socket_error to errno if connecting fails in rfc2553_connect_to().
-      Previously rejected direct connections could be incorrectly reported
-      as DNS issues if Privoxy was compiled with IPv6 support.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Adjust url_code_map[] so spaces are replaced with %20 instead of '+'
-      While '+' can be used by client's submitting form data, this is not
-      actually what Privoxy is using the lookups for. This is more of a
-      cosmetic issue and doesn't fix any known problems.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      When compiled without FEATURE_FAST_REDIRECTS, do not silently
-      ignore +fast-redirect{} directives
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Added a workaround for GNU libc's strptime() reporting negative
-      year values when the parsed year is only specified with two digits.
-      On affected systems cookies with such a date would not be turned
-      into session cookies by the +session-cookies-only action.
-      Reported by Vaeinoe in #3403560
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fixed bind failures with certain GNU libc versions if no non-loopback
-      IP address has been configured on the system. This is mainly an issue
-      if the system is using DHCP and Privoxy is started before the network
-      is completely configured.
-      Reported by Raphael Marichez in #3349356.
-      Additional insight from Petr Pisar.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Privoxy log messages now use the ISO 8601 date format %Y-%m-%d.
-      It's only slightly longer than the old format, but contains
-      the full date including the year and allows sorting by date
-      (when grepping in multiple log files) without hassle.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In get_last_url(), do not bother trying to decode URLs that do
-      not contain at least one '%' sign. It reduces the log noise and
-      a number of unnecessary memory allocations.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In case of SOCKS5 failures, dump the socks response in the log message.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Simplify the signal setup in main().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Streamline socks5_connect() slightly.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In socks5_connect(), require a complete socks response from the server.
-      Previously Privoxy didn't care how much data the server response
-      contained as long as the first two bytes contained the expected
-      values. While at it, shrink the buffer size so Privoxy can't read
-      more than a whole socks response.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In chat(), do not bother to generate a client request in case of
-      direct CONNECT requests. It will not be used anyway.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Reduce server_last_modified()'s stack size.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Shorten get_http_time() by using strftime().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Constify the known_http_methods pointers in unknown_method().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Constify the time_formats pointers in parse_header_time().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Constify the formerly_valid_actions pointers in action_used_to_be_valid().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Introduce a GNUMakefile MAN_PAGE variable that defaults to privoxy.1.
-      The Debian package uses section 8 for the man page and this
-      should simplify the patch.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Deduplicate the INADDR_NONE definition for Solaris by moving it to jbsockets.h
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In block_url(), ditch the obsolete workaround for ancient Netscape versions
-      that supposedly couldn't properly deal with status code 403.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Remove a useless NULL pointer check in load_trustfile().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Remove two useless NULL pointer checks in load_one_re_filterfile().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Change url_code_map[] from an array of pointers to an array of arrays
-      It removes an unnecessary layer of indirection and on 64bit system reduces
-      the size of the binary a bit.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fix various typos. Fixes taken from Debian's 29_typos.dpatch by Roland Rosenfeld.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Add a dok-tidy GNUMakefile target to clean up the messy HTML
-      generated by the other dok targets.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      GNUisms in the GNUMakefile have been removed.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Change the HTTP version in static responses to 1.1
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Synced config.sub and config.guess with upstream
-      2011-11-11/386c7218162c145f5f9e1ff7f558a3fbb66c37c5.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Add a dedicated function to parse the values of toggles. Reduces duplicated
-      code in load_config() and provides better error handling. Invalid or missing
-      toggle values are now a fatal error instead of being silently ignored.
-     </para>
     </listitem>
     <listitem>
      <para>
-      Terminate HTML lines in static error messages with \n instead of \r\n.
+      New directive tolerate-pipelining to allow client-side pipelining.
+      If enabled (3.0.20 beta enables it by default), Privoxy will keep
+      pipelined client requests around to deal with them once the current
+      request has been served.
      </para>
     </listitem>
     <listitem>
      <para>
-      Simplify cgi_error_unknown() a bit.
+      New --config-test option to let Privoxy exit after checking whether or not
+      the configuration seems valid. The limitations noted in TODO #22 and #23
+      still apply. Based on a patch by Ramkumar Chinchani.
      </para>
     </listitem>
     <listitem>
      <para>
-      In LogPutString(), don't bother looking at pszText when not
-      actually logging anything.
+      New limit-cookie-lifetime{} action to let cookies expire before the end
+      of the session. Suggested by Rick Sykes in #1049575.
      </para>
     </listitem>
     <listitem>
      <para>
-      Change ssplit()'s fourth parameter from int to size_t.
-      Fixes a clang complaint.
+      Increase the hard-coded maximum number of actions and filter files from
+      10 to 30 (each). It doesn't significantly affect Privoxy's memory usage
+      and recompiling wasn't an option for all Privoxy users that reached the
+      limit.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a warning that the statistics currently can't be trusted.
-      Mention Privoxy-Log-Parser's --statistics option as
-      an alternative for the time being.
+      Add support for chunk-encoded client request bodies. Previously
+      chunk-encoded request bodies weren't guaranteed to be forwarded correctly,
+      so this can also be considered a bug fix although chunk-encoded request
+      bodies aren't commonly used in the real world.
      </para>
     </listitem>
     <listitem>
      <para>
-      In rfc2553_connect_to(), start setting cgi->error_message on error.
+      Add support for Tor's optimistic-data SOCKS extension, which can reduce the
+      latency for requests on newly created connections. Currently only the
+      headers are sent optimistically and only if the client request has already
+      been read completely which rules out requests with large bodies.
      </para>
     </listitem>
     <listitem>
      <para>
-      Change the expected status code returned for http://p.p/die depending
-      on whether or not FEATURE_GRACEFUL_TERMINATION is available.
+      After preventing the client from pipelining, don't signal keep-alive
+      intentions. When looking at the response headers alone, it previously
+      wasn't obvious from the client's perspective that no additional responses
+      should be expected.
      </para>
     </listitem>
     <listitem>
      <para>
-      In cgi_die(), mark the client connection for closing.
-      If the client will fetch the style sheet through another connection
-      it gets the main thread out of the accept() state and should thus
-      trigger the actual shutdown.
+      Stop considering client sockets tainted after receiving a request with body.
+      It hasn't been necessary for a while now and unnecessarily causes test
+      failures when using curl's test suite.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a proper CGI message for cgi_die().
+      Allow HTTP/1.0 clients to signal interest in keep-alive through the
+      Proxy-Connection header. While such client are rare in the real world, it
+      doesn't hurt and couple of curl tests rely on it.
      </para>
     </listitem>
     <listitem>
      <para>
-      Don't enforce a logical line length limit in read_config_line().
+      Only remove duplicated Content-Type headers when filters are enabled.
+      If they are not it doesn't cause ill effects and the user might not want it.
+      Downgrade the removal message to LOG_LEVEL_HEADER to clarify that it's not
+      an error in Privoxy and is unlikely to cause any problems in general.
+      Anonymously reported in #3599335.
      </para>
     </listitem>
     <listitem>
      <para>
-      Slightly refactor server_last_modified() to remove useless gmtime*() calls.
+      Set the socket option SO_LINGER for the client socket.
      </para>
     </listitem>
     <listitem>
      <para>
-      In get_content_type(), also recognize '.jpeg' as JPEG extension.
+      Move several variable declarations to the beginning of their code block.
+      It's required when compiling with gcc 2.95 which is still used on some
+      platforms. Initial patch submitted by Simon South in #3564815.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add '.png' to the list of recognized file extensions in get_content_type().
+      Optionally try to sanity-check strptime() results before trusting them.
+      Broken strptime() implementations have caused problems in the past and
+      the most recent offender seems to be FreeBSD's libc (standards/173421).
      </para>
     </listitem>
     <listitem>
      <para>
-      In block_url(), consistently use the block reason "Request blocked by Privoxy"
-      In two places the reason was "Request for blocked URL" which hides the
-      fact that the request got blocked by Privoxy and isn't necessarily
-      correct as the block may be due to tags.
+      When filtering is enabled, let Range headers pass if the range starts at
+      the beginning. This should work around (or at least reduce) the video
+      playback issues with various Apple clients as reported by Duc in #3426305.
      </para>
     </listitem>
     <listitem>
      <para>
-      In listen_loop(), reload the configuration files after accepting
-      a new connection instead of before.
-      Previously the first connection that arrived after a configuration
-      change would still be handled with the old configuration.
+      Do not confuse a client hanging up with a connection time out. If a client
+      closes its side of the connection without sending a request line, do not
+      send the CLIENT_CONNECTION_TIMEOUT_RESPONSE, but report the condition
+      properly.
      </para>
     </listitem>
     <listitem>
      <para>
-      In chat()'s receive-data loop, skip a client socket check if
-      the socket will be written to right away anyway. This can
-      increase the transfer speed for unfiltered content on fast
-      network connections.
+      Allow closing curly braces as part of action values as long as they are
+      escaped.
      </para>
     </listitem>
     <listitem>
      <para>
-      The socket timeout is used for SOCKS negotiations as well which
-      previously couldn't timeout.
+      On Windows, the logfile is now written before showing the GUI error
+      message which blocks until the user acknowledges it.
+      Reported by Adriaan in #3593603.
      </para>
     </listitem>
     <listitem>
      <para>
-      Don't keep the client connection alive if any configuration file
-      changed since the time the connection came in. This is closer to
-      Privoxy's behaviour before keep-alive support for client connection
-      has been added and also less confusing in general.
+      Remove an unreasonable parameter limit in the CGI interface. The new
+      parameter limit depends on the memory available and is currently unlikely
+      to be reachable, due to other limits in both Privoxy and common clients.
+      Reported by Andrew on ijbswa-users@.
      </para>
     </listitem>
     <listitem>
      <para>
-      Treat all Content-Type header values containing the pattern
-      'script' as a sign of text. Reported by pribog in #3134970.
+      Decrease the chances of parse failures after requests with unsupported
+      methods were sent to the CGI interface.
      </para>
      </listitem>
     </itemizedlist>
@@ -962,108 +647,179 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Moved the site-specific block pattern section below the one for the
-      generic patterns so for requests that are matched in both, the block
-      reason for the domain is shown which is usually more useful than showing
-      the one for the generic pattern.
+      Remove the comment that indicated that updated default.action versions
+      are released on their own.
      </para>
     </listitem>
     <listitem>
      <para>
-      Remove -prevent-compression from the fragile alias. It's no longer
-      used anywhere by default and isn't known to break stuff anyway.
+      Block 'optimize.indieclick.com/' and 'optimized-by.rubiconproject.com/'
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a (disabled) section to block various Facebook tracking URLs.
-      Reported by Dan Stahlke in #3421764.
+      Unblock 'adjamblog.wordpress.com/' and 'adjamblog.files.wordpress.com/'.
+      Reported by Ryan Farmer in #3496116.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a (disabled) section to rewrite and redirect click-tracking
-      URLs used on news.google.com.
-      Reported by Dan Stahlke in #3421755.
+      Unblock '/.*Bugtracker'. Reported by pwhk in #3522341.
      </para>
     </listitem>
     <listitem>
      <para>
-      Unblock linuxcounter.net/.
-      Reported by Dan Stahlke in #3422612.
+      Add test URLs for '.freebsd.org' and '.watson.org'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Block 'www91.intel.com/' which is used by Omniture.
-      Reported by Adam Piggott in #3167370.
+      Unblock '.urbandictionary.com/popular'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Disable the handle-as-empty-doc-returns-ok option and mark it as deprecated.
-      Reminded by tceverling in #2790091.
+      Block '.adnxs.com/'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add ".ivwbox.de/" to the "Cross-site user tracking" section.
-      Reported by Nettozahler in #3172525.
+      Block 'farm.plista.com/widgetdata.php'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Unblock and fast-redirect ".awin1.com/.*=http://".
-      Reported by Adam Piggott in #3170921.
+      Block 'rotation.linuxnewmedia.com/'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Block "b.collective-media.net/".
+      Block 'reklamy.sfd.pl/'. Reported by kacperdominik in #3399948.
      </para>
     </listitem>
     <listitem>
      <para>
-      Widen the Debian popcon exception to "qa.debian.org/popcon".
-      Seen in Debian's 05_default_action.dpatch by Roland Rosenfeld.
+      Block 'g.adspeed.net/'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Block ".gemius.pl/" which only seems to be used for user tracking.
-      Reported by johnd16 in #3002731. Additional input from Lee and movax.
+      Unblock 'websupport.wdc.com/'. Reported by Adam Piggot in #3577851.
      </para>
     </listitem>
     <listitem>
      <para>
-      Disable banners-by-size filters for '.thinkgeek.com/'.
-      The filter only seems to catch pictures of the inventory.
+      Block '/openx/www/delivery/'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Block requests for 'go.idmnet.bbelements.com/please/showit/'.
-      Reported by kacperdominik in #3372959.
+      Disable fast-redirects for '.googleapis.com/'.
      </para>
     </listitem>
     <listitem>
      <para>
-      Unblock adainitiative.org/.
+      Block 'imp.double.net/'. Reported by David Bo in #3070411.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a fast-redirects exception for '.googleusercontent.com/.*=cache'.
+      Block 'gm-link.com/' which is used for email tracking.
+      Reported by David Bo in #1812733.
      </para>
     </listitem>
     <listitem>
      <para>
-      Add a fast-redirects exception for webcache.googleusercontent.com/.
+      Verify that requests to "bwp." are blocked. URL taken from #1736879
+      submitted by Francois Marier.
      </para>
     </listitem>
     <listitem>
      <para>
-      Unblock http://adassier.wordpress.com/ and http://adassier.files.wordpress.com/.
+      Block '/.*bannerid='. Reported by Adam Piggott in #2975779.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block 'cltomedia.info/delivery/' and '.adexprt.com/'.
+      Anonymously reported in #2965254.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block 'de17a.com/'. Reported by David Bo in #3061472.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block 'oskar.tradera.com/'. Reported by David Bo in #3060596.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block '/scripts/webtrends\.js'. Reported by johnd16 in #3002729.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block requests for 'pool.*.adhese.com/'. Reported by johnd16 in #3002716.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Update path pattern for Coremetrics and add tests.
+      Pattern and URLs submitted by Adam Piggott #3168443.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Enable +fast-redirects{check-decoded-url} for 'tr.anp.se/'.
+      Reported by David Bo in #3268832.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unblock '.conrad.se/newsletter/banners/'. Reported by David Bo in #3413824.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block '.tynt.com/'. Reported by Dan Stahlke in #3421767.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unblock '.bbci.co.uk/radio/'. Reported by Adam Piggott in #3569603.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Block requests to 'service.maxymiser.net/'.
+      Reported by johnd16 in #3118401 (with a previous URL).
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Disable fast-redirects for Google's "let's pretend your computer is
+      infected" page.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unblock '/.*download' to resolve actionsfile feedback #3498129.
+      Submitted by Steven Kolins (soundcloud.com not working).
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unblock '.wlxrs.com/' which is required by hotmail.com.
+      Fixes #3413827 submitted by David Bo.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add two unblock patterns for popup radio and TV players.
+      Submitted by Adam Piggott in #3596089.
      </para>
      </listitem>
     </itemizedlist>
@@ -1071,24 +827,17 @@ How to install the binary packages depends on your operating system:
   </listitem>
   <listitem>
    <para>
-    Filter file improvements:
+    Filter file improvements & bug fixes:
     <itemizedlist>
     <listitem>
      <para>
-      Let the yahoo filter hide '.ads'.
+      Add a referer tagger.
      </para>
     </listitem>
     <listitem>
      <para>
-      Let the msn filter hide overlay ads for Facebook 'likes' in search
-      results and elements with the id 's_notf_div'. They only seem to be
-      used to advertise site 'enhancements'.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Let the js-events filter additionally disarm setInterval().
-      Suggested by dg1727 in #3423775.
+      Reduce the likelihood that the google filter messes up HTML-generating
+      JavaScript. Reported by Zeno Kugy in #3520260.
      </para>
      </listitem>
     </itemizedlist>
@@ -1100,28 +849,102 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Clarify the effect of compiling Privoxy with zlib support.
-      Suggested by dg1727 in #3423782.
+      Revised all OS X sections due to new packaging module (OSXPackageBuilder).
      </para>
     </listitem>
     <listitem>
      <para>
-      Point out that the SourceForge messaging system works like a black
-      hole and should thus not be used to contact individual developers.
+      Update the list of supported operating systems to clarify that all Windows
+      versions after 95 are expected to work and note that the platform-specific
+      code for AmigaOS and QNX currently isn't maintained.
      </para>
     </listitem>
     <listitem>
      <para>
-      Mention some of the problems one can experience when not explicitly
-      configuring an IP addresses as listen address.
+      Update 'Signals' section, the only explicitly handled signals are SIGINT,
+      SIGTERM and SIGHUP.
      </para>
     </listitem>
     <listitem>
      <para>
-      Explicitly mention that hostnames can be used instead of IP addresses
-      for the listen-address, that only the first address returned will be
-      used and what happens if the address is invalid.
-      Requested by Calestyo in #3302213.
+      Add Haiku to the list of operating systems on which Privoxy is known to
+      run.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add DragonFly to the list of BSDs on which Privoxy is known to run.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Removed references to redhat-specific documentation set since it no longer
+      exists.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Removed references to building PDFs since we no longer do so.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Multiple listen-address directives are supported since 3.0.18, correct the
+      documentation to say so.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Remove bogus section about long and short being preferable to int.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Corrected some Internet JunkBuster references to Privoxy.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Removed references to www.junkbusters.com since it is no longer
+      maintained. Reported by Angelina Matson.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Various grammar and spelling corrections
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add a client-header-tagger{} example for disabling filtering for range
+      requests.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Correct a URL in the "Privoxy with Tor" FAQ.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Spell 'refresh-tags' correctly. Reported by Don in #3571927.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Sort manpage options alphabetically.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Remove an incorrect sentence in the toggle section. The toggle state
+      doesn't affect whether or not the Windows version uses the tray icon.
+      Reported by Zeno Kugy in #3596395.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add new contributors since 3.0.19.
      </para>
      </listitem>
     </itemizedlist>
@@ -1133,170 +956,29 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      If only the server connection is kept alive, do not pretend to
-      wait for a new client request.
+      When stopping to watch a client socket due to pipelining, additionally log
+      the socket number.
      </para>
     </listitem>
     <listitem>
      <para>
-      Remove a superfluous log message in forget_connection().
+      Log the client socket and its condition before closing it. This makes it
+      more obvious that the socket actually gets closed and should help when
+      diagnosing problems like #3464439.
      </para>
     </listitem>
     <listitem>
      <para>
-      In chat(), properly report missing server responses as such
-      instead of calling them empty.
+      In case of SOCKS5 failures, do not explicitly log the server's response.
+      It hasn't helped so far and the response can already be logged by enabling
+      "debug 32768" anyway. This reverts v1.81 and the follow-up bug fix v1.84.
      </para>
     </listitem>
     <listitem>
      <para>
-      In forwarded_connect(), fix a log message nobody should ever see.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Fix a log message in socks5_connect(), a failed write operation
-      was logged as failed read operation.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Let load_one_actions_file() properly complain about a missing
-      '{' at the beginning of the file.
-      Simply stating that a line is invalid isn't particularly helpful.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Do not claim to listen on a socket until Privoxy actually does.
-      Patch submitted by Petr Pisar #3354485
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Prevent a duplicated LOG_LEVEL_CLF message when sending out
-      the "no-server-data" response.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Also log the client socket when dropping a connection.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Include the destination host in the 'Request ... marked for
-      blocking. limit-connect{...} doesn't allow CONNECT ...' message
-      Patch submitted by Saperski in #3296250.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Prevent a duplicated log message if none of the resolved IP
-      addresses were reachable.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In connect_to(), do not pretend to retry if forwarded-connect-retries
-      is zero or unset.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      When a specified user or group can't be found, put the name in
-      single-quotes when logging it.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In rfc2553_connect_to(), explain getnameinfo() errors better.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Remove a useless log message in chat().
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      When retrying to connect, also log the maximum number of connection
-      attempts.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Rephrase a log message in compile_dynamic_pcrs_job_list().
-      Divide the error code and its meaning with a colon. Call the pcrs
-      job dynamic and not the filter. Filters may contain dynamic and
-      non-dynamic pcrs jobs at the same time. Only mention the name of
-      the filter or tagger, but don't claim it's a filter when it could
-      be a tagger.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In a fatal error message in load_one_actions_file(), cover both
-      URL and TAG patterns.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In pcrs_strerror(), properly report unknown positive error code
-      values as such. Previously they were handled like 0 (no error).
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In compile_dynamic_pcrs_job_list(), also log the actual error code as
-      pcrs_strerror() doesn't handle all errors reported by pcre.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Don't bother trying to continue chatting if the client didn't ask for it.
-      Reduces log noise a bit.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Make two fatal error message in load_one_actions_file() more descriptive.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In cgi_send_user_manual(), log when rejecting a file name due to '/' or '..'.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In load_file(), log a message if opening a file failed.
-      The CGI error message alone isn't too helpful.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In connection_destination_matches(), improve two log messages
-      to help understand why the destinations don't match.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Rephrase a log message in serve(). Client request arrival
-      should be differentiated from closed client connections now.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In serve(), log if a client connection isn't reused due to a
-      configuration file change.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Let mark_server_socket_tainted() always mark the server socket tainted,
-      just don't talk about it in cases where it has no effect. It doesn't change
-      Privoxy's behaviour, but makes understanding the log file easier.
+      Relocate the connection-accepted message from listen_loop() to serve().
+      This way it's printed by the thread that is actually serving the
+      connection which is nice when grepping for thread ids in log files.
      </para>
      </listitem>
     </itemizedlist>
@@ -1304,37 +986,172 @@ How to install the binary packages depends on your operating system:
   </listitem>
   <listitem>
    <para>
-    configure:
+    Code cleanups:
     <itemizedlist>
     <listitem>
      <para>
-      Added a --disable-ipv6-support switch for platforms where support
-      is detected but doesn't actually work.
+      Remove compatibility layer for versions prior to 3.0 since it has been
+      obsolete for more than 10 years now.
      </para>
     </listitem>
     <listitem>
      <para>
-      Do not check for the existence of strerror() and memmove() twice
+      Remove the ijb_isupper() and ijb_tolower() macros from parsers.c since
+      they aren't used in this file.
      </para>
     </listitem>
     <listitem>
      <para>
-      Remove a useless test for setpgrp(2). Privoxy doesn't need it and
-      it can cause problems when cross-compiling.
+      Removed the 'Functions declared include:' comment sections since they tend
+      to be incomplete, incorrect and out of date and the benefit seems
+      questionable.
      </para>
     </listitem>
     <listitem>
      <para>
-      Rename the --disable-acl-files switch to --disable-acl-support.
-      Since about 2001, ACL directives are specified in the standard
-      config file.
+      Various comment grammar and comprehensibility improvements.
      </para>
     </listitem>
     <listitem>
      <para>
-      Update the URL of the 'Removing outdated PCRE version after the
-      next stable release' posting. The old URL stopped working after
-      one of SF's recent site "optimizations". Reported by Han Liu.
+      Remove a pointless fflush() call in chat(). Flushing all streams pretty
+      much all the time for no obvious reason is ridiculous.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Relocate ijb_isupper()'s definition to project.h and get the ijb_tolower()
+      definition from there, too.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Relocate ijb_isdigit()'s definition to project.h.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Rename ijb_foo macros to privoxy_foo.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add malloc_or_die() which will allow to simplify code paths where malloc()
+      failures don't need to be handled gracefully.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add strdup_or_die() which will allow to simplify code paths where strdup()
+      failures don't need to be handled gracefully.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Replace strdup() calls with strdup_or_die() calls where it's safe and
+      simplifies the code.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix white-space around parentheses.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Add missing white-space behind if's and the following parentheses.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unwrap a memcpy() call in resolve_hostname_to_ip().
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Declare pcrs_get_delimiter()'s delimiters[] static const.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Various optimisations to remove dead code and merge inefficient code
+      structures for improved clarity, performance or code compactness.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Various data type corrections.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Change visibility of several code segments when compiling without
+      FEATURE_CONNECTION_KEEP_ALIVE enabled for clarity.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      In pcrs_get_delimiter(), do not use delimiters outside the ASCII range.
+      Fixes a clang complaint.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix an error message in get_last_url() nobody is supposed to see.
+      Reported by Matthew Fischer in #3507301.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fix a typo in the no-zlib-support complaint. Patch submitted by Matthew
+      Fischer in #3507304.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Shorten ssplit()'s prototype by removing the last two arguments. We always
+      want to skip empty fields and ignore leading delimiters, so having
+      parameters for this only complicates the API.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Use an enum for the type of the action value.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Rename action_name's member takes_value to value_type as it isn't used as
+      boolean.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Turn family mismatches in match_sockaddr() into fatal errors.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Let enlist_unique_header() verify that the caller didn't pass a header
+      containing either \r or \n.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Change the hashes used in load_config() to unsigned int. That's what
+      hash_string() actually returns and using a potentially larger type
+      is at best useless.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Use privoxy_tolower() instead of vanilla tolower() with manual casting of
+      the argument.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Catch ssplit() failures in parse_cgi_parameters().
      </para>
      </listitem>
     </itemizedlist>
@@ -1346,58 +1163,52 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Added --shuffle-tests option to increase the chances of detection race conditions.
+      Add an 'Overwrite condition' directive to skip any matching tests before
+      it. As it has a global scope, using it is more convenient than clowning
+      around with the Ignore directive.
      </para>
     </listitem>
     <listitem>
      <para>
-      Added a --local-test-file option that allows to use Privoxy-Regression-Test without Privoxy.
+      Log to STDOUT instead of STDERR.
      </para>
     </listitem>
     <listitem>
      <para>
-      Added tests for missing socks4 and socks4a forwarders.
+      Include the Privoxy version in the output.
      </para>
     </listitem>
     <listitem>
      <para>
-      The --privoxy-address option now works with IPv6 addresses containing brackets, too.
+      Various grammar and spelling corrections in documentation and code.
      </para>
     </listitem>
     <listitem>
      <para>
-      Perform limited sanity checks for parameters that are supposed to have numerical values.
+      Additional tests for range requests with filtering enabled.
      </para>
     </listitem>
     <listitem>
      <para>
-      Added a --sleep-time option to specify a number of seconds to
-      sleep between tests, defaults to 0.
+      Tests with mostly invalid range request.
      </para>
     </listitem>
     <listitem>
      <para>
-      Disable the range-requests tagger for tests that break if it's enabled.
+      Add a couple of hide-if-modified-since{} tests with different date formats.
      </para>
     </listitem>
     <listitem>
      <para>
-      Log messages use the ISO 8601 date format %Y-%m-%d.
+      Cleaned up the format of the regression-tests.action file to match the
+      format of default.action.
      </para>
     </listitem>
     <listitem>
      <para>
-      Fix spelling in two error messages.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      In the --help output, include a list of supported tests and their default levels.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Adjust the tests to properly deal with FEATURE_TOGGLE being disabled.
+      Remove the "Copyright" line from print_version(). When using --help, every
+      line of screen space matters and thus shouldn't be wasted on things the
+      user doesn't care about.
      </para>
      </listitem>
     </itemizedlist>
@@ -1409,38 +1220,27 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Perform limited sanity checks for command line parameters that
-      are supposed to have numerical values.
+      Improve the --statistics performance by skipping sanity checks for input
+      that shouldn't affect the results anyway. Add a --strict-checks option
+      that enables some of the checks again, just in case anybody cares.
      </para>
     </listitem>
     <listitem>
      <para>
-      Implement a --unbreak-lines-only option to try to revert MUA breakage.
+      The distribution of client requests per connection is included in
+      the --statistic output.
      </para>
     </listitem>
     <listitem>
      <para>
-      Accept and highlight: Added header: Content-Encoding: deflate
+      The --accept-unknown-messages option has been removed and the behavior
+      is now the default.
      </para>
     </listitem>
     <listitem>
      <para>
-      Accept and highlight: Compressed content from 29258 to 8630 bytes.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Accept and highlight: Client request arrived in time on socket 21.
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Highlight: Didn't receive data in time: a.fsdn.com:443
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      Accept log messages with ISO 8601 time stamps, too.
+      Accept and (mostly) highlight new log messages introduced with
+      Privoxy 3.0.20.
      </para>
      </listitem>
     </itemizedlist>
@@ -1452,14 +1252,90 @@ How to install the binary packages depends on your operating system:
     <itemizedlist>
     <listitem>
      <para>
-      Bump generated Firefox version to 8.0.
+      Bump generated Firefox version to 17.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    GNUmakefile improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      The dok-tidy target no longer taints documents with a tidy-mark
      </para>
     </listitem>
     <listitem>
      <para>
-      Only randomize the release date if the new --randomize-release-date
-      option is enabled. Firefox versions after 4 use a fixed date string
-      without meaning.
+      Change RA_MODE from 0664 to 0644. Suggested by Markus Dittrich in
+      #3505445.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Remove tidy's clean flag as it changes the scope of attributes.
+      Link-specific colors end up being applied to all text. Reported by Adam
+      Piggott in #3569551.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Leave it up to the user whether or not smart tags are inserted.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Let w3m itself do the line wrapping for the config file. It works better
+      than fmt as it can honour pre tags causing less unintentional line breaks.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Ditch a pointless '-r' passed to rm to delete files.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The config-file target now requires less manual intervention and updates
+      the original config.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Change WDUMP to generate ASCII. Add WDUMP_UTF8 to allow UTF-8 in the
+      AUTHORS file so the names are right.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Stop pretending that lynx and links are supported for the documentation.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    configure improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      On Haiku, do not pass -lpthread to the compiler. Haiku's pthreads
+      implementation is contained in its system library, libroot, so no
+      additional library needs to be searched.
+      Patch submitted by Simon South in #3564815.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Additional Haiku-specific improvements. Disable checks intended for
+      multi-user systems as Haiku is presently single-user. Group Haiku-specific
+      settings in their own section, following the pattern for Solaris, OS/2 and
+      AmigaOS. Add additional library-related settings to remove the need for
+      providing configure with custom LDFLAGS.
+      Submitted by Simon South in #3574538.
      </para>
      </listitem>
     </itemizedlist>
@@ -2388,6 +2264,27 @@ must find a better place for this paragraph
 <para>
  <itemizedlist>
 
+ <listitem>
+  <para>
+   <emphasis>--config-test</emphasis>
+  </para>
+  <para>
+   Exit after loading the configuration files before binding to
+   the listen address. The exit code signals whether or not the
+   configuration files have been successfully loaded.
+  </para>
+  <para>
+   If the exit code is 1, at least one of the configuration files
+   is invalid, if it is 0, all the configuration files have been
+   successfully loaded (but may still contain errors that can
+   currently only be detected at run time).
+  </para>
+  <para>
+   This option doesn't affect the log setting, combination with
+   <emphasis>--no-daemon</emphasis> is recommended if a configured
+   log file shouldn't be used.
+  </para>
+ </listitem>
  <listitem>
   <para>
     <emphasis>--version</emphasis>
@@ -3899,7 +3796,7 @@ for details.
     and use their output as input.
    </para>
    <para>
-    If the request URL gets changed, &my-app; will detect that and use the new
+    If the request URI gets changed, &my-app; will detect that and use the new
     one. This can be used to rewrite the request destination behind the client's
     back, for example to specify a Tor exit relay for certain requests.
    </para>
@@ -3921,7 +3818,7 @@ for details.
 {+client-header-filter{hide-tor-exit-notation}}
 /
     </screen>
-    </para>
+   </para>
   </listitem>
  </varlistentry>
 
@@ -4014,6 +3911,22 @@ TAG:^User-Agent: RPM APT-HTTP/
 TAG:^User-Agent: fetch libfetch/
 TAG:^User-Agent: Ubuntu APT-HTTP/
 TAG:^User-Agent: MPlayer/
+    </screen>
+   </para>
+   <para>
+     <screen>
+# Tag all requests with the Range header set
+{+client-header-tagger{range-requests}}
+/
+
+# Disable filtering for the tagged requests.
+#
+# With filtering enabled Privoxy would remove the Range headers
+# to be able to filter the whole response. The downside is that
+# it prevents clients from resuming downloads or skipping over
+# parts of multimedia files.
+{-filter -deanimate-gifs}
+TAG:^RANGE-REQUEST$
     </screen>
     </para>
   </listitem>
@@ -5989,6 +5902,94 @@ new action
 </variablelist>
 </sect3>
 
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="limit-cookie-lifetime">
+<title>limit-cookie-lifetime</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>Limit the lifetime of HTTP cookies to a couple of minutes or hours.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    Overwrites the expires field in Set-Cookie server headers if it's above the specified limit.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- Boolean, Parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <para>
+    The lifetime limit in minutes, or 0.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    This action reduces the lifetime of HTTP cookies coming from the
+    server to the specified number of minutes, starting from the time
+    the cookie passes Privoxy.
+   </para>
+   <para>
+    Cookies with a lifetime below the limit are not modified.
+    The lifetime of session cookies is set to the specified limit.
+   </para>
+   <para>
+    The effect of this action depends on the server.
+   </para>
+   <para>
+    In case of servers which refresh their cookies with each response
+    (or at least frequently), the lifetime limit set by this action
+    is updated as well.
+    Thus, a session associated with the cookie continues to work with
+    this action enabled, as long as a new request is made before the
+    last limit set is reached.
+   </para>
+   <para>
+    However, some servers send their cookies once, with a lifetime of several
+    years (the year 2037 is a popular choice), and do not refresh them
+    until a certain event in the future, for example the user logging out.
+    In this case this action may limit the absolute lifetime of the session,
+    even if requests are made frequently.
+   </para>
+   <para>
+    If the parameter is <quote>0</quote>, this action behaves like
+    <literal><link linkend="session-cookies-only">session-cookies-only</link></literal>.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Example usages:</term>
+  <listitem>
+    <para>
+     <screen>+limit-cookie-lifetime{60}
+       </screen>
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+</sect3>
+
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="prevent-compression">
 <title>prevent-compression</title>
@@ -6244,6 +6245,10 @@ new action
     HTTP redirect to URLs of your choosing. The new URL is
     either provided as parameter, or derived by applying a
     single pcrs command to the original URL.
+   </para>
+   <para>
+    The syntax for pcrs commands is documented in the
+    <link linkend="filter-file">filter file</link> section.
    </para>
    <para>
     This action will be ignored if you use it together with
@@ -7865,7 +7870,7 @@ pre-defined filters for your convenience:
  </varlistentry>
 
  <varlistentry>
-  <term><emphasis>refresh tags</emphasis></term>
+  <term><emphasis>refresh-tags</emphasis></term>
   <listitem>
    <para>
     Disable any refresh tags if the interval is greater than nine seconds (so
@@ -9438,1018 +9443,6 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  or write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
  USA
-
- $Log: user-manual.sgml,v $
- Revision 2.146  2011/12/26 17:05:40  fabiankeil
- Bump entities for 3.0.19
-
- Revision 2.145  2011/12/26 17:04:19  fabiankeil
- Import ChangeLog entries for 3.0.19, keeping the ones for 3.0.18 for now
-
- Revision 2.144  2011/12/26 17:01:29  fabiankeil
- Try to be less misleading in the downgrade-http-version description
-
- Revision 2.143  2011/11/20 17:16:36  fabiankeil
- Last minute ChangeLog changes that didn't make it into the tarball
-
- Revision 2.142  2011/11/20 12:43:38  fabiankeil
- Update ChangeLog. Once more, with feeling.
-
- Revision 2.141  2011/11/20 12:41:22  fabiankeil
- Document the +fast-redirects{} HTTP response splitting fix
-
- Revision 2.140  2011/11/19 15:18:02  fabiankeil
- Update ChangeLog
-
- Revision 2.139  2011/11/18 16:49:29  fabiankeil
- Update ChangeLog
-
- Revision 2.138  2011/11/13 17:03:54  fabiankeil
- Bump entities for 3.0.18 stable
-
- Revision 2.137  2011/11/13 17:02:59  fabiankeil
- Import the first ChangeLog draft for 3.0.18 stable
-
- Revision 2.136  2011/10/14 16:53:10  fabiankeil
- Clarify the effect of compiling Privoxy with zlib support
-
- Suggested by dg1727 in #3423782.
-
- zlib support has been available for years now,
- so drop the reference to Privoxy 3.0.7
-
- Revision 2.135  2011/09/04 11:10:12  fabiankeil
- Ditch trailing whitespace
-
- Revision 2.134  2011/08/18 11:45:02  fabiankeil
- Don't use unspecified MSN sites as examples for User-Agent-based descrimination
-
- Without knowing the URLs, nobody can easily verify it and it could
- be mistaken as FUD. I also assume that it's no longer an issue anyway.
-
- Revision 2.133  2011/08/18 11:42:50  fabiankeil
- Bump some more documentation copyright ranges.
-
- Revision 2.132  2011/08/17 10:40:07  fabiankeil
- Update the entities.
-
- This commit is chronological out of order.
-
- Revision 2.131  2011/04/19 13:14:10  fabiankeil
- Fix spelling errors in the documentation. Found with codespell.
-
- Revision 2.130  2010/12/01 19:28:28  fabiankeil
- Hopefully unbreak the dok target when using some kind of jade.
-
- Reported by Lee.
-
- Revision 2.129  2010/11/13 20:17:11  fabiankeil
- Merge ChangeLog updates
-
- Revision 2.128  2010/11/10 22:00:13  fabiankeil
- Update the first paragraph of the 'What's New' section.
-
- Revision 2.127  2010/11/10 21:48:54  fabiankeil
- Update the "What's New" section.
-
- Revision 2.126  2010/11/06 12:55:48  fabiankeil
- Set p-version to 3.0.17
-
- Revision 2.125  2010/09/03 17:39:37  fabiankeil
- Slightly improve the explanation of why filtering may appear slower than it is.
-
- Revision 2.124  2010/05/01 18:21:30  fabiankeil
- Explicitly mention how to match any URL.
-
- Revision 2.123  2010/02/19 16:00:38  fabiankeil
- Even more fixes.
-
- Revision 2.122  2010/02/19 15:22:47  fabiankeil
- Add missing word.
-
- Revision 2.121  2010/02/15 15:30:13  fabiankeil
- Mention the use of the no-such-domain template for DNS problems with FEATURE_IPV6_SUPPORT enabled.
-
- Revision 2.120  2010/02/13 17:38:39  fabiankeil
- Update entities for 3.0.16 stable.
-
- Revision 2.119  2010/02/13 16:37:37  fabiankeil
- Update 'What's new?' section.
-
- Revision 2.118  2010/02/11 13:59:48  fabiankeil
- Mention that the headers added by the add-header action aren't modified by other actions.
-
- Revision 2.117  2010/01/11 12:56:04  fabiankeil
- Bump copyright range as p-config.sgml's copyright line is only used in the config file.
-
- Revision 2.116  2009/11/15 14:24:12  fabiankeil
- Prepare to generate docs for 3.0.16 UNRELEASED.
-
- Revision 2.115  2009/10/10 06:19:34  fabiankeil
- Ditch a duplicated 'since'.
-
- Revision 2.114  2009/10/10 05:51:48  fabiankeil
- Update "What's new" section.
-
- Revision 2.113  2009/10/10 05:48:55  fabiankeil
- Prepare for 3.0.15 beta.
-
- Revision 2.112  2009/07/24 12:20:30  fabiankeil
- Remove duplicated period.
-
- Revision 2.111  2009/07/18 18:11:11  fabiankeil
- Don't claim that NTLM should work when there are multiple reports that it doesn't.
-
- Revision 2.110  2009/07/18 16:25:17  fabiankeil
- Fix trailing whitespace.
-
- Revision 2.109  2009/07/18 16:24:39  fabiankeil
- Bump entities for 3.0.14 beta.
-
- Revision 2.108  2009/07/18 15:49:23  fabiankeil
- Add most of the changes in 3.0.14 to the "What's New" section.
-
- Revision 2.107  2009/06/12 14:30:58  fabiankeil
- Update entities for 3.0.13 beta.
-
- Revision 2.106  2009/06/12 11:04:13  fabiankeil
- Import ChangeLog for 3.0.13 beta.
-
- Revision 2.105  2009/04/17 11:32:57  fabiankeil
- Grammar and spelling fixes.
-
- Revision 2.104  2009/04/17 11:27:49  fabiankeil
- Petr Pisar's privoxy-3.0.12-ipv6-3.diff.
-
- Revision 2.103  2009/03/21 10:49:05  fabiankeil
- Merge updated ChangeLog.
-
- Revision 2.102  2009/03/15 19:31:36  fabiankeil
- Update "What's New in this Release" section.
-
- Revision 2.101  2009/02/25 19:01:56  fabiankeil
- Fix typo.
-
- Revision 2.100  2009/02/19 17:14:11  fabiankeil
- - Copy the release cycle description from announce.txt into
-   the "What's New" section.
- - Stop referring to the ChangeLog for a "complete list of changes".
-   The "What's New" section already contains the complete list.
-
- Revision 2.99  2009/02/19 02:20:22  hal9
- Make some links in seealso conditional. Man page is now privoxy only links.
-
- Revision 2.98  2009/02/16 17:10:33  fabiankeil
- Fix entry about shortened log messages. Noticed by Lee.
-
- Revision 2.97  2009/02/14 18:01:00  fabiankeil
- Import ChangeLog.
-
- Revision 2.96  2009/02/14 13:14:03  fabiankeil
- Unbreak syntax.
-
- Revision 2.95  2009/02/14 12:51:26  fabiankeil
- Mention match-all.action in the "Actions Files Tutorial" section.
-
- Revision 2.94  2009/02/14 11:50:31  fabiankeil
- Some indentation fixes.
-
- Revision 2.93  2009/02/14 10:14:42  fabiankeil
- Mention match-all.action in the action file descriptions.
-
- Revision 2.92  2009/02/12 16:08:26  fabiankeil
- Declare the code stable.
-
- Revision 2.91  2009/01/13 16:50:35  fabiankeil
- The standard.action file is gone.
-
- Revision 2.90  2008/09/26 16:53:09  fabiankeil
- Update "What's new" section.
-
- Revision 2.89  2008/09/21 15:38:56  fabiankeil
- Fix Portage tree sync instructions in Gentoo section.
- Anonymously reported at ijbswa-developers@.
-
- Revision 2.88  2008/09/21 14:42:52  fabiankeil
- Add documentation for change-x-forwarded-for{},
- remove documentation for hide-forwarded-for-headers.
-
- Revision 2.87  2008/08/30 15:37:35  fabiankeil
- Update entities.
-
- Revision 2.86  2008/08/16 10:12:23  fabiankeil
- Merge two sentences and move the URL to the end of the item.
-
- Revision 2.85  2008/08/16 10:04:59  fabiankeil
- Some more syntax fixes. This version actually builds.
-
- Revision 2.84  2008/08/16 09:42:45  fabiankeil
- Turns out building docs works better if the syntax is valid.
-
- Revision 2.83  2008/08/16 09:32:02  fabiankeil
- Mention changes since 3.0.9 beta.
-
- Revision 2.82  2008/08/16 09:00:52  fabiankeil
- Fix example URL pattern (once more with feeling).
-
- Revision 2.81  2008/08/16 08:51:28  fabiankeil
- Update version-related entities.
-
- Revision 2.80  2008/07/18 16:54:30  fabiankeil
- Remove erroneous whitespace in documentation link.
- Reported by John Chronister in #2021611.
-
- Revision 2.79  2008/06/27 18:00:53  markm68k
- remove outdated startup information for mac os x
-
- Revision 2.78  2008/06/21 17:03:03  fabiankeil
- Fix typo.
-
- Revision 2.77  2008/06/14 13:45:22  fabiankeil
- Re-add a colon I unintentionally removed a few revisions ago.
-
- Revision 2.76  2008/06/14 13:21:28  fabiankeil
- Prepare for the upcoming 3.0.9 beta release.
-
- Revision 2.75  2008/06/13 16:06:48  fabiankeil
- Update the "What's New in this Release" section with
- the ChangeLog entries changelog2doc.pl could handle.
-
- Revision 2.74  2008/05/26 15:55:46  fabiankeil
- - Update "default profiles" table.
- - Add some more pcrs redirect examples and note that
-   enabling debug 128 helps to get redirects working.
-
- Revision 2.73  2008/05/23 14:43:18  fabiankeil
- Remove previously out-commented block that caused syntax problems.
-
- Revision 2.72  2008/05/12 10:26:14  fabiankeil
- Synchronize content filter descriptions with the ones in default.filter.
-
- Revision 2.71  2008/04/10 17:37:16  fabiankeil
- Actually we use "modern" POSIX 1003.2 regular
- expressions in path patterns, not PCRE.
-
- Revision 2.70  2008/04/10 15:59:12  fabiankeil
- Add another section to the client-header-tagger example that shows
- how to actually change the action settings once the tag is created.
-
- Revision 2.69  2008/03/29 12:14:25  fabiankeil
- Remove send-wafer and send-vanilla-wafer actions.
-
- Revision 2.68  2008/03/28 15:13:43  fabiankeil
- Remove inspect-jpegs action.
-
- Revision 2.67  2008/03/27 18:31:21  fabiankeil
- Remove kill-popups action.
-
- Revision 2.66  2008/03/06 16:33:47  fabiankeil
- If limit-connect isn't used, don't limit CONNECT requests to port 443.
-
- Revision 2.65  2008/03/04 18:30:40  fabiankeil
- Remove the treat-forbidden-connects-like-blocks action. We now
- use the "blocked" page for forbidden CONNECT requests by default.
-
- Revision 2.64  2008/03/01 14:10:28  fabiankeil
- Use new block syntax. Still needs some polishing.
-
- Revision 2.63  2008/02/22 05:50:37  markm68k
- fix merge problem
-
- Revision 2.62  2008/02/11 11:52:23  hal9
- Fix entity ... s/&/&amp;
-
- Revision 2.61  2008/02/11 03:41:47  markm68k
- more updates for mac os x
-
- Revision 2.60  2008/02/11 03:40:25  markm68k
- more updates for mac os x
-
- Revision 2.59  2008/02/11 00:52:34  markm68k
- reflect new changes for mac os x
-
- Revision 2.58  2008/02/03 21:37:40  hal9
- Apply patch from Mark: s/OSX/OS X/
-
- Revision 2.57  2008/02/03 19:10:14  fabiankeil
- Mention forward-socks5.
-
- Revision 2.56  2008/01/31 19:11:35  fabiankeil
- Let the +client-header-filter{hide-tor-exit-notation} example apply
- to all requests as "tainted" Referers aren't limited to exit TLDs.
-
- Revision 2.55  2008/01/19 21:26:37  hal9
- Add IE7 to configuration section per Gerry.
-
- Revision 2.54  2008/01/19 17:52:39  hal9
- Re-commit to fix various minor issues for new release.
-
- Revision 2.53  2008/01/19 15:03:05  hal9
- Doc sources tagged for 3.0.8 release.
-
- Revision 2.52  2008/01/17 01:49:51  hal9
- Change copyright notice for docs s/2007/2008/. All these will be rebuilt soon
- enough.
-
- Revision 2.51  2007/12/23 16:48:24  fabiankeil
- Use more precise example descriptions for the mysterious domain patterns.
-
- Revision 2.50  2007/12/08 12:44:36  fabiankeil
- - Remove already commented out pre-3.0.7 changes.
- - Update the "new log defaults" paragraph.
-
- Revision 2.49  2007/12/06 18:21:55  fabiankeil
- Update hide-forwarded-for-headers description.
-
- Revision 2.48  2007/11/24 19:07:17  fabiankeil
- - Mention request rewriting.
- - Enable the conditional-forge paragraph.
- - Minor rewordings.
-
- Revision 2.47  2007/11/18 14:59:47  fabiankeil
- A few "Note to Upgraders" updates.
-
- Revision 2.46  2007/11/17 17:24:44  fabiankeil
- - Use new action defaults.
- - Minor fixes and rewordings.
-
- Revision 2.45  2007/11/16 11:48:46  hal9
- Fix one typo, and add a couple of small refinements.
-
- Revision 2.44  2007/11/15 03:30:20  hal9
- Results of spell check.
-
- Revision 2.43  2007/11/14 18:45:39  fabiankeil
- - Mention some more contributors in the "New in this Release" list.
- - Minor rewordings.
-
- Revision 2.42  2007/11/12 03:32:40  hal9
- Updates for "What's New" and "Notes to Upgraders". Various other changes in
- preparation for new release. User Manual is almost ready.
-
- Revision 2.41  2007/11/11 16:32:11  hal9
- This is primarily syncing What's New and Note to Upgraders sections with the many
- new features and changes (gleaned from memory but mostly from ChangeLog).
-
- Revision 2.40  2007/11/10 17:10:59  fabiankeil
- In the first third of the file, mention several times that
- the action editor is disabled by default in 3.0.7 beta and later.
-
- Revision 2.39  2007/11/05 02:34:49  hal9
- Various changes in preparation for the upcoming release. Much yet to be done.
-
- Revision 2.38  2007/09/22 16:01:42  fabiankeil
- Update embedded show-url-info output.
-
- Revision 2.37  2007/08/27 16:09:55  fabiankeil
- Fix pre-chroot-nslookup description which I failed to
- copy and paste properly. Reported by Stephen Gildea.
-
- Revision 2.36  2007/08/26 16:47:14  fabiankeil
- Add Stephen Gildea's pre-chroot-nslookup patch [#1276666],
- extensive comments moved to user manual.
-
- Revision 2.35  2007/08/26 14:59:49  fabiankeil
- Minor rewordings and fixes.
-
- Revision 2.34  2007/08/05 15:19:50  fabiankeil
- - Don't claim HTTP/1.1 compliance.
- - Use $ in some of the path pattern examples.
- - Use a hide-user-agent example argument without
-   leading and trailing space.
- - Make it clear that the cookie actions work with
-   HTTP cookies only.
- - Rephrase the inspect-jpegs text to underline
-   that it's only meant to protect against a single
-   exploit.
-
- Revision 2.33  2007/07/27 10:57:35  hal9
- Add references for user-agent strings for hide-user-agenet
-
- Revision 2.32  2007/06/07 12:36:22  fabiankeil
- Apply Roland's 29_usermanual.dpatch to fix a bunch
- of syntax errors I collected over the last months.
-
- Revision 2.31  2007/06/02 14:01:37  fabiankeil
- Start to document forward-override{}.
-
- Revision 2.30  2007/04/25 15:10:36  fabiankeil
- - Describe installation for FreeBSD.
- - Start to document taggers and tag patterns.
- - Don't confuse devils and daemons.
-
- Revision 2.29  2007/04/05 11:47:51  fabiankeil
- Some updates regarding header filtering,
- handling of compressed content and redirect's
- support for pcrs commands.
-
- Revision 2.28  2006/12/10 23:42:48  hal9
- Fix various typos reported by Adam P. Thanks.
-
- Revision 2.27  2006/11/14 01:57:47  hal9
- Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
- manual.
-
- Revision 2.26  2006/10/24 11:16:44  hal9
- Add new filters.
-
- Revision 2.25  2006/10/18 10:50:33  hal9
- Add note that since filters are off in Cautious, compression is ON. Turn off
- compression to make filters work on all sites.
-
- Revision 2.24  2006/10/03 11:13:54  hal9
- More references to the new filters. Include html this time around.
-
- Revision 2.23  2006/10/02 22:43:53  hal9
- Contains new filter definitions from Fabian, and few other miscellaneous
- touch-ups.
-
- Revision 2.22  2006/09/22 01:27:55  hal9
- Final commit of probably various minor changes here and there. Unless
- something changes this should be ready for pending release.
-
- Revision 2.21  2006/09/20 03:21:36  david__schmidt
- Just the tiniest tweak.  Wafer thin!
-
- Revision 2.20  2006/09/10 14:53:54  hal9
- Results of spell check. User manual has some updates to standard.actions file
- info.
-
- Revision 2.19  2006/09/08 12:19:02  fabiankeil
- Adjust hide-if-modified-since example values
- to reflect the recent changes.
-
- Revision 2.18  2006/09/08 02:38:57  hal9
- Various changes:
-  -Fix a number of broken links.
-  -Migrate the new Windows service command line options, and reference as
-   needed.
-  -Rebuild so that can be used with the new "user-manual" config capabilities.
-  -Etc.
-
- Revision 2.17  2006/09/05 13:25:12  david__schmidt
- Add Windows service invocation stuff (duplicated) in FAQ and in user manual under Windows startup.  One probably ought to reference the other.
-
- Revision 2.16  2006/09/02 12:49:37  hal9
- Various small updates for new actions, filterfiles, etc.
-
- Revision 2.15  2006/08/30 11:15:22  hal9
- More work on the new actions, especially filter-*-headers, and What's New
- section. User Manual is close to final form for 3.0.4 release. Some tinkering
- and proof reading left to do.
-
- Revision 2.14  2006/08/29 10:59:36  hal9
- Add a "Whats New in this release" Section. Further work on multiple filter
- files, and assorted other minor changes.
-
- Revision 2.13  2006/08/22 11:04:59  hal9
- Silence warnings and errors. This should build now. New filters were only
- stubbed in. More to be done.
-
- Revision 2.12  2006/08/14 08:40:39  fabiankeil
- Documented new actions that were part of
- the "minor Privoxy improvements".
-
- Revision 2.11  2006/07/18 14:48:51  david__schmidt
- Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
- with what was really the latest development (the v_3_0_branch branch)
-
- Revision 1.123.2.43  2005/05/23 09:59:10  hal9
- Fix typo 'loose'
-
- Revision 1.123.2.42  2004/12/04 14:39:57  hal9
- Fix two minor typos per bug SF report.
-
- Revision 1.123.2.41  2004/03/23 12:58:42  oes
- Fixed an inaccuracy
-
- Revision 1.123.2.40  2004/02/27 12:48:49  hal9
- Add comment re: redirecting to local file system for set-image-blocker may
- is dependent on browser.
-
- Revision 1.123.2.39  2004/01/30 22:31:40  oes
- Added a hint re bookmarklets to Quickstart section
-
- Revision 1.123.2.38  2004/01/30 16:47:51  oes
- Some minor clarifications
-
- Revision 1.123.2.37  2004/01/29 22:36:11  hal9
- Updates for no longer filtering text/plain, and demoronizer default settings,
- and copyright notice dates.
-
- Revision 1.123.2.36  2003/12/10 02:26:26  hal9
- Changed the demoronizer filter description.
-
- Revision 1.123.2.35  2003/11/06 13:36:37  oes
- Updated link to nightly CVS tarball
-
- Revision 1.123.2.34  2003/06/26 23:50:16  hal9
- Add a small bit on filtering and problems re: source code being corrupted.
-
- Revision 1.123.2.33  2003/05/08 18:17:33  roro
- Use apt-get instead of dpkg to install Debian package, which is more
- solid, uses the correct and most recent Debian version automatically.
-
- Revision 1.123.2.32  2003/04/11 03:13:57  hal9
- Add small note about only one filterfile (as opposed to multiple actions
- files).
-
- Revision 1.123.2.31  2003/03/26 02:03:43  oes
- Updated hard-coded copyright dates
-
- Revision 1.123.2.30  2003/03/24 12:58:56  hal9
- Add new section on Predefined Filters.
-
- Revision 1.123.2.29  2003/03/20 02:45:29  hal9
- More problems with \-\-chroot causing markup problems :(
-
- Revision 1.123.2.28  2003/03/19 00:35:24  hal9
- Manual edit of revision log because 'chroot' (even inside a comment) was
- causing Docbook to hang here (due to double hyphen and the processor thinking
- it was a comment).
-
- Revision 1.123.2.27  2003/03/18 19:37:14  oes
- s/Advanced|Radical/Adventuresome/g to avoid complaints re fun filter
-
- Revision 1.123.2.26  2003/03/17 16:50:53  oes
- Added documentation for new chroot option
-
- Revision 1.123.2.25  2003/03/15 18:36:55  oes
- Adapted to the new filters
-
- Revision 1.123.2.24  2002/11/17 06:41:06  hal9
- Move default profiles table from FAQ to U-M, and other minor related changes.
- Add faq on cookies.
-
- Revision 1.123.2.23  2002/10/21 02:32:01  hal9
- Updates to the user.action examples section. A few new ones.
-
- Revision 1.123.2.22  2002/10/12 00:51:53  hal9
- Add demoronizer to filter section.
-
- Revision 1.123.2.21  2002/10/10 04:09:35  hal9
- s/Advanced/Radical/ and added very brief note.
-
- Revision 1.123.2.20  2002/10/10 03:49:21  hal9
- Add notes to session-cookies-only and Quickstart about pre-existing
- cookies. Also, note content-cookies work differently.
-
- Revision 1.123.2.19  2002/09/26 01:25:36  hal9
- More explanation on Privoxy patterns, more on content-cookies and SSL.
-
- Revision 1.123.2.18  2002/08/22 23:47:58  hal9
- Add 'Documentation' to Privoxy Menu shot in Configuration section to match
- CGIs.
-
- Revision 1.123.2.17  2002/08/18 01:13:05  hal9
- Spell checked (only one typo this time!).
-
- Revision 1.123.2.16  2002/08/09 19:20:54  david__schmidt
- Update to Mac OS X startup script name
-
- Revision 1.123.2.15  2002/08/07 17:32:11  oes
- Converted some internal links from ulink to link for PDF creation; no content changed
-
- Revision 1.123.2.14  2002/08/06 09:16:13  oes
- Nits re: actions file download
-
- Revision 1.123.2.13  2002/08/02 18:23:19  g_sauthoff
- Just 2 small corrections to the Gentoo sections
-
- Revision 1.123.2.12  2002/08/02 18:17:21  g_sauthoff
- Added 2 Gentoo sections
-
- Revision 1.123.2.11  2002/07/26 15:20:31  oes
- - Added version info to title
- - Added info on new filters
- - Revised parts of the filter file tutorial
- - Added info on where to get updated actions files
-
- Revision 1.123.2.10  2002/07/25 21:42:29  hal9
- Add brief notes on not proxying non-HTTP protocols.
-
- Revision 1.123.2.9  2002/07/11 03:40:28  david__schmidt
-
- Updated Mac OS X sections due to installation location change
-
- Revision 1.123.2.8  2002/06/09 16:36:32  hal9
- Clarifications on filtering and MIME. Hardcode 'latest release' in index.html.
-
- Revision 1.123.2.7  2002/06/09 00:29:34  hal9
- Touch ups on filtering, in actions section and Anatomy.
-
- Revision 1.123.2.6  2002/06/06 23:11:03  hal9
- Fix broken link. Linkchecked all docs.
-
- Revision 1.123.2.5  2002/05/29 02:01:02  hal9
- This is break out of the entire config section from u-m, so it can
- eventually be used to generate the comments, etc in the main config file
- so that these are in sync with each other.
-
- Revision 1.123.2.4  2002/05/27 03:28:45  hal9
- Ooops missed something from David.
-
- Revision 1.123.2.3  2002/05/27 03:23:17  hal9
- Fix FIXMEs for OS2 and Mac OS X startup. Fix Redhat typos (should be Red Hat).
- That's a wrap, I think.
-
- Revision 1.123.2.2  2002/05/26 19:02:09  hal9
- Move Amiga stuff around to take of FIXME in start up section.
-
- Revision 1.123.2.1  2002/05/26 17:04:25  hal9
- -Spellcheck, very minor edits, and sync across branches
-
- Revision 1.123  2002/05/24 23:19:23  hal9
- Include new image (Proxy setup). More fun with guibutton.
- Minor corrections/clarifications here and there.
-
- Revision 1.122  2002/05/24 13:24:08  oes
- Added Bookmarklet for one-click pre-filled access to show-url-info
-
- Revision 1.121  2002/05/23 23:20:17  oes
-  - Changed more (all?) references to actions to the
-    <literal><link> style.
-  - Small fixes in the actions chapter
-  - Small clarifications in the quickstart to ad blocking
-  - Removed <emphasis> from <title>s since the new doc CSS
-    renders them red (bad in TOC).
-
- Revision 1.120  2002/05/23 19:16:43  roro
- Correct Debian specials (installation and startup).
-
- Revision 1.119  2002/05/22 17:17:05  oes
- Added Security hint
-
- Revision 1.118  2002/05/21 04:54:55  hal9
- -New Section: Quickstart to Ad Blocking
- -Reformat Actions Anatomy to match new CGI layout
-
- Revision 1.117  2002/05/17 13:56:16  oes
-  - Reworked & extended Templates chapter
-  - Small changes to Regex appendix
-  - #included authors.sgml into (C) and hist chapter
-
- Revision 1.116  2002/05/17 03:23:46  hal9
- Fixing merge conflict in Quickstart section.
-
- Revision 1.115  2002/05/16 16:25:00  oes
- Extended the Filter File chapter & minor fixes
-
- Revision 1.114  2002/05/16 09:42:50  oes
- More ulink->link, added some hints to Quickstart section
-
- Revision 1.113  2002/05/15 21:07:25  oes
- Extended and further commented the example actions files
-
- Revision 1.112  2002/05/15 03:57:14  hal9
- Spell check. A few minor edits here and there for better syntax and
- clarification.
-
- Revision 1.111  2002/05/14 23:01:36  oes
- Fixing the fixes
-
- Revision 1.110  2002/05/14 19:10:45  oes
- Restored alphabetical order of actions
-
- Revision 1.109  2002/05/14 17:23:11  oes
- Renamed the prevent-*-cookies actions, extended aliases section and moved it before the example AFs
-
- Revision 1.108  2002/05/14 15:29:12  oes
- Completed proofreading the actions chapter
-
- Revision 1.107  2002/05/12 03:20:41  hal9
- Small clarifications for 127.0.0.1 vs localhost for listen-address since this
- apparently an important distinction for some OS's.
-
- Revision 1.106  2002/05/10 01:48:20  hal9
- This is mostly proposed copyright/licensing additions and changes. Docs
- are still GPL, but licensing and copyright are more visible. Also, copyright
- changed in doc header comments (eliminate references to JB except FAQ).
-
- Revision 1.105  2002/05/05 20:26:02  hal9
- Sorting out license vs copyright in these docs.
-
- Revision 1.104  2002/05/04 08:44:45  swa
- bumped version
-
- Revision 1.103  2002/05/04 00:40:53  hal9
- -Remove the TOC first page kludge. It's fixed proper now in ldp.dsl.in.
- -Some minor additions to Quickstart.
-
- Revision 1.102  2002/05/03 17:46:00  oes
- Further proofread & reactivated short build instructions
-
- Revision 1.101  2002/05/03 03:58:30  hal9
- Move the user-manual config directive to top of section. Add note about
- Privoxy needing read permissions for configs, and write for logs.
-
- Revision 1.100  2002/04/29 03:05:55  hal9
- Add clarification on differences of new actions files.
-
- Revision 1.99  2002/04/28 16:59:05  swa
- more structure in starting section
-
- Revision 1.98  2002/04/28 05:43:59  hal9
- This is the break up of configuration.html into multiple files. This
- will probably break links elsewhere :(
-
- Revision 1.97  2002/04/27 21:04:42  hal9
- -Rewrite of Actions File example.
- -Add section for user-manual directive in config.
-
- Revision 1.96  2002/04/27 05:32:00  hal9
- -Add short section to Filter Files to tie in with +filter action.
- -Start rewrite of examples in Actions Examples (not finished).
-
- Revision 1.95  2002/04/26 17:23:29  swa
- bookmarks cleaned, changed structure of user manual, screen and programlisting cleanups, and numerous other changes that I forgot
-
- Revision 1.94  2002/04/26 05:24:36  hal9
- -Add most of Andreas suggestions to Chain of Events section.
- -A few other minor corrections and touch up.
-
- Revision 1.92  2002/04/25 18:55:13  hal9
- More catchups on new actions files, and new actions names.
- Other assorted cleanups, and minor modifications.
-
- Revision 1.91  2002/04/24 02:39:31  hal9
- Add 'Chain of Events' section.
-
- Revision 1.90  2002/04/23 21:41:25  hal9
- Linuxconf is deprecated on RH, substitute chkconfig.
-
- Revision 1.89  2002/04/23 21:05:28  oes
- Added hint for startup on Red Hat
-
- Revision 1.88  2002/04/23 05:37:54  hal9
- Add AmigaOS install stuff.
-
- Revision 1.87  2002/04/23 02:53:15  david__schmidt
- Updated Mac OS X installation section
- Added a few English tweaks here an there
-
- Revision 1.86  2002/04/21 01:46:32  hal9
- Re-write actions section.
-
- Revision 1.85  2002/04/18 21:23:23  hal9
- Fix ugly typo (mine).
-
- Revision 1.84  2002/04/18 21:17:13  hal9
- Spell Redhat correctly (ie Red Hat). A few minor grammar corrections.
-
- Revision 1.83  2002/04/18 18:21:12  oes
- Added RPM install detail
-
- Revision 1.82  2002/04/18 12:04:50  oes
- Cosmetics
-
- Revision 1.81  2002/04/18 11:50:24  oes
- Extended Install section - needs fixing by packagers
-
- Revision 1.80  2002/04/18 10:45:19  oes
- Moved text to buildsource.sgml, renamed some filters, details
-
- Revision 1.79  2002/04/18 03:18:06  hal9
- Spellcheck, and minor touchups.
-
- Revision 1.78  2002/04/17 18:04:16  oes
- Proofreading part 2
-
- Revision 1.77  2002/04/17 13:51:23  oes
- Proofreading, part one
-
- Revision 1.76  2002/04/16 04:25:51  hal9
- -Added 'Note to Upgraders' and re-ordered the 'Quickstart' section.
- -Note about proxy may need requests to re-read config files.
-
- Revision 1.75  2002/04/12 02:08:48  david__schmidt
- Remove OS/2 building info... it is already in the developer-manual
-
- Revision 1.74  2002/04/11 00:54:38  hal9
- Add small section on submitting actions.
-
- Revision 1.73  2002/04/10 18:45:15  swa
- generated
-
- Revision 1.72  2002/04/10 04:06:19  hal9
- Added actions feedback  to Bookmarklets section
-
- Revision 1.71  2002/04/08 22:59:26  hal9
- Version update. Spell chkconfig correctly :)
-
- Revision 1.70  2002/04/08 20:53:56  swa
- ?
-
- Revision 1.69  2002/04/06 05:07:29  hal9
- -Add privoxy-man-page.sgml, for man page.
- -Add authors.sgml for AUTHORS (and p-authors.sgml)
- -Reworked various aspects of various docs.
- -Added additional comments to sub-docs.
-
- Revision 1.68  2002/04/04 18:46:47  swa
- consistent look. reuse of copyright, history et. al.
-
- Revision 1.67  2002/04/04 17:27:57  swa
- more single file to be included at multiple points. make maintaining easier
-
- Revision 1.66  2002/04/04 06:48:37  hal9
- Structural changes to allow for conditional inclusion/exclusion of content
- based on entity toggles, e.g. 'entity % p-not-stable  "INCLUDE"'. And
- definition of internal entities, e.g. 'entity p-version "2.9.13"' that will
- eventually be set by Makefile.
- More boilerplate text for use across multiple docs.
-
- Revision 1.65  2002/04/03 19:52:07  swa
- enhance squid section due to user suggestion
-
- Revision 1.64  2002/04/03 03:53:43  hal9
- A few minor bug fixes, and touch ups. Ready for review.
-
- Revision 1.63  2002/04/01 16:24:49  hal9
- Define entities to include boilerplate text. See doc/source/*.
-
- Revision 1.62  2002/03/30 04:15:53  hal9
- - Fix privoxy.org/config links.
- - Paste in Bookmarklets from Toggle page.
- - Move Quickstart nearer top, and minor rework.
-
- Revision 1.61  2002/03/29 01:31:08  hal9
- Minor update.
-
- Revision 1.60  2002/03/27 01:57:34  hal9
- Added more to Anatomy section.
-
- Revision 1.59  2002/03/27 00:54:33  hal9
- Touch up intro for new name.
-
- Revision 1.58  2002/03/26 22:29:55  swa
- we have a new homepage!
-
- Revision 1.57  2002/03/24 20:33:30  hal9
- A few minor catch ups with name change.
-
- Revision 1.56  2002/03/24 16:17:06  swa
- configure needs to be generated.
-
- Revision 1.55  2002/03/24 16:08:08  swa
- we are too lazy to make a block-built
- privoxy logo. hence removed the option.
-
- Revision 1.54  2002/03/24 15:46:20  swa
- name change related issue.
-
- Revision 1.53  2002/03/24 11:51:00  swa
- name change. changed filenames.
-
- Revision 1.52  2002/03/24 11:01:06  swa
- name change
-
- Revision 1.51  2002/03/23 15:13:11  swa
- renamed every reference to the old name with foobar.
- fixed "application foobar application" tag, fixed
- "the foobar" with "foobar". left junkbustser in cvs
- comments and remarks to history untouched.
-
- Revision 1.50  2002/03/23 05:06:21  hal9
- Touch up.
-
- Revision 1.49  2002/03/21 17:01:05  hal9
- New section in Appendix.
-
- Revision 1.48  2002/03/12 06:33:01  hal9
- Catching up to Andreas and re_filterfile changes.
-
- Revision 1.47  2002/03/11 13:13:27  swa
- correct feedback channels
-
- Revision 1.46  2002/03/10 00:51:08  hal9
- Added section on JB internal pages in Appendix.
-
- Revision 1.45  2002/03/09 17:43:53  swa
- more distros
-
- Revision 1.44  2002/03/09 17:08:48  hal9
- New section on Jon's actions file editor, and move some stuff around.
-
- Revision 1.43  2002/03/08 00:47:32  hal9
- Added imageblock{pattern}.
-
- Revision 1.42  2002/03/07 18:16:55  swa
- looks better
-
- Revision 1.41  2002/03/07 16:46:43  hal9
- Fix a few markup problems for jade.
-
- Revision 1.40  2002/03/07 16:28:39  swa
- provide correct feedback channels
-
- Revision 1.39  2002/03/06 16:19:28  hal9
- Note on perceived filtering slowdown per FR.
-
- Revision 1.38  2002/03/05 23:55:14  hal9
- Stupid I did it again. Double hyphen in comment breaks jade.
-
- Revision 1.37  2002/03/05 23:53:49  hal9
- jade barfs on '- -' embedded in comments. - -user option broke it.
-
- Revision 1.36  2002/03/05 22:53:28  hal9
- Add new - - user option.
-
- Revision 1.35  2002/03/05 00:17:27  hal9
- Added section on command line options.
-
- Revision 1.34  2002/03/04 19:32:07  oes
- Changed default port to 8118
-
- Revision 1.33  2002/03/03 19:46:13  hal9
- Emphasis on where/how to report bugs, etc
-
- Revision 1.32  2002/03/03 09:26:06  joergs
- AmigaOS changes, config is now loaded from PROGDIR: instead of
- AmiTCP:db/junkbuster/ if no configuration file is specified on the
- command line.
-
- Revision 1.31  2002/03/02 22:45:52  david__schmidt
- Just tweaking
-
- Revision 1.30  2002/03/02 22:00:14  hal9
- Updated 'New Features' list. Ran through spell-checker.
-
- Revision 1.29  2002/03/02 20:34:07  david__schmidt
- Update OS/2 build section
-
- Revision 1.28  2002/02/24 14:34:24  jongfoster
- Formatting changes.  Now changing the doctype to DocBook XML 4.1
- will work - no other changes are needed.
-
- Revision 1.27  2002/01/11 14:14:32  hal9
- Added a very short section on Templates
-
- Revision 1.26  2002/01/09 20:02:50  hal9
- Fix bug re: auto-detect config file changes.
-
- Revision 1.25  2002/01/09 18:20:30  hal9
- Touch ups for *.action files.
-
- Revision 1.24  2001/12/02 01:13:42  hal9
- Fix typo.
-
- Revision 1.23  2001/12/02 00:20:41  hal9
- Updates for recent changes.
-
- Revision 1.22  2001/11/05 23:57:51  hal9
- Minor update for startup now daemon mode.
-
- Revision 1.21  2001/10/31 21:11:03  hal9
- Correct 2 minor errors
-
- Revision 1.18  2001/10/24 18:45:26  hal9
- *** empty log message ***
-
- Revision 1.17  2001/10/24 17:10:55  hal9
- Catching up with Jon's recent work, and a few other things.
-
- Revision 1.16  2001/10/21 17:19:21  swa
- wrong url in documentation
-
- Revision 1.15  2001/10/14 23:46:24  hal9
- Various minor changes. Fleshed out SEE ALSO section.
-
- Revision 1.13  2001/10/10 17:28:33  hal9
- Very minor changes.
-
- Revision 1.12  2001/09/28 02:57:04  hal9
- Ditto :/
-
- Revision 1.11  2001/09/28 02:25:20  hal9
- Ditto.
-
- Revision 1.9  2001/09/27 23:50:29  hal9
- A few changes. A short section on regular expression in appendix.
-
- Revision 1.8  2001/09/25 00:34:59  hal9
- Some additions, and re-arranging.
-
- Revision 1.7  2001/09/24 14:31:36  hal9
- Diddling.
-
- Revision 1.6  2001/09/24 14:10:32  hal9
- Including David's OS/2 installation instructions.
-
- Revision 1.2  2001/09/13 15:27:40  swa
- cosmetics
-
- Revision 1.1  2001/09/12 15:36:41  swa
- source files for junkbuster documentation
-
- Revision 1.3  2001/09/10 17:43:59  swa
- first proposal of a structure.
-
- Revision 1.2  2001/06/13 14:28:31  swa
- docs should have an author.
-
- Revision 1.1  2001/06/13 14:20:37  swa
- first import of project's documentation for the webserver.
 
  -->
 

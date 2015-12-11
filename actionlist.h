@@ -63,8 +63,8 @@ DEFINE_CGI_PARAM_NO_RADIO("content-type-overwrite",     ACTION_CONTENT_TYPE_OVER
 DEFINE_ACTION_STRING     ("crunch-client-header",       ACTION_CRUNCH_CLIENT_HEADER, ACTION_STRING_CLIENT_HEADER)
 DEFINE_CGI_PARAM_NO_RADIO("crunch-client-header",       ACTION_CRUNCH_CLIENT_HEADER, ACTION_STRING_CLIENT_HEADER,          "X-Whatever:")
 DEFINE_ACTION_BOOL       ("crunch-if-none-match",       ACTION_CRUNCH_IF_NONE_MATCH)
-DEFINE_ACTION_BOOL       ("crunch-incoming-cookies",    ACTION_NO_COOKIE_SET)
-DEFINE_ACTION_BOOL       ("crunch-outgoing-cookies",    ACTION_NO_COOKIE_READ)
+DEFINE_ACTION_BOOL       ("crunch-incoming-cookies",    ACTION_CRUNCH_INCOMING_COOKIES)
+DEFINE_ACTION_BOOL       ("crunch-outgoing-cookies",    ACTION_CRUNCH_OUTGOING_COOKIES)
 DEFINE_ACTION_STRING     ("crunch-server-header",       ACTION_CRUNCH_SERVER_HEADER, ACTION_STRING_SERVER_HEADER)
 DEFINE_CGI_PARAM_NO_RADIO("crunch-server-header",       ACTION_CRUNCH_SERVER_HEADER, ACTION_STRING_SERVER_HEADER,          "X-Whatever:")
 DEFINE_ACTION_STRING     ("deanimate-gifs",             ACTION_DEANIMATE,       ACTION_STRING_DEANIMATE)
@@ -104,6 +104,8 @@ DEFINE_ACTION_STRING     ("hide-user-agent",            ACTION_HIDE_USER_AGENT, 
 DEFINE_CGI_PARAM_NO_RADIO("hide-user-agent",            ACTION_HIDE_USER_AGENT, ACTION_STRING_USER_AGENT,    "Privoxy " VERSION)
 DEFINE_ACTION_STRING     ("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT)
 DEFINE_CGI_PARAM_NO_RADIO("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT,  "443")
+DEFINE_ACTION_STRING     ("limit-cookie-lifetime",      ACTION_LIMIT_COOKIE_LIFETIME, ACTION_STRING_LIMIT_COOKIE_LIFETIME)
+DEFINE_CGI_PARAM_CUSTOM  ("limit-cookie-lifetime",      ACTION_LIMIT_COOKIE_LIFETIME, ACTION_STRING_LIMIT_COOKIE_LIFETIME, "60")
 DEFINE_ACTION_STRING     ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED)
 DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED, "block", 0)
 DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED, "reset-to-request-time", 1)
@@ -113,7 +115,7 @@ DEFINE_ACTION_STRING     ("redirect",                   ACTION_REDIRECT,        
 DEFINE_CGI_PARAM_NO_RADIO("redirect",                   ACTION_REDIRECT,        ACTION_STRING_REDIRECT,  "http://localhost/")
 DEFINE_ACTION_MULTI      ("server-header-filter",       ACTION_MULTI_SERVER_HEADER_FILTER)
 DEFINE_ACTION_MULTI      ("server-header-tagger",       ACTION_MULTI_SERVER_HEADER_TAGGER)
-DEFINE_ACTION_BOOL       ("session-cookies-only",       ACTION_NO_COOKIE_KEEP)
+DEFINE_ACTION_BOOL       ("session-cookies-only",       ACTION_SESSION_COOKIES_ONLY)
 DEFINE_ACTION_STRING     ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER)
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "pattern", 1)
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "blank", 0)
@@ -125,7 +127,7 @@ DEFINE_CGI_PARAM_CUSTOM  ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   
  * Alternative spellings
  */
 DEFINE_ACTION_STRING     ("hide-referer",   ACTION_HIDE_REFERER,    ACTION_STRING_REFERER)
-DEFINE_ACTION_BOOL       ("prevent-keeping-cookies", ACTION_NO_COOKIE_KEEP)
+DEFINE_ACTION_BOOL       ("prevent-keeping-cookies", ACTION_SESSION_COOKIES_ONLY)
 
 /*
  * Pre-3.0.7 (pseudo) compatibility
@@ -133,21 +135,6 @@ DEFINE_ACTION_BOOL       ("prevent-keeping-cookies", ACTION_NO_COOKIE_KEEP)
 DEFINE_ACTION_MULTI      ("filter-client-headers",       ACTION_MULTI_CLIENT_HEADER_FILTER)
 DEFINE_ACTION_MULTI      ("filter-server-headers",       ACTION_MULTI_SERVER_HEADER_FILTER)
 
-/*
- * Pre-3.0 compatibility
- */
-DEFINE_ACTION_BOOL       ("no-cookie-read",          ACTION_NO_COOKIE_READ)
-DEFINE_ACTION_BOOL       ("no-cookie-set",           ACTION_NO_COOKIE_SET)
-DEFINE_ACTION_BOOL       ("prevent-reading-cookies", ACTION_NO_COOKIE_READ)
-DEFINE_ACTION_BOOL       ("prevent-setting-cookies", ACTION_NO_COOKIE_SET)
-DEFINE_ACTION_BOOL       ("downgrade",               ACTION_DOWNGRADE)
-DEFINE_ACTION_STRING     ("hide-from",               ACTION_HIDE_FROM,       ACTION_STRING_FROM)
-DEFINE_ACTION_BOOL       ("image",                   ACTION_IMAGE)
-DEFINE_ACTION_STRING     ("image-blocker",           ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER)
-DEFINE_ACTION_BOOL       ("no-compression",          ACTION_NO_COMPRESSION)
-DEFINE_ACTION_BOOL       ("no-cookies-keep",         ACTION_NO_COOKIE_KEEP)
-DEFINE_ACTION_BOOL       ("no-cookies-read",         ACTION_NO_COOKIE_READ)
-DEFINE_ACTION_BOOL       ("no-cookies-set",          ACTION_NO_COOKIE_SET)
 #endif /* if DEFINE_ACTION_ALIAS */
 
 #undef DEFINE_ACTION_MULTI

@@ -1,4 +1,4 @@
-const char amiga_rcs[] = "$Id: amiga.c,v 1.14 2011/09/04 11:10:56 fabiankeil Exp $";
+const char amiga_rcs[] = "$Id: amiga.c,v 1.16 2012/03/09 16:24:36 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/amiga.c,v $
@@ -74,7 +74,7 @@ SAVEDS ULONG server_thread(void)
    {
       SetErrnoPtr(&(UserData.eno),sizeof(int));
       local_csp->cfd=ObtainSocket(local_csp->cfd, AF_INET, SOCK_STREAM, 0);
-      if(JB_INVALID_SOCKET!=local_csp->cfd)
+      if (JB_INVALID_SOCKET!=local_csp->cfd)
       {
          Signal(main_task,SIGF_SINGLE);
          serve((struct client_state *) local_csp);
@@ -207,7 +207,7 @@ void free (void *m)
 {
    ULONG *mem = m;
 
-   if(mem && memPool)
+   if (mem && memPool)
    {
       ULONG size=*--mem;
 
@@ -268,7 +268,7 @@ void __memCleanUp (void)
    }
 }
 
-#define ADD2LIST(a,b,c) asm(".stabs \"_" #b "\"," #c ",0,0,_" #a )
+#define ADD2LIST(a,b,c) asm(".stabs \"_" #b "\"," #c ",0,0,_" #a)
 #define ADD2EXIT(a,pri) ADD2LIST(a,__EXIT_LIST__,22); \
                         asm(".stabs \"___EXIT_LIST__\",20,0,0," #pri "+128")
 ADD2EXIT(__memCleanUp,-50);

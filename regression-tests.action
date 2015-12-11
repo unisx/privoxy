@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.42 2011/11/06 11:46:58 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.48 2012/11/11 12:42:00 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -10,7 +10,7 @@
 #
 #############################################################################
 #
-# Copyright (c) 2007-2011 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2012 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -26,10 +26,8 @@
 #
 #############################################################################
 
-# While the syntax used is understood by Privoxy 3.0.14 and later,
-# some of the +fast-redirects{} tests require at least 3.0.18 to work.
 {{settings}}
-for-privoxy-version=3.0.18
+for-privoxy-version=3.0.20
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
@@ -68,14 +66,14 @@ TAG:^User-Agent: Privoxy-Regression-Test
 # Test accept-language{}.
 #######################################################
 
+{+hide-accept-language{en-gb}}
 # Set Header    = Accept-Language: de-de
 # Expect Header = Accept-Language: en-gb
-{+hide-accept-language{en-gb}}
 TAG:^hide-accept-language\{en-gb\}$
 
+{+hide-accept-language{block}}
 # Set Header    = Accept-Language: de-de
 # Expect Header = REMOVAL
-{+hide-accept-language{block}}
 TAG:^hide-accept-language\{block\}$
 
 #######################################################
@@ -89,6 +87,7 @@ TAG:^hide-accept-language\{block\}$
 # 6) a parameter that looks like an invalid fake referrer
 #######################################################
 
+{+hide-referrer{conditional-block}}
 # Set Header    = Referer: http://www.example.org/foo
 # Expect Header = REMOVAL
 #
@@ -106,9 +105,9 @@ TAG:^hide-accept-language\{block\}$
 #
 # Set Header    = Referer: https://p.p/
 # Expect Header = REMOVAL
-{+hide-referrer{conditional-block}}
 TAG:^hide-referrer\{conditional-block\}$
 
+{+hide-referrer{conditional-forge}}
 # Set Header    = Referer: http://www.example.org/foo
 # Expect Header = Referer: http://p.p/
 #
@@ -126,27 +125,26 @@ TAG:^hide-referrer\{conditional-block\}$
 #
 # Set Header    = Referer: https://p.p/
 # Expect Header = Referer: http://p.p/
-{+hide-referrer{conditional-forge}}
 TAG:^hide-referrer\{conditional-forge\}$
 
+{+hide-referrer{forge}}
 # Set Header    = Referer: http://www.example.org/foo
 # Expect Header = Referer: http://p.p/
-{+hide-referrer{forge}}
 TAG:^hide-referrer\{forge\}$
 
+{+hide-referrer{block}}
 # Set Header    = Referer: http://www.example.org/foo
 # Expect Header = REMOVAL
-{+hide-referrer{block}}
 TAG:^hide-referrer\{block\}$
 
+{+hide-referrer{invalid}}
 # Set Header    = Referer: http://www.example.org/foo
 # Expect Header = Referer: invalid
-{+hide-referrer{invalid}}
 TAG:^hide-referrer\{invalid\}$
 
+{+hide-referrer{http://www.privoxy.org/}}
 # Set Header    = Referer: http://www.example.org/asdf
 # Expect Header = Referer: http://www.privoxy.org/
-{+hide-referrer{http://www.privoxy.org/}}
 TAG:^hide-referrer\{http://www.privoxy.org/\}$
 
 #{+hide-referrer{}}
@@ -156,20 +154,20 @@ TAG:^hide-referrer\{http://www.privoxy.org/\}$
 # Test hide-user-agent{}.
 #######################################################
 
+{+hide-user-agent{Mozilla/5.0 (X11; U; FreeBSD alpha; en-GB; rv:1.8.1.6) Gecko/20070913 Firefox/2.0.0.6}}
 # Set Header    = User-Agent: Mozilla/5.0 (X11; U; NetBSD i386; de-CH; rv:1.8.1.6) Gecko/20070806 Firefox/2.0.0.6
 # Expect Header = User-Agent: Mozilla/5.0 (X11; U; FreeBSD alpha; en-GB; rv:1.8.1.6) Gecko/20070913 Firefox/2.0.0.6
-{+hide-user-agent{Mozilla/5.0 (X11; U; FreeBSD alpha; en-GB; rv:1.8.1.6) Gecko/20070913 Firefox/2.0.0.6}}
 TAG:^hide-user-agent\{Mozilla/5\.0 \(X11; U; FreeBSD alpha; en-GB; rv:1\.8\.1\.6\) Gecko/20070913 Firefox/2\.0\.0\.6\}$
 
+{+hide-user-agent{block}}
 # XXX: Check the code that is tested here.
 # Set Header = ua-blah: blah
 # Expect Header = REMOVAL
-{+hide-user-agent{block}}
 TAG:^hide-user-agent{block}$
 
+{-hide-user-agent{}}
 # Set Header = ua-blah: blah
 # Expect Header = NO CHANGE
-{-hide-user-agent{}}
 TAG:^-hide-user-agent{block}$
 
 
@@ -177,16 +175,16 @@ TAG:^-hide-user-agent{block}$
 # Test add-header{}.
 #######################################################
 
+{+add-header{X-Custom-Header: yes, please}}
 # Set Header    = X-Whatever: foo
 # Expect Header = X-Custom-Header: yes, please
-
-{+add-header{X-Custom-Header: yes, please}}
 TAG:^add-header\{X-Custom-Header: yes, please\}$
 
 #######################################################
 # Test client-header-filter{hide-tor-exit-notation}.
 #######################################################
 
+{+client-header-filter{hide-tor-exit-notation} -hide-referer}
 # Set Header    = Referer: http://p.p.zwiebelsuppe.exit/
 # Expect Header = Referer: http://p.p/
 #
@@ -207,14 +205,13 @@ TAG:^add-header\{X-Custom-Header: yes, please\}$
 #
 # Set Header    = Referer: http://config.privoxy.org.ad356ef8e87a89e6c898b74500d58607ac691178.exit/foo/baaz.html
 # Expect Header = Referer: http://config.privoxy.org/foo/baaz.html
-
-{+client-header-filter{hide-tor-exit-notation} -hide-referer}
 TAG:^client-header-filter\{hide-tor-exit-notation\}$
 
 #######################################################
 # Test crunch-client-header{}.
 #######################################################
 
+{+crunch-client-header{text/html}}
 # Set Header    = Content-Type: text/html
 # Expect Header = REMOVAL
 #
@@ -223,106 +220,147 @@ TAG:^client-header-filter\{hide-tor-exit-notation\}$
 #
 # Set Header    = Content-Type: text/plain
 # Expect Header = NO CHANGE
-
-{+crunch-client-header{text/html}}
 TAG:^crunch-client-header\{text/plain\}$
-
 
 #######################################################
 # Test crunch-if-none-match.
 #######################################################
 
+{+crunch-if-none-match -hide-if-modified-since}
 # Set Header    = If-None-Match: 8987afd239d2093kd2309kd
 # Expect Header = REMOVAL
-
+#
 # Set Header    = If-None-Match: 82c3cb50c984ef11b1fed749949b2a16
 # Expect Header = REMOVAL
-
+#
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = NO CHANGE
-
-{+crunch-if-none-match -hide-if-modified-since}
 TAG:^crunch-if-none-match$
 
 #######################################################
 # Test hide-if-modified-since
 #######################################################
 
+{+hide-if-modified-since{block} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = REMOVAL
 #
 # Set Header    = If-None-Match: 82c3cb50c984ef11b1fed749949b2a16
 # Expect Header = NO CHANGE
-
-{+hide-if-modified-since{block} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{block\}$
 
+{+hide-if-modified-since{-60} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
+#
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thu, 04-Oct-07 09:56:35 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thursday, 04-Oct-2007 09:56:35 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thu, 04-Oct-2007 09:56:35 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thursday Oct 04 09:56:35 2007 GMT
+# Expect Header = SOME CHANGE
+#
 # Set Header    = If-Modified-Since: Thu, 1 Jan 1970 00:00:00 GMT
 # Expect Header = SOME CHANGE
 # Level = 17
+# Set Header    = If-Modified-Since: Thu, 01-Jan-70 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Thursday, 01-Jan-1970 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Thu, 01-Jan-1970 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Thursday Jan 01 00:00:00 1970 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+#
 # Set Header    = If-Modified-Since: Thu, 1 Jan 123456789 00:00:00 GMT
 # Expect Header = REMOVAL
+# Set Header    = If-Modified-Since: Thu, 01-Jan-123456789 00:00:00 GMT
+# Expect Header = REMOVAL
+# Set Header    = If-Modified-Since: Thursday, 01-Jan-123456789 00:00:00 GMT
+# Expect Header = REMOVAL
+# Set Header    = If-Modified-Since: Thu, 01-Jan-123456789 00:00:00 GMT
+# Expect Header = REMOVAL
+# Set Header    = If-Modified-Since: Thursday Jan 01 00:00:00 123456789 GMT
+# Expect Header = REMOVAL
+#
 # Set Header    = If-Modified-Since: Mon, 1 Jan 2525 00:00:00 GMT
 # Expect Header = SOME CHANGE
 # Level = 17
+# Set Header    = If-Modified-Since: Mon, 01-Jan-25 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Monday, 01-Jan-2525 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Mon, 01-Jan-2525 00:00:00 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+# Set Header    = If-Modified-Since: Monday Jan 01 00:00:00 2525 GMT
+# Expect Header = SOME CHANGE
+# Level = 17
+#
 # Set Header    = If-Modified-Since: Thu, 1 Jan 1970 02:00:00 GMT
 # Expect Header = SOME CHANGE
-
-{+hide-if-modified-since{-60} -crunch-if-none-match}
+# Set Header    = If-Modified-Since: Thu, 01-Jan-70 02:00:00 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thursday, 01-Jan-1970 02:00:00 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thu, 01-Jan-1970 02:00:00 GMT
+# Expect Header = SOME CHANGE
+# Set Header    = If-Modified-Since: Thursday Jan 01 02:00:00 1970 GMT
+# Expect Header = SOME CHANGE
 TAG:^hide-if-modified-since\{-60\}$
 
+{+hide-if-modified-since{+60} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = SOME CHANGE
 # Set Header    = If-Modified-Since: Wed, 31 Dec 1969 23:59:59 GMT
 # Expect Header = SOME CHANGE
-
-{+hide-if-modified-since{+60} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{\+60\}$
 
+{+hide-if-modified-since{60} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = SOME CHANGE
-
-{+hide-if-modified-since{60} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{60\}$
 
+{+hide-if-modified-since{+0} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = NO CHANGE
-
-{+hide-if-modified-since{+0} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{\+0\}$
 
+{+hide-if-modified-since{-0} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = NO CHANGE
-
-{+hide-if-modified-since{-0} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{-0\}$
 
+{+hide-if-modified-since{0} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = NO CHANGE
-
-{+hide-if-modified-since{0} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{0\}$
 
+{+hide-if-modified-since{NaN} -crunch-if-none-match}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = REMOVAL
 # Set Header    = If-Modified-Since: Thu, 04 Oct 2007 09:56:35 GMT
 # Expect Header = NO CHANGE
-
-{+hide-if-modified-since{NaN} -crunch-if-none-match}
 TAG:^hide-if-modified-since\{NaN\}$
 
 
@@ -330,17 +368,18 @@ TAG:^hide-if-modified-since\{NaN\}$
 # Test crunch-outgoing-cookies
 #######################################################
 
+{\
+ +crunch-outgoing-cookies \
+ -crunch-incoming-cookies \
+ -limit-cookie-lifetime   \
+ -session-cookies-only    \
+ -hide-if-modified-since  \
+}
 # Set Header    = If-Modified-Since: Gee, this date is invalid
 # Expect Header = NO CHANGE
 #
 # Set Header    = Cookie: PREF=ID=6cf0abd34262:TM=117335617:LM=1617:S=jZypyJ7LPiwFi1_
 # Expect Header = REMOVAL
-{\
- +crunch-outgoing-cookies \
- -crunch-incoming-cookies \
- -session-cookies-only    \
- -hide-if-modified-since  \
-}
 TAG:^crunch-outgoing-cookies$
 
 #######################################################
@@ -350,66 +389,70 @@ TAG:^crunch-outgoing-cookies$
 # affect client headers.
 #######################################################
 
+{\
+ -crunch-outgoing-cookies \
+ -crunch-incoming-cookies \
+ -limit-cookie-lifetime   \
+ +session-cookies-only    \
+ -hide-if-modified-since  \
+}
 # Set Header    = Cookie: NSC_gffe-iuuq-mc-wtfswfs=8efb330d3660;expires=Thu, 04-Oct-07 19:11:34 GMT;path=/
 # Expect Header = NO CHANGE
 #
 # Set Header    = Cookie: PREF=ID=6cf0abd34262:TM=117335617:LM=1617:S=jZypyJ7LPiwFi1_
 # Expect Header = NO CHANGE
-{\
- -crunch-outgoing-cookies \
- -crunch-incoming-cookies \
- +session-cookies-only    \
- -hide-if-modified-since  \
-}
 TAG:^session-cookies-only$
 
 #######################################################
 # Test change-x-forwarded-for
 #######################################################
 
-# Set Header    = X-Forwarded-For: 10.0.0.1
-# Expect Header = NO CHANGE
 {\
  -change-x-forwarded-for \
 }
+# Set Header    = X-Forwarded-For: 10.0.0.1
+# Expect Header = NO CHANGE
 TAG:^-change-x-forwarded-for$
 
-# Set Header    = X-Forwarded-For: 10.0.0.1
-# Expect Header = REMOVAL
 {\
  +change-x-forwarded-for{block} \
 }
+# Set Header    = X-Forwarded-For: 10.0.0.1
+# Expect Header = REMOVAL
 TAG:^change-x-forwarded-for\{block\}$
 
-# Set Header    = X-Forwarded-For: 10.0.0.1
-# Expect Header = SOME CHANGE
 {\
  +change-x-forwarded-for{add} \
 }
+# Set Header    = X-Forwarded-For: 10.0.0.1
+# Expect Header = SOME CHANGE
 TAG:^change-x-forwarded-for\{add\}$
 
 #######################################################
 # Test hide-from-header
 #######################################################
 
-# Set Header    = From: schneewitchen@example.org
-# Expect Header = REMOVAL
 {\
  +hide-from-header{block}\
 }
+# Set Header    = From: schneewitchen@example.org
+# Expect Header = REMOVAL
 TAG:^hide-from-header\{block\}$
 
-# Set Header    = From: schneewitchen@example.org
-# Expect Header = From: siebenzwerge@example.org
 {\
  +hide-from-header{siebenzwerge@example.org}\
 }
+# Set Header    = From: schneewitchen@example.org
+# Expect Header = From: siebenzwerge@example.org
 TAG:^hide-from-header\{siebenzwerge@example.org\}$
 
 #######################################################
 # Test prevent-compression
 #######################################################
 
+{\
+ +prevent-compression\
+}
 # Set Header    = Accept-Encoding: gzip, deflate
 # Expect Header = REMOVAL
 #
@@ -418,9 +461,6 @@ TAG:^hide-from-header\{siebenzwerge@example.org\}$
 #
 # Set Header    = Accept-Encoding: deflate
 # Expect Header = REMOVAL
-{\
- +prevent-compression\
-}
 TAG:^prevent-compression$
 
 #######################################################
@@ -428,115 +468,162 @@ TAG:^prevent-compression$
 # range requests.
 #######################################################
 
-# Set Header    = Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = If-Range: bytes=1234-5678
-# Expect Header = REMOVAL
-# Set Header    = Request-Range: bytes=1234-5678
-# Expect Header = REMOVAL
 {\
  -client-header-tagger{range-requests} \
  +deanimate-gifs{last} \
  -filter \
 }
-TAG:^deanimate-gifs\{last\}$
-
 # Set Header    = Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Range: bytes=1-5
 # Expect Header = REMOVAL
 # Set Header    = If-Range: bytes=1234-5678
 # Expect Header = REMOVAL
 # Set Header    = Request-Range: bytes=1234-5678
 # Expect Header = REMOVAL
+# Set Header    = Range: foo
+# Expect Header = REMOVAL
+# Set Header    = If-Range: foo
+# Expect Header = REMOVAL
+# Set Header    = Request-Range: foo
+# Expect Header = REMOVAL
+# Set Header    = Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = Range: bytes=0-
+# Expect Header = NO CHANGE
+# Set Header    = If-Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = If-Range: bytes=0-
+# Expect Header = NO CHANGE
+# Set Header    = Request-Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = Request-Range: bytes=0-
+# Expect Header = NO CHANGE
+TAG:^deanimate-gifs\{last\}$
+
 {\
  -client-header-tagger{range-requests} \
  -deanimate-gifs \
  +filter{banners-by-size} \
 }
+# Set Header    = Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Range: bytes=1-5
+# Expect Header = REMOVAL
+# Set Header    = If-Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Request-Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Range: bytes=1-5
+# Expect Header = REMOVAL
+# Set Header    = If-Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Request-Range: bytes=1234-5678
+# Expect Header = REMOVAL
+# Set Header    = Range: foo
+# Expect Header = REMOVAL
+# Set Header    = If-Range: foo
+# Expect Header = REMOVAL
+# Set Header    = Request-Range: foo
+# Expect Header = REMOVAL
+# Set Header    = Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = Range: bytes=0-
+# Expect Header = NO CHANGE
+# Set Header    = If-Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = If-Range: bytes=0-
+# Expect Header = NO CHANGE
+# Set Header    = Request-Range: bytes=0-5678
+# Expect Header = NO CHANGE
+# Set Header    = Request-Range: bytes=0-
+# Expect Header = NO CHANGE
 TAG:^filter\{banners-by-size\}$
 
+{\
+ -client-header-tagger{range-requests} \
+ -deanimate-gifs \
+ -filter \
+}
 # Set Header    = Range: bytes=1234-5678
 # Expect Header = NO CHANGE
 # Set Header    = If-Range: bytes=1234-5678
 # Expect Header = NO CHANGE
 # Set Header    = Request-Range: bytes=1234-5678
 # Expect Header = NO CHANGE
-{\
- -client-header-tagger{range-requests} \
- -deanimate-gifs \
- -filter \
-}
 TAG:^no-content-filter$
 
+{}
 # Set Header    = Connection: keep-alive
 # Expect Header = NO CHANGE
 # Level = 13
 # Set Header    = Connection:
 # Expect Header = REMOVAL
 # Level = 13
-{}
 TAG:^Connection: keep-alive$
 
+{}
 # Set Header    = Connection: keep-alive
 # Expect Header = Connection: close
 # Level = 14
 # Set Header    = Connection:
 # Expect Header = Connection: close
 # Level = 14
-{}
 TAG:^Connection: close$
 
+{}
 # Set Header    = Connection: close
 # Expect Header = NO CHANGE
 # Level = 15
-{}
 TAG:^connection-sharing disabled$
 
+{}
 # Set Header    = Connection: close
 # Expect Header = REMOVAL
 # Level = 16
 # Set Header    = Connection: keep-alive
 # Expect Header = NO CHANGE
 # Level = 16
-{}
 TAG:^connection-sharing enabled$
 
+{}
 # XXX: Removing a header by not specifying a value is
 # an inherited curl feature and could be viewed as a
 # bug as far as Privoxy-Regression-Test is concerned.
 #
 # Set Header    = Host:
 # Expect Header = Host: p.p
-{}
 TAG:^No Host header$
 
+{}
 # Set Header    = Host: whatever.example.org
 # Expect Header = NO CHANGE
-{}
 TAG:^Host header other than the target host$
 
+{}
 # Set Header = Keep-Alive: 20
 # Expect Header = NO CHANGE
 # Level = 13
-{}
 TAG:^Pass Keep-Alive header$
 
+{}
 # Set Header = Keep-Alive: 20
 # Expect Header = REMOVAL
 # Level = 14
-{}
 TAG:^Keep-Alive header removal$
 
+{}
 # XXX: check the RFC to use a real value
 # Set Header = proxy-connection: keep-alive
 # Expect Header = REMOVAL
-{}
 TAG:^Proxy-Connection removal$
 
+{}
 # Set Header = Proxy-Connection: keep-alive
 # Expect Header = REMOVAL
-{}
 TAG:^Proxy-Connection removal$
 
+{}
 # These are somewhat redundant when testing with
 # GET requests, but I want to remember then when
 # TRACE requests are supported.
@@ -549,7 +636,6 @@ TAG:^Proxy-Connection removal$
 # Expect Header = NO CHANGE
 # Set Header = Max-Forwards: 3
 # Expect Header = NO CHANGE
-{}
 TAG:^Max-Forwards header without TRACE method$
 
 ################################################################
@@ -755,54 +841,54 @@ p.p:1-/
 config.privoxy.org:3,79-81/
 p.p:3,22,79-81/
 
+{+forward-override{forward-socks5 127.0.0.1:12345 .}}
 # Fetch Test = http://oh-dear-this-hostname-is-so-very-long-that-it-can-not-possibly-be-forwarded-through-socks5-as-a-result-we-therefore-expect-privoxy-to-return-an-error-response-instead-of-forwarding-the-request-because-as-already-mentioned-this-host-is-really-very-long.example
 # Expect Status Code = 503
-{+forward-override{forward-socks5 127.0.0.1:12345 .}}
 oh-dear-this-hostname-is-so-very-long-that-it-can-not-possibly-be-forwarded-through-socks5-as-a-result-we-therefore-expect-privoxy-to-return-an-error-response-instead-of-forwarding-the-request-because-as-already-mentioned-this-host-is-really-very-long.example/
 
+{+forward-override{forward-socks5 127.0.0.1:12345 .}}
 # Fetch Test = http://oh-dear-this-hostname-is-short-enough-but-there-is-no-socks5-server-listening.example
 # Expect Status Code = 503
-{+forward-override{forward-socks5 127.0.0.1:12345 .}}
 oh-dear-this-hostname-is-short-enough-but-there-is-no-socks5-server-listening.example
 
+{+forward-override{forward-socks4 127.0.0.1:12345 .}}
 # Fetch Test = http://oh-dear-this-hostname-is-short-enough-but-there-is-no-socks4-server-listening.example
 # Expect Status Code = 503
-{+forward-override{forward-socks4 127.0.0.1:12345 .}}
 oh-dear-this-hostname-is-short-enough-but-there-is-no-socks4-server-listening.example
 
+{+forward-override{forward-socks4a 127.0.0.1:12345 .}}
 # Fetch Test = http://oh-dear-this-hostname-is-short-enough-but-there-is-no-socks4a-server-listening.example
 # Expect Status Code = 503
-{+forward-override{forward-socks4a 127.0.0.1:12345 .}}
 oh-dear-this-hostname-is-short-enough-but-there-is-no-socks4a-server-listening.example
 
+{+forward-override{forward-socks5 127.0.0.1:-1 127.0.0.1:12345}}
 # This one currently triggers the same error condition as the
 # test above (socks5 server unreachable), but once Privoxy
 # starts to properly reject invalid ports it should become useful.
-
+#
 # Fetch Test = http://invalid-forward5-gateway-port.example
 # Expect Status Code = 503
-{+forward-override{forward-socks5 127.0.0.1:-1 127.0.0.1:12345}}
 invalid-forward5-gateway-port.example
 
+{+forward-override{forward-socks5 :12345 127.0.0.1:12345}}
 # Fetch Test = http://forward5-null-gateway-host.example
 # Expect Status Code = 503
-{+forward-override{forward-socks5 :12345 127.0.0.1:12345}}
 forward5-null-gateway-host.example
 
+{+limit-connect{443}}
 # Fetch Test = http://www.forbidden-connect.example:444/
 # Method = CONNECT
 # Expect Status Code = 403
-{+limit-connect{443}}
 www.forbidden-connect.example/
 
+{+block{This request failed to make it to the target destination which means the test succeeded.}}
 # Fetch Test = http://www.blocked-request.example/blocked-request
 # Expect Status Code = 403
-{+block{This request failed to make it to the target destination which means the test succeeded.}}
 www.blocked-request.example/blocked-request
 
+{+block}
 # Fetch Test = http://www.blocked-request.example/blocked-request-with-no-reason-specified
 # Expect Status Code = 403
-{+block}
 www.blocked-request.example/blocked-request-with-no-reason-specified
 
 # Some domain pattern tests
@@ -817,6 +903,7 @@ domain-pattern-test.example.
 # Blocked URL = http://trailing-dot.example.org./foo
 trailing-dot.example.org
 
+{}
 # Just in case there is no white-space fuzzer in the house ...
 #
 # Set Header = X-LWS-Test: no superfluous white space here
@@ -843,7 +930,6 @@ trailing-dot.example.org
 # Expect Header = X-LWS-Test: "This  is  quoted" this is not "but   this  is  again"
 # Set Header = X-LWS-Test:  "This  is  quoted" this   is  not "this  is  "  but  "  this again   is  not
 # Expect Header = X-LWS-Test: "This  is  quoted" this is not "this  is  " but " this again is not
-{}
 TAG:^LWS Tests$
 
 {+fast-redirects{check-decoded-url}}
@@ -888,4 +974,3 @@ redirect.example.net/
 # Redirected URL = http://redirect2.example.net/blafasel?x=http://redirected.example.net/&parameter1=part-of-the-redirected-url1&parameter2=part-of-the-redirected-url1
 # Redirect Destination = http://redirected.example.net/&parameter1=part-of-the-redirected-url1&parameter2=part-of-the-redirected-url1
 redirect2.example.net/
-

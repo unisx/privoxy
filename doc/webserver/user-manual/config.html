@@ -3,41 +3,25 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>The Main Configuration File</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Privoxy Configuration" href=
   "configuration.html">
   <link rel="NEXT" title="Actions Files" href="actions-file.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  td.c5 {font-weight: bold}
-  table.c4 {background-color: #E0E0E0}
-  tt.c3 {font-style: italic}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -50,7 +34,7 @@ body {
         "actions-file.html" accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -64,7 +48,7 @@ body {
     (any number of spaces or tabs). For example:</p>
 
     <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-    "emphasis EMPHASIS c2">confdir /etc/privoxy</span></tt></p>
+    "emphasis"><i class="EMPHASIS">confdir /etc/privoxy</i></span></tt></p>
 
     <p>Assigns the value <tt class="LITERAL">/etc/privoxy</tt> to the option
     <tt class="LITERAL">confdir</tt> and thus indicates that the
@@ -113,7 +97,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -121,8 +106,8 @@ body {
             <dd>
               <p><a href="http://www.privoxy.org/user-manual/" target=
               "_top">http://www.privoxy.org/<tt class=
-              "REPLACEABLE c3">version</tt>/user-manual/</a> will be used,
-              where <tt class="REPLACEABLE c3">version</tt> is the
+              "REPLACEABLE"><i>version</i></tt>/user-manual/</a> will be
+              used, where <tt class="REPLACEABLE"><i>version</i></tt> is the
               <span class="APPLICATION">Privoxy</span> version.</p>
             </dd>
 
@@ -141,7 +126,7 @@ body {
               local <tt class="LITERAL">PATH</tt> to where the <i class=
               "CITETITLE">User Manual</i> is located:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -161,7 +146,7 @@ body {
               <p>If the documentation is not on the local system, it can be
               accessed from a remote server, as:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -174,15 +159,15 @@ body {
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c5" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
                     <td align="left">
                       <p>If set, this option should be <span class=
-                      "emphasis EMPHASIS c2">the first option in the config
-                      file</span>, because it is used while the config file
-                      is being read on start-up.</p>
+                      "emphasis"><i class="EMPHASIS">the first option in the
+                      config file</i></span>, because it is used while the
+                      config file is being read on start-up.</p>
                     </td>
                   </tr>
                 </table>
@@ -214,7 +199,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -228,8 +214,8 @@ body {
             <dd>
               <p>The value of this option only matters if the experimental
               trust mechanism has been activated. (See <a href=
-              "config.html#TRUSTFILE"><span class=
-              "emphasis EMPHASIS c2">trustfile</span></a> below.)</p>
+              "config.html#TRUSTFILE"><span class="emphasis"><i class=
+              "EMPHASIS">trustfile</i></span></a> below.)</p>
 
               <p>If you use the trust mechanism, it is a good idea to write
               up some on-line documentation about your trust policy and to
@@ -266,7 +252,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -311,7 +298,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -372,15 +360,16 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p>/etc/privoxy (Unix) <span class=
-              "emphasis EMPHASIS c2">or</span> <span class=
+              <p>/etc/privoxy (Unix) <span class="emphasis"><i class=
+              "EMPHASIS">or</i></span> <span class=
               "APPLICATION">Privoxy</span> installation dir (Windows)</p>
             </dd>
 
             <dt>Effect if unset:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Mandatory</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Mandatory</i></span></p>
             </dd>
 
             <dt>Notes:</dt>
@@ -461,15 +450,16 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p>/var/log/privoxy (Unix) <span class=
-              "emphasis EMPHASIS c2">or</span> <span class=
+              <p>/var/log/privoxy (Unix) <span class="emphasis"><i class=
+              "EMPHASIS">or</i></span> <span class=
               "APPLICATION">Privoxy</span> installation dir (Windows)</p>
             </dd>
 
             <dt>Effect if unset:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Mandatory</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Mandatory</i></span></p>
             </dd>
 
             <dt>Notes:</dt>
@@ -589,9 +579,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p>default.filter (Unix) <span class=
-              "emphasis EMPHASIS c2">or</span> default.filter.txt
-              (Windows)</p>
+              <p>default.filter (Unix) <span class="emphasis"><i class=
+              "EMPHASIS">or</i></span> default.filter.txt (Windows)</p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -600,8 +589,8 @@ body {
               <p>No textual content filtering takes place, i.e. all
               <tt class="LITERAL">+<a href=
               "actions-file.html#FILTER">filter</a>{<tt class=
-              "REPLACEABLE c3">name</tt>}</tt> actions in the actions files
-              are turned neutral.</p>
+              "REPLACEABLE"><i>name</i></tt>}</tt> actions in the actions
+              files are turned neutral.</p>
             </dd>
 
             <dt>Notes:</dt>
@@ -621,9 +610,9 @@ body {
 
               <p>The <tt class="LITERAL">+<a href=
               "actions-file.html#FILTER">filter</a>{<tt class=
-              "REPLACEABLE c3">name</tt>}</tt> actions rely on the relevant
-              filter (<tt class="REPLACEABLE c3">name</tt>) to be defined in
-              a filter file!</p>
+              "REPLACEABLE"><i>name</i></tt>}</tt> actions rely on the
+              relevant filter (<tt class="REPLACEABLE"><i>name</i></tt>) to
+              be defined in a filter file!</p>
 
               <p>A pre-defined filter file called <tt class=
               "FILENAME">default.filter</tt> that contains a number of useful
@@ -661,9 +650,10 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset (commented
-              out)</span>. When activated: logfile (Unix) <span class=
-              "emphasis EMPHASIS c2">or</span> privoxy.log (Windows).</p>
+              <p><span class="emphasis"><i class="EMPHASIS">Unset (commented
+              out)</i></span>. When activated: logfile (Unix) <span class=
+              "emphasis"><i class="EMPHASIS">or</i></span> privoxy.log
+              (Windows).</p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -695,8 +685,7 @@ body {
               <p>Your logfile will grow indefinitely, and you will probably
               want to periodically remove it. On Unix systems, you can do
               this with a cron job (see <span class="QUOTE">"man
-              cron"</span>). For Red Hat based Linux distributions, a
-              <b class="COMMAND">logrotate</b> script has been included.</p>
+              cron"</span>).</p>
 
               <p>Any log files must be writable by whatever user <span class=
               "APPLICATION">Privoxy</span> is being run as (on Unix, default
@@ -727,9 +716,10 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset (commented
-              out)</span>. When activated: trust (Unix) <span class=
-              "emphasis EMPHASIS c2">or</span> trust.txt (Windows)</p>
+              <p><span class="emphasis"><i class="EMPHASIS">Unset (commented
+              out)</i></span>. When activated: trust (Unix) <span class=
+              "emphasis"><i class="EMPHASIS">or</i></span> trust.txt
+              (Windows)</p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -743,8 +733,8 @@ body {
             <dd>
               <p>The trust mechanism is an experimental feature for building
               white-lists and should be used with care. It is <span class=
-              "emphasis EMPHASIS c2">NOT</span> recommended for the casual
-              user.</p>
+              "emphasis"><i class="EMPHASIS">NOT</i></span> recommended for
+              the casual user.</p>
 
               <p>If you specify a trust file, <span class=
               "APPLICATION">Privoxy</span> will only allow access to sites
@@ -758,14 +748,14 @@ body {
               etc.</p>
 
               <p>Or, you can designate sites as <span class=
-              "emphasis EMPHASIS c2">trusted referrers</span>, by prepending
-              the name with a <tt class="LITERAL">+</tt> character. The
-              effect is that access to untrusted sites will be granted -- but
-              only if a link from this trusted referrer was used to get
-              there. The link target will then be added to the <span class=
-              "QUOTE">"trustfile"</span> so that future, direct accesses will
-              be granted. Sites added via this mechanism do not become
-              trusted referrers themselves (i.e. they are added with a
+              "emphasis"><i class="EMPHASIS">trusted referrers</i></span>, by
+              prepending the name with a <tt class="LITERAL">+</tt>
+              character. The effect is that access to untrusted sites will be
+              granted -- but only if a link from this trusted referrer was
+              used to get there. The link target will then be added to the
+              <span class="QUOTE">"trustfile"</span> so that future, direct
+              accesses will be granted. Sites added via this mechanism do not
+              become trusted referrers themselves (i.e. they are added with a
               <tt class="LITERAL">~</tt> designation). There is a limit of
               512 such entries, after which new entries will not be made.</p>
 
@@ -831,7 +821,7 @@ body {
             <dd>
               <p>The available debug levels are:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -852,6 +842,7 @@ body {
   debug  4096 # Startup banner and warnings.
   debug  8192 # Non-fatal errors
   debug 32768 # log all data read from the network
+  debug 65536 # Log the applying actions
 </pre>
                   </td>
                 </tr>
@@ -861,12 +852,12 @@ body {
               use multiple <tt class="LITERAL">debug</tt> lines.</p>
 
               <p>A debug level of 1 is informative because it will show you
-              each request as it happens. <span class=
-              "emphasis EMPHASIS c2">1, 1024, 4096 and 8192 are
-              recommended</span> so that you will notice when things go
-              wrong. The other levels are probably only of interest if you
-              are hunting down a specific problem. They can produce a hell of
-              an output (especially 16).</p>
+              each request as it happens. <span class="emphasis"><i class=
+              "EMPHASIS">1, 1024, 4096 and 8192 are recommended</i></span> so
+              that you will notice when things go wrong. The other levels are
+              probably only of interest if you are hunting down a specific
+              problem. They can produce a hell of an output (especially
+              16).</p>
 
               <p><span class="APPLICATION">Privoxy</span> used to ship with
               the debug levels recommended above enabled by default, but due
@@ -878,8 +869,8 @@ body {
 
               <p>If you want to use pure CLF (Common Log Format), you should
               set <span class="QUOTE">"debug 512"</span> <span class=
-              "emphasis EMPHASIS c2">ONLY</span> and not enable anything
-              else.</p>
+              "emphasis"><i class="EMPHASIS">ONLY</i></span> and not enable
+              anything else.</p>
 
               <p><span class="APPLICATION">Privoxy</span> has a hard-coded
               limit for the length of log messages. If it's reached, messages
@@ -910,13 +901,15 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">None</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">None</i></span></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -930,8 +923,8 @@ body {
 
             <dd>
               <p>This option is only there for debugging purposes.
-              <span class="emphasis EMPHASIS c2">It will drastically reduce
-              performance.</span></p>
+              <span class="emphasis"><i class="EMPHASIS">It will drastically
+              reduce performance.</i></span></p>
             </dd>
           </dl>
         </div>
@@ -958,7 +951,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -1012,11 +1006,11 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p>[<tt class="REPLACEABLE c3">IP-Address</tt>]:<tt class=
-              "REPLACEABLE c3">Port</tt></p>
+              <p>[<tt class="REPLACEABLE"><i>IP-Address</i></tt>]:<tt class=
+              "REPLACEABLE"><i>Port</i></tt></p>
 
-              <p>[<tt class="REPLACEABLE c3">Hostname</tt>]:<tt class=
-              "REPLACEABLE c3">Port</tt></p>
+              <p>[<tt class="REPLACEABLE"><i>Hostname</i></tt>]:<tt class=
+              "REPLACEABLE"><i>Port</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -1088,10 +1082,10 @@ body {
               Internet and/or the local network. Be aware that some GNU/Linux
               distributions modify that behaviour without updating the
               documentation. Check for non-standard patches if your
-              <span class="APPLICATION">Privoxy</span>version behaves
+              <span class="APPLICATION">Privoxy</span> version behaves
               differently.</p>
 
-              <p>If you configure <span class="APPLICATION">Privoxy</span>to
+              <p>If you configure <span class="APPLICATION">Privoxy</span> to
               be reachable from the network, consider using <a href=
               "config.html#ACLS">access control lists</a> (ACL's, see below),
               and/or a firewall.</p>
@@ -1102,12 +1096,6 @@ body {
               "config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions</a></tt>
               and <tt class="LITERAL"><a href=
               "config.html#ENABLE-REMOTE-TOGGLE">enable-remote-toggle</a></tt></p>
-
-              <p>With the exception noted above, listening on multiple
-              addresses is currently not supported by <span class=
-              "APPLICATION">Privoxy</span> directly. It can be done on most
-              operating systems by letting a packet filter redirect request
-              for certain addresses to Privoxy, though.</p>
             </dd>
 
             <dt>Example:</dt>
@@ -1119,7 +1107,7 @@ body {
               another outside connection with a different address. You want
               it to serve requests from inside only:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1134,7 +1122,7 @@ body {
               want it to listen on the IPv6 address of the loopback
               device:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1185,9 +1173,6 @@ body {
               mostly behave like a normal, content-neutral proxy with both ad
               blocking and content filtering disabled. See <tt class=
               "LITERAL">enable-remote-toggle</tt> below.</p>
-
-              <p>The windows version will only display the toggle icon in the
-              system tray if this option is present.</p>
             </dd>
           </dl>
         </div>
@@ -1233,15 +1218,15 @@ body {
               block ads or filter content.</p>
 
               <p>Access to the toggle feature can <span class=
-              "emphasis EMPHASIS c2">not</span> be controlled separately by
-              <span class="QUOTE">"ACLs"</span> or HTTP authentication, so
-              that everybody who can access <span class=
+              "emphasis"><i class="EMPHASIS">not</i></span> be controlled
+              separately by <span class="QUOTE">"ACLs"</span> or HTTP
+              authentication, so that everybody who can access <span class=
               "APPLICATION">Privoxy</span> (see <span class=
               "QUOTE">"ACLs"</span> and <tt class=
               "LITERAL">listen-address</tt> above) can toggle it for all
-              users. So this option is <span class="emphasis EMPHASIS c2">not
-              recommended</span> for multi-user environments with untrusted
-              users.</p>
+              users. So this option is <span class="emphasis"><i class=
+              "EMPHASIS">not recommended</i></span> for multi-user
+              environments with untrusted users.</p>
 
               <p>Note that malicious client side code (e.g Java) is also
               capable of using this option.</p>
@@ -1347,8 +1332,8 @@ body {
             <dt>Notes:</dt>
 
             <dd>
-              <p>Access to the editor can <span class=
-              "emphasis EMPHASIS c2">not</span> be controlled separately by
+              <p>Access to the editor can <span class="emphasis"><i class=
+              "EMPHASIS">not</i></span> be controlled separately by
               <span class="QUOTE">"ACLs"</span> or HTTP authentication, so
               that everybody who can access <span class=
               "APPLICATION">Privoxy</span> (see <span class=
@@ -1356,10 +1341,11 @@ body {
               "LITERAL">listen-address</tt> above) can modify its
               configuration for all users.</p>
 
-              <p>This option is <span class="emphasis EMPHASIS c2">not
-              recommended</span> for environments with untrusted users and as
-              a lot of <span class="APPLICATION">Privoxy</span> users don't
-              read documentation, this feature is disabled by default.</p>
+              <p>This option is <span class="emphasis"><i class=
+              "EMPHASIS">not recommended</i></span> for environments with
+              untrusted users and as a lot of <span class=
+              "APPLICATION">Privoxy</span> users don't read documentation,
+              this feature is disabled by default.</p>
 
               <p>Note that malicious client side code (e.g Java) is also
               capable of using the actions editor and you shouldn't enable
@@ -1390,13 +1376,13 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">0</span></p>
+              <p><span class="emphasis"><i class="EMPHASIS">0</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -1459,43 +1445,44 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">src_addr</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>][/<tt class=
-              "REPLACEABLE c3">src_masklen</tt>] [<tt class=
-              "REPLACEABLE c3">dst_addr</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>][/<tt class=
-              "REPLACEABLE c3">dst_masklen</tt>]]</p>
+              <p><tt class="REPLACEABLE"><i>src_addr</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>][/<tt class=
+              "REPLACEABLE"><i>src_masklen</i></tt>] [<tt class=
+              "REPLACEABLE"><i>dst_addr</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>][/<tt class=
+              "REPLACEABLE"><i>dst_masklen</i></tt>]]</p>
 
-              <p>Where <tt class="REPLACEABLE c3">src_addr</tt> and
-              <tt class="REPLACEABLE c3">dst_addr</tt> are IPv4 addresses in
-              dotted decimal notation or valid DNS names, <tt class=
-              "REPLACEABLE c3">port</tt> is a port number, and <tt class=
-              "REPLACEABLE c3">src_masklen</tt> and <tt class=
-              "REPLACEABLE c3">dst_masklen</tt> are subnet masks in CIDR
+              <p>Where <tt class="REPLACEABLE"><i>src_addr</i></tt> and
+              <tt class="REPLACEABLE"><i>dst_addr</i></tt> are IPv4 addresses
+              in dotted decimal notation or valid DNS names, <tt class=
+              "REPLACEABLE"><i>port</i></tt> is a port number, and <tt class=
+              "REPLACEABLE"><i>src_masklen</i></tt> and <tt class=
+              "REPLACEABLE"><i>dst_masklen</i></tt> are subnet masks in CIDR
               notation, i.e. integer values from 2 to 30 representing the
               length (in bits) of the network address. The masks and the
               whole destination part are optional.</p>
 
               <p>If your system implements <a href=
               "http://tools.ietf.org/html/rfc3493" target="_top">RFC
-              3493</a>, then <tt class="REPLACEABLE c3">src_addr</tt> and
-              <tt class="REPLACEABLE c3">dst_addr</tt> can be IPv6 addresses
-              delimeted by brackets, <tt class="REPLACEABLE c3">port</tt> can
-              be a number or a service name, and <tt class=
-              "REPLACEABLE c3">src_masklen</tt> and <tt class=
-              "REPLACEABLE c3">dst_masklen</tt> can be a number from 0 to
-              128.</p>
+              3493</a>, then <tt class="REPLACEABLE"><i>src_addr</i></tt> and
+              <tt class="REPLACEABLE"><i>dst_addr</i></tt> can be IPv6
+              addresses delimeted by brackets, <tt class=
+              "REPLACEABLE"><i>port</i></tt> can be a number or a service
+              name, and <tt class="REPLACEABLE"><i>src_masklen</i></tt> and
+              <tt class="REPLACEABLE"><i>dst_masklen</i></tt> can be a number
+              from 0 to 128.</p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
 
-              <p>If no <tt class="REPLACEABLE c3">port</tt> is specified, any
-              port will match. If no <tt class=
-              "REPLACEABLE c3">src_masklen</tt> or <tt class=
-              "REPLACEABLE c3">src_masklen</tt> is given, the complete IP
+              <p>If no <tt class="REPLACEABLE"><i>port</i></tt> is specified,
+              any port will match. If no <tt class=
+              "REPLACEABLE"><i>src_masklen</i></tt> or <tt class=
+              "REPLACEABLE"><i>src_masklen</i></tt> is given, the complete IP
               address has to match (i.e. 32 bits for IPv4 and 128 bits for
               IPv6).</p>
             </dd>
@@ -1511,14 +1498,14 @@ body {
 
             <dd>
               <p>Access controls are included at the request of ISPs and
-              systems administrators, and <span class=
-              "emphasis EMPHASIS c2">are not usually needed by individual
-              users</span>. For a typical home user, it will normally suffice
-              to ensure that <span class="APPLICATION">Privoxy</span> only
-              listens on the localhost (127.0.0.1) or internal (home) network
-              address by means of the <a href=
-              "config.html#LISTEN-ADDRESS"><span class=
-              "emphasis EMPHASIS c2">listen-address</span></a> option.</p>
+              systems administrators, and <span class="emphasis"><i class=
+              "EMPHASIS">are not usually needed by individual
+              users</i></span>. For a typical home user, it will normally
+              suffice to ensure that <span class="APPLICATION">Privoxy</span>
+              only listens on the localhost (127.0.0.1) or internal (home)
+              network address by means of the <a href=
+              "config.html#LISTEN-ADDRESS"><span class="emphasis"><i class=
+              "EMPHASIS">listen-address</i></span></a> option.</p>
 
               <p>Please see the warnings in the FAQ that <span class=
               "APPLICATION">Privoxy</span> is not intended to be a substitute
@@ -1536,20 +1523,20 @@ body {
               <p>If <span class="APPLICATION">Privoxy</span> is using a
               forwarder (see <tt class="LITERAL">forward</tt> below) for a
               particular destination URL, the <tt class=
-              "REPLACEABLE c3">dst_addr</tt> that is examined is the address
-              of the forwarder and <span class=
-              "emphasis EMPHASIS c2">NOT</span> the address of the ultimate
-              target. This is necessary because it may be impossible for the
-              local <span class="APPLICATION">Privoxy</span> to determine the
-              IP address of the ultimate target (that's often what gateways
-              are used for).</p>
+              "REPLACEABLE"><i>dst_addr</i></tt> that is examined is the
+              address of the forwarder and <span class="emphasis"><i class=
+              "EMPHASIS">NOT</i></span> the address of the ultimate target.
+              This is necessary because it may be impossible for the local
+              <span class="APPLICATION">Privoxy</span> to determine the IP
+              address of the ultimate target (that's often what gateways are
+              used for).</p>
 
               <p>You should prefer using IP addresses over DNS names, because
               the address lookups take time. All DNS names must resolve! You
-              can <span class="emphasis EMPHASIS c2">not</span> use domain
-              patterns like <span class="QUOTE">"*.org"</span> or partial
-              domain names. If a DNS name resolves to multiple IP addresses,
-              only the first one is used.</p>
+              can <span class="emphasis"><i class="EMPHASIS">not</i></span>
+              use domain patterns like <span class="QUOTE">"*.org"</span> or
+              partial domain names. If a DNS name resolves to multiple IP
+              addresses, only the first one is used.</p>
 
               <p>Some systems allow IPv4 clients to connect to IPv6 server
               sockets. Then the client's IPv4 address will be translated by
@@ -1569,11 +1556,11 @@ body {
               <p>Explicitly define the default behavior if no ACL and
               <tt class="LITERAL">listen-address</tt> are set: <span class=
               "QUOTE">"localhost"</span> is OK. The absence of a <tt class=
-              "REPLACEABLE c3">dst_addr</tt> implies that <span class=
-              "emphasis EMPHASIS c2">all</span> destination addresses are
-              OK:</p>
+              "REPLACEABLE"><i>dst_addr</i></tt> implies that <span class=
+              "emphasis"><i class="EMPHASIS">all</i></span> destination
+              addresses are OK:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1587,7 +1574,7 @@ body {
               access to nothing but www.example.com (or other domains hosted
               on the same system):</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1602,7 +1589,7 @@ body {
               192.168.45.73 may not access the IP address behind
               www.dirty-stuff.example.com:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1617,7 +1604,7 @@ body {
               listening on an IPv6 wild card address (not supported on all
               platforms):</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1630,7 +1617,7 @@ body {
               <p>This is equivalent to the following line even if listening
               on an IPv4 address (not supported on all platforms):</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1692,8 +1679,8 @@ body {
               document is made. Remember that there may be multiple threads
               running, which might require up to <tt class=
               "LITERAL">buffer-limit</tt> Kbytes <span class=
-              "emphasis EMPHASIS c2">each</span>, unless you have enabled
-              <span class="QUOTE">"single-threaded"</span> above.</p>
+              "emphasis"><i class="EMPHASIS">each</i></span>, unless you have
+              enabled <span class="QUOTE">"single-threaded"</span> above.</p>
             </dd>
           </dl>
         </div>
@@ -1741,18 +1728,18 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">target_pattern</tt> <tt class=
-              "REPLACEABLE c3">http_parent</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>]</p>
+              <p><tt class="REPLACEABLE"><i>target_pattern</i></tt>
+              <tt class="REPLACEABLE"><i>http_parent</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>]</p>
 
-              <p>where <tt class="REPLACEABLE c3">target_pattern</tt> is a
-              <a href="actions-file.html#AF-PATTERNS">URL pattern</a> that
+              <p>where <tt class="REPLACEABLE"><i>target_pattern</i></tt> is
+              a <a href="actions-file.html#AF-PATTERNS">URL pattern</a> that
               specifies to which requests (i.e. URLs) this forward rule shall
               apply. Use <tt class="LITERAL">/</tt> to denote <span class=
               "QUOTE">"all URLs"</span>. <tt class=
-              "REPLACEABLE c3">http_parent</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>] is the DNS name or IP address of
-              the parent HTTP proxy through which the requests should be
+              "REPLACEABLE"><i>http_parent</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>] is the DNS name or IP address
+              of the parent HTTP proxy through which the requests should be
               forwarded, optionally followed by its listening port (default:
               8000). Use a single dot (<tt class="LITERAL">.</tt>) to denote
               <span class="QUOTE">"no forwarding"</span>.</p>
@@ -1761,7 +1748,8 @@ body {
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -1773,17 +1761,17 @@ body {
             <dt>Notes:</dt>
 
             <dd>
-              <p>If <tt class="REPLACEABLE c3">http_parent</tt> is
+              <p>If <tt class="REPLACEABLE"><i>http_parent</i></tt> is
               <span class="QUOTE">"."</span>, then requests are not forwarded
               to another HTTP proxy but are made directly to the web
               servers.</p>
 
-              <p><tt class="REPLACEABLE c3">http_parent</tt> can be a
+              <p><tt class="REPLACEABLE"><i>http_parent</i></tt> can be a
               numerical IPv6 address (if <a href=
               "http://tools.ietf.org/html/rfc3493" target="_top">RFC 3493</a>
               is implemented). To prevent clashes with the port delimiter,
               the whole IP address has to be put into brackets. On the other
-              hand a <tt class="REPLACEABLE c3">target_pattern</tt>
+              hand a <tt class="REPLACEABLE"><i>target_pattern</i></tt>
               containing an IPv6 address has to be put into angle brackets
               (normal brackets are reserved for regular expressions
               already).</p>
@@ -1798,7 +1786,7 @@ body {
               <p>Everything goes to an example parent proxy, except SSL on
               port 443 (which it doesn't handle):</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1812,7 +1800,7 @@ body {
               <p>Everything goes to our example ISP's caching proxy, except
               for requests to that ISP's sites:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1825,7 +1813,7 @@ body {
 
               <p>Parent proxy specified by an IPv6 address:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1837,7 +1825,7 @@ body {
 
               <p>Suppose your parent proxy doesn't support IPv6:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="PROGRAMLISTING">
@@ -1855,9 +1843,9 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="SOCKS" id="SOCKS">7.5.2. forward-socks4,
-        forward-socks4a and forward-socks5</a></h4><a name="FORWARD-SOCKS4"
-        id="FORWARD-SOCKS4"></a><a name="FORWARD-SOCKS4A" id=
-        "FORWARD-SOCKS4A"></a>
+        forward-socks4a, forward-socks5 and forward-socks5t</a></h4><a name=
+        "FORWARD-SOCKS4" id="FORWARD-SOCKS4"></a><a name="FORWARD-SOCKS4A"
+        id="FORWARD-SOCKS4A"></a>
 
         <div class="VARIABLELIST">
           <dl>
@@ -1871,31 +1859,32 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">target_pattern</tt> <tt class=
-              "REPLACEABLE c3">socks_proxy</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>] <tt class=
-              "REPLACEABLE c3">http_parent</tt>[:<tt class=
-              "REPLACEABLE c3">port</tt>]</p>
+              <p><tt class="REPLACEABLE"><i>target_pattern</i></tt>
+              <tt class="REPLACEABLE"><i>socks_proxy</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>] <tt class=
+              "REPLACEABLE"><i>http_parent</i></tt>[:<tt class=
+              "REPLACEABLE"><i>port</i></tt>]</p>
 
-              <p>where <tt class="REPLACEABLE c3">target_pattern</tt> is a
-              <a href="actions-file.html#AF-PATTERNS">URL pattern</a> that
+              <p>where <tt class="REPLACEABLE"><i>target_pattern</i></tt> is
+              a <a href="actions-file.html#AF-PATTERNS">URL pattern</a> that
               specifies to which requests (i.e. URLs) this forward rule shall
               apply. Use <tt class="LITERAL">/</tt> to denote <span class=
               "QUOTE">"all URLs"</span>. <tt class=
-              "REPLACEABLE c3">http_parent</tt> and <tt class=
-              "REPLACEABLE c3">socks_proxy</tt> are IP addresses in dotted
-              decimal notation or valid DNS names (<tt class=
-              "REPLACEABLE c3">http_parent</tt> may be <span class=
+              "REPLACEABLE"><i>http_parent</i></tt> and <tt class=
+              "REPLACEABLE"><i>socks_proxy</i></tt> are IP addresses in
+              dotted decimal notation or valid DNS names (<tt class=
+              "REPLACEABLE"><i>http_parent</i></tt> may be <span class=
               "QUOTE">"."</span> to denote <span class="QUOTE">"no HTTP
               forwarding"</span>), and the optional <tt class=
-              "REPLACEABLE c3">port</tt> parameters are TCP ports, i.e.
+              "REPLACEABLE"><i>port</i></tt> parameters are TCP ports, i.e.
               integer values from 1 to 65535</p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">Unset</span></p>
+              <p><span class="emphasis"><i class=
+              "EMPHASIS">Unset</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -1919,17 +1908,25 @@ body {
               <p>With <tt class="LITERAL">forward-socks5</tt> the DNS
               resolution will happen on the remote server as well.</p>
 
-              <p><tt class="REPLACEABLE c3">socks_proxy</tt> and <tt class=
-              "REPLACEABLE c3">http_parent</tt> can be a numerical IPv6
-              address (if <a href="http://tools.ietf.org/html/rfc3493"
-              target="_top">RFC 3493</a> is implemented). To prevent clashes
-              with the port delimiter, the whole IP address has to be put
-              into brackets. On the other hand a <tt class=
-              "REPLACEABLE c3">target_pattern</tt> containing an IPv6 address
-              has to be put into angle brackets (normal brackets are reserved
-              for regular expressions already).</p>
+              <p><tt class="LITERAL">forward-socks5t</tt> works like vanilla
+              <tt class="LITERAL">forward-socks5</tt> but lets <span class=
+              "APPLICATION">Privoxy</span> additionally use Tor-specific
+              SOCKS extensions. Currently the only supported SOCKS extension
+              is optimistic data which can reduce the latency for the first
+              request made on a newly created connection.</p>
 
-              <p>If <tt class="REPLACEABLE c3">http_parent</tt> is
+              <p><tt class="REPLACEABLE"><i>socks_proxy</i></tt> and
+              <tt class="REPLACEABLE"><i>http_parent</i></tt> can be a
+              numerical IPv6 address (if <a href=
+              "http://tools.ietf.org/html/rfc3493" target="_top">RFC 3493</a>
+              is implemented). To prevent clashes with the port delimiter,
+              the whole IP address has to be put into brackets. On the other
+              hand a <tt class="REPLACEABLE"><i>target_pattern</i></tt>
+              containing an IPv6 address has to be put into angle brackets
+              (normal brackets are reserved for regular expressions
+              already).</p>
+
+              <p>If <tt class="REPLACEABLE"><i>http_parent</i></tt> is
               <span class="QUOTE">"."</span>, then requests are not forwarded
               to another HTTP proxy but are made (HTTP-wise) directly to the
               web servers, albeit through a SOCKS proxy.</p>
@@ -1943,7 +1940,7 @@ body {
               everything outbound goes through their ISP's proxy by way of
               example.com's corporate SOCKS 4A gateway to the Internet.</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1957,7 +1954,7 @@ body {
               <p>A rule that uses a SOCKS 4 gateway for all destinations but
               no HTTP parent looks like this:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1970,7 +1967,7 @@ body {
               <p>To chain Privoxy and Tor, both running on the same system,
               you would use something like:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1985,7 +1982,7 @@ body {
               access local servers you therefore might want to make some
               exceptions:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2008,7 +2005,7 @@ body {
               network by using their names, you will need additional
               exceptions that look like this:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2031,8 +2028,8 @@ body {
         content only to their subscribers, you can configure multiple
         <span class="APPLICATION">Privoxies</span> which have connections to
         the respective ISPs to act as forwarders to each other, so that
-        <span class="emphasis EMPHASIS c2">your</span> users can see the
-        internal content of all ISPs.</p>
+        <span class="emphasis"><i class="EMPHASIS">your</i></span> users can
+        see the internal content of all ISPs.</p>
 
         <p>Assume that host-a has a PPP connection to isp-a.example.net. And
         host-b has a PPP connection to isp-b.example.org. Both run
@@ -2041,7 +2038,7 @@ body {
 
         <p>host-a:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -2054,7 +2051,7 @@ body {
 
         <p>host-b:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -2079,7 +2076,7 @@ body {
         <span class="APPLICATION">squid</span> configuration could then look
         like this:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -2109,7 +2106,7 @@ body {
         proxy, say, on <tt class="LITERAL">antivir.example.com</tt>, port
         8010:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -2137,13 +2134,13 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Number of retries.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Number of retries.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">0</span></p>
+              <p><span class="emphasis"><i class="EMPHASIS">0</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -2156,8 +2153,9 @@ body {
             <dt>Notes:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">forwarded-connect-retries</tt> is
-              mainly interesting for socks4a connections, where <span class=
+              <p><tt class=
+              "REPLACEABLE"><i>forwarded-connect-retries</i></tt> is mainly
+              interesting for socks4a connections, where <span class=
               "APPLICATION">Privoxy</span> can't detect why the connections
               failed. The connection might have failed because of a DNS
               timeout in which case a retry makes sense, but it might also
@@ -2206,13 +2204,13 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">0</span></p>
+              <p><span class="emphasis"><i class="EMPHASIS">0</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -2267,13 +2265,13 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">0</span></p>
+              <p><span class="emphasis"><i class="EMPHASIS">0</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -2322,13 +2320,13 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
 
             <dd>
-              <p><span class="emphasis EMPHASIS c2">0</span></p>
+              <p><span class="emphasis"><i class="EMPHASIS">0</i></span></p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -2381,7 +2379,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Time in seconds.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Time in seconds.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2429,7 +2427,7 @@ body {
               <p>Several users have reported this as a Privoxy bug, so the
               default value has been reduced. Consider increasing it to 300
               seconds or even more if you think your browser can handle it.
-              If your browser appears to be hanging it can't.</p>
+              If your browser appears to be hanging, it probably can't.</p>
             </dd>
 
             <dt>Examples:</dt>
@@ -2442,8 +2440,70 @@ body {
       </div>
 
       <div class="SECT3">
+        <h4 class="SECT3"><a name="TOLERATE-PIPELINING" id=
+        "TOLERATE-PIPELINING">7.6.5. tolerate-pipelining</a></h4>
+
+        <div class="VARIABLELIST">
+          <dl>
+            <dt>Specifies:</dt>
+
+            <dd>
+              <p>Whether or not pipelined requests should be served.</p>
+            </dd>
+
+            <dt>Type of value:</dt>
+
+            <dd>
+              <p><tt class="REPLACEABLE"><i>0 or 1.</i></tt></p>
+            </dd>
+
+            <dt>Default value:</dt>
+
+            <dd>
+              <p>None</p>
+            </dd>
+
+            <dt>Effect if unset:</dt>
+
+            <dd>
+              <p>If Privoxy receives more than one request at once, it
+              terminates the client connection after serving the first
+              one.</p>
+            </dd>
+
+            <dt>Notes:</dt>
+
+            <dd>
+              <p><span class="APPLICATION">Privoxy</span> currently doesn't
+              pipeline outgoing requests, thus allowing pipelining on the
+              client connection is not guaranteed to improve the
+              performance.</p>
+
+              <p>By default <span class="APPLICATION">Privoxy</span> tries to
+              discourage clients from pipelining by discarding aggressively
+              pipelined requests, which forces the client to resend them
+              through a new connection.</p>
+
+              <p>This option lets <span class="APPLICATION">Privoxy</span>
+              tolerate pipelining. Whether or not that improves performance
+              mainly depends on the client configuration.</p>
+
+              <p>If you are seeing problems with pages not properly loading,
+              disabling this option could work around the problem.</p>
+            </dd>
+
+            <dt>Examples:</dt>
+
+            <dd>
+              <p>tolerate-pipelining 1</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="SECT3">
         <h4 class="SECT3"><a name="DEFAULT-SERVER-TIMEOUT" id=
-        "DEFAULT-SERVER-TIMEOUT">7.6.5. default-server-timeout</a></h4>
+        "DEFAULT-SERVER-TIMEOUT">7.6.6. default-server-timeout</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -2457,7 +2517,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Time in seconds.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Time in seconds.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2516,7 +2576,7 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="CONNECTION-SHARING" id=
-        "CONNECTION-SHARING">7.6.6. connection-sharing</a></h4>
+        "CONNECTION-SHARING">7.6.7. connection-sharing</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -2531,7 +2591,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2609,7 +2669,7 @@ body {
       </div>
 
       <div class="SECT3">
-        <h4 class="SECT3"><a name="SOCKET-TIMEOUT" id="SOCKET-TIMEOUT">7.6.7.
+        <h4 class="SECT3"><a name="SOCKET-TIMEOUT" id="SOCKET-TIMEOUT">7.6.8.
         socket-timeout</a></h4>
 
         <div class="VARIABLELIST">
@@ -2624,7 +2684,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Time in seconds.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Time in seconds.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2658,7 +2718,7 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="MAX-CLIENT-CONNECTIONS" id=
-        "MAX-CLIENT-CONNECTIONS">7.6.8. max-client-connections</a></h4>
+        "MAX-CLIENT-CONNECTIONS">7.6.9. max-client-connections</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -2672,7 +2732,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Positive number.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Positive number.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2737,7 +2797,7 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="HANDLE-AS-EMPTY-DOC-RETURNS-OK" id=
-        "HANDLE-AS-EMPTY-DOC-RETURNS-OK">7.6.9.
+        "HANDLE-AS-EMPTY-DOC-RETURNS-OK">7.6.10.
         handle-as-empty-doc-returns-ok</a></h4>
 
         <div class="VARIABLELIST">
@@ -2754,7 +2814,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2797,7 +2857,7 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="ENABLE-COMPRESSION" id=
-        "ENABLE-COMPRESSION">7.6.10. enable-compression</a></h4>
+        "ENABLE-COMPRESSION">7.6.11. enable-compression</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -2811,7 +2871,7 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">0 or 1</tt></p>
+              <p><tt class="REPLACEABLE"><i>0 or 1</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2855,7 +2915,7 @@ body {
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="COMPRESSION-LEVEL" id=
-        "COMPRESSION-LEVEL">7.6.11. compression-level</a></h4>
+        "COMPRESSION-LEVEL">7.6.12. compression-level</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -2869,8 +2929,8 @@ body {
             <dt>Type of value:</dt>
 
             <dd>
-              <p><tt class="REPLACEABLE c3">Positive number ranging from 0 to
-              9.</tt></p>
+              <p><tt class="REPLACEABLE"><i>Positive number ranging from 0 to
+              9.</i></tt></p>
             </dd>
 
             <dt>Default value:</dt>
@@ -2896,7 +2956,7 @@ body {
             <dt>Examples:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2919,6 +2979,56 @@ body {
           </dl>
         </div>
       </div>
+
+      <div class="SECT3">
+        <h4 class="SECT3"><a name="CLIENT-HEADER-ORDER" id=
+        "CLIENT-HEADER-ORDER">7.6.13. client-header-order</a></h4>
+
+        <div class="VARIABLELIST">
+          <dl>
+            <dt>Specifies:</dt>
+
+            <dd>
+              <p>The order in which client headers are sorted before
+              forwarding them.</p>
+            </dd>
+
+            <dt>Type of value:</dt>
+
+            <dd>
+              <p><tt class="REPLACEABLE"><i>Client header names delimited by
+              spaces or tabs</i></tt></p>
+            </dd>
+
+            <dt>Default value:</dt>
+
+            <dd>
+              <p>None</p>
+            </dd>
+
+            <dt>Notes:</dt>
+
+            <dd>
+              <p>By default <span class="APPLICATION">Privoxy</span> leaves
+              the client headers in the order they were sent by the client.
+              Headers are modified in-place, new headers are added at the end
+              of the already existing headers.</p>
+
+              <p>The header order can be used to fingerprint client requests
+              independently of other headers like the User-Agent.</p>
+
+              <p>This directive allows to sort the headers differently to
+              better mimic a different User-Agent. Client headers will be
+              emitted in the order given, headers whose name isn't explicitly
+              specified are added at the end.</p>
+
+              <p>Note that sorting headers in an uncommon way will make
+              fingerprinting actually easier. Encrypted headers are not
+              affected by this directive.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
     </div>
 
     <div class="SECT2">
@@ -2935,16 +3045,17 @@ body {
       0.</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">activity-animation 1</span><br>
+      "emphasis"><i class="EMPHASIS">activity-animation 1</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-MESSAGES" id=
       "LOG-MESSAGES"></a>
 
       <p>If <span class="QUOTE">"log-messages"</span> is set to 1,
-      <span class="APPLICATION">Privoxy</span> will log messages to the
-      console window:</p>
+      <span class="APPLICATION">Privoxy</span> copies log messages to the
+      console window. The log detail depends on the <a href=
+      "config.html#DEBUG">debug</a> directive.</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-messages 1</span><br>
+      "emphasis"><i class="EMPHASIS">log-messages 1</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-BUFFER-SIZE" id=
       "LOG-BUFFER-SIZE"></a>
 
@@ -2957,7 +3068,7 @@ body {
       infinitely and eat up all your memory!</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-buffer-size 1</span><br>
+      "emphasis"><i class="EMPHASIS">log-buffer-size 1</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-MAX-LINES" id=
       "LOG-MAX-LINES"></a>
 
@@ -2965,7 +3076,7 @@ body {
       of lines held in the log buffer. See above.</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-max-lines 200</span><br>
+      "emphasis"><i class="EMPHASIS">log-max-lines 200</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-HIGHLIGHT-MESSAGES" id=
       "LOG-HIGHLIGHT-MESSAGES"></a>
 
@@ -2974,21 +3085,22 @@ body {
       log messages with a bold-faced font:</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-highlight-messages 1</span><br>
+      "emphasis"><i class="EMPHASIS">log-highlight-messages 1</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-FONT-NAME" id=
       "LOG-FONT-NAME"></a>
 
       <p>The font used in the console window:</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-font-name Comic Sans MS</span><br>
+      "emphasis"><i class="EMPHASIS">log-font-name Comic Sans
+      MS</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="LOG-FONT-SIZE" id=
       "LOG-FONT-SIZE"></a>
 
       <p>Font size used in the console window:</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">log-font-size 8</span><br>
+      "emphasis"><i class="EMPHASIS">log-font-size 8</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="SHOW-ON-TASK-BAR" id=
       "SHOW-ON-TASK-BAR"></a>
 
@@ -2997,7 +3109,7 @@ body {
       the Task bar when minimized:</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">show-on-task-bar 0</span><br>
+      "emphasis"><i class="EMPHASIS">show-on-task-bar 0</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="CLOSE-BUTTON-MINIMIZES" id=
       "CLOSE-BUTTON-MINIMIZES"></a>
 
@@ -3007,7 +3119,7 @@ body {
       the exit option on the File menu).</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;<span class=
-      "emphasis EMPHASIS c2">close-button-minimizes 1</span><br>
+      "emphasis"><i class="EMPHASIS">close-button-minimizes 1</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p><a name="HIDE-CONSOLE" id=
       "HIDE-CONSOLE"></a>
 
@@ -3017,13 +3129,13 @@ body {
       disconnect from and hide the command console.</p>
 
       <p class="LITERALLAYOUT"><tt class="LITERAL">&nbsp;&nbsp;#<span class=
-      "emphasis EMPHASIS c2">hide-console</span><br>
+      "emphasis"><i class="EMPHASIS">hide-console</i></span><br>
       &nbsp;&nbsp;&nbsp;</tt></p>
     </div>
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

@@ -1,11 +1,11 @@
-const char ssplit_rcs[] = "$Id: ssplit.c,v 1.12 2011/09/04 11:10:56 fabiankeil Exp $";
+const char ssplit_rcs[] = "$Id: ssplit.c,v 1.20 2012/07/23 12:47:01 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.c,v $
  *
  * Purpose     :  A function to split a string at specified delimiters.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2012 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -37,15 +37,12 @@ const char ssplit_rcs[] = "$Id: ssplit.c,v 1.12 2011/09/04 11:10:56 fabiankeil E
 
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "ssplit.h"
 #include "miscutil.h"
 
 const char ssplit_h_rcs[] = SSPLIT_H_VERSION;
-
-/* Define this for lots of debugging information to stdout */
-#undef SSPLIT_VERBOSE
-/* #define SSPLIT_VERBOSE 1 */
 
 
 /*********************************************************************
@@ -62,11 +59,6 @@ const char ssplit_h_rcs[] = SSPLIT_H_VERSION;
  *          2  :  delim = array of delimiters (if NULL, uses " \t").
  *          3  :  vec[] = results vector (aka. array) [out]
  *          4  :  vec_len = number of usable slots in the vector (aka. array size)
- *          5  :  dont_save_empty_fields = zero if consecutive delimiters
- *                give a null output field(s), nonzero if they are just
- *                to be considered as single delimeter
- *          6  :  ignore_leading = nonzero to ignore leading field
- *                separators.
  *
  * Returns     :  -1 => Error: vec_len is too small to hold all the
  *                      data, or str == NULL.
@@ -74,12 +66,17 @@ const char ssplit_h_rcs[] = SSPLIT_H_VERSION;
  *                On error, vec and str may still have been overwritten.
  *
  *********************************************************************/
-int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
-           int dont_save_empty_fields, int ignore_leading)
+int ssplit(char *str, const char *delim, char *vec[], size_t vec_len)
 {
    unsigned char is_delim[256];
    unsigned char char_type;
    int vec_count = 0;
+   enum char_type {
+      WANTED     = 0,
+      SEPARATOR  = 1,
+      TERMINATOR = 2,
+   };
+
 
    if (!str)
    {
@@ -98,44 +95,38 @@ int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
 
    while (*delim)
    {
-      is_delim[(unsigned)(unsigned char)*delim++] = 1;   /* separator  */
+      is_delim[(unsigned)(unsigned char)*delim++] = SEPARATOR;
    }
 
-   is_delim[(unsigned)(unsigned char)'\0'] = 2;   /* terminator */
-   is_delim[(unsigned)(unsigned char)'\n'] = 2;   /* terminator */
+   is_delim[(unsigned)(unsigned char)'\0'] = TERMINATOR;
+   is_delim[(unsigned)(unsigned char)'\n'] = TERMINATOR;
 
 
    /* Parse string */
 
-   if (ignore_leading)
+   /* Skip leading separators. XXX: Why do they matter? */
+   while (is_delim[(unsigned)(unsigned char)*str] == SEPARATOR)
    {
-      /* skip leading separators */
-      while (is_delim[(unsigned)(unsigned char)*str] == 1)
-      {
-         str++;
-      }
+      str++;
    }
 
-   /* first pointer is the beginning of string */
-   /* Check if we want to save this field */
-   if ( (!dont_save_empty_fields)
-     || (is_delim[(unsigned)(unsigned char)*str] == 0) )
-      {
+   /* The first pointer is the beginning of string */
+   if (is_delim[(unsigned)(unsigned char)*str] == WANTED)
+   {
       /*
-       * We want empty fields, or the first character in this
-       * field is not a delimiter or the end of string.
-       * So save it.
+       * The first character in this field is not a
+       * delimiter or the end of string, so save it.
        */
       if (vec_count >= vec_len)
       {
          return(-1); /* overflow */
       }
-      vec[vec_count++] = (char *) str;
+      vec[vec_count++] = str;
    }
 
-   while ((char_type = is_delim[(unsigned)(unsigned char)*str]) != 2)
+   while ((char_type = is_delim[(unsigned)(unsigned char)*str]) != TERMINATOR)
    {
-      if (char_type == 1)
+      if (char_type == SEPARATOR)
       {
          /* the char is a separator */
 
@@ -143,19 +134,17 @@ int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
          *str++ = '\0';
 
          /* Check if we want to save this field */
-         if ( (!dont_save_empty_fields)
-           || (is_delim[(unsigned)(unsigned char)*str] == 0) )
-            {
+         if (is_delim[(unsigned)(unsigned char)*str] == WANTED)
+         {
             /*
-             * We want empty fields, or the first character in this
-             * field is not a delimiter or the end of string.
-             * So save it.
+             * The first character in this field is not a
+             * delimiter or the end of string. So save it.
              */
             if (vec_count >= vec_len)
             {
                return(-1); /* overflow */
             }
-            vec[vec_count++] = (char *) str;
+            vec[vec_count++] = str;
          }
       }
       else
@@ -163,18 +152,10 @@ int ssplit(char *str, const char *delim, char *vec[], size_t vec_len,
          str++;
       }
    }
-   *str = '\0';     /* null terminate the substring */
-
-#ifdef SSPLIT_VERBOSE
-   {
-      int i;
-      printf("dump %d strings\n", vec_count);
-      for (i = 0; i < vec_count; i++)
-      {
-         printf("%d '%s'\n", i, vec[i]);
-      }
-   }
-#endif /* def SSPLIT_VERBOSE */
+   /* null terminate the substring */
+   /* XXX: this shouldn't be necessary, so assert that it isn't. */
+   assert(*str == '\0');
+   *str = '\0';
 
    return(vec_count);
 }

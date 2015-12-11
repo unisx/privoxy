@@ -3,9 +3,6 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Troubleshooting</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
@@ -17,21 +14,10 @@
   "contact.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  span.c3 {font-style: italic}
-  table.c2 {background-color: #E0E0E0}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
@@ -50,7 +36,7 @@ body {
         accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -58,7 +44,7 @@ body {
     Troubleshooting</a></h1>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN1100" id="AEN1100">5.1. I cannot connect
+      <h3 class="SECT2"><a name="AEN1091" id="AEN1091">5.1. I cannot connect
       to any websites. Or, I am getting <span class="QUOTE">"connection
       refused"</span> message with every web page. Why?</a></h3>
 
@@ -108,7 +94,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h3 class="SECT2"><a name="AEN1123" id="AEN1123">5.3. I just added a
+      <h3 class="SECT2"><a name="AEN1114" id="AEN1114">5.3. I just added a
       new rule, but the steenkin ad is still getting through. How?</a></h3>
 
       <p>If the ad had been displayed before you added its URL, it will
@@ -147,7 +133,7 @@ body {
       (meaning caught and BLOCKED) quite a few items in this example, but
       perhaps missed a few as well.</p>
 
-      <table class="c2" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -218,9 +204,9 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       need to be enabled in the main config file). Many sites are complex and
       require a number of related pages to help present their content. Look
       at what else might be used by the page in question, and what of that
-      might be <span class="emphasis EMPHASIS c3">required</span>. Now, armed
-      with this information, go to <a href=
-      "http://config.privoxy.org/show-status" target=
+      might be <span class="emphasis"><i class=
+      "EMPHASIS">required</i></span>. Now, armed with this information, go to
+      <a href="http://config.privoxy.org/show-status" target=
       "_top">http://config.privoxy.org/show-status</a> and select the
       appropriate actions files for editing.</p>
 
@@ -302,8 +288,8 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       <p><span class="APPLICATION">Privoxy</span> cannot act as a proxy for
       FTP traffic, so do not configure your browser to use <span class=
       "APPLICATION">Privoxy</span> as an FTP proxy. The same is true for
-      <span class="emphasis EMPHASIS c3">any protocol other than HTTP or
-      HTTPS (SSL)</span>.</p>
+      <span class="emphasis"><i class="EMPHASIS">any protocol other than HTTP
+      or HTTPS (SSL)</i></span>.</p>
 
       <p>Most browsers understand FTP as well as HTTP. If you connect to a
       site, with a URL like <tt class="LITERAL">ftp://ftp.example.com</tt>,
@@ -314,9 +300,9 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
 
       <p>To complicate matters, some systems may have a generic <span class=
       "QUOTE">"proxy"</span> setting, which will enable various protocols,
-      including <span class="emphasis EMPHASIS c3">both</span> HTTP and FTP
-      proxying! So it is possible to accidentally enable FTP proxying in
-      these cases. And of course, if this happens, <span class=
+      including <span class="emphasis"><i class="EMPHASIS">both</i></span>
+      HTTP and FTP proxying! So it is possible to accidentally enable FTP
+      proxying in these cases. And of course, if this happens, <span class=
       "APPLICATION">Privoxy</span> will indeed cause problems since it does
       not know FTP. Newer version will give a sane error message if a FTP
       connection is attempted. Just disable the FTP setting and all will be
@@ -392,7 +378,7 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       the site to a <tt class="LITERAL">-prevent-compression</tt> section in
       <tt class="FILENAME">user.action</tt>:</p>
 
-      <table class="c2" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -419,9 +405,10 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       <p><span class="APPLICATION">Privoxy</span> tries to get the hostname
       of the system its running on from the IP address of the system
       interface it is bound to (from the <tt class="FILENAME">config</tt>
-      file <span class="emphasis EMPHASIS c3">listen-address</span> setting).
-      If the system cannot supply this information, <span class=
-      "APPLICATION">Privoxy</span> logs this condition.</p>
+      file <span class="emphasis"><i class=
+      "EMPHASIS">listen-address</i></span> setting). If the system cannot
+      supply this information, <span class="APPLICATION">Privoxy</span> logs
+      this condition.</p>
 
       <p>Typically, this would be considered a minor system configuration
       error. It is not a fatal error to <span class=
@@ -505,7 +492,7 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       <p>If you are using Microsoft products, you do not need it. If you need
       to view pages with UTF-8 characters (such as Cyrillic or Chinese), then
       it will cause corruption of the fonts, and thus <span class=
-      "emphasis EMPHASIS c3">should not be on</span>.</p>
+      "emphasis"><i class="EMPHASIS">should not be on</i></span>.</p>
 
       <p>On the other hand, if you use non-Microsoft products, and you
       occasionally notice weird characters on pages, you might want to try
@@ -633,7 +620,7 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
       by <span class="APPLICATION">Privoxy</span> and add the hosts (no path
       patterns) to a section like this:</p>
 
-      <table class="c2" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -707,7 +694,7 @@ Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&amp;si=Ua
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

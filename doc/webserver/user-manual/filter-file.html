@@ -3,39 +3,24 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Filter Files</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Actions Files" href="actions-file.html">
   <link rel="NEXT" title="Privoxy's Template Files" href="templates.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  table.c4 {background-color: #E0E0E0}
-  tt.c3 {font-style: italic}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -48,7 +33,7 @@ body {
         "templates.html" accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -106,25 +91,26 @@ body {
 
     <p>Just like the <a href="actions-file.html">actions files</a>, the
     filter file is organized in sections, which are called <span class=
-    "emphasis EMPHASIS c2">filters</span> here. Each filter consists of a
-    heading line, that starts with one of the <span class=
-    "emphasis EMPHASIS c2">keywords</span> <tt class="LITERAL">FILTER:</tt>,
-    <tt class="LITERAL">CLIENT-HEADER-FILTER:</tt> or <tt class=
-    "LITERAL">SERVER-HEADER-FILTER:</tt> followed by the filter's
-    <span class="emphasis EMPHASIS c2">name</span>, and a short (one line)
-    <span class="emphasis EMPHASIS c2">description</span> of what it does.
-    Below that line come the <span class="emphasis EMPHASIS c2">jobs</span>,
-    i.e. lines that define the actual text substitutions. By convention, the
-    name of a filter should describe what the filter <span class=
-    "emphasis EMPHASIS c2">eliminates</span>. The comment is used in the
-    <a href="http://config.privoxy.org/" target="_top">web-based user
+    "emphasis"><i class="EMPHASIS">filters</i></span> here. Each filter
+    consists of a heading line, that starts with one of the <span class=
+    "emphasis"><i class="EMPHASIS">keywords</i></span> <tt class=
+    "LITERAL">FILTER:</tt>, <tt class="LITERAL">CLIENT-HEADER-FILTER:</tt> or
+    <tt class="LITERAL">SERVER-HEADER-FILTER:</tt> followed by the filter's
+    <span class="emphasis"><i class="EMPHASIS">name</i></span>, and a short
+    (one line) <span class="emphasis"><i class=
+    "EMPHASIS">description</i></span> of what it does. Below that line come
+    the <span class="emphasis"><i class="EMPHASIS">jobs</i></span>, i.e.
+    lines that define the actual text substitutions. By convention, the name
+    of a filter should describe what the filter <span class=
+    "emphasis"><i class="EMPHASIS">eliminates</i></span>. The comment is used
+    in the <a href="http://config.privoxy.org/" target="_top">web-based user
     interface</a>.</p>
 
-    <p>Once a filter called <tt class="REPLACEABLE c3">name</tt> has been
+    <p>Once a filter called <tt class="REPLACEABLE"><i>name</i></tt> has been
     defined in the filter file, it can be invoked by using an action of the
     form +<tt class="LITERAL"><a href=
     "actions-file.html#FILTER">filter</a>{<tt class=
-    "REPLACEABLE c3">name</tt>}</tt> in any <a href=
+    "REPLACEABLE"><i>name</i></tt>}</tt> in any <a href=
     "actions-file.html">actions file</a>.</p>
 
     <p>Filter definitions start with a header line that contains the filter
@@ -132,7 +118,7 @@ body {
     line for a filter called <span class="QUOTE">"foo"</span> could look like
     this:</p>
 
-    <table class="c4" border="0" width="100%">
+    <table border="0" bgcolor="#E0E0E0" width="100%">
       <tr>
         <td>
           <pre class="SCREEN">
@@ -165,7 +151,7 @@ FILTER: foo Replace all "foo" with "bar"
     started.</p>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN5060" id="AEN5060">9.1. Filter File
+      <h2 class="SECT2"><a name="AEN5127" id="AEN5127">9.1. Filter File
       Tutorial</a></h2>
 
       <p>Now, let's complete our <span class="QUOTE">"foo"</span> content
@@ -174,7 +160,7 @@ FILTER: foo Replace all "foo" with "bar"
       "QUOTE">"foo"</span> with <span class="QUOTE">"bar"</span>, there is
       only one (trivial) job needed:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -185,13 +171,13 @@ s/foo/bar/
       </table>
 
       <p>But wait! Didn't the comment say that <span class=
-      "emphasis EMPHASIS c2">all</span> occurrences of <span class=
-      "QUOTE">"foo"</span> should be replaced? Our current job will only take
-      care of the first <span class="QUOTE">"foo"</span> on each page. For
-      global substitution, we'll need to add the <tt class="LITERAL">g</tt>
-      option:</p>
+      "emphasis"><i class="EMPHASIS">all</i></span> occurrences of
+      <span class="QUOTE">"foo"</span> should be replaced? Our current job
+      will only take care of the first <span class="QUOTE">"foo"</span> on
+      each page. For global substitution, we'll need to add the <tt class=
+      "LITERAL">g</tt> option:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -203,7 +189,7 @@ s/foo/bar/g
 
       <p>Our complete filter now looks like this:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -219,7 +205,7 @@ s/foo/bar/g
       arise from JavaScript abuse. Let's look at its jobs one after the
       other:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -244,20 +230,20 @@ s|(&lt;script.*)document\.referrer(.*&lt;/script&gt;)|$1"Not Your Business!"$2|U
       matches any character, and <tt class="LITERAL">*</tt> means:
       <span class="QUOTE">"Match an arbitrary number of the element left of
       myself"</span>, this matches <span class="QUOTE">"&lt;script"</span>,
-      followed by <span class="emphasis EMPHASIS c2">any</span> text, i.e. it
-      matches the whole page, from the start of the first &lt;script&gt;
-      tag.</p>
+      followed by <span class="emphasis"><i class="EMPHASIS">any</i></span>
+      text, i.e. it matches the whole page, from the start of the first
+      &lt;script&gt; tag.</p>
 
       <p>That's more than we want, but the pattern continues: <tt class=
       "LITERAL">document\.referrer</tt> matches only the exact string
       <span class="QUOTE">"document.referrer"</span>. The dot needed to be
-      <span class="emphasis EMPHASIS c2">escaped</span>, i.e. preceded by a
-      backslash, to take away its special meaning as a joker, and make it
-      just a regular dot. So far, the meaning is: Match from the start of the
-      first &lt;script&gt; tag in a the page, up to, and including, the text
-      <span class="QUOTE">"document.referrer"</span>, if <span class=
-      "emphasis EMPHASIS c2">both</span> are present in the page (and appear
-      in that order).</p>
+      <span class="emphasis"><i class="EMPHASIS">escaped</i></span>, i.e.
+      preceded by a backslash, to take away its special meaning as a joker,
+      and make it just a regular dot. So far, the meaning is: Match from the
+      start of the first &lt;script&gt; tag in a the page, up to, and
+      including, the text <span class="QUOTE">"document.referrer"</span>, if
+      <span class="emphasis"><i class="EMPHASIS">both</i></span> are present
+      in the page (and appear in that order).</p>
 
       <p>But there's still more pattern to go. The next element, again
       enclosed in parentheses, is <tt class="LITERAL">.*&lt;/script&gt;</tt>.
@@ -275,14 +261,14 @@ s|(&lt;script.*)document\.referrer(.*&lt;/script&gt;)|$1"Not Your Business!"$2|U
       matching, which means that the first <tt class="LITERAL">.*</tt> in the
       pattern will only <span class="QUOTE">"eat up"</span> all text in
       between <span class="QUOTE">"&lt;script"</span> and the <span class=
-      "emphasis EMPHASIS c2">first</span> occurrence of <span class=
-      "QUOTE">"document.referrer"</span>, and that the second <tt class=
-      "LITERAL">.*</tt> will only span the text up to the <span class=
-      "emphasis EMPHASIS c2">first</span> <span class=
-      "QUOTE">"&lt;/script&gt;"</span> tag. Furthermore, the <tt class=
-      "LITERAL">s</tt> option says that the match may span multiple lines in
-      the page, and the <tt class="LITERAL">g</tt> option again means that
-      the substitution is global.</p>
+      "emphasis"><i class="EMPHASIS">first</i></span> occurrence of
+      <span class="QUOTE">"document.referrer"</span>, and that the second
+      <tt class="LITERAL">.*</tt> will only span the text up to the
+      <span class="emphasis"><i class="EMPHASIS">first</i></span>
+      <span class="QUOTE">"&lt;/script&gt;"</span> tag. Furthermore, the
+      <tt class="LITERAL">s</tt> option says that the match may span multiple
+      lines in the page, and the <tt class="LITERAL">g</tt> option again
+      means that the substitution is global.</p>
 
       <p>So, to summarize, the pattern means: Match all scripts that contain
       the text <span class="QUOTE">"document.referrer"</span>. Remember the
@@ -295,10 +281,10 @@ s|(&lt;script.*)document\.referrer(.*&lt;/script&gt;)|$1"Not Your Business!"$2|U
       things? So lets look at the substitute: <tt class="LITERAL">$1"Not Your
       Business!"$2</tt> is easy to read: The text remembered as <tt class=
       "LITERAL">$1</tt>, followed by <tt class="LITERAL">"Not Your
-      Business!"</tt> (<span class="emphasis EMPHASIS c2">including</span>
-      the quotation marks!), followed by the text remembered as <tt class=
-      "LITERAL">$2</tt>. This produces an exact copy of the original string,
-      with the middle part (the <span class=
+      Business!"</tt> (<span class="emphasis"><i class=
+      "EMPHASIS">including</i></span> the quotation marks!), followed by the
+      text remembered as <tt class="LITERAL">$2</tt>. This produces an exact
+      copy of the original string, with the middle part (the <span class=
       "QUOTE">"document.referrer"</span>) replaced by <tt class=
       "LITERAL">"Not Your Business!"</tt>.</p>
 
@@ -312,7 +298,7 @@ s|(&lt;script.*)document\.referrer(.*&lt;/script&gt;)|$1"Not Your Business!"$2|U
       <p>We'll show you two other jobs from the JavaScript taming department,
       but this time only point out the constructs of special interest:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -331,13 +317,14 @@ s/window\.status\s*=\s*(['"]).*?\1/dUmMy=1/ig
       "LITERAL">.*?</tt> makes this matching of arbitrary text ungreedy.
       (Note that the <tt class="LITERAL">U</tt> option is not set). The
       <tt class="LITERAL">['"]</tt> construct means: <span class="QUOTE">"a
-      single <span class="emphasis EMPHASIS c2">or</span> a double
-      quote"</span>. Finally, <tt class="LITERAL">\1</tt> is a back-reference
-      to the first parenthesis just like <tt class="LITERAL">$1</tt> above,
-      with the difference that in the <span class=
-      "emphasis EMPHASIS c2">pattern</span>, a backslash indicates a
-      back-reference, whereas in the <span class=
-      "emphasis EMPHASIS c2">substitute</span>, it's the dollar.</p>
+      single <span class="emphasis"><i class="EMPHASIS">or</i></span> a
+      double quote"</span>. Finally, <tt class="LITERAL">\1</tt> is a
+      back-reference to the first parenthesis just like <tt class=
+      "LITERAL">$1</tt> above, with the difference that in the <span class=
+      "emphasis"><i class="EMPHASIS">pattern</i></span>, a backslash
+      indicates a back-reference, whereas in the <span class=
+      "emphasis"><i class="EMPHASIS">substitute</i></span>, it's the
+      dollar.</p>
 
       <p>So what does this job do? It replaces assignments of single- or
       double-quoted strings to the <span class="QUOTE">"window.status"</span>
@@ -347,7 +334,7 @@ s/window\.status\s*=\s*(['"]).*?\1/dUmMy=1/ig
       the status bar instead of the link target when you move your mouse over
       links.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -362,21 +349,22 @@ s/(&lt;body [^&gt;]*)onunload(.*&gt;)/$1never$2/iU
       <p>Including the <a href=
       "http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-eventgroupings-htmlevents"
       target="_top">OnUnload event binding</a> in the HTML DOM was a
-      <span class="emphasis EMPHASIS c2">CRIME</span>. When I close a browser
-      window, I want it to close and die. Basta. This job replaces the
-      <span class="QUOTE">"onunload"</span> attribute in <span class=
-      "QUOTE">"&lt;body&gt;"</span> tags with the dummy word <tt class=
-      "LITERAL">never</tt>. Note that the <tt class="LITERAL">i</tt> option
-      makes the pattern matching case-insensitive. Also note that ungreedy
-      matching alone doesn't always guarantee a minimal match: In the first
-      parenthesis, we had to use <tt class="LITERAL">[^&gt;]*</tt> instead of
-      <tt class="LITERAL">.*</tt> to prevent the match from exceeding the
-      &lt;body&gt; tag if it doesn't contain <span class=
-      "QUOTE">"OnUnload"</span>, but the page's content does.</p>
+      <span class="emphasis"><i class="EMPHASIS">CRIME</i></span>. When I
+      close a browser window, I want it to close and die. Basta. This job
+      replaces the <span class="QUOTE">"onunload"</span> attribute in
+      <span class="QUOTE">"&lt;body&gt;"</span> tags with the dummy word
+      <tt class="LITERAL">never</tt>. Note that the <tt class=
+      "LITERAL">i</tt> option makes the pattern matching case-insensitive.
+      Also note that ungreedy matching alone doesn't always guarantee a
+      minimal match: In the first parenthesis, we had to use <tt class=
+      "LITERAL">[^&gt;]*</tt> instead of <tt class="LITERAL">.*</tt> to
+      prevent the match from exceeding the &lt;body&gt; tag if it doesn't
+      contain <span class="QUOTE">"OnUnload"</span>, but the page's content
+      does.</p>
 
       <p>The last example is from the fun department:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -397,7 +385,7 @@ s/microsoft(?!\.com)/MicroSuck/ig
       to microsoft.com from being trashed, while still replacing the word
       everywhere else.</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -436,7 +424,8 @@ s* industry[ -]leading \
 
       <div class="VARIABLELIST">
         <dl>
-          <dt><span class="emphasis EMPHASIS c2">js-annoyances</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">js-annoyances</i></span></dt>
 
           <dd>
             <p>The purpose of this filter is to get rid of particularly
@@ -471,7 +460,8 @@ s* industry[ -]leading \
             sites that rely heavily on JavaScript.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">js-events</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">js-events</i></span></dt>
 
           <dd>
             <p>This is a very radical measure. It removes virtually all
@@ -479,13 +469,14 @@ s* industry[ -]leading \
             to user actions such as mouse movements or clicks, window
             resizing etc, anymore. Use with caution!</p>
 
-            <p>We <span class="emphasis EMPHASIS c2">strongly
-            discourage</span> using this filter as a default since it breaks
-            many legitimate scripts. It is meant for use only on extra-nasty
-            sites (should you really need to go there).</p>
+            <p>We <span class="emphasis"><i class="EMPHASIS">strongly
+            discourage</i></span> using this filter as a default since it
+            breaks many legitimate scripts. It is meant for use only on
+            extra-nasty sites (should you really need to go there).</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">html-annoyances</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">html-annoyances</i></span></dt>
 
           <dd>
             <p>This filter will undo many common instances of HTML based
@@ -498,7 +489,8 @@ s* industry[ -]leading \
             if specified otherwise.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">content-cookies</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">content-cookies</i></span></dt>
 
           <dd>
             <p>Most cookies are set in the HTTP dialog, where they can be
@@ -516,7 +508,8 @@ s* industry[ -]leading \
             wherever you would also use the cookie crunch actions.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">refresh tags</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">refresh-tags</i></span></dt>
 
           <dd>
             <p>Disable any refresh tags if the interval is greater than nine
@@ -525,8 +518,8 @@ s* industry[ -]leading \
             those who find this HTML feature annoying.</p>
           </dd>
 
-          <dt><span class=
-          "emphasis EMPHASIS c2">unsolicited-popups</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">unsolicited-popups</i></span></dt>
 
           <dd>
             <p>This filter attempts to prevent only <span class=
@@ -547,17 +540,19 @@ s* industry[ -]leading \
             caution.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">all-popups</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">all-popups</i></span></dt>
 
           <dd>
-            <p>Attempt to prevent <span class=
-            "emphasis EMPHASIS c2">all</span> pop-up windows from opening.
-            Note this should be used with even more discretion than the
-            above, since it is more likely to break some sites that require
-            pop-ups for normal usage. Use with caution.</p>
+            <p>Attempt to prevent <span class="emphasis"><i class=
+            "EMPHASIS">all</i></span> pop-up windows from opening. Note this
+            should be used with even more discretion than the above, since it
+            is more likely to break some sites that require pop-ups for
+            normal usage. Use with caution.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">img-reorder</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">img-reorder</i></span></dt>
 
           <dd>
             <p>This is a helper filter that has no value if used alone. It
@@ -566,7 +561,8 @@ s* industry[ -]leading \
             and should be enabled together with them.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">banners-by-size</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">banners-by-size</i></span></dt>
 
           <dd>
             <p>This filter removes image tags purely based on what size they
@@ -580,10 +576,12 @@ s* industry[ -]leading \
 
             <p>Recommended only for those who require extreme ad blocking.
             The default block rules should catch 95+% of all ads <span class=
-            "emphasis EMPHASIS c2">without</span> this filter enabled.</p>
+            "emphasis"><i class="EMPHASIS">without</i></span> this filter
+            enabled.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">banners-by-link</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">banners-by-link</i></span></dt>
 
           <dd>
             <p>This is an experimental filter that attempts to kill any
@@ -592,7 +590,8 @@ s* industry[ -]leading \
             recommended for use by default.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">webbugs</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">webbugs</i></span></dt>
 
           <dd>
             <p>Webbugs are small, invisible images (technically 1X1 GIF
@@ -609,7 +608,8 @@ s* industry[ -]leading \
             "QUOTE">"webbugs"</span>.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">tiny-textforms</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">tiny-textforms</i></span></dt>
 
           <dd>
             <p>A rather special-purpose filter that can be used to enlarge
@@ -621,7 +621,8 @@ s* industry[ -]leading \
             <p>It is not recommended to use this filter as a default.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">jumping-windows</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">jumping-windows</i></span></dt>
 
           <dd>
             <p>Many consider windows that move, or resize themselves to be
@@ -630,7 +631,8 @@ s* industry[ -]leading \
             using this filter. Use with caution.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">frameset-borders</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">frameset-borders</i></span></dt>
 
           <dd>
             <p>Some web designers seem to assume that everyone in the world
@@ -644,7 +646,8 @@ s* industry[ -]leading \
             applied to sites which need it.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">demoronizer</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">demoronizer</i></span></dt>
 
           <dd>
             <p>Many Microsoft products that generate HTML use non-standard
@@ -661,7 +664,8 @@ s* industry[ -]leading \
             fly.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">shockwave-flash</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">shockwave-flash</i></span></dt>
 
           <dd>
             <p>A filter for shockwave haters. As the name suggests, this
@@ -669,22 +673,23 @@ s* industry[ -]leading \
             shockwave flash objects.</p>
           </dd>
 
-          <dt><span class=
-          "emphasis EMPHASIS c2">quicktime-kioskmode</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">quicktime-kioskmode</i></span></dt>
 
           <dd>
             <p>Change HTML code that embeds Quicktime objects so that
             kioskmode, which prevents saving, is disabled.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">fun</span></dt>
+          <dt><span class="emphasis"><i class="EMPHASIS">fun</i></span></dt>
 
           <dd>
             <p>Text replacements for subversive browsing fun. Make fun of
             your favorite Monopolist or play buzzword bingo.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">crude-parental</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">crude-parental</i></span></dt>
 
           <dd>
             <p>A demonstration-only filter that shows how <span class=
@@ -692,7 +697,8 @@ s* industry[ -]leading \
             a keyword basis.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">ie-exploits</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">ie-exploits</i></span></dt>
 
           <dd>
             <p>An experimental collection of text replacements to disable
@@ -704,7 +710,8 @@ s* industry[ -]leading \
             substantial protection.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">site-specifics</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">site-specifics</i></span></dt>
 
           <dd>
             <p>Some web sites have very specific problems, the cure for which
@@ -718,28 +725,31 @@ s* industry[ -]leading \
             filter.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">google</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">google</i></span></dt>
 
           <dd>
             <p>A CSS based block for Google text ads. Also removes a width
             limitation and the toolbar advertisement.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">yahoo</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">yahoo</i></span></dt>
 
           <dd>
             <p>Another CSS based block, this time for Yahoo text ads. And
             removes a width limitation as well.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">msn</span></dt>
+          <dt><span class="emphasis"><i class="EMPHASIS">msn</i></span></dt>
 
           <dd>
             <p>Another CSS based block, this time for MSN text ads. And
             removes tracking URLs, as well as a width limitation.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">blogspot</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">blogspot</i></span></dt>
 
           <dd>
             <p>Cleans up some Blogspot blogs. Read the fine print before
@@ -752,29 +762,32 @@ s* industry[ -]leading \
             understands background-size (CSS3), they are removed instead.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">xml-to-html</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">xml-to-html</i></span></dt>
 
           <dd>
             <p>Server-header filter to change the Content-Type from xml to
             html.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">html-to-xml</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">html-to-xml</i></span></dt>
 
           <dd>
             <p>Server-header filter to change the Content-Type from html to
             xml.</p>
           </dd>
 
-          <dt><span class="emphasis EMPHASIS c2">no-ping</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">no-ping</i></span></dt>
 
           <dd>
             <p>Removes the non-standard <tt class="LITERAL">ping</tt>
             attribute from anchor and area HTML tags.</p>
           </dd>
 
-          <dt><span class=
-          "emphasis EMPHASIS c2">hide-tor-exit-notation</span></dt>
+          <dt><span class="emphasis"><i class=
+          "EMPHASIS">hide-tor-exit-notation</i></span></dt>
 
           <dd>
             <p>Client-header filter to remove the <b class="COMMAND">Tor</b>
@@ -815,7 +828,7 @@ s* industry[ -]leading \
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

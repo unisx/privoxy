@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.112 2011/09/04 11:10:56 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.117 2012/12/09 12:28:14 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -146,25 +146,27 @@ static inline void unlock_loginit() {}
  *********************************************************************/
 static void fatal_error(const char *error_message)
 {
-#if defined(_WIN32) && !defined(_WIN_CONSOLE)
-   /* Skip timestamp and thread id for the message box. */
-   const char *box_message = strstr(error_message, "Fatal error");
-   if (NULL == box_message)
-   {
-      /* Shouldn't happen but ... */
-      box_message = error_message;
-   }
-   MessageBox(g_hwndLogFrame, box_message, "Privoxy Error",
-      MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);
-
-   /* Cleanup - remove taskbar icon etc. */
-   TermLogWindow();
-#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
-
    if (logfp != NULL)
    {
       fputs(error_message, logfp);
    }
+
+#if defined(_WIN32) && !defined(_WIN_CONSOLE)
+   {
+      /* Skip timestamp and thread id for the message box. */
+      const char *box_message = strstr(error_message, "Fatal error");
+      if (NULL == box_message)
+      {
+         /* Shouldn't happen but ... */
+         box_message = error_message;
+      }
+      MessageBox(g_hwndLogFrame, box_message, "Privoxy Error",
+         MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND | MB_TOPMOST);
+
+      /* Cleanup - remove taskbar icon etc. */
+      TermLogWindow();
+   }
+#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
 
 #if defined(unix)
    if (pidfile)
@@ -241,6 +243,23 @@ void init_log_module(void)
 void set_debug_level(int debug_level)
 {
    debug = debug_level | LOG_LEVEL_MINIMUM;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  debug_level_is_enabled
+ *
+ * Description :  Checks if a certain debug level is enabled.
+ *
+ * Parameters  :  1: debug_level = The debug level to check.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+int debug_level_is_enabled(int debug_level)
+{
+   return (0 != (debug & debug_level));
 }
 
 
@@ -604,6 +623,9 @@ static inline const char *get_log_level_string(int loglevel)
       case LOG_LEVEL_CGI:
          log_level_string = "CGI";
          break;
+      case LOG_LEVEL_ACTIONS:
+         log_level_string = "Actions";
+         break;
       default:
          log_level_string = "Unknown log level";
          break;
@@ -743,11 +765,11 @@ void log_error(int loglevel, const char *fmt, ...)
             tempbuf[1] = '\0';
             break;
          case 'd':
-            ival = va_arg( ap, int );
+            ival = va_arg(ap, int);
             snprintf(tempbuf, sizeof(tempbuf), "%d", ival);
             break;
          case 'u':
-            uval = va_arg( ap, unsigned );
+            uval = va_arg(ap, unsigned);
             snprintf(tempbuf, sizeof(tempbuf), "%u", uval);
             break;
          case 'l':
@@ -755,12 +777,12 @@ void log_error(int loglevel, const char *fmt, ...)
             ch = *src++;
             if (ch == 'd')
             {
-               lval = va_arg( ap, long );
+               lval = va_arg(ap, long);
                snprintf(tempbuf, sizeof(tempbuf), "%ld", lval);
             }
             else if (ch == 'u')
             {
-               ulval = va_arg( ap, unsigned long );
+               ulval = va_arg(ap, unsigned long);
                snprintf(tempbuf, sizeof(tempbuf), "%lu", ulval);
             }
             else if ((ch == 'l') && (*src == 'u'))

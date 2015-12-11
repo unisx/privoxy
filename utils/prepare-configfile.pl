@@ -1,5 +1,10 @@
 #!/usr/local/bin/perl
 
+# This script is used by the config-file target in GNUMakefile.
+#
+# It removes garbage in the w3m output and separates comments
+# and active directives.
+
 use strict;
 use warnings;
 
@@ -7,8 +12,23 @@ sub main() {
     my $hit_header = 0;
     my $hit_option = 0;
     my $header_len;
+    my $unfold_mode = 0;
+    my $unfolding_enabled = 0;
+    my $windows_section_reached = 0;
 
     while (<>) {
+
+        if (!$unfolding_enabled and m/=========/) {
+            # We passed the table of contents
+            # and can try to unfold unintentional
+            # line breaks;
+            $unfolding_enabled = 1;
+        }
+        if (m/specific to the Windows GUI/) {
+            # The Windows section is formatted differently.
+            $windows_section_reached = 1;
+        }
+
         s/^1\. \@\@TITLE\@\@/     /i;
 
         if (m/^(\d\.)(\d\.)(\d\.)?\s/) {
@@ -22,9 +42,21 @@ sub main() {
             # Remember to underline it.
             $hit_header = 1;
             $header_len = length($_);
+
+            # Separate it from the previous section.
+            print "#\n";
         }
 
-        s/^/#  /;
+        if ($unfold_mode) {
+            s/^\s+/ /;
+            $unfold_mode = 0;
+        } else {
+            s/^/#  /;
+        }
+        if ($unfolding_enabled and m/(\s+#)\s*$/) {
+            $unfold_mode = 1;
+            chomp;
+        }
 
         # XXX: someone should figure out what this stuff
         # is supposed to do (and if it really does that).
@@ -35,8 +67,13 @@ sub main() {
         s/^#\s*-{20,}//;
         s/ *$//;
         $hit_option = 1 if s/^#\s+@@//;
-    
-        print;
+
+        if ($windows_section_reached) {
+            # Do not drop empty lines in the Windows section
+            s/^\s*$/#\n/;
+        }
+
+        print unless (/^\s*$/);
 
         if ($hit_header) {
             # The previous line was a section

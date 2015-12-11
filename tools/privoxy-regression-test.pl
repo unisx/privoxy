@@ -7,7 +7,7 @@
 # A regression test "framework" for Privoxy. For documentation see:
 # perldoc privoxy-regression-test.pl
 #
-# $Id: privoxy-regression-test.pl,v 1.81 2011/10/30 16:22:29 fabiankeil Exp $
+# $Id: privoxy-regression-test.pl,v 1.88 2013/01/06 18:19:24 fabiankeil Exp $
 #
 # Wish list:
 #
@@ -19,7 +19,7 @@
 # - Document magic Expect Header values
 # - Internal fuzz support?
 #
-# Copyright (c) 2007-2011 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2013 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -40,7 +40,7 @@ use strict;
 use Getopt::Long;
 
 use constant {
-    PRT_VERSION => 'Privoxy-Regression-Test 0.5',
+    PRT_VERSION => 'Privoxy-Regression-Test 0.6',
  
     CURL => 'curl',
 
@@ -311,6 +311,7 @@ sub load_regression_tests_through_privoxy () {
     my $curl_url = '';
     my $file_number = 0;
     my $feature;
+    my $privoxy_version = '(Unknown version!)';
 
     $curl_url .= $privoxy_cgi_url;
     $curl_url .= 'show-status';
@@ -342,10 +343,14 @@ sub load_regression_tests_through_privoxy () {
 
             $privoxy_features{$feature} = $1 if defined $feature;
             $feature = undef;
+
+        } elsif (m@This is <a href="http://www.privoxy.org/">Privoxy</a> (\d+\.\d+\.\d+) on@) {
+            $privoxy_version = $1;
         }
     }
 
-    l(LL_FILE_LOADING, "Recognized " . @actionfiles . " actions files");
+    l(LL_STATUS, "Gathering regression tests from " .
+      @actionfiles . " action file(s) delivered by Privoxy $privoxy_version.");
 
     load_action_files(\@actionfiles);
 }
@@ -474,6 +479,34 @@ sub enlist_new_test ($$$$$$) {
       "Regression test " . $number . " (section:" . $si . "):");
 }
 
+sub mark_matching_tests_for_skipping($) {
+    my $overwrite_condition = shift;
+
+    our @regression_tests;
+
+    for (my $s = 0;  $s < @regression_tests; $s++) {
+
+        my $r = 0;
+
+        while (defined $regression_tests[$s][$r]) {
+
+            if ($regression_tests[$s][$r]{'data'} eq $overwrite_condition) {
+                my $message = sprintf("Marking test %s for ignoring. Overwrite condition: %s.",
+                                      $regression_tests[$s][$r]{'number'}, $overwrite_condition);
+
+                # XXX: Should eventually be downgraded to LL_FILE_LOADING.
+                log_message($message);
+
+                # XXX: Should eventually get its own key so get_skip_reason()
+                #      can tell about the overwrite condition.
+                $regression_tests[$s][$r]{'ignore'} = 1;
+            }
+            $r++;
+        }
+    }
+}
+
+
 # XXX: Shares a lot of code with load_regression_tests_from_file()
 #      that should be factored out.
 sub load_action_files ($) {
@@ -490,9 +523,6 @@ sub load_action_files ($) {
     my $count = 0;
 
     my $ignored = 0;
-
-    l(LL_STATUS, "Gathering regression tests from " .
-      @actionfiles . " action file(s) delivered by Privoxy.");
 
     for my $file_number (0 .. @actionfiles - 1) {
 
@@ -543,7 +573,16 @@ sub load_action_files ($) {
                                 "action parameters are currently unsupported.");
                 }
             }
-            
+
+            if ($token eq 'overwrite condition') {
+
+                l(LL_FILE_LOADING, "Detected overwrite condition: " . $value);
+                # We can only skip matching tests that have already
+                # be loaded but that is exactly what we want anyway.
+                mark_matching_tests_for_skipping($value);
+                next;
+            }
+
             if ($si == -1 || $ri == -1) {
                 # No beginning of a test detected yet,
                 # so we don't care about any other test
@@ -1502,7 +1541,7 @@ sub log_message ($) {
         $message = $time_stamp . ": " . $message;
     }
 
-    printf(STDERR "%s\n", $message);
+    printf("%s\n", $message);
 }
 
 sub log_result ($$) {
@@ -1598,7 +1637,7 @@ sub quote ($) {
 }
 
 sub print_version () {
-    printf PRT_VERSION . "\n" . 'Copyright (C) 2007-2011 Fabian Keil <fk@fabiankeil.de>' . "\n";
+    printf PRT_VERSION . "\n";
 }
 
 sub list_test_types () {
@@ -1870,6 +1909,36 @@ To verify that requests for a URL get redirected, use:
 
     # Redirected URL = http://www.example.com/redirect-me
     # Redirect Destination = http://www.example.org/redirected
+
+To skip a test, add the following line:
+
+# Ignore = Yes
+
+The difference between a skipped test and a removed one is that removing
+a test affects the numbers of the following tests, while a skipped test
+is still loaded and thus keeps the test numbers unchanged.
+
+Sometimes user modifications intentionally conflict with tests in the
+default configuration and thus cause test failures. Adding the Ignore
+directive to the failing tests works but is inconvenient as the directive
+is likely to get lost with the next update.
+
+Overwrite conditions are an alternative and can be added in any action
+file as long as the come after the test that is expected to fail.
+They causes all previous tests a matching the condition to be skipped.
+
+It is recommended to put the overwrite condition below the custom Privoxy
+section that causes the expected test failure and before the custom test
+that verifies that tests the now expected behaviour. Example:
+
+# The following section is expected to overwrite a section in
+# default.action, whose effect is tested. Thus also disable the
+# test that is now expected to fail and add a new one.
+#
+{+block{Facebook makes Firefox even more unstable. Do not want.}}
+# Overwrite condition = http://apps.facebook.com/onthefarm/track.php?creative=&cat=friendvisit&subcat=weeds&key=a789a971dc687bee4c20c044834fabdd&next=index.php%3Fref%3Dnotif%26visitId%3D898835505
+# Blocked URL = http://apps.facebook.com/
+.facebook./
 
 =head1 TEST LEVELS
 

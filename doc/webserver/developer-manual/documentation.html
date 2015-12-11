@@ -3,9 +3,6 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Documentation Guidelines</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
@@ -14,21 +11,10 @@
   <link rel="NEXT" title="Coding Guidelines" href="coding.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  span.c3 {font-style: italic}
-  a.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
@@ -46,7 +32,7 @@ body {
         accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -59,10 +45,10 @@ body {
     DTD's and the Docbook modular stylesheets (or comparable alternatives),
     and either <span class="APPLICATION">jade</span> or <span class=
     "APPLICATION">openjade</span> (recommended) installed in order to build
-    docs from source. Currently there is <a class="CITETITLE c2" href=
-    "../user-manual/index.html" target="_top">user-manual</a>, <a class=
-    "CITETITLE c2" href="../faq/index.html" target="_top">FAQ</a>, and, of
-    course this, the <i class="CITETITLE">developer-manual</i> in this
+    docs from source. Currently there is <a href="../user-manual/index.html"
+    target="_top"><i class="CITETITLE">user-manual</i></a>, <a href=
+    "../faq/index.html" target="_top"><i class="CITETITLE">FAQ</i></a>, and,
+    of course this, the <i class="CITETITLE">developer-manual</i> in this
     format. The <i class="CITETITLE">README</i>, <i class=
     "CITETITLE">AUTHORS</i>, <i class="CITETITLE">INSTALL</i>, <i class=
     "CITETITLE">privoxy.1</i> (man page), and <i class="CITETITLE">config</i>
@@ -72,8 +58,9 @@ body {
     "FILENAME">index.html</tt> (and a variation on this file, <tt class=
     "FILENAME">privoxy-index.html</tt>, meant for inclusion with doc
     packages), are maintained as SGML as well. <span class=
-    "emphasis EMPHASIS c3">DO NOT edit these directly</span>. Edit the SGML
-    source, or contact someone involved in the documentation.</p>
+    "emphasis"><i class="EMPHASIS">DO NOT edit these directly</i></span>.
+    Edit the SGML source, or contact someone involved in the
+    documentation.</p>
 
     <p><tt class="FILENAME">config</tt> requires some special handling. The
     reason it is maintained this way is so that the extensive comments in the
@@ -92,16 +79,14 @@ body {
     <p>Packagers are encouraged to include this documentation. For those
     without the ability to build the docs locally, text versions of each are
     kept in CVS. HTML versions are also being kept in CVS under <tt class=
-    "FILENAME">doc/webserver/*</tt>. And PDF version are kept in <tt class=
-    "FILENAME">doc/pdf/*</tt>.</p>
+    "FILENAME">doc/webserver/*</tt>.</p>
 
     <p>Formal documents are built with the Makefile targets of <samp class=
-    "COMPUTEROUTPUT">make dok</samp>, or alternately <samp class=
-    "COMPUTEROUTPUT">make redhat-dok</samp>. If you have problems, try both.
-    The build process uses the document SGML sources in <samp class=
-    "COMPUTEROUTPUT">doc/source/*/*</samp> to update all text files in
-    <samp class="COMPUTEROUTPUT">doc/text/</samp> and to update all HTML
-    documents in <samp class="COMPUTEROUTPUT">doc/webserver/</samp>.</p>
+    "COMPUTEROUTPUT">make dok</samp>. The build process uses the document
+    SGML sources in <samp class="COMPUTEROUTPUT">doc/source/*/*</samp> to
+    update all text files in <samp class="COMPUTEROUTPUT">doc/text/</samp>
+    and to update all HTML documents in <samp class=
+    "COMPUTEROUTPUT">doc/webserver/</samp>.</p>
 
     <p>Documentation writers should please make sure documents build
     successfully before committing to CVS, if possible.</p>
@@ -111,9 +96,7 @@ body {
     <ol type="1">
       <li>
         <p>First, build the docs by running <samp class="COMPUTEROUTPUT">make
-        dok</samp> (or alternately <samp class="COMPUTEROUTPUT">make
-        redhat-dok</samp>). For PDF docs, do <samp class=
-        "COMPUTEROUTPUT">make dok-pdf</samp>.</p>
+        dok</samp>.</p>
       </li>
 
       <li>
@@ -128,9 +111,10 @@ body {
     "FILENAME">doc/webserver/*/*.html</tt>) so that those without the ability
     to build them locally, have access to them if needed. This is especially
     important just prior to a new release! Please do this <span class=
-    "emphasis EMPHASIS c3">after</span> the <tt class="LITERAL">$VERSION</tt>
-    and other release specific data in <tt class="FILENAME">configure.in</tt>
-    has been updated (this is done just prior to a new release).</p>
+    "emphasis"><i class="EMPHASIS">after</i></span> the <tt class=
+    "LITERAL">$VERSION</tt> and other release specific data in <tt class=
+    "FILENAME">configure.in</tt> has been updated (this is done just prior to
+    a new release).</p>
 
     <div class="SECT2">
       <h2 class="SECT2"><a name="SGML" id="SGML">3.1. Quickstart to Docbook
@@ -175,65 +159,65 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;para&gt;&lt;/para&gt;</span>,
-            paragraph delimiter. Most text needs to be within paragraph
-            elements (there are some exceptions).</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;para&gt;&lt;/para&gt;</i></span>, paragraph
+            delimiter. Most text needs to be within paragraph elements (there
+            are some exceptions).</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;emphasis&gt;&lt;/emphasis&gt;</span>,
-            the stylesheets make this italics.</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;emphasis&gt;&lt;/emphasis&gt;</i></span>, the
+            stylesheets make this italics.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;filename&gt;&lt;/filename&gt;</span>,
-            files and directories.</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;filename&gt;&lt;/filename&gt;</i></span>, files
+            and directories.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;command&gt;&lt;/command&gt;</span>,
-            command examples.</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;command&gt;&lt;/command&gt;</i></span>, command
+            examples.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;literallayout&gt;&lt;/literallayout&gt;</span>,
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;literallayout&gt;&lt;/literallayout&gt;</i></span>,
             like <tt class="LITERAL">&lt;pre&gt;</tt>, more or less.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;itemizedlist&gt;&lt;/itemizedlist&gt;</span>,
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;itemizedlist&gt;&lt;/itemizedlist&gt;</i></span>,
             list with bullets.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;listitem&gt;&lt;/listitem&gt;</span>,
-            member of the above.</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;listitem&gt;&lt;/listitem&gt;</i></span>, member
+            of the above.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;screen&gt;&lt;/screen&gt;</span>,
-            screen output, implies <tt class=
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;screen&gt;&lt;/screen&gt;</i></span>, screen
+            output, implies <tt class=
             "LITERAL">&lt;literallayout&gt;</tt>.</td>
           </tr>
 
           <tr>
-            <td><span class="emphasis EMPHASIS c3">&lt;ulink
-            url="example.com"&gt;&lt;/ulink&gt;</span>, like HTML <tt class=
-            "LITERAL">&lt;a&gt;</tt> tag.</td>
+            <td><span class="emphasis"><i class="EMPHASIS">&lt;ulink
+            url="example.com"&gt;&lt;/ulink&gt;</i></span>, like HTML
+            <tt class="LITERAL">&lt;a&gt;</tt> tag.</td>
           </tr>
 
           <tr>
-            <td><span class=
-            "emphasis EMPHASIS c3">&lt;quote&gt;&lt;/quote&gt;</span>, for,
-            doh, quoting text.</td>
+            <td><span class="emphasis"><i class=
+            "EMPHASIS">&lt;quote&gt;&lt;/quote&gt;</i></span>, for, doh,
+            quoting text.</td>
           </tr>
         </tbody>
       </table>
@@ -263,9 +247,9 @@ body {
         </li>
 
         <li>
-          <p>Tags delimiting a <span class=
-          "emphasis EMPHASIS c3">block</span> of text (even small blocks)
-          should be on their own line. Like:</p>
+          <p>Tags delimiting a <span class="emphasis"><i class=
+          "EMPHASIS">block</i></span> of text (even small blocks) should be
+          on their own line. Like:</p>
 
           <p class="LITERALLAYOUT">&nbsp;&lt;para&gt;<br>
           &nbsp;&nbsp;Some&nbsp;text&nbsp;goes&nbsp;here.<br>
@@ -324,7 +308,7 @@ body {
 
         <li>
           <p>Our documents are available in differing formats. Right now,
-          they are just plain text, HTML, and PDF, but others are always a
+          they are just plain text and/or HTML, but others are always a
           future possibility. Be careful with URLs (&lt;ulink&gt;), and avoid
           this mistake:</p>
 
@@ -349,7 +333,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN217" id="AEN217">3.3. Privoxy Custom
+      <h2 class="SECT2"><a name="AEN208" id="AEN208">3.3. Privoxy Custom
       Entities</a></h2>
 
       <p><span class="APPLICATION">Privoxy</span> documentation is using a
@@ -360,9 +344,9 @@ body {
       with generic text, that is used by multiple docs. This way we can write
       something once, and use it repeatedly without having to re-write the
       same content over and over again. If editing such a file, keep in mind
-      that it should be <span class="emphasis EMPHASIS c3">generic</span>.
-      That is the purpose; so it can be used in varying contexts without
-      additional modifications.</p>
+      that it should be <span class="emphasis"><i class=
+      "EMPHASIS">generic</i></span>. That is the purpose; so it can be used
+      in varying contexts without additional modifications.</p>
 
       <p>We are also using what <span class="APPLICATION">Docbook</span>
       calls <span class="QUOTE">"internal entities"</span>. These are like
@@ -397,33 +381,36 @@ body {
           <table border="0">
             <tbody>
               <tr>
-                <td><span class="emphasis EMPHASIS c3">p-version</span>: the
-                <span class="APPLICATION">Privoxy</span> version string, e.g.
-                <span class="QUOTE">"3.0.19"</span>.</td>
+                <td><span class="emphasis"><i class=
+                "EMPHASIS">p-version</i></span>: the <span class=
+                "APPLICATION">Privoxy</span> version string, e.g.
+                <span class="QUOTE">"3.0.20"</span>.</td>
               </tr>
 
               <tr>
-                <td><span class="emphasis EMPHASIS c3">p-status</span>: the
-                project status, either <span class="QUOTE">"alpha"</span>,
-                <span class="QUOTE">"beta"</span>, or <span class=
+                <td><span class="emphasis"><i class=
+                "EMPHASIS">p-status</i></span>: the project status, either
+                <span class="QUOTE">"alpha"</span>, <span class=
+                "QUOTE">"beta"</span>, or <span class=
                 "QUOTE">"stable"</span>.</td>
               </tr>
 
               <tr>
-                <td><span class="emphasis EMPHASIS c3">p-not-stable</span>:
-                use to conditionally include text in <span class="QUOTE">"not
-                stable"</span> releases (e.g. <span class=
-                "QUOTE">"beta"</span>).</td>
+                <td><span class="emphasis"><i class=
+                "EMPHASIS">p-not-stable</i></span>: use to conditionally
+                include text in <span class="QUOTE">"not stable"</span>
+                releases (e.g. <span class="QUOTE">"beta"</span>).</td>
               </tr>
 
               <tr>
-                <td><span class="emphasis EMPHASIS c3">p-stable</span>: just
-                the opposite.</td>
+                <td><span class="emphasis"><i class=
+                "EMPHASIS">p-stable</i></span>: just the opposite.</td>
               </tr>
 
               <tr>
-                <td><span class="emphasis EMPHASIS c3">p-text</span>: this
-                doc is only generated as text.</td>
+                <td><span class="emphasis"><i class=
+                "EMPHASIS">p-text</i></span>: this doc is only generated as
+                text.</td>
               </tr>
             </tbody>
           </table>
@@ -436,7 +423,7 @@ body {
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

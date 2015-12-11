@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.87 2011/11/06 11:53:15 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.95 2013/01/13 15:38:14 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -8,7 +8,7 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.87 2011/11/06 11:53:15 fabiankeil
  *                the list of active loaders, and to automatically
  *                unload files that are no longer in use.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2010 the
+ * Copyright   :  Written by and Copyright (C) 2001-2012 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -81,11 +81,6 @@ static struct file_list *current_re_filterfile[MAX_AF_FILES]  = {
    NULL, NULL, NULL, NULL, NULL
 };
 
-/*
- * Pseudo filter type for load_one_re_filterfile
- */
-#define NO_NEW_FILTER -1
-
 
 /*********************************************************************
  *
@@ -120,7 +115,7 @@ unsigned int sweep(void)
    unsigned int active_threads = 0;
 
    /* clear all of the file's active flags */
-   for ( fl = files->next; NULL != fl; fl = fl->next )
+   for (fl = files->next; NULL != fl; fl = fl->next)
    {
       fl->active = 0;
    }
@@ -187,6 +182,7 @@ unsigned int sweep(void)
          last_active->next = client_list->next;
 
          freez(csp->ip_addr_str);
+         freez(csp->client_iob->buf);
          freez(csp->iob->buf);
          freez(csp->error_message);
 
@@ -221,7 +217,7 @@ unsigned int sweep(void)
 
    while (fl != NULL)
    {
-      if ( ( 0 == fl->active ) && ( NULL != fl->unloader ) )
+      if ((0 == fl->active) && (NULL != fl->unloader))
       {
          nfl->next = fl->next;
 
@@ -569,8 +565,8 @@ jb_err edit_read_line(FILE *fp,
 
    /* Main loop.  Loop while we need more data & it's not EOF. */
 
-   while ( (contflag || is_empty)
-        && (JB_ERR_OK == (rval = simple_read_line(fp, &linebuf, newline))))
+   while ((contflag || is_empty)
+       && (JB_ERR_OK == (rval = simple_read_line(fp, &linebuf, newline))))
    {
       if (line_number)
       {
@@ -923,7 +919,7 @@ int load_trustfile(struct client_state *csp)
        */
       if (trusted)
       {
-         if(++trusted_referrers < MAX_TRUSTED_REFERRERS)
+         if (++trusted_referrers < MAX_TRUSTED_REFERRERS)
          {
             *tl++ = b->url;
          }
@@ -931,7 +927,7 @@ int load_trustfile(struct client_state *csp)
       freez(buf);
    }
 
-   if(trusted_referrers >= MAX_TRUSTED_REFERRERS)
+   if (trusted_referrers >= MAX_TRUSTED_REFERRERS)
    {
       /*
        * FIXME: ... after Privoxy 3.0.4 is out.
@@ -1152,7 +1148,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
     */
    while (read_config_line(fp, &linenum, &buf) != NULL)
    {
-      int new_filter = NO_NEW_FILTER;
+      enum filter_type new_filter = FT_INVALID_FILTER;
 
       if (strncmp(buf, "FILTER:", 7) == 0)
       {
@@ -1179,7 +1175,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
        * If this is the head of a new filter block, make it a
        * re_filterfile spec of its own and chain it to the list:
        */
-      if (new_filter != NO_NEW_FILTER)
+      if (new_filter != FT_INVALID_FILTER)
       {
          new_bl = (struct re_filterfile_spec  *)zalloc(sizeof(*bl));
          if (new_bl == NULL)
@@ -1316,7 +1312,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
    /*
     * Schedule the now-obsolete old data for unloading
     */
-   if ( NULL != current_re_filterfile[fileid] )
+   if (NULL != current_re_filterfile[fileid])
    {
       current_re_filterfile[fileid]->unloader = unload_re_filterfile;
    }
@@ -1329,7 +1325,7 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
    current_re_filterfile[fileid] = fs;
    csp->rlist[fileid] = fs;
 
-   return( 0 );
+   return(0);
 
 load_re_filterfile_error:
    log_error(LOG_LEVEL_FATAL, "can't load re_filterfile '%s': %E",
@@ -1450,18 +1446,50 @@ static int file_has_been_modified(const char *filename, time_t last_know_modific
  *               FALSE otherwise.
  *
  *********************************************************************/
-int any_loaded_file_changed(const struct file_list *files_to_check)
+int any_loaded_file_changed(const struct client_state *csp)
 {
-   const struct file_list *file_to_check = files_to_check;
+   const struct file_list *file_to_check = csp->config->config_file_list;
+   int i;
 
-   while (file_to_check != NULL)
+   if (file_has_been_modified(file_to_check->filename, file_to_check->lastmodified))
    {
-      if (file_has_been_modified(file_to_check->filename, file_to_check->lastmodified))
+      return TRUE;
+   }
+
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if (csp->actions_list[i])
+      {
+         file_to_check = csp->actions_list[i];
+         if (file_has_been_modified(file_to_check->filename, file_to_check->lastmodified))
+         {
+            return TRUE;
+         }
+      }
+   }
+
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if (csp->rlist[i])
+      {
+         file_to_check = csp->rlist[i];
+         if (file_has_been_modified(file_to_check->filename, file_to_check->lastmodified))
+         {
+            return TRUE;
+         }
+      }
+   }
+
+#ifdef FEATURE_TRUST
+   if (csp->tlist)
+   {
+      if (file_has_been_modified(csp->tlist->filename, csp->tlist->lastmodified))
       {
          return TRUE;
       }
-      file_to_check = file_to_check->next;
    }
+#endif /* def FEATURE_TRUST */
+
    return FALSE;
 }
 

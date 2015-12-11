@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
@@ -24,9 +24,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: developer-manual.sgml,v 2.38 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.52 2013/01/06 11:25:52 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2012 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -51,7 +51,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.38 2011/12/26 17:05:40 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.52 2013/01/06 11:25:52 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -190,6 +190,7 @@ Hal.
        url="http://ijbswa.cvs.sourceforge.net/ijbswa/">http://ijbswa.cvs.sourceforge.net/ijbswa/</ulink>,
        which might help with visualizing how these pieces fit together.
      </para>
+     <!--
      <para>
        Branches are used to fork a sub-development path from the main trunk.
        Within the <literal>current</literal> module where the sources are, there
@@ -204,6 +205,7 @@ Hal.
        linkend="versionnumbers">Version Numbers</link> below for details on
        versioning.)
      </para>
+     -->
      <para>
       At one time there were two distinct branches: stable and unstable. The
       more drastic changes were to be in the unstable branch. These branches
@@ -227,8 +229,8 @@ Hal.
       <para>
         The source tree is the heart of every software project. Every effort must
         be made to ensure that it is readable, compilable and consistent at all
-        times. There are differing guidelines for the stable branch and the
-        main development trunk, and we ask anyone with CVS access to strictly
+        times. <!-- There are differing guidelines for the stable branch and the
+        main development trunk, and --> We expect anyone with CVS access to strictly
         adhere to the following guidelines:
       </para>
 
@@ -363,14 +365,12 @@ Hal.
      Packagers are encouraged to include this documentation. For those without
      the ability to build the docs locally, text versions of each are kept in
      CVS. HTML versions are also being kept in CVS under
-     <filename>doc/webserver/*</filename>. And PDF version are kept in
-     <filename>doc/pdf/*</filename>.
+     <filename>doc/webserver/*</filename>.
     </para>
     <para>
      Formal documents are built with the Makefile targets of
-     <computeroutput>make dok</computeroutput>, or alternately
-     <computeroutput>make redhat-dok</computeroutput>. If you have problems,
-     try both. The build process uses the document SGML sources in
+     <computeroutput>make dok</computeroutput>.
+     The build process uses the document SGML sources in
      <computeroutput>doc/source/*/*</computeroutput> to update all text files in
      <computeroutput>doc/text/</computeroutput> and to update all HTML
      documents in <computeroutput>doc/webserver/</computeroutput>.
@@ -385,9 +385,7 @@ Hal.
      <orderedlist numeration="arabic">
       <listitem><para>
         First, build the docs by running <computeroutput>make
-        dok</computeroutput> (or alternately <computeroutput>make
-        redhat-dok</computeroutput>). For PDF docs, do <computeroutput>make
-        dok-pdf</computeroutput>.
+        dok</computeroutput>.
       </para></listitem>
       <listitem><para>
         Run <computeroutput>make webserver</computeroutput> which copies all
@@ -585,7 +583,7 @@ Hal.
   <listitem>
    <para>
     Our documents are available in differing formats. Right now, they
-    are just plain text, HTML, and PDF, but others are always a
+    are just plain text and/or HTML, but others are always a
     future possibility. Be careful with URLs (&lt;ulink&gt;), and avoid
     this mistake:
    </para>
@@ -731,7 +729,7 @@ Hal.
     understand why or what is being done. A reader may spend a lot
     more time figuring out what is going on when a simple comment
     or explanation would have prevented the extra research. Please
-    help your brother IJB'ers out!</para>
+    help your fellow Privoxy developers out!</para>
 
     <para>The comments will also help justify the intent of the code.
     If the comment describes something different than what the code
@@ -740,13 +738,13 @@ Hal.
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
 /* if page size greater than 1k ... */
-if ( page_length() > 1024 )
+if (page_length() > 1024)
 {
     ... "block" the page up ...
 }
 
 /* if page size is small, send it in blocks */
-if ( page_length() > 1024 )
+if (page_length() > 1024)
 {
     ... "block" the page up ...
 }
@@ -774,20 +772,20 @@ is actually being done.
 /*********************************************************************
  * This will stand out clearly in your code!
  *********************************************************************/
-if ( this_variable == that_variable )
+if (this_variable == that_variable)
 {
    do_something_very_important();
 }
 
 
 /* unfortunately, this may not */
-if ( this_variable == that_variable )
+if (this_variable == that_variable)
 {
    do_something_very_important();
 }
 
 
-if ( this_variable == that_variable ) /* this may not either */
+if (this_variable == that_variable) /* this may not either */
 {
    do_something_very_important();
 }</programlisting>
@@ -821,12 +819,12 @@ if ( this_variable == that_variable ) /* this may not either */
  * This will stand out clearly in your code,
  * But the second example won't.
  *********************************************************************/
-if ( this_variable == this_variable )
+if (this_variable == this_variable)
 {
    do_something_very_important();
 }
 
-if ( this_variable == this_variable ) /*can you see me?*/
+if (this_variable == this_variable) /*can you see me?*/
 {
    do_something_very_important(); /*not easily*/
 }
@@ -838,7 +836,7 @@ if ( this_variable == this_variable ) /*can you see me?*/
 int urls_read     = 0;     /* # of urls read + rejected */
 int urls_rejected = 0;     /* # of urls rejected */
 
-if ( 1 == X )
+if (1 == X)
 {
    do_something_very_important();
 }
@@ -915,7 +913,7 @@ short do_something_very_important(
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-if ( 1 == X )
+if (1 == X)
 {
    do_something_very_important();
    ...some long list of commands...
@@ -923,11 +921,11 @@ if ( 1 == X )
 
 or:
 
-if ( 1 == X )
+if (1 == X)
 {
    do_something_very_important();
    ...some long list of commands...
-} /* -END- if ( 1 == X ) */
+} /* -END- if (1 == X) */
 </programlisting>
   </sect3>
 
@@ -977,14 +975,14 @@ int msiis5hack = 0; int msIis5Hack = 0;
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-int load_some_file( struct client_state *csp )</programlisting>
+int load_some_file(struct client_state *csp)</programlisting>
 
     <para><emphasis>Instead of:</emphasis></para>
 
     <para>
 <programlisting>
-int loadsomefile( struct client_state *csp )
-int loadSomeFile( struct client_state *csp )
+int loadsomefile(struct client_state *csp)
+int loadSomeFile(struct client_state *csp)
 </programlisting>
 </para>
 
@@ -1002,14 +1000,14 @@ int loadSomeFile( struct client_state *csp )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-(.h) extern int load_aclfile( struct client_state *csp );
-(.c) int load_aclfile( struct client_state *csp )</programlisting>
+(.h) extern int load_aclfile(struct client_state *csp);
+(.c) int load_aclfile(struct client_state *csp)</programlisting>
 
     <para><emphasis>Instead of:</emphasis>
 <programlisting>
-(.h) extern int load_aclfile( struct client_state * ); or
+(.h) extern int load_aclfile(struct client_state *); or
 (.h) extern int load_aclfile();
-(.c) int load_aclfile( struct client_state *csp )
+(.c) int load_aclfile(struct client_state *csp)
 </programlisting>
 </para>
 
@@ -1027,7 +1025,7 @@ int loadSomeFile( struct client_state *csp )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-(enumeration) : enum Boolean { FALSE, TRUE };
+(enumeration) : enum Boolean {FALSE, TRUE};
 (#define) : #define DEFAULT_SIZE 100;</programlisting>
 
     <para><emphasis>Note:</emphasis> We have a standard naming scheme for #defines
@@ -1095,18 +1093,18 @@ int loadSomeFile( struct client_state *csp )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-if ( this == that )
+if (this == that)
 {
    ...
 }</programlisting>
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>if ( this == that ) { ... }</para>
+    <para>if (this == that) { ... }</para>
 
     <para>or</para>
 
-    <para>if ( this == that ) { ... }</para>
+    <para>if (this == that) { ... }</para>
 
     <para><emphasis>Note:</emphasis> In the special case that the if-statement is
     inside a loop, and it is trivial, i.e. it tests for a
@@ -1118,12 +1116,12 @@ if ( this == that )
 
     <para><emphasis>Example exception:</emphasis></para>
 <programlisting>
-while ( more lines are read )
+while (more lines are read)
 {
    /* Please document what is/is not a comment line here */
-   if ( it's a comment ) continue;
+   if (it's a comment) continue;
 
-   do_something( line );
+   do_something(line);
 }
 </programlisting>
   </sect3>
@@ -1140,7 +1138,7 @@ while ( more lines are read )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-if ( this == that )
+if (this == that)
 {
    do_something();
    do_something_else();
@@ -1148,11 +1146,11 @@ if ( this == that )
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>if ( this == that ) do_something(); do_something_else();</para>
+    <para>if (this == that) do_something(); do_something_else();</para>
 
     <para>or</para>
 
-    <para>if ( this == that ) do_something();</para>
+    <para>if (this == that) do_something();</para>
 
     <para><emphasis>Note:</emphasis> The first example in "Instead of" will execute
     in a manner other than that which the developer desired (per
@@ -1169,11 +1167,11 @@ if ( this == that )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-structure->flag = ( condition );</programlisting>
+structure->flag = (condition);</programlisting>
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>if ( condition ) { structure->flag = 1; } else {
+    <para>if (condition) { structure->flag = 1; } else {
     structure->flag = 0; }</para>
 
     <para><emphasis>Note:</emphasis> The former is readable and concise. The later
@@ -1199,10 +1197,6 @@ int first_value   = 0;
 int some_value    = 0;
 int another_value = 0;
 int this_variable = 0;
-
-if ( this_variable == this_variable )
-
-first_value = old_value + ( ( some_value - another_value ) - whatever )
 </programlisting>
   </sect3>
 
@@ -1241,19 +1235,19 @@ function_name();</programlisting>
 int function1( ... )
 {
    ...code...
-   return( ret_code );
+   return(ret_code);
 
-}   /* -END- function1 */
+} /* -END- function1 */
 
 
 int function2( ... )
 {
-}   /* -END- function2 */
+} /* -END- function2 */
 </programlisting>
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>int function1( ... ) { ...code... return( ret_code ); } int
+    <para>int function1( ... ) { ...code... return(ret_code); } int
     function2( ... ) { }</para>
 
     <para><emphasis>Note:</emphasis> Use 1 blank line before the closing brace and 2
@@ -1290,16 +1284,16 @@ static const char * const url_code_map[256] =
 
 int function1( ... )
 {
-   if ( 1 )
+   if (1)
    {
-      return( ALWAYS_TRUE );
+      return ALWAYS_TRUE;
    }
    else
    {
-      return( HOW_DID_YOU_GET_HERE );
+      return HOW_DID_YOU_GET_HERE;
    }
 
-   return( NEVER_GETS_HERE );
+   return NEVER_GETS_HERE;
 
 }
 </programlisting>
@@ -1384,7 +1378,7 @@ is_web_page_blank();
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-for ( size_t cnt = 0; cnt &lt; block_list_length(); cnt++ )
+for (size_t cnt = 0; cnt &lt; block_list_length(); cnt++)
 {
    ....
 }</programlisting>
@@ -1407,7 +1401,7 @@ for ( size_t cnt = 0; cnt &lt; block_list_length(); cnt++ )
 <programlisting>
 size_t len = block_list_length();
 
-for ( size_t cnt = 0; cnt &lt; len; cnt++ )
+for (size_t cnt = 0; cnt &lt; len; cnt++)
 {
    ....
 }</programlisting>
@@ -1427,12 +1421,12 @@ for ( size_t cnt = 0; cnt &lt; len; cnt++ )
     <para>This allows a developer to define a const pointer and call
     your function. If your function does not have the const
     keyword, we may not be able to use your function. Consider
-    strcmp, if it were defined as: extern int strcmp( char *s1,
-    char *s2 );</para>
+    strcmp, if it were defined as: extern int strcmp(char *s1,
+    char *s2);</para>
 
-    <para>I could then not use it to compare argv's in main: int main(
-    int argc, const char *argv[] ) { strcmp( argv[0], "privoxy"
-    ); }</para>
+    <para>I could then not use it to compare argv's in main: int
+    main(int argc, const char *argv[]) { strcmp(argv[0], "privoxy");
+     }</para>
 
     <para>Both these pointers are *const*! If the c runtime library
     maintainers do it, we should too.</para>
@@ -1447,11 +1441,11 @@ for ( size_t cnt = 0; cnt &lt; len; cnt++ )
 
     <para>Most structures cannot fit onto a normal stack entry (i.e.
     they are not 4 bytes or less). Aka, a function declaration
-    like: int load_aclfile( struct client_state csp )</para>
+    like: int load_aclfile(struct client_state csp)</para>
 
     <para>would not work. So, to be consistent, we should declare all
-    prototypes with "pass by value": int load_aclfile( struct
-    client_state *csp )</para>
+    prototypes with "pass by value": int load_aclfile(struct
+    client_state *csp)</para>
 
 
   </sect3>
@@ -1594,22 +1588,22 @@ extern file_list *xyz;</programlisting>
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-switch( hash_string( cmd ) )
+switch (hash_string(cmd))
 {
-   case hash_actions_file :
+   case hash_actions_file:
       ... code ...
       break;
 
-   case hash_confdir :
+   case hash_confdir:
       ... code ...
       break;
 
-   default :
+   default:
       log_error( ... );
       ... anomaly code goes here ...
       continue; / break; / exit( 1 ); / etc ...
 
-} /* end switch( hash_string( cmd ) ) */</programlisting>
+} /* end switch (hash_string(cmd)) */</programlisting>
 
     <para><emphasis>Note:</emphasis> If you already have a default condition, you
     are obviously exempt from this point. Of note, most of the
@@ -1647,24 +1641,6 @@ switch( hash_string( cmd ) )
     <para>If you choose to allow fall through, you should comment both
     the fact of the fall through and reason why you felt it was
     necessary.</para>
-
-
-  </sect3>
-
-
-    <sect3 id="s39"><title>Use 'long' or 'short' Instead of
-    'int'</title>
-
-    <para><emphasis>Explanation:</emphasis></para>
-
-    <para>On 32-bit platforms, int usually has the range of long. On
-    16-bit platforms, int has the range of short.</para>
-
-    <para><emphasis>Status:</emphasis> open-to-debate. In the case of most FSF
-    projects (including X/GNU-Emacs), there are typedefs to int4,
-    int8, int16, (or equivalence ... I forget the exact typedefs
-    now). Should we add these to IJB now that we have a "configure"
-    script?</para>
 
 
   </sect3>
@@ -1752,8 +1728,8 @@ list, then it should definitely be allocated via `malloc'.
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-int load_re_filterfile( struct client_state *csp ) { ... }
-static void unload_re_filterfile( void *f ) { ... }</programlisting>
+int load_re_filterfile(struct client_state *csp) { ... }
+static void unload_re_filterfile(void *f) { ... }</programlisting>
 
     <para><emphasis>Exceptions:</emphasis></para>
 
@@ -1788,7 +1764,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
 
     <sect3 id="s45"><title>"Uncertain" new code and/or changes to
-    existing code, use FIXME or XXX</title>
+    existing code, use XXX</title>
 
     <para><emphasis>Explanation:</emphasis></para>
 
@@ -1796,18 +1772,18 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
     your changes, but are not *quite* sure of the repercussions,
     add this:</para>
 
-    <para>/* FIXME: this code has a logic error on platform XYZ, *
+    <para>/* XXX: this code has a logic error on platform XYZ, *
     attempting to fix */ #ifdef PLATFORM ...changed code here...
     #endif</para>
 
     <para>or:</para>
 
-    <para>/* FIXME: I think the original author really meant this...
+    <para>/* XXX: I think the original author really meant this...
     */ ...changed code here...</para>
 
     <para>or:</para>
 
-    <para>/* FIXME: new code that *may* break something else... */
+    <para>/* XXX: new code that *may* break something else... */
     ...new code here...</para>
 
     <para><emphasis>Note:</emphasis> If you make it clear that this may or may not
@@ -1825,10 +1801,10 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$I<!-- Break CVS Substitution -->d$";
+const char FILENAME_rcs[] = "$I&lt;!-- Break CVS Substitution -->d$";
 /*********************************************************************
  *
- * File        :  $S<!-- Break CVS Substitution -->ource$
+ * File        :  $S&lt;!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
@@ -1879,10 +1855,10 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$I<!-- Break CVS Substitution -->d$"
+#define FILENAME_H_VERSION "$I&lt;!-- Break CVS Substitution -->d$"
 /*********************************************************************
  *
- * File        :  $S<!-- Break CVS Substitution -->ource$
+ * File        :  $S&lt;!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
@@ -1953,10 +1929,10 @@ extern const char FILENAME_h_rcs[];
  * Returns     :  0 => Ok, everything else is an error.
  *
  *********************************************************************/
-int FUNCTION_NAME( void *param1, const char *x )
+int FUNCTION_NAME(void *param1, const char *x)
 {
    ...
-   return( 0 );
+   return 0;
 
 }
 </programlisting>
@@ -2040,8 +2016,8 @@ at sourceforge. Three simple steps:
     </para>
 
     <para>
-	The following programs are required to follow this process:
-	<filename>ncftpput</filename> (ncftp), <filename>scp, ssh</filename> (ssh),
+        The following programs are required to follow this process:
+        <filename>ncftpput</filename> (ncftp), <filename>scp, ssh</filename> (ssh),
         <filename>gmake</filename> (GNU's version of make), autoconf, cvs.
     </para>
 
@@ -2402,51 +2378,51 @@ at sourceforge. Three simple steps:
     </sect3>
 
     <sect3 id="newrelease-tarball"><title>Source Tarball</title>
-        <para>
-	First, <emphasis>make sure that you have freshly exported the right
+      <para>
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then do:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Then do:
+      </para>
+      <para>
+        <programlisting>
   make tarball-dist
 </programlisting>
-	</para>
-	<para>
-	To upload the package to Sourceforge, simply issue
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        To upload the package to Sourceforge, simply issue
+      </para>
+      <para>
+        <programlisting>
   make tarball-upload
 </programlisting>
-	</para>
-	<para>
-	Go to the displayed URL and release the file publicly on Sourceforge.
+      </para>
+      <para>
+        Go to the displayed URL and release the file publicly on Sourceforge.
         For the change log field, use the relevant section of the
         <filename>ChangeLog</filename> file.
       </para>
     </sect3>
 
     <sect3 id="newrelease-rpm"><title>SuSE, Conectiva or Red Hat RPM</title>
-        <para>
+      <para>
         In following text, replace <replaceable class="parameter">dist</replaceable>
         with either <quote>rh</quote> for Red Hat or <quote>suse</quote> for SuSE.
-        </para>
-        <para>
-	First, <emphasis>make sure that you have freshly exported the right
+      </para>
+      <para>
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above).
-	</para>
-	<para>
+      </para>
+      <para>
         As the only exception to not changing anything after export from CVS,
         now examine the file <filename>privoxy-</filename><replaceable class="parameter">dist</replaceable><filename>.spec</filename>
         and make sure that the version information and the RPM release number are
@@ -2457,133 +2433,133 @@ at sourceforge. Three simple steps:
         <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">file
         list</ulink> if unsure. Else, it must be set to the highest already available RPM
         release number for that version plus one.
-	</para>
-	<para>
+      </para>
+      <para>
         Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then do
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Then do
+      </para>
+      <para>
+        <programlisting>
   make <replaceable class="parameter">dist</replaceable>-dist
 </programlisting>
-	</para>
-	<para>
-	To upload the package to Sourceforge, simply issue
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        To upload the package to Sourceforge, simply issue
+      </para>
+      <para>
+        <programlisting>
   make <replaceable class="parameter">dist</replaceable>-upload <replaceable class="parameter">rpm_packagerev</replaceable>
 </programlisting>
-	</para>
-	<para>
+      </para>
+      <para>
         where <replaceable class="parameter">rpm_packagerev</replaceable> is the
         RPM release number as determined above.
-	Go to the displayed URL and release the file publicly on Sourceforge.
+        Go to the displayed URL and release the file publicly on Sourceforge.
         Use the release notes and change log from the source tarball package.
       </para>
     </sect3>
 
     <sect3 id="newrelease-os2"><title>OS/2</title>
       <para>
-	First, <emphasis>make sure that you have freshly exported the right
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then get the OS/2 Setup module:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co os2setup
 </programlisting>
-	</para>
-	<para>
-	You will need a mix of development tools.
-	The main compilation takes place with IBM Visual Age C++.
-	Some ancillary work takes place with GNU tools, available from
-	various sources like hobbes.nmsu.edu.
-	Specificially, you will need <filename>autoheader</filename>,
-	<filename>autoconf</filename> and <filename>sh</filename> tools.
-	The packaging takes place with WarpIN, available from various sources, including
-	its home page: <ulink url="http://www.xworkplace.org/">xworkplace</ulink>.
-	</para>
-	<para>
-	Change directory to the <filename>os2setup</filename> directory.
-	Edit the os2build.cmd file to set the final executable filename.
-	For example,
-	</para>
-	<para>
- 	<programlisting>
+      </para>
+      <para>
+        You will need a mix of development tools.
+        The main compilation takes place with IBM Visual Age C++.
+        Some ancillary work takes place with GNU tools, available from
+        various sources like hobbes.nmsu.edu.
+        Specificially, you will need <filename>autoheader</filename>,
+        <filename>autoconf</filename> and <filename>sh</filename> tools.
+        The packaging takes place with WarpIN, available from various sources, including
+        its home page: <ulink url="http://www.xworkplace.org/">xworkplace</ulink>.
+      </para>
+      <para>
+        Change directory to the <filename>os2setup</filename> directory.
+        Edit the os2build.cmd file to set the final executable filename.
+        For example,
+      </para>
+      <para>
+        <programlisting>
   installExeName='privoxyos2_setup_X.Y.Z.exe'
 </programlisting>
-	</para>
-	<para>
- 	Next, edit the <filename>IJB.wis</filename> file so the release number matches
- 	in the <filename>PACKAGEID</filename> section:
- 	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Next, edit the <filename>IJB.wis</filename> file so the release number matches
+        in the <filename>PACKAGEID</filename> section:
+      </para>
+      <para>
+        <programlisting>
   PACKAGEID="Privoxy Team\Privoxy\Privoxy Package\X\Y\Z"
 </programlisting>
-	</para>
-	<para>
-	You're now ready to build.  Run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        You're now ready to build.  Run:
+      </para>
+      <para>
+        <programlisting>
   os2build
 </programlisting>
-	</para>
-	<para>
+      </para>
+      <para>
          You will find the  WarpIN-installable executable in the
         <filename>./files</filename> directory. Upload this anonymously to
          <filename>uploads.sourceforge.net/incoming</filename>, create a release
          for it, and you're done. Use the release notes and Change Log from the
          source tarball package.
-	</para>
+      </para>
     </sect3>
 
     <sect3 id="newrelease-solaris"><title>Solaris</title>
       <para>
-	Login to Sourceforge's compilefarm via ssh:
-	</para>
-	<para>
-	<programlisting>
+        Login to Sourceforge's compilefarm via ssh:
+      </para>
+      <para>
+        <programlisting>
   ssh cf.sourceforge.net
 </programlisting>
-	</para>
-	<para>
-	Choose the right operating system (not the Debian one).
+      </para>
+      <para>
+        Choose the right operating system (not the Debian one).
         When logged in, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then run
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Then run
+      </para>
+      <para>
+        <programlisting>
   gmake solaris-dist
 </programlisting>
-	</para>
-	<para>
-	which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
-	solaris-upload</command> on the Sourceforge machine (no ncftpput). You now have
-	to manually upload the archive to Sourceforge's ftp server and release
-	the file publicly. Use the release notes and Change Log from the
+      </para>
+      <para>
+        which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
+        solaris-upload</command> on the Sourceforge machine (no ncftpput). You now have
+        to manually upload the archive to Sourceforge's ftp server and release
+        the file publicly. Use the release notes and Change Log from the
         source tarball package.
-	</para>
+      </para>
     </sect3>
 
     <sect3 id="newrelease-windows"><title>Windows</title>
@@ -2593,7 +2569,7 @@ at sourceforge. Three simple steps:
         Run the following commands from within a Cygwin bash shell.
       </para>
       <para>
-	First, <emphasis>make sure that you have freshly exported the right
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then get the Windows setup module:
       </para>
@@ -2646,7 +2622,7 @@ at sourceforge. Three simple steps:
         This will create
         <filename>../privoxy_&p-version;-&p-status;-1_i386.deb</filename>
         which can be uploaded.  To upload the package to Sourceforge, simply
-	issue
+        issue
       </para>
       <para>
         <programlisting>
@@ -2657,157 +2633,216 @@ at sourceforge. Three simple steps:
 
     <sect3 id="newrelease-macosx"><title>Mac OS X</title>
       <para>
-	First, <emphasis>make sure that you have freshly exported the right
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
-        packages" above). Then get the Mac OS X setup module:
-	</para>
-	<para>
-	<programlisting>
+        packages" above).
+      </para>
+      <para>
+        There are three modules available in the CVS repository for use on Mac
+        OS X, though technically only two of them generate a release (the other
+        can be used to install from source).
+      </para>
+      <sect4 id="OS-X-OSXPackageBuilder-module">
+      <title>OSXPackageBuilder module</title>
+        <para>
+          The OSXPackageBuilder module generates OS X installer packages
+          supporting all Macs running OS X 10.4 and above. Obtain it from CVS as
+          follows into a folder parallel to the exported privoxy source:
+          <programlisting>
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co OSXPackageBuilder
+</programlisting>
+        </para>
+        <para>
+          The module contains complete instructions on its usage in the file
+          <filename>OS X Package Builder HOWTO.txt</filename>.
+        </para>
+        <para>
+          Once the package(s) have been generated, you can then upload them
+          directly to the Files section of the Sourceforge project in the
+          Macintosh (OS X) folder. Each new version release of Privoxy should
+          have a new subfolder created in which to store its files. Please
+          ensure that the folder contains a readme file that makes it clear
+          which package is for whichversion of OS X.
+        </para>
+      </sect4>
+      <sect4 id="OS-X-osxsetup-module">
+      <title>osxsetup module (DEPRECATED)</title>
+        <para>
+          <emphasis>This module is deprecated since the installer it generates
+          places all Privoxy files in one folder in a non-standard location, and
+          supports only Intel Macs running OS X 10.6 or higher.</emphasis>
+        </para>
+        <para>
+          Check out the module from CVS as follows into a folder parallel to the
+          exported privoxy source:
+          <programlisting>
   cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co osxsetup
 </programlisting>
-	</para>
-	<para>
-	Then run:
-	</para>
-	<para>
-	<programlisting>
+        </para>
+        <para>
+          Then run:
+        </para>
+        <para>
+          <programlisting>
   cd osxsetup
   build
 </programlisting>
-	</para>
-	<para>
-	This will run <filename>autoheader</filename>, <filename>autoconf</filename> and
-	<filename>configure</filename> as well as <filename>make</filename>.
-	Finally, it will copy over the necessary files to the ./osxsetup/files directory
-	for further processing by <filename>PackageMaker</filename>.
-	</para>
-	<para>
-	Bring up PackageMaker with the PrivoxyPackage.pmsp definition file, modify the package
-	name to match the release, and hit the "Create package" button.
-	If you specify ./Privoxy.pkg as the output package name, you can then create
-	the distributable zip file with the command:
-	</para>
-	<para>
-	<programlisting>
+        </para>
+        <para>
+          This will run <filename>autoheader</filename>, <filename>autoconf</filename>
+          and <filename>configure</filename> as well as <filename>make</filename>.
+          Finally, it will copy over the necessary files to the ./osxsetup/files
+          directory for further processing by <filename>PackageMaker</filename>.
+        </para>
+        <para>
+        Bring up PackageMaker with the PrivoxyPackage.pmsp definition file,
+        modify the package name to match the release, and hit the "Create
+        package" button. If you specify ./Privoxy.pkg as the output package
+        name, you can then create the distributable zip file with the command:
+        </para>
+        <para>
+          <programlisting>
   zip -r privoxyosx_setup_x.y.z.zip Privoxy.pkg
 </programlisting>
-	</para>
-	<para>
-	You can then upload <filename>privoxyosx_setup_x.y.z.zip</filename> anonymously to
-	<filename>uploads.sourceforge.net/incoming</filename>,
-	create a release for it, and you're done. Use the release notes
-        and Change Log from the source tarball package.
-	</para>
+        </para>
+        <para>
+          You can then upload this file directly to the Files section of the
+          Sourceforge project in the Macintosh (OS X) folder. Each new version
+          release of Privoxy should have a new subfolder created in which to
+          store its files.
+          Please ensure that the folder contains a readme file that makes it
+          clear which version(s) of OS X the package supports.
+        </para>
+      </sect4>
+      <sect4 id="OS-X-macsetup-module">
+      <title>macsetup module</title>
+        <para>
+          The macsetup module is ideal if you wish to build and install Privoxy
+          from source on a single machine.
+        </para>
+        <para>
+          Check out the module from CVS as follows into a folder parallel to the
+          exported privoxy source:
+          <programlisting>
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co macsetup
+</programlisting>
+        </para>
+        <para>
+          The module contains complete instructions on its usage in its
+          <filename>README</filename> file. The end result will be the
+          exported version of Privoxy installed on the build machine.
+        </para>
+      </sect4>
     </sect3>
 
     <sect3 id="newrelease-freebsd"><title>FreeBSD</title>
       <para>
-	Login to Sourceforge's compile-farm via ssh:
-	</para>
-	<para>
-	<programlisting>
+        Login to Sourceforge's compile-farm via ssh:
+      </para>
+      <para>
+        <programlisting>
   ssh cf.sourceforge.net
 </programlisting>
-	</para>
-	<para>
-	Choose the right operating system.
+      </para>
+      <para>
+        Choose the right operating system.
         When logged in, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Then run:
+      </para>
+      <para>
+        <programlisting>
   gmake freebsd-dist
 </programlisting>
-	</para>
-	<para>
-	which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
-	freebsd-upload</command> on the Sourceforge machine (no ncftpput). You now have
-	to manually upload the archive to Sourceforge's ftp server and release
-	the file publicly. Use the release notes and Change Log from the
+      </para>
+      <para>
+        which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
+        freebsd-upload</command> on the Sourceforge machine (no ncftpput). You now have
+        to manually upload the archive to Sourceforge's ftp server and release
+        the file publicly. Use the release notes and Change Log from the
         source tarball package.
-	</para>
+      </para>
     </sect3>
 
     <sect3 id="newrelease-hpux"><title>HP-UX 11</title>
       <para>
-	First, <emphasis>make sure that you have freshly exported the right
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then do FIXME.
-	</para>
+      </para>
+      <para>
+        Then do FIXME.
+      </para>
     </sect3>
 
     <sect3 id="newrelease-amiga"><title>Amiga OS</title>
       <para>
-	First, <emphasis>make sure that you have freshly exported the right
+        First, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then do FIXME.
-	</para>
+      </para>
+      <para>
+        Then do FIXME.
+      </para>
     </sect3>
 
     <sect3 id="newrelease-aix"><title>AIX</title>
       <para>
-	Login to Sourceforge's compilefarm via ssh:
-	</para>
-	<para>
-	<programlisting>
+        Login to Sourceforge's compilefarm via ssh:
+      </para>
+      <para>
+        <programlisting>
   ssh cf.sourceforge.net
 </programlisting>
-	</para>
-	<para>
-	Choose the right operating system.
+      </para>
+      <para>
+        Choose the right operating system.
         When logged in, <emphasis>make sure that you have freshly exported the right
         version into an empty directory</emphasis>. (See "Building and releasing
         packages" above). Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        <programlisting>
   cd current
   autoheader && autoconf && ./configure
 </programlisting>
-	</para>
-	<para>
-	Then run:
-	</para>
-	<para>
-	<programlisting>
+      </para>
+      <para>
+        Then run:
+      </para>
+      <para>
+        <programlisting>
   make aix-dist
 </programlisting>
-	</para>
-	<para>
-	which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
-	aix-upload</command> on the Sourceforge machine (no ncftpput). You now have
-	to manually upload the archive to Sourceforge's ftp server and release
-	the file publicly. Use the release notes and Change Log from the
+      </para>
+      <para>
+        which creates a gzip'ed tar archive. Sadly, you cannot use <command>make
+        aix-upload</command> on the Sourceforge machine (no ncftpput). You now have
+        to manually upload the archive to Sourceforge's ftp server and release
+        the file publicly. Use the release notes and Change Log from the
         source tarball package.
-	</para>
+      </para>
     </sect3>
    </sect2>
 
@@ -3005,6 +3040,52 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.52  2013/01/06 11:25:52  fabiankeil
+  Set entities to 3.0.20 beta
+
+  Revision 2.51  2012/06/19 12:48:04  fabiankeil
+  Prevent the CVS substitution in the generated example comment as well
+
+  Revision 2.50  2012/05/27 15:31:24  fabiankeil
+  Remove a duplicated 'the'
+
+  Spotted by igor.
+
+  Revision 2.49  2012/03/20 13:05:55  fabiankeil
+  We use XXX not FIXME
+
+  Revision 2.48  2012/03/20 13:05:39  fabiankeil
+  Remove bogus section about long and short being preferable to int
+
+  Revision 2.47  2012/03/20 13:05:14  fabiankeil
+  Adjust whitespace in examples to be closer to our style
+
+  Revision 2.46  2012/03/20 13:04:54  fabiankeil
+  IJB is dead, long live Privoxy
+
+  Revision 2.45  2012/03/20 13:04:41  fabiankeil
+  The redhat-dok target no longer exists so there's no point documenting it
+
+  Revision 2.44  2012/03/20 13:04:19  fabiankeil
+  We no longer build PDFs so stop pretending
+
+  Revision 2.43  2012/03/20 13:04:03  fabiankeil
+  Comment out references to multiple branches
+
+  We currently don't use any.
+
+  Revision 2.42  2012/03/20 13:03:05  fabiankeil
+  Bump copyright date
+
+  Revision 2.41  2012/03/19 12:56:08  fabiankeil
+  Untabify
+
+  Revision 2.40  2012/03/18 15:41:49  fabiankeil
+  Bump entities to 3.0.20 UNRELEASED
+
+  Revision 2.39  2012/03/18 01:16:35  diem
+  Brought OS X section up to date, deprecating the osxsetup module and adding a section referring to the OSXPackageBuilder module
+
   Revision 2.38  2011/12/26 17:05:40  fabiankeil
   Bump entities for 3.0.19
 

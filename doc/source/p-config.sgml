@@ -3,7 +3,7 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.79 2011/09/04 11:10:12 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.96 2013/01/10 11:04:45 fabiankeil Exp $
 
  Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -97,10 +97,10 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.79 2011/09/04 11:10:12 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.96 2013/01/10 11:04:45 fabiankeil Exp $
 </para>
 <para>
-Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
+Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
 </para>
 
 <para>
@@ -856,8 +856,7 @@ actionsfile
    <para>
     Your logfile will grow indefinitely, and you will probably want to
     periodically remove it.  On Unix systems, you can do this with a cron job
-    (see <quote>man cron</quote>). For Red Hat based Linux distributions, a
-    <command>logrotate</command> script has been included.
+    (see <quote>man cron</quote>).
    </para>
    <para>
     Any log files must be writable by whatever user <application>Privoxy</application>
@@ -1020,6 +1019,7 @@ actionsfile
   debug  4096 # Startup banner and warnings.
   debug  8192 # Non-fatal errors
   debug 32768 # log all data read from the network
+  debug 65536 # Log the applying actions
 </programlisting>
    </para>
    <para>
@@ -1278,10 +1278,10 @@ actionsfile
     IPv4 interfaces (addresses) on your machine and may become reachable from the
     Internet and/or the local network. Be aware that some GNU/Linux distributions
     modify that behaviour without updating the documentation. Check for non-standard
-    patches if your <application>Privoxy</application>version behaves differently.
+    patches if your <application>Privoxy</application> version behaves differently.
    </para>
    <para>
-    If you configure <application>Privoxy</application>to be reachable from the
+    If you configure <application>Privoxy</application> to be reachable from the
     network, consider using <link linkend="acls">access control lists</link>
     (ACL's, see below), and/or a firewall.
    </para>
@@ -1290,12 +1290,6 @@ actionsfile
     also want to make sure that the following actions are disabled:  <literal><link
     linkend="enable-edit-actions">enable-edit-actions</link></literal> and
     <literal><link linkend="enable-remote-toggle">enable-remote-toggle</link></literal>
-   </para>
-   <para>
-    With the exception noted above, listening on multiple addresses is currently
-    not supported by <application>Privoxy</application> directly.
-    It can be done on most operating systems by letting a packet filter
-    redirect request for certain addresses to Privoxy, though.
    </para>
   </listitem>
  </varlistentry>
@@ -1371,18 +1365,6 @@ actionsfile
     <quote>toggled off</quote> mode, i.e. mostly behave like a normal,
     content-neutral proxy with both ad blocking and content filtering
     disabled. See <literal>enable-remote-toggle</literal> below.
-<!--
-    This is not really useful
-    anymore, since toggling is much easier via <ulink
-    url="http://config.privoxy.org/toggle">the web interface</ulink> than via
-    editing the <filename>conf</filename> file.
-
-    Remote toggling is now disabled by default. fk 2007-11-07)
--->
-   </para>
-   <para>
-    The windows version will only display the toggle icon in the system tray
-    if this option is present.
    </para>
   </listitem>
  </varlistentry>
@@ -2034,7 +2016,7 @@ ACLs: permit-access and deny-access</title>
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="socks"><title>
-forward-socks4, forward-socks4a and forward-socks5</title>
+forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t</title>
 <anchor id="forward-socks4">
 <anchor id="forward-socks4a">
 
@@ -2096,6 +2078,12 @@ forward-socks4, forward-socks4a and forward-socks5</title>
    </para>
    <para>
     With <literal>forward-socks5</literal> the DNS resolution will happen on the remote server as well.
+   </para>
+   <para>
+    <literal>forward-socks5t</literal> works like vanilla <literal>forward-socks5</literal> but
+    lets &my-app; additionally use Tor-specific SOCKS extensions. Currently the only supported
+    SOCKS extension is optimistic data which can reduce the latency for the first request made
+    on a newly created connection.
    </para>
    <para>
     <replaceable class="parameter">socks_proxy</replaceable> and
@@ -2600,7 +2588,7 @@ forward-socks4, forward-socks4a and forward-socks5</title>
     Several users have reported this as a Privoxy bug, so the
     default value has been reduced. Consider increasing it to
     300 seconds or even more if you think your browser can handle
-    it. If your browser appears to be hanging it can't.
+    it. If your browser appears to be hanging, it probably can't.
    </para>
   </listitem>
  </varlistentry>
@@ -2614,6 +2602,75 @@ forward-socks4, forward-socks4a and forward-socks5</title>
  </varlistentry>
 </variablelist>
 <![%config-file;[<literallayout>@@keep-alive-timeout 5</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="tolerate-pipelining"><title>tolerate-pipelining</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Whether or not pipelined requests should be served.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>0 or 1.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    If Privoxy receives more than one request at once, it terminates the
+    client connection after serving the first one.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    &my-app; currently doesn't pipeline outgoing requests,
+    thus allowing pipelining on the client connection is not
+    guaranteed to improve the performance.
+   </para>
+   <para>
+    By default &my-app; tries to discourage clients from pipelining
+    by discarding aggressively pipelined requests, which forces the
+    client to resend them through a new connection.
+   </para>
+   <para>
+    This option lets &my-app; tolerate pipelining. Whether or not
+    that improves performance mainly depends on the client configuration.
+   </para>
+   <para>
+    If you are seeing problems with pages not properly loading,
+    disabling this option could work around the problem.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    tolerate-pipelining 1
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@tolerate-pipelining 1</literallayout>]]>
 </sect3>
 
 
@@ -3126,6 +3183,72 @@ forward-socks4, forward-socks4a and forward-socks5</title>
 </sect3>
 
 
+<sect3 renderas="sect4" id="client-header-order"><title>client-header-order</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The order in which client headers are sorted before forwarding them.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>Client header names delimited by spaces or tabs</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+     By default &my-app; leaves the client headers in the order they
+     were sent by the client. Headers are modified in-place, new headers
+     are added at the end of the already existing headers.
+   </para>
+   <para>
+     The header order can be used to fingerprint client requests
+     independently of other headers like the User-Agent.
+   </para>
+   <para>
+     This directive allows to sort the headers differently to better
+     mimic a different User-Agent. Client headers will be emitted
+     in the order given, headers whose name isn't explicitly specified
+     are added at the end.
+   </para>
+   <para>
+     Note that sorting headers in an uncommon way will make fingerprinting
+     actually easier. Encrypted headers are not affected by this directive.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@#client-header-order Host \
+ User-Agent \
+ Accept \
+ Accept-Language \
+ Accept-Encoding \
+ Proxy-Connection \
+ Referer \
+ Cookie \
+ DNT \
+ If-Modified-Since \
+ Cache-Control \
+ Content-Length \
+ Content-Type
+</literallayout>]]>
+</sect3>
+
+
 </sect2>
 
 <!--  ~  End section  ~  -->
@@ -3165,8 +3288,9 @@ forward-socks4, forward-socks4a and forward-socks5</title>
 <![%config-file;[<para>@@</para>]]> <!-- for spacing -->
 <para>
  If <quote>log-messages</quote> is set to 1,
- <application>Privoxy</application> will log messages to the console
- window:
+ <application>Privoxy</application> copies log messages to the console
+ window.
+ The log detail depends on the <link linkend="debug">debug</link> directive.
 </para>
 
 <![%config-file;[<literallayout>@@#log-messages   1</literallayout>]]>

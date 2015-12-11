@@ -1,10 +1,9 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.73 2011/09/18 14:43:07 fabiankeil Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.87 2012/11/24 13:59:00 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.c,v $
  *
  * Purpose     :  Declares functions to work with actions files
- *                Functions declared include: FIXME
  *
  * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
@@ -70,11 +69,13 @@ const char actions_h_rcs[] = ACTIONS_H_VERSION;
  * an enumerated type (well, the preprocessor equivalent).  Here are
  * the values:
  */
-#define AV_NONE       0 /* +opt -opt */
-#define AV_ADD_STRING 1 /* +stropt{string} */
-#define AV_REM_STRING 2 /* -stropt */
-#define AV_ADD_MULTI  3 /* +multiopt{string} +multiopt{string2} */
-#define AV_REM_MULTI  4 /* -multiopt{string} -multiopt          */
+enum action_value_type {
+   AV_NONE       = 0, /* +opt -opt */
+   AV_ADD_STRING = 1, /* +stropt{string} */
+   AV_REM_STRING = 2, /* -stropt */
+   AV_ADD_MULTI  = 3, /* +multiopt{string} +multiopt{string2} */
+   AV_REM_MULTI  = 4  /* -multiopt{string} -multiopt          */
+};
 
 /*
  * We need a structure to hold the name, flag changes,
@@ -83,10 +84,10 @@ const char actions_h_rcs[] = ACTIONS_H_VERSION;
 struct action_name
 {
    const char * name;
-   unsigned long mask;   /* a bit set to "0" = remove action */
-   unsigned long add;    /* a bit set to "1" = add action */
-   int takes_value;      /* an AV_... constant */
-   int index;            /* index into strings[] or multi[] */
+   unsigned long mask;                /* a bit set to "0" = remove action */
+   unsigned long add;                 /* a bit set to "1" = add action */
+   enum action_value_type value_type; /* an AV_... constant */
+   int index;                         /* index into strings[] or multi[] */
 };
 
 /*
@@ -155,11 +156,7 @@ jb_err merge_actions (struct action_spec *dest,
       if (str)
       {
          freez(dest->string[i]);
-         dest->string[i] = strdup(str);
-         if (NULL == dest->string[i])
-         {
-            return JB_ERR_MEMORY;
-         }
+         dest->string[i] = strdup_or_die(str);
       }
    }
 
@@ -211,7 +208,7 @@ jb_err merge_actions (struct action_spec *dest,
  *          1  :  dest = Destination of copy.
  *          2  :  src = Source for copy.
  *
- * Returns     :  N/A
+ * Returns     :  JB_ERR_OK or JB_ERR_MEMORY
  *
  *********************************************************************/
 jb_err copy_action (struct action_spec *dest,
@@ -231,11 +228,7 @@ jb_err copy_action (struct action_spec *dest,
       char * str = src->string[i];
       if (str)
       {
-         str = strdup(str);
-         if (!str)
-         {
-            return JB_ERR_MEMORY;
-         }
+         str = strdup_or_die(str);
          dest->string[i] = str;
       }
    }
@@ -319,7 +312,7 @@ void free_action (struct action_spec *src)
  * Function    :  get_action_token
  *
  * Description :  Parses a line for the first action.
- *                Modifies it's input array, doesn't allocate memory.
+ *                Modifies its input array, doesn't allocate memory.
  *                e.g. given:
  *                *line="  +abc{def}  -ghi "
  *                Returns:
@@ -402,7 +395,17 @@ jb_err get_action_token(char **line, char **name, char **value)
    str++;
    *value = str;
 
-   str = strchr(str, '}');
+   /* The value ends with the first non-escaped closing curly brace */
+   while ((str = strchr(str, '}')) != NULL)
+   {
+      if (str[-1] == '\\')
+      {
+         /* Overwrite the '\' so the action doesn't see it. */
+         string_move(str-1, str);
+         continue;
+      }
+      break;
+   }
    if (str == NULL)
    {
       /* error */
@@ -500,7 +503,7 @@ jb_err get_actions(char *line,
          /* Check for standard action name */
          const struct action_name * action = action_names;
 
-         while ( (action->name != NULL) && (0 != strcmpic(action->name, option)) )
+         while ((action->name != NULL) && (0 != strcmpic(action->name, option)))
          {
             action++;
          }
@@ -511,7 +514,7 @@ jb_err get_actions(char *line,
             cur_action->add  &= action->mask;
             cur_action->add  |= action->add;
 
-            switch (action->takes_value)
+            switch (action->value_type)
             {
             case AV_NONE:
                /* ignore any option. */
@@ -581,8 +584,8 @@ jb_err get_actions(char *line,
                   struct list * remove_p = cur_action->multi_remove[action->index];
                   struct list * add_p    = cur_action->multi_add[action->index];
 
-                  if ( (value == NULL) || (*value == '\0')
-                     || ((*value == '*') && (value[1] == '\0')) )
+                  if ((value == NULL) || (*value == '\0')
+                     || ((*value == '*') && (value[1] == '\0')))
                   {
                      /*
                       * no option, or option == "*".
@@ -597,7 +600,7 @@ jb_err get_actions(char *line,
                   {
                      /* Valid option - remove only 1 option */
 
-                     if ( !cur_action->multi_remove_all[action->index] )
+                     if (!cur_action->multi_remove_all[action->index])
                      {
                         /* there isn't a catch-all in the remove list already */
                         err = enlist_unique(remove_p, value, 0);
@@ -621,7 +624,7 @@ jb_err get_actions(char *line,
             /* try user aliases. */
             const struct action_alias * alias = alias_list;
 
-            while ( (alias != NULL) && (0 != strcmpic(alias->name, option)) )
+            while ((alias != NULL) && (0 != strcmpic(alias->name, option)))
             {
                alias = alias->next;
             }
@@ -738,11 +741,7 @@ jb_err merge_current_action (struct current_action_spec *dest,
       char * str = src->string[i];
       if (str)
       {
-         str = strdup(str);
-         if (!str)
-         {
-            return JB_ERR_MEMORY;
-         }
+         str = strdup_or_die(str);
          freez(dest->string[i]);
          dest->string[i] = str;
       }
@@ -772,36 +771,6 @@ jb_err merge_current_action (struct current_action_spec *dest,
    return err;
 }
 
-#if 0
-/*********************************************************************
- *
- * Function    :  update_action_bits_for_all_tags
- *
- * Description :  Updates the action bits based on all matching tags.
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *
- * Returns     :  0 if no tag matched, or
- *                1 otherwise
- *
- *********************************************************************/
-int update_action_bits_for_all_tags(struct client_state *csp)
-{
-   struct list_entry *tag;
-   int updated = 0;
-
-   for (tag = csp->tags->first; tag != NULL; tag = tag->next)
-   {
-      if (update_action_bits_for_tag(csp, tag->str))
-      {
-         updated = 1;
-      }
-   }
-
-   return updated;
-}
-#endif
 
 /*********************************************************************
  *
@@ -1359,15 +1328,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
              *
              * buf + 1 to skip the leading '{'
              */
-            actions_buf = strdup(buf + 1);
-            if (actions_buf == NULL)
-            {
-               fclose(fp);
-               log_error(LOG_LEVEL_FATAL,
-                  "can't load actions file '%s': out of memory",
-                  csp->config->actions_file[fileid]);
-               return 1; /* never get here */
-            }
+            actions_buf = strdup_or_die(buf + 1);
 
             /* check we have a trailing } and then trim it */
             end = actions_buf + strlen(actions_buf) - 1;
@@ -1420,16 +1381,9 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             char *version_string, *fields[3];
             int num_fields;
 
-            if ((version_string = strdup(buf + 20)) == NULL)
-            {
-               fclose(fp);
-               log_error(LOG_LEVEL_FATAL,
-                         "can't load actions file '%s': out of memory!",
-                         csp->config->actions_file[fileid]);
-               return 1; /* never get here */
-            }
+            version_string = strdup_or_die(buf + 20);
 
-            num_fields = ssplit(version_string, ".", fields, SZ(fields), TRUE, FALSE);
+            num_fields = ssplit(version_string, ".", fields, SZ(fields));
 
             if (num_fields < 1 || atoi(fields[0]) == 0)
             {
@@ -1437,14 +1391,14 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
                  "While loading actions file '%s': invalid line (%lu): %s",
                   csp->config->actions_file[fileid], linenum, buf);
             }
-            else if (                      atoi(fields[0]) > VERSION_MAJOR
-                     || (num_fields > 1 && atoi(fields[1]) > VERSION_MINOR)
-                     || (num_fields > 2 && atoi(fields[2]) > VERSION_POINT))
+            else if (                  (atoi(fields[0]) > VERSION_MAJOR)
+               || ((num_fields > 1) && (atoi(fields[1]) > VERSION_MINOR))
+               || ((num_fields > 2) && (atoi(fields[2]) > VERSION_POINT)))
             {
                fclose(fp);
                log_error(LOG_LEVEL_FATAL,
                          "Actions file '%s', line %lu requires newer Privoxy version: %s",
-                         csp->config->actions_file[fileid], linenum, buf );
+                         csp->config->actions_file[fileid], linenum, buf);
                return 1; /* never get here */
             }
             free(version_string);
@@ -1511,14 +1465,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             return 1; /* never get here */
          }
 
-         if ((new_alias->name = strdup(buf)) == NULL)
-         {
-            fclose(fp);
-            log_error(LOG_LEVEL_FATAL,
-               "can't load actions file '%s': out of memory!",
-               csp->config->actions_file[fileid]);
-            return 1; /* never get here */
-         }
+         new_alias->name = strdup_or_die(buf);
 
          strlcpy(actions_buf, start, sizeof(actions_buf));
 
@@ -1632,7 +1579,7 @@ char * actions_to_text(const struct action_spec *action)
 {
    unsigned long mask = action->mask;
    unsigned long add  = action->add;
-   char *result = strdup("");
+   char *result = strdup_or_die("");
    struct list_entry * lst;
 
    /* sanity - prevents "-feature +feature" */
@@ -1721,7 +1668,7 @@ char * actions_to_html(const struct client_state *csp,
 {
    unsigned long mask = action->mask;
    unsigned long add  = action->add;
-   char *result = strdup("");
+   char *result = strdup_or_die("");
    struct list_entry * lst;
 
    /* sanity - prevents "-feature +feature" */
@@ -1827,9 +1774,9 @@ char *current_action_to_html(const struct client_state *csp,
 {
    unsigned long flags  = action->flags;
    struct list_entry * lst;
-   char *result   = strdup("");
-   char *active   = strdup("");
-   char *inactive = strdup("");
+   char *result   = strdup_or_die("");
+   char *active   = strdup_or_die("");
+   char *inactive = strdup_or_die("");
 
 #define DEFINE_ACTION_BOOL(__name, __bit)  \
    if (flags & __bit)                      \
@@ -1899,4 +1846,70 @@ char *current_action_to_html(const struct client_state *csp,
       freez(inactive);
    }
    return result;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  action_to_line_of_text
+ *
+ * Description :  Converts a action spec to a single text line
+ *                listing the enabled actions.
+ *
+ * Parameters  :
+ *          1  :  action = Current action spec to be converted
+ *
+ * Returns     :  A string. Caller must free it.
+ *                Out-of-memory errors are fatal.
+ *
+ *********************************************************************/
+char *actions_to_line_of_text(const struct current_action_spec *action)
+{
+   char buffer[200];
+   struct list_entry *lst;
+   char *active;
+   const unsigned long flags = action->flags;
+
+   active = strdup_or_die("");
+
+#define DEFINE_ACTION_BOOL(__name, __bit)               \
+   if (flags & __bit)                                   \
+   {                                                    \
+      snprintf(buffer, sizeof(buffer), "+%s ", __name); \
+      string_append(&active, buffer);                   \
+   }                                                    \
+
+#define DEFINE_ACTION_STRING(__name, __bit, __index)    \
+   if (flags & __bit)                                   \
+   {                                                    \
+      snprintf(buffer, sizeof(buffer), "+%s{%s} ",      \
+         __name, action->string[__index]);              \
+      string_append(&active, buffer);                   \
+   }                                                    \
+
+#define DEFINE_ACTION_MULTI(__name, __index)            \
+   lst = action->multi[__index]->first;                 \
+   while (lst != NULL)                                  \
+   {                                                    \
+      snprintf(buffer, sizeof(buffer), "+%s{%s} ",      \
+         __name, lst->str);                             \
+      string_append(&active, buffer);                   \
+      lst = lst->next;                                  \
+   }                                                    \
+
+#define DEFINE_ACTION_ALIAS 0 /* No aliases for output */
+
+#include "actionlist.h"
+
+#undef DEFINE_ACTION_MULTI
+#undef DEFINE_ACTION_STRING
+#undef DEFINE_ACTION_BOOL
+#undef DEFINE_ACTION_ALIAS
+
+   if (active == NULL)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory in action_to_line_of_text()");
+   }
+
+   return active;
 }

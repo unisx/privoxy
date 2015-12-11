@@ -3,23 +3,42 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "PRIVOXY" "1" "26 Dezember 2011" "Privoxy 3.0.19" ""
+.TH "PRIVOXY" "1" "06 Januar 2013" "Privoxy 3.0.20 beta" ""
 .SH NAME
 privoxy \- Privacy Enhancing Proxy
 .SH SYNOPSIS
 
-\fBprivoxy\fR [\fB\-\-help\fR ] [\fB\-\-version\fR ] [\fB\-\-no-daemon\fR ] [\fB\-\-pidfile \fIpidfile\fB\fR ] [\fB\-\-user \fIuser[.group]\fB\fR ] [\fB\-\-chroot\fR ] [\fB\-\-pre-chroot-nslookup \fIhostname\fB\fR ] [\fB\fIconfigfile\fB\fR ]
+\fBprivoxy\fR [\fB\-\-chroot\fR ] [\fB\-\-config-test\fR ] [\fB\-\-help\fR ] [\fB\-\-no-daemon\fR ] [\fB\-\-pidfile \fIpidfile\fB\fR ] [\fB\-\-pre-chroot-nslookup \fIhostname\fB\fR ] [\fB\-\-user \fIuser[.group]\fB\fR ] [\fB\-\-version\fR ] [\fB\fIconfigfile\fB\fR ]
 
 .SH "OPTIONS"
 .PP
 \fBPrivoxy\fR may be invoked with the following command line
 options:
 .TP
+\fB\-\-chroot\fR
+Before changing to the user ID given in the \-\-user option, chroot to
+that user's home directory, i.e. make the kernel pretend to the
+\fBPrivoxy\fR process that the directory tree starts
+there. If set up carefully, this can limit the impact of possible
+vulnerabilities in \fBPrivoxy\fR to the files contained in
+that hierarchy.
+.TP
+\fB\-\-config-test\fR
+Exit after loading the configuration files before binding to
+the listen address. The exit code signals whether or not the
+configuration files have been successfully loaded.
+
+If the exit code is 1, at least one of the configuration files
+is invalid, if it is 0, all the configuration files have been
+successfully loaded (but may still contain errors that can
+currently only be detected at run time).
+
+This option doesn't affect the log setting, combination with
+"--no-daemon" is recommended if a configured log file shouldn't
+be used.
+.TP
 \fB\-\-help\fR
 Print brief usage info and exit.
-.TP
-\fB\-\-version\fR
-Print version info and exit.
 .TP
 \fB\-\-no-daemon\fR
 Don't  become  a daemon, i.e. don't fork and become process group
@@ -31,6 +50,11 @@ Delete the \fIpidfile\fR on exit.
 Failure to create or delete the \fIpidfile\fR
 is non-fatal. If no \fB\-\-pidfile\fR option is given, no PID file will be used.
 .TP
+\fB\-\-pre-chroot-nslookup \fIhostname\fB\fR
+Initialize the resolver library using \fIhostname\fR
+before chroot'ing. On some systems this reduces the number of files
+that must be copied into the chroot tree.
+.TP
 \fB\-\-user \fIuser[.group]\fB\fR
 After (optionally) writing the PID file, assume the user ID of
 \fIuser\fR and the GID of
@@ -39,18 +63,8 @@ After (optionally) writing the PID file, assume the user ID of
 \fIuser\fR. Exit if the privileges are not
 sufficient to do so.
 .TP
-\fB\-\-chroot\fR
-Before changing to the user ID given in the \-\-user option, chroot to
-that user's home directory, i.e. make the kernel pretend to the
-\fBPrivoxy\fR process that the directory tree starts
-there. If set up carefully, this can limit the impact of possible
-vulnerabilities in \fBPrivoxy\fR to the files contained in
-that hierarchy.
-.TP
-\fB\-\-pre-chroot-nslookup \fIhostname\fB\fR
-Initialize the resolver library using \fIhostname\fR
-before chroot'ing. On some systems this reduces the number of files
-that must be copied into the chroot tree.
+\fB\-\-version\fR
+Print version info and exit.
 .PP
 If the \fIconfigfile\fR is not specified on  the  command  line,
 \fBPrivoxy\fR  will  look for a file named
@@ -150,14 +164,18 @@ and build configuration. Additional documentation should be included in the loca
 documentation directory.
 .SH "SIGNALS"
 .PP
-\fBPrivoxy\fR terminates on the \fBSIGINT\fR,
-\fBSIGTERM\fR and \fBSIGABRT\fR signals. Log
+\fBPrivoxy\fR terminates on the \fBSIGINT\fR
+and \fBSIGTERM\fR signals. Log
 rotation scripts may cause a re-opening of the logfile by sending a
 \fBSIGHUP\fR to \fBPrivoxy\fR. Note that unlike
 other daemons,  \fBPrivoxy\fR does not need to be made aware of
 config file changes by \fBSIGHUP\fR -- it will detect them
-automatically.
+automatically. Signals other than the ones listed above aren't explicitly
+handled and result in the default action defined by the operating system.
 .SH "NOTES"
+.PP
+This is a beta version of \fBPrivoxy\fR. Not
+all features are well tested.
 .PP
 Please see the \fIUser Manual\fR on how to contact the
 developers, for feature requests, reporting problems, and other questions.
@@ -195,11 +213,12 @@ configuration related suggestions to the developers.
  Hal Burgiss
  Lee Rian
  Roland Rosenfeld
+ Ian Silvester
 .fi
 .SH "COPYRIGHT AND LICENSE"
 .SS "COPYRIGHT"
 .PP
-Copyright (C) 2001-2011 by Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
+Copyright (C) 2001-2013 by Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
 .PP
 Some source code is based on code Copyright (C) 1997 by Anonymous Coders
 and Junkbusters, Inc. and licensed under the \fIGNU General Public

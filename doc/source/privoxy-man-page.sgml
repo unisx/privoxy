@@ -5,9 +5,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: privoxy-man-page.sgml,v 2.40 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: privoxy-man-page.sgml,v 2.46 2013/01/06 11:25:52 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2012 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -42,10 +42,10 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">           <!-- define we are not a text only doc -->
 <!entity % p-authors-formal "IGNORE"> <!-- exclude additional formating      -->
 <!entity my-copy "(C)">               <!-- db2man barfs on copyright symbol  -->
@@ -54,7 +54,7 @@
 
 <refentry id="privoxy">
 <refentryinfo>
- <date>2009-02-15</date>
+ <date>2012-11-08</date>
 </refentryinfo>
 <refmeta>
  <refentrytitle>privoxy</refentrytitle>
@@ -72,13 +72,14 @@
 <refsynopsisdiv>
  <cmdsynopsis>
   <command>privoxy</command>
+  <arg><option>--chroot</option></arg>
+  <arg><option>--config-test</option></arg>
   <arg><option>--help</option></arg>
-  <arg><option>--version</option></arg>
   <arg><option>--no-daemon</option></arg>
   <arg><option>--pidfile </option><replaceable class="parameter">pidfile</replaceable></arg>
-  <arg><option>--user </option><replaceable class="parameter">user[.group]</replaceable></arg>
-  <arg><option>--chroot</option></arg>
   <arg><option>--pre-chroot-nslookup </option><replaceable class="parameter">hostname</replaceable></arg>
+  <arg><option>--user </option><replaceable class="parameter">user[.group]</replaceable></arg>
+  <arg><option>--version</option></arg>
   <arg><replaceable class="parameter">configfile</replaceable></arg>
  </cmdsynopsis>
 
@@ -93,20 +94,48 @@
  </para>
 
  <variablelist>
+
+  <varlistentry>
+    <term>--chroot</term>
+     <listitem>
+      <para>
+       Before changing to the user ID given in the --user option, chroot to
+       that user's home directory, i.e. make the kernel pretend to the
+       <command>Privoxy</command> process that the directory tree starts
+       there. If set up carefully, this can limit the impact of possible
+       vulnerabilities in <command>Privoxy</command> to the files contained in
+       that hierarchy.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>--config-test</term>
+      <listitem>
+       <para>
+         Exit after loading the configuration files before binding to
+         the listen address. The exit code signals whether or not the
+         configuration files have been successfully loaded.
+       </para>
+       <para>
+         If the exit code is 1, at least one of the configuration files
+         is invalid, if it is 0, all the configuration files have been
+         successfully loaded (but may still contain errors that can
+         currently only be detected at run time).
+        </para>
+       <para>
+         This option doesn't affect the log setting, combination with
+         "--no-daemon" is recommended if a configured log file shouldn't
+         be used.
+       </para>
+      </listitem>
+  </varlistentry>
+
   <varlistentry>
     <term>--help</term>
       <listitem>
        <para>
          Print brief usage info and exit.
-        </para>
-      </listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term>--version</term>
-      <listitem>
-       <para>
-         Print version info and exit.
         </para>
       </listitem>
   </varlistentry>
@@ -134,6 +163,17 @@
   </varlistentry>
 
   <varlistentry>
+    <term>--pre-chroot-nslookup <replaceable class="parameter">hostname</replaceable></term>
+     <listitem>
+      <para>
+        Initialize the resolver library using <replaceable class="parameter">hostname</replaceable>
+        before chroot'ing. On some systems this reduces the number of files
+        that must be copied into the chroot tree.
+     </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term>--user <replaceable class="parameter">user[.group]</replaceable></term>
      <listitem>
       <para>
@@ -148,29 +188,16 @@
      </para>
     </listitem>
   </varlistentry>
+
   <varlistentry>
-    <term>--chroot</term>
-     <listitem>
-      <para>
-       Before changing to the user ID given in the --user option, chroot to
-       that user's home directory, i.e. make the kernel pretend to the
-       <command>Privoxy</command> process that the directory tree starts
-       there. If set up carefully, this can limit the impact of possible
-       vulnerabilities in <command>Privoxy</command> to the files contained in
-       that hierarchy.
-      </para>
-    </listitem>
+    <term>--version</term>
+      <listitem>
+       <para>
+         Print version info and exit.
+        </para>
+      </listitem>
   </varlistentry>
-  <varlistentry>
-    <term>--pre-chroot-nslookup <replaceable class="parameter">hostname</replaceable></term>
-     <listitem>
-      <para>
-        Initialize the resolver library using <replaceable class="parameter">hostname</replaceable>
-        before chroot'ing. On some systems this reduces the number of files
-        that must be copied into the chroot tree.
-     </para>
-    </listitem>
-  </varlistentry>
+
  </variablelist>
 
  <para>
@@ -294,13 +321,14 @@
 <refsect1><title>Signals</title>
 <para>
  <!-- command tag is used here to get proper looking format  -->
- <command>Privoxy</command> terminates on the <command>SIGINT</command>,
- <command>SIGTERM</command> and <command>SIGABRT</command> signals. Log
+ <command>Privoxy</command> terminates on the <command>SIGINT</command>
+ and <command>SIGTERM</command> signals. Log
  rotation scripts may cause a re-opening of the logfile by sending a
  <command>SIGHUP</command> to <command>Privoxy</command>. Note that unlike
  other daemons,  <command>Privoxy</command> does not need to be made aware of
  config file changes by <command>SIGHUP</command> -- it will detect them
- automatically.
+ automatically. Signals other than the ones listed above aren't explicitly
+ handled and result in the default action defined by the operating system.
 </para>
 
 </refsect1>

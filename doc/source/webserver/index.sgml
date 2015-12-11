@@ -5,10 +5,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
 <!entity % p-homepage "IGNORE">    <!-- toggle for webserver index.html   -->
 <!entity % p-index "IGNORE">       <!-- toggle for local doc index        -->
@@ -20,7 +20,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 2.20 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: index.sgml,v 2.24 2013/01/18 18:46:17 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
  See LICENSE.
@@ -46,16 +46,6 @@
  <![%p-index;[<subtitle>Project Index Page v&p-version;</subtitle>]]>
 
 <!-- copyright is at bottom of page -->
-
- <keywordset>
-  <keyword>privoxy</keyword> <keyword>HTTP</keyword> <keyword>proxy</keyword> <keyword>privacy</keyword>
-  <keyword>popups</keyword>  <keyword>po-ups</keyword> <keyword>HTML</keyword> <keyword>JavaScript</keyword>
-  <keyword>cleaning</keyword> <keyword>blocking</keyword> <keyword>cleaner</keyword> <keyword>blocker</keyword>
-  <keyword>filter</keyword> <keyword>proxy</keyword> <keyword>junk</keyword> <keyword>ad</keyword>
-  <keyword>advertisement</keyword> <keyword>banner</keyword> <keyword>webbugs</keyword>
-  <keyword>web-bugs</keyword> <keyword>werbung</keyword> <keyword>junkbusters</keyword>
-  <keyword>junkbuster</keyword>
- </keywordset>
 
  <abstract>
 
@@ -222,7 +212,7 @@
 <!-- GNUMakefile is inserting this now -->
 <para>
  <subscript>
-  Copyright __copy 2001-2010 by Privoxy Developers
+  Copyright __copy 2001-2013 by Privoxy Developers
  </subscript>
 </para>
 
@@ -249,6 +239,18 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 2.24  2013/01/18 18:46:17  fabiankeil
+ Bump the copyright for the website
+
+ Revision 2.23  2013/01/06 13:25:00  fabiankeil
+ Bumped entities for 3.0.20 beta
+
+ Revision 2.22  2012/09/20 10:43:11  fabiankeil
+ Ditch pointless keywords. Search engines no longer need them.
+
+ Revision 2.21  2012/03/18 15:41:49  fabiankeil
+ Bump entities to 3.0.20 UNRELEASED
+
  Revision 2.20  2011/12/26 17:05:40  fabiankeil
  Bump entities for 3.0.19
 

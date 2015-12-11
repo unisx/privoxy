@@ -3,42 +3,25 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Actions Files</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="The Main Configuration File" href=
   "config.html">
   <link rel="NEXT" title="Filter Files" href="filter-file.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  td.c6 {font-weight: bold}
-  tt.c5 {font-style: italic}
-  table.c4 {background-color: #E0E0E0}
-  p.c3 {font-weight: bold}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -51,7 +34,7 @@ body {
         "filter-file.html" accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -59,7 +42,7 @@ body {
     Files</a></h1>
 
     <p>The actions files are used to define what <span class=
-    "emphasis EMPHASIS c2">actions</span> <span class=
+    "emphasis"><i class="EMPHASIS">actions</i></span> <span class=
     "APPLICATION">Privoxy</span> takes for which URLs, and thus determines
     how ad images, cookies and various other aspects of HTTP content and
     transactions are handled, and on which sites (or even parts thereof).
@@ -103,8 +86,8 @@ body {
         <span class="GUIBUTTON">Set to Advanced</span></p>
 
         <p>These have increasing levels of aggressiveness <span class=
-        "emphasis EMPHASIS c2">and have no influence on your browsing unless
-        you select them explicitly in the editor</span>. A default
+        "emphasis"><i class="EMPHASIS">and have no influence on your browsing
+        unless you select them explicitly in the editor</i></span>. A default
         installation should be pre-set to <tt class="LITERAL">Cautious</tt>.
         New users should try this for a while before adjusting the settings
         to more aggressive levels. The more aggressive the settings, then the
@@ -134,9 +117,9 @@ body {
         in <tt class="FILENAME">default.action</tt> are:</p>
 
         <div class="TABLE">
-          <a name="AEN2780" id="AEN2780"></a>
+          <a name="AEN2807" id="AEN2807"></a>
 
-          <p class="c3">Table 1. Default Configurations</p>
+          <p><b>Table 1. Default Configurations</b></p>
 
           <table border="1" frame="border" rules="all" class="CALSTABLE">
             <col width="1*" title="C1">
@@ -303,20 +286,21 @@ body {
     <tt class="FILENAME">default.action</tt>), followed by any exceptions
     (typically also in <tt class="FILENAME">default.action</tt>), which are
     then followed lastly by any local preferences (typically in <span class=
-    "emphasis EMPHASIS c2">user</span><tt class="FILENAME">.action</tt>).
-    Generally, <tt class="FILENAME">user.action</tt> has the last word.</p>
+    "emphasis"><i class="EMPHASIS">user</i></span><tt class=
+    "FILENAME">.action</tt>). Generally, <tt class=
+    "FILENAME">user.action</tt> has the last word.</p>
 
     <p>An actions file typically has multiple sections. If you want to use
     <span class="QUOTE">"aliases"</span> in an actions file, you have to
     place the (optional) <a href="actions-file.html#ALIASES">alias
     section</a> at the top of that file. Then comes the default set of rules
     which will apply universally to all sites and pages (be <span class=
-    "emphasis EMPHASIS c2">very careful</span> with using such a universal
-    set in <tt class="FILENAME">user.action</tt> or any other actions file
-    after <tt class="FILENAME">default.action</tt>, because it will override
-    the result from consulting any previous file). And then below that,
-    exceptions to the defined universal policies. You can regard <tt class=
-    "FILENAME">user.action</tt> as an appendix to <tt class=
+    "emphasis"><i class="EMPHASIS">very careful</i></span> with using such a
+    universal set in <tt class="FILENAME">user.action</tt> or any other
+    actions file after <tt class="FILENAME">default.action</tt>, because it
+    will override the result from consulting any previous file). And then
+    below that, exceptions to the defined universal policies. You can regard
+    <tt class="FILENAME">user.action</tt> as an appendix to <tt class=
     "FILENAME">default.action</tt>, with the advantage that it is a separate
     file, which makes preserving your personal settings across <span class=
     "APPLICATION">Privoxy</span> upgrades easier.</p>
@@ -330,7 +314,7 @@ body {
     actions</a>.</p>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2879" id="AEN2879">8.1. Finding the Right
+      <h2 class="SECT2"><a name="AEN2906" id="AEN2906">8.1. Finding the Right
       Mix</a></h2>
 
       <p>Note that some <a href="actions-file.html#ACTIONS">actions</a>, like
@@ -355,7 +339,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2886" id="AEN2886">8.2. How to
+      <h2 class="SECT2"><a name="AEN2913" id="AEN2913">8.2. How to
       Edit</a></h2>
 
       <p>The easiest way to edit the actions files is with a browser by using
@@ -404,11 +388,11 @@ body {
       +<a href="actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a>
       }</tt>, then later another one with just <tt class="LITERAL">{
       +<a href="actions-file.html#BLOCK">block</a> }</tt>, resulting in
-      <span class="emphasis EMPHASIS c2">both</span> actions to apply. And
-      there may well be cases where you will want to combine actions
-      together. Such a section then might look like:</p>
+      <span class="emphasis"><i class="EMPHASIS">both</i></span> actions to
+      apply. And there may well be cases where you will want to combine
+      actions together. Such a section then might look like:</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -438,12 +422,12 @@ body {
 
       <p>As mentioned, <span class="APPLICATION">Privoxy</span> uses
       <span class="QUOTE">"patterns"</span> to determine what <span class=
-      "emphasis EMPHASIS c2">actions</span> might apply to which sites and
-      pages your browser attempts to access. These <span class=
+      "emphasis"><i class="EMPHASIS">actions</i></span> might apply to which
+      sites and pages your browser attempts to access. These <span class=
       "QUOTE">"patterns"</span> use wild card type <span class=
-      "emphasis EMPHASIS c2">pattern</span> matching to achieve a high degree
-      of flexibility. This allows one expression to be expanded and
-      potentially match against many similar patterns.</p>
+      "emphasis"><i class="EMPHASIS">pattern</i></span> matching to achieve a
+      high degree of flexibility. This allows one expression to be expanded
+      and potentially match against many similar patterns.</p>
 
       <p>Generally, an URL pattern has the form <tt class=
       "LITERAL">&lt;domain&gt;&lt;port&gt;/&lt;path&gt;</tt>, where the
@@ -452,9 +436,9 @@ body {
       "LITERAL">&lt;path&gt;</tt> are optional. (This is why the special
       <tt class="LITERAL">/</tt> pattern matches all URLs). Note that the
       protocol portion of the URL pattern (e.g. <tt class=
-      "LITERAL">http://</tt>) should <span class=
-      "emphasis EMPHASIS c2">not</span> be included in the pattern. This is
-      assumed already!</p>
+      "LITERAL">http://</tt>) should <span class="emphasis"><i class=
+      "EMPHASIS">not</i></span> be included in the pattern. This is assumed
+      already!</p>
 
       <p>The pattern matching syntax is different for the domain and path
       parts of the URL. The domain part uses a simple globbing type matching
@@ -509,7 +493,8 @@ body {
           <dd>
             <p>matches the document <tt class="LITERAL">/index.html</tt>,
             regardless of the domain, i.e. on <span class=
-            "emphasis EMPHASIS c2">any</span> web server anywhere.</p>
+            "emphasis"><i class="EMPHASIS">any</i></span> web server
+            anywhere.</p>
           </dd>
 
           <dt><tt class="LITERAL">/</tt></dt>
@@ -544,7 +529,7 @@ body {
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN2998" id="AEN2998">8.4.1. The Domain
+        <h3 class="SECT3"><a name="AEN3025" id="AEN3025">8.4.1. The Domain
         Pattern</a></h3>
 
         <p>The matching of the domain part offers some flexible options: if
@@ -569,18 +554,17 @@ body {
             <dt><tt class="LITERAL">www.</tt></dt>
 
             <dd>
-              <p>matches any domain that <span class=
-              "emphasis EMPHASIS c2">STARTS</span> with <tt class=
-              "LITERAL">www.</tt> (It also matches the domain <tt class=
-              "LITERAL">www</tt> but most of the time that doesn't
-              matter.)</p>
+              <p>matches any domain that <span class="emphasis"><i class=
+              "EMPHASIS">STARTS</i></span> with <tt class="LITERAL">www.</tt>
+              (It also matches the domain <tt class="LITERAL">www</tt> but
+              most of the time that doesn't matter.)</p>
             </dd>
 
             <dt><tt class="LITERAL">.example.</tt></dt>
 
             <dd>
-              <p>matches any domain that <span class=
-              "emphasis EMPHASIS c2">CONTAINS</span> <tt class=
+              <p>matches any domain that <span class="emphasis"><i class=
+              "EMPHASIS">CONTAINS</i></span> <tt class=
               "LITERAL">.example.</tt>. And, by the way, also included would
               be any files or documents that exist within that domain since
               no path limitations are specified. (Correctly speaking: It
@@ -639,7 +623,7 @@ body {
               <tt class="LITERAL">www4.example.cc</tt>, <tt class=
               "LITERAL">wwwd.example.cy</tt>, <tt class=
               "LITERAL">wwwz.example.com</tt> etc., but <span class=
-              "emphasis EMPHASIS c2">not</span> <tt class=
+              "emphasis"><i class="EMPHASIS">not</i></span> <tt class=
               "LITERAL">wwww.example.com</tt>.</p>
             </dd>
           </dl>
@@ -650,7 +634,7 @@ body {
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN3074" id="AEN3074">8.4.2. The Path
+        <h3 class="SECT3"><a name="AEN3101" id="AEN3101">8.4.2. The Path
         Pattern</a></h3>
 
         <p><span class="APPLICATION">Privoxy</span> uses <span class=
@@ -671,13 +655,13 @@ body {
         the beginning of a line).</p>
 
         <p>Please also note that matching in the path is <span class=
-        "emphasis EMPHASIS c2">CASE INSENSITIVE</span> by default, but you
-        can switch to case sensitive at any point in the pattern by using the
-        <span class="QUOTE">"(?-i)"</span> switch: <tt class=
-        "LITERAL">www.example.com/(?-i)PaTtErN.*</tt> will match only
-        documents whose path starts with <tt class="LITERAL">PaTtErN</tt> in
-        <span class="emphasis EMPHASIS c2">exactly</span> this
-        capitalization.</p>
+        "emphasis"><i class="EMPHASIS">CASE INSENSITIVE</i></span> by
+        default, but you can switch to case sensitive at any point in the
+        pattern by using the <span class="QUOTE">"(?-i)"</span> switch:
+        <tt class="LITERAL">www.example.com/(?-i)PaTtErN.*</tt> will match
+        only documents whose path starts with <tt class=
+        "LITERAL">PaTtErN</tt> in <span class="emphasis"><i class=
+        "EMPHASIS">exactly</i></span> this capitalization.</p>
 
         <div class="VARIABLELIST">
           <dl>
@@ -831,14 +815,14 @@ body {
           "QUOTE">"enabled"</span> or <span class="QUOTE">"disabled"</span>.
           Syntax:</p>
 
-          <table class="c4" border="0" width="90%">
+          <table border="0" bgcolor="#E0E0E0" width="90%">
             <tr>
               <td>
                 <pre class="SCREEN">
-  +<tt class="REPLACEABLE c5">name</tt>        # enable action <tt class=
-"REPLACEABLE c5">name</tt>
-  -<tt class="REPLACEABLE c5">name</tt>        # disable action <tt class=
-"REPLACEABLE c5">name</tt>
+  +<tt class="REPLACEABLE"><i>name</i></tt>        # enable action <tt class=
+"REPLACEABLE"><i>name</i></tt>
+  -<tt class=
+"REPLACEABLE"><i>name</i></tt>        # disable action <tt class="REPLACEABLE"><i>name</i></tt>
 </pre>
               </td>
             </tr>
@@ -851,16 +835,15 @@ body {
           <p>Parameterized, where some value is required in order to enable
           this type of action. Syntax:</p>
 
-          <table class="c4" border="0" width="90%">
+          <table border="0" bgcolor="#E0E0E0" width="90%">
             <tr>
               <td>
                 <pre class="SCREEN">
-  +<tt class="REPLACEABLE c5">name</tt>{<tt class=
-"REPLACEABLE c5">param</tt>}  # enable action and set parameter to <tt class=
-"REPLACEABLE c5">param</tt>,
+  +<tt class="REPLACEABLE"><i>name</i></tt>{<tt class=
+"REPLACEABLE"><i>param</i></tt>}  # enable action and set parameter to <tt class="REPLACEABLE"><i>param</i></tt>,
                # overwriting parameter from previous match if necessary
   -<tt class=
-"REPLACEABLE c5">name</tt>         # disable action. The parameter can be omitted
+"REPLACEABLE"><i>name</i></tt>         # disable action. The parameter can be omitted
 </pre>
               </td>
             </tr>
@@ -879,25 +862,25 @@ body {
           <p>Multi-value. These look exactly like parameterized actions, but
           they behave differently: If the action applies multiple times to
           the same URL, but with different parameters, <span class=
-          "emphasis EMPHASIS c2">all</span> the parameters from <span class=
-          "emphasis EMPHASIS c2">all</span> matches are remembered. This is
-          used for actions that can be executed for the same request
-          repeatedly, like adding multiple headers, or filtering through
-          multiple filters. Syntax:</p>
+          "emphasis"><i class="EMPHASIS">all</i></span> the parameters from
+          <span class="emphasis"><i class="EMPHASIS">all</i></span> matches
+          are remembered. This is used for actions that can be executed for
+          the same request repeatedly, like adding multiple headers, or
+          filtering through multiple filters. Syntax:</p>
 
-          <table class="c4" border="0" width="90%">
+          <table border="0" bgcolor="#E0E0E0" width="90%">
             <tr>
               <td>
                 <pre class="SCREEN">
-  +<tt class="REPLACEABLE c5">name</tt>{<tt class=
-"REPLACEABLE c5">param</tt>}   # enable action and add <tt class=
-"REPLACEABLE c5">param</tt> to the list of parameters
-  -<tt class="REPLACEABLE c5">name</tt>{<tt class=
-"REPLACEABLE c5">param</tt>}   # remove the parameter <tt class=
-"REPLACEABLE c5">param</tt> from the list of parameters
+  +<tt class="REPLACEABLE"><i>name</i></tt>{<tt class=
+"REPLACEABLE"><i>param</i></tt>}   # enable action and add <tt class=
+"REPLACEABLE"><i>param</i></tt> to the list of parameters
+  -<tt class="REPLACEABLE"><i>name</i></tt>{<tt class=
+"REPLACEABLE"><i>param</i></tt>}   # remove the parameter <tt class=
+"REPLACEABLE"><i>param</i></tt> from the list of parameters
                 # If it was the last one left, disable the action.
   <tt class=
-"REPLACEABLE c5">-name</tt>          # disable this action completely and remove all parameters from the list
+"REPLACEABLE"><i>-name</i></tt>          # disable this action completely and remove all parameters from the list
 </pre>
               </td>
             </tr>
@@ -981,7 +964,7 @@ body {
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1045,7 +1028,7 @@ body {
               force feature is available and enabled).</p>
 
               <p>A very important exception occurs if <span class=
-              "emphasis EMPHASIS c2">both</span> <tt class=
+              "emphasis"><i class="EMPHASIS">both</i></span> <tt class=
               "LITERAL">block</tt> and <tt class="LITERAL"><a href=
               "actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a></tt>,
               apply to the same request: it will then be replaced by an
@@ -1072,7 +1055,7 @@ body {
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1153,7 +1136,7 @@ body {
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1212,7 +1195,7 @@ body {
               <p>Client-header filters are executed after the other header
               actions have finished and use their output as input.</p>
 
-              <p>If the request URL gets changed, <span class=
+              <p>If the request URI gets changed, <span class=
               "APPLICATION">Privoxy</span> will detect that and use the new
               one. This can be used to rewrite the request destination behind
               the client's back, for example to specify a Tor exit relay for
@@ -1226,7 +1209,7 @@ body {
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1291,7 +1274,7 @@ body {
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1317,6 +1300,28 @@ TAG:^User-Agent: RPM APT-HTTP/
 TAG:^User-Agent: fetch libfetch/
 TAG:^User-Agent: Ubuntu APT-HTTP/
 TAG:^User-Agent: MPlayer/
+
+</pre>
+                  </td>
+                </tr>
+              </table>
+
+              <table border="0" bgcolor="#E0E0E0" width="90%">
+                <tr>
+                  <td>
+                    <pre class="SCREEN">
+# Tag all requests with the Range header set
+{+client-header-tagger{range-requests}}
+/
+
+# Disable filtering for the tagged requests.
+#
+# With filtering enabled Privoxy would remove the Range headers
+# to be able to filter the whole response. The downside is that
+# it prevents clients from resuming downloads or skipping over
+# parts of multimedia files.
+{-filter -deanimate-gifs}
+TAG:^RANGE-REQUEST$
 
 </pre>
                   </td>
@@ -1415,7 +1420,7 @@ TAG:^User-Agent: MPlayer/
             <dt>Example usage (sections):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1477,10 +1482,10 @@ www.example.net/.*style
               every client header that contains the string you supplied as
               parameter.</p>
 
-              <p>Regular expressions are <span class=
-              "emphasis EMPHASIS c2">not supported</span> and you can't use
-              this action to block different headers in the same request,
-              unless they contain the same string.</p>
+              <p>Regular expressions are <span class="emphasis"><i class=
+              "EMPHASIS">not supported</i></span> and you can't use this
+              action to block different headers in the same request, unless
+              they contain the same string.</p>
 
               <p><tt class="LITERAL">crunch-client-header</tt> is only meant
               for quick tests. If you have to block several different
@@ -1492,7 +1497,7 @@ www.example.net/.*style
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c6" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
@@ -1508,7 +1513,7 @@ www.example.net/.*style
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1584,7 +1589,7 @@ www.example.net/.*style
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1639,15 +1644,16 @@ www.example.net/.*style
 
             <dd>
               <p>This action is only concerned with <span class=
-              "emphasis EMPHASIS c2">incoming</span> HTTP cookies. For
-              <span class="emphasis EMPHASIS c2">outgoing</span> HTTP
-              cookies, use <tt class="LITERAL"><a href=
+              "emphasis"><i class="EMPHASIS">incoming</i></span> HTTP
+              cookies. For <span class="emphasis"><i class=
+              "EMPHASIS">outgoing</i></span> HTTP cookies, use <tt class=
+              "LITERAL"><a href=
               "actions-file.html#CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</a></tt>.
-              Use <span class="emphasis EMPHASIS c2">both</span> to disable
-              HTTP cookies completely.</p>
+              Use <span class="emphasis"><i class="EMPHASIS">both</i></span>
+              to disable HTTP cookies completely.</p>
 
-              <p>It makes <span class="emphasis EMPHASIS c2">no sense at
-              all</span> to use this action in conjunction with the
+              <p>It makes <span class="emphasis"><i class="EMPHASIS">no sense
+              at all</i></span> to use this action in conjunction with the
               <tt class="LITERAL"><a href=
               "actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</a></tt>
               action, since it would prevent the session cookies from being
@@ -1658,7 +1664,7 @@ www.example.net/.*style
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1713,10 +1719,10 @@ www.example.net/.*style
               every server header that contains the string you supplied as
               parameter.</p>
 
-              <p>Regular expressions are <span class=
-              "emphasis EMPHASIS c2">not supported</span> and you can't use
-              this action to block different headers in the same request,
-              unless they contain the same string.</p>
+              <p>Regular expressions are <span class="emphasis"><i class=
+              "EMPHASIS">not supported</i></span> and you can't use this
+              action to block different headers in the same request, unless
+              they contain the same string.</p>
 
               <p><tt class="LITERAL">crunch-server-header</tt> is only meant
               for quick tests. If you have to block several different
@@ -1728,7 +1734,7 @@ www.example.net/.*style
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c6" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
@@ -1744,7 +1750,7 @@ www.example.net/.*style
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1796,15 +1802,16 @@ www.example.net/.*style
 
             <dd>
               <p>This action is only concerned with <span class=
-              "emphasis EMPHASIS c2">outgoing</span> HTTP cookies. For
-              <span class="emphasis EMPHASIS c2">incoming</span> HTTP
-              cookies, use <tt class="LITERAL"><a href=
+              "emphasis"><i class="EMPHASIS">outgoing</i></span> HTTP
+              cookies. For <span class="emphasis"><i class=
+              "EMPHASIS">incoming</i></span> HTTP cookies, use <tt class=
+              "LITERAL"><a href=
               "actions-file.html#CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</a></tt>.
-              Use <span class="emphasis EMPHASIS c2">both</span> to disable
-              HTTP cookies completely.</p>
+              Use <span class="emphasis"><i class="EMPHASIS">both</i></span>
+              to disable HTTP cookies completely.</p>
 
-              <p>It makes <span class="emphasis EMPHASIS c2">no sense at
-              all</span> to use this action in conjunction with the
+              <p>It makes <span class="emphasis"><i class="EMPHASIS">no sense
+              at all</i></span> to use this action in conjunction with the
               <tt class="LITERAL"><a href=
               "actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</a></tt>
               action, since it would prevent the session cookies from being
@@ -1814,7 +1821,7 @@ www.example.net/.*style
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1880,7 +1887,7 @@ www.example.net/.*style
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -1949,7 +1956,7 @@ www.example.net/.*style
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2069,7 +2076,7 @@ problem-host.example.com
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2133,8 +2140,8 @@ problem-host.example.com
               "FILENAME">user.filter</tt>.</p>
 
               <p>When used in its negative form, and without parameters,
-              <span class="emphasis EMPHASIS c2">all</span> filtering is
-              completely disabled.</p>
+              <span class="emphasis"><i class="EMPHASIS">all</i></span>
+              filtering is completely disabled.</p>
             </dd>
 
             <dt>Notes:</dt>
@@ -2218,7 +2225,7 @@ problem-host.example.com
               <p><a name="FILTER-JS-ANNOYANCES" id=
               "FILTER-JS-ANNOYANCES"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2230,7 +2237,7 @@ problem-host.example.com
 
               <p><a name="FILTER-JS-EVENTS" id="FILTER-JS-EVENTS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2243,7 +2250,7 @@ problem-host.example.com
               <p><a name="FILTER-HTML-ANNOYANCES" id=
               "FILTER-HTML-ANNOYANCES"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2256,7 +2263,7 @@ problem-host.example.com
               <p><a name="FILTER-CONTENT-COOKIES" id=
               "FILTER-CONTENT-COOKIES"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2269,7 +2276,7 @@ problem-host.example.com
               <p><a name="FILTER-REFRESH-TAGS" id=
               "FILTER-REFRESH-TAGS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2282,7 +2289,7 @@ problem-host.example.com
               <p><a name="FILTER-UNSOLICITED-POPUPS" id=
               "FILTER-UNSOLICITED-POPUPS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2294,7 +2301,7 @@ problem-host.example.com
 
               <p><a name="FILTER-ALL-POPUPS" id="FILTER-ALL-POPUPS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2307,7 +2314,7 @@ problem-host.example.com
               <p><a name="FILTER-IMG-REORDER" id=
               "FILTER-IMG-REORDER"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2320,7 +2327,7 @@ problem-host.example.com
               <p><a name="FILTER-BANNERS-BY-SIZE" id=
               "FILTER-BANNERS-BY-SIZE"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2333,7 +2340,7 @@ problem-host.example.com
               <p><a name="FILTER-BANNERS-BY-LINK" id=
               "FILTER-BANNERS-BY-LINK"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2345,7 +2352,7 @@ problem-host.example.com
 
               <p><a name="FILTER-WEBBUGS" id="FILTER-WEBBUGS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2358,7 +2365,7 @@ problem-host.example.com
               <p><a name="FILTER-TINY-TEXTFORMS" id=
               "FILTER-TINY-TEXTFORMS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2371,7 +2378,7 @@ problem-host.example.com
               <p><a name="FILTER-JUMPING-WINDOWS" id=
               "FILTER-JUMPING-WINDOWS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2384,7 +2391,7 @@ problem-host.example.com
               <p><a name="FILTER-FRAMESET-BORDERS" id=
               "FILTER-FRAMESET-BORDERS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2397,7 +2404,7 @@ problem-host.example.com
               <p><a name="FILTER-DEMORONIZER" id=
               "FILTER-DEMORONIZER"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2410,7 +2417,7 @@ problem-host.example.com
               <p><a name="FILTER-SHOCKWAVE-FLASH" id=
               "FILTER-SHOCKWAVE-FLASH"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2423,7 +2430,7 @@ problem-host.example.com
               <p><a name="FILTER-QUICKTIME-KIOSKMODE" id=
               "FILTER-QUICKTIME-KIOSKMODE"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2435,7 +2442,7 @@ problem-host.example.com
 
               <p><a name="FILTER-FUN" id="FILTER-FUN"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2448,7 +2455,7 @@ problem-host.example.com
               <p><a name="FILTER-CRUDE-PARENTAL" id=
               "FILTER-CRUDE-PARENTAL"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2461,7 +2468,7 @@ problem-host.example.com
               <p><a name="FILTER-IE-EXPLOITS" id=
               "FILTER-IE-EXPLOITS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2474,7 +2481,7 @@ problem-host.example.com
               <p><a name="FILTER-SITE-SPECIFICS" id=
               "FILTER-SITE-SPECIFICS"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2486,7 +2493,7 @@ problem-host.example.com
 
               <p><a name="FILTER-NO-PING" id="FILTER-NO-PING"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2498,7 +2505,7 @@ problem-host.example.com
 
               <p><a name="FILTER-GOOGLE" id="FILTER-GOOGLE"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2510,7 +2517,7 @@ problem-host.example.com
 
               <p><a name="FILTER-YAHOO" id="FILTER-YAHOO"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2522,7 +2529,7 @@ problem-host.example.com
 
               <p><a name="FILTER-MSN" id="FILTER-MSN"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2534,7 +2541,7 @@ problem-host.example.com
 
               <p><a name="FILTER-BLOGSPOT" id="FILTER-BLOGSPOT"></a></p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2559,7 +2566,7 @@ problem-host.example.com
             <dd>
               <p>Force <span class="APPLICATION">Privoxy</span> to treat a
               document as if it was in some kind of <span class=
-              "emphasis EMPHASIS c2">text</span> format.</p>
+              "emphasis"><i class="EMPHASIS">text</i></span> format.</p>
             </dd>
 
             <dt>Effect:</dt>
@@ -2597,7 +2604,7 @@ problem-host.example.com
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c6" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
@@ -2614,7 +2621,7 @@ problem-host.example.com
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2706,7 +2713,7 @@ problem-host.example.com
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c6" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
@@ -2735,7 +2742,7 @@ problem-host.example.com
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2772,8 +2779,8 @@ TAG:^User-Agent: fetch libfetch/2\.0$
 
             <dd>
               <p>Mark URLs that should be replaced by empty documents
-              <span class="emphasis EMPHASIS c2">if they get
-              blocked</span></p>
+              <span class="emphasis"><i class="EMPHASIS">if they get
+              blocked</i></span></p>
             </dd>
 
             <dt>Effect:</dt>
@@ -2782,12 +2789,13 @@ TAG:^User-Agent: fetch libfetch/2\.0$
               <p>This action alone doesn't do anything noticeable. It just
               marks URLs. If the <tt class="LITERAL"><a href=
               "actions-file.html#BLOCK">block</a></tt> action <span class=
-              "emphasis EMPHASIS c2">also applies</span>, the presence or
-              absence of this mark decides whether an HTML <span class=
-              "QUOTE">"BLOCKED"</span> page, or an empty document will be
-              sent to the client as a substitute for the blocked content. The
-              <span class="emphasis EMPHASIS c2">empty</span> document isn't
-              literally empty, but actually contains a single space.</p>
+              "emphasis"><i class="EMPHASIS">also applies</i></span>, the
+              presence or absence of this mark decides whether an HTML
+              <span class="QUOTE">"BLOCKED"</span> page, or an empty document
+              will be sent to the client as a substitute for the blocked
+              content. The <span class="emphasis"><i class=
+              "EMPHASIS">empty</i></span> document isn't literally empty, but
+              actually contains a single space.</p>
             </dd>
 
             <dt>Type:</dt>
@@ -2821,7 +2829,7 @@ TAG:^User-Agent: fetch libfetch/2\.0$
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2849,8 +2857,8 @@ example.org/.*\.js$
 
             <dd>
               <p>Mark URLs as belonging to images (so they'll be replaced by
-              images <span class="emphasis EMPHASIS c2">if they do get
-              blocked</span>, rather than HTML pages)</p>
+              images <span class="emphasis"><i class="EMPHASIS">if they do
+              get blocked</i></span>, rather than HTML pages)</p>
             </dd>
 
             <dt>Effect:</dt>
@@ -2859,10 +2867,10 @@ example.org/.*\.js$
               <p>This action alone doesn't do anything noticeable. It just
               marks URLs as images. If the <tt class="LITERAL"><a href=
               "actions-file.html#BLOCK">block</a></tt> action <span class=
-              "emphasis EMPHASIS c2">also applies</span>, the presence or
-              absence of this mark decides whether an HTML <span class=
-              "QUOTE">"blocked"</span> page, or a replacement image (as
-              determined by the <tt class="LITERAL"><a href=
+              "emphasis"><i class="EMPHASIS">also applies</i></span>, the
+              presence or absence of this mark decides whether an HTML
+              <span class="QUOTE">"blocked"</span> page, or a replacement
+              image (as determined by the <tt class="LITERAL"><a href=
               "actions-file.html#SET-IMAGE-BLOCKER">set-image-blocker</a></tt>
               action) will be sent to the client as a substitute for the
               blocked content.</p>
@@ -2905,7 +2913,7 @@ example.org/.*\.js$
             <dt>Example usage (sections):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -2990,7 +2998,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3053,9 +3061,9 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
               default.</p>
 
               <p>In most browsers that understand this header, it makes it
-              impossible to <span class="emphasis EMPHASIS c2">just
-              view</span> the document, without downloading it first, even if
-              it's just a simple text file or an image.</p>
+              impossible to <span class="emphasis"><i class="EMPHASIS">just
+              view</i></span> the document, without downloading it first,
+              even if it's just a simple text file or an image.</p>
 
               <p>Removing the <span class=
               "QUOTE">"Content-Disposition:"</span> header helps to prevent
@@ -3076,7 +3084,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3163,7 +3171,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3233,7 +3241,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3243,7 +3251,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
                 </tr>
               </table>or
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3352,7 +3360,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3362,7 +3370,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
                 </tr>
               </table>or
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3415,7 +3423,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
               <div class="WARNING">
                 <table class="WARNING" border="1" width="90%">
                   <tr>
-                    <td class="c6" align="center">Warning</td>
+                    <td align="center"><b>Warning</b></td>
                   </tr>
 
                   <tr>
@@ -3423,9 +3431,9 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
                       <p>This can lead to problems on web sites that depend
                       on looking at this header in order to customize their
                       content for different browsers (which, by the way, is
-                      <span class="emphasis EMPHASIS c2">NOT</span> the right
-                      thing to do: good web sites work
-                      browser-independently).</p>
+                      <span class="emphasis"><i class=
+                      "EMPHASIS">NOT</i></span> the right thing to do: good
+                      web sites work browser-independently).</p>
                     </td>
                   </tr>
                 </table>
@@ -3434,9 +3442,9 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
               <p>Using this action in multi-user setups or wherever different
               types of browsers will access the same <span class=
               "APPLICATION">Privoxy</span> is <span class=
-              "emphasis EMPHASIS c2">not recommended</span>. In single-user,
-              single-browser setups, you might use it to delete your OS
-              version information from the headers, because it is an
+              "emphasis"><i class="EMPHASIS">not recommended</i></span>. In
+              single-user, single-browser setups, you might use it to delete
+              your OS version information from the headers, because it is an
               invitation to exploit known bugs for your OS. It is also
               occasionally useful to forge this in order to access sites that
               won't let you in otherwise (though there may be a good reason
@@ -3452,7 +3460,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3528,7 +3536,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usages:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3547,8 +3555,90 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
       </div>
 
       <div class="SECT3">
+        <h4 class="SECT3"><a name="LIMIT-COOKIE-LIFETIME" id=
+        "LIMIT-COOKIE-LIFETIME">8.5.27. limit-cookie-lifetime</a></h4>
+
+        <div class="VARIABLELIST">
+          <dl>
+            <dt>Typical use:</dt>
+
+            <dd>
+              <p>Limit the lifetime of HTTP cookies to a couple of minutes or
+              hours.</p>
+            </dd>
+
+            <dt>Effect:</dt>
+
+            <dd>
+              <p>Overwrites the expires field in Set-Cookie server headers if
+              it's above the specified limit.</p>
+            </dd>
+
+            <dt>Type:</dt>
+
+            <dd>
+              <p>Parameterized.</p>
+            </dd>
+
+            <dt>Parameter:</dt>
+
+            <dd>
+              <p>The lifetime limit in minutes, or 0.</p>
+            </dd>
+
+            <dt>Notes:</dt>
+
+            <dd>
+              <p>This action reduces the lifetime of HTTP cookies coming from
+              the server to the specified number of minutes, starting from
+              the time the cookie passes Privoxy.</p>
+
+              <p>Cookies with a lifetime below the limit are not modified.
+              The lifetime of session cookies is set to the specified
+              limit.</p>
+
+              <p>The effect of this action depends on the server.</p>
+
+              <p>In case of servers which refresh their cookies with each
+              response (or at least frequently), the lifetime limit set by
+              this action is updated as well. Thus, a session associated with
+              the cookie continues to work with this action enabled, as long
+              as a new request is made before the last limit set is
+              reached.</p>
+
+              <p>However, some servers send their cookies once, with a
+              lifetime of several years (the year 2037 is a popular choice),
+              and do not refresh them until a certain event in the future,
+              for example the user logging out. In this case this action may
+              limit the absolute lifetime of the session, even if requests
+              are made frequently.</p>
+
+              <p>If the parameter is <span class="QUOTE">"0"</span>, this
+              action behaves like <tt class="LITERAL"><a href=
+              "actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</a></tt>.</p>
+            </dd>
+
+            <dt>Example usages:</dt>
+
+            <dd>
+              <table border="0" bgcolor="#E0E0E0" width="90%">
+                <tr>
+                  <td>
+                    <pre class="SCREEN">
++limit-cookie-lifetime{60}
+
+</pre>
+                  </td>
+                </tr>
+              </table>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="SECT3">
         <h4 class="SECT3"><a name="PREVENT-COMPRESSION" id=
-        "PREVENT-COMPRESSION">8.5.27. prevent-compression</a></h4>
+        "PREVENT-COMPRESSION">8.5.28. prevent-compression</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -3620,7 +3710,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage (sections):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3652,7 +3742,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="OVERWRITE-LAST-MODIFIED" id=
-        "OVERWRITE-LAST-MODIFIED">8.5.28. overwrite-last-modified</a></h4>
+        "OVERWRITE-LAST-MODIFIED">8.5.29. overwrite-last-modified</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -3729,7 +3819,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3748,7 +3838,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
       </div>
 
       <div class="SECT3">
-        <h4 class="SECT3"><a name="REDIRECT" id="REDIRECT">8.5.29.
+        <h4 class="SECT3"><a name="REDIRECT" id="REDIRECT">8.5.30.
         redirect</a></h4>
 
         <div class="VARIABLELIST">
@@ -3787,6 +3877,9 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
               provided as parameter, or derived by applying a single pcrs
               command to the original URL.</p>
 
+              <p>The syntax for pcrs commands is documented in the <a href=
+              "filter-file.html">filter file</a> section.</p>
+
               <p>This action will be ignored if you use it together with
               <tt class="LITERAL"><a href=
               "actions-file.html#BLOCK">block</a></tt>. It can be combined
@@ -3806,7 +3899,7 @@ nasty-banner-server.example.com/junk.cgi\?output=trash
             <dt>Example usages:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3849,7 +3942,7 @@ www.privoxy.org/user-manual/
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="SERVER-HEADER-FILTER" id=
-        "SERVER-HEADER-FILTER">8.5.30. server-header-filter</a></h4>
+        "SERVER-HEADER-FILTER">8.5.31. server-header-filter</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -3900,7 +3993,7 @@ www.privoxy.org/user-manual/
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3921,7 +4014,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="SERVER-HEADER-TAGGER" id=
-        "SERVER-HEADER-TAGGER">8.5.31. server-header-tagger</a></h4>
+        "SERVER-HEADER-TAGGER">8.5.32. server-header-tagger</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -3975,7 +4068,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
             <dt>Example usage (section):</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -3994,7 +4087,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="SESSION-COOKIES-ONLY" id=
-        "SESSION-COOKIES-ONLY">8.5.32. session-cookies-only</a></h4>
+        "SESSION-COOKIES-ONLY">8.5.33. session-cookies-only</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -4003,7 +4096,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
             <dd>
               <p>Allow only temporary <span class="QUOTE">"session"</span>
               cookies (for the current browser session <span class=
-              "emphasis EMPHASIS c2">only</span>).</p>
+              "emphasis"><i class="EMPHASIS">only</i></span>).</p>
             </dd>
 
             <dt>Effect:</dt>
@@ -4046,9 +4139,10 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
               generally turned on for all sites, and is the recommended
               setting.</p>
 
-              <p>It makes <span class="emphasis EMPHASIS c2">no sense at
-              all</span> to use <tt class="LITERAL">session-cookies-only</tt>
-              together with <tt class="LITERAL"><a href=
+              <p>It makes <span class="emphasis"><i class="EMPHASIS">no sense
+              at all</i></span> to use <tt class=
+              "LITERAL">session-cookies-only</tt> together with <tt class=
+              "LITERAL"><a href=
               "actions-file.html#CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</a></tt>
               or <tt class="LITERAL"><a href=
               "actions-file.html#CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</a></tt>.
@@ -4075,7 +4169,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
             <dt>Example usage:</dt>
 
             <dd>
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -4091,7 +4185,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
       <div class="SECT3">
         <h4 class="SECT3"><a name="SET-IMAGE-BLOCKER" id=
-        "SET-IMAGE-BLOCKER">8.5.33. set-image-blocker</a></h4>
+        "SET-IMAGE-BLOCKER">8.5.34. set-image-blocker</a></h4>
 
         <div class="VARIABLELIST">
           <dl>
@@ -4105,15 +4199,17 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
             <dd>
               <p>This action alone doesn't do anything noticeable. If
-              <span class="emphasis EMPHASIS c2">both</span> <tt class=
-              "LITERAL"><a href="actions-file.html#BLOCK">block</a></tt>
-              <span class="emphasis EMPHASIS c2">and</span> <tt class=
+              <span class="emphasis"><i class="EMPHASIS">both</i></span>
+              <tt class="LITERAL"><a href=
+              "actions-file.html#BLOCK">block</a></tt> <span class=
+              "emphasis"><i class="EMPHASIS">and</i></span> <tt class=
               "LITERAL"><a href=
               "actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a></tt>
-              <span class="emphasis EMPHASIS c2">also</span> apply, i.e. if
-              the request is to be blocked as an image, <span class=
-              "emphasis EMPHASIS c2">then</span> the parameter of this action
-              decides what will be sent as a replacement.</p>
+              <span class="emphasis"><i class="EMPHASIS">also</i></span>
+              apply, i.e. if the request is to be blocked as an image,
+              <span class="emphasis"><i class="EMPHASIS">then</i></span> the
+              parameter of this action decides what will be sent as a
+              replacement.</p>
             </dd>
 
             <dt>Type:</dt>
@@ -4145,9 +4241,9 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
                 <li>
                   <p><span class="QUOTE">"<tt class=
-                  "REPLACEABLE c5">target-url</tt>"</span> to send a redirect
-                  to <tt class="REPLACEABLE c5">target-url</tt>. You can
-                  redirect to any image anywhere, even in your local
+                  "REPLACEABLE"><i>target-url</i></tt>"</span> to send a
+                  redirect to <tt class="REPLACEABLE"><i>target-url</i></tt>.
+                  You can redirect to any image anywhere, even in your local
                   filesystem via <span class="QUOTE">"file:///"</span> URL.
                   (But note that not all browsers support redirecting to a
                   local file system).</p>
@@ -4155,11 +4251,12 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
                   <p>A good application of redirects is to use special
                   <span class="APPLICATION">Privoxy</span>-built-in URLs,
                   which send the built-in images, as <tt class=
-                  "REPLACEABLE c5">target-url</tt>. This has the same visual
-                  effect as specifying <span class="QUOTE">"blank"</span> or
-                  <span class="QUOTE">"pattern"</span> in the first place,
-                  but enables your browser to cache the replacement image,
-                  instead of requesting it over and over again.</p>
+                  "REPLACEABLE"><i>target-url</i></tt>. This has the same
+                  visual effect as specifying <span class=
+                  "QUOTE">"blank"</span> or <span class=
+                  "QUOTE">"pattern"</span> in the first place, but enables
+                  your browser to cache the replacement image, instead of
+                  requesting it over and over again.</p>
                 </li>
               </ul>
             </dd>
@@ -4169,14 +4266,14 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
             <dd>
               <p>The URLs for the built-in images are <span class=
               "QUOTE">"http://config.privoxy.org/send-banner?type=<tt class=
-              "REPLACEABLE c5">type</tt>"</span>, where <tt class=
-              "REPLACEABLE c5">type</tt> is either <span class=
+              "REPLACEABLE"><i>type</i></tt>"</span>, where <tt class=
+              "REPLACEABLE"><i>type</i></tt> is either <span class=
               "QUOTE">"blank"</span> or <span class=
               "QUOTE">"pattern"</span>.</p>
 
               <p>There is a third (advanced) type, called <span class=
-              "QUOTE">"auto"</span>. It is <span class=
-              "emphasis EMPHASIS c2">NOT</span> to be used in <tt class=
+              "QUOTE">"auto"</span>. It is <span class="emphasis"><i class=
+              "EMPHASIS">NOT</i></span> to be used in <tt class=
               "LITERAL">set-image-blocker</tt>, but meant for use from
               <a href="filter-file.html">filters</a>. Auto will select the
               type of image that would have applied to the referring page,
@@ -4188,7 +4285,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
             <dd>
               <p>Built-in pattern:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -4200,7 +4297,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
               <p>Redirect to the BSD daemon:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -4212,7 +4309,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
               <p>Redirect to the built-in pattern for better caching:</p>
 
-              <table class="c4" border="0" width="90%">
+              <table border="0" bgcolor="#E0E0E0" width="90%">
                 <tr>
                   <td>
                     <pre class="SCREEN">
@@ -4227,7 +4324,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4706" id="AEN4706">8.5.34.
+        <h3 class="SECT3"><a name="AEN4773" id="AEN4773">8.5.35.
         Summary</a></h3>
 
         <p>Note that many of these actions have the potential to cause a page
@@ -4249,27 +4346,29 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       just like the built-in actions. Currently, an alias name can contain
       any character except space, tab, <span class="QUOTE">"="</span>,
       <span class="QUOTE">"{"</span> and <span class="QUOTE">"}"</span>, but
-      we <span class="emphasis EMPHASIS c2">strongly recommend</span> that
-      you only use <span class="QUOTE">"a"</span> to <span class=
-      "QUOTE">"z"</span>, <span class="QUOTE">"0"</span> to <span class=
-      "QUOTE">"9"</span>, <span class="QUOTE">"+"</span>, and <span class=
-      "QUOTE">"-"</span>. Alias names are not case sensitive, and are not
-      required to start with a <span class="QUOTE">"+"</span> or <span class=
-      "QUOTE">"-"</span> sign, since they are merely textually expanded.</p>
+      we <span class="emphasis"><i class="EMPHASIS">strongly
+      recommend</i></span> that you only use <span class="QUOTE">"a"</span>
+      to <span class="QUOTE">"z"</span>, <span class="QUOTE">"0"</span> to
+      <span class="QUOTE">"9"</span>, <span class="QUOTE">"+"</span>, and
+      <span class="QUOTE">"-"</span>. Alias names are not case sensitive, and
+      are not required to start with a <span class="QUOTE">"+"</span> or
+      <span class="QUOTE">"-"</span> sign, since they are merely textually
+      expanded.</p>
 
       <p>Aliases can be used throughout the actions file, but they
-      <span class="emphasis EMPHASIS c2">must be defined in a special section
-      at the top of the file!</span> And there can only be one such section
-      per actions file. Each actions file may have its own alias section, and
-      the aliases defined in it are only visible within that file.</p>
+      <span class="emphasis"><i class="EMPHASIS">must be defined in a special
+      section at the top of the file!</i></span> And there can only be one
+      such section per actions file. Each actions file may have its own alias
+      section, and the aliases defined in it are only visible within that
+      file.</p>
 
       <p>There are two main reasons to use aliases: One is to save typing for
       frequently used combinations of actions, the other one is a gain in
       flexibility: If you decide once how you want to handle shops by
       defining an alias called <span class="QUOTE">"shop"</span>, you can
-      later change your policy on shops in <span class=
-      "emphasis EMPHASIS c2">one</span> place, and your changes will take
-      effect everywhere in the actions file where the <span class=
+      later change your policy on shops in <span class="emphasis"><i class=
+      "EMPHASIS">one</i></span> place, and your changes will take effect
+      everywhere in the actions file where the <span class=
       "QUOTE">"shop"</span> alias is used. Calling aliases by their purpose
       also makes your actions files more readable.</p>
 
@@ -4282,7 +4381,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
 
       <p>Now let's define some aliases...</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -4331,7 +4430,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       (as specified further up for the <span class="QUOTE">"/"</span>
       pattern):</p>
 
-      <table class="c4" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -4384,12 +4483,12 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       together:</p>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4770" id="AEN4770">8.7.1.
+        <h3 class="SECT3"><a name="AEN4837" id="AEN4837">8.7.1.
         match-all.action</a></h3>
 
-        <p>Remember <span class="emphasis EMPHASIS c2">all actions are
-        disabled when matching starts</span>, so we have to explicitly enable
-        the ones we want.</p>
+        <p>Remember <span class="emphasis"><i class="EMPHASIS">all actions
+        are disabled when matching starts</i></span>, so we have to
+        explicitly enable the ones we want.</p>
 
         <p>While the <tt class="FILENAME">match-all.action</tt> file only
         contains a single section, it is probably the most important one. It
@@ -4397,11 +4496,12 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
         "LITERAL">/</tt>"</span>, but this pattern <a href=
         "actions-file.html#AF-PATTERNS">matches all URLs</a>. Therefore, the
         set of actions used in this <span class="QUOTE">"default"</span>
-        section <span class="emphasis EMPHASIS c2">will be applied to all
-        requests as a start</span>. It can be partly or wholly overridden by
-        other actions files like <tt class="FILENAME">default.action</tt> and
-        <tt class="FILENAME">user.action</tt>, but it will still be largely
-        responsible for your overall browsing experience.</p>
+        section <span class="emphasis"><i class="EMPHASIS">will be applied to
+        all requests as a start</i></span>. It can be partly or wholly
+        overridden by other actions files like <tt class=
+        "FILENAME">default.action</tt> and <tt class=
+        "FILENAME">user.action</tt>, but it will still be largely responsible
+        for your overall browsing experience.</p>
 
         <p>Again, at the start of matching, all actions are disabled, so
         there is no need to disable any actions here. (Remember: a
@@ -4410,7 +4510,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
         this long line has been made more readable by splitting it into
         multiple lines with line continuation.</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4432,7 +4532,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4792" id="AEN4792">8.7.2.
+        <h3 class="SECT3"><a name="AEN4859" id="AEN4859">8.7.2.
         default.action</a></h3>
 
         <p>If you aren't a developer, there's no need for you to edit the
@@ -4449,7 +4549,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
         use that prevents older <span class="APPLICATION">Privoxy</span>
         versions from reading the file:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4468,7 +4568,7 @@ for-privoxy-version=3.0.11
         "actions-file.html#ALIASES">chapter on aliases</a>, that also
         explains why and how aliases are used:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4511,7 +4611,7 @@ for-privoxy-version=3.0.11
         pre-defined <tt class="LITERAL">fragile</tt> alias instead of stating
         the list of actions explicitly:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4534,7 +4634,7 @@ mail.google.com
         cookies to log in, and pop-up windows for shopping carts or item
         details. Again, we'll use a pre-defined alias:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4556,7 +4656,7 @@ mail.google.com
         "FILENAME">match-all.action</tt>, breaks some sites. So disable it
         for popular sites where we know it misbehaves:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4574,17 +4674,17 @@ edit.*.yahoo.com
 
         <p>It is important that <span class="APPLICATION">Privoxy</span>
         knows which URLs belong to images, so that <span class=
-        "emphasis EMPHASIS c2">if</span> they are to be blocked, a substitute
-        image can be sent, rather than an HTML page. Contacting the remote
-        site to find out is not an option, since it would destroy the loading
-        time advantage of banner blocking, and it would feed the advertisers
-        information about you. We can mark any URL as an image with the
-        <tt class="LITERAL"><a href=
+        "emphasis"><i class="EMPHASIS">if</i></span> they are to be blocked,
+        a substitute image can be sent, rather than an HTML page. Contacting
+        the remote site to find out is not an option, since it would destroy
+        the loading time advantage of banner blocking, and it would feed the
+        advertisers information about you. We can mark any URL as an image
+        with the <tt class="LITERAL"><a href=
         "actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a></tt> action,
         and marking all URLs that end in a known image file extension is a
         good start:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4605,9 +4705,9 @@ edit.*.yahoo.com
         <p>And then there are known banner sources. They often use scripts to
         generate the banners, so it won't be visible from the URL that the
         request is for an image. Hence we block them <span class=
-        "emphasis EMPHASIS c2">and</span> mark them as images in one go, with
-        the help of our <tt class="LITERAL">+block-as-image</tt> alias
-        defined above. (We could of course just as well use <tt class=
+        "emphasis"><i class="EMPHASIS">and</i></span> mark them as images in
+        one go, with the help of our <tt class="LITERAL">+block-as-image</tt>
+        alias defined above. (We could of course just as well use <tt class=
         "LITERAL">+<a href="actions-file.html#BLOCK">block</a> +<a href=
         "actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a></tt> here.)
         Remember that the type of the replacement image is chosen by the
@@ -4618,7 +4718,7 @@ edit.*.yahoo.com
         "actions-file.html#SET-IMAGE-BLOCKER">set-image-blocker</a>{pattern}</tt>
         action before, it still applies and needn't be repeated:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4655,7 +4755,7 @@ bs*.gsanet.com
         comes a list of individual patterns for specific sites, which is
         omitted here to keep the example short:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4682,20 +4782,20 @@ count*.
         </table>
 
         <p>It's quite remarkable how many advertisers actually call their
-        banner servers ads.<tt class="REPLACEABLE c5">company</tt>.com, or
-        call the directory in which the banners are stored simply
+        banner servers ads.<tt class="REPLACEABLE"><i>company</i></tt>.com,
+        or call the directory in which the banners are stored simply
         <span class="QUOTE">"banners"</span>. So the above generic patterns
         are surprisingly effective.</p>
 
         <p>But being very generic, they necessarily also catch URLs that we
         don't want to block. The pattern <tt class="LITERAL">.*ads.</tt> e.g.
-        catches <span class="QUOTE">"nasty-<span class=
-        "emphasis EMPHASIS c2">ads</span>.nasty-corp.com"</span> as intended,
-        but also <span class="QUOTE">"downlo<span class=
-        "emphasis EMPHASIS c2">ads</span>.sourcefroge.net"</span> or
-        <span class="QUOTE">"<span class=
-        "emphasis EMPHASIS c2">ads</span>l.some-provider.net."</span> So here
-        come some well-known exceptions to the <tt class="LITERAL">+<a href=
+        catches <span class="QUOTE">"nasty-<span class="emphasis"><i class=
+        "EMPHASIS">ads</i></span>.nasty-corp.com"</span> as intended, but
+        also <span class="QUOTE">"downlo<span class="emphasis"><i class=
+        "EMPHASIS">ads</i></span>.sourcefroge.net"</span> or <span class=
+        "QUOTE">"<span class="emphasis"><i class=
+        "EMPHASIS">ads</i></span>l.some-provider.net."</span> So here come
+        some well-known exceptions to the <tt class="LITERAL">+<a href=
         "actions-file.html#BLOCK">block</a></tt> section above.</p>
 
         <p>Note that these are exceptions to exceptions from the default!
@@ -4709,12 +4809,12 @@ count*.
         "LITERAL"><a href="actions-file.html#BLOCK">+block</a></tt> applies.
         And now, it'll match <tt class="LITERAL">.*loads.</tt>, where
         <tt class="LITERAL"><a href="actions-file.html#BLOCK">-block</a></tt>
-        applies, so (unless it matches <span class=
-        "emphasis EMPHASIS c2">again</span> further down) it ends up with no
+        applies, so (unless it matches <span class="emphasis"><i class=
+        "EMPHASIS">again</i></span> further down) it ends up with no
         <tt class="LITERAL"><a href="actions-file.html#BLOCK">block</a></tt>
         action applying.</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4749,10 +4849,10 @@ www.ugu.com/sui/ugu/adv
         exception for our friends at sourceforge.net, and all paths with
         <span class="QUOTE">"cvs"</span> in them. Note that <tt class=
         "LITERAL">-<a href="actions-file.html#FILTER">filter</a></tt>
-        disables <span class="emphasis EMPHASIS c2">all</span> filters in one
-        fell swoop!</p>
+        disables <span class="emphasis"><i class="EMPHASIS">all</i></span>
+        filters in one fell swoop!</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4775,7 +4875,7 @@ wiki.
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4905" id="AEN4905">8.7.3.
+        <h3 class="SECT3"><a name="AEN4972" id="AEN4972">8.7.3.
         user.action</a></h3>
 
         <p>So far we are painting with a broad brush by setting general
@@ -4787,15 +4887,16 @@ wiki.
         is parsed after all other actions files and hence has the last word,
         over-riding any previously defined actions. <tt class=
         "FILENAME">user.action</tt> is also a <span class=
-        "emphasis EMPHASIS c2">safe</span> place for your personal settings,
-        since <tt class="FILENAME">default.action</tt> is actively maintained
-        by the <span class="APPLICATION">Privoxy</span> developers and you'll
-        probably want to install updated versions from time to time.</p>
+        "emphasis"><i class="EMPHASIS">safe</i></span> place for your
+        personal settings, since <tt class="FILENAME">default.action</tt> is
+        actively maintained by the <span class="APPLICATION">Privoxy</span>
+        developers and you'll probably want to install updated versions from
+        time to time.</p>
 
         <p>So let's look at a few examples of things that one might typically
         do in <tt class="FILENAME">user.action</tt>:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4810,7 +4911,7 @@ wiki.
         from <tt class="FILENAME">default.action</tt>, unless you repeat them
         here:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4855,7 +4956,7 @@ handle-as-text = -<a href="actions-file.html#FILTER">filter</a> +-<a href=
         that, i.e. it disables crunching of cookies in any direction, and the
         processing of cookies to make them only temporary.</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4872,7 +4973,7 @@ handle-as-text = -<a href="actions-file.html#FILTER">filter</a> +-<a href=
         <p>Your bank is allergic to some filter, but you don't know which, so
         you disable them all:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4886,7 +4987,7 @@ handle-as-text = -<a href="actions-file.html#FILTER">filter</a> +-<a href=
         <p>Some file types you may not want to filter for various
         reasons:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4915,7 +5016,7 @@ stupid-server.example.com/
         in <tt class="LITERAL">.gif</tt> will be tagged as images by the
         general rules as set in default.action anyway:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4937,7 +5038,7 @@ stupid-server.example.com/
         as a <span class="QUOTE">"broken image"</span> icon by the browser.
         Use cautiously.</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4956,14 +5057,14 @@ stupid-server.example.com/
         culprit, and you were again too lazy to give <a href=
         "contact.html">feedback</a>, so you just used the <tt class=
         "LITERAL">fragile</tt> alias on the site, and -- <span class=
-        "emphasis EMPHASIS c2">whoa!</span> -- it worked. The <tt class=
-        "LITERAL">fragile</tt> aliases disables those actions that are most
-        likely to break a site. Also, good for testing purposes to see if it
-        is <span class="APPLICATION">Privoxy</span> that is causing the
-        problem or not. We later find other regular sites that misbehave, and
-        add those to our personalized list of troublemakers:</p>
+        "emphasis"><i class="EMPHASIS">whoa!</i></span> -- it worked. The
+        <tt class="LITERAL">fragile</tt> aliases disables those actions that
+        are most likely to break a site. Also, good for testing purposes to
+        see if it is <span class="APPLICATION">Privoxy</span> that is causing
+        the problem or not. We later find other regular sites that misbehave,
+        and add those to our personalized list of troublemakers:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -4981,7 +5082,7 @@ stupid-server.example.com/
         distributed actions file. So you'd like to turn it on in your
         private, update-safe config, once and for all:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -5004,7 +5105,7 @@ stupid-server.example.com/
         to survive. So you might want to specifically allow banners for those
         sites that you feel provide value to you:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -5031,7 +5132,7 @@ stupid-server.example.com/
         a download type dialog. In my case, I want to look at the shell
         script, and then I can save it should I choose to.</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -5047,11 +5148,11 @@ stupid-server.example.com/
         <tt class="FILENAME">default.action</tt>. Some actions are safe to
         have their default policies set here though. So let's set a default
         policy to have a <span class="QUOTE">"blank"</span> image as opposed
-        to the checkerboard pattern for <span class=
-        "emphasis EMPHASIS c2">ALL</span> sites. <span class=
-        "QUOTE">"/"</span> of course matches all URL paths and patterns:</p>
+        to the checkerboard pattern for <span class="emphasis"><i class=
+        "EMPHASIS">ALL</i></span> sites. <span class="QUOTE">"/"</span> of
+        course matches all URL paths and patterns:</p>
 
-        <table class="c4" border="0" width="100%">
+        <table border="0" bgcolor="#E0E0E0" width="100%">
           <tr>
             <td>
               <pre class="SCREEN">
@@ -5067,7 +5168,7 @@ stupid-server.example.com/
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

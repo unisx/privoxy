@@ -97,11 +97,6 @@
 #undef FEATURE_CGI_EDIT_ACTIONS
 
 /*
- * Allows the use of jar files to capture cookies.
- */
-#undef FEATURE_COOKIE_JAR
-
-/*
  * Locally redirect remote script-redirect URLs
  */
 #undef FEATURE_FAST_REDIRECTS
@@ -185,6 +180,11 @@
  * Enables statistics function.
  */
 #undef FEATURE_STATISTICS
+
+/*
+ * Enable strptime() sanity checks.
+ */
+#undef FEATURE_STRPTIME_SANITY_CHECKS
 
 /*
  * Allow Privoxy to be "disabled" so it is just a normal non-blocking

@@ -1,4 +1,4 @@
-const char miscutil_rcs[] = "$Id: miscutil.c,v 1.68 2011/09/04 11:10:56 fabiankeil Exp $";
+const char miscutil_rcs[] = "$Id: miscutil.c,v 1.78 2012/11/24 13:58:17 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.c,v $
@@ -8,7 +8,7 @@ const char miscutil_rcs[] = "$Id: miscutil.c,v 1.68 2011/09/04 11:10:56 fabianke
  *                to deserve their own file but don't really fit in
  *                any other file.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2011 the
+ * Copyright   :  Written by and Copyright (C) 2001-2012 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -72,7 +72,6 @@ const char miscutil_h_rcs[] = MISCUTIL_H_VERSION;
  * Function    :  zalloc
  *
  * Description :  Malloc some memory and set it to '\0'.
- *                The way calloc() ought to be -acjc
  *
  * Parameters  :
  *          1  :  size = Size of memory chunk to return.
@@ -90,6 +89,78 @@ void *zalloc(size_t size)
    }
 
    return(ret);
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  strdup_or_die
+ *
+ * Description :  strdup wrapper that either succeeds or causes
+ *                program termination.
+ *
+ *                Useful in situations were the string length is
+ *                "small" and strdup() failures couldn't be handled
+ *                better anyway. In case of debug builds, failures
+ *                trigger an assert().
+ *
+ * Parameters  :
+ *          1  :  str = String to duplicate
+ *
+ * Returns     :  Pointer to newly strdup'd copy of the string.
+ *
+ *********************************************************************/
+char *strdup_or_die(const char *str)
+{
+   char *new_str;
+
+   new_str = strdup(str);
+
+   if (new_str == NULL)
+   {
+      assert(new_str != NULL);
+      log_error(LOG_LEVEL_FATAL, "Out of memory in strdup_or_die().");
+      exit(1);
+   }
+
+   return(new_str);
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  malloc_or_die
+ *
+ * Description :  malloc wrapper that either succeeds or causes
+ *                program termination.
+ *
+ *                Useful in situations were the buffer size is "small"
+ *                and malloc() failures couldn't be handled better
+ *                anyway. In case of debug builds, failures trigger
+ *                an assert().
+ *
+ * Parameters  :
+ *          1  :  buffer_size = Size of the space to allocate
+ *
+ * Returns     :  Pointer to newly malloc'd memory
+ *
+ *********************************************************************/
+void *malloc_or_die(size_t buffer_size)
+{
+   char *new_buf;
+
+   new_buf = malloc(buffer_size);
+
+   if (new_buf == NULL)
+   {
+      assert(new_buf != NULL);
+      log_error(LOG_LEVEL_FATAL, "Out of memory in malloc_or_die().");
+      exit(1);
+   }
+
+   return(new_buf);
 
 }
 
@@ -136,20 +207,19 @@ void write_pid_file(void)
  * Function    :  hash_string
  *
  * Description :  Take a string and compute a (hopefuly) unique numeric
- *                integer value.  This has several uses, but being able
- *                to "switch" a string the one of my favorites.
+ *                integer value. This is useful to "switch" a string.
  *
  * Parameters  :
  *          1  :  s : string to be hashed.
  *
- * Returns     :  an unsigned long variable with the hashed value.
+ * Returns     :  The string's hash
  *
  *********************************************************************/
-unsigned int hash_string( const char* s )
+unsigned int hash_string(const char* s)
 {
    unsigned int h = 0;
 
-   for ( ; *s; ++s )
+   for (; *s; ++s)
    {
       h = 5 * h + (unsigned int)*s;
    }
@@ -179,13 +249,13 @@ int strcmpic(const char *s1, const char *s2)
 
    while (*s1 && *s2)
    {
-      if ( ( *s1 != *s2 ) && ( ijb_tolower(*s1) != ijb_tolower(*s2) ) )
+      if ((*s1 != *s2) && (privoxy_tolower(*s1) != privoxy_tolower(*s2)))
       {
          break;
       }
       s1++, s2++;
    }
-   return(ijb_tolower(*s1) - ijb_tolower(*s2));
+   return(privoxy_tolower(*s1) - privoxy_tolower(*s2));
 
 }
 
@@ -212,7 +282,7 @@ int strncmpic(const char *s1, const char *s2, size_t n)
 
    while (*s1 && *s2)
    {
-      if ( ( *s1 != *s2 ) && ( ijb_tolower(*s1) != ijb_tolower(*s2) ) )
+      if ((*s1 != *s2) && (privoxy_tolower(*s1) != privoxy_tolower(*s2)))
       {
          break;
       }
@@ -221,7 +291,7 @@ int strncmpic(const char *s1, const char *s2, size_t n)
 
       s1++, s2++;
    }
-   return(ijb_tolower(*s1) - ijb_tolower(*s2));
+   return(privoxy_tolower(*s1) - privoxy_tolower(*s2));
 
 }
 
@@ -247,7 +317,7 @@ char *chomp(char *string)
     * strip trailing whitespace
     */
    p = string + strlen(string);
-   while (p > string && ijb_isspace(*(p-1)))
+   while (p > string && privoxy_isspace(*(p-1)))
    {
       p--;
    }
@@ -257,7 +327,7 @@ char *chomp(char *string)
     * find end of leading whitespace
     */
    q = r = string;
-   while (*q && ijb_isspace(*q))
+   while (*q && privoxy_isspace(*q))
    {
       q++;
    }
@@ -456,6 +526,31 @@ char *string_toupper(const char *string)
 
 /*********************************************************************
  *
+ * Function    :  string_move
+ *
+ * Description :  memmove wrapper to move the last part of a string
+ *                towards the beginning, overwriting the part in
+ *                the middle. strlcpy() can't be used here as the
+ *                strings overlap.
+ *
+ * Parameters  :
+ *          1  :  dst = Destination to overwrite
+ *          2  :  src = Source to move.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+void string_move(char *dst, char *src)
+{
+   assert(dst < src);
+
+   /* +1 to copy the terminating nul as well. */
+   memmove(dst, src, strlen(src)+1);
+}
+
+
+/*********************************************************************
+ *
  * Function    :  bindup
  *
  * Description :  Duplicate the first n characters of a string that may
@@ -472,13 +567,10 @@ char *bindup(const char *string, size_t len)
 {
    char *duplicate;
 
-   if (NULL == (duplicate = (char *)malloc(len)))
+   duplicate = (char *)malloc(len);
+   if (NULL != duplicate)
    {
-      return NULL;
-   }
-   else
-   {
-     memcpy(duplicate, string, len);
+      memcpy(duplicate, string, len);
    }
 
    return duplicate;
@@ -511,11 +603,11 @@ char * make_path(const char * dir, const char * file)
 #ifdef AMIGA
    char path[512];
 
-   if(dir)
+   if (dir)
    {
-      if(dir[0] == '.')
+      if (dir[0] == '.')
       {
-         if(dir[1] == '/')
+         if (dir[1] == '/')
          {
             strncpy(path,dir+2,512);
          }
@@ -534,7 +626,7 @@ char * make_path(const char * dir, const char * file)
    {
       path[0]=0;
    }
-   if(AddPart(path,file,512))
+   if (AddPart(path,file,512))
    {
       return strdup(path);
    }
@@ -565,14 +657,14 @@ char * make_path(const char * dir, const char * file)
       size_t path_size = strlen(dir) + strlen(file) + 2; /* +2 for trailing (back)slash and \0 */
 
 #if defined(unix)
-      if ( *dir != '/' && basedir && *basedir )
+      if (*dir != '/' && basedir && *basedir)
       {
          /*
           * Relative path, so start with the base directory.
           */
          path_size += strlen(basedir) + 1; /* +1 for the slash */
          path = malloc(path_size);
-         if (!path ) log_error(LOG_LEVEL_FATAL, "malloc failed!");
+         if (!path) log_error(LOG_LEVEL_FATAL, "malloc failed!");
          strlcpy(path, basedir, path_size);
          strlcat(path, "/", path_size);
          strlcat(path, dir, path_size);
@@ -581,18 +673,18 @@ char * make_path(const char * dir, const char * file)
 #endif /* defined unix */
       {
          path = malloc(path_size);
-         if (!path ) log_error(LOG_LEVEL_FATAL, "malloc failed!");
+         if (!path) log_error(LOG_LEVEL_FATAL, "malloc failed!");
          strlcpy(path, dir, path_size);
       }
 
       assert(NULL != path);
 #if defined(_WIN32) || defined(__OS2__)
-      if(path[strlen(path)-1] != '\\')
+      if (path[strlen(path)-1] != '\\')
       {
          strlcat(path, "\\", path_size);
       }
 #else /* ifndef _WIN32 || __OS2__ */
-      if(path[strlen(path)-1] != '/')
+      if (path[strlen(path)-1] != '/')
       {
          strlcat(path, "/", path_size);
       }

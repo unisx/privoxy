@@ -6,7 +6,7 @@
 #                particular section in an actions file.
 #
 #
-# Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
+# Copyright   :  Written by and Copyright (C) 2001-2012 the
 #                Privoxy team. http://www.privoxy.org/
 #
 #                Original Author: Copyright (C) 2001 Jonathan Foster
@@ -939,6 +939,29 @@ function show_limit_connect_opts(tf)
       <td>Legal ports (comma separated, ranges allowed):<br>
         <input type="text" name="limit_connect_mode" size="40"
         value="@limit-connect-param@"></td>
+    </tr>
+    <tr class="bg1" align="left" valign="top">
+      <td class="en1" align="center" valign="middle"><input type="radio"
+        name="limit_cookie_lifetime" id="limit_cookie_lifetime_y" value="Y" @limit-cookie-lifetime-y@
+        onclick="show_limit_cookie_lifetime_opts(true)"></td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="limit_cookie_lifetime" value="N" @limit-cookie-lifetime-n@
+        onclick="show_limit_cookie_lifetime_opts(false)"></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="limit_cookie_lifetime" value="X" @limit-cookie-lifetime-x@
+        onclick="show_limit_cookie_lifetime_opts(false)"></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@LIMIT-COOKIE-LIFETIME">limit-cookie-lifetime</a></td>
+      <td>Limit the cookie lifetime specified in Set-Cookie headers.</td>
+    </tr>
+    <tr class="bg1" align="left" valign="top" id="limit_cookie_lifetime_opts">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1">&nbsp;</td>
+      <td class="noc1">&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>Lifetime limit in minutes (or 0 to behave like
+        <a href="@user-manual@@actions-help-prefix@LIMIT-COOKIE-LIFETIME">session-cookies-only</a>):<br>
+        <input type="text" name="limit_cookie_lifetime_mode" size="40"
+        value="@limit-cookie-lifetime-param@"></td>
     </tr>
     <tr class="bg1" align="left" valign="top">
       <td class="en1" align="center" valign="middle"><input type="radio"

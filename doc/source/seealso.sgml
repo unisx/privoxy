@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: seealso.sgml,v 2.13 2011/09/04 11:10:12 fabiankeil Exp $
+ $Id: seealso.sgml,v 2.14 2012/06/19 12:48:54 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -76,18 +76,6 @@
  </simplelist>
  <![%seealso-extra;[
  <!-- This part only goes into user-manual -->
- <simplelist>
-  <member>
-   <ulink url="http://www.junkbusters.com/ht/en/cookies.html">http://www.junkbusters.com/ht/en/cookies.html</ulink>,
-   an explanation how cookies are used to track web users.
-  </member>
- </simplelist>
- <simplelist>
-  <member>
-   <ulink url="http://www.junkbusters.com/ijb.html">http://www.junkbusters.com/ijb.html</ulink>,
-   the original Internet Junkbuster.
-  </member>
- </simplelist>
  <simplelist>
   <member>
    <ulink url="http://www.squid-cache.org/">http://www.squid-cache.org/</ulink>, a popular

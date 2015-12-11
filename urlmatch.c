@@ -1,4 +1,4 @@
-const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.65 2011/11/06 11:41:34 fabiankeil Exp $";
+const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.75 2012/12/07 12:49:47 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.c,v $
@@ -115,7 +115,6 @@ void free_http_request(struct http_request *http)
  *          1  :  http = pointer to the http structure to hold elements.
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out of memory
  *                JB_ERR_PARSE on malformed command/URL
  *                             or >100 domains deep.
  *
@@ -126,20 +125,16 @@ jb_err init_domain_components(struct http_request *http)
    size_t size;
    char *p;
 
-   http->dbuffer = strdup(http->host);
-   if (NULL == http->dbuffer)
-   {
-      return JB_ERR_MEMORY;
-   }
+   http->dbuffer = strdup_or_die(http->host);
 
    /* map to lower case */
    for (p = http->dbuffer; *p ; p++)
    {
-      *p = (char)tolower((int)(unsigned char)*p);
+      *p = (char)privoxy_tolower(*p);
    }
 
    /* split the domain name into components */
-   http->dcount = ssplit(http->dbuffer, ".", vec, SZ(vec), 1, 1);
+   http->dcount = ssplit(http->dbuffer, ".", vec, SZ(vec));
 
    if (http->dcount <= 0)
    {
@@ -154,11 +149,7 @@ jb_err init_domain_components(struct http_request *http)
    /* save a copy of the pointers in dvec */
    size = (size_t)http->dcount * sizeof(*http->dvec);
 
-   http->dvec = (char **)malloc(size);
-   if (NULL == http->dvec)
-   {
-      return JB_ERR_MEMORY;
-   }
+   http->dvec = malloc_or_die(size);
 
    memcpy(http->dvec, vec, size);
 
@@ -229,7 +220,6 @@ int url_requires_percent_encoding(const char *url)
  *                                   protocol are acceptable.
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out of memory
  *                JB_ERR_PARSE on malformed command/URL
  *                             or >100 domains deep.
  *
@@ -241,23 +231,15 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
    /*
     * Save our initial URL
     */
-   http->url = strdup(url);
-   if (http->url == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
-
+   http->url = strdup_or_die(url);
 
    /*
     * Check for * URI. If found, we're done.
     */
    if (*http->url == '*')
    {
-      if  ( NULL == (http->path = strdup("*"))
-         || NULL == (http->hostport = strdup("")) )
-      {
-         return JB_ERR_MEMORY;
-      }
+      http->path = strdup_or_die("*");
+      http->hostport = strdup_or_die("");
       if (http->url[1] != '\0')
       {
          return JB_ERR_PARSE;
@@ -274,11 +256,7 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
       char *url_noproto;
       char *url_path;
 
-      buf = strdup(url);
-      if (buf == NULL)
-      {
-         return JB_ERR_MEMORY;
-      }
+      buf = strdup_or_die(url);
 
       /* Find the start of the URL in our scratch space */
       url_noproto = buf;
@@ -321,9 +299,9 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
           * https URL in and it's parsed by the function.  (When the
           * URL is actually retrieved, SSL hides the path part).
           */
-         http->path = strdup(http->ssl ? "/" : url_path);
+         http->path = strdup_or_die(http->ssl ? "/" : url_path);
          *url_path = '\0';
-         http->hostport = strdup(url_noproto);
+         http->hostport = strdup_or_die(url_noproto);
       }
       else
       {
@@ -331,17 +309,11 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
           * Repair broken HTTP requests that don't contain a path,
           * or CONNECT requests
           */
-         http->path = strdup("/");
-         http->hostport = strdup(url_noproto);
+         http->path = strdup_or_die("/");
+         http->hostport = strdup_or_die(url_noproto);
       }
 
       freez(buf);
-
-      if ( (http->path == NULL)
-        || (http->hostport == NULL))
-      {
-         return JB_ERR_MEMORY;
-      }
    }
 
    if (!host_available)
@@ -358,11 +330,7 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
       char *host;
       char *port;
 
-      buf = strdup(http->hostport);
-      if (buf == NULL)
-      {
-         return JB_ERR_MEMORY;
-      }
+      buf = strdup_or_die(http->hostport);
 
       /* check if url contains username and/or password */
       host = strchr(buf, '@');
@@ -414,9 +382,18 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
       if (port != NULL)
       {
          /* Contains port */
+         char *endptr;
+         long parsed_port;
          /* Terminate hostname and point to start of port string */
          *port++ = '\0';
-         http->port = atoi(port);
+         parsed_port = strtol(port, &endptr, 10);
+         if ((parsed_port <= 0) || (parsed_port > 65535) || (*endptr != '\0'))
+         {
+            log_error(LOG_LEVEL_ERROR, "Invalid port in URL: %s.", url);
+            freez(buf);
+            return JB_ERR_PARSE;
+         }
+         http->port = (int)parsed_port;
       }
       else
       {
@@ -424,14 +401,9 @@ jb_err parse_http_url(const char *url, struct http_request *http, int require_pr
          http->port = (http->ssl ? 443 : 80);
       }
 
-      http->host = strdup(host);
+      http->host = strdup_or_die(host);
 
       freez(buf);
-
-      if (http->host == NULL)
-      {
-         return JB_ERR_MEMORY;
-      }
    }
 
 #ifdef FEATURE_EXTENDED_HOST_PATTERNS
@@ -510,7 +482,6 @@ static int unknown_method(const char *method)
  *          2  :  http = pointer to the http structure to hold elements
  *
  * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out of memory
  *                JB_ERR_CGI_PARAMS on malformed command/URL
  *                                  or >100 domains deep.
  *
@@ -524,13 +495,9 @@ jb_err parse_http_request(const char *req, struct http_request *http)
 
    memset(http, '\0', sizeof(*http));
 
-   buf = strdup(req);
-   if (buf == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
+   buf = strdup_or_die(req);
 
-   n = ssplit(buf, " \r\n", v, SZ(v), 1, 1);
+   n = ssplit(buf, " \r\n", v, SZ(v));
    if (n != 3)
    {
       freez(buf);
@@ -573,18 +540,11 @@ jb_err parse_http_request(const char *req, struct http_request *http)
    /*
     * Copy the details into the structure
     */
-   http->cmd = strdup(req);
-   http->gpc = strdup(v[0]);
-   http->ver = strdup(v[2]);
+   http->cmd = strdup_or_die(req);
+   http->gpc = strdup_or_die(v[0]);
+   http->ver = strdup_or_die(v[2]);
 
    freez(buf);
-
-   if ( (http->cmd == NULL)
-     || (http->gpc == NULL)
-     || (http->ver == NULL) )
-   {
-      return JB_ERR_MEMORY;
-   }
 
    return JB_ERR_OK;
 
@@ -749,11 +709,7 @@ static jb_err compile_url_pattern(struct url_spec *url, char *buf)
    if (NULL != p)
    {
       *p++ = '\0';
-      url->port_list = strdup(p);
-      if (NULL == url->port_list)
-      {
-         return JB_ERR_MEMORY;
-      }
+      url->port_list = strdup_or_die(p);
    }
    else
    {
@@ -775,7 +731,7 @@ static jb_err compile_url_pattern(struct url_spec *url, char *buf)
  *
  * Function    :  compile_host_pattern
  *
- * Description :  Parses and compiles a host pattern..
+ * Description :  Parses and compiles a host pattern.
  *
  * Parameters  :
  *          1  :  url = Target url_spec to be filled in.
@@ -804,7 +760,6 @@ static jb_err compile_host_pattern(struct url_spec *url, const char *host_patter
  *          2  :  host_pattern = Host pattern to parse.
  *
  * Returns     :  JB_ERR_OK - Success
- *                JB_ERR_MEMORY - Out of memory
  *                JB_ERR_PARSE - Cannot parse regex
  *
  *********************************************************************/
@@ -829,30 +784,25 @@ static jb_err compile_host_pattern(struct url_spec *url, const char *host_patter
    /*
     * Split domain into components
     */
-   url->dbuffer = strdup(host_pattern);
-   if (NULL == url->dbuffer)
-   {
-      free_url_spec(url);
-      return JB_ERR_MEMORY;
-   }
+   url->dbuffer = strdup_or_die(host_pattern);
 
    /*
     * Map to lower case
     */
    for (p = url->dbuffer; *p ; p++)
    {
-      *p = (char)tolower((int)(unsigned char)*p);
+      *p = (char)privoxy_tolower(*p);
    }
 
    /*
     * Split the domain name into components
     */
-   url->dcount = ssplit(url->dbuffer, ".", v, SZ(v), 1, 1);
+   url->dcount = ssplit(url->dbuffer, ".", v, SZ(v));
 
    if (url->dcount < 0)
    {
       free_url_spec(url);
-      return JB_ERR_MEMORY;
+      return JB_ERR_PARSE;
    }
    else if (url->dcount != 0)
    {
@@ -861,12 +811,7 @@ static jb_err compile_host_pattern(struct url_spec *url, const char *host_patter
        */
       size = (size_t)url->dcount * sizeof(*url->dvec);
 
-      url->dvec = (char **)malloc(size);
-      if (NULL == url->dvec)
-      {
-         free_url_spec(url);
-         return JB_ERR_MEMORY;
-      }
+      url->dvec = malloc_or_die(size);
 
       memcpy(url->dvec, v, size);
    }
@@ -971,9 +916,9 @@ static int simplematch(const char *pattern, const char *text)
       /*
        * Char match, or char range match?
        */
-      if ( (*pat == *txt)
-      ||   (*pat == '?')
-      ||   ((*pat == ']') && (charmap[*txt / 8] & (1 << (*txt % 8)))) )
+      if ((*pat == *txt)
+       || (*pat == '?')
+       || ((*pat == ']') && (charmap[*txt / 8] & (1 << (*txt % 8)))))
       {
          /*
           * Success: Go ahead
@@ -1009,7 +954,7 @@ static int simplematch(const char *pattern, const char *text)
    }
 
    /* Cut off extra '*'s */
-   if(*pat == '*')  pat++;
+   if (*pat == '*') pat++;
 
    /* If this is the pattern's end, fine! */
    return(*pat);
@@ -1155,7 +1100,6 @@ static int domain_match(const struct url_spec *pattern, const struct http_reques
  *                      are lost forever.
  *
  * Returns     :  JB_ERR_OK - Success
- *                JB_ERR_MEMORY - Out of memory
  *                JB_ERR_PARSE - Cannot parse regex (Detailed message
  *                               written to system log)
  *
@@ -1168,11 +1112,7 @@ jb_err create_url_spec(struct url_spec *url, char *buf)
    memset(url, '\0', sizeof(*url));
 
    /* Remember the original specification for the CGI pages. */
-   url->spec = strdup(buf);
-   if (NULL == url->spec)
-   {
-      return JB_ERR_MEMORY;
-   }
+   url->spec = strdup_or_die(buf);
 
    /* Is it a tag pattern? */
    if (0 == strncmpic(url->spec, "TAG:", 4))
@@ -1341,7 +1281,7 @@ int match_portlist(const char *portlist, int port)
 {
    char *min, *max, *next, *portlist_copy;
 
-   min = portlist_copy = strdup(portlist);
+   min = portlist_copy = strdup_or_die(portlist);
 
    /*
     * Zero-terminate first item and remember offset for next
@@ -1374,7 +1314,7 @@ int match_portlist(const char *portlist, int port)
           * or, if max was omitted, between min and 65K
           */
          *max++ = '\0';
-         if(port >= atoi(min) && port <= (atoi(max) ? atoi(max) : 65535))
+         if (port >= atoi(min) && port <= (atoi(max) ? atoi(max) : 65535))
          {
             freez(portlist_copy);
             return(1);
@@ -1429,11 +1369,7 @@ jb_err parse_forwarder_address(char *address, char **hostname, int *port)
       return JB_ERR_PARSE;
    }
 
-   *hostname = strdup(address);
-   if (NULL == *hostname)
-   {
-      return JB_ERR_MEMORY;
-   }
+   *hostname = strdup_or_die(address);
 
    if ((**hostname == '[') && (NULL != (p = strchr(*hostname, ']'))))
    {

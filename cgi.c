@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.145 2011/10/08 17:31:05 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.158 2012/12/07 12:45:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -7,9 +7,6 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.145 2011/10/08 17:31:05 fabiankeil Exp $"
  *                html or gif answers, and to compose HTTP resonses.
  *                This only contains the framework functions, the
  *                actual handler functions are declared elsewhere.
- *
- *                Functions declared include:
- *
  *
  * Copyright   :  Written by and Copyright (C) 2001-2004, 2006-2008
  *                the SourceForge Privoxy team. http://www.privoxy.org/
@@ -317,15 +314,15 @@ struct http_response *dispatch_cgi(struct client_state *csp)
    /* Either the host matches CGI_SITE_1_HOST ..*/
    if (   ( (0 == strcmpic(host, CGI_SITE_1_HOST))
          || (0 == strcmpic(host, CGI_SITE_1_HOST ".")))
-       && (path[0] == '/') )
+       && (path[0] == '/'))
    {
       /* ..then the path will all be for us.  Remove leading '/' */
       path++;
    }
    /* Or it's the host part CGI_SITE_2_HOST, and the path CGI_SITE_2_PATH */
-   else if ( ( (0 == strcmpic(host, CGI_SITE_2_HOST ))
-            || (0 == strcmpic(host, CGI_SITE_2_HOST ".")) )
-          && (0 == strncmpic(path, CGI_SITE_2_PATH, strlen(CGI_SITE_2_PATH))) )
+   else if ((  (0 == strcmpic(host, CGI_SITE_2_HOST))
+            || (0 == strcmpic(host, CGI_SITE_2_HOST ".")))
+          && (0 == strncmpic(path, CGI_SITE_2_PATH, strlen(CGI_SITE_2_PATH))))
    {
       /* take everything following CGI_SITE_2_PATH */
       path += strlen(CGI_SITE_2_PATH);
@@ -347,6 +344,21 @@ struct http_response *dispatch_cgi(struct client_state *csp)
    {
       /* Not a CGI */
       return NULL;
+   }
+
+   if (strcmpic(csp->http->gpc, "GET")
+    && strcmpic(csp->http->gpc, "HEAD"))
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "CGI request with unsupported method received: %s", csp->http->gpc);
+      /*
+       * The CGI pages currently only support GET and HEAD requests.
+       *
+       * If the client used a different method, ditch any data following
+       * the current headers to reduce the likelihood of parse errors
+       * with the following request.
+       */
+      csp->client_iob->eod = csp->client_iob->cur;
    }
 
    /*
@@ -597,12 +609,31 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
 static struct map *parse_cgi_parameters(char *argstring)
 {
    char *p;
-   char *vector[BUFFER_SIZE];
+   char **vector;
    int pairs, i;
    struct map *cgi_params;
 
+   /*
+    * XXX: This estimate is guaranteed to be high enough as we
+    *      let ssplit() ignore empty fields, but also a bit wasteful.
+    *      The same hack is used in get_last_url() so it looks like
+    *      a real solution is needed.
+    */
+   size_t max_segments = strlen(argstring) / 2;
+   if (max_segments == 0)
+   {
+      /*
+       * XXX: If the argstring is empty, there's really
+       *      no point in creating a param list, but currently
+       *      other parts of Privoxy depend on the list's existence.
+       */
+      max_segments = 1;
+   }
+   vector = malloc_or_die(max_segments * sizeof(char *));
+
    if (NULL == (cgi_params = new_map()))
    {
+      freez(vector);
       return NULL;
    }
 
@@ -616,7 +647,14 @@ static struct map *parse_cgi_parameters(char *argstring)
       *p = '\0';
    }
 
-   pairs = ssplit(argstring, "&", vector, SZ(vector), 1, 1);
+   pairs = ssplit(argstring, "&", vector, max_segments);
+   assert(pairs != -1);
+   if (pairs == -1)
+   {
+      freez(vector);
+      free_map(cgi_params);
+      return NULL;
+   }
 
    for (i = 0; i < pairs; i++)
    {
@@ -625,11 +663,14 @@ static struct map *parse_cgi_parameters(char *argstring)
          *p = '\0';
          if (map(cgi_params, url_decode(vector[i]), 0, url_decode(++p), 0))
          {
+            freez(vector);
             free_map(cgi_params);
             return NULL;
          }
       }
    }
+
+   freez(vector);
 
    return cgi_params;
 
@@ -726,8 +767,8 @@ jb_err get_string_param(const struct map *parameters,
    s = param;
    while ((ch = *s++) != '\0')
    {
-      if ( ((unsigned char)ch < (unsigned char)' ')
-        || (ch == '}') )
+      if (((unsigned char)ch < (unsigned char)' ')
+        || (ch == '}'))
       {
          /* Probable hack attempt, or user accidentally used '}'. */
          return JB_ERR_CGI_PARAMS;
@@ -936,6 +977,9 @@ struct http_response *error_response(struct client_state *csp,
             break;
          case SOCKS_5:
             socks_type = "socks5-";
+            break;
+         case SOCKS_5T:
+            socks_type = "socks5t-";
             break;
          default:
             log_error(LOG_LEVEL_FATAL, "Unknown socks type: %d.", fwd->type);
@@ -1155,11 +1199,7 @@ jb_err cgi_error_no_template(const struct client_state *csp,
    rsp->head_length = 0;
    rsp->is_static = 0;
 
-   rsp->body = malloc(body_size);
-   if (rsp->body == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
+   rsp->body = malloc_or_die(body_size);
    strlcpy(rsp->body, body_prefix, body_size);
    strlcat(rsp->body, template_name, body_size);
    strlcat(rsp->body, body_suffix, body_size);
@@ -1235,11 +1275,7 @@ jb_err cgi_error_unknown(const struct client_state *csp,
    rsp->is_static = 0;
    rsp->crunch_reason = INTERNAL_ERROR;
 
-   rsp->body = malloc(body_size);
-   if (rsp->body == NULL)
-   {
-      return JB_ERR_MEMORY;
-   }
+   rsp->body = malloc_or_die(body_size);
 
    snprintf(rsp->body, body_size, "%s%d%s", body_prefix, error_to_report, body_suffix);
 
@@ -1497,12 +1533,7 @@ char *compress_buffer(char *buffer, size_t *buffer_length, int compression_level
    /* Let zlib figure out the maximum length of the compressed data */
    new_length = compressBound((uLongf)*buffer_length);
 
-   compressed_buffer = malloc(new_length);
-   if (NULL == compressed_buffer)
-   {
-      log_error(LOG_LEVEL_FATAL,
-         "Out of memory allocation compression buffer.");
-   }
+   compressed_buffer = malloc_or_die(new_length);
 
    if (Z_OK != compress2((Bytef *)compressed_buffer, &new_length,
          (Bytef *)buffer, *buffer_length, compression_level))
@@ -1542,7 +1573,7 @@ char *compress_buffer(char *buffer, size_t *buffer_length, int compression_level
  *                On error, free()s rsp and returns cgi_error_memory()
  *
  *********************************************************************/
-struct http_response *finish_http_response(const struct client_state *csp, struct http_response *rsp)
+struct http_response *finish_http_response(struct client_state *csp, struct http_response *rsp)
 {
    char buf[BUFFER_SIZE];
    jb_err err;
@@ -1592,6 +1623,11 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
    if (!err)
    {
       snprintf(buf, sizeof(buf), "Content-Length: %d", (int)rsp->content_length);
+      /*
+       * Signal serve() that the client will be able to figure out
+       * the end of the response without having to close the connection.
+       */
+      csp->flags |= CSP_FLAG_SERVER_CONTENT_LENGTH_SET;
       err = enlist(rsp->headers, buf);
    }
 
@@ -1701,7 +1737,8 @@ struct http_response *finish_http_response(const struct client_state *csp, struc
       if (!err) err = enlist_unique_header(rsp->headers, "Pragma", "no-cache");
    }
 
-   if (!err && !(csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
+   if (!err && (!(csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
+              || (csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)))
    {
       err = enlist_unique_header(rsp->headers, "Connection", "close");
    }
@@ -2145,7 +2182,7 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map(exports, "time",          1, html_encode(buf), 0);
    if (!err) err = map(exports, "my-ip-address", 1, html_encode(ip_address ? ip_address : "unknown"), 0);
    freez(ip_address);
-   if (!err) err = map(exports, "my-port",       1, html_encode(port ? port : "unkown"), 0);
+   if (!err) err = map(exports, "my-port",       1, html_encode(port ? port : "unknown"), 0);
    freez(port);
    if (!err) err = map(exports, "my-hostname",   1, html_encode(hostname ? hostname : "unknown"), 0);
    freez(hostname);
@@ -2171,7 +2208,7 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map_block_killer(exports, "can-toggle");
 #endif
 
-   if(!strcmp(CODE_STATUS, "stable"))
+   if (!strcmp(CODE_STATUS, "stable"))
    {
       if (!err) err = map_block_killer(exports, "unstable");
    }

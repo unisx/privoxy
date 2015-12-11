@@ -216,7 +216,7 @@
       <td class="warning">
         <h2>Warning:</h2>
         <p>
-          This Privoxy version has been build without zlib support,
+          This Privoxy version has been built without zlib support,
           <strong>content filters will not work if the server sends compressed content.</strong>
           Consider enabling the <a title="prevent-compression documentation"
            href="@user-manual@actions-file.html#PREVENT-COMPRESSION">prevent-compression</a>

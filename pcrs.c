@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.38 2011/09/04 11:10:56 fabiankeil Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.43 2012/10/29 12:01:31 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/pcrs.c,v $
@@ -301,7 +301,7 @@ static pcrs_substitute *pcrs_compile_replacement(const char *replacement, int tr
                    */
                   const int ascii_value = xtoi(&replacement[i+2]);
 
-                  assert(ascii_value > 0);
+                  assert(ascii_value >= 0);
                   assert(ascii_value < 256);
                   text[k++] = (char)ascii_value;
                   i += 4;
@@ -447,7 +447,7 @@ pcrs_job *pcrs_free_job(pcrs_job *job)
  *********************************************************************/
 void pcrs_free_joblist(pcrs_job *joblist)
 {
-   while ( NULL != (joblist = pcrs_free_job(joblist)) ) {};
+   while (NULL != (joblist = pcrs_free_job(joblist))) {};
 
    return;
 
@@ -997,8 +997,8 @@ char pcrs_get_delimiter(const char *string)
     * Some characters that are unlikely to
     * be part of pcrs replacement strings.
     */
-   char delimiters[] = "><§#+*~%^°-:;µ!@";
-   char *d = delimiters;
+   static const char delimiters[] = "><#+*~%^-:;!@";
+   const char *d = delimiters;
 
    /* Take the first delimiter that isn't part of the string */
    while (*d && NULL != strchr(string, *d))

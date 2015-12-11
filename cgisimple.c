@@ -1,13 +1,10 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.111 2011/09/04 11:10:56 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.118 2012/12/07 12:45:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
  *
  * Purpose     :  Simple CGIs to get information about Privoxy's
  *                status.
- *
- *                Functions declared include:
- *
  *
  * Copyright   :  Written by and Copyright (C) 2001-2011 the
  *                Privoxy team. http://www.privoxy.org/
@@ -258,7 +255,7 @@ jb_err cgi_show_request(struct client_state *csp,
    /*
     * Repair the damage done to the IOB by get_header()
     */
-   for (p = csp->iob->buf; p < csp->iob->eod; p++)
+   for (p = csp->client_iob->buf; p < csp->client_iob->cur; p++)
    {
       if (*p == '\0') *p = '\n';
    }
@@ -268,7 +265,7 @@ jb_err cgi_show_request(struct client_state *csp,
     * be sending to the server if this wasn't a CGI call
     */
 
-   if (map(exports, "client-request", 1, html_encode(csp->iob->buf), 0))
+   if (map(exports, "client-request", 1, html_encode(csp->client_iob->buf), 0))
    {
       free_map(exports);
       return JB_ERR_MEMORY;
@@ -1144,7 +1141,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
       {
          /*
           * Empty URL (just prefix).
-          * Make it totally empty so it's caught by the next if()
+          * Make it totally empty so it's caught by the next if ()
           */
          url_param[0] = '\0';
       }
@@ -1155,7 +1152,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
       {
          /*
           * Empty URL (just prefix).
-          * Make it totally empty so it's caught by the next if()
+          * Make it totally empty so it's caught by the next if ()
           */
          url_param[0] = '\0';
       }
@@ -1410,6 +1407,9 @@ jb_err cgi_show_url_info(struct client_state *csp,
                      break;
                   case SOCKS_5:
                      socks_type = "socks5";
+                     break;
+                  case SOCKS_5T:
+                     socks_type = "socks5t";
                      break;
                   default:
                      log_error(LOG_LEVEL_FATAL, "Unknown socks type: %d.", fwd->type);
@@ -1858,8 +1858,8 @@ static jb_err cgi_show_file(struct client_state *csp,
          return JB_ERR_MEMORY;
       }
 
-      if ( map(exports, "file-description", 1, file_description, 1)
-        || map(exports, "filepath", 1, html_encode(filename), 0) )
+      if (map(exports, "file-description", 1, file_description, 1)
+        || map(exports, "filepath", 1, html_encode(filename), 0))
       {
          free_map(exports);
          return JB_ERR_MEMORY;

@@ -3,37 +3,23 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Appendix</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="See Also" href="seealso.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  table.c3 {background-color: #E0E0E0}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -45,7 +31,7 @@ body {
         <td width="10%" align="right" valign="bottom">&nbsp;</td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -98,11 +84,11 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">.</span> - Matches any
-            single character, e.g. <span class="QUOTE">"a"</span>,
-            <span class="QUOTE">"A"</span>, <span class="QUOTE">"4"</span>,
-            <span class="QUOTE">":"</span>, or <span class=
-            "QUOTE">"@"</span>.</td>
+            <td><span class="emphasis"><i class="EMPHASIS">.</i></span> -
+            Matches any single character, e.g. <span class=
+            "QUOTE">"a"</span>, <span class="QUOTE">"A"</span>, <span class=
+            "QUOTE">"4"</span>, <span class="QUOTE">":"</span>, or
+            <span class="QUOTE">"@"</span>.</td>
           </tr>
         </tbody>
       </table>
@@ -110,8 +96,8 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">?</span> - The preceding
-            character or expression is matched ZERO or ONE times.
+            <td><span class="emphasis"><i class="EMPHASIS">?</i></span> - The
+            preceding character or expression is matched ZERO or ONE times.
             Either/or.</td>
           </tr>
         </tbody>
@@ -120,8 +106,9 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">+</span> - The preceding
-            character or expression is matched ONE or MORE times.</td>
+            <td><span class="emphasis"><i class="EMPHASIS">+</i></span> - The
+            preceding character or expression is matched ONE or MORE
+            times.</td>
           </tr>
         </tbody>
       </table>
@@ -129,8 +116,9 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">*</span> - The preceding
-            character or expression is matched ZERO or MORE times.</td>
+            <td><span class="emphasis"><i class="EMPHASIS">*</i></span> - The
+            preceding character or expression is matched ZERO or MORE
+            times.</td>
           </tr>
         </tbody>
       </table>
@@ -138,7 +126,7 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">\</span> - The
+            <td><span class="emphasis"><i class="EMPHASIS">\</i></span> - The
             <span class="QUOTE">"escape"</span> character denotes that the
             following character should be taken literally. This is used where
             one of the special characters (e.g. <span class=
@@ -154,9 +142,9 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">[ ]</span> - Characters
-            enclosed in brackets will be matched if any of the enclosed
-            characters are encountered. For instance, <span class=
+            <td><span class="emphasis"><i class="EMPHASIS">[ ]</i></span> -
+            Characters enclosed in brackets will be matched if any of the
+            enclosed characters are encountered. For instance, <span class=
             "QUOTE">"[0-9]"</span> matches any numeric digit (zero through
             nine). As an example, we can combine this with <span class=
             "QUOTE">"+"</span> to match any digit one of more times:
@@ -168,8 +156,8 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">( )</span> - parentheses
-            are used to group a sub-expression, or multiple
+            <td><span class="emphasis"><i class="EMPHASIS">( )</i></span> -
+            parentheses are used to group a sub-expression, or multiple
             sub-expressions.</td>
           </tr>
         </tbody>
@@ -178,7 +166,7 @@ body {
       <table border="0">
         <tbody>
           <tr>
-            <td><span class="emphasis EMPHASIS c2">|</span> - The
+            <td><span class="emphasis"><i class="EMPHASIS">|</i></span> - The
             <span class="QUOTE">"bar"</span> character works like an
             <span class="QUOTE">"or"</span> conditional statement. A match is
             successful if the sub-expression on either side of <span class=
@@ -196,12 +184,12 @@ body {
       from a definitive list. This is enough to get us started with a few
       simple examples which may be more illuminating:</p>
 
-      <p><span class="emphasis EMPHASIS c2"><tt class=
-      "LITERAL">/.*/banners/.*</tt></span> - A simple example that uses the
-      common combination of <span class="QUOTE">"."</span> and <span class=
-      "QUOTE">"*"</span> to denote any character, zero or more times. In
-      other words, any string at all. So we start with a literal forward
-      slash, then our regular expression pattern (<span class=
+      <p><span class="emphasis"><i class="EMPHASIS"><tt class=
+      "LITERAL">/.*/banners/.*</tt></i></span> - A simple example that uses
+      the common combination of <span class="QUOTE">"."</span> and
+      <span class="QUOTE">"*"</span> to denote any character, zero or more
+      times. In other words, any string at all. So we start with a literal
+      forward slash, then our regular expression pattern (<span class=
       "QUOTE">".*"</span>) another literal forward slash, the string
       <span class="QUOTE">"banners"</span>, another forward slash, and lastly
       another <span class="QUOTE">".*"</span>. We are building a directory
@@ -217,16 +205,17 @@ body {
 
       <p>And now something a little more complex:</p>
 
-      <p><span class="emphasis EMPHASIS c2"><tt class=
-      "LITERAL">/.*/adv((er)?ts?|ertis(ing|ements?))?/</tt></span> - We have
-      several literal forward slashes again (<span class="QUOTE">"/"</span>),
-      so we are building another expression that is a file path statement. We
-      have another <span class="QUOTE">".*"</span>, so we are matching
-      against any conceivable sub-path, just so it matches our expression.
-      The only true literal that <span class="emphasis EMPHASIS c2">must
-      match</span> our pattern is <span class="APPLICATION">adv</span>,
-      together with the forward slashes. What comes after the <span class=
-      "QUOTE">"adv"</span> string is the interesting part.</p>
+      <p><span class="emphasis"><i class="EMPHASIS"><tt class=
+      "LITERAL">/.*/adv((er)?ts?|ertis(ing|ements?))?/</tt></i></span> - We
+      have several literal forward slashes again (<span class=
+      "QUOTE">"/"</span>), so we are building another expression that is a
+      file path statement. We have another <span class="QUOTE">".*"</span>,
+      so we are matching against any conceivable sub-path, just so it matches
+      our expression. The only true literal that <span class=
+      "emphasis"><i class="EMPHASIS">must match</i></span> our pattern is
+      <span class="APPLICATION">adv</span>, together with the forward
+      slashes. What comes after the <span class="QUOTE">"adv"</span> string
+      is the interesting part.</p>
 
       <p>Remember the <span class="QUOTE">"?"</span> means the preceding
       expression (either a literal character or anything grouped with
@@ -238,15 +227,14 @@ body {
       "QUOTE">"s"</span>. The <span class="QUOTE">"|"</span> means
       <span class="QUOTE">"or"</span>. We have two of those. For instance,
       <span class="QUOTE">"(ing|ements?)"</span>, can expand to match either
-      <span class="QUOTE">"ing"</span> <span class=
-      "emphasis EMPHASIS c2">OR</span> <span class="QUOTE">"ements?"</span>.
-      What is being done here, is an attempt at matching as many variations
-      of <span class="QUOTE">"advertisement"</span>, and similar, as
-      possible. So this would expand to match just <span class=
-      "QUOTE">"adv"</span>, or <span class="QUOTE">"advert"</span>, or
-      <span class="QUOTE">"adverts"</span>, or <span class=
-      "QUOTE">"advertising"</span>, or <span class=
-      "QUOTE">"advertisement"</span>, or <span class=
+      <span class="QUOTE">"ing"</span> <span class="emphasis"><i class=
+      "EMPHASIS">OR</i></span> <span class="QUOTE">"ements?"</span>. What is
+      being done here, is an attempt at matching as many variations of
+      <span class="QUOTE">"advertisement"</span>, and similar, as possible.
+      So this would expand to match just <span class="QUOTE">"adv"</span>, or
+      <span class="QUOTE">"advert"</span>, or <span class=
+      "QUOTE">"adverts"</span>, or <span class="QUOTE">"advertising"</span>,
+      or <span class="QUOTE">"advertisement"</span>, or <span class=
       "QUOTE">"advertisements"</span>. You get the idea. But it would not
       match <span class="QUOTE">"advertizements"</span> (with a <span class=
       "QUOTE">"z"</span>). We could fix that by changing our regular
@@ -254,8 +242,8 @@ body {
       "QUOTE">"/.*/adv((er)?ts?|erti(s|z)(ing|ements?))?/"</span>, which
       would then match either spelling.</p>
 
-      <p><span class="emphasis EMPHASIS c2"><tt class=
-      "LITERAL">/.*/advert[0-9]+\.(gif|jpe?g)</tt></span> - Again another
+      <p><span class="emphasis"><i class="EMPHASIS"><tt class=
+      "LITERAL">/.*/advert[0-9]+\.(gif|jpe?g)</tt></i></span> - Again another
       path statement with forward slashes. Anything in the square brackets
       <span class="QUOTE">"[ ]"</span> can be matched. This is using
       <span class="QUOTE">"0-9"</span> as a shorthand expression to mean any
@@ -305,7 +293,7 @@ body {
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN5795" id="AEN5795">14.2. Privoxy's
+      <h2 class="SECT2"><a name="AEN5853" id="AEN5853">14.2. Privoxy's
       Internal Pages</a></h2>
 
       <p>Since <span class="APPLICATION">Privoxy</span> proxies each
@@ -325,7 +313,7 @@ body {
 
       <ul>
         <li>
-          <p>Privoxy main page:</p><a name="AEN5809" id="AEN5809"></a>
+          <p>Privoxy main page:</p><a name="AEN5867" id="AEN5867"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/" target=
@@ -340,8 +328,8 @@ body {
 
         <li>
           <p>Show information about the current configuration, including
-          viewing and editing of actions files:</p><a name="AEN5817" id=
-          "AEN5817"></a>
+          viewing and editing of actions files:</p><a name="AEN5875" id=
+          "AEN5875"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/show-status" target=
@@ -350,8 +338,8 @@ body {
         </li>
 
         <li>
-          <p>Show the source code version numbers:</p><a name="AEN5822" id=
-          "AEN5822"></a>
+          <p>Show the source code version numbers:</p><a name="AEN5880" id=
+          "AEN5880"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/show-version" target=
@@ -360,8 +348,8 @@ body {
         </li>
 
         <li>
-          <p>Show the browser's request headers:</p><a name="AEN5827" id=
-          "AEN5827"></a>
+          <p>Show the browser's request headers:</p><a name="AEN5885" id=
+          "AEN5885"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/show-request" target=
@@ -370,8 +358,8 @@ body {
         </li>
 
         <li>
-          <p>Show which actions apply to a URL and why:</p><a name="AEN5832"
-          id="AEN5832"></a>
+          <p>Show which actions apply to a URL and why:</p><a name="AEN5890"
+          id="AEN5890"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/show-url-info" target=
@@ -385,20 +373,20 @@ body {
           <span class="QUOTE">"off"</span>, <span class=
           "QUOTE">"Privoxy"</span> continues to run, but only as a
           pass-through proxy, with no actions taking place:</p><a name=
-          "AEN5840" id="AEN5840"></a>
+          "AEN5898" id="AEN5898"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/toggle" target=
             "_top">http://config.privoxy.org/toggle</a></p>
           </blockquote>
 
-          <p>Short cuts. Turn off, then on:</p><a name="AEN5844" id=
-          "AEN5844"></a>
+          <p>Short cuts. Turn off, then on:</p><a name="AEN5902" id=
+          "AEN5902"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/toggle?set=disable" target=
             "_top">http://config.privoxy.org/toggle?set=disable</a></p>
-          </blockquote><a name="AEN5847" id="AEN5847"></a>
+          </blockquote><a name="AEN5905" id="AEN5905"></a>
 
           <blockquote class="BLOCKQUOTE">
             <p><a href="http://config.privoxy.org/toggle?set=enable" target=
@@ -603,13 +591,14 @@ body {
       "actions-file.html#ACTIONS">actions</a> and <a href=
       "actions-file.html#FILTER">filters</a> to any given URL can be complex,
       and not always so easy to understand what is happening. And sometimes
-      we need to be able to <span class="emphasis EMPHASIS c2">see</span>
-      just what <span class="APPLICATION">Privoxy</span> is doing.
-      Especially, if something <span class="APPLICATION">Privoxy</span> is
-      doing is causing us a problem inadvertently. It can be a little
-      daunting to look at the actions and filters files themselves, since
-      they tend to be filled with <a href="appendix.html#REGEX">regular
-      expressions</a> whose consequences are not always so obvious.</p>
+      we need to be able to <span class="emphasis"><i class=
+      "EMPHASIS">see</i></span> just what <span class=
+      "APPLICATION">Privoxy</span> is doing. Especially, if something
+      <span class="APPLICATION">Privoxy</span> is doing is causing us a
+      problem inadvertently. It can be a little daunting to look at the
+      actions and filters files themselves, since they tend to be filled with
+      <a href="appendix.html#REGEX">regular expressions</a> whose
+      consequences are not always so obvious.</p>
 
       <p>One quick test to see if <span class="APPLICATION">Privoxy</span> is
       causing a problem or not, is to disable it temporarily. This should be
@@ -652,7 +641,7 @@ body {
       "_top">google.com</a>, and look at it one section at a time in a sample
       configuration (your real configuration may vary):</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -718,8 +707,8 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       <a href="actions-file.html#SESSION-COOKIES-ONLY"><span class=
       "QUOTE">"+session-cookies-only"</span></a> (i.e. not persistent). So we
       will allow persistent cookies for google, at least that is how it is in
-      this example. The second turns <span class=
-      "emphasis EMPHASIS c2">off</span> any <a href=
+      this example. The second turns <span class="emphasis"><i class=
+      "EMPHASIS">off</i></span> any <a href=
       "actions-file.html#FAST-REDIRECTS"><span class=
       "QUOTE">"+fast-redirects"</span></a> action, allowing this to take
       place unmolested. Note that there is a leading dot here -- <span class=
@@ -746,7 +735,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       its <span class="QUOTE">"actions"</span> to <span class=
       "QUOTE">"google.com"</span>:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -822,7 +811,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       <p>Now another example, <span class=
       "QUOTE">"ad.doubleclick.net"</span>:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -856,7 +845,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       be invisible, it should be defined as <span class=
       "QUOTE">"ad.doubleclick.net"</span> is done here -- as both a <a href=
       "actions-file.html#BLOCK"><span class="QUOTE">"+block{}"</span></a>
-      <span class="emphasis EMPHASIS c2">and</span> an <a href=
+      <span class="emphasis"><i class="EMPHASIS">and</i></span> an <a href=
       "actions-file.html#HANDLE-AS-IMAGE"><span class=
       "QUOTE">"+handle-as-image"</span></a>. The custom alias <span class=
       "QUOTE">"<tt class="LITERAL">+block-as-image</tt>"</span> just
@@ -866,7 +855,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       "QUOTE">"http://www.example.net/adsl/HOWTO/"</span>. This one is giving
       us problems. We are getting a blank page. Hmmm ...</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -947,13 +936,13 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       an image. But this is, of course, all wrong. We could now add a new
       action below this (or better in our own <tt class=
       "FILENAME">user.action</tt> file) that explicitly <span class=
-      "emphasis EMPHASIS c2">un</span> blocks ( <a href=
+      "emphasis"><i class="EMPHASIS">un</i></span> blocks ( <a href=
       "actions-file.html#BLOCK"><span class="QUOTE">"{-block}"</span></a>)
       paths with <span class="QUOTE">"adsl"</span> in them (remember, last
       match in the configuration wins). There are various ways to handle such
       exceptions. Example:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -972,7 +961,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       <p>But now what about a situation where we get no explicit matches like
       we did with:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -995,7 +984,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       "actions-file.html#FILTER"><span class=
       "QUOTE">"+filter"</span></a>:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -1016,7 +1005,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       }</tt>"</span>. Or you could do your own exception to negate
       filtering:</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -1040,14 +1029,14 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
       <a href="actions-file.html#FILTER-BANNERS-BY-SIZE"><span class=
       "QUOTE">"+filter{banners-by-size}"</span></a> rule, which assumes that
       images of certain sizes are ad banners (works well <span class=
-      "emphasis EMPHASIS c2">most of the time</span> since these tend to be
-      standardized).</p>
+      "emphasis"><i class="EMPHASIS">most of the time</i></span> since these
+      tend to be standardized).</p>
 
       <p><span class="QUOTE">"<tt class="LITERAL">{ fragile }</tt>"</span> is
       an alias that disables most actions that are the most likely to cause
       trouble. This can be used as a last resort for problem sites.</p>
 
-      <table class="c3" border="0" width="100%">
+      <table border="0" bgcolor="#E0E0E0" width="100%">
         <tr>
           <td>
             <pre class="SCREEN">
@@ -1060,12 +1049,12 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
         </tr>
       </table>
 
-      <p><span class="emphasis EMPHASIS c2">Remember to flush caches!</span>
-      Note that the <tt class="LITERAL">mail.google</tt> reference lacks the
-      TLD portion (e.g. <span class="QUOTE">".com"</span>). This will
-      effectively match any TLD with <tt class="LITERAL">google</tt> in it,
-      such as <tt class="LITERAL">mail.google.de.</tt>, just as an
-      example.</p>
+      <p><span class="emphasis"><i class="EMPHASIS">Remember to flush
+      caches!</i></span> Note that the <tt class="LITERAL">mail.google</tt>
+      reference lacks the TLD portion (e.g. <span class=
+      "QUOTE">".com"</span>). This will effectively match any TLD with
+      <tt class="LITERAL">google</tt> in it, such as <tt class=
+      "LITERAL">mail.google.de.</tt>, just as an example.</p>
 
       <p>If this still does not work, you will have to go through the
       remaining actions one by one to find which one(s) is causing the
@@ -1074,7 +1063,7 @@ In file: user.action <span class="GUIBUTTON">[ View ]</span> <span class=
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

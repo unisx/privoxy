@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.19">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.20">
+<!entity p-status "beta">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
 
- $Id: readme.sgml,v 2.49 2011/12/26 17:05:40 fabiankeil Exp $
+ $Id: readme.sgml,v 2.51 2013/01/06 11:25:52 fabiankeil Exp $
 
  Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -232,7 +232,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.49 2011/12/26 17:05:40 fabiankeil Exp $ -->
+<!--  $Id: readme.sgml,v 2.51 2013/01/06 11:25:52 fabiankeil Exp $ -->
 <!-- </para> -->
 
 </article>

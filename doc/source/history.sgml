@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: history.sgml,v 2.8 2011/09/04 11:10:12 fabiankeil Exp $
+ $Id: history.sgml,v 2.9 2012/06/19 12:49:25 fabiankeil Exp $
 
   Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
   See LICENSE.
@@ -25,11 +25,9 @@
 -->
 
 <para>
- A long time ago, there was the
- <ulink url="http://www.junkbusters.com/ijb.html"><application>Internet Junkbuster</application></ulink>,
- by Anonymous Coders and <ulink url="http://www.junkbusters.com/">Junkbusters
- Corporation</ulink>. This saved many users a lot of pain in the early days of
- web advertising and user tracking.
+ A long time ago, there was the <application>Internet Junkbuster</application>,
+ by Anonymous Coders and Junkbusters Corporation. This saved many users a lot of
+ pain in the early days of  web advertising and user tracking.
 </para>
 
 <para>
@@ -37,9 +35,7 @@
  forcing ads on users, give up autonomy over their browsing, and
  for tracking them, keeps evolving. Unfortunately, the <application>Internet
  Junkbuster</application> did not. Version 2.0.2, published in 1998, was
- (and is) the last official
- <ulink url="http://www.junkbusters.com/ijbdist.html#release">release</ulink>
- available from <ulink url="http://www.junkbusters.com">Junkbusters Corporation</ulink>.
+ the last official release, available from Junkbusters Corporation.
  Fortunately, it had been released under the GNU
  <ulink url="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL</ulink>,
  which allowed further development by others.
@@ -68,4 +64,9 @@
  The result of this is <application>Privoxy</application>, whose first
  stable version, 3.0, was released August, 2002.
  <!-- Cautious!!!!!!!!! ;) -->
+</para>
+
+<para>
+ As of 2012 the Junkbusters Corporation's website (http://www.junkbusters.com/)
+ has been shut down, but Privoxy is still actively maintained.
 </para>

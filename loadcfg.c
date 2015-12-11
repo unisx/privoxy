@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.121 2011/07/30 15:05:23 fabiankeil Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.135 2012/12/07 12:45:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -72,6 +72,7 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.121 2011/07/30 15:05:23 fabiankei
 
 #endif
 
+#include "project.h"
 #include "loadcfg.h"
 #include "list.h"
 #include "jcc.h"
@@ -86,17 +87,6 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.121 2011/07/30 15:05:23 fabiankei
 #include "gateway.h"
 
 const char loadcfg_h_rcs[] = LOADCFG_H_VERSION;
-
-/*
- * Fix a problem with Solaris.  There should be no effect on other
- * platforms.
- * Solaris's isspace() is a macro which uses it's argument directly
- * as an array index.  Therefore we need to make sure that high-bit
- * characters generate +ve values, and ideally we also want to make
- * the argument match the declared parameter type of "int".
- */
-#define ijb_isupper(__X) isupper((int)(unsigned char)(__X))
-#define ijb_tolower(__X) tolower((int)(unsigned char)(__X))
 
 #ifdef FEATURE_TOGGLE
 /* Privoxy is enabled by default. */
@@ -128,56 +118,59 @@ static struct file_list *current_configfile = NULL;
  * console and GUI specific options last).
  */
 
-#define hash_actions_file                1196306641ul /* "actionsfile" */
-#define hash_accept_intercepted_requests 1513024973ul /* "accept-intercepted-requests" */
-#define hash_admin_address               4112573064ul /* "admin-address" */
-#define hash_allow_cgi_request_crunching  258915987ul /* "allow-cgi-request-crunching" */
-#define hash_buffer_limit                1881726070ul /* "buffer-limit */
-#define hash_compression_level           2464423563ul /* "compression-level" */
-#define hash_confdir                        1978389ul /* "confdir" */
-#define hash_connection_sharing          1348841265ul /* "connection-sharing" */
-#define hash_debug                            78263ul /* "debug" */
-#define hash_default_server_timeout      2530089913ul /* "default-server-timeout" */
-#define hash_deny_access                 1227333715ul /* "deny-access" */
-#define hash_enable_edit_actions         2517097536ul /* "enable-edit-actions" */
-#define hash_enable_compression          3943696946ul /* "enable-compression" */
-#define hash_enable_remote_toggle        2979744683ul /* "enable-remote-toggle" */
-#define hash_enable_remote_http_toggle    110543988ul /* "enable-remote-http-toggle" */
-#define hash_enforce_blocks              1862427469ul /* "enforce-blocks" */
-#define hash_filterfile                   250887266ul /* "filterfile" */
-#define hash_forward                        2029845ul /* "forward" */
-#define hash_forward_socks4              3963965521ul /* "forward-socks4" */
-#define hash_forward_socks4a             2639958518ul /* "forward-socks4a" */
-#define hash_forward_socks5              3963965522ul /* "forward-socks5" */
-#define hash_forwarded_connect_retries    101465292ul /* "forwarded-connect-retries" */
-#define hash_handle_as_empty_returns_ok  1444873247ul /* "handle-as-empty-doc-returns-ok" */
-#define hash_hostname                      10308071ul /* "hostname" */
-#define hash_keep_alive_timeout          3878599515ul /* "keep-alive-timeout" */
-#define hash_listen_address              1255650842ul /* "listen-address" */
-#define hash_logdir                          422889ul /* "logdir" */
-#define hash_logfile                        2114766ul /* "logfile" */
-#define hash_max_client_connections      3595884446ul /* "max-client-connections" */
-#define hash_permit_access               3587953268ul /* "permit-access" */
-#define hash_proxy_info_url              3903079059ul /* "proxy-info-url" */
-#define hash_single_threaded             4250084780ul /* "single-threaded" */
-#define hash_socket_timeout              1809001761ul /* "socket-timeout" */
-#define hash_split_large_cgi_forms        671658948ul /* "split-large-cgi-forms" */
-#define hash_suppress_blocklists         1948693308ul /* "suppress-blocklists" */
-#define hash_templdir                      11067889ul /* "templdir" */
-#define hash_toggle                          447966ul /* "toggle" */
-#define hash_trust_info_url               430331967ul /* "trust-info-url" */
-#define hash_trustfile                     56494766ul /* "trustfile" */
-#define hash_usermanual                  1416668518ul /* "user-manual" */
-#define hash_activity_animation          1817904738ul /* "activity-animation" */
-#define hash_close_button_minimizes      3651284693ul /* "close-button-minimizes" */
-#define hash_hide_console                2048809870ul /* "hide-console" */
-#define hash_log_buffer_size             2918070425ul /* "log-buffer-size" */
-#define hash_log_font_name               2866730124ul /* "log-font-name" */
-#define hash_log_font_size               2866731014ul /* "log-font-size" */
-#define hash_log_highlight_messages      4032101240ul /* "log-highlight-messages" */
-#define hash_log_max_lines               2868344173ul /* "log-max-lines" */
-#define hash_log_messages                2291744899ul /* "log-messages" */
-#define hash_show_on_task_bar             215410365ul /* "show-on-task-bar" */
+#define hash_actions_file                1196306641U /* "actionsfile" */
+#define hash_accept_intercepted_requests 1513024973U /* "accept-intercepted-requests" */
+#define hash_admin_address               4112573064U /* "admin-address" */
+#define hash_allow_cgi_request_crunching  258915987U /* "allow-cgi-request-crunching" */
+#define hash_buffer_limit                1881726070U /* "buffer-limit */
+#define hash_client_header_order         2701453514U /* "client-header-order" */
+#define hash_compression_level           2464423563U /* "compression-level" */
+#define hash_confdir                        1978389U /* "confdir" */
+#define hash_connection_sharing          1348841265U /* "connection-sharing" */
+#define hash_debug                            78263U /* "debug" */
+#define hash_default_server_timeout      2530089913U /* "default-server-timeout" */
+#define hash_deny_access                 1227333715U /* "deny-access" */
+#define hash_enable_edit_actions         2517097536U /* "enable-edit-actions" */
+#define hash_enable_compression          3943696946U /* "enable-compression" */
+#define hash_enable_remote_toggle        2979744683U /* "enable-remote-toggle" */
+#define hash_enable_remote_http_toggle    110543988U /* "enable-remote-http-toggle" */
+#define hash_enforce_blocks              1862427469U /* "enforce-blocks" */
+#define hash_filterfile                   250887266U /* "filterfile" */
+#define hash_forward                        2029845U /* "forward" */
+#define hash_forward_socks4              3963965521U /* "forward-socks4" */
+#define hash_forward_socks4a             2639958518U /* "forward-socks4a" */
+#define hash_forward_socks5              3963965522U /* "forward-socks5" */
+#define hash_forward_socks5t             2639958542U /* "forward-socks5t" */
+#define hash_forwarded_connect_retries    101465292U /* "forwarded-connect-retries" */
+#define hash_handle_as_empty_returns_ok  1444873247U /* "handle-as-empty-doc-returns-ok" */
+#define hash_hostname                      10308071U /* "hostname" */
+#define hash_keep_alive_timeout          3878599515U /* "keep-alive-timeout" */
+#define hash_listen_address              1255650842U /* "listen-address" */
+#define hash_logdir                          422889U /* "logdir" */
+#define hash_logfile                        2114766U /* "logfile" */
+#define hash_max_client_connections      3595884446U /* "max-client-connections" */
+#define hash_permit_access               3587953268U /* "permit-access" */
+#define hash_proxy_info_url              3903079059U /* "proxy-info-url" */
+#define hash_single_threaded             4250084780U /* "single-threaded" */
+#define hash_socket_timeout              1809001761U /* "socket-timeout" */
+#define hash_split_large_cgi_forms        671658948U /* "split-large-cgi-forms" */
+#define hash_suppress_blocklists         1948693308U /* "suppress-blocklists" */
+#define hash_templdir                      11067889U /* "templdir" */
+#define hash_tolerate_pipelining         1360286620U /* "tolerate-pipelining" */
+#define hash_toggle                          447966U /* "toggle" */
+#define hash_trust_info_url               430331967U /* "trust-info-url" */
+#define hash_trustfile                     56494766U /* "trustfile" */
+#define hash_usermanual                  1416668518U /* "user-manual" */
+#define hash_activity_animation          1817904738U /* "activity-animation" */
+#define hash_close_button_minimizes      3651284693U /* "close-button-minimizes" */
+#define hash_hide_console                2048809870U /* "hide-console" */
+#define hash_log_buffer_size             2918070425U /* "log-buffer-size" */
+#define hash_log_font_name               2866730124U /* "log-font-name" */
+#define hash_log_font_size               2866731014U /* "log-font-size" */
+#define hash_log_highlight_messages      4032101240U /* "log-highlight-messages" */
+#define hash_log_max_lines               2868344173U /* "log-max-lines" */
+#define hash_log_messages                2291744899U /* "log-messages" */
+#define hash_show_on_task_bar             215410365U /* "show-on-task-bar" */
 
 
 static void savearg(char *command, char *argument, struct configuration_spec * config);
@@ -242,6 +235,8 @@ static void unload_configfile (void * data)
       freez(config->re_filterfile_short[i]);
       freez(config->re_filterfile[i]);
    }
+
+   list_remove_all(config->ordered_client_headers);
 
    freez(config->admin_address);
    freez(config->proxy_info_url);
@@ -322,6 +317,76 @@ static int parse_toggle_state(const char *name, const char *value)
    }
 
    return toggle_state;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  parse_client_header_order
+ *
+ * Description :  Parse the value of the header-order directive
+ *
+ * Parameters  :
+ *          1  :  ordered_header_list:  List to insert the ordered
+ *                                      headers into.
+ *          2  :  ordered_headers:  The ordered header names separated
+ *                                  by spaces or tabs.
+ *
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+static void parse_client_header_order(struct list *ordered_header_list, const char *ordered_headers)
+{
+   char *original_headers_copy;
+   char **vector;
+   size_t max_segments;
+   int number_of_headers;
+   int i;
+
+   assert(ordered_header_list != NULL);
+   assert(ordered_headers != NULL);
+
+   if (ordered_headers == NULL)
+   {
+      log_error(LOG_LEVEL_FATAL, "header-order used without argument");
+   }
+
+   /*
+    * XXX: This estimate is guaranteed to be high enough as we
+    *      let ssplit() ignore empty fields, but also a bit wasteful.
+    *      The same hack is used in get_last_url() so it looks like
+    *      a real solution is needed.
+    */
+   max_segments = strlen(ordered_headers) / 2;
+   if (max_segments == 0)
+   {
+      max_segments = 1;
+   }
+   vector = malloc_or_die(max_segments * sizeof(char *));
+
+   original_headers_copy = strdup_or_die(ordered_headers);
+
+   number_of_headers = ssplit(original_headers_copy, "\t ", vector, max_segments);
+   if (number_of_headers == -1)
+   {
+      log_error(LOG_LEVEL_FATAL, "Failed to split ordered headers");
+   }
+
+   for (i = 0; i < number_of_headers; i++)
+   {
+      if (JB_ERR_OK != enlist(ordered_header_list, vector[i]))
+      {
+         log_error(LOG_LEVEL_FATAL,
+            "Failed to enlist ordered header: %s", vector[i]);
+      }
+   }
+
+   freez(vector);
+   freez(original_headers_copy);
+
+   return;
 
 }
 
@@ -421,6 +486,7 @@ struct configuration_spec * load_config(void)
     */
    config->compression_level         = 1;
 #endif
+   config->feature_flags            &= ~RUNTIME_FEATURE_TOLERATE_PIPELINING;
 
    configfp = fopen(configfile, "r");
    if (NULL == configfp)
@@ -441,7 +507,7 @@ struct configuration_spec * load_config(void)
       struct forward_spec *cur_fwd;
       int vec_count;
       char *vec[3];
-      unsigned long directive_hash;
+      unsigned int directive_hash;
 
       strlcpy(tmp, buf, sizeof(tmp));
 
@@ -476,9 +542,9 @@ struct configuration_spec * load_config(void)
       /* Make sure the command field is lower case */
       for (p = cmd; *p; p++)
       {
-         if (ijb_isupper(*p))
+         if (privoxy_isupper(*p))
          {
-            *p = (char)ijb_tolower(*p);
+            *p = (char)privoxy_tolower(*p);
          }
       }
 
@@ -550,11 +616,19 @@ struct configuration_spec * load_config(void)
             break;
 
 /* *************************************************************************
+ * client-header-order header-1 header-2 ... header-n
+ * *************************************************************************/
+         case hash_client_header_order:
+            list_remove_all(config->ordered_client_headers);
+            parse_client_header_order(config->ordered_client_headers, arg);
+            break;
+
+/* *************************************************************************
  * confdir directory-name
  * *************************************************************************/
          case hash_confdir :
             freez(config->confdir);
-            config->confdir = make_path( NULL, arg);
+            config->confdir = make_path(NULL, arg);
             break;
 
 /* *************************************************************************
@@ -615,7 +689,7 @@ struct configuration_spec * load_config(void)
             if (*arg != '\0')
             {
                int timeout = atoi(arg);
-               if (0 < timeout)
+               if (0 <= timeout)
                {
                   config->default_server_timeout = (unsigned int)timeout;
                }
@@ -634,7 +708,7 @@ struct configuration_spec * load_config(void)
 #ifdef FEATURE_ACL
          case hash_deny_access:
             strlcpy(tmp, arg, sizeof(tmp));
-            vec_count = ssplit(tmp, " \t", vec, SZ(vec), 1, 1);
+            vec_count = ssplit(tmp, " \t", vec, SZ(vec));
 
             if ((vec_count != 1) && (vec_count != 2))
             {
@@ -819,7 +893,7 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_forward:
             strlcpy(tmp, arg, sizeof(tmp));
-            vec_count = ssplit(tmp, " \t", vec, SZ(vec), 1, 1);
+            vec_count = ssplit(tmp, " \t", vec, SZ(vec));
 
             if (vec_count != 2)
             {
@@ -874,7 +948,7 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_forward_socks4:
             strlcpy(tmp, arg, sizeof(tmp));
-            vec_count = ssplit(tmp, " \t", vec, SZ(vec), 1, 1);
+            vec_count = ssplit(tmp, " \t", vec, SZ(vec));
 
             if (vec_count != 3)
             {
@@ -940,8 +1014,9 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_forward_socks4a:
          case hash_forward_socks5:
+         case hash_forward_socks5t:
             strlcpy(tmp, arg, sizeof(tmp));
-            vec_count = ssplit(tmp, " \t", vec, SZ(vec), 1, 1);
+            vec_count = ssplit(tmp, " \t", vec, SZ(vec));
 
             if (vec_count != 3)
             {
@@ -966,9 +1041,14 @@ struct configuration_spec * load_config(void)
             {
                cur_fwd->type = SOCKS_4A;
             }
-            else
+            else if (directive_hash == hash_forward_socks5)
             {
                cur_fwd->type = SOCKS_5;
+            }
+            else
+            {
+               assert(directive_hash == hash_forward_socks5t);
+               cur_fwd->type = SOCKS_5T;
             }
 
             /* Save the URL pattern */
@@ -1131,7 +1211,7 @@ struct configuration_spec * load_config(void)
 #ifdef FEATURE_ACL
          case hash_permit_access:
             strlcpy(tmp, arg, sizeof(tmp));
-            vec_count = ssplit(tmp, " \t", vec, SZ(vec), 1, 1);
+            vec_count = ssplit(tmp, " \t", vec, SZ(vec));
 
             if ((vec_count != 1) && (vec_count != 2))
             {
@@ -1230,7 +1310,7 @@ struct configuration_spec * load_config(void)
             if (*arg != '\0')
             {
                int socket_timeout = atoi(arg);
-               if (0 < socket_timeout)
+               if (0 <= socket_timeout)
                {
                   config->socket_timeout = socket_timeout;
                }
@@ -1265,11 +1345,25 @@ struct configuration_spec * load_config(void)
             break;
 
 /* *************************************************************************
+ * tolerate-pipelining (0|1)
+ * *************************************************************************/
+         case hash_tolerate_pipelining :
+            if (parse_toggle_state(cmd, arg) == 1)
+            {
+               config->feature_flags |= RUNTIME_FEATURE_TOLERATE_PIPELINING;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_TOLERATE_PIPELINING;
+            }
+            break;
+
+/* *************************************************************************
  * toggle (0|1)
  * *************************************************************************/
 #ifdef FEATURE_TOGGLE
          case hash_toggle :
-            global_toggle_state = atoi(arg);
+            global_toggle_state = parse_toggle_state(cmd, arg);
             break;
 #endif /* def FEATURE_TOGGLE */
 
@@ -1329,21 +1423,21 @@ struct configuration_spec * load_config(void)
  * activity-animation (0|1)
  * *************************************************************************/
          case hash_activity_animation :
-            g_bShowActivityAnimation = atoi(arg);
+            g_bShowActivityAnimation = parse_toggle_state(cmd, arg);
             break;
 
 /* *************************************************************************
  *  close-button-minimizes (0|1)
  * *************************************************************************/
          case hash_close_button_minimizes :
-            g_bCloseHidesWindow = atoi(arg);
+            g_bCloseHidesWindow = parse_toggle_state(cmd, arg);
             break;
 
 /* *************************************************************************
  * log-buffer-size (0|1)
  * *************************************************************************/
          case hash_log_buffer_size :
-            g_bLimitBufferSize = atoi(arg);
+            g_bLimitBufferSize = parse_toggle_state(cmd, arg);
             break;
 
 /* *************************************************************************
@@ -1370,7 +1464,7 @@ struct configuration_spec * load_config(void)
  * log-highlight-messages (0|1)
  * *************************************************************************/
          case hash_log_highlight_messages :
-            g_bHighlightMessages = atoi(arg);
+            g_bHighlightMessages = parse_toggle_state(cmd, arg);
             break;
 
 /* *************************************************************************
@@ -1384,14 +1478,14 @@ struct configuration_spec * load_config(void)
  * log-messages (0|1)
  * *************************************************************************/
          case hash_log_messages :
-            g_bLogMessages = atoi(arg);
+            g_bLogMessages = parse_toggle_state(cmd, arg);
             break;
 
 /* *************************************************************************
  * show-on-task-bar (0|1)
  * *************************************************************************/
          case hash_show_on_task_bar :
-            g_bShowOnTaskBar = atoi(arg);
+            g_bShowOnTaskBar = parse_toggle_state(cmd, arg);
             break;
 
 #endif /* defined(_WIN32) && ! defined(_WIN_CONSOLE) */
@@ -1447,19 +1541,20 @@ struct configuration_spec * load_config(void)
              * error.  To change back to an error, just change log level
              * to LOG_LEVEL_FATAL.
              */
-            log_error(LOG_LEVEL_ERROR, "Ignoring unrecognized directive '%s' (%luul) in line %lu "
-                  "in configuration file (%s).",  buf, directive_hash, linenum, configfile);
+            log_error(LOG_LEVEL_ERROR, "Ignoring unrecognized directive "
+               "'%s' (%uU) in line %lu in configuration file (%s).",
+               buf, directive_hash, linenum, configfile);
             string_append(&config->proxy_args,
                " <strong class='warning'>Warning: Ignoring unrecognized directive:</strong>");
             break;
 
 /* *************************************************************************/
-      } /* end switch( hash_string(cmd) ) */
+      } /* end switch(hash_string(cmd)) */
 
       /* Save the argument for the show-status page. */
       savearg(cmd, arg, config);
       freez(buf);
-   } /* end while ( read_config_line(...) ) */
+   } /* end while (read_config_line(...)) */
 
    fclose(configfp);
 
@@ -1542,9 +1637,9 @@ struct configuration_spec * load_config(void)
    }
 #endif /* def FEATURE_TRUST */
 
-   if ( NULL == config->haddr[0] )
+   if (NULL == config->haddr[0])
    {
-      config->haddr[0] = strdup( HADDR_DEFAULT );
+      config->haddr[0] = strdup(HADDR_DEFAULT);
       if (NULL == config->haddr[0])
       {
          log_error(LOG_LEVEL_FATAL, "Out of memory while copying default listening address");
@@ -1718,7 +1813,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
       return;
    }
 
-   if ( (NULL != argument) && ('\0' != *argument) )
+   if ((NULL != argument) && ('\0' != *argument))
    {
       s = html_encode(argument);
       if (NULL == s)

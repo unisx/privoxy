@@ -1,4 +1,4 @@
-const char w32log_rcs[] = "$Id: w32log.c,v 1.40 2011/09/04 11:10:56 fabiankeil Exp $";
+const char w32log_rcs[] = "$Id: w32log.c,v 1.48 2012/05/27 15:45:05 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/w32log.c,v $
@@ -641,7 +641,7 @@ HWND CreateHiddenLogOwnerWindow(HINSTANCE hInstance)
 
    hwnd = CreateWindow(szWndName, szWndName,
       WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-      CW_USEDEFAULT, NULL, NULL, hInstance, NULL );
+      CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
 
    return hwnd;
 
@@ -944,18 +944,17 @@ void OnLogCommand(int nCommand)
          break;
 
 #ifdef FEATURE_TOGGLE
-      /* by haroon - change toggle to its opposite value */
       case ID_TOGGLE_ENABLED:
          global_toggle_state = !global_toggle_state;
-         if (global_toggle_state)
-         {
-            log_error(LOG_LEVEL_INFO, "Now toggled ON.");
-         }
-         else
-         {
-            log_error(LOG_LEVEL_INFO, "Now toggled OFF.");
-         }
-         SetIdleIcon();
+         log_error(LOG_LEVEL_INFO,
+            "Now toggled %s", global_toggle_state ? "ON" : "OFF");
+         /*
+          * Leverage TIMER_ANIMSTOP_ID to set the idle icon through the
+          * "application queue". According to MSDN, 10 milliseconds are
+          * the lowest value possible and seem to be close enough to
+          * "instantly".
+          */
+         SetTimer(g_hwndLogFrame, TIMER_ANIMSTOP_ID, 10, NULL);
          break;
 #endif /* def FEATURE_TOGGLE */
 
@@ -1111,7 +1110,6 @@ void SetIdleIcon()
          if (!global_toggle_state)
          {
             TraySetIcon(g_hwndTray, 1, g_hiconOff);
-            /* log_error(LOG_LEVEL_INFO, "Privoxy OFF icon selected."); */
          }
          else
 #endif /* def FEATURE_TOGGLE */
@@ -1184,7 +1182,7 @@ LRESULT CALLBACK LogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
          return 0;
 
       case WM_CLOSE:
-         /* This is the end - beautiful friend - the end */
+         /* This is the end - my only friend - the end */
          DestroyWindow(g_hwndLogBox);
          DestroyWindow(g_hwndLogFrame);
          return 0;

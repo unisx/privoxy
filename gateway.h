@@ -1,6 +1,6 @@
 #ifndef GATEWAY_H_INCLUDED
 #define GATEWAY_H_INCLUDED
-#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.21 2011/09/04 11:10:56 fabiankeil Exp $"
+#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.22 2012/10/23 10:16:52 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.h,v $
@@ -63,8 +63,8 @@ extern void remember_connection(const struct reusable_connection *connection);
 extern int close_unusable_connections(void);
 #endif /* FEATURE_CONNECTION_SHARING */
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 extern void mark_connection_closed(struct reusable_connection *closed_connection);
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 extern int connection_destination_matches(const struct reusable_connection *connection,
                                           const struct http_request *http,
                                           const struct forward_spec *fwd);

@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.83 2011/10/16 14:01:05 fabiankeil Exp $
+#  $Id: default.filter,v 1.85 2012/04/22 12:17:08 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -575,7 +575,7 @@ s@(<a(?:rea)?[^>]*?)\sping=(['"]?)([^"'>]+)\2([>\s]?)@\
 #################################################################################
 FILTER: google CSS-based block for Google text ads. Also removes a width limitation and the toolbar advertisement.
 
-s@</head>@<style type="text/css">\n\
+s@</head>[^\\]@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's google filter. */\n\
  \#fbc, \#fbl, \#ra, .rhh {visibility: hidden !important;}\n\
  \#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, .ch, \#ads,\
@@ -839,6 +839,15 @@ s@^\w*\s+(.*)\s+HTTP/\d\.\d\s*$@$1@i
 CLIENT-HEADER-TAGGER: user-agent Tags the request with the complete User-Agent header.
 
 s@^User-Agent:.*@$0@i
+
+#################################################################################
+#
+# referer: Tags the request with the complete Referer header.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: referer Tags the request with the complete Referer header.
+
+s@^Referer:.*@$0@i
 
 #################################################################################
 #

@@ -3,39 +3,25 @@
 
 <html>
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org">
-
   <title>Quickstart to Using Privoxy</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.19 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
   <link rel="PREVIOUS" title="What's New in this Release" href=
   "whatsnew.html">
   <link rel="NEXT" title="Starting Privoxy" href="startup.html">
   <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="STYLESHEET" type="text/css" href="p_doc.css">
-  <style type="text/css">
-body {
-  background-color: #EEEEEE;
-  color: #000000;
-  }
-  :link { color: #0000FF }
-  :visited { color: #840084 }
-  :active { color: #0000FF }
-  p.c3 {font-weight: bold}
-  span.c2 {font-style: italic}
-  hr.c1 {text-align: left}
-  </style>
 </head>
 
-<body class="SECT1">
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
   <div class="NAVHEADER">
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.19 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
       </tr>
 
       <tr>
@@ -48,7 +34,7 @@ body {
         accesskey="N">Next</a></td>
       </tr>
     </table>
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
   </div>
 
   <div class="SECT1">
@@ -84,10 +70,10 @@ body {
         "http://en.wikipedia.org/wiki/Proxy_server" target="_top">proxy</a>
         by setting the proxy configuration for address of <tt class=
         "LITERAL">127.0.0.1</tt> and port <tt class="LITERAL">8118</tt>.
-        <span class="emphasis EMPHASIS c2">DO NOT</span> activate proxying
-        for <tt class="LITERAL">FTP</tt> or any protocols besides HTTP and
-        HTTPS (SSL) unless you intend to prevent your browser from using
-        these protocols.</p>
+        <span class="emphasis"><i class="EMPHASIS">DO NOT</i></span> activate
+        proxying for <tt class="LITERAL">FTP</tt> or any protocols besides
+        HTTP and HTTPS (SSL) unless you intend to prevent your browser from
+        using these protocols.</p>
       </li>
 
       <li>
@@ -161,10 +147,11 @@ body {
       <span class="QUOTE">"problem"</span> sites, and to spend more time
       adjusting the configuration to solve these unintended consequences. In
       short, there is not an easy way to eliminate <span class=
-      "emphasis EMPHASIS c2">all</span> ads. Either take the easy way and
-      settle for <span class="emphasis EMPHASIS c2">most</span> ads blocked
-      with the default configuration, or jump in and tweak it for your
-      personal surfing habits and preferences.</p>
+      "emphasis"><i class="EMPHASIS">all</i></span> ads. Either take the easy
+      way and settle for <span class="emphasis"><i class=
+      "EMPHASIS">most</i></span> ads blocked with the default configuration,
+      or jump in and tweak it for your personal surfing habits and
+      preferences.</p>
 
       <p>Secondly, a brief explanation of <span class=
       "APPLICATION">Privoxy's</span> <span class="QUOTE">"actions"</span>.
@@ -256,8 +243,9 @@ body {
           place of an ad image that has hit a block rule. For this to come
           into play, the URL must match a <tt class="LITERAL"><a href=
           "actions-file.html#BLOCK">block</a></tt> action somewhere in the
-          configuration, <span class="emphasis EMPHASIS c2">and</span>, it
-          must also match an <tt class="LITERAL"><a href=
+          configuration, <span class="emphasis"><i class=
+          "EMPHASIS">and</i></span>, it must also match an <tt class=
+          "LITERAL"><a href=
           "actions-file.html#HANDLE-AS-IMAGE">handle-as-image</a></tt>
           action.</p>
 
@@ -267,10 +255,9 @@ body {
           <table border="0">
             <tbody>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;<span class=
-                "emphasis EMPHASIS c2">pattern</span> - a checkerboard
-                pattern, so that an ad replacement is obvious. This is the
-                default.</td>
+                <td>&nbsp;&nbsp;&nbsp;<span class="emphasis"><i class=
+                "EMPHASIS">pattern</i></span> - a checkerboard pattern, so
+                that an ad replacement is obvious. This is the default.</td>
               </tr>
             </tbody>
           </table>
@@ -278,9 +265,9 @@ body {
           <table border="0">
             <tbody>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;<span class=
-                "emphasis EMPHASIS c2">blank</span> - A very small empty GIF
-                image is displayed. This is the so-called <span class=
+                <td>&nbsp;&nbsp;&nbsp;<span class="emphasis"><i class=
+                "EMPHASIS">blank</i></span> - A very small empty GIF image is
+                displayed. This is the so-called <span class=
                 "QUOTE">"invisible"</span> configuration option.</td>
               </tr>
             </tbody>
@@ -289,10 +276,9 @@ body {
           <table border="0">
             <tbody>
               <tr>
-                <td>&nbsp;&nbsp;&nbsp;<span class=
-                "emphasis EMPHASIS c2">http://&lt;URL&gt;</span> - A redirect
-                to any image anywhere of the user's choosing (advanced
-                usage).</td>
+                <td>&nbsp;&nbsp;&nbsp;<span class="emphasis"><i class=
+                "EMPHASIS">http://&lt;URL&gt;</i></span> - A redirect to any
+                image anywhere of the user's choosing (advanced usage).</td>
               </tr>
             </tbody>
           </table>
@@ -357,9 +343,9 @@ body {
           "GUIBUTTON">Edit</span>"</span>:</p>
 
           <div class="FIGURE">
-            <a name="AEN844" id="AEN844"></a>
+            <a name="AEN803" id="AEN803"></a>
 
-            <p class="c3">Figure 1. Actions Files in Use</p>
+            <p><b>Figure 1. Actions Files in Use</b></p>
 
             <div class="MEDIAOBJECT">
               <p><img src="files-in-use.jpg"></p>
@@ -422,7 +408,7 @@ body {
   </div>
 
   <div class="NAVFOOTER">
-    <hr class="c1" width="100%">
+    <hr align="left" width="100%">
 
     <table summary="Footer navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">

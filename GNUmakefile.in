@@ -1,8 +1,8 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.205 2011/11/20 17:17:56 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.216 2013/01/10 11:03:58 fabiankeil Exp $
 #
-# Written by and Copyright (C) 2001-2011 members of the
+# Written by and Copyright (C) 2001-2013 members of the
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
@@ -86,7 +86,7 @@ INSTALL    = @INSTALL@
 # Binaries
 BIN_MODE	 = 0755
 # Support files, docs, etc.
-RA_MODE   = 0664
+RA_MODE   = 0644
 # Directory
 DIR_MODE   = 0755
 # Files daemon writes to.
@@ -130,7 +130,8 @@ CHMOD      = chmod
 CHOWN      = chown
 CHGRP      = chgrp
 GROUPS     = groups
-WDUMP      = @WDUMP@ -dump
+W3M_DUMP   = env -u LANG LC_ALL=C @W3M@ -dump
+W3M_DUMP_UTF8 = @W3M@ -dump
 JADECAT    = @JADECAT@
 JADEBIN    = @JADEBIN@
 DB         = $(JADEBIN) $(JADECAT) -ihtml -t sgml  -D.. -d ldp.dsl\#html
@@ -142,7 +143,7 @@ PERL       = perl
 DOC_DIR    = doc/source
 DOC_TMP    = $(DOC_DIR)/tmp
 DOC_STATUS = @DOC_STATUS@
-TIDY       = tidy -modify -indent -clean -wrap 78
+TIDY       = tidy -modify -indent -wrap 78 --tidy-mark no
 
 # Program to do LF->CRLF
 #
@@ -503,9 +504,9 @@ groff2html:
 # readme page and INSTALL file
 dok-readme: dok-release
 	cd doc/source && $(DB)-notoc -V nochunks readme.sgml > tmp.html &&\
-	env -u LANG $(WDUMP) tmp.html > ../../README ;\
+	$(W3M_DUMP) tmp.html > ../../README ;\
 	$(DB)-notoc -V nochunks install.sgml > tmp.html &&\
-	env -u LANG $(WDUMP) tmp.html > ../../INSTALL ;\
+	$(W3M_DUMP) tmp.html > ../../INSTALL ;\
 	$(RM) tmp.*
 
 # index.sgml is used to create both the Home Page, and a local index
@@ -516,7 +517,6 @@ dok-webserver:
 	cd doc/source/webserver && $(DB)-notoc -ip-homepage -V nochunks index.sgml > ../../webserver/index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
 	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
-	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
 	s/\.\d\. //;\
 	s/__copy/&copy;/'\
      doc/webserver/index.html && $(RM) doc/webserver/*.bak
@@ -526,7 +526,6 @@ dok-index:
 	cd doc/source/webserver && $(DB)-notoc -ip-index -V nochunks index.sgml > ../../webserver/privoxy-index.html
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
 	s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps users to protect their privacy.\"><\/HEAD/;\
-	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
 	s/\.\d\. //;\
 	s/__copy/&copy;/' \
      doc/webserver/privoxy-index.html && $(RM) doc/webserver/*.bak
@@ -537,7 +536,7 @@ dok: dok-release dok-devel dok-user dok-faq dok-readme dok-webserver dok-authors
 
 ## Make AUTHORS file
 dok-authors:
-	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && env -u LANG $(WDUMP) \
+	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && $(W3M_DUMP_UTF8) \
 	  tmp.html > ../../AUTHORS && $(RM) tmp.html
 
 # Set doc entities for VERSION and CODE_STATUS in sgml docs. Toggle content
@@ -566,30 +565,27 @@ dok-release:
 # announce: dok-release
 # 	mkdir -p $(DOC_TMP)
 # 	cd $(DOC_TMP) && cp -f ../announce.sgml . && $(DB) -iannounce-big announce.sgml &&\
-# 	mv -f index.html announce.html && $(WDUMP) announce.html > announce.txt
+# 	mv -f index.html announce.html && $(W3M_DUMP) announce.html > announce.txt
 # 	cd $(DOC_TMP) && $(DB) announce.sgml &&\
-# 	mv -f index.html announce-mini.html && $(WDUMP) announce-mini.html > announce-mini.txt &&\
+# 	mv -f index.html announce-mini.html && $(W3M_DUMP) announce-mini.html > announce-mini.txt &&\
 # 	mv -f *html *txt ../../..
 # 	rm -fr $(DOC_TMP)
 
 # The main Privoxy config file, generated from sgml sources.
-# NOTE: This will require some hand editing. The new file is outputted
-# as config.new so that problem sections can be compared to previous
-# version. This is hardcored to w3m for html/text conversion. Also,
-# requires the shell util 'fmt'.
+# NOTE: This will require some hand editing.
 config-file: dok-release
 	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
-	env -u LANG w3m -dump __tmp.html | fmt -w 70 > ../../config.new && $(RM) -r __tmp.*
-	$(PERL) -i.bak utils/prepare-configfile.pl config.new
+	$(W3M_DUMP) -cols 67 __tmp.html > ../../config && $(RM) __tmp.*
+	$(PERL) -i.bak utils/prepare-configfile.pl config
 
 	$(RM) *.bak
 	@$(ECHO)  "****************************************************"
-	@$(ECHO)  "The output file is config.new."
-	@$(ECHO)  "Now -- you need to hand edit the results!!!"
+	@$(ECHO)  "The config file has been optimistically updated"
+	@$(ECHO)  "Now -- you may need to hand edit the results!"
 	@$(ECHO)  "In particular, check the Debug levels, the"
 	@$(ECHO)  "permit-access, forward & socks examples and the"
 	@$(ECHO)  "various user-manual examples, which all"
-	@$(ECHO)  "probably got hammered."
+	@$(ECHO)  "might have gotten hammered."
 	@$(ECHO)  "****************************************************"
 
 # config file, alternate version using lynx (perl stuff unfinished). Lynx
