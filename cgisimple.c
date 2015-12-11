@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.95 2009/09/06 14:18:35 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.96 2009/12/16 08:36:39 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -1490,6 +1490,12 @@ jb_err cgi_robots_txt(struct client_state *csp,
 static jb_err show_defines(struct map *exports)
 {
    jb_err err = JB_ERR_OK;
+
+#ifdef FEATURE_ACCEPT_FILTER
+   if (!err) err = map_conditional(exports, "FEATURE_ACCEPT_FILTER", 1);
+#else /* ifndef FEATURE_ACCEPT_FILTER */
+   if (!err) err = map_conditional(exports, "FEATURE_ACCEPT_FILTER", 0);
+#endif /* ndef FEATURE_ACCEPT_FILTER */
 
 #ifdef FEATURE_ACL
    if (!err) err = map_conditional(exports, "FEATURE_ACL", 1);

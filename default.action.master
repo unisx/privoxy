@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.191 2009/10/02 18:07:22 fabiankeil Exp $
+#  $Id: default.action.master,v 1.207 2010/02/09 16:18:53 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -23,7 +23,7 @@
 #                 and enhancements are better placed in user.action,
 #                 the match-all section has been moved to match-all.action.
 #
-#  Copyright   :  Written by and Copyright (C) 2001-2009 the
+#  Copyright   :  Written by and Copyright (C) 2001-2010 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 #  Note: Updated versions of this file will be made available from time
@@ -750,6 +750,17 @@ support./(.*/)?track
 /.*(top|bottom|left|right|text)_?ad
 
 #############################################################################
+# Catch-all exceptions
+#############################################################################
+{-block}
+# Sticky Actions = -block
+
+#MASTER# REMARKS: Actionsfile feedback item #2933856  2010-01-17 16:59
+#MASTER# REMARKS: Allow URLs containing DektopAdmin (matches .*top_?ad)
+# URL = http://support.apple.com/downloads/DL985/en_US/RemoteDesktopAdmin332.dmg
+/.*desktopadmin
+
+#############################################################################
 # Site-specific block patterns;
 #############################################################################
 {+block{Domain parking site}}
@@ -918,7 +929,9 @@ static.lycos-europe.net
 #MASTER# Remark: nothing but "sponsored listings"
 # Blocked URL = http://bcc.co.uk/
 bcc.co.uk/
-
+# Blocked URL = http://fusion.adtoma.com:80/125AFFE801/1DC59C7801.swf
+# Blocked URL = http://fusion.adtoma.com/1254D5CC01/1E43C76801.jpg
+fusion.adtoma.com/
 
 
 #----------------------------------------------------------------------------
@@ -935,8 +948,6 @@ bcc.co.uk/
 #MASTER# REMARKS: See <http://www.google.com/analytics/> for user tracking.
 #MASTER# REMARKS: There is a ssl.google-analytics as well.
 .google-analytics./
-#MASTER# BLOCK-REFERRER: http://versiontracker.com and many others. 10/20/06
-/(.*/)?__utm.gif\?
 #MASTER# REMARKS: Below Moved here from -handle-as-image 10/16/06 ##########
 #MASTER# BLOCK-REFERRER: http://forums2.gardenweb.com/forums/orchids/ 09/25/06
 #MASTER# REMARKS: Mostly JS and plain text stuff
@@ -953,34 +964,10 @@ view.atdmt.com/(.*/)?iview/
 tracking.
 #MASTER# BLOCK-REFERRER: http://netcraft.com and many others 10/22/06
 /(.*/)?adjs\.php\?
-#MASTER# BLOCK-REFERRER: http://washingpost.com and others 10/25/06
-/.*\.gif\?D=DM
-#MASTER# BLOCK-REFERRER: http://www.washingtonpost.com/
-#stats.surfaid.ihost.com/(crc/)?images/(bounce/)?uc.GIF
-#MASTER# BLOCK-REFERRER: http://www.ibm.com 10/09/06
-#MASTER# REMARKS: Similar hostname and paths appear in multiple locations.
-# Blocked URL = http://stats.surfaid.ihost.com/crc/images/bounce/uc.GIF
-# Blocked URL = http://stats.surfaid.ihost.com/rc/images/bounce/uc.GIF
-stats./c?rc/.*/uc.gif
-#MASTER# BLOCK-REFERRER: http://priceline.com 10/20/06
-#MASTER# REMARKS: User tracking, webbug stuff
-/(.*/)?dcs.gif\?&?dcs
-#MASTER# BLOCK-REFERRER: http://www.msnbc.com 10/07/06
-#MASTER# REMARKS: And MANY others. Webbug stuff.
-/(.*/)?c(lear)?\.gif\?.
-#MASTER# BLOCK-REFERRER: http://www.investorguide.com 10/08/06
-#MASTER# BLOCK-REFERRER: http://foodnetwork.com, http://gardenweb.com 10/20/06
-#MASTER# REMARK: webbug type gif used in MANY places.
-#MASTER# REMARK: Too many false positives
-#/(.*/)?(clear|(trans_?1x|blank)?1).gif
-#MASTER# REMARK: Let's try this way.
-/(.*/)?(clear|blank|(trans_?|1x)?1).gif\?.
 #MASTER# BLOCK-REFERRER: http://groups.yahoo.com/group/epdf/ 10/08/06
 .bc.yahoo.com/b\?P=
 #MASTER# BLOCK-REFERRER: http://www.motherboard.cz 10/30/06
 x*.alexa.com
-#MASTER# BLOCK-REFERRER: http://actorstheatre.org 11/02/06
-stats./.*\.gif\?
 #MASTER# BLOCK-REFERRER: http://mplayernetwork.com 11/07/06
 #MASTER# BLOCK-REFERRER: http://eetimes.com 09/26/06
 /event.ng/
@@ -1010,6 +997,34 @@ stats.reinvigorate.net/
 .quantserve.com
 # Blocked URL = http://media.adrevolver.com/adrevolver/trace?sip=123&cpy=123
 media.adrevolver.com/
+
+{+block{Might be a web-bug.} -handle-as-empty-document +handle-as-image}
+#MASTER# BLOCK-REFERRER: http://versiontracker.com and many others. 10/20/06
+/(.*/)?__utm.gif\?
+#MASTER# BLOCK-REFERRER: http://washingpost.com and others 10/25/06
+/.*\.gif\?D=DM
+#MASTER# BLOCK-REFERRER: http://www.washingtonpost.com/
+#stats.surfaid.ihost.com/(crc/)?images/(bounce/)?uc.GIF
+#MASTER# BLOCK-REFERRER: http://www.ibm.com 10/09/06
+#MASTER# REMARKS: Similar hostname and paths appear in multiple locations.
+# Blocked URL = http://stats.surfaid.ihost.com/crc/images/bounce/uc.GIF
+# Blocked URL = http://stats.surfaid.ihost.com/rc/images/bounce/uc.GIF
+stats./c?rc/.*/uc.gif
+#MASTER# BLOCK-REFERRER: http://priceline.com 10/20/06
+#MASTER# REMARKS: User tracking, webbug stuff
+/(.*/)?dcs.gif\?&?dcs
+#MASTER# BLOCK-REFERRER: http://www.msnbc.com 10/07/06
+#MASTER# REMARKS: And MANY others. Webbug stuff.
+/(.*/)?c(lear)?\.gif\?.
+#MASTER# BLOCK-REFERRER: http://www.investorguide.com 10/08/06
+#MASTER# BLOCK-REFERRER: http://foodnetwork.com, http://gardenweb.com 10/20/06
+#MASTER# REMARK: webbug type gif used in MANY places.
+#MASTER# REMARK: Too many false positives
+#/(.*/)?(clear|(trans_?1x|blank)?1).gif
+#MASTER# REMARK: Let's try this way.
+/(.*/)?(clear|blank|(trans_?|1x)?1).gif\?.
+#MASTER# BLOCK-REFERRER: http://actorstheatre.org 11/02/06
+stats./.*\.gif\?
 
 #----------------------------------------------------------------------------
 # JavaScripts and Texts for ad and popup generation
@@ -1237,6 +1252,10 @@ img.directtrack.com
 .pclick.yahoo.com/images/
 # Blocked URL = http://rover.ebay.com/ar/1/2/3?mpt=123&adtype=1&size=728x90
 /.*\&adtype=
+# Blocked URL = http://resources.parfym.se/tradedoubler/250x360.swf
+/tradedoubler/.*\.swf
+# Blocked URL = http://hstse.tradedoubler.com/file/142609/440x220.swf
+hstse.tradedoubler.com/.*\.swf
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1329,6 +1348,9 @@ feeds.feedburner.com/~a/DilbertDailyStrip\?
 #MASTER# BLOCK-REFERER: http://www.buch.de/
 # URL = http://track.webtrekk.de/471497967328727/wt.pl?p=177,de.buch.show.home,1,1024x768,24,1,1218816426275,0,884x653,0&enc1=%FC&enc2=iso-8859-1&st=view&la=en-US&np=Default%20Plugi
 track.webtrekk.de/
+#MASTER# BLOCK-REFERER: https://sourceforge.net/
+# URL = http://b.scorecardresearch.com/p2?c1=2&c2=6035546&c3=&c4=&c5=&c6=&c15=&cj=1
+b.scorecardresearch.com/
 
 #----------------------------------------------------------------------------
 # Specific counters (see above for generic patterns)
@@ -1676,6 +1698,30 @@ lads.myspacecdn.com/
 #MASTER# REMARKS: Actionfile tracker ID: 2838501:  2009-08-16
 # URL = http://new.meteo.pl/advajax.js
 .meteo.pl/advajax\.js
+# URL = http://www.adressa.no/
+# URL = http://adressa.no/
+adressa.no/
+# URL = http://www.adresseavisen.no/
+# URL = http://adresseavisen.no/
+adresseavisen.no/
+# URL = http://apps.facebook.com/onthefarm/track.php?creative=&cat=friendvisit&subcat=weeds&key=a789a971dc687bee4c20c044834fabdd&next=index.php%3Fref%3Dnotif%26visitId%3D898835505
+.facebook.com/.*/track.php
+# URL = http://www.ifdb.tads.org/
+# URL = http://www.tads.org/
+.tads.org/
+# URL = http://adtoma.com/
+adtoma.com/
+#MASTER# REMARKS: Actionsfile feedback 2859872  2009-09-16 09:58
+# URL = http://adactio.com/
+adactio.com/
+# URL = http://www.peereboom.us/adsuck/
+www.peereboom.us/adsuck/
+# URL = http://www.svd.se/template/ver1-0/css/ads.css?v=194
+.svd.se/.*\.css($|\?)
+#MASTER# REMARKS: [privoxy-users] Privoxy blocking Ebay item pictures Jan 31, 2010
+#MASTER# REMARKS: Ebay enlarge picture function doesn't work.
+# URL = http://include.ebaystatic.com/v4js/en_GB/e637i/SYS-LIGER_Omniture_e637i10177164_5_en_GB.js
+include.ebaystatic.com/.*omniture.*\.js
 
 
 
@@ -1703,8 +1749,9 @@ mail.google.*
 #----------------------------------------------------------------------------
 # Semi-fragile, allow for blocks.
 #----------------------------------------------------------------------------
-{ -crunch-all-cookies -filter -fast-redirects -hide-referer -prevent-compression }
-#MASTER# REMARKS: Problem URL: adserver.yahoo.com 10/01/06
+{-crunch-all-cookies -filter -fast-redirects -hide-referer}
+# Sticky Actions = -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer
+# URL = http://adserver.yahoo.com/
 #MASTER# REMARKS: This is much too broad for my taste. It forces me to add
 #MASTER# REMARKS: a special yahoo section in my user.action file, just to
 #MASTER# REMARKS: confirm my defaults in default.action. fk 2007-01-19
@@ -2009,6 +2056,8 @@ javabog.dk/ijk/
 .fsfe.org/
 # URL = http://www.couchsurfing.com/mapsurf.html
 .couchsurfing.com/
+# URL = http://www.couchsurfing.org/mapsurf.html
+.couchsurfing.org/
 
 {-filter{banners-by-link}}
 # Sticky Actions = -filter{banners-by-link}
@@ -2175,9 +2224,6 @@ www.skweezer.net/bloglines
 #MASTER# PROBLEM-URL: http://www.anti-leech.com/theft_example.html
 #MASTER# REMARKS: Lame attempt at banning ad-blockers. Used by other websites as well.
 /antitheft\.php
-
-{ +prevent-compression }
-.compusa.com/
 
 {+filter{tiny-textforms}}
 .sourceforge.net/tracker

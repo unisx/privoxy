@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.27 2009/09/10 14:42:01 fabiankeil Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.28 2010/01/03 12:37:14 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
@@ -56,7 +56,7 @@ extern struct file_list    files[1];
 #ifdef unix
 extern const char *pidfile;
 #endif
-extern int no_daemon;
+extern int daemon_mode;
 
 #ifdef FEATURE_GRACEFUL_TERMINATION
 extern int g_terminate;

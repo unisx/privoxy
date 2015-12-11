@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.151 2009/10/04 15:45:11 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.154 2010/01/10 13:53:48 ler762 Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -1148,6 +1148,9 @@ struct access_control_list
 /** configuration_spec::feature_flags: Share outgoing connections between different client connections. */
 #define RUNTIME_FEATURE_CONNECTION_SHARING         256U
 
+/** configuration_spec::feature_flags: Pages blocked with +handle-as-empty-doc get a return status of 200 OK. */
+#define RUNTIME_FEATURE_EMPTY_DOC_RETURNS_OK       512U
+
 /**
  * Data loaded from the configuration file.
  *
@@ -1169,6 +1172,12 @@ struct configuration_spec
     * - RUNTIME_FEATURE_CGI_TOGGLE
     * - RUNTIME_FEATURE_HTTP_TOGGLE
     * - RUNTIME_FEATURE_SPLIT_LARGE_FORMS
+    * - RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS
+    * - RUNTIME_FEATURE_ENFORCE_BLOCKS
+    * - RUNTIME_FEATURE_CGI_CRUNCHING
+    * - RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE
+    * - RUNTIME_FEATURE_CONNECTION_SHARING
+    * - RUNTIME_FEATURE_EMPTY_DOC_RETURNS_OK
     */
    unsigned feature_flags;
 
@@ -1252,6 +1261,9 @@ struct configuration_spec
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    /* Maximum number of seconds after which an open connection will no longer be reused. */
    unsigned int keep_alive_timeout;
+
+   /* Assumed server-side keep alive timeout if none is specified. */
+   unsigned int default_server_timeout;
 #endif
 
    /** All options from the config file, HTML-formatted. */

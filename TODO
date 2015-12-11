@@ -1,4 +1,4 @@
-$Id: TODO,v 1.6 2009/09/06 17:20:31 fabiankeil Exp $
+$Id: TODO,v 1.17 2010/02/09 16:21:46 fabiankeil Exp $
 
 Some Privoxy related task, not ordered in any way.
 
@@ -116,13 +116,19 @@ Some Privoxy related task, not ordered in any way.
     macros with strstr() before compiling pcrs commands.
     Investigated, needs some restructuring but is probably worth it.
 
-51) Make user-manual directive more general to allow serving
+51) Make user-manual directive more generic to allow serving
     the FAQ and other stuff, too. Consider changing the port
     for "same origin policy" issues.
 
-53) Find a more reliable hoster.
+53) Find a more reliable hoster. Involves finding out what our
+    requirements are and which SF alternatives fulfil them.
+    It would probably also make sense to look into what other
+    projects did when migrating away from SF.
 
 54) Move away from CVS to a more modern revision control system.
+    Find out if there are any objection against going with Git.
+    Using Git would also have the advantage that SF now pretents
+    to support it, so we could do it independently from 53).
 
 55) Apply for Coverity scans: http://scan.coverity.com/
 
@@ -149,7 +155,9 @@ Some Privoxy related task, not ordered in any way.
 64) Use proper copyright attribution. "Privoxy Developers"
     is no legal entity.
 
-65) Polish Website.
+65) Polish Website. Probably involves ditching the Docbook
+    mess in favour of wml. There should be already some threads
+    in the mailinglists archives about this.
 
 66) Increase maximum number of action and filter files.
 
@@ -167,8 +175,16 @@ Some Privoxy related task, not ordered in any way.
 71) Allow to listen on multiple addresses without having to
     bind to all.
 
-72) Use less ugly Privoxy (fav)icons.
+74) Let Privoxy-Regression-Test optionally check that action
+    sections which disable actions actually are preceded by
+    sections that enable said actions.
 
-73) Factor FEATURE_CONNECTION_SHARING out of
-    FEATURE_CONNECTION_KEEP_ALIVE so the later can be enabled
-    on platforms without mutex support as well.
+75) Create a tool that creates Privoxy action (and filter?) files
+    out of adblock files. Could be implemented as option for
+    url-pattern-translator.pl.
+
+76) Cache DNS responses. Note that this has been requested
+    several times by users, but is not a developer priority.
+    If you care about this, feel free to submit patches.
+
+77) Allow to configure the IP address used in outgoing connections.

@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.15">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.16">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,9 +17,9 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.32 2009/10/10 05:52:55 fabiankeil Exp $
+ $Id: readme.sgml,v 2.37 2010/02/19 16:50:05 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -80,7 +80,7 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the
+ * Copyright   :  Written by and Copyright (C) 2001-2010 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -128,19 +128,16 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
 <para>
- October 2009, Privoxy 3.0.15 beta is released.
+ February 2010, Privoxy 3.0.16 stable is released.
 </para>
 <para>
- This is a bugfix-release for the previous betas which introduced IPv6
- support, improved keep-alive support and a bunch of minor improvements.
+ This is the first stable release since 3.0.12. It mainly contains
+ bugfixes for the previous betas which introduced IPv6 support,
+ improved keep-alive support and a bunch of minor improvements.
  See the "ChangeLog", and the "What's New" section and the
  "Upgrader's Notes" in <citetitle>the User Manual</citetitle> for details.
 </para>
 
-<para>
- Depending on the feedback it will be either followed by yet another
- beta release, or by a stable release with the same feature set.
-</para>
 </sect1>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -168,9 +165,6 @@
  file named 'config' in the current directory (except Win32 which will look
  for 'config.txt'). If no config_file is found, Privoxy will fail to start.
 </para>
-<para>
- Or Debian and Ubuntu: /etc/init.d/privoxy start
-</para>
 </sect1>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -189,7 +183,7 @@
 <para>
  Be sure to set your browser(s) for HTTP/HTTPS Proxy at &lt;IP&gt;:&lt;Port&gt;, or
  whatever you specify in the config file under 'listen-address'. DEFAULT is
- localhost:8118. Note that Privoxy ONLY proxies HTTP (and HTTPS) traffic. Do not try it 
+ 127.0.0.1:8118. Note that Privoxy ONLY proxies HTTP (and HTTPS) traffic. Do not try it
  with FTP or other protocols for the simple reason it does not work.
 </para>
 <para>
@@ -243,7 +237,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.32 2009/10/10 05:52:55 fabiankeil Exp $ -->
+<!--  $Id: readme.sgml,v 2.37 2010/02/19 16:50:05 fabiankeil Exp $ -->
 <!-- </para> -->
 
 </article>

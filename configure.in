@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.138 2009/10/10 05:47:52 fabiankeil Exp $
+dnl $Id: configure.in,v 1.142 2010/02/13 16:35:45 fabiankeil Exp $
 dnl 
-dnl Written by and Copyright (C) 2001-2009 the
+dnl Written by and Copyright (C) 2001-2010 the
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
@@ -32,7 +32,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.138 $)
+AC_REVISION($Revision: 1.142 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -78,8 +78,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=15
-CODE_STATUS="beta"
+VERSION_POINT=16
+CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
@@ -837,9 +837,21 @@ AC_ARG_ENABLE(graceful-termination,
 fi])
 
 AC_ARG_ENABLE(extended-host-patterns,
-[  --enable-extended-host-patterns Allow extended regular expressions in host patterns.],
+[  --enable-extended-host-patterns Enable and require PCRE syntax in host patterns. This feature hasn't
+                                  been announced yet and it's not clear if it's a good idea. It's expected
+                                  to work, but undocumented. You should only enable it if you know what
+                                  PCRE is and are sure that you need it for your host patterns. You can
+                                  use tools/url-pattern-translator.pl to convert existing action files to
+                                  use PCRE host patterns. Please don't enable this option when creating
+                                  packages for others that may not be expecting it.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_EXTENDED_HOST_PATTERNS)
+fi])
+
+AC_ARG_ENABLE(accept-filter,
+[  --enable-accept-filter          Try to use accf_http(9) if supported.],
+[if test $enableval = yes; then
+  AC_DEFINE(FEATURE_ACCEPT_FILTER)
 fi])
 
 dnl pcre/pcrs is needed for CGI anyway, so

@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.125 2009/06/14 14:37:08 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.126 2009/10/29 16:53:56 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -1362,7 +1362,7 @@ char *add_help_link(const char *item,
    string_join  (&result, string_toupper(item));
    string_append(&result, "\">");
    string_append(&result, item);
-   string_append(&result, "</a> ");
+   string_append(&result, "</a>");
 
    return result;
 }

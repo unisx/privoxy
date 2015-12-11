@@ -1,6 +1,62 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.16 Stable ***
+
+- Added the config file option handle-as-empty-doc-returns-ok to
+  work around Firefox bug #492459, which causes Firefox to hang
+  if JavaScripts are blocked in certain situations. The option is
+  enabled in the default config file.
+- Added the config file option default-server-timeout to control the
+  assumed default server timeout. Since Privoxy no longer returns
+  an error message for connection resets on reused client connections,
+  assuming larger server timeout values appears to actually work
+  pretty well as long as connections aren't shared.
+- Added optional support for FreeBSD's accf_http(9). Use the
+  configure option --enable-accept-filter to enable it.
+- Added fancier Privoxy icons for win32. Contributed by Jeff H.
+- In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
+- Resolve localhost using whatever address family the operating
+  system feels like. Previous betas would try to use IPv4 as this
+  is what most users expect, but this didn't work reliably on
+  GNU/Linux systems.
+- In the action lists on CGI pages, actions and their parameters are
+  no longer separated with a space. The action file parser doesn't
+  actually allow this and will throw an invalid syntax error if actions
+  and parameters in the action files are separated. Not adding the
+  spaces means copy and pasting CGI output into the action files works.
+- The default keep-alive timeout has been reduced to 5 seconds to work
+  around hangs in clients that treat the proxy like any other host and
+  stop allowing any new connections if the "maximum number of
+  connections per host" is reached.
+- Several webbug URLs that look like they are leading to images are now
+  blocked as image instead of empty documents. Doing the latter causes
+  WebKit-based clients to show a "missing image" icon which may mess up
+  the layout.
+- The no-such-domain template is used for DNS resolution
+  problems with FEATURE_IPV6_SUPPORT enabled. Previously the
+  connect-failed template was used. Reported by 'zebul666'.
+- Accepts quoted expiration dates even though RFC 2109 10.1.2
+  doesn't seem to allow them. Reported anonymously.
+- Don't try to forget connections if connection sharing is disabled.
+  This wasn't a real problem but caused an unnecessary log message.
+- The still undocumented --enable-extended-host-patterns configure
+  option has a better description.
+- Fixed an error message that would claim a write to the server
+  failed when actually writing to the client failed.
+- Log the crunch reason before trying to write to the client.
+  The log is easier to read that way.
+- Several log messages about client connections also mention
+  the socket number.
+- handle-as-empty-document no longer depends on the image blocking
+  code being enabled.
+- Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
+- uagen, a Firefox User-Agent generator for Privoxy and Mozilla
+  browsers has been imported and is available in the tarball's
+  tools directory.
+- The scripts in the tools directory treat unknown parameters
+  as fatal errors.
+
 *** Version 3.0.15 Beta ***
 
 - In case of missing server data, no error message is send to the
@@ -119,7 +175,7 @@ ChangeLog for Privoxy
   the still-open connection will be reused for the client's next
   request to the same destination. Note that this only matters
   if connection-sharing is enabled.
-- A TODO list has been added to the source tarballs to give potential
+- A TODO list has been added to the source tarball to give potential
   volunteers a better idea of what the current goals are. Donations
   are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
 
@@ -158,7 +214,7 @@ ChangeLog for Privoxy
   skip reason.
 
 *** Version 3.0.11 ***
-	
+
 - On most platforms, outgoing connections can be kept alive and
   reused if the server supports it. Whether or not this improves
   things depends on the connection.
@@ -373,7 +429,7 @@ ChangeLog for Privoxy
   forbidden characters like dots.
 - New trust entries are saved with a comment that contains the
   trusted referring URL (Suggested by Daniel Griscom).
-- Filter descriptions are HTML encoded automatically. 	
+- Filter descriptions are HTML encoded automatically.
 - New config option "split-large-forms" to work
   around a browser bug that caused IE6 and IE7 to ignore
   the Submit button on the edit-actions-for-url CGI page.
@@ -412,11 +468,11 @@ ChangeLog for Privoxy
   Privoxy detection "attack". Note that detecting Privoxy is
   still possible through other ways and Privoxy was never intended
   to be invisible anyway.
-- Added support for AmigaOS 4, fixed build for AmigaOS 3.x.	
+- Added support for AmigaOS 4, fixed build for AmigaOS 3.x.
 - The show-url-info CGI page displays a warning if Privoxy
   is currently toggled off.
 - The show-status CGI page suppresses the edit button
-  for action files if Privoxy has no write access.	
+  for action files if Privoxy has no write access.
 - Most CGI error pages react properly to HEAD requests.
 - Requests with RFC 3253 HTTP methods (used by Subversion)
   are accepted. (Patch provided by Petr Kadlec)
@@ -491,18 +547,18 @@ ChangeLog for Privoxy
 - Improved the filters img-reorder, js-annoyances, webbugs,
   banners-by-size, banners-by-link and ie-exploits to make them
   less likely to break anything.
-- Removed outdated URL patterns in default.action and added new ones. 
+- Removed outdated URL patterns in default.action and added new ones.
 - Added redirection from http://p.p/user-manual to http://p.p/user-manual/
 - Changed webinterface default values for hide-user-agent, hide-referrer
   and set-image-blocker.
-	
+
 *** Version 3.0.5 Beta ***
 
 - Windows version can be installed/started as a service.
 - Windows icon stays blue when Privoxy is idle, green when busy.
 - Integrated Fabian Keil's extensive patch.  See:
-  http://www.fabiankeil.de/sourcecode/privoxy/. Includes the 
-  following new or significantly improved actions (among many 
+  http://www.fabiankeil.de/sourcecode/privoxy/. Includes the
+  following new or significantly improved actions (among many
   other improvements):
 
      content-type-overwrite{}
@@ -530,17 +586,17 @@ ChangeLog for Privoxy
 - Added jpeg filtering to defend against MS jpeg vulnerability MS04-028
   with the new inspect-jpegs action.
 - Removed the "arbitrary" 1000 filter limit - addresses tracker #911950
-- Thanks to Jindrich Makovicka for a race condition fix for the log 
+- Thanks to Jindrich Makovicka for a race condition fix for the log
   file.  The race condition remains for non-pthread implementations.
   Reference patch #1175720. Various other logging enhancements.
 - A pile of assorted bug fixes, memory leaks, enhancements, etc.
 - Moved Actions file reporting mechanism to SF tracker.
-- Two new options for config: enable-remote-http-toggle and 
+- Two new options for config: enable-remote-http-toggle and
   forwarded-connect-retries.
 - Trap unsupported FTP requests.
 - Let text/xml be filtered.
 - Numerous updates to default.action
-- Increase the compiled in limit of trusted referrers from 64 to 512 
+- Increase the compiled in limit of trusted referrers from 64 to 512
   (for trustfile users).
 
 *** Version 3.0.3 ***
@@ -557,15 +613,15 @@ ChangeLog for Privoxy
 - Workarounds for client (iTunes etc) and server (PHP < 4.2.3) bugs
   including the notorious "blank page" problem.
 - Various filter improvements; most notably the unsolicited-popups
-  filter became less destructive     
+  filter became less destructive
 - Major revamp of the actions file
-	
+
 *** Version 3.0.2 ***
 
 - Fixed two memory leaks, one serious
 - Fixed bug in pcrs which could cause crashes with user-defined filters
 - Fixed bug in domain name matching
-- Assorted small fixes (Win32 menu, CGI URL editor, ..) 
+- Assorted small fixes (Win32 menu, CGI URL editor, ..)
 - Added basic support for the OPTIONS and TRACE http methods
 - Added workaround for Bug in Mac OSX that made Privoxy crash occasionally
 - Refined the default action file through >400 items of user feedback
@@ -576,7 +632,7 @@ ChangeLog for Privoxy
   - Replaced filter "popups" by choice between two modes:
     - "unsolicited-popups" tries to catch only the unsolicited ones
     - "all-popups" tries to kill them all (as before)
-  - New filter "tiny-textforms" Help those tiny or hard-wrap textareas. 
+  - New filter "tiny-textforms" Help those tiny or hard-wrap textareas.
   - New filter "jumping-windows" that prevents windows from resizing
     and moving themselves
   - New filter "demoronizer" which fixes MS's abuse of std charsets
@@ -600,7 +656,7 @@ ChangeLog for Privoxy
 - Added quicktime-kioskmode filter and improved frameset-borders
 - Updated default.action based on latest feedback
 - New PDF doc build process
-- Add a user contrib module to cvs: 
+- Add a user contrib module to cvs:
   http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/
 
 *** Version 2.9.18  ***
@@ -610,7 +666,7 @@ ChangeLog for Privoxy
 - Three filters fixed (again!)
 - Assorted small fixes and doc enhancements
 
-*** Version 2.9.16  *** 
+*** Version 2.9.16  ***
 
 - Major revamp of default.action to get rid of years of cruft.
 - Same for default.filter
@@ -622,11 +678,11 @@ ChangeLog for Privoxy
 - user-manual directive added to config for help links from within CGI
   editor.
 - Multiple actions files can now be specified in config.
-- Actions files are changed to: default.action, standard.action, and 
+- Actions files are changed to: default.action, standard.action, and
   user.action. user.action is for personal/local configuration.
 - The usual many small and miscellaneous bug and security fixes.
 
-*** Version 2.9.14 Beta *** 
+*** Version 2.9.14 Beta ***
 
 - Fix Solaris compile problem (gateway.h and filters.h)
 - Makefile fixes for Solaris, FreeBSD (?)
@@ -640,30 +696,30 @@ ChangeLog for Privoxy
 - #include mechansim for common text in templates
 - Various other minor fixes.
 
-*** Version 2.9.13 Beta *** 
+*** Version 2.9.13 Beta ***
 
-- *NEWS*: The project has been renamed to Privoxy! The new name is 
+- *NEWS*: The project has been renamed to Privoxy! The new name is
   reflected throughout (file locations, etc).
-- ijb.action is now default.action. re_filterfile is now 
+- ijb.action is now default.action. re_filterfile is now
   default.filter.
 - http://i.j.b/ is now http://p.p/
-- The 'logo' option for replacing ad iamges is removed now. 'Pattern' 
+- The 'logo' option for replacing ad iamges is removed now. 'Pattern'
   (checkerboard) is now the default.
 - RPM spec file make over.
 
 
-*** Version 2.9.12 Beta *** 
+*** Version 2.9.12 Beta ***
 
-- **READ**: The default listening PORT is NOW 8118!!! Changed from 
-  8000 due to conflict with NAS (Network Audio Server, whatever that 
+- **READ**: The default listening PORT is NOW 8118!!! Changed from
+  8000 due to conflict with NAS (Network Audio Server, whatever that
   is.)
 - More CGI actions editor fixes and improvements.
 - Win32 command line fix ups.
-- re_filterfile now has modular sections that can be activated on a 
+- re_filterfile now has modular sections that can be activated on a
   per site basis. Some new goodies there too.
 - +filter now takes arguments to match FILTER sections in re_filterfile
-  for even more flexibility. 
-- Added a new image blocker option: +image-blocker{pattern}, which 
+  for even more flexibility.
+- Added a new image blocker option: +image-blocker{pattern}, which
   displays a checkerboard patthern and scales better than the logo.
 - PNG images will be used in place of GIF for JB built-in images
   if configured with --enable-no-gif.
@@ -676,14 +732,14 @@ ChangeLog for Privoxy
 - CGI Editor works on OS/2 now.
 - Fix restart failure where sockets were in TIME_WAIT.
 - Fixes for actions cgi editor, make sure we have right file.
-- A --pidfile command line option now, in addition to --help, 
+- A --pidfile command line option now, in addition to --help,
   --version, --no-daemon, --user and configfile. --no-daemon replaces
-  the former -d option and _DEBUG define. --user will drop privileges 
+  the former -d option and _DEBUG define. --user will drop privileges
   to the specified user.
 - Signal handling cleanups (*nix).
 - CGI actions editor improvements and fixes.
 - Error handling improvements, especially out of memory.
-- Default re_filterfile fix that caused spurious IJB logos 
+- Default re_filterfile fix that caused spurious IJB logos
   (instead of 'blank').
 - configure.in threading fixes for Solaris.
 - Various other minor fixes.
@@ -691,14 +747,14 @@ ChangeLog for Privoxy
 
 *** Version 2.9.11 Beta Changes ***
 
-- Add "session" cookie concept where cookies exist for the life 
-of that browser session only (ie never goes to disk). 
+- Add "session" cookie concept where cookies exist for the life
+  of that browser session only (ie never goes to disk).
 - Checks for correct header length.
 - Fix user:pass@host.domain.com auth bug.
 - Better signal handling on *nix.
 - Fix CFLAGS hard-coded in configure.in
-- Fix threading bug re: gethostbyname() that caused random 
-URLs to fail in some cases.
+- Fix threading bug re: gethostbyname() that caused random
+  URLs to fail in some cases.
 
 
 *** Version 2.9.11 Alpha Changes ***
@@ -738,7 +794,7 @@ The only other URLs left are the GNU GPL:
 and the home page:
   http://ijbswa.sourceforge.net/
 ... and various URLs which will be intercepted by Junkbuster anyway.
-TODO: Still need to do something with the URLs in Junkbuster Corp's 
+TODO: Still need to do something with the URLs in Junkbuster Corp's
 copyright/trademark notice on the bottom of the show-proxy-args page.
 - PCRE or GNU Regex is now a #define option.
 
@@ -762,7 +818,7 @@ parsers.c (again). They obviously got lost in our current
 patch war ;-)
 - Cut the credit for the §-referrer-option from the config file,
 that Stefan had placed there.
-- Improved the re_filterfile 
+- Improved the re_filterfile
 
 
 *** Version 2.9.0 pre-Alpha Changes ***
@@ -770,9 +826,9 @@ that Stefan had placed there.
 -  Now use PCRE, not GNU REGEX.  I have not yet had chance to check the
 syntax of the block/image/cookie file to ensure that they match what
 is expected - however they seem to work.
--  Replaced "configure" script with one generated by "autoconf".  Also 
-use a header "config.h" (was ijbconfig.h in my previous release) for 
-the #defines.  "config.h" is now generated with "autoheader" from 
+-  Replaced "configure" script with one generated by "autoconf".  Also
+use a header "config.h" (was ijbconfig.h in my previous release) for
+the #defines.  "config.h" is now generated with "autoheader" from
 "acconfig.h" and "configure.in".  (Note that to install you do not
 need autoconf or autoheader - just run "./configure".)
 To see command-line options, run "./configure --help".
@@ -785,7 +841,7 @@ apply all of these, since I had already independently done conditional
 popup file, conditional image file, and integration of popup code.
 - ACL, Jar and trust files conditionally compiled.
 - New source file headers.
-- Various cosmetic changes.  (But I have not consistently ordered the 
+- Various cosmetic changes.  (But I have not consistently ordered the
 config files - I think that's worthwhile, but it's 1am and I want to
 get this released!)
 - RCS tags on .h files.
@@ -811,16 +867,15 @@ being a mix of "U.S. English", "U.K. English" and "Irish English".
 - Version number changes to 2.9.0
 
 
-
 ----------------------------------------------------------------------
-Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
+Copyright   :  Written by and Copyright (C) 2001-2010 the
                Privoxy team. http://www.privoxy.org/
 
                Based on the Internet Junkbuster originally written
-               by and Copyright (C) 1997 Anonymous Coders and 
+               by and Copyright (C) 1997 Anonymous Coders and
                Junkbusters Corporation.  http://www.junkbusters.com/
 
-               This program is free software; you can redistribute it 
+               This program is free software; you can redistribute it
                and/or modify it under the terms of the GNU General
                Public License as published by the Free Software
                Foundation; either version 2 of the License, or (at

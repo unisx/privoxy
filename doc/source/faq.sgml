@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.15">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.16">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -27,7 +27,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.66 2009/10/10 05:48:55 fabiankeil Exp $
+ $Id: faq.sgml,v 2.69 2010/02/13 17:38:27 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -73,12 +73,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2010 by
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.66 2009/10/10 05:48:55 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.69 2010/02/13 17:38:27 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -2194,6 +2194,42 @@ and related issues?</title>
 </para>
 </sect2>
 
+<sect2 renderas="sect3" id="surprise-privoxy">
+<title>How did you manage to get Privoxy on my computer without my consent?</title>
+
+<para>
+ We didn't. We make Privoxy available for download, but we don't go
+ around installing it on other people's systems behind their back.
+ If you discover Privoxy running on your system and are sure you didn't
+ install it yourself, somebody else did. You may not even be running
+ the real Privoxy, but maybe something else that only pretends to be
+ Privoxy, or maybe something that is based on the real Privoxy,
+ but has been modified.
+</para>
+<para>
+ Lately there have been reports of problems with some kind of
+ Privoxy versions that come preinstalled on some Netbooks.
+ Some of the problems described are inconsistent with the behaviour
+ of official Privoxy versions, which suggests that the preinstalled
+ software may contain vendor modifications that we don't know about
+ and thus can't debug.
+</para>
+<para>
+ Privoxy's <link linkend="copyright">license</link> allows vendor
+ modifications, but the vendor has to comply with the license,
+ which involves informing the user about the changes and to make
+ the changes available under the same license as Privoxy itself.
+</para>
+<para>
+ If you are having trouble with a modified Privoxy version,
+ please try to talk to whoever made the modifications before
+ reporting the problem to us. Please also try to convince
+ whoever made the modifications to talk to us.  If you think
+ somebody gave you a modified Privoxy version without complying
+ to the license, please let us know.
+</para>
+</sect2>
+
 
 </sect1>
 
@@ -2930,6 +2966,17 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.69  2010/02/13 17:38:27  fabiankeil
+Update entities for 3.0.16 stable.
+
+Revision 2.68  2010/01/30 19:51:28  fabiankeil
+New FAQ entry: How did you manage to get Privoxy on my computer without my consent?
+
+Also bump copyright.
+
+Revision 2.67  2009/11/15 14:24:12  fabiankeil
+Prepare to generate docs for 3.0.16 UNRELEASED.
+
 Revision 2.66  2009/10/10 05:48:55  fabiankeil
 Prepare for 3.0.15 beta.
 

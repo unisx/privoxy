@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.98 2009/07/08 23:18:05 ler762 Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.100 2010/01/03 12:37:14 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -342,6 +342,21 @@ void init_error_log(const char *prog_name, const char *logfname)
    {
       fclose(logfp);
    }
+#ifdef unix
+   if (daemon_mode && (logfp == stderr))
+   {
+      if (dup2(1, 2) == -1)
+      {
+         /*
+          * We only use fatal_error() to clear the pid
+          * file and to exit. Given that stderr has just
+          * been closed, the user will not see the error
+          * message.
+          */
+         fatal_error("Failed to reserve fd 2.");
+      }
+   }
+#endif
    logfp = fp;
    unlock_logfile();
 

@@ -2,7 +2,7 @@
 <HTML
 ><HEAD
 ><TITLE
->Privoxy 3.0.15 User Manual</TITLE
+>Privoxy 3.0.16 User Manual</TITLE
 ><META
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
@@ -32,7 +32,7 @@ CLASS="TITLEPAGE"
 CLASS="TITLE"
 ><A
 NAME="AEN2"
->Privoxy 3.0.15 User Manual</A
+>Privoxy 3.0.16 User Manual</A
 ></H1
 ><P
 CLASS="PUBDATE"
@@ -40,7 +40,7 @@ CLASS="PUBDATE"
 > <A
 HREF="copyright.html"
 >Copyright</A
-> © 2001-2009 by 
+> © 2001-2010 by
  <A
 HREF="http://www.privoxy.org/"
 TARGET="_top"
@@ -50,7 +50,7 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.66 2009/10/10 06:01:52 fabiankeil Exp $<BR></P
+>$Id: index.html,v 1.73 2010/02/19 17:00:41 fabiankeil Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
@@ -77,14 +77,34 @@ TARGET="_top"
  flexible configuration and can be customized to suit individual needs and tastes.
  It has application for both stand-alone systems and multi-user networks.</P
 ><P
-> Privoxy is Free Software and licensed under the GPL2.</P
+> Privoxy is Free Software and licensed under the GNU GPLv2.</P
 ><P
-> Privoxy is an associated project of Software in the Public Interest (SPI).
- <A
+> Privoxy is an associated project of Software in the Public Interest (SPI).</P
+><P
+> Helping hands and donations are welcome:
+ <P
+></P
+><UL
+><LI
+><P
+>      <A
+HREF="http://www.privoxy.org/faq/general.html#PARTICIPATE"
+TARGET="_top"
+>http://www.privoxy.org/faq/general.html#PARTICIPATE</A
+>
+    </P
+></LI
+><LI
+><P
+>     <A
 HREF="http://www.privoxy.org/faq/general.html#DONATE"
 TARGET="_top"
->Donations are welcome</A
->.</P
+>http://www.privoxy.org/faq/general.html#DONATE</A
+>
+    </P
+></LI
+></UL
+></P
 ><P
 >  You can find the latest version of the <I
 CLASS="CITETITLE"
@@ -290,7 +310,7 @@ HREF="configuration.html"
 ><DL
 ><DT
 >6.1. <A
-HREF="configuration.html#AEN839"
+HREF="configuration.html#AEN884"
 >Controlling Privoxy with Your Web Browser</A
 ></DT
 ><DT
@@ -511,18 +531,28 @@ HREF="config.html#KEEP-ALIVE-TIMEOUT"
 ></DT
 ><DT
 >7.6.5. <A
+HREF="config.html#DEFAULT-SERVER-TIMEOUT"
+>default-server-timeout</A
+></DT
+><DT
+>7.6.6. <A
 HREF="config.html#CONNECTION-SHARING"
 >connection-sharing</A
 ></DT
 ><DT
->7.6.6. <A
+>7.6.7. <A
 HREF="config.html#SOCKET-TIMEOUT"
 >socket-timeout</A
 ></DT
 ><DT
->7.6.7. <A
+>7.6.8. <A
 HREF="config.html#MAX-CLIENT-CONNECTIONS"
 >max-client-connections</A
+></DT
+><DT
+>7.6.9. <A
+HREF="config.html#HANDLE-AS-EMPTY-DOC-RETURNS-OK"
+>handle-as-empty-doc-returns-ok</A
 ></DT
 ></DL
 ></DD
@@ -542,12 +572,12 @@ HREF="actions-file.html"
 ><DL
 ><DT
 >8.1. <A
-HREF="actions-file.html#AEN2479"
+HREF="actions-file.html#AEN2596"
 >Finding the Right Mix</A
 ></DT
 ><DT
 >8.2. <A
-HREF="actions-file.html#AEN2486"
+HREF="actions-file.html#AEN2603"
 >How to Edit</A
 ></DT
 ><DT
@@ -564,12 +594,12 @@ HREF="actions-file.html#AF-PATTERNS"
 ><DL
 ><DT
 >8.4.1. <A
-HREF="actions-file.html#AEN2593"
+HREF="actions-file.html#AEN2710"
 >The Domain Pattern</A
 ></DT
 ><DT
 >8.4.2. <A
-HREF="actions-file.html#AEN2669"
+HREF="actions-file.html#AEN2786"
 >The Path Pattern</A
 ></DT
 ><DT
@@ -753,7 +783,7 @@ HREF="actions-file.html#SET-IMAGE-BLOCKER"
 ></DT
 ><DT
 >8.5.34. <A
-HREF="actions-file.html#AEN4300"
+HREF="actions-file.html#AEN4418"
 >Summary</A
 ></DT
 ></DL
@@ -772,17 +802,17 @@ HREF="actions-file.html#ACT-EXAMPLES"
 ><DL
 ><DT
 >8.7.1. <A
-HREF="actions-file.html#AEN4364"
+HREF="actions-file.html#AEN4482"
 >match-all.action</A
 ></DT
 ><DT
 >8.7.2. <A
-HREF="actions-file.html#AEN4386"
+HREF="actions-file.html#AEN4504"
 >default.action</A
 ></DT
 ><DT
 >8.7.3. <A
-HREF="actions-file.html#AEN4499"
+HREF="actions-file.html#AEN4617"
 >user.action</A
 ></DT
 ></DL
@@ -798,7 +828,7 @@ HREF="filter-file.html"
 ><DL
 ><DT
 >9.1. <A
-HREF="filter-file.html#AEN4654"
+HREF="filter-file.html#AEN4772"
 >Filter File Tutorial</A
 ></DT
 ><DT
@@ -866,7 +896,7 @@ HREF="copyright.html"
 ><DL
 ><DT
 >12.1. <A
-HREF="copyright.html#AEN5128"
+HREF="copyright.html#AEN5250"
 >License</A
 ></DT
 ><DT
@@ -900,7 +930,7 @@ HREF="appendix.html#REGEX"
 ></DT
 ><DT
 >14.2. <A
-HREF="appendix.html#AEN5381"
+HREF="appendix.html#AEN5503"
 >Privoxy's Internal Pages</A
 ></DT
 ><DD

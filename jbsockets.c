@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.68 2009/10/04 16:38:26 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.72 2010/02/15 15:14:10 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -101,7 +101,6 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.68 2009/10/04 16:38:26 fabian
 #include "jbsockets.h"
 #include "filters.h"
 #include "errlog.h"
-#include "miscutil.h"
 
 /* Mac OSX doesn't define AI_NUMERICSESRV */
 #ifndef AI_NUMERICSERV
@@ -177,6 +176,8 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    {
       log_error(LOG_LEVEL_INFO,
          "Can not resolve %s: %s", host, gai_strerror(retval));
+      /* XXX: Should find a better way to propagate this error. */
+      errno = EINVAL;
       csp->http->host_ip_addr_str = strdup("unknown");
       return(JB_INVALID_SOCKET);
    }
@@ -691,7 +692,7 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    }
 
    memset(&hints, 0, sizeof(struct addrinfo));
-   if ((hostnam == NULL) || !strcmpic(hostnam, "localhost"))
+   if (hostnam == NULL)
    {
       /*
        * XXX: This is a hack. The right thing to do
@@ -1043,6 +1044,12 @@ int accept_connection(struct client_state * csp, jb_socket fd)
 #else
    do
    {
+#if defined(FEATURE_ACCEPT_FILTER) && defined(SO_ACCEPTFILTER)
+      struct accept_filter_arg af_options;
+      bzero(&af_options, sizeof(af_options));
+      strlcpy(af_options.af_name, "httpready", sizeof(af_options.af_name));
+      setsockopt(fd, SOL_SOCKET, SO_ACCEPTFILTER, &af_options, sizeof(af_options));
+#endif
       afd = accept (fd, (struct sockaddr *) &client, &c_length);
    } while (afd < 1 && errno == EINTR);
    if (afd < 0)

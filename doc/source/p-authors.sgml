@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 2.39 2009/10/08 11:50:41 fabiankeil Exp $
+ $Id: p-authors.sgml,v 2.41 2009/12/16 08:28:11 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -80,6 +80,7 @@ Current Privoxy Team:
 <literallayout>
  Ken Arromdee
  Devin Bayer
+ Havard Berland
  Gergely Bor
  Francois Botha
  Reiner Buehl
@@ -97,6 +98,7 @@ Current Privoxy Team:
  Stephen Gildea
  Daniel Griscom
  Felix Gröbert
+ Jeff H.
  Aaron Hamid
  Darel Henman
  Magnus Holmgren

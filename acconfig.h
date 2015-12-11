@@ -86,6 +86,11 @@
 #undef FEATURE_ACL
 
 /*
+ * Allow Privoxy to use accf_http(9) if supported.
+ */
+#undef FEATURE_ACCEPT_FILTER
+
+/*
  * Enables the web-based configuration (actionsfile) editor.  If you
  * have a shared proxy, you might want to turn this off.
  */

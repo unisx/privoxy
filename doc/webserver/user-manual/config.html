@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.15 User Manual"
+TITLE="Privoxy 3.0.16 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.15 User Manual</TH
+>Privoxy 3.0.16 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -1697,12 +1697,7 @@ CLASS="APPLICATION"
 HREF="config.html#ACLS"
 >access control lists</A
 > (ACL's, see below), and/or
-    a firewall. If the hostname is localhost, <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->
-    will explicitly try to bind to an IPv4 address. For other hostnames it depends
-    on the operating system which IP version will be used.
+    a firewall.
    </P
 ><P
 >    If you open <SPAN
@@ -3572,6 +3567,10 @@ CLASS="QUOTE"
     that go away when you try again manually. Start with a small value and check Privoxy's
     logfile from time to time, to see how many retries are usually needed.
    </P
+><P
+>    Due to a bug, this option currently also causes Privoxy to
+    retry in case of certain problems with direct connections.
+   </P
 ></DD
 ><DT
 >Examples:</DT
@@ -3938,6 +3937,26 @@ CLASS="APPLICATION"
 >
     has been compiled without keep-alive support.
    </P
+><P
+>    Note that a timeout of five seconds as used in the default
+    configuration file significantly decreases the number of
+    connections that will be reused. The value is used because
+    some browsers limit the number of connections they open to
+    a single host and apply the same limit to proxies. This can
+    result in a single website <SPAN
+CLASS="QUOTE"
+>"grabbing"</SPAN
+> all the
+    connections the browser allows, which means connections to
+    other websites can't be opened until the connections currently
+    in use time out.
+   </P
+><P
+>    Several users have reported this as a Privoxy bug, so the
+    default value has been reduced. Consider increasing it to
+    300 seconds or even more if you think your browser can handle
+    it. If your browser appears to be hanging it can't.
+   </P
 ></DD
 ><DT
 >Examples:</DT
@@ -3954,8 +3973,119 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="DEFAULT-SERVER-TIMEOUT"
+>7.6.5. default-server-timeout</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Specifies:</DT
+><DD
+><P
+>    Assumed server-side keep-alive timeout if not specified by the server.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>Time in seconds.</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>None</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Connections for which the server didn't specify the keep-alive
+    timeout are not reused.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Enabling this option significantly increases the number of connections
+    that are reused, provided the <A
+HREF="#KEEP-ALIVE-TIMEOUT"
+TARGET="_top"
+>keep-alive-timeout</A
+> option
+    is also enabled.
+   </P
+><P
+>    While it also increases the number of connections problems
+    when <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> tries to reuse a connection that already has
+    been closed on the server side, or is closed while <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    is trying to reuse it, this should only be a problem if it
+    happens for the first request sent by the client. If it happens
+    for requests on reused client connections, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will simply
+    close the connection and the client is supposed to retry the
+    request without bothering the user.
+   </P
+><P
+>    Enabling this option is therefore only recommended if the
+    <A
+HREF="#CONNECTION-SHARING"
+TARGET="_top"
+>connection-sharing</A
+> option
+    is disabled.
+   </P
+><P
+>    It is an error to specify a value larger than the <A
+HREF="#KEEP-ALIVE-TIMEOUT"
+TARGET="_top"
+>keep-alive-timeout</A
+> value.
+   </P
+><P
+>    This option has no effect if <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    has been compiled without keep-alive support.
+   </P
+></DD
+><DT
+>Examples:</DT
+><DD
+><P
+>    default-server-timeout 60
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="CONNECTION-SHARING"
->7.6.5. connection-sharing</A
+>7.6.6. connection-sharing</A
 ></H4
 ><P
 ></P
@@ -4077,7 +4207,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SOCKET-TIMEOUT"
->7.6.6. socket-timeout</A
+>7.6.7. socket-timeout</A
 ></H4
 ><P
 ></P
@@ -4142,7 +4272,7 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="MAX-CLIENT-CONNECTIONS"
->7.6.7. max-client-connections</A
+>7.6.8. max-client-connections</A
 ></H4
 ><P
 ></P
@@ -4245,6 +4375,88 @@ CLASS="APPLICATION"
 ><DD
 ><P
 >    max-client-connections 256
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="HANDLE-AS-EMPTY-DOC-RETURNS-OK"
+>7.6.9. handle-as-empty-doc-returns-ok</A
+></H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Note:</DT
+><DD
+><P
+>    This is a work-around for Firefox bug 492459:
+    <SPAN
+CLASS="QUOTE"
+>"    Websites are no longer rendered if SSL requests for JavaScripts are blocked by a proxy.
+    "</SPAN
+>
+    (<A
+HREF="https://bugzilla.mozilla.org/show_bug.cgi?id=492459"
+TARGET="_top"
+>https://bugzilla.mozilla.org/show_bug.cgi?id=492459</A
+>)
+   </P
+></DD
+><DT
+>Specifies:</DT
+><DD
+><P
+>    The status code Privoxy returns for pages blocked with
+    
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+TARGET="_top"
+>+handle-as-empty-document</A
+></TT
+>.
+   </P
+></DD
+><DT
+>Type of value:</DT
+><DD
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>0 or 1</I
+></TT
+>
+   </P
+></DD
+><DT
+>Default value:</DT
+><DD
+><P
+>0</P
+></DD
+><DT
+>Effect if unset:</DT
+><DD
+><P
+>    Privoxy returns a status 403(forbidden) for all blocked pages.
+   </P
+></DD
+><DT
+>Effect if set:</DT
+><DD
+><P
+>    Privoxy returns a status 200(OK) for pages blocked with +handle-as-empty-document
+    and a status 403(Forbidden) for all other blocked pages.
    </P
 ></DD
 ></DL

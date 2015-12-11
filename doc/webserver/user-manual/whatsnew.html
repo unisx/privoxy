@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.15 User Manual"
+TITLE="Privoxy 3.0.16 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.15 User Manual</TH
+>Privoxy 3.0.16 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -84,128 +84,150 @@ NAME="WHATSNEW"
 ><P
 > <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.15 beta</SPAN
-> is a bug-fix release
- for the previous beta. The changes since 3.0.14 are:</P
+>Privoxy 3.0.16</SPAN
+> is a stable release.
+ The changes since 3.0.15 beta are:</P
 ><P
 > <P
 ></P
 ><UL
 ><LI
 ><P
->    In case of missing server data, no error message is send to the
-    client if the request arrived on a reused connection. The client
-    is then supposed to silently retry the request without bothering
-    the user. This should significantly reduce the frequency of the
-    "No server or forwarder data received" error message many users
-    reported.
+>    Added the config file option handle-as-empty-doc-returns-ok to
+    work around Firefox bug #492459, which causes Firefox to hang
+    if JavaScripts are blocked in certain situations. The option is
+    enabled in the default config file.
    </P
 ></LI
 ><LI
 ><P
->    More reliable detection of prematurely closed client sockets
-    with keep-alive enabled.
+>    Added the config file option default-server-timeout to control the
+    assumed default server timeout. Since Privoxy no longer returns
+    an error message for connection resets on reused client connections,
+    assuming larger server timeout values appears to actually work
+    pretty well as long as connections aren't shared.
    </P
 ></LI
 ><LI
 ><P
->    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
-    FEATURE_CONNECTION_SHARING and now available on
-    all platforms.
+>    Added optional support for FreeBSD's accf_http(9). Use the
+    configure option --enable-accept-filter to enable it.
    </P
 ></LI
 ><LI
 ><P
->    Improved handling of POST requests on reused connections.
-    Should fix problems with stalled connections after submitting
-    form data with some browser configurations.
+>    Added fancier Privoxy icons for win32. Contributed by Jeff H.
    </P
 ></LI
 ><LI
 ><P
->    Fixed various latency calculation issues.
+>    In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
    </P
 ></LI
 ><LI
 ><P
->    Allows the client to pass NTLM authentication requests to a
-    forwarding proxy. This was already assumed and hinted to work
-    in 3.0.13 beta but actually didn't. Now it's confirmed to work
-    with IE, Firefox and Chrome.
-    Thanks to Francois Botha and Wan-Teh Chang
+>    Resolve localhost using whatever address family the operating
+    system feels like. Previous betas would try to use IPv4 as this
+    is what most users expect, but this didn't work reliably on
+    GNU/Linux systems.
    </P
 ></LI
 ><LI
 ><P
->    Fixed a calculation problem if receiving the server headers
-    takes more than two reads, that could cause Privoxy to terminate
-    the connection prematurely. Reported by Oliver.
+>    In the action lists on CGI pages, actions and their parameters are
+    no longer separated with a space. The action file parser doesn't
+    actually allow this and will throw an invalid syntax error if actions
+    and parameters in the action files are separated. Not adding the
+    spaces means copy and pasting CGI output into the action files works.
    </P
 ></LI
 ><LI
 ><P
->    Compiles again on platforms such as OpenBSD and systems
-    using earlier glibc version that don't support AI_ADDRCONFIG.
-    Anonymously submitted in #2872591.
+>    The default keep-alive timeout has been reduced to 5 seconds to work
+    around hangs in clients that treat the proxy like any other host and
+    stop allowing any new connections if the "maximum number of
+    connections per host" is reached.
    </P
 ></LI
 ><LI
 ><P
->    A bunch of MS VC project files and Suse and Redhat RPM spec
-    files have been removed as they were no longer maintained for
-    quite some time.
+>    Several webbug URLs that look like they are leading to images are now
+    blocked as image instead of empty documents. Doing the latter causes
+    WebKit-based clients to show a "missing image" icon which may mess up
+    the layout.
    </P
 ></LI
 ><LI
 ><P
->    Overly long action lines are properly rejected with a proper
-    error message. Previously they would be either rejected as
-    invalid or cause a core dump through abort().
+>    The no-such-domain template is used for DNS resolution
+    problems with FEATURE_IPV6_SUPPORT enabled. Previously the
+    connect-failed template was used. Reported by 'zebul666'.
    </P
 ></LI
 ><LI
 ><P
->    Already timed-out connections are no longer temporarily remembered.
-    They weren't reused anyway, but wasted a socket slot.
+>    Accepts quoted expiration dates even though RFC 2109 10.1.2
+    doesn't seem to allow them. Reported anonymously.
    </P
 ></LI
 ><LI
 ><P
->    len refers to the number of bytes actually read which might
-    differ from the ones received. Adjust log messages accordingly.
+>    Don't try to forget connections if connection sharing is disabled.
+    This wasn't a real problem but caused an unnecessary log message.
    </P
 ></LI
 ><LI
 ><P
->    The optional JavaScript on the CGI page uses encodeURIComponent()
-    instead of escape() which doesn't encode all characters that matter.
-    Anonymously reported in #2832722.
+>    The still undocumented --enable-extended-host-patterns configure
+    option has a better description.
    </P
 ></LI
 ><LI
 ><P
->    Fix gcc45 warnings in decompress_iob().
+>    Fixed an error message that would claim a write to the server
+    failed when actually writing to the client failed.
    </P
 ></LI
 ><LI
 ><P
->    Various log message improvements.
+>    Log the crunch reason before trying to write to the client.
+    The log is easier to read that way.
    </P
 ></LI
 ><LI
 ><P
->    Privoxy-Regression-Test supports redirect tests.
+>    Several log messages about client connections also mention
+    the socket number.
    </P
 ></LI
 ><LI
 ><P
->    Privoxy-Log-Parser can gather some connection statistics.
+>    handle-as-empty-document no longer depends on the image blocking
+    code being enabled.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
+   </P
+></LI
+><LI
+><P
+>    uagen, a Firefox User-Agent generator for Privoxy and Mozilla
+    browsers has been imported and is available in the tarball's
+    tools directory.
+   </P
+></LI
+><LI
+><P
+>    The scripts in the tools directory treat unknown parameters
+    as fatal errors.
    </P
 ></LI
 ></UL
 ></P
 ><P
-> If you missed the previous two beta versions, you may also be
+> If you missed the previous three beta versions, you may also be
  interested in the additional changes since 3.0.12, the
  last stable release:</P
 ><P
@@ -374,9 +396,120 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->    A TODO list has been added to the source tarballs to give potential
+>    A TODO list has been added to the source tarball to give potential
     volunteers a better idea of what the current goals are. Donations
     are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
+   </P
+></LI
+><LI
+><P
+>    In case of missing server data, no error message is send to the
+    client if the request arrived on a reused connection. The client
+    is then supposed to silently retry the request without bothering
+    the user. This should significantly reduce the frequency of the
+    "No server or forwarder data received" error message many users
+    reported.
+   </P
+></LI
+><LI
+><P
+>    More reliable detection of prematurely closed client sockets
+    with keep-alive enabled.
+   </P
+></LI
+><LI
+><P
+>    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+    FEATURE_CONNECTION_SHARING and now available on
+    all platforms.
+   </P
+></LI
+><LI
+><P
+>    Improved handling of POST requests on reused connections.
+    Should fix problems with stalled connections after submitting
+    form data with some browser configurations.
+   </P
+></LI
+><LI
+><P
+>    Fixed various latency calculation issues.
+   </P
+></LI
+><LI
+><P
+>    Allows the client to pass NTLM authentication requests to a
+    forwarding proxy. This was already assumed and hinted to work
+    in 3.0.13 beta but actually didn't. Now it's confirmed to work
+    with IE, Firefox and Chrome.
+    Thanks to Francois Botha and Wan-Teh Chang
+   </P
+></LI
+><LI
+><P
+>    Fixed a calculation problem if receiving the server headers
+    takes more than two reads, that could cause Privoxy to terminate
+    the connection prematurely. Reported by Oliver.
+   </P
+></LI
+><LI
+><P
+>    Compiles again on platforms such as OpenBSD and systems
+    using earlier glibc version that don't support AI_ADDRCONFIG.
+    Anonymously submitted in #2872591.
+   </P
+></LI
+><LI
+><P
+>    A bunch of MS VC project files and Suse and Redhat RPM spec
+    files have been removed as they were no longer maintained for
+    quite some time.
+   </P
+></LI
+><LI
+><P
+>    Overly long action lines are properly rejected with a proper
+    error message. Previously they would be either rejected as
+    invalid or cause a core dump through abort().
+   </P
+></LI
+><LI
+><P
+>    Already timed-out connections are no longer temporarily remembered.
+    They weren't reused anyway, but wasted a socket slot.
+   </P
+></LI
+><LI
+><P
+>    len refers to the number of bytes actually read which might
+    differ from the ones received. Adjust log messages accordingly.
+   </P
+></LI
+><LI
+><P
+>    The optional JavaScript on the CGI page uses encodeURIComponent()
+    instead of escape() which doesn't encode all characters that matter.
+    Anonymously reported in #2832722.
+   </P
+></LI
+><LI
+><P
+>    Fix gcc45 warnings in decompress_iob().
+   </P
+></LI
+><LI
+><P
+>    Various log message improvements.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Regression-Test supports redirect tests.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Log-Parser can gather some connection statistics.
    </P
 ></LI
 ></UL
@@ -557,4 +690,5 @@ VALIGN="top"
 ></TABLE
 ></DIV
 ></BODY
-></HTML>
+></HTML
+>

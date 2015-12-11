@@ -3,9 +3,9 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.53 2009/06/12 11:53:33 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.62 2010/02/15 15:07:56 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -97,10 +97,10 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.53 2009/06/12 11:53:33 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.62 2010/02/15 15:07:56 fabiankeil Exp $
 </para>
 <para>
-Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
 </para>
 
 <para>
@@ -1240,9 +1240,7 @@ actionsfile
     bind to all IPv4 interfaces (addresses) on your machine and may become reachable
     from the Internet. In that case, consider using <link
     linkend="acls">access control lists</link> (ACL's, see below), and/or
-    a firewall. If the hostname is localhost, <application>Privoxy</application>
-    will explicitly try to bind to an IPv4 address. For other hostnames it depends
-    on the operating system which IP version will be used.
+    a firewall.
    </para>
    <para>
     If you open <application>Privoxy</application> to untrusted users, you will
@@ -2279,6 +2277,10 @@ forward-socks4, forward-socks4a and forward-socks5</title>
     that go away when you try again manually. Start with a small value and check Privoxy's
     logfile from time to time, to see how many retries are usually needed.
    </para>
+   <para>
+    Due to a bug, this option currently also causes Privoxy to
+    retry in case of certain problems with direct connections.
+   </para>
   </listitem>
  </varlistentry>
  <varlistentry>
@@ -2538,6 +2540,23 @@ forward-socks4, forward-socks4a and forward-socks5</title>
     This option has no effect if <application>Privoxy</application>
     has been compiled without keep-alive support.
    </para>
+   <para>
+    Note that a timeout of five seconds as used in the default
+    configuration file significantly decreases the number of
+    connections that will be reused. The value is used because
+    some browsers limit the number of connections they open to
+    a single host and apply the same limit to proxies. This can
+    result in a single website <quote>grabbing</quote> all the
+    connections the browser allows, which means connections to
+    other websites can't be opened until the connections currently
+    in use time out.
+   </para>
+   <para>
+    Several users have reported this as a Privoxy bug, so the
+    default value has been reduced. Consider increasing it to
+    300 seconds or even more if you think your browser can handle
+    it. If your browser appears to be hanging it can't.
+   </para>
   </listitem>
  </varlistentry>
  <varlistentry>
@@ -2549,7 +2568,88 @@ forward-socks4, forward-socks4a and forward-socks5</title>
   </listitem>
  </varlistentry>
 </variablelist>
-<![%config-file;[<literallayout>@@keep-alive-timeout 300</literallayout>]]>
+<![%config-file;[<literallayout>@@keep-alive-timeout 5</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="default-server-timeout"><title>default-server-timeout</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Assumed server-side keep-alive timeout if not specified by the server.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>Time in seconds.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>None</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Connections for which the server didn't specify the keep-alive
+    timeout are not reused.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Enabling this option significantly increases the number of connections
+    that are reused, provided the <ulink
+     url="#KEEP-ALIVE-TIMEOUT">keep-alive-timeout</ulink> option
+    is also enabled.
+   </para>
+   <para>
+    While it also increases the number of connections problems
+    when &my-app; tries to reuse a connection that already has
+    been closed on the server side, or is closed while &my-app;
+    is trying to reuse it, this should only be a problem if it
+    happens for the first request sent by the client. If it happens
+    for requests on reused client connections, &my-app; will simply
+    close the connection and the client is supposed to retry the
+    request without bothering the user.
+   </para>
+   <para>
+    Enabling this option is therefore only recommended if the
+    <ulink
+     url="#CONNECTION-SHARING">connection-sharing</ulink> option
+    is disabled.
+   </para>
+   <para>
+    It is an error to specify a value larger than the <ulink
+     url="#KEEP-ALIVE-TIMEOUT">keep-alive-timeout</ulink> value.
+   </para>
+   <para>
+    This option has no effect if <application>Privoxy</application>
+    has been compiled without keep-alive support.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    default-server-timeout 60
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@#default-server-timeout 60</literallayout>]]>
 </sect3>
 
 
@@ -2786,6 +2886,67 @@ forward-socks4, forward-socks4a and forward-socks5</title>
  </varlistentry>
 </variablelist>
 <![%config-file;[<literallayout>@@#max-client-connections 256</literallayout>]]>
+</sect3>
+
+
+<sect3 renderas="sect4" id="handle-as-empty-doc-returns-ok"><title>handle-as-empty-doc-returns-ok</title>
+<variablelist>
+ <varlistentry>
+  <term>Note:</term>
+  <listitem>
+   <para>
+    This is a work-around for Firefox bug 492459:
+    <quote>
+    Websites are no longer rendered if SSL requests for JavaScripts are blocked by a proxy.
+    </quote>
+    (<ulink url="https://bugzilla.mozilla.org/show_bug.cgi?id=492459"
+	>https://bugzilla.mozilla.org/show_bug.cgi?id=492459</ulink>)
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The status code Privoxy returns for pages blocked with
+    <!--  URL will only end up in the user manual so the relative link should work. -->
+    <literal><ulink url="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT">+handle-as-empty-document</ulink></literal>.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable>0 or 1</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>0</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Privoxy returns a status 403(forbidden) for all blocked pages.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if set:</term>
+  <listitem>
+   <para>
+    Privoxy returns a status 200(OK) for pages blocked with +handle-as-empty-document
+    and a status 403(Forbidden) for all other blocked pages.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@handle-as-empty-doc-returns-ok 1</literallayout>]]>
 </sect3>
 
 

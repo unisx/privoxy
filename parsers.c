@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.209 2009/09/06 14:11:06 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.210 2009/12/25 11:39:26 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -3810,6 +3810,17 @@ static jb_err server_set_cookie(struct client_state *csp, char **header)
          if ((strncmpic(cur_tag, "expires=", 8) == 0) && *(cur_tag + 8))
          {
             char *expiration_date = cur_tag + 8; /* Skip "[Ee]xpires=" */
+
+            if ((expiration_date[0] == '"')
+             && (expiration_date[1] != '\0'))
+            {
+               /*
+                * Skip quotation mark. RFC 2109 10.1.2 seems to hint
+                * that the expiration date isn't supposed to be quoted,
+                * but some servers do it anyway.
+                */
+               expiration_date++;
+            }
 
             /* Did we detect the date properly? */
             if (JB_ERR_OK != parse_header_time(expiration_date, &cookie_time))

@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.15">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.16">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
@@ -24,7 +24,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.31 2009/10/10 05:48:55 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.33 2010/02/13 17:38:27 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -51,7 +51,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.31 2009/10/10 05:48:55 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.33 2010/02/13 17:38:27 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -3005,6 +3005,12 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.33  2010/02/13 17:38:27  fabiankeil
+  Update entities for 3.0.16 stable.
+
+  Revision 2.32  2009/11/15 14:24:12  fabiankeil
+  Prepare to generate docs for 3.0.16 UNRELEASED.
+
   Revision 2.31  2009/10/10 05:48:55  fabiankeil
   Prepare for 3.0.15 beta.
 

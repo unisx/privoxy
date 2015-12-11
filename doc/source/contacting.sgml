@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: contacting.sgml,v 2.14 2008/04/26 11:38:51 fabiankeil Exp $
+ $Id: contacting.sgml,v 2.16 2010/02/14 17:59:31 fabiankeil Exp $
 
- Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -214,7 +214,25 @@ Please be sure to provide the following information:
    <para>
     Any other pertinent information to help identify the problem such as config
     or log file excerpts (yes, you should have log file entries for each
-    action taken).
+    action taken). To get a meaningful logfile, please make sure that the
+    <ulink url="../user-manual/config.html#LOGFILE">logfile directive</ulink>
+    is being used and the following <ulink
+    url="../user-manual/config.html#DEBUG">debug options</ulink> are enabled:
+    <literallayout>debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
+debug     2 # show each connection status
+debug     4 # show I/O status
+debug     8 # show header parsing
+debug   128 # debug redirects
+debug   256 # debug GIF de-animation
+debug   512 # Common Log Format
+debug  1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
+debug  4096 # Startup banner and warnings.
+debug  8192 # Non-fatal errors</literallayout>
+    If you are having trouble with a filter, please additionally enable
+    <literallayout>debug    64 # debug regular expression filters</literallayout>
+    Note that Privoxy log files may contain sensitive information so please don't
+    submit any logfiles you didn't read first. You can mask sensitive information
+    as long as it's clear that you removed something.
    </para>
   </listitem> 
 
@@ -223,8 +241,8 @@ Please be sure to provide the following information:
 
 <para>
  You don't have to tell us your actual name when filing a problem
- report, but please use a nickname so we can differentiate between
- your messages and the ones entered by other "anonymous" users that
+ report, but if you don't, please use a nickname so we can differentiate
+ between your messages and the ones entered by other "anonymous" users that
  may respond to your request if they have the same problem or already
  found a solution.
 </para>

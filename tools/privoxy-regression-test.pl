@@ -7,7 +7,7 @@
 # A regression test "framework" for Privoxy. For documentation see:
 # perldoc privoxy-regression-test.pl
 #
-# $Id: privoxy-regression-test.pl,v 1.57 2009/10/08 11:48:20 fabiankeil Exp $
+# $Id: privoxy-regression-test.pl,v 1.61 2010/01/03 13:49:01 fabiankeil Exp $
 #
 # Wish list:
 #
@@ -40,7 +40,7 @@ use strict;
 use Getopt::Long;
 
 use constant {
-    PRT_VERSION => 'Privoxy-Regression-Test 0.3',
+    PRT_VERSION => 'Privoxy-Regression-Test 0.4',
  
     CURL => 'curl',
 
@@ -247,50 +247,59 @@ sub enlist_new_test ($$$$$$) {
 
     my ($regression_tests, $token, $value, $si, $ri, $number) = @_;
     my $type;
+    my $executor;
 
     if ($token eq 'set header') {
 
         l(LL_FILE_LOADING, "Header to set: " . $value);
         $type = CLIENT_HEADER_TEST;
+        $executor = \&execute_client_header_regression_test;
 
     } elsif ($token eq 'request header') {
 
         l(LL_FILE_LOADING, "Header to request: " . $value);
         $type = SERVER_HEADER_TEST;
+        $executor = \&execute_server_header_regression_test;
         $$regression_tests[$si][$ri]{'expected-status-code'} = 200;
 
     } elsif ($token eq 'trusted cgi request') {
 
         l(LL_FILE_LOADING, "CGI URL to test in a dumb way: " . $value);
         $type = TRUSTED_CGI_REQUEST;
+        $executor = \&execute_dumb_fetch_test;
         $$regression_tests[$si][$ri]{'expected-status-code'} = 200;
 
     } elsif ($token eq 'fetch test') {
 
         l(LL_FILE_LOADING, "URL to test in a dumb way: " . $value);
         $type = DUMB_FETCH_TEST;
+        $executor = \&execute_dumb_fetch_test;
         $$regression_tests[$si][$ri]{'expected-status-code'} = 200;
 
     } elsif ($token eq 'method test') {
 
         l(LL_FILE_LOADING, "Method to test: " . $value);
         $type = METHOD_TEST;
+        $executor = \&execute_method_test;
         $$regression_tests[$si][$ri]{'expected-status-code'} = 200;
 
     } elsif ($token eq 'blocked url') {
 
         l(LL_FILE_LOADING, "URL to block-test: " . $value);
+        $executor = \&execute_block_test;
         $type = BLOCK_TEST;
 
     } elsif ($token eq 'url') {
 
         l(LL_FILE_LOADING, "Sticky URL to test: " . $value);
         $type = STICKY_ACTIONS_TEST;
+        $executor = \&execute_sticky_actions_test;
 
     } elsif ($token eq 'redirected url') {
 
         l(LL_FILE_LOADING, "Redirected URL to test: " . $value);
         $type = REDIRECT_TEST;
+        $executor = \&execute_redirect_test;
 
     } else {
 
@@ -299,6 +308,7 @@ sub enlist_new_test ($$$$$$) {
 
     $$regression_tests[$si][$ri]{'type'} = $type;
     $$regression_tests[$si][$ri]{'level'} = $type;
+    $$regression_tests[$si][$ri]{'executor'} = $executor;
 
     check_for_forbidden_characters($value);
 
@@ -501,6 +511,8 @@ sub execute_regression_tests () {
 
                 die "Section id mismatch" if ($s != $regression_tests[$s][$r]{'section-id'});
                 die "Regression test id mismatch" if ($r != $regression_tests[$s][$r]{'regression-test-id'});
+                die "Internal error. Test executor missing."
+                    unless defined $regression_tests[$s][$r]{executor};
 
                 my $number = $regression_tests[$s][$r]{'number'};
                 my $skip_reason = get_skip_reason($regression_tests[$s][$r]);
@@ -513,7 +525,7 @@ sub execute_regression_tests () {
 
                 } else {
 
-                    my $result = execute_regression_test($regression_tests[$s][$r]);
+                    my $result = $regression_tests[$s][$r]{executor}($regression_tests[$s][$r]);
 
                     log_result($regression_tests[$s][$r], $result, $tests);
 
@@ -649,27 +661,6 @@ sub register_dependency ($$) {
 
         log_and_die("Didn't recognize dependency: $dependency.");
     }
-}
-
-# XXX: somewhat misleading name
-sub execute_regression_test ($) {
-
-    my $test = shift;
-    my $type = $test->{'type'};
-    my %test_subs = (
-        (CLIENT_HEADER_TEST) => \&execute_client_header_regression_test,
-        (SERVER_HEADER_TEST) => \&execute_server_header_regression_test,
-        (DUMB_FETCH_TEST) => \&execute_dumb_fetch_test,
-        (TRUSTED_CGI_REQUEST) => \&execute_dumb_fetch_test,
-        (METHOD_TEST) => \&execute_method_test,
-        (BLOCK_TEST) => \&execute_block_test,
-        (STICKY_ACTIONS_TEST) => \&execute_sticky_actions_test,
-        (REDIRECT_TEST) => \&execute_redirect_test);
-
-    die "Unsupported test type detected: " . $type
-        unless defined ($test_subs{$type});
-
-    return $test_subs{$type}($test);
 }
 
 sub execute_method_test ($) {
@@ -827,7 +818,10 @@ sub get_final_results ($) {
         next unless ($final_results_reached);
         last if (m@</td>@);
 
-        if (m@<br>([-+])<a.*>([^>]*)</a>(?: (\{.*\}))?@) {
+        # Privoxy versions before 3.0.16 add a space
+        # between action name and parameters, therefore
+        # the " ?".
+        if (m@<br>([-+])<a.*>([^>]*)</a>(?: ?(\{.*\}))?@) {
             my $action = $1.$2;
             my $parameter = $3;
             
@@ -1503,7 +1497,7 @@ sub parse_cli_options () {
         'test-number=s'      => \$cli_options{'test-number'},
         'verbose'            => \$cli_options{'verbose'},
         'version'            => sub {print_version && exit(0)}
-    );
+    ) or exit(1);
     $log_level |= $cli_options{'debug'};
 }
 

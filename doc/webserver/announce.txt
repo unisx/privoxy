@@ -1,15 +1,71 @@
-              Announcing Privoxy v.3.0.15 beta
+              Announcing Privoxy v.3.0.16 stable
 -----------------------------------------------------------------
 
-Privoxy 3.0.15 beta is a bugfix-release for the previous betas
-which introduced IPv6 support, improved keep-alive support and
-a bunch of minor improvements.
+This is the first stable release since 3.0.12. It mainly contains
+bugfixes for the previous betas which introduced IPv6 support,
+improved keep-alive support and a bunch of minor improvements.
 
-See http://www.privoxy.org/3.0.14/user-manual/whatsnew.html for details.
+See http://www.privoxy.org/3.0.15/user-manual/whatsnew.html for details.
 
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.16 stable ***
+
+- Added the config file option handle-as-empty-doc-returns-ok to
+  work around Firefox bug #492459, which causes Firefox to hang
+  if JavaScripts are blocked in certain situations. The option is
+  enabled in the default config file.
+- Added the config file option default-server-timeout to control the
+  assumed default server timeout. Since Privoxy no longer returns
+  an error message for connection resets on reused client connections,
+  assuming larger server timeout values appears to actually work
+  pretty well as long as connections aren't shared.
+- Added optional support for FreeBSD's accf_http(9). Use the
+  configure option --enable-accept-filter to enable it.
+- Added fancier Privoxy icons for win32. Contributed by Jeff H.
+- In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
+- Resolve localhost using whatever address family the operating
+  system feels like. Previous betas would try to use IPv4 as this
+  is what most users expect, but this didn't work reliably on
+  GNU/Linux systems.
+- In the action lists on CGI pages, actions and their parameters are
+  no longer separated with a space. The action file parser doesn't
+  actually allow this and will throw an invalid syntax error if actions
+  and parameters in the action files are separated. Not adding the
+  spaces means copy and pasting CGI output into the action files works.
+- The default keep-alive timeout has been reduced to 5 seconds to work
+  around hangs in clients that treat the proxy like any other host and
+  stop allowing any new connections if the "maximum number of
+  connections per host" is reached.
+- Several webbug URLs that look like they are leading to images are now
+  blocked as image instead of empty documents. Doing the latter causes
+  WebKit-based clients to show a "missing image" icon which may mess up
+  the layout.
+- The no-such-domain template is used for DNS resolution
+  problems with FEATURE_IPV6_SUPPORT enabled. Previously the
+  connect-failed template was used. Reported by 'zebul666'.
+- Accepts quoted expiration dates even though RFC 2109 10.1.2
+  doesn't seem to allow them. Reported anonymously.
+- Don't try to forget connections if connection sharing is disabled.
+  This wasn't a real problem but caused an unnecessary log message.
+- The still undocumented --enable-extended-host-patterns configure
+  option has a better description.
+- Fixed an error message that would claim a write to the server
+  failed when actually writing to the client failed.
+- Log the crunch reason before trying to write to the client.
+  The log is easier to read that way.
+- Several log messages about client connections also mention
+  the socket number.
+- handle-as-empty-document no longer depends on the image blocking
+  code being enabled.
+- Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
+- uagen, a Firefox User-Agent generator for Privoxy and Mozilla
+  browsers has been imported and is available in the tarball's
+  tools directory.
+- The scripts in the tools directory treat unknown parameters
+  as fatal errors.
+
 *** Version 3.0.15 beta ***
 
 - In case of missing server data, no error message is send to the
@@ -91,7 +147,7 @@ ChangeLog for Privoxy
 - The configure script respects the $PATH variable when searching
   for groups and id.
 
-*** Version 3.0.13 beta  ***
+*** Version 3.0.13 beta ***
 
 - Added IPv6 support. Thanks to Petr Pisar who not only provided
   the initial patch but also helped a lot with the integration.
@@ -128,7 +184,7 @@ ChangeLog for Privoxy
   the still-open connection will be reused for the client's next
   request to the same destination. Note that this only matters
   if connection-sharing is enabled.
-- A TODO list has been added to the source tarballs to give potential
+- A TODO list has been added to the source tarball to give potential
   volunteers a better idea of what the current goals are.
 
 -----------------------------------------------------------------
@@ -142,10 +198,15 @@ flexible configuration and can be customized to suit individual needs and
 tastes. It has application for both stand-alone systems and multi-user
 networks.
 
-Privoxy is Free Software and licensed under the GPL2.
+Privoxy is Free Software and licensed under the GNU GPLv2.
 
 Privoxy is an associated project of Software in the Public Interest (SPI).
-Donations are welcome: http://www.privoxy.org/faq/general.html#DONATE
+
+Helping hands and donations are welcome:
+
+  * http://www.privoxy.org/faq/general.html#PARTICIPATE
+
+  * http://www.privoxy.org/faq/general.html#DONATE
 
 At present, Privoxy is known to run on Windows(95, 98, ME, 2000,
 XP, Vista), Linux (Ubuntu, RedHat, SuSE, Debian, Fedora, Gentoo and

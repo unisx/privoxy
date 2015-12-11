@@ -1,8 +1,8 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.184 2009/09/26 17:21:01 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.185 2009/12/16 08:15:42 fabiankeil Exp $
 #
-# Written by and Copyright (C) 2001 - 2008 the SourceForge
+# Written by and Copyright (C) 2001-2009 members of the
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
@@ -703,7 +703,7 @@ w32log.@OBJEXT@: w32log.c errlog.h config.h jcc.h loadcfg.h miscutil.h pcre/pcre
 w32taskbar.@OBJEXT@: w32taskbar.c config.h w32log.h w32taskbar.h
 win32.@OBJEXT@: win32.c config.h jcc.h loadcfg.h pcre/pcre.h pcre/pcreposix.h pcrs.h project.h w32log.h win32.h w32svrapi.h
 
-w32.res: w32.rc w32res.h icons/ico00001.ico icons/ico00002.ico icons/ico00003.ico icons/ico00004.ico icons/ico00005.ico icons/ico00006.ico icons/ico00007.ico icons/ico00008.ico icons/idle.ico icons/privoxy.ico config.h
+w32.res: w32.rc w32res.h icons/radar-01.ico icons/radar-02.ico icons/radar-03.ico icons/radar-04.ico icons/radar-05.ico icons/radar-06.ico icons/radar-07.ico icons/radar-08.ico icons/idle.ico icons/privoxy.ico config.h
 	windres -D__MINGW32__=0.2 -O coff -i $< -o $@
 
 # AmigaOS

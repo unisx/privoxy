@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.302 2009/10/09 16:50:50 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.312 2010/01/24 15:36:08 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -119,7 +119,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.302 2009/10/09 16:50:50 fabiankeil Exp $"
 const char jcc_h_rcs[] = JCC_H_VERSION;
 const char project_h_rcs[] = PROJECT_H_VERSION;
 
-int no_daemon = 0;
+int daemon_mode = 1;
 struct client_state  clients[1];
 struct file_list     files[1];
 
@@ -724,18 +724,20 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
       status_code[2] = rsp->head[11];
       status_code[3] = '\0';
 
+      /* Log that the request was crunched and why. */
+      log_error(LOG_LEVEL_CRUNCH, "%s: %s", crunch_reason(rsp), http->url);
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" %s %u",
+         csp->ip_addr_str, http->ocmd, status_code, rsp->content_length);
+
       /* Write the answer to the client */
       if (write_socket(csp->cfd, rsp->head, rsp->head_length)
        || write_socket(csp->cfd, rsp->body, rsp->content_length))
       {
          /* There is nothing we can do about it. */
-         log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", csp->http->host);
+         log_error(LOG_LEVEL_ERROR,
+            "Couldn't deliver the error message through client socket %d: %E",
+            csp->cfd);
       }
-
-      /* Log that the request was crunched and why. */
-      log_error(LOG_LEVEL_CRUNCH, "%s: %s", crunch_reason(rsp), http->url);
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" %s %u",
-         csp->ip_addr_str, http->ocmd, status_code, rsp->content_length);
 
       /* Clean up and return */
       if (cgi_error_memory() != rsp)
@@ -2317,7 +2319,7 @@ static void chat(struct client_state *csp)
                {
                   log_error(LOG_LEVEL_ERROR,
                      "Empty server or forwarder response received on socket %d. "
-                     "Closing client connection %d without sending data.",
+                     "Closing client socket %d without sending data.",
                      csp->server_connection.sfd, csp->cfd);
                }
                else
@@ -2516,33 +2518,37 @@ static void serve(struct client_state *csp)
          && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
          && (csp->cfd != JB_INVALID_SOCKET)
          && (csp->server_connection.sfd != JB_INVALID_SOCKET)
-         && socket_is_still_usable(csp->server_connection.sfd)
-         && (latency < csp->server_connection.keep_alive_timeout);
+         && socket_is_still_usable(csp->server_connection.sfd);
+
+      if (continue_chatting)
+      {
+         if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
+         {
+            csp->server_connection.keep_alive_timeout = csp->config->default_server_timeout;
+            log_error(LOG_LEVEL_CONNECT,
+               "The server didn't specify how long the connection will stay open. "
+               "Assumed timeout is: %u.", csp->server_connection.keep_alive_timeout);
+         }
+         continue_chatting = (latency < csp->server_connection.keep_alive_timeout);
+      }
 
       if (continue_chatting)
       {
          unsigned int client_timeout;
 
-         if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
-         {
-            log_error(LOG_LEVEL_CONNECT, "The server didn't specify how long "
-               "the connection will stay open. Assume it's only a second.");
-            csp->server_connection.keep_alive_timeout = 1;
-         }
-
          client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
 
          log_error(LOG_LEVEL_CONNECT,
-            "Waiting for the next client request. "
+            "Waiting for the next client request on socket %d. "
             "Keeping the server socket %d to %s open.",
-            csp->server_connection.sfd, csp->server_connection.host);
-
+            csp->cfd, csp->server_connection.sfd, csp->server_connection.host);
          if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
             && data_is_available(csp->cfd, (int)client_timeout)
             && socket_is_still_usable(csp->cfd))
          {
             log_error(LOG_LEVEL_CONNECT, "Client request arrived in "
-               "time or the client closed the connection.");
+               "time or the client closed the connection on socket %d.",
+                csp->cfd);
             /*
              * Get the csp in a mostly vergin state again.
              * XXX: Should be done elsewhere.
@@ -2572,7 +2578,8 @@ static void serve(struct client_state *csp)
          else
          {
             log_error(LOG_LEVEL_CONNECT,
-               "No additional client request received in time.");
+               "No additional client request received in time on socket %d.",
+                csp->cfd);
 #ifdef FEATURE_CONNECTION_SHARING
             if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
                && (socket_is_still_usable(csp->server_connection.sfd)))
@@ -2618,7 +2625,10 @@ static void serve(struct client_state *csp)
    if (csp->server_connection.sfd != JB_INVALID_SOCKET)
    {
 #ifdef FEATURE_CONNECTION_SHARING
-      forget_connection(csp->server_connection.sfd);
+      if (csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
+      {
+         forget_connection(csp->server_connection.sfd);
+      }
 #endif /* def FEATURE_CONNECTION_SHARING */
       close_socket(csp->server_connection.sfd);
    }
@@ -2941,7 +2951,7 @@ int main(int argc, char **argv)
       else if (strcmp(argv[argc_pos], "--no-daemon" ) == 0)
       {
          set_debug_level(LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);
-         no_daemon = 1;
+         daemon_mode = 0;
       }
 
       else if (strcmp(argv[argc_pos], "--pidfile" ) == 0)
@@ -3108,12 +3118,11 @@ int main(int argc, char **argv)
 #if defined(unix)
 {
    pid_t pid = 0;
-#if 0
-   int   fd;
-#endif
 
-   if (!no_daemon)
+   if (daemon_mode)
    {
+      int fd;
+
       pid  = fork();
 
       if ( pid < 0 ) /* error */
@@ -3138,33 +3147,50 @@ int main(int argc, char **argv)
          exit( 0 );
       }
       /* child */
-#if 1
-      /* Should be more portable, but not as well tested */
+
       setsid();
-#else /* !1 */
-#ifdef __FreeBSD__
-      setpgrp(0,0);
-#else /* ndef __FreeBSD__ */
-      setpgrp();
-#endif /* ndef __FreeBSD__ */
-      fd = open("/dev/tty", O_RDONLY);
-      if ( fd )
-      {
-         /* no error check here */
-         ioctl( fd, TIOCNOTTY,0 );
-         close ( fd );
-      }
-#endif /* 1 */
+
       /*
        * stderr (fd 2) will be closed later on,
        * when the config file has been parsed.
        */
+      close(0);
+      close(1);
 
-      close( 0 );
-      close( 1 );
+      /*
+       * Reserve fd 0 and 1 to prevent abort() and friends
+       * from sending stuff to the clients or servers.
+       */
+      fd = open("/dev/null", O_RDONLY);
+      if (fd == -1)
+      {
+         log_error(LOG_LEVEL_FATAL, "Failed to open /dev/null: %E");
+      }
+      else if (fd != 0)
+      {
+         if (dup2(fd, 0) == -1)
+         {
+            log_error(LOG_LEVEL_FATAL, "Failed to reserve fd 0: %E");
+         }
+         close(fd);
+      }
+      fd = open("/dev/null", O_WRONLY);
+      if (fd == -1)
+      {
+         log_error(LOG_LEVEL_FATAL, "Failed to open /dev/null: %E");
+      }
+      else if (fd != 1)
+      {
+         if (dup2(fd, 1) == -1)
+         {
+            log_error(LOG_LEVEL_FATAL, "Failed to reserve fd 1: %E");
+         }
+         close(fd);
+      }
+
       chdir("/");
 
-   } /* -END- if (!no_daemon) */
+   } /* -END- if (daemon_mode) */
 
    /*
     * As soon as we have written the PID file, we can switch

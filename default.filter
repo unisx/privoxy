@@ -2,11 +2,11 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.76 2009/10/03 10:40:05 fabiankeil Exp $
+#  $Id: default.filter,v 1.77 2010/02/05 21:41:31 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
-#  Copyright   :  Written by and Copyright (C) 2001-2009 the
+#  Copyright   :  Written by and Copyright (C) 2001-2010 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 # We value your feedback. However, to provide you with the best support,
@@ -422,7 +422,7 @@ FILTER: fun Text replacements for subversive browsing fun!
 
 # SCNR
 #
-s/microsoft(?!.[^\s])/MicroSuck/ig
+s/microsoft(?!\.[^\s])/MicroSuck/ig
 
 # Buzzword Bingo (example for extended regex syntax)
 #

@@ -4,7 +4,7 @@
  *
  * Purpose     :  Windows GUI resource script.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2002 members of
+ * Copyright   :  Written by and Copyright (C) 2001-2009 members of
  *                the Privoxy team.  http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -61,14 +61,14 @@
  * remains consistent on all systems.
  */
 IDI_MAINICON            ICON    DISCARDABLE     "icons/privoxy.ico"
-IDI_ANIMATED1           ICON    DISCARDABLE     "icons/ico00001.ico"
-IDI_ANIMATED2           ICON    DISCARDABLE     "icons/ico00002.ico"
-IDI_ANIMATED3           ICON    DISCARDABLE     "icons/ico00003.ico"
-IDI_ANIMATED4           ICON    DISCARDABLE     "icons/ico00004.ico"
-IDI_ANIMATED5           ICON    DISCARDABLE     "icons/ico00005.ico"
-IDI_ANIMATED6           ICON    DISCARDABLE     "icons/ico00006.ico"
-IDI_ANIMATED7           ICON    DISCARDABLE     "icons/ico00007.ico"
-IDI_ANIMATED8           ICON    DISCARDABLE     "icons/ico00008.ico"
+IDI_ANIMATED1           ICON    DISCARDABLE     "icons/radar-01.ico"
+IDI_ANIMATED2           ICON    DISCARDABLE     "icons/radar-02.ico"
+IDI_ANIMATED3           ICON    DISCARDABLE     "icons/radar-03.ico"
+IDI_ANIMATED4           ICON    DISCARDABLE     "icons/radar-04.ico"
+IDI_ANIMATED5           ICON    DISCARDABLE     "icons/radar-05.ico"
+IDI_ANIMATED6           ICON    DISCARDABLE     "icons/radar-06.ico"
+IDI_ANIMATED7           ICON    DISCARDABLE     "icons/radar-07.ico"
+IDI_ANIMATED8           ICON    DISCARDABLE     "icons/radar-08.ico"
 IDI_IDLE                ICON    DISCARDABLE     "icons/privoxy.ico"
 IDI_OFF                 ICON    DISCARDABLE     "icons/off.ico"
 

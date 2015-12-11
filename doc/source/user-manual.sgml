@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.15">
-<!entity p-status "beta">
+<!entity p-version "3.0.16">
+<!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -34,9 +34,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.115 2009/10/10 06:19:34 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.123 2010/02/19 16:00:38 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -55,12 +55,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2010 by
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.115 2009/10/10 06:19:34 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.123 2010/02/19 16:00:38 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -437,128 +437,150 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- <application>Privoxy 3.0.15 beta</application> is a bug-fix release
- for the previous beta. The changes since 3.0.14 are:
+ <application>Privoxy 3.0.16</application> is a stable release.
+ The changes since 3.0.15 beta are:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    In case of missing server data, no error message is send to the
-    client if the request arrived on a reused connection. The client
-    is then supposed to silently retry the request without bothering
-    the user. This should significantly reduce the frequency of the
-    "No server or forwarder data received" error message many users
-    reported.
+    Added the config file option handle-as-empty-doc-returns-ok to
+    work around Firefox bug #492459, which causes Firefox to hang
+    if JavaScripts are blocked in certain situations. The option is
+    enabled in the default config file.
    </para>
   </listitem>
   <listitem>
    <para>
-    More reliable detection of prematurely closed client sockets
-    with keep-alive enabled.
+    Added the config file option default-server-timeout to control the
+    assumed default server timeout. Since Privoxy no longer returns
+    an error message for connection resets on reused client connections,
+    assuming larger server timeout values appears to actually work
+    pretty well as long as connections aren't shared.
    </para>
   </listitem>
   <listitem>
    <para>
-    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
-    FEATURE_CONNECTION_SHARING and now available on
-    all platforms.
+    Added optional support for FreeBSD's accf_http(9). Use the
+    configure option --enable-accept-filter to enable it.
    </para>
   </listitem>
   <listitem>
    <para>
-    Improved handling of POST requests on reused connections.
-    Should fix problems with stalled connections after submitting
-    form data with some browser configurations.
+    Added fancier Privoxy icons for win32. Contributed by Jeff H.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed various latency calculation issues.
+    In daemon mode, fd 0, 1 and 2 are bound to /dev/null.
    </para>
   </listitem>
   <listitem>
    <para>
-    Allows the client to pass NTLM authentication requests to a
-    forwarding proxy. This was already assumed and hinted to work
-    in 3.0.13 beta but actually didn't. Now it's confirmed to work
-    with IE, Firefox and Chrome.
-    Thanks to Francois Botha and Wan-Teh Chang
+    Resolve localhost using whatever address family the operating
+    system feels like. Previous betas would try to use IPv4 as this
+    is what most users expect, but this didn't work reliably on
+    GNU/Linux systems.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fixed a calculation problem if receiving the server headers
-    takes more than two reads, that could cause Privoxy to terminate
-    the connection prematurely. Reported by Oliver.
+    In the action lists on CGI pages, actions and their parameters are
+    no longer separated with a space. The action file parser doesn't
+    actually allow this and will throw an invalid syntax error if actions
+    and parameters in the action files are separated. Not adding the
+    spaces means copy and pasting CGI output into the action files works.
    </para>
   </listitem>
   <listitem>
    <para>
-    Compiles again on platforms such as OpenBSD and systems
-    using earlier glibc version that don't support AI_ADDRCONFIG.
-    Anonymously submitted in #2872591.
+    The default keep-alive timeout has been reduced to 5 seconds to work
+    around hangs in clients that treat the proxy like any other host and
+    stop allowing any new connections if the "maximum number of
+    connections per host" is reached.
    </para>
   </listitem>
   <listitem>
    <para>
-    A bunch of MS VC project files and Suse and Redhat RPM spec
-    files have been removed as they were no longer maintained for
-    quite some time.
+    Several webbug URLs that look like they are leading to images are now
+    blocked as image instead of empty documents. Doing the latter causes
+    WebKit-based clients to show a "missing image" icon which may mess up
+    the layout.
    </para>
   </listitem>
   <listitem>
    <para>
-    Overly long action lines are properly rejected with a proper
-    error message. Previously they would be either rejected as
-    invalid or cause a core dump through abort().
+    The no-such-domain template is used for DNS resolution
+    problems with FEATURE_IPV6_SUPPORT enabled. Previously the
+    connect-failed template was used. Reported by 'zebul666'.
    </para>
   </listitem>
   <listitem>
    <para>
-    Already timed-out connections are no longer temporarily remembered.
-    They weren't reused anyway, but wasted a socket slot.
+    Accepts quoted expiration dates even though RFC 2109 10.1.2
+    doesn't seem to allow them. Reported anonymously.
    </para>
   </listitem>
   <listitem>
    <para>
-    len refers to the number of bytes actually read which might
-    differ from the ones received. Adjust log messages accordingly.
+    Don't try to forget connections if connection sharing is disabled.
+    This wasn't a real problem but caused an unnecessary log message.
    </para>
   </listitem>
   <listitem>
    <para>
-    The optional JavaScript on the CGI page uses encodeURIComponent()
-    instead of escape() which doesn't encode all characters that matter.
-    Anonymously reported in #2832722.
+    The still undocumented --enable-extended-host-patterns configure
+    option has a better description.
    </para>
   </listitem>
   <listitem>
    <para>
-    Fix gcc45 warnings in decompress_iob().
+    Fixed an error message that would claim a write to the server
+    failed when actually writing to the client failed.
    </para>
   </listitem>
   <listitem>
    <para>
-    Various log message improvements.
+    Log the crunch reason before trying to write to the client.
+    The log is easier to read that way.
    </para>
   </listitem>
   <listitem>
    <para>
-    Privoxy-Regression-Test supports redirect tests.
+    Several log messages about client connections also mention
+    the socket number.
    </para>
   </listitem>
   <listitem>
    <para>
-    Privoxy-Log-Parser can gather some connection statistics.
+    handle-as-empty-document no longer depends on the image blocking
+    code being enabled.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Log-Parser is roughly 40% faster in highlighting mode.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    uagen, a Firefox User-Agent generator for Privoxy and Mozilla
+    browsers has been imported and is available in the tarball's
+    tools directory.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The scripts in the tools directory treat unknown parameters
+    as fatal errors.
    </para>
   </listitem>
  </itemizedlist>
 </para>
 
 <para>
- If you missed the previous two beta versions, you may also be
+ If you missed the previous three beta versions, you may also be
  interested in the additional changes since 3.0.12, the
  last stable release:
 </para>
@@ -727,11 +749,123 @@ How to install the binary packages depends on your operating system:
   </listitem>
   <listitem>
    <para>
-    A TODO list has been added to the source tarballs to give potential
+    A TODO list has been added to the source tarball to give potential
     volunteers a better idea of what the current goals are. Donations
     are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
    </para>
   </listitem>
+  <listitem>
+   <para>
+    In case of missing server data, no error message is send to the
+    client if the request arrived on a reused connection. The client
+    is then supposed to silently retry the request without bothering
+    the user. This should significantly reduce the frequency of the
+    "No server or forwarder data received" error message many users
+    reported.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    More reliable detection of prematurely closed client sockets
+    with keep-alive enabled.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+    FEATURE_CONNECTION_SHARING and now available on
+    all platforms.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Improved handling of POST requests on reused connections.
+    Should fix problems with stalled connections after submitting
+    form data with some browser configurations.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed various latency calculation issues.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Allows the client to pass NTLM authentication requests to a
+    forwarding proxy. This was already assumed and hinted to work
+    in 3.0.13 beta but actually didn't. Now it's confirmed to work
+    with IE, Firefox and Chrome.
+    Thanks to Francois Botha and Wan-Teh Chang
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed a calculation problem if receiving the server headers
+    takes more than two reads, that could cause Privoxy to terminate
+    the connection prematurely. Reported by Oliver.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Compiles again on platforms such as OpenBSD and systems
+    using earlier glibc version that don't support AI_ADDRCONFIG.
+    Anonymously submitted in #2872591.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    A bunch of MS VC project files and Suse and Redhat RPM spec
+    files have been removed as they were no longer maintained for
+    quite some time.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Overly long action lines are properly rejected with a proper
+    error message. Previously they would be either rejected as
+    invalid or cause a core dump through abort().
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Already timed-out connections are no longer temporarily remembered.
+    They weren't reused anyway, but wasted a socket slot.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    len refers to the number of bytes actually read which might
+    differ from the ones received. Adjust log messages accordingly.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The optional JavaScript on the CGI page uses encodeURIComponent()
+    instead of escape() which doesn't encode all characters that matter.
+    Anonymously reported in #2832722.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fix gcc45 warnings in decompress_iob().
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Various log message improvements.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Regression-Test supports redirect tests.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Log-Parser can gather some connection statistics.
+   </para>
+  </listitem>
+
  </itemizedlist>
 </para>
 
@@ -2908,6 +3042,9 @@ for details.
     headers. This is rarely needed for the typical user. If you don't know what 
     <quote>HTTP headers</quote> are, you definitely don't need to worry about this 
     one.
+   </para>
+   <para>
+    Headers added by this action are not modified by other actions.
    </para>
   </listitem>
  </varlistentry>
@@ -8687,6 +8824,30 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.123  2010/02/19 16:00:38  fabiankeil
+ Even more fixes.
+
+ Revision 2.122  2010/02/19 15:22:47  fabiankeil
+ Add missing word.
+
+ Revision 2.121  2010/02/15 15:30:13  fabiankeil
+ Mention the use of the no-such-domain template for DNS problems with FEATURE_IPV6_SUPPORT enabled.
+
+ Revision 2.120  2010/02/13 17:38:39  fabiankeil
+ Update entities for 3.0.16 stable.
+
+ Revision 2.119  2010/02/13 16:37:37  fabiankeil
+ Update 'What's new?' section.
+
+ Revision 2.118  2010/02/11 13:59:48  fabiankeil
+ Mention that the headers added by the add-header action aren't modified by other actions.
+
+ Revision 2.117  2010/01/11 12:56:04  fabiankeil
+ Bump copyright range as p-config.sgml's copyright line is only used in the config file.
+
+ Revision 2.116  2009/11/15 14:24:12  fabiankeil
+ Prepare to generate docs for 3.0.16 UNRELEASED.
+
  Revision 2.115  2009/10/10 06:19:34  fabiankeil
  Ditch a duplicated 'since'.
 

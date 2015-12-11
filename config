@@ -1,8 +1,8 @@
-#    Sample Configuration File for Privoxy v3.0.15 beta
+#        Sample Configuration File for Privoxy v3.0.16
 #
-#  $Id: config,v 1.82 2009/10/10 05:56:41 fabiankeil Exp $
+#  $Id: config,v 1.89 2010/02/15 16:47:12 fabiankeil Exp $
 #
-#  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+#  Copyright (C) 2001-2010 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -713,10 +713,7 @@ logfile logfile
 #      If you leave out the IP address, Privoxy will bind to all IPv4
 #      interfaces (addresses) on your machine and may become reachable
 #      from the Internet. In that case, consider using access control
-#      lists (ACL's, see below), and/or a firewall. If the hostname
-#      is localhost, Privoxy will explicitly try to bind to an IPv4
-#      address. For other hostnames it depends on the operating system
-#      which IP version will be used.
+#      lists (ACL's, see below), and/or a firewall.
 #
 #      If you open Privoxy to untrusted users, you will also
 #      want to make sure that the following actions are disabled:
@@ -1321,6 +1318,9 @@ buffer-limit 4096
 #      manually. Start with a small value and check Privoxy's logfile
 #      from time to time, to see how many retries are usually needed.
 #
+#      Due to a bug, this option currently also causes Privoxy to
+#      retry in case of certain problems with direct connections.
+#
 #  Examples:
 #
 #      forwarded-connect-retries 1
@@ -1485,14 +1485,79 @@ split-large-forms 0
 #      This option has no effect if Privoxy has been compiled without
 #      keep-alive support.
 #
+#      Note that a timeout of five seconds as used in the default
+#      configuration file significantly decreases the number of
+#      connections that will be reused.  The value is used because some
+#      browsers limit the number of connections they open to a single
+#      host and apply the same limit to proxies. This can result in a
+#      single website "grabbing" all the connections the browser allows,
+#      which means connections to other websites can't be opened until
+#      the connections currently in use time out.
+#
+#      Several users have reported this as a Privoxy bug, so the default
+#      value has been reduced. Consider increasing it to 300 seconds
+#      or even more if you think your browser can handle it. If your
+#      browser appears to be hanging it can't.
+#
 #  Examples:
 #
 #      keep-alive-timeout 300
 #
-keep-alive-timeout 300
+keep-alive-timeout 5
 #
 #
-#  6.5. connection-sharing
+#  6.5. default-server-timeout
+#  ============================
+#
+#  Specifies:
+#
+#      Assumed server-side keep-alive timeout if not specified by
+#      the server.
+#
+#  Type of value:
+#
+#      Time in seconds.
+#
+#  Default value:
+#
+#      None
+#
+#  Effect if unset:
+#
+#      Connections for which the server didn't specify the keep-alive
+#      timeout are not reused.
+#
+#  Notes:
+#
+#      Enabling this option significantly increases the number of
+#      connections that are reused, provided the keep-alive-timeout
+#      option is also enabled.
+#
+#      While it also increases the number of connections problems when
+#      Privoxy tries to reuse a connection that already has been closed
+#      on the server side, or is closed while Privoxy is trying to
+#      reuse it, this should only be a problem if it happens for the
+#      first request sent by the client. If it happens for requests
+#      on reused client connections, Privoxy will simply close the
+#      connection and the client is supposed to retry the request
+#      without bothering the user.
+#
+#      Enabling this option is therefore only recommended if the
+#      connection-sharing option is disabled.
+#
+#      It is an error to specify a value larger than the
+#      keep-alive-timeout value.
+#
+#      This option has no effect if Privoxy has been compiled without
+#      keep-alive support.
+#
+#  Examples:
+#
+#      default-server-timeout 60
+#
+#default-server-timeout 60
+#
+#  6.6. connection-sharing
 #  ========================
 #
 #  Specifies:
@@ -1563,7 +1628,7 @@ keep-alive-timeout 300
 #connection-sharing 1
 #
 #
-#  6.6. socket-timeout
+#  6.7. socket-timeout
 #  ====================
 #
 #  Specifies:
@@ -1596,7 +1661,7 @@ keep-alive-timeout 300
 socket-timeout 300
 #
 #
-#  6.7. max-client-connections
+#  6.8. max-client-connections
 #  ============================
 #
 #  Specifies:
@@ -1650,6 +1715,41 @@ socket-timeout 300
 #      max-client-connections 256
 #
 #max-client-connections 256
+#
+#
+#  6.9. handle-as-empty-doc-returns-ok
+#  ====================================
+#
+#  Note:
+#
+#      This is a work-around for Firefox bug 492459: " Websites are no
+#      longer rendered if SSL requests for JavaScripts are blocked by
+#      a proxy. " (https:/ /bugzilla.mozilla.org/show_bug.cgi?id=492459)
+#
+#  Specifies:
+#
+#      The status code Privoxy returns for pages blocked with
+#      +handle-as-empty-document.
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      Privoxy returns a status 403(forbidden) for all blocked pages.
+#
+#  Effect if set:
+#
+#      Privoxy returns a status 200(OK) for pages blocked with
+#      +handle-as-empty-document and a status 403(Forbidden) for all
+#      other blocked pages.
+#
+handle-as-empty-doc-returns-ok 1
 #
 #
 #  7. WINDOWS GUI OPTIONS

@@ -8,7 +8,7 @@ Requests</TITLE
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.15 User Manual"
+TITLE="Privoxy 3.0.16 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy's Template Files"
@@ -43,7 +43,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.15 User Manual</TH
+>Privoxy 3.0.16 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -380,15 +380,46 @@ CLASS="APPLICATION"
 ><P
 >    Any other pertinent information to help identify the problem such as config
     or log file excerpts (yes, you should have log file entries for each
-    action taken).
+    action taken). To get a meaningful logfile, please make sure that the
+    <A
+HREF="../user-manual/config.html#LOGFILE"
+TARGET="_top"
+>logfile directive</A
+>
+    is being used and the following <A
+HREF="../user-manual/config.html#DEBUG"
+TARGET="_top"
+>debug options</A
+> are enabled:
+    <P
+CLASS="LITERALLAYOUT"
+>debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;#&nbsp;Log&nbsp;the&nbsp;destination&nbsp;for&nbsp;each&nbsp;request&nbsp;Privoxy&nbsp;let&nbsp;through.&nbsp;See&nbsp;also&nbsp;debug&nbsp;1024.<br>
+debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;#&nbsp;show&nbsp;each&nbsp;connection&nbsp;status<br>
+debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;#&nbsp;show&nbsp;I/O&nbsp;status<br>
+debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8&nbsp;#&nbsp;show&nbsp;header&nbsp;parsing<br>
+debug&nbsp;&nbsp;&nbsp;128&nbsp;#&nbsp;debug&nbsp;redirects<br>
+debug&nbsp;&nbsp;&nbsp;256&nbsp;#&nbsp;debug&nbsp;GIF&nbsp;de-animation<br>
+debug&nbsp;&nbsp;&nbsp;512&nbsp;#&nbsp;Common&nbsp;Log&nbsp;Format<br>
+debug&nbsp;&nbsp;1024&nbsp;#&nbsp;Log&nbsp;the&nbsp;destination&nbsp;for&nbsp;requests&nbsp;Privoxy&nbsp;didn't&nbsp;let&nbsp;through,&nbsp;and&nbsp;the&nbsp;reason&nbsp;why.<br>
+debug&nbsp;&nbsp;4096&nbsp;#&nbsp;Startup&nbsp;banner&nbsp;and&nbsp;warnings.<br>
+debug&nbsp;&nbsp;8192&nbsp;#&nbsp;Non-fatal&nbsp;errors</P
+>
+    If you are having trouble with a filter, please additionally enable
+    <P
+CLASS="LITERALLAYOUT"
+>debug&nbsp;&nbsp;&nbsp;&nbsp;64&nbsp;#&nbsp;debug&nbsp;regular&nbsp;expression&nbsp;filters</P
+>
+    Note that Privoxy log files may contain sensitive information so please don't
+    submit any logfiles you didn't read first. You can mask sensitive information
+    as long as it's clear that you removed something.
    </P
 ></LI
 ></UL
 ></P
 ><P
 > You don't have to tell us your actual name when filing a problem
- report, but please use a nickname so we can differentiate between
- your messages and the ones entered by other "anonymous" users that
+ report, but if you don't, please use a nickname so we can differentiate
+ between your messages and the ones entered by other "anonymous" users that
  may respond to your request if they have the same problem or already
  found a solution.</P
 ><P
