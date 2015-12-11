@@ -1,6 +1,6 @@
 #ifndef FILTERS_H_INCLUDED
 #define FILTERS_H_INCLUDED
-#define FILTERS_H_VERSION "$Id: filters.h,v 1.22 2006/07/18 14:48:46 david__schmidt Exp $"
+#define FILTERS_H_VERSION "$Id: filters.h,v 1.31 2007/10/19 16:53:28 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.h,v $
@@ -39,6 +39,48 @@
  *
  * Revisions   :
  *    $Log: filters.h,v $
+ *    Revision 1.31  2007/10/19 16:53:28  fabiankeil
+ *    Add helper function to check if any content filters are enabled.
+ *
+ *    Revision 1.30  2007/09/29 10:21:16  fabiankeil
+ *    - Move get_filter_function() from jcc.c to filters.c
+ *      so the filter functions can be static.
+ *    - Don't bother filtering body-less responses.
+ *
+ *    Revision 1.29  2007/09/28 16:38:55  fabiankeil
+ *    - Execute content filters through execute_content_filter().
+ *    - Add prepare_for_filtering() so filter functions don't have to
+ *      care about de-chunking and decompression. As a side effect this enables
+ *      decompression for gif_deanimate_response() and jpeg_inspect_response().
+ *    - Change remove_chunked_transfer_coding()'s return type to jb_err.
+ *      Some clowns feel like chunking empty responses in which case
+ *      (size == 0) is valid but previously would be interpreted as error.
+ *
+ *    Revision 1.28  2007/09/02 15:31:20  fabiankeil
+ *    Move match_portlist() from filter.c to urlmatch.c.
+ *    It's used for url matching, not for filtering.
+ *
+ *    Revision 1.27  2007/04/30 15:02:18  fabiankeil
+ *    Introduce dynamic pcrs jobs that can resolve variables.
+ *
+ *    Revision 1.26  2007/03/13 11:28:43  fabiankeil
+ *    - Fix port handling in acl_addr() and use a temporary acl spec
+ *      copy so error messages don't contain a truncated version.
+ *    - Log size of iob before and after decompression.
+ *
+ *    Revision 1.25  2007/01/12 15:36:44  fabiankeil
+ *    Mark *csp as immutable for is_untrusted_url()
+ *    and is_imageurl(). Closes FR 1237736.
+ *
+ *    Revision 1.24  2006/12/29 18:30:46  fabiankeil
+ *    Fixed gcc43 conversion warnings,
+ *    changed sprintf calls to snprintf.
+ *
+ *    Revision 1.23  2006/11/28 15:19:43  fabiankeil
+ *    Implemented +redirect{s@foo@bar@} to generate
+ *    a redirect based on a rewritten version of the
+ *    original URL.
+ *
  *    Revision 1.22  2006/07/18 14:48:46  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -234,9 +276,8 @@ struct url_spec;
  */
 #ifdef FEATURE_ACL
 extern int block_acl(struct access_control_addr *dst, struct client_state *csp);
-extern int acl_addr(char *aspec, struct access_control_addr *aca);
+extern int acl_addr(const char *aspec, struct access_control_addr *aca);
 #endif /* def FEATURE_ACL */
-extern int match_portlist(const char *portlist, int port);
 
 /*
  * Interceptors
@@ -251,10 +292,10 @@ extern struct http_response *trust_url(struct client_state *csp);
  * Request inspectors
  */
 #ifdef FEATURE_TRUST
-extern int is_untrusted_url(struct client_state *csp);
+extern int is_untrusted_url(const struct client_state *csp);
 #endif /* def FEATURE_TRUST */
 #ifdef FEATURE_IMAGE_BLOCKING
-extern int is_imageurl(struct client_state *csp);
+extern int is_imageurl(const struct client_state *csp);
 #endif /* def FEATURE_IMAGE_BLOCKING */
 
 /*
@@ -273,10 +314,18 @@ extern const struct forward_spec *forward_url(struct http_request *http, struct 
 /*
  * Content modification
  */
-extern char *pcrs_filter_response(struct client_state *csp);
-extern char *gif_deanimate_response(struct client_state *csp);
-extern char *jpeg_inspect_response(struct client_state *csp);
-extern int remove_chunked_transfer_coding(char *buffer, const size_t size);
+
+typedef char *(*filter_function_ptr)();
+extern char *execute_content_filter(struct client_state *csp, filter_function_ptr content_filter);
+
+extern filter_function_ptr get_filter_function(struct client_state *csp);
+extern char *execute_single_pcrs_command(char *subject, const char *pcrs_command, int *hits);
+extern char *rewrite_url(char *old_url, const char *pcrs_command);
+extern char *get_last_url(char *subject, const char *redirect_mode);
+
+extern pcrs_job *compile_dynamic_pcrs_job_list(const struct client_state *csp, const struct re_filterfile_spec *b);
+
+extern inline int content_filters_enabled(const struct client_state *csp);
 
 /*
  * Handling Max-Forwards:

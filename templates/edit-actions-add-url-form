@@ -31,6 +31,14 @@
 #
 # Revisions   :
 #    $Log: edit-actions-add-url-form,v $
+#    Revision 1.18  2007/12/08 14:36:43  fabiankeil
+#    - Use the shiny new CSS "pattern" class.
+#    - s@URL Pattern@URL or TAG Pattern@
+#
+#    Revision 1.17  2007/01/23 16:03:16  fabiankeil
+#    - Add favicon links.
+#    - Remove useless W3C validator links.
+#
 #    Revision 1.16  2006/07/18 14:49:13  david__schmidt
 #    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
 #    with what was really the latest development (the v_3_0_branch branch)
@@ -116,6 +124,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@favicon.ico" type="image/x-icon">
 
   <title>Privoxy@@my-hostname@: Add URL Pattern</title>
 
@@ -159,14 +168,14 @@
 
     <tr>
       <td class="box">
-        <h2>Add URL Pattern</h2>
+        <h2>Add URL or TAG Pattern</h2>
         <form method="GET" action="edit-actions-add-url"
               onSubmit="return validate(u.value);">
           <p>
             <input type="hidden" name="f" value="@f@">
             <input type="hidden" name="v" value="@v@">
             <input type="hidden" name="s" value="@s@">
-            <input type="text" name="u" value="" size="78"><br>
+            <input type="text" name="u" value="" size="78" class="pattern"><br>
             <input type="submit" value="Submit"> &nbsp;
             <input type="reset" value="Reset"> &nbsp;
             <a class="cmd" href="edit-actions-list?f=@f@#l@s@">Cancel</a>
@@ -199,12 +208,6 @@
       </td>
     </tr>
 <!-- if-have-help-info-end@ -->
-
-    <tr>
-      <td>
-        <p class="small">Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></p>
-      </td>
-    </tr>
 
   </table>
 

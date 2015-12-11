@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.6
+#        Sample Configuration File for Privoxy v3.0.7
 #
-#  $Id: config,v 1.56 2006/11/14 01:54:36 hal9 Exp $
+#  $Id: config,v 1.62 2007/12/09 07:51:46 fabiankeil Exp $
 #
-#  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+#  Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -24,14 +24,20 @@
 #  I. INTRODUCTION
 #   ===============
 #
-#  This file holds the Privoxy configuration. If you modify this file,
-#  you will need to send a couple of requests (of any kind) to the
-#  proxy before any changes take effect.
+#  This file holds Privoxy's main configuration. Privoxy detects
+#  configuration changes automatically, so you don't have to restart
+#  it unless you want to load a different configuration file.
 #
-#  When starting Privoxy on Unix systems, give the name of this file as
-#  an argument. On Windows systems, Privoxy will look for this file
-#  with the name 'config.txt' in the same directory where Privoxy
-#  is installed.
+#  The configuration will be reloaded with the first request after
+#  the change was done, this request itself will still use the old
+#  configuration, though. In other words: it takes two requests before
+#  you see the result of your changes.  Requests that are dropped due
+#  to ACL don't trigger reloads.
+#
+#  When starting Privoxy on Unix systems, give the location of this
+#  file as last argument. On Windows systems, Privoxy will look for
+#  this file with the name 'config.txt' in the current working directory
+#  of the Privoxy process.
 #
 #
 #  II. FORMAT OF THE CONFIGURATION FILE
@@ -48,31 +54,30 @@
 #  The '#' indicates a comment. Any part of a line following a '#'
 #  is ignored, except if the '#' is preceded by a '\'.
 #
-#  Thus, by placing a # at the start of an existing configuration line,
-#  you can make it a comment and it will be treated as if it weren't
-#  there. This is called "commenting out" an option and can be useful.
+#  Thus, by placing a # at the start of an existing configuration
+#  line, you can make it a comment and it will be treated as if it
+#  weren't there. This is called "commenting out" an option and can
+#  be useful. Removing the # again is called "uncommenting".
 #
-#  Note that commenting out and option and leaving it at its default
+#  Note that commenting out an option and leaving it at its default
 #  are two completely different things! Most options behave very
-#  differently when unset.  See the the "Effect if unset" explanation
-#  in each option's description for details.
+#  differently when unset.  See the "Effect if unset" explanation in
+#  each option's description for details.
 #
 #  Long lines can be continued on the next line by using a `\' as the
 #  last character.
 #
-
+#
 #
 #  1. LOCAL SET-UP DOCUMENTATION
-#  =============================
 #
 #  If you intend to operate Privoxy for more users than just yourself,
 #  it might be a good idea to let them know how to reach you, what
 #  you block and why you do that, your policies, etc.
 #
-
+#
 #
 #  1.1. user-manual
-#  ================
 #
 #  Specifies:
 #
@@ -96,10 +101,8 @@
 #      The User Manual URI is the single best source of information on
 #      Privoxy, and is used for help links from some of the internal
 #      CGI pages. The manual itself is normally packaged with the
-#      binary distributions, so you probably want to set this to
-#      a locally installed copy. For multi-user setups, you could
-#      provide a copy on a local webserver for all your users and use
-#      the corresponding URL here.
+#      binary distributions, so you probably want to set this to a
+#      locally installed copy.
 #
 #      Examples:
 #
@@ -108,8 +111,9 @@
 #
 #        user-manual  /usr/share/doc/privoxy/user-manual
 #
+#
 #      The User Manual is then available to anyone with
-#      access to the proxy, by following the built-in URL:
+#      access to Privoxy, by following the built-in URL:
 #      http://config.privoxy.org/user-manual/ (or the shortcut:
 #      http://p.p/user-manual/).
 #
@@ -118,16 +122,16 @@
 #
 #        user-manual  http://example.com/privoxy/user-manual/
 #
+#
 #      WARNING!!!
 #
 #          If set, this option should be the first option in the config
 #          file, because it is used while the config file is being read.
 #
 #user-manual http://www.privoxy.org/user-manual/
-
+#
 #
 #  1.2. trust-info-url
-#  ===================
 #
 #  Specifies:
 #
@@ -140,7 +144,7 @@
 #
 #  Default value:
 #
-#      Two example URL are provided
+#      Two example URLs are provided
 #
 #  Effect if unset:
 #
@@ -149,7 +153,7 @@
 #  Notes:
 #
 #      The value of this option only matters if the experimental trust
-#      mechanism has been activated. (See trustfile above.)
+#      mechanism has been activated. (See trustfile below.)
 #
 #      If you use the trust mechanism, it is a good idea to write
 #      up some on-line documentation about your trust policy and to
@@ -161,14 +165,13 @@
 #
 trust-info-url  http://www.example.com/why_we_block.html
 trust-info-url  http://www.example.com/what_we_allow.html
-
+#
 #
 #  1.3. admin-address
-#  ==================
 #
 #  Specifies:
 #
-#      An email address to reach the proxy administrator.
+#      An email address to reach the Privoxy administrator.
 #
 #  Type of value:
 #
@@ -190,10 +193,9 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #      be shown.
 #
 #admin-address privoxy-admin@example.com
-
+#
 #
 #  1.4. proxy-info-url
-#  ===================
 #
 #  Specifies:
 #
@@ -222,10 +224,9 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #      This URL shouldn't be blocked ;-)
 #
 #proxy-info-url http://www.example.com/proxy-service.html
-
+#
 #
 #  2. CONFIGURATION AND LOG FILE LOCATIONS
-#  =======================================
 #
 #  Privoxy can (and normally does) use a number of other files for
 #  additional configuration, help and logging. This section of the
@@ -235,14 +236,13 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #  configuration files, and write permission to any files that would
 #  be modified, such as log files and actions files.
 #
-
+#
 #
 #  2.1. confdir
-#  ============
 #
 #  Specifies:
 #
-#      The directory where the other configuration files are located
+#      The directory where the other configuration files are located.
 #
 #  Type of value:
 #
@@ -258,24 +258,46 @@ trust-info-url  http://www.example.com/what_we_allow.html
 #
 #  Notes:
 #
-#      No trailing "/", please
-#
-#      When development goes modular and multi-user, the blocker,
-#      filter, and per-user config will be stored in subdirectories of
-#      "confdir". For now, the configuration directory structure is
-#      flat, except for confdir/templates, where the HTML templates
-#      for CGI output reside (e.g. Privoxy's 404 error page).
+#      No trailing "/", please.
 #
 confdir .
-
 #
-#  2.2. logdir
-#  ===========
+#
+#  2.2. templdir
+#
+#  Specifies:
+#
+#      An alternative directory where the templates are loaded from.
+#
+#  Type of value:
+#
+#      Path name
+#
+#  Default value:
+#
+#      unset
+#
+#  Effect if unset:
+#
+#      The templates are assumed to be located in confdir/template.
+#
+#  Notes:
+#
+#      Privoxy's original templates are usually overwritten with each
+#      update. Use this option to relocate customized templates that
+#      should be kept. As template variables might change between
+#      updates, you shouldn't expect templates to work with Privoxy
+#      releases other than the one they were part of, though.
+#
+#templdir .
+#
+#
+#  2.3. logdir
 #
 #  Specifies:
 #
 #      The directory where all logging takes place (i.e. where logfile
-#      and jarfile are located)
+#      and jarfile are located).
 #
 #  Type of value:
 #
@@ -291,13 +313,12 @@ confdir .
 #
 #  Notes:
 #
-#      No trailing "/", please
+#      No trailing "/", please.
 #
 logdir .
-
 #
-#  2.3. actionsfile
-#  ================
+#
+#  2.4. actionsfile
 #
 #  Specifies:
 #
@@ -305,19 +326,19 @@ logdir .
 #
 #  Type of value:
 #
-#      File name, relative to confdir, without the .action suffix
+#      Complete file name, relative to confdir
 #
 #  Default values:
 #
-#        standard     # Internal purposes, no editing recommended
+#        standard.action     # Internal purposes, no editing recommended
 #
-#        default      # Main actions file
+#        default.action      # Main actions file
 #
-#        user         # User customizations
+#        user.action         # User customizations
 #
 #  Effect if unset:
 #
-#      No actions are taken at all. Simple neutral proxying.
+#      No actions are taken at all. More or less neutral proxying.
 #
 #  Notes:
 #
@@ -329,18 +350,22 @@ logdir .
 #      which is the "main" actions file maintained by the developers,
 #      and user.action, where you can make your personal additions.
 #
-#      Actions files are where all the per site and per URL
-#      configuration is done for ad blocking, cookie management,
-#      privacy considerations, etc. There is no point in using Privoxy
-#      without at least one actions file.
+#      Actions files contain all the per site and per URL configuration
+#      for ad blocking, cookie management, privacy considerations,
+#      etc. There is no point in using Privoxy without at least one
+#      actions file.
 #
-actionsfile standard  # Internal purpose, recommended
-actionsfile default   # Main actions file
-actionsfile user      # User customizations
-
+#      Note that since Privoxy 3.0.7, the complete filename, including
+#      the ".action" extension has to be specified. The syntax change
+#      was necessary to be consistent with the other file options and
+#      to allow previously forbidden characters.
 #
-#  2.4. filterfile
-#  ===============
+actionsfile standard.action  # Internal purpose, recommended
+actionsfile default.action   # Main actions file
+actionsfile user.action      # User customizations
+#
+#
+#  2.5. filterfile
 #
 #  Specifies:
 #
@@ -364,9 +389,9 @@ actionsfile user      # User customizations
 #      Multiple filterfile lines are permitted.
 #
 #      The filter files contain content modification rules that use
-#      regular expressions. These rules permit powerful changes on
-#      the content of Web pages, and optionally the headers as well,
-#      e.g., you could disable your favorite JavaScript annoyances,
+#      regular expressions. These rules permit powerful changes on the
+#      content of Web pages, and optionally the headers as well, e.g.,
+#      you could try to disable your favorite JavaScript annoyances,
 #      re-write the actual displayed text, or just have some fun
 #      playing buzzword bingo with web pages.
 #
@@ -382,10 +407,9 @@ actionsfile user      # User customizations
 #
 filterfile default.filter
 #filterfile user.filter      # User customizations
-
 #
-#  2.5. logfile
-#  ============
+#
+#  2.6. logfile
 #
 #  Specifies:
 #
@@ -397,11 +421,12 @@ filterfile default.filter
 #
 #  Default value:
 #
-#      logfile (Unix) or privoxy.log (Windows)
+#      Unset (commented out). When activated: logfile (Unix) or
+#      privoxy.log (Windows).
 #
 #  Effect if unset:
 #
-#      No log file is used, all log messages go to the console (STDERR).
+#      Logging is disabled unless --no-daemon mode is used.
 #
 #  Notes:
 #
@@ -409,27 +434,28 @@ filterfile default.filter
 #      written. The level of detail and number of messages are set with
 #      the debug option (see below).  The logfile can be useful for
 #      tracking down a problem with Privoxy (e.g., it's not blocking
-#      an ad you think it should block) but in most cases you probably
-#      will never look at it.
+#      an ad you think it should block) and it can help you to monitor
+#      what your browser is doing.
+#
+#      Depending on the debug options below, the logfile may be a privacy
+#      risk if third parties can get access to it. As most users will never
+#      look at it, Privoxy 3.0.7 and later only log fatal errors by default.
+#
+#      For most troubleshooting purposes, you will have to change that, please
+#      refer to the debugging section for details.
 #
 #      Your logfile will grow indefinitely, and you will probably
 #      want to periodically remove it. On Unix systems, you can do
-#      this with a cron job (see "man cron"). For Red Hat, a logrotate
-#      script has been included.
-#
-#      On SuSE Linux systems, you can place a line like
-#      "/var/log/privoxy.* +1024k 644 nobody.nogroup" in /etc/logfiles,
-#      with the effect that cron.daily will automatically archive,
-#      gzip, and empty the log, when it exceeds 1M size.
+#      this with a cron job (see "man cron"). For Red Hat based Linux
+#      distributions, a logrotate script has been included.
 #
 #      Any log files must be writable by whatever user Privoxy is
-#      being run as (default on UNIX, user id is "privoxy").
+#      being run as (on Unix, default user id is "privoxy").
 #
 logfile logfile
-
 #
-#  2.6. jarfile
-#  ============
+#
+#  2.7. jarfile
 #
 #  Specifies:
 #
@@ -442,7 +468,7 @@ logfile logfile
 #  Default value:
 #
 #      Unset (commented out). When activated: jarfile (Unix) or
-#      privoxy.jar (Windows)
+#      privoxy.jar (Windows).
 #
 #  Effect if unset:
 #
@@ -452,18 +478,20 @@ logfile logfile
 #
 #      The jarfile may grow to ridiculous sizes over time.
 #
-#      If debug 8 (show header parsing) is enabled, cookies are written
-#      to the logfile with the rest of the headers.
+#      If debug 8 (show header parsing) is enabled, cookies are also
+#      written to the logfile with the rest of the headers. Therefore
+#      this option isn't very useful and may be removed in future
+#      releases. Please report to the developers if you are still
+#      using it.
 #
 #jarfile jarfile
-
 #
-#  2.7. trustfile
-#  ==============
+#
+#  2.8. trustfile
 #
 #  Specifies:
 #
-#      The trust file to use
+#      The name of the trust file to use
 #
 #  Type of value:
 #
@@ -476,7 +504,7 @@ logfile logfile
 #
 #  Effect if unset:
 #
-#      The entire trust mechanism is turned off.
+#      The entire trust mechanism is disabled.
 #
 #  Notes:
 #
@@ -489,15 +517,18 @@ logfile logfile
 #      in one of two ways:
 #
 #      Prepending a ~ character limits access to this site only (and
-#      any sub-paths within this site), e.g. ~www.example.com.
+#      any sub-paths within this site), e.g. ~www.example.com allows
+#      access to ~www.example.com/ features/news.html, etc.
 #
 #      Or, you can designate sites as trusted referrers, by prepending
 #      the name with a + character. The effect is that access to
-#      untrusted sites will be granted -- but only if a link from this
-#      trusted referrer was used. The link target will then be added
-#      to the "trustfile" so that future, direct accesses will be
-#      granted. Sites added via this mechanism do not become trusted
-#      referrers themselves (i.e. they are added with a ~ designation).
+#      untrusted sites will be granted -- but only if a link from
+#      this trusted referrer was used to get there. The link target
+#      will then be added to the "trustfile" so that future, direct
+#      accesses will be granted. Sites added via this mechanism do
+#      not become trusted referrers themselves (i.e. they are added
+#      with a ~ designation). There is a limit of 512 such entries,
+#      after which new entries will not be made.
 #
 #      If you use the + operator in the trust file, it may grow
 #      considerably over time.
@@ -510,19 +541,17 @@ logfile logfile
 #      children.
 #
 #trustfile trust
-
+#
 #
 #  3. DEBUGGING
-#  ============
 #
 #  These options are mainly useful when tracing a problem. Note that
 #  you might also want to invoke Privoxy with the --no-daemon command
 #  line option when debugging.
 #
-
+#
 #
 #  3.1. debug
-#  ==========
 #
 #  Specifies:
 #
@@ -544,48 +573,60 @@ logfile logfile
 #  Notes:
 #
 #      The available debug levels are:
-#  
-#          debug         1 # show each GET/POST/CONNECT request 
-#          debug         2 # show each connection status 
-#          debug         4 # show I/O status 
-#          debug         8 # show header parsing 
-#          debug        16 # log all data into the logfile 
-#          debug        32 # debug force feature 
-#          debug        64 # debug regular expression filter
-#          debug       128 # debug fast redirects 
-#          debug       256 # debug GIF de-animation 
-#          debug       512 # Common Log Format
-#          debug      1024 # debug kill pop-ups 
-#          debug      2048 # CGI user interface 
-#          debug      4096 # Startup banner and warnings.
-#          debug      8192 # Non-fatal errors
+#
+#        debug         1 # show each GET/POST/CONNECT request 
+#        debug         2 # show each connection status 
+#        debug         4 # show I/O status 
+#        debug         8 # show header parsing 
+#        debug        16 # log all data written to the network into the logfile 
+#        debug        32 # debug force feature 
+#        debug        64 # debug regular expression filters 
+#        debug       128 # debug redirects 
+#        debug       256 # debug GIF de-animation 
+#        debug       512 # Common Log Format 
+#        debug      1024 # debug kill pop-ups 
+#        debug      2048 # CGI user interface 
+#        debug      4096 # Startup banner and warnings.  
+#        debug      8192 # Non-fatal errors
+#
 #
 #      To select multiple debug levels, you can either add them or
 #      use multiple debug lines.
 #
 #      A debug level of 1 is informative because it will show you each
-#      request as it happens. 1, 4096 and 8192 are highly recommended
-#      so that you will notice when things go wrong. The other levels
-#      are probably only of interest if you are hunting down a specific
-#      problem. They can produce a hell of an output (especially 16).
+#      request as it happens. 1, 4096 and 8192 are recommended so that you
+#      will notice when things go wrong. The other levels are probably only
+#      of interest if you are hunting down a specific problem. They can
+#      produce a hell of an output (especially 16).
 #
-#      The reporting of fatal errors (i.e. ones which crash Privoxy)
-#      is always on and cannot be disabled.
+#      Privoxy used to ship with the debug levels recommended above enabled
+#      by default, but due to privacy concerns 3.0.7 and later are
+#      configured to only log fatal errors.
+# 
+#      If you are used to the more verbose settings, simply enable the debug
+#      lines below again.
 #
-#      If you want to use CLF (Common Log Format), you should set
-#      "debug 512" ONLY and not enable anything else.
+#      If you want to use pure CLF (Common Log Format), you should set
+#      debug 512 ONLY and not enable anything else.
 #
-debug   1    # show each GET/POST/CONNECT request
-debug   4096 # Startup banner and warnings
-debug   8192 # Errors - *we highly recommended enabling this*
-
+#      Privoxy has a hard-coded limit for the length of log messages. If
+#      it's reached, messages are logged truncated and marked with
+#      "... [too long, truncated]".
+#
+#      Please don't file any support requests without trying to reproduce
+#      the problem with increased debug level first. Once you read the log
+#      messages, you may even be able to solve the problem on your own.
+#
+#debug   1    # show each GET/POST/CONNECT request
+#debug   4096 # Startup banner and warnings
+#debug   8192 # Errors - *we highly recommended enabling this*
+#
 #
 #  3.2. single-threaded
-#  ====================
 #
 #  Specifies:
 #
-#      Whether to run only one server thread
+#      Whether to run only one server thread.
 #
 #  Type of value:
 #
@@ -602,22 +643,20 @@ debug   8192 # Errors - *we highly recommended enabling this*
 #
 #  Notes:
 #
-#      This option is only there for debug purposes and you should
-#      never need to use it. It will drastically reduce performance.
+#      This option is only there for debugging purposes. It will
+#      drastically reduce performance.
 #
 #single-threaded
-
+#
 #
 #  4. ACCESS CONTROL AND SECURITY
-#  ==============================
 #
 #  This section of the config file controls the security-relevant
 #  aspects of Privoxy's configuration.
 #
-
+#
 #
 #  4.1. listen-address
-#  ===================
 #
 #  Specifies:
 #
@@ -652,9 +691,9 @@ debug   8192 # Errors - *we highly recommended enabling this*
 #      from the Internet. In that case, consider using access control
 #      lists (ACL's, see below), and/or a firewall.
 #
-#      If you open Privoxy to untrusted users, you will also want
-#      to turn off the enable-edit-actions and enable-remote-toggle
-#      options!
+#      If you open Privoxy to untrusted users, you will also
+#      want to make sure that the following actions are disabled:
+#      enable-edit-actions and enable-remote-toggle
 #
 #  Example:
 #
@@ -665,11 +704,11 @@ debug   8192 # Errors - *we highly recommended enabling this*
 #
 #        listen-address  192.168.0.1:8118
 #
+#
 listen-address  127.0.0.1:8118
-
+#
 #
 #  4.2. toggle
-#  ===========
 #
 #  Specifies:
 #
@@ -690,19 +729,17 @@ listen-address  127.0.0.1:8118
 #  Notes:
 #
 #      If set to 0, Privoxy will start in "toggled off" mode,
-#      i.e. behave like a normal, content-neutral proxy where all ad
-#      blocking, filtering, etc are disabled. See enable-remote-toggle
-#      below. This is not really useful anymore, since toggling is
-#      much easier via the web interface than via editing the conf file.
+#      i.e. mostly behave like a normal, content-neutral proxy
+#      with both ad blocking and content filtering disabled. See
+#      enable-remote-toggle below.
 #
 #      The windows version will only display the toggle icon in the
 #      system tray if this option is present.
 #
 toggle  1
-
+#
 #
 #  4.3. enable-remote-toggle
-#  =========================
 #
 #  Specifies:
 #
@@ -714,7 +751,7 @@ toggle  1
 #
 #  Default value:
 #
-#      1
+#      0
 #
 #  Effect if unset:
 #
@@ -722,24 +759,28 @@ toggle  1
 #
 #  Notes:
 #
-#      When toggled off, Privoxy acts like a normal, content-neutral
-#      proxy, i.e.  it acts as if none of the actions applied to
-#      any URL.
+#      When toggled off, Privoxy mostly acts like a normal,
+#      content-neutral proxy, i.e. doesn't block ads or filter content.
 #
-#      For the time being, access to the toggle feature can not be
-#      controlled separately by "ACLs" or HTTP authentication, so that
-#      everybody who can access Privoxy (see "ACLs" and listen-address
-#      above) can toggle it for all users. So this option is not
-#      recommended for multi-user environments with untrusted users.
+#      Access to the toggle feature can not be controlled separately by
+#      "ACLs" or HTTP authentication, so that everybody who can access
+#      Privoxy (see "ACLs" and listen-address above) can toggle it
+#      for all users. So this option is not recommended for multi-user
+#      environments with untrusted users.
+#
+#      Note that malicious client side code (e.g Java) is also capable
+#      of using this option.
+#
+#      As a lot of Privoxy users don't read documentation, this feature
+#      is disabled by default.
 #
 #      Note that you must have compiled Privoxy with support for this
 #      feature, otherwise this option has no effect.
 #
-enable-remote-toggle  1
-
+enable-remote-toggle  0
+#
 #
 #  4.4. enable-remote-http-toggle
-#  ==============================
 #
 #  Specifies:
 #
@@ -752,7 +793,7 @@ enable-remote-toggle  1
 #
 #  Default value:
 #
-#      1
+#      0
 #
 #  Effect if unset:
 #
@@ -766,15 +807,18 @@ enable-remote-toggle  1
 #      the ongoing request, even if it is enabled in one of the
 #      action files.
 #
-#      If you are using Privoxy in a multi-user environment or with
-#      untrustworthy clients and want to enforce filtering, you will
-#      have to disable this option, otherwise you can ignore it.
+#      This feature is disabled by default. If you are using Privoxy in
+#      a environment with trusted clients, you may enable this feature
+#      at your discretion. Note that malicious client side code (e.g
+#      Java) is also capable of using this feature.
 #
-enable-remote-http-toggle  1
-
+#      This option will be removed in future releases as it has been
+#      obsoleted by the more general header taggers.
+#
+enable-remote-http-toggle  0
+#
 #
 #  4.5. enable-edit-actions
-#  ========================
 #
 #  Specifies:
 #
@@ -786,7 +830,7 @@ enable-remote-http-toggle  1
 #
 #  Default value:
 #
-#      1
+#      0
 #
 #  Effect if unset:
 #
@@ -794,20 +838,75 @@ enable-remote-http-toggle  1
 #
 #  Notes:
 #
-#      For the time being, access to the editor can not be controlled
-#      separately by "ACLs" or HTTP authentication, so that everybody
-#      who can access Privoxy (see "ACLs" and listen-address above)
-#      can modify its configuration for all users. So this option is
-#      not recommended for multi-user environments with untrusted users.
+#      Access to the editor can not be controlled separately by
+#      "ACLs" or HTTP authentication, so that everybody who can access
+#      Privoxy (see "ACLs" and listen-address above) can modify its
+#      configuration for all users.
+#
+#      This option is not recommended for environments with untrusted
+#      users and as a lot of Privoxy users don't read documentation,
+#      this feature is disabled by default.
+#
+#      Note that malicious client side code (e.g Java) is also capable
+#      of using the actions editor and you shouldn't enable this
+#      options unless you understand the consequences and are sure
+#      your browser is configured correctly.
 #
 #      Note that you must have compiled Privoxy with support for this
 #      feature, otherwise this option has no effect.
 #
-enable-edit-actions 1
-
+enable-edit-actions 0
 #
-#  4.6. ACLs: permit-access and deny-access
-#  ========================================
+#
+#  4.6. enforce-blocks
+#
+#  Specifies:
+#
+#      Whether the user is allowed to ignore blocks and can "go there
+#      anyway".
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      Blocks are not enforced.
+#
+#  Notes:
+#
+#      Privoxy is mainly used to block and filter requests as a service
+#      to the user, for example to block ads and other junk that clogs
+#      the pipes.  Privoxy's configuration isn't perfect and sometimes
+#      innocent pages are blocked. In this situation it makes sense to
+#      allow the user to enforce the request and have Privoxy ignore
+#      the block.
+#
+#      In the default configuration Privoxy's "Blocked" page contains
+#      a "go there anyway" link to adds a special string (the force
+#      prefix) to the request URL. If that link is used, Privoxy
+#      will detect the force prefix, remove it again and let the
+#      request pass.
+#
+#      Of course Privoxy can also be used to enforce a network
+#      policy. In that case the user obviously should not be able to
+#      bypass any blocks, and that's what the "enforce-blocks" option
+#      is for. If it's enabled, Privoxy hides the "go there anyway"
+#      link. If the user adds the force prefix by hand, it will not
+#      be accepted and the circumvention attempt is logged.
+#
+#  Examples:
+#
+#      enforce-blocks 1
+#
+enforce-blocks 0
+#
+#
+#  4.7. ACLs: permit-access and deny-access
 #
 #  Specifies:
 #
@@ -840,15 +939,14 @@ enable-edit-actions 1
 #      or internal (home) network address by means of the listen-address
 #      option.
 #
-#      Please see the warnings in the FAQ that this proxy is not
-#      intended to be a substitute for a firewall or to encourage
-#      anyone to defer addressing basic security weaknesses.
+#      Please see the warnings in the FAQ that Privoxy is not intended
+#      to be a substitute for a firewall or to encourage anyone to
+#      defer addressing basic security weaknesses.
 #
-#      Multiple ACL lines are OK. If any ACLs are specified, then
-#      the Privoxy talks only to IP addresses that match at least one
-#      permit-access line and don't match any subsequent deny-access
-#      line. In other words, the last match wins, with the default
-#      being deny-access.
+#      Multiple ACL lines are OK. If any ACLs are specified, Privoxy
+#      only talks to IP addresses that match at least one permit-access
+#      line and don't match any subsequent deny-access line. In other
+#      words, the last match wins, with the default being deny-access.
 #
 #      If Privoxy is using a forwarder (see forward below) for a
 #      particular destination URL, the dst_addr that is examined is
@@ -865,7 +963,7 @@ enable-edit-actions 1
 #
 #      Denying access to particular sites by ACL may have undesired
 #      side effects if the site in question is hosted on a machine
-#      which also hosts other sites.
+#      which also hosts other sites (most sites are).
 #
 #  Examples:
 #
@@ -875,22 +973,24 @@ enable-edit-actions 1
 #
 #        permit-access  localhost
 #
+#
 #      Allow any host on the same class C subnet as www.privoxy.org
-#      access to nothing but www.example.com:
+#      access to nothing but www.example.com (or other domains hosted
+#      on the same system):
 #
-#        permit-access  www.privoxy.org/24   www.example.com/32
+#        permit-access  www.privoxy.org/24 www.example.com/32
 #
-#      Allow access from any host on the 26-bit subnet 192.168.45.64
-#      to anywhere, with the exception that 192.168.45.73 may not
-#      access www.dirty-stuff.example.com:
+#
+#      Allow access from any host on the 26-bit subnet 192.168.45.64 to
+#      anywhere, with the exception that 192.168.45.73 may not access
+#      the IP address behind www.dirty-stuff.example.com:
 #
 #        permit-access  192.168.45.64/26 
-#        deny-access    192.168.45.73     www.dirty-stuff.example.com
+#        deny-access   192.168.45.73  www.dirty-stuff.example.com
 #
-
 #
-#  4.7. buffer-limit
-#  =================
+#
+#  4.8. buffer-limit
 #
 #  Specifies:
 #
@@ -923,26 +1023,31 @@ enable-edit-actions 1
 #      Kbytes each, unless you have enabled "single-threaded" above.
 #
 buffer-limit 4096
-
+#
 #
 #  5. FORWARDING
-#  =============
 #
-#  This feature allows routing of HTTP requests through a chain
-#  of multiple proxies. It can be used to better protect privacy
-#  and confidentiality when accessing specific domains by routing
-#  requests to those domains through an anonymous public proxy.
-#  Or to use a caching proxy to speed up browsing. Or chaining to 
-#  a parent proxy may be necessary because the machine that Privoxy 
-#  runs on has no direct Internet access.
+#  This feature allows routing of HTTP requests through a chain of
+#  multiple proxies.
+#
+#  Forwarding can be used to chain Privoxy with a caching proxy to
+#  speed up browsing. Using a parent proxy may also be necessary if
+#  the machine that Privoxy runs on has no direct Internet access.
+#
+#  Note that parent proxies can severely decrease your privacy
+#  level. For example a parent proxy could add your IP address to the
+#  request headers and if it's a caching proxy it may add the "Etag"
+#  header to revalidation requests again, even though you configured
+#  Privoxy to remove it. It may also ignore Privoxy's header time
+#  randomization and use the original values which could be used by
+#  the server as cookie replacement to track your steps between visits.
 #
 #  Also specified here are SOCKS proxies. Privoxy supports the SOCKS
 #  4 and SOCKS 4A protocols.
 #
-
+#
 #
 #  5.1. forward
-#  ============
 #
 #  Specifies:
 #
@@ -977,27 +1082,28 @@ buffer-limit 4096
 #
 #  Examples:
 #
-#      Everything goes to an example anonymizing proxy, except SSL on
-#      port 443 (which it doesn't handle):
+#      Everything goes to an example parent proxy, except SSL on port
+#      443 (which it doesn't handle):
 #
-#        forward   /      anon-proxy.example.org:8080 
+#        forward   /      parent-proxy.example.org:8080 
 #        forward   :443   .
+#
 #
 #      Everything goes to our example ISP's caching proxy, except for
 #      requests to that ISP's sites:
 #
-#        forward   /                  caching-proxy.example-isp.net:8000
-#        forward   .example-isp.net   .
+#        forward   /                  caching-proxy.isp.example.net:8000
+#        forward   .isp.example.net   .
 #
-
+#
+#
 #
 #  5.2. forward-socks4 and forward-socks4a
-#  =======================================
 #
 #  Specifies:
 #
-#      Through which SOCKS proxy (and to which parent HTTP proxy)
-#      specific requests should be routed.
+#      Through which SOCKS proxy (and optionally to which parent HTTP
+#      proxy) specific requests should be routed.
 #
 #  Type of value:
 #
@@ -1039,40 +1145,47 @@ buffer-limit 4096
 #      ISP's proxy by way of example.com's corporate SOCKS 4A gateway
 #      to the Internet.
 #
-#        forward-socks4a   /              socks-gw.example.com:1080   www-cache.example-isp.net:8080 
-#        forward           .example.com   .
-#  
+#        forward-socks4a   /       socks-gw.example.com:1080    www-cache.isp.example.net:8080 
+#        forward           .example.com        .
+#
+#
 #      A rule that uses a SOCKS 4 gateway for all destinations but no
 #      HTTP parent looks like this:
-#  
+#
 #        forward-socks4   /               socks-gw.example.com:1080  .
 #
+#
 #      To chain Privoxy and Tor, both running on the same system,
-#      you should use the rule:
-#  
-#        forward-socks4a             /     127.0.0.1:9050 .
+#      you would use something like:
+#
+#        forward-socks4a   /               127.0.0.1:9050 .
+#
 #
 #      The public Tor network can't be used to reach your local network,
-#      therefore it's a good idea to make some exceptions:
+#      if you need to access local servers you therefore might want
+#      to make some exceptions:
 #
-#        forward         192.168.*.*/     .
-#        forward            10.*.*.*/     .
-#        forward           127.*.*.*/     .
+#        forward         192.168.*.*/     .  
+#        forward         10.*.*.*/        .  
+#        forward         127.*.*.*/       .
+#
 #
 #      Unencrypted connections to systems in these address ranges will
-#      be as (un)secure as the local network is, but the alternative is
-#      that you can't reach the network at all.
+#      be as (un) secure as the local network is, but the alternative
+#      is that you can't reach the local network through Privoxy at
+#      all. Of course this may actually be desired and there is no
+#      reason to make these exceptions if you aren't sure you need them.
 #
 #      If you also want to be able to reach servers in your local
-#      network by using their names, you will need additional
-#      exceptions that look like this:
+#      network by using their names, you will need additional exceptions
+#      that look like this:
 #
-#        forward           localhost/     .
+#       forward           localhost/     .
 #
-
+#
+#
 #
 #  5.3. forwarded-connect-retries
-#  ==============================
 #
 #  Specifies:
 #
@@ -1089,8 +1202,8 @@ buffer-limit 4096
 #
 #  Effect if unset:
 #
-#      Forwarded connections are treated like direct connections and
-#      no retry attempts are made.
+#      Connections forwarded through other proxies are treated like
+#      direct connections and no retry attempts are made.
 #
 #  Notes:
 #
@@ -1102,20 +1215,139 @@ buffer-limit 4096
 #      case the retry will just delay the appearance of Privoxy's
 #      error message.
 #
-#      Only use this option, if you are getting many forwarding related
-#      error messages, that go away when you try again manually. Start
-#      with a small value and check Privoxy's logfile from time to time,
-#      to see how many retries are usually needed.
+#      Note that in the context of this option, "forwarded connections"
+#      includes all connections that Privoxy forwards through other
+#      proxies. This option is not limited to the HTTP CONNECT method.
+#
+#      Only use this option, if you are getting lots of
+#      forwarding-related error messages that go away when you try again
+#      manually. Start with a small value and check Privoxy's logfile
+#      from time to time, to see how many retries are usually needed.
 #
 #  Examples:
 #
 #      forwarded-connect-retries 1
 #
 forwarded-connect-retries  0
-
+#
+#
+#  5.4. accept-intercepted-requests
+#
+#  Specifies:
+#
+#      Whether intercepted requests should be treated as valid.
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      Only proxy requests are accepted, intercepted requests are
+#      treated as invalid.
+#
+#  Notes:
+#
+#      If you don't trust your clients and want to force them to use
+#      Privoxy, enable this option and configure your packet filter
+#      to redirect outgoing HTTP connections into Privoxy.
+#
+#      Make sure that Privoxy's own requests aren't redirected as well.
+#      Additionally take care that Privoxy can't intentionally connect
+#      to itself, otherwise you could run into redirection loops if
+#      Privoxy's listening port is reachable by the outside or an
+#      attacker has access to the pages you visit.
+#
+#  Examples:
+#
+#      accept-intercepted-requests 1
+#
+accept-intercepted-requests 0
+#
+#
+#  5.5. allow-cgi-request-crunching
+#
+#  Specifies:
+#
+#      Whether requests to Privoxy's CGI pages can be blocked or
+#      redirected.
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      Privoxy ignores block and redirect actions for its CGI pages.
+#
+#  Notes:
+#
+#      By default Privoxy ignores block or redirect actions for
+#      its CGI pages.  Intercepting these requests can be useful in
+#      multi-user setups to implement fine-grained access control,
+#      but it can also render the complete web interface useless and
+#      make debugging problems painful if done without care.
+#
+#      Don't enable this option unless you're sure that you really
+#      need it.
+#
+#  Examples:
+#
+#      allow-cgi-request-crunching 1
+#
+allow-cgi-request-crunching 0
+#
+#
+#  5.6. split-large-forms
+#
+#  Specifies:
+#
+#      Whether the CGI interface should stay compatible with broken
+#      HTTP clients.
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      The CGI form generate long GET URLs.
+#
+#  Notes:
+#
+#      Privoxy's CGI forms can lead to rather long URLs. This isn't
+#      a problem as far as the HTTP standard is concerned, but it can
+#      confuse clients with arbitrary URL length limitations.
+#
+#      Enabling split-large-forms causes Privoxy to divide big forms
+#      into smaller ones to keep the URL length down. It makes editing
+#      a lot less convenient and you can no longer submit all changes
+#      at once, but at least it works around this browser bug.
+#
+#      If you don't notice any editing problems, there is no reason
+#      to enable this option, but if one of the submit buttons appears
+#      to be broken, you should give it a try.
+#
+#  Examples:
+#
+#      split-large-forms 1
+#
+split-large-forms 0
+#
 #
 #  6. WINDOWS GUI OPTIONS
-#  ======================
 #
 #  Privoxy has a number of options specific to the Windows GUI
 #  interface:
@@ -1174,5 +1406,5 @@ forwarded-connect-retries  0
 #  and hide the command console.
 #
 #hide-console
-
+#
 #

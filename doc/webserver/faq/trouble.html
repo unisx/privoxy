@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Troubleshooting</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,20 +74,20 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="TROUBLE"
-></A
->5. Troubleshooting</H1
+>5. Troubleshooting</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1062"
-></A
+NAME="AEN1075"
 >5.1. I cannot connect to any websites. Or, I am getting
 <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
-> message with every web page. Why?</H3
+> message with every web page. Why?</A
+></H3
 ><P
 > There are several possibilities:</P
 ><P
@@ -104,10 +104,10 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is installed correctly, has not crashed, and is indeed running.
- Look at <SPAN
+ Turn on <SPAN
 CLASS="APPLICATION"
 >Privoxy's</SPAN
-> logs to see what they say.</P
+> logging, and look at the logs to see what they say.</P
 ></LI
 ><LI
 ><P
@@ -145,8 +145,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ERROR503"
-></A
->5.2. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
+>5.2. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
+></H3
 ><P
 >  More than likely this is a problem with your TCP/IP networking. ZoneAlarm has
   been reported to cause this symptom -- even if not running! The solution is
@@ -160,10 +160,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN1085"
-></A
+NAME="AEN1098"
 >5.3. I just added a new rule, but the steenkin ad is 
-still getting through. How?</H3
+still getting through. How?</A
+></H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
  held in the browser's cache for some time, so it will be displayed without
@@ -188,7 +188,8 @@ TARGET="_top"
  find the correct URL by looking at <SPAN
 CLASS="APPLICATION"
 >Privoxy's</SPAN
-> logs.</P
+> logs
+ (you may need to enable logging in the main config file if its disabled).</P
 ><P
 > Below is a slightly modified real-life log snippet that originates with one 
  requested URL: <TT
@@ -236,31 +237,31 @@ Request: img.example.com/sr.js
 Request: example.betamarker.com/example.html
 Request: www.lik-sang.com/Banners/bestsellers/skyscraper.php?likref=BSellers
 Request: img.example.com/pb.png
-Request: www.google-analytics.com/urchin.js crunch!
-Request: www.advertising-department.com/ats/switch.ps.php?26856 crunch!
+Request: www.google-analytics.com/urchin.js crunch! (Blocked)
+Request: www.advertising-department.com/ats/switch.ps.php?26856 crunch! (Blocked)
 Request: img.example.com/p.gif
-Request: www.popuptraffic.com/assign.php?l=example&#38;mode=behind crunch!
-Request: www.popuptraffic.com/scripts/popup.php?hid=5c3cf&#38;tmpl=PBa.tmpl crunch!
-Request: www.popuptraffic.com/assign.php?l=example crunch!
+Request: www.popuptraffic.com/assign.php?l=example&#38;mode=behind crunch! (Blocked)
+Request: www.popuptraffic.com/scripts/popup.php?hid=5c3cf&#38;tmpl=PBa.tmpl crunch! (Blocked)
+Request: www.popuptraffic.com/assign.php?l=example crunch! (Blocked)
 Request: www.lik-sang.com/Banners/best_sellers/best_sellers.css
-Request: www.adtrak.net/adx.js crunch!
+Request: www.adtrak.net/adx.js crunch! (Blocked)
 Request: img.example.com/hbg.gif
 Request: img.example.com/example.jpg
 Request: img.example.com/mt.png
 Request: img.example.com/mm.png
 Request: img.example.com/mb.png
-Request: www.popuptraffic.com/scripts/popup.php?hid=a71b91fa5&#38;tmpl=Ua.tmp crunch!
+Request: www.popuptraffic.com/scripts/popup.php?hid=a71b91fa5&#38;tmpl=Ua.tmp crunch! (Blocked)
 Request: www.example.com/tracker.js
 Request: www.lik-sang.com/Banners/best_sellers/lsi_head.gif
-Request: www.adtrak.net/adjs.php?n=020548130&#38;what=zone:61 crunch!
-Request: www.adtrak.net/adjs.php?n=463594413&#38;what=zone:58&#38;source=Ua crunch!
+Request: www.adtrak.net/adjs.php?n=020548130&#38;what=zone:61 crunch! (Blocked)
+Request: www.adtrak.net/adjs.php?n=463594413&#38;what=zone:58&#38;source=Ua crunch! (Blocked)
 Request: www.lik-sang.com/Banners/best_sellers/bottomani.swf
-Request: mmm.elitemediagroup.net/install.php?allowpop=no&#38;popupmincook=0&#38;allowsp2=1 crunch!
+Request: mmm.elitemediagroup.net/install.php?allowpop=no&#38;popupmincook=0&#38;allowsp2=1 crunch! (Blocked)
 Request: www.example.com/tracker.js?screen=1400x1050&#38;win=962x693
-Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=61 crunch!
+Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=61 crunch! (Blocked)
 Request: 66.70.21.80/scripts/click.php?hid=5c3cf599a9efd0320d26&#38;si
 Request: 66.70.21.80/img/pixel.gif
-Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=58&#38;source=Ua&#38;block=86400 crunch!
+Request: www.adtrak.net/adlog.php?bannerid=1309&#38;clientid=439&#38;zoneid=58&#38;source=Ua&#38;block=86400 crunch! (Blocked)
 Request: 66.70.21.80/scripts/click.php?hid=a71b9f6504b0c5681fa5&#38;si=Ua</PRE
 ></TD
 ></TR
@@ -279,9 +280,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BADSITE"
-></A
 >5.4. One of my favorite sites does not work with Privoxy.
-What can I do?</H3
+What can I do?</A
+></H3
 ><P
 > First verify that it is indeed a <SPAN
 CLASS="APPLICATION"
@@ -294,7 +295,12 @@ CLASS="APPLICATION"
 HREF="http://config.privoxy.org/toggle"
 TARGET="_top"
 >http://config.privoxy.org/toggle</A
->,
+>
+ (the toggle feature may need to be enabled in the main
+ <TT
+CLASS="FILENAME"
+>config</TT
+>),
  and then shift-reloading the problem page (i.e. holding down the shift key
  while clicking reload. Alternatively, flush your browser's disk and memory
  caches).</P
@@ -308,7 +314,8 @@ TARGET="_top"
  and paste the full URL of the page in question into the prompt. See which
  actions are being applied to the URL, and which matches in which actions
  files are responsible for that. It might be helpful also to look at your logs
- for this site too, to see what else might be happening. Many sites are
+ for this site too, to see what else might be happening (note: logging may need
+ to be enabled in the main config file). Many sites are
  complex and require a number of related pages to help present their content.
  Look at what else might be used by the page in question, and what of that
  might be <SPAN
@@ -373,9 +380,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DUN"
-></A
 >5.5. After installing Privoxy, I have to log in
-every time I start IE. What gives?</H3
+every time I start IE. What gives?</A
+></H3
 ><P
 > This is a quirk that effects the installation of
  <SPAN
@@ -428,9 +435,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="FTP"
-></A
 >5.6. I cannot connect to any FTP sites. Privoxy
- is blocking me.</H3
+ is blocking me.</A
+></H3
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -499,9 +506,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXIE"
-></A
 >5.7. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
- Privoxy as the HTTP proxy.</H3
+ Privoxy as the HTTP proxy.</A
+></H3
 ><P
 >  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
   network settings.  In order to change the HTTP proxy, open System
@@ -524,10 +531,10 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXUNINSTALL"
-></A
 >5.8. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
- empty the trash.</H3
+ empty the trash.</A
+></H3
 ><P
 >  Just dragging the <SPAN
 CLASS="APPLICATION"
@@ -559,13 +566,13 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXIMAGES"
-></A
 >5.9. In Mac OSX Panther (10.3), images often fail to load and/or I
  experience random delays in page loading. I'm using
  <TT
 CLASS="LITERAL"
 >localhost</TT
-> as my browser's proxy setting.</H3
+> as my browser's proxy setting.</A
+></H3
 ><P
 >  We believe this is due to an IPv6-related bug in OSX, but don't fully
   understand the issue yet. In any case, changing the proxy setting to 
@@ -585,7 +592,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BLANKPAGE"
-></A
 >5.10. I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
 >"View Source"</SPAN
@@ -594,7 +600,8 @@ CLASS="QUOTE"
 CLASS="MARKUP"
 >&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
 >. Without
- Privoxy the page loads fine.</H3
+ Privoxy the page loads fine.</A
+></H3
 ><P
 >  Chances are that the site suffers from a bug in
   <A
@@ -651,12 +658,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOHOSTNAME"
-></A
 >5.11. My logs show many <SPAN
 CLASS="QUOTE"
 >"Unable to get my own hostname"</SPAN
 > lines.
-Why?</H3
+Why?</A
+></H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -704,13 +711,13 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="INUSE"
-></A
 >5.12. When I try to launch Privoxy, I get an 
 error message <SPAN
 CLASS="QUOTE"
 >"port 8118 is already in use"</SPAN
 > (or similar wording).
-Why?</H3
+Why?</A
+></H3
 ><P
 > Port 8118 is <SPAN
 CLASS="APPLICATION"
@@ -739,8 +746,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER"
-></A
->5.13. Pages with UTF-8 fonts are garbled.</H3
+>5.13. Pages with UTF-8 fonts are garbled.</A
+></H3
 ><P
 > This is caused by the <SPAN
 CLASS="QUOTE"
@@ -766,15 +773,15 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER2"
-></A
 >5.14. Why are binary files (such as images) corrupted when Privoxy
- is used?</H3
+ is used?</A
+></H3
 ><P
 > This may also be caused by the <SPAN
 CLASS="QUOTE"
 >"demoronizer"</SPAN
 > filter, 
- in conjunction with a web server that is misreporting a file type. Binary 
+ in conjunction with a web server that is misreporting the content type. Binary 
  files are exempted from <SPAN
 CLASS="APPLICATION"
 >Privoxy's</SPAN
@@ -799,11 +806,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER3"
-></A
 >5.15. What is the <SPAN
 CLASS="QUOTE"
 >"demoronizer"</SPAN
-> and why is it there?</H3
+> and why is it there?</A
+></H3
 ><P
 > The original demoronizer was a Perl script that cleaned up HTML pages which 
  were created with certain Microsoft products. MS has used proprietary extensions 
@@ -831,7 +838,7 @@ CLASS="EMPHASIS"
 >.</P
 ><P
 > On the other hand, if you use non-Microsoft products, and you occasionally 
- notice wierd characters on pages, you might want to try it.</P
+ notice weird characters on pages, you might want to try it.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -839,11 +846,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WINDOWOPEN"
-></A
 >5.16. Why do I keep seeing <SPAN
 CLASS="QUOTE"
 >"PrivoxyWindowOpen()"</SPAN
-> in raw source code?</H3
+> in raw source code?</A
+></H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -882,12 +889,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DNSERRORS"
-></A
 >5.17. I am getting too many DNS errors like <SPAN
 CLASS="QUOTE"
 >"404 No Such Domain"</SPAN
 >. Why
- can't Privoxy do this better?</H3
+ can't Privoxy do this better?</A
+></H3
 ><P
 > There are potentially several factors here. First of all, the DNS resolution
  is done by the underlying operating system -- not
@@ -905,12 +912,13 @@ CLASS="APPLICATION"
  adding <SPAN
 CLASS="QUOTE"
 >"www."</SPAN
-> to the URL). In other cases, if
- <SPAN
+> to the URL).</P
+><P
+> In other cases, if <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is being chained with another proxy, this
- could complicate the issue, and cause undue
+> is being chained
+ with another proxy, this could complicate the issue, and cause undue
  delays and timeouts. In the case of a <SPAN
 CLASS="QUOTE"
 >"socks4a"</SPAN
@@ -925,7 +933,7 @@ CLASS="QUOTE"
 > which is reporting whatever problem occurred
  downstream, and not the root cause of the error.</P
 ><P
-> In any case, newer versions include various improvements to help
+> In any case, versions newer than 3.0.3 include various improvements to help
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -937,9 +945,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ALLCPU"
-></A
 >5.18. At one site Privoxy just hangs, and starts taking 
- all CPU. Why is this?</H3
+ all CPU. Why is this?</A
+></H3
 ><P
 > This is probably a manifestation of the <SPAN
 CLASS="QUOTE"
@@ -969,9 +977,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="SLOWCRAWL"
-></A
 >5.19. I just installed Privoxy, and all my
-browsing has slowed to a crawl. What gives?</H3
+browsing has slowed to a crawl. What gives?</A
+></H3
 ><P
 > This should not happen, and for the overwhelming number of users world-wide,
  it does not happen. I would suspect some inadvertent interaction of software
@@ -985,8 +993,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="PREVENTCOMP"
-></A
->5.20. Why do my filters work on some sites but not on others?</H3
+>5.20. Why do my filters work on some sites but not on others?</A
+></H3
 ><P
 > It's probably due to compression. It is a common practice for web servers to
  send their content <SPAN
@@ -996,17 +1004,16 @@ CLASS="QUOTE"
  then let the browser <SPAN
 CLASS="QUOTE"
 >"uncompress"</SPAN
-> them. <SPAN
+> them. When compiled with zlib support
+ <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> does not (yet)
- support compression. But we can force the web server to bend to our will ;-) 
- So for filtering, make sure you have <A
+> can decompress content before filtering, otherwise you may want to enable
+<A
 HREF="../user-manual/actions-file.html#PREVENT-COMPRESSION"
 TARGET="_top"
 >prevent-compression</A
->
- turned ON!  </P
+>.</P
 ></DIV
 ></DIV
 ><DIV

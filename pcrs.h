@@ -11,6 +11,22 @@
  *
  * Revisions   :
  *    $Log: pcrs.h,v $
+ *    Revision 1.16  2007/04/30 15:02:19  fabiankeil
+ *    Introduce dynamic pcrs jobs that can resolve variables.
+ *
+ *    Revision 1.15  2007/01/05 15:46:12  fabiankeil
+ *    Don't use strlen() to calculate the length of
+ *    the pcrs substitutes. They don't have to be valid C
+ *    strings and getting their length wrong can result in
+ *    user-controlled memory corruption.
+ *
+ *    Thanks to Felix Gröbert for reporting the problem
+ *    and providing the fix [#1627140].
+ *
+ *    Revision 1.14  2006/12/24 17:27:37  fabiankeil
+ *    Increase pcrs error code offset to prevent overlaps
+ *    with pcre versions newer than our own.
+ *
  *    Revision 1.13  2006/07/18 14:48:47  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -66,7 +82,7 @@
  *
  *********************************************************************/
 
-#define PCRS_H_VERSION "$Id: pcrs.h,v 1.13 2006/07/18 14:48:47 david__schmidt Exp $"
+#define PCRS_H_VERSION "$Id: pcrs.h,v 1.16 2007/04/30 15:02:19 fabiankeil Exp $"
 
 
 #ifndef _PCRE_H
@@ -89,12 +105,22 @@ extern "C" {
 #define PCRS_MAX_MATCH_INIT  40     /* Initial amount of matches that can be stored in global searches */
 #define PCRS_MAX_MATCH_GROW  1.6    /* Factor by which storage for matches is extended if exhausted */
 
-/* Error codes */
-#define PCRS_ERR_NOMEM     -10      /* Failed to acquire memory. */
-#define PCRS_ERR_CMDSYNTAX -11      /* Syntax of s///-command */
-#define PCRS_ERR_STUDY     -12      /* pcre error while studying the pattern */
-#define PCRS_ERR_BADJOB    -13      /* NULL job pointer, pattern or substitute */
-#define PCRS_WARN_BADREF   -14      /* Backreference out of range */
+/*
+ * PCRS error codes
+ *
+ * They are supposed to be handled together with PCRE error
+ * codes and have to start with an offset to prevent overlaps.
+ *
+ * PCRE 6.7 uses error codes from -1 to -21, PCRS error codes
+ * below -100 should be safe for a while.
+ */
+#define PCRS_ERR_NOMEM           -100      /* Failed to acquire memory. */
+#define PCRS_ERR_CMDSYNTAX       -101      /* Syntax of s///-command */
+#define PCRS_ERR_STUDY           -102      /* pcre error while studying the pattern */
+#define PCRS_ERR_BADJOB          -103      /* NULL job pointer, pattern or substitute */
+#define PCRS_WARN_BADREF         -104      /* Backreference out of range */
+#define PCRS_WARN_TRUNCATION     -105      /* At least one pcrs variable was too big,
+                                            * only the first part was used. */
 
 /* Flags */
 #define PCRS_GLOBAL          1      /* Job should be applied globally, as with perl's g option */
@@ -110,6 +136,7 @@ extern "C" {
 
 typedef struct {
   char  *text;                                   /* The plaintext part of the substitute, with all backreferences stripped */
+  size_t length;                                 /* The substitute may not be a valid C string so we can't rely on strlen(). */
   int    backrefs;                               /* The number of backreferences */
   int    block_offset[PCRS_MAX_SUBMATCHES];      /* Array with the offsets of all plaintext blocks in text */
   size_t block_length[PCRS_MAX_SUBMATCHES];      /* Array with the lengths of all plaintext blocks in text */
@@ -151,7 +178,7 @@ typedef struct PCRS_JOB {
 /* Main usage */
 extern pcrs_job        *pcrs_compile_command(const char *command, int *errptr);
 extern pcrs_job        *pcrs_compile(const char *pattern, const char *substitute, const char *options, int *errptr);
-extern int              pcrs_execute(pcrs_job *job, char *subject, size_t subject_length, char **result, size_t *result_length);
+extern int              pcrs_execute(pcrs_job *job, const char *subject, size_t subject_length, char **result, size_t *result_length);
 extern int              pcrs_execute_list(pcrs_job *joblist, char *subject, size_t subject_length, char **result, size_t *result_length);
 
 /* Freeing jobs */
@@ -161,6 +188,25 @@ extern void             pcrs_free_joblist(pcrs_job *joblist);
 /* Info on errors: */
 extern const char *pcrs_strerror(const int error);
 
+extern int pcrs_job_is_dynamic(char *job);
+extern char pcrs_get_delimiter(const char *string);
+extern char *pcrs_execute_single_command(const char *subject, const char *pcrs_command, int *hits);
+/*
+ * Variable/value pair for dynamic pcrs commands.
+ */
+struct pcrs_variable
+{
+   const char *name;
+   char *value;
+   int static_value;
+};
+
+extern pcrs_job *pcrs_compile_dynamic_command(char *pcrs_command, const struct pcrs_variable v[], int *error);
+
+/* Only relevant for maximum pcrs variable size */
+#ifndef PCRS_BUFFER_SIZE
+#define PCRS_BUFFER_SIZE 4000
+#endif /* ndef PCRS_BUFFER_SIZE */
 
 #ifdef __cplusplus
 } /* extern "C" */

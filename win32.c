@@ -1,4 +1,4 @@
-const char win32_rcs[] = "$Id: win32.c,v 1.12 2006/08/12 03:54:37 david__schmidt Exp $";
+const char win32_rcs[] = "$Id: win32.c,v 1.13 2007/01/31 16:25:24 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/win32.c,v $
@@ -31,6 +31,9 @@ const char win32_rcs[] = "$Id: win32.c,v 1.12 2006/08/12 03:54:37 david__schmidt
  *
  * Revisions   :
  *    $Log: win32.c,v $
+ *    Revision 1.13  2007/01/31 16:25:24  fabiankeil
+ *    Update copyright range for the About message.
+ *
  *    Revision 1.12  2006/08/12 03:54:37  david__schmidt
  *    Windows service integration
  *
@@ -112,7 +115,7 @@ const char win32_h_rcs[] = WIN32_H_VERSION;
  */
 const char win32_blurb[] =
 "Privoxy version " VERSION " for Windows\n"
-"Copyright (C) 2000-2002 the Privoxy Team (" HOME_PAGE_URL ")\n"
+"Copyright (C) 2000-2007 the Privoxy Team (" HOME_PAGE_URL ")\n"
 "Based on the Internet Junkbuster by Junkbusters Corp.\n"
 "This is free software; it may be used and copied under the\n"
 "GNU General Public License: http://www.gnu.org/copyleft/gpl.html .\n"

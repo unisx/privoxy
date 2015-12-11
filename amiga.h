@@ -1,7 +1,7 @@
 #ifdef AMIGA
 #ifndef AMIGA_H_INCLUDED
 #define AMIGA_H_INCLUDED
-#define AMIGA_H_VERSION "$Id: amiga.h,v 1.11 2006/07/18 14:48:45 david__schmidt Exp $"
+#define AMIGA_H_VERSION "$Id: amiga.h,v 1.12 2007/01/07 07:40:52 joergs Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/amiga.h,v $
@@ -31,6 +31,9 @@
  *
  * Revisions   :
  *    $Log: amiga.h,v $
+ *    Revision 1.12  2007/01/07 07:40:52  joergs
+ *    Added AmigaOS4 support and made it work on AmigaOS 3.x with current sources.
+ *
  *    Revision 1.11  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -73,11 +76,12 @@
 #undef _KERNEL
 
 #define __NOLIBBASE__
+#define __NOGLOBALIFACE__
 #include <proto/socket.h>
 #undef __NOLIBBASE__
+#undef __NOGLOBALIFACE__
 
 #define __CONSTLIBBASEDECL__ const
-#define DEVICES_TIMER_H
 #include <proto/exec.h>
 #include <exec/tasks.h>
 #include <proto/dos.h>
@@ -85,11 +89,20 @@
 
 struct UserData
 {
+#ifdef __amigaos4__
+   struct SocketIFace *si;
+#else
    struct Library *sb;
+#endif
    int eno;
 };
 
+#ifdef __amigaos4__
+#define ISocket (((struct UserData *)(FindTask(NULL)->tc_UserData))->si)
+#undef errno
+#else
 #define SocketBase ((struct Library *)(((struct UserData *)(FindTask(NULL)->tc_UserData))->sb))
+#endif
 #define errno (((struct UserData *)(FindTask(NULL)->tc_UserData))->eno)
 #define select(a,b,c,d,e) WaitSelect(a,b,c,d,e,NULL)
 #define inet_ntoa(x) Inet_NtoA(x.s_addr)
@@ -100,8 +113,35 @@ extern struct Task *main_task;
 void InitAmiga(void);
 void amiga_exit(void);
 void __memCleanUp(void);
-__saveds ULONG server_thread(void);
+SAVEDS ULONG server_thread(void);
 
+#ifdef __amigaos4__
+#define exit(x)                                             \
+{                                                           \
+   if(main_task)                                            \
+   {                                                        \
+      if(main_task == FindTask(NULL))                       \
+      {                                                     \
+         while(childs) Delay(10*TICKS_PER_SECOND); exit(x); \
+      }                                                     \
+      else                                                  \
+      {                                                     \
+         if (ISocket)                                       \
+         {                                                  \
+             struct Library *sb = ISocket->Data.LibBase;    \
+             DropInterface((struct Interface *)ISocket);    \
+             CloseLibrary(sb);                              \
+         }                                                  \
+         childs--;                                          \
+         RemTask(NULL);                                     \
+      }                                                     \
+   }                                                        \
+   else                                                     \
+   {                                                        \
+      exit(x);                                              \
+   }                                                        \
+}
+#else
 #define exit(x)                                             \
 {                                                           \
    if(main_task)                                            \
@@ -122,6 +162,12 @@ __saveds ULONG server_thread(void);
       exit(x);                                              \
    }                                                        \
 }
+
+#undef HAVE_RANDOM
+#define h_errno 0
+#define HAVE_TIMEGM
+#define timegm(tm) mktime(tm)
+#endif /* __amigaos4__ */
 
 #undef EINTR
 #define EINTR 0

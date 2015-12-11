@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Miscellaneous</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,17 +74,17 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="MISC"
-></A
->4. Miscellaneous</H1
+>4. Miscellaneous</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN712"
-></A
+NAME="AEN717"
 >4.1. How much does Privoxy slow my browsing down? This 
-has to add extra time to browsing.</H3
+has to add extra time to browsing.</A
+></H3
 ><P
 > How much of an impact depends on many things, including the CPU of the host
  system, how aggressive the configuration is, which specific actions are being triggered, 
@@ -98,8 +98,8 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > itself for each page, is relatively small
  in the overall scheme of things, and happens very quickly. This is typically
- more than offset by time saved not downloading and rendering ad images (if ad
- blocking is being used).</P
+ more than offset by time saved not downloading and rendering ad images and
+ other junk content (if ad blocking is being used).</P
 ><P
 > <SPAN
 CLASS="QUOTE"
@@ -120,21 +120,20 @@ TARGET="_top"
 >deanimate-gifs</A
 ></TT
 >
- actions will certainly cause a perceived slowdown, since the entire document
- needs to be buffered before displaying. And on very large documents, filtering may have 
- some measurable impact. How much depends on the page size, the actual
- definition of the filter(s), etc. See below. Most other actions have little
- to no impact on speed.</P
+ actions may cause a perceived slowdown, since the entire document
+ needs to be buffered before displaying. And on very large documents,
+ filtering may have some measurable impact. How much depends on the page size,
+ the actual definition of the filter(s), etc. See below. Most other actions
+ have little to no impact on speed.</P
 ><P
-> 
- Also, when filtering is enabled, typically there is a disabling of 
- compression, (see <A
+> Also, when filtering is enabled but zlib support isn't available, compression
+ is often disabled (see <A
 HREF="../user-manual/actions-file.html#PREVENT-COMPRESSION"
 TARGET="_top"
 >prevent-compression</A
 >).
- This can have an impact on speed as well. Again, the page size, etc. will 
- determine how much of an impact.</P
+ This can have an impact on speed as well, although it's probably smaller than
+ you might think. Again, the page size, etc. will determine how much of an impact.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -142,9 +141,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOADINGTIMES"
-></A
 >4.2. I notice considerable
-delays in page requests compared to the old Junkbuster. What's wrong?</H3
+delays in page requests. What's wrong?</A
+></H3
 ><P
 > If you use any <TT
 CLASS="LITERAL"
@@ -183,7 +182,7 @@ CLASS="APPLICATION"
 > only knows how
  to differentiate filterable content because of the MIME type as reported by
  the server, or because of some configuration setting that enables/disables
- filtering.&#13;</P
+ filtering.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -191,9 +190,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONFIGURL"
-></A
 >4.3. What are "http://config.privoxy.org/" and
-"http://p.p/"?</H3
+"http://p.p/"?</A
+></H3
 ><P
 > <A
 HREF="http://config.privoxy.org/"
@@ -246,28 +245,6 @@ CLASS="EMPHASIS"
 ></SPAN
 >
  web site at config.privoxy.org.</P
-><P
-> With recent versions of <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> (version 2.9.x and
- later), the user interface features information on the run time status, the
- configuration, and even a built-in editor for the <A
-HREF="../user-manual/actions-file.html"
-TARGET="_top"
->actions files</A
->.</P
-><P
-> Note that the built-in URLs from earlier versions of <SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
->
- / <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->, http://example.com/show-proxy-args and http://i.j.b/,
- are no longer supported. If you still use such an old version, you should really consider
- upgrading to 3.0.6.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -275,9 +252,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NEWADS"
-></A
 >4.4. How can I submit new ads, or report
-problems?</H3
+problems?</A
+></H3
 ><P
 >Please see the <A
 HREF="contact.html"
@@ -291,9 +268,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NEWADS2"
-></A
 >4.5. If I do submit missed ads, will 
-they be included in future updates?</H3
+they be included in future updates?</A
+></H3
 ><P
 > Whether such submissions are eventually included in the
  <TT
@@ -324,9 +301,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOONECARES"
-></A
 >4.6. Why doesn't anyone answer my support 
-request?</H3
+request?</A
+></H3
 ><P
 >Rest assured that it has been read and considered. Why it is not answered,
 could be for various reasons, including no one has a good answer for it, no
@@ -340,8 +317,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="IP"
-></A
->4.7. How can I hide my IP address?</H3
+>4.7. How can I hide my IP address?</A
+></H3
 ><P
 > If you run both the browser and <SPAN
 CLASS="APPLICATION"
@@ -358,13 +335,14 @@ CLASS="APPLICATION"
  provide a further level of indirection between you and the web server.</P
 ><P
 > However, these proxies are called "anonymous" because you don't need
- a password, not because they would offer any real anonymity.
+ to authenticate, not because they would offer any real anonymity.
  Most of them will log your IP address and make it available to the
  authorities in case you violate the law of the country they run in. In fact
  you can't even rule out that some of them only exist to *collect* information
  on (those suspicious) people with a more than average preference for privacy.</P
 ><P
-> Your best bet is to chain <SPAN
+> If you want to hide your IP address from most adversaries,
+ you should consider chaining <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
@@ -372,12 +350,7 @@ CLASS="APPLICATION"
 HREF="http://tor.eff.org/"
 TARGET="_top"
 >Tor</A
->,
- an  <A
-HREF="http://www.eff.org/"
-TARGET="_top"
->EFF</A
-> supported onion routing system.
+>.
  The configuration details can be found in
  <A
 HREF="#TOR"
@@ -385,7 +358,8 @@ TARGET="_top"
 >How do I use <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> together with <SPAN
+> together
+ with <SPAN
 CLASS="APPLICATION"
 >Tor</SPAN
 > section</A
@@ -397,11 +371,11 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN784"
-></A
->4.8. Can Privoxy guarantee I am anonymous?</H3
+NAME="AEN782"
+>4.8. Can Privoxy guarantee I am anonymous?</A
+></H3
 ><P
-> No. Your chances of remaining anonymous are greatly improved, but unless you
+> No. Your chances of remaining anonymous are improved, but unless you
  <A
 HREF="#TOR"
 TARGET="_top"
@@ -413,8 +387,8 @@ CLASS="APPLICATION"
 >Tor</SPAN
 ></A
 >
- or a similar system and know what you're doing when it comes to configuring
- the rest of your system, it would be safest to assume that everything you do
+ or a similar proxy and know what you're doing when it comes to configuring
+ the rest of your system, you should assume that everything you do
  on the Web can be traced back to you.</P
 ><P
 > <SPAN
@@ -443,7 +417,7 @@ CLASS="APPLICATION"
 > Most of <SPAN
 CLASS="APPLICATION"
 >Privoxy's</SPAN
-> protection can be easily subverted
+> privacy-enhancing features can be easily subverted
  by an insecure browser configuration, therefore you should use a browser that can
  be configured to only execute code from trusted sites, and be careful which sites you trust.
  For example there is no point in having <SPAN
@@ -477,9 +451,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN802"
-></A
->4.9. A test site says I am not using a Proxy.</H3
+NAME="AEN800"
+>4.9. A test site says I am not using a Proxy.</A
+></H3
 ><P
 > Good! Actually, they are probably testing for some other kinds of proxies.
  Hiding yourself completely would require additional steps.</P
@@ -490,22 +464,19 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="TOR"
-></A
 >4.10. How do I use Privoxy
- together with Tor?</H3
+ together with Tor?</A
+></H3
 ><P
 > Before you configure <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> to use <SPAN
-CLASS="APPLICATION"
->Tor</SPAN
->
- (<A
-HREF="http://tor.eff.org/"
+> to use
+ <A
+HREF="https://www.torproject.org/"
 TARGET="_top"
->http://tor.eff.org/</A
->),
+>Tor</A
+>,
  please follow the <I
 CLASS="CITETITLE"
 >User Manual</I
@@ -527,7 +498,7 @@ CLASS="APPLICATION"
 ><P
 > 
  If it is, refer to <A
-HREF="http://tor.eff.org/documentation.html.en"
+HREF="https://www.torproject.org/documentation.html"
 TARGET="_top"
 >Tor's
  extensive documentation</A
@@ -592,11 +563,7 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Tor</SPAN
 >
- to increase your anonymity level, therefore you should use socks4a,
- to make sure <SPAN
-CLASS="APPLICATION"
->Privoxy's</SPAN
-> DNS requests are
+ to increase your anonymity level, therefore you should use socks4a, to make sure DNS requests are
  done through <SPAN
 CLASS="APPLICATION"
 >Tor</SPAN
@@ -645,7 +612,7 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> This is enough to reach the Internet, but additionally you should
+> This is enough to reach the Internet, but additionally you might want to
  uncomment the following forward rules, to make sure your local network is still
  reachable through Privoxy:</P
 ><P
@@ -668,10 +635,14 @@ CLASS="SCREEN"
 ><P
 > Unencrypted connections to systems in these address ranges will
  be as (un)secure as the local network is, but the alternative is
- that you can't reach the network at all.
- If you also want to be able to reach servers in your local
- network by using their names, you will need additional
- exceptions that look like this:</P
+ that your browser can't reach the network at all. Then again,
+ that may actually be desired and if you don't know for sure
+ that your browser has to be able to reach the local network,
+ there's no reason to allow it.</P
+><P
+> If you want your browser to be able to reach servers in your local
+ network by using their names, you will need additional exceptions
+ that look like this:</P
 ><P
 > <TABLE
 BORDER="0"
@@ -701,7 +672,7 @@ CLASS="APPLICATION"
  and that there are no other forward lines, unless you know that you need them. If everything looks good,
  refer to
  <A
-HREF="http://wiki.noreply.org/noreply/TheOnionRouter/TorFAQ#head-0e1cc2ac330ede8c6ad1ac0d0db0ac163b0e6143"
+HREF="https://wiki.torproject.org/wiki/TheOnionRouter/TorFAQ#head-0e1cc2ac330ede8c6ad1ac0d0db0ac163b0e6143"
 TARGET="_top"
 >Tor
  Faq 4.2</A
@@ -719,17 +690,18 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Tor</SPAN
 > does, why it is no replacement for
- application level security, and why you shouldn't use it for unencrypted logins.</P
+ application level security, and why you probably don't want to
+ use it for unencrypted logins.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN859"
-></A
+NAME="AEN856"
 >4.11. Might some things break because header information or
-content is being altered?</H3
+content is being altered?</A
+></H3
 ><P
 > Definitely. It is common for sites to use browser type, browser version, 
  HTTP header content, and various other techniques in order to dynamically
@@ -737,16 +709,13 @@ content is being altered?</H3
  might be very different. There are many, many ways that this can be handled,
  so having hard and fast rules, is tricky.</P
 ><P
-> <SPAN
+> The <SPAN
 CLASS="QUOTE"
 >"User-Agent"</SPAN
-> is often used in this way to identify
- the browser, and adjust content accordingly. Changing this now (at least not
- further than removing the OS information) is not recommended, since so many
- sites do look for it. You may get undesirable results by changing just this 
- one aspect.</P
+> is sometimes used in this way to identify
+ the browser, and adjust content accordingly.</P
 ><P
-> Also, different browsers use different encodings of Russian and Czech
+> Also, different browsers use different encodings of non-English
  characters, certain web servers convert pages on-the-fly according to the
  User Agent header. Giving a <SPAN
 CLASS="QUOTE"
@@ -765,7 +734,7 @@ CLASS="QUOTE"
 >"Referer"</SPAN
 > or cookie is provided, is another example. (But you
  can forge both headers without giving information away). There are
- many other ways things that can go wrong when trying to fool a web server. The
+ many other ways things can go wrong when trying to fool a web server. The
  results of which could inadvertently cause pages to load incorrectly,
  partially, or even not at all. And there may be no obvious clues as to just
  what went wrong, or why. Nowhere will there be a message that says 
@@ -796,21 +765,26 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN873"
-></A
+NAME="AEN870"
 >4.12. Can Privoxy act as a <SPAN
 CLASS="QUOTE"
 >"caching"</SPAN
 > proxy to 
-speed up web browsing?</H3
+speed up web browsing?</A
+></H3
 ><P
 > No, it does not have this ability at all. You want something like 
  <A
 HREF="http://www.squid-cache.org/"
 TARGET="_top"
 >Squid</A
-> for this. And, yes, 
- before you ask, <SPAN
+> or
+ <A
+HREF="http://www.pps.jussieu.fr/~jch/software/polipo/"
+TARGET="_top"
+>Polipo</A
+> for this.
+ And, yes, before you ask, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > can co-exist 
@@ -835,17 +809,17 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN882"
-></A
->4.13. What about as a firewall? Can Privoxy protect me?</H3
+NAME="AEN880"
+>4.13. What about as a firewall? Can Privoxy protect me?</A
+></H3
 ><P
-> Not in the way you mean, or in the way a true firewall can. 
+> Not in the way you mean, or in the way some firewall vendors claim they can. 
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> can help protect your privacy, but not
- protect you from intrusion attempts. It is, of course, perfectly possible
- and recommended to use <SPAN
+> can help protect your privacy, but can't
+ protect your system from intrusion attempts. It is, of course, perfectly possible
+ to use <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
@@ -858,10 +832,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN887"
-></A
+NAME="AEN885"
 >4.14. I have large empty spaces / a checkerboard pattern now where
-ads used to be. Why?</H3
+ads used to be. Why?</A
+></H3
 ><P
 > It is technically possible to eliminate banners and ads in a way that frees
  their allocated page space. This could easily be done by blocking with 
@@ -897,9 +871,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN895"
-></A
->4.15. How can Privoxy filter Secure (HTTPS) URLs?</H3
+NAME="AEN893"
+>4.15. How can Privoxy filter Secure (HTTPS) URLs?</A
+></H3
 ><P
 > Since secure HTTP connections are encrypted SSL sessions between your browser
  and the secure site, and are meant to be reliably <SPAN
@@ -956,37 +930,33 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN909"
-></A
+NAME="AEN907"
 >4.16. Privoxy runs as a <SPAN
 CLASS="QUOTE"
 >"server"</SPAN
 >. How 
-secure is it? Do I need to take any special precautions?</H3
+secure is it? Do I need to take any special precautions?</A
+></H3
 ><P
-> There are no known exploits that might affect
- <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->. On Unix-like systems, 
- <SPAN
+> On Unix-like systems, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > can run as a non-privileged 
- user, which is how we recommend it be run. Also, by default 
+ user, which is how we recommend it be run. Also, by default
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> only listens to requests 
- from <SPAN
+> listens to requests from <SPAN
 CLASS="QUOTE"
 >"localhost"</SPAN
-> only. The server aspect of
- <SPAN
+>
+ only.</P
+><P
+> The server aspect of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is not itself directly exposed to the
- Internet in this configuration. If you want to have
+> is not itself directly 
+ exposed to the Internet in this configuration. If you want to have
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -1015,19 +985,23 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="TURNOFF"
-></A
->4.17. How can I temporarily disable Privoxy?</H3
+>4.17. Can I temporarily disable Privoxy?</A
+></H3
 ><P
-> The easiest way is to access <SPAN
+> <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with your 
- browser by using the remote toggle URL: <A
+> doesn't have a transparent proxy mode,
+ but you can toggle off blocking and content filtering.</P
+><P
+> The easiest way to do that is to point your browser
+ to the remote toggle URL: <A
 HREF="http://config.privoxy.org/toggle"
 TARGET="_top"
 >http://config.privoxy.org/toggle</A
->.
- See the <A
+>.</P
+><P
+> See the <A
 HREF="../user-manual/appendix.html#BOOKMARKLETS"
 TARGET="_top"
 >Bookmarklets section</A
@@ -1036,7 +1010,11 @@ TARGET="_top"
 CLASS="CITETITLE"
 >User Manual</I
 > for an easy way to access this 
- feature.</P
+ feature. Note that this is a feature that may need to be enabled in the main 
+ <TT
+CLASS="FILENAME"
+>config</TT
+> file.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -1044,19 +1022,19 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="REALLYOFF"
-></A
 >4.18. When <SPAN
 CLASS="QUOTE"
 >"disabled"</SPAN
 > is Privoxy totally 
-out of the picture?</H3
+out of the picture?</A
+></H3
 ><P
-> No, this just means all filtering and actions are disabled.
+> No, this just means all optional filtering and actions are disabled.
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is still acting as a proxy, but just not 
- doing any of the things that <SPAN
+> is still acting as a proxy, but just 
+ doing less of the things that <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > would
@@ -1073,8 +1051,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="TURNOFF2"
-></A
->4.19. How can I tell Privoxy to totally ignore certain sites?</H3
+>4.19. How can I tell Privoxy to totally ignore certain sites?</A
+></H3
 ><P
 > Bypassing a proxy, or proxying based on arbitrary criteria, is purely a browser
  configuration issue, not a <SPAN
@@ -1089,7 +1067,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CRUNCH"
-></A
 >4.20. My logs show Privoxy <SPAN
 CLASS="QUOTE"
 >"crunches"</SPAN
@@ -1097,7 +1074,8 @@ CLASS="QUOTE"
 ads, but also its own internal CGI pages. What is a <SPAN
 CLASS="QUOTE"
 >"crunch"</SPAN
->?</H3
+>?</A
+></H3
 ><P
 > A <SPAN
 CLASS="QUOTE"
@@ -1132,6 +1110,9 @@ TARGET="_top"
 CLASS="QUOTE"
 >"crunch"</SPAN
 >.</P
+><P
+> Since version 3.0.7, Privoxy will also log the crunch reason.
+ If you are using an older version you might want to upgrade.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -1139,9 +1120,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DOWNLOADS"
-></A
 >4.21. Can Privoxy effect files that I download
-from a webserver? FTP server?</H3
+from a webserver? FTP server?</A
+></H3
 ><P
 > From the webserver's perspective, there is no difference between
  viewing a document (i.e. a page), and downloading a file. The same is true of
@@ -1193,7 +1174,7 @@ CLASS="APPLICATION"
 > knows the differences in files according
  to the <SPAN
 CLASS="QUOTE"
->"Document Type"</SPAN
+>"Content Type"</SPAN
 > as reported by the webserver. If this is
  reported accurately (e.g. <SPAN
 CLASS="QUOTE"
@@ -1230,7 +1211,7 @@ CLASS="APPLICATION"
 > In short, filtering is <SPAN
 CLASS="QUOTE"
 >"ON"</SPAN
-> if a) the Document Type as reported
+> if a) the content type as reported
  by the webserver is appropriate <SPAN
 CLASS="emphasis"
 ><I
@@ -1246,7 +1227,7 @@ CLASS="QUOTE"
  <SPAN
 CLASS="QUOTE"
 >"bad"</SPAN
->. It's the configuration that let's it all happen or not.</P
+>. It's the configuration that lets it all happen or not.</P
 ><P
 > If you download text files, you probably do not want these to be filtered,
  particularly if the content is source code, or other critical content. Source
@@ -1278,9 +1259,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DOWNLOADS2"
-></A
 >4.22. I just downloaded a Perl script, and Privoxy
-altered it! Yikes, what is wrong!</H3
+altered it! Yikes, what is wrong!</A
+></H3
 ><P
 > Please read above.</P
 ></DIV
@@ -1290,11 +1271,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="HOSTSFILE"
-></A
 >4.23. Should I continue to use a <SPAN
 CLASS="QUOTE"
 >"HOSTS"</SPAN
-> file for ad-blocking?</H3
+> file for ad-blocking?</A
+></H3
 ><P
 > One time-tested technique to defeat common ads is to trick the local DNS
  system by giving a phony IP address for the ad generator in the local 
@@ -1323,8 +1304,8 @@ CLASS="APPLICATION"
 CLASS="FILENAME"
 >HOSTS</TT
 > file, in fact, not only
- duplicates effort, but may get in the way. It is recommended to remove 
- such entries from your <TT
+ duplicates effort, but may get in the way and seriously slow down your system.
+ It is recommended to remove such entries from your <TT
 CLASS="FILENAME"
 >HOSTS</TT
 > file. If you think 
@@ -1361,9 +1342,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="SEEALSO"
-></A
 >4.24. Where can I find more information about Privoxy
-and related issues?</H3
+and related issues?</A
+></H3
 ><P
 > Other references and sites of interest to <SPAN
 CLASS="APPLICATION"
@@ -1537,7 +1518,6 @@ TARGET="_top"
 ><P
 ></P
 >
- 
  <P
 ></P
 ><TABLE
@@ -1569,11 +1549,39 @@ BORDER="0"
 HREF="http://www.squid-cache.org/"
 TARGET="_top"
 >http://www.squid-cache.org/</A
->, a very popular
+>, a popular
    caching proxy, which is often used together with <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >.
+  </TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+ <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>   <A
+HREF="http://www.pps.jussieu.fr/~jch/software/polipo/"
+TARGET="_top"
+>http://www.pps.jussieu.fr/~jch/software/polipo/</A
+>,
+   <SPAN
+CLASS="APPLICATION"
+>Polipo</SPAN
+> is a caching proxy with advanced features
+   like pipelining, multiplexing and caching of partial instances. In many setups
+   it can be used as <SPAN
+CLASS="APPLICATION"
+>Squid</SPAN
+> replacement.
   </TD
 ></TR
 ></TBODY
@@ -1635,7 +1643,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="MICROSUCK"
-></A
 >4.25. I've noticed that Privoxy changes <SPAN
 CLASS="QUOTE"
 >"Microsoft"</SPAN
@@ -1643,7 +1650,8 @@ CLASS="QUOTE"
 <SPAN
 CLASS="QUOTE"
 >"MicroSuck"</SPAN
->! Why are you manipulating my browsing?</H3
+>! Why are you manipulating my browsing?</A
+></H3
 ><P
 > We're not. The text substitutions that you are seeing are disabled
  in the default configuration as shipped. You have either manually
@@ -1663,7 +1671,30 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"Adventuresome"</SPAN
 > profile in the
- web-based editor. Please upgrade!</P
+ web-based editor. Please upgrade.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="VALID"
+>4.26. Does Privoxy produce <SPAN
+CLASS="QUOTE"
+>"valid"</SPAN
+> HTML (or XHTML)?</A
+></H3
+><P
+> Privoxy generates HTML in both its own <SPAN
+CLASS="QUOTE"
+>"templates"</SPAN
+>, and possibly
+ whenever there are text substitutions via a <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> filter. While this
+ should always conform to the HTML 4.01 specifications, it has not been
+ validated against this or any other standard. </P
 ></DIV
 ></DIV
 ><DIV

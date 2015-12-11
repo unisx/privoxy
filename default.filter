@@ -2,11 +2,11 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.33 2006/11/16 17:10:43 fabiankeil Exp $
+#  $Id: default.filter,v 1.52 2007/11/27 18:35:48 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
-#  Copyright   :  Written by and Copyright (C) 2001 - 2006 the
+#  Copyright   :  Written by and Copyright (C) 2001 - 2007 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 # We value your feedback. However, to provide you with the best support,
@@ -37,8 +37,12 @@
 #
 # Syntax:
 #
-# Filters start with a line "FILTER: name description". They are then referrable
-# from the actionsfile with +filter{name}
+# Generally filters start with a line like "FILTER: name description".
+# They are then referrable from the actionsfile with +filter{name}
+#
+# FILTER marks a filter as content filter, other filter
+# types are CLIENT-HEADER-FILTER, CLIENT-HEADER-TAGGER,
+# SERVER-HEADER-FILTER and SERVER-HEADER-TAGGER.
 #
 # Inside the filters, write one Perl-Style substitution (job) per line.
 # Jobs that precede the first FILTER: line are ignored.
@@ -46,33 +50,44 @@
 # For Details see the pcrs manpage contained in this distribution.
 # (and the perlre, perlop and pcre manpages)
 #
-# Note that you are free to choose the delimter as you see fit.
+# Note that you are free to choose the delimiter as you see fit.
 #
-# Note2: In addidion to the Perl options gimsx, the following nonstandard
+# Note2: In addition to the Perl options gimsx, the following nonstandard
 # options are supported:
 # 
 # 'U' turns the default to ungreedy matching.  Add ? to quantifiers to
 #     switch back to greedy.
+#
 # 'T' (trivial) prevents parsing for backreferences in the substitute.
 #     Use if you want to include text like '$&' in your substitute without
 #     quoting.
+#
+# 'D' (Dynamic) allows the use of variables. Supported variables are:
+#     $host, $origin (the IP address the request came from), $path and $url.
+#
+#     Note that '$' is a bad choice as delimiter for dynamic filters as you
+#     might end up with unintended variables if you use a variable name
+#     directly after the delimiter. Variables will be resolved without
+#     escaping anything, therefore you also have to be careful not to chose
+#     delimiters that appear in the replacement text. For example '<' should
+#     be save, while '?' will sooner or later cause conflicts with $url.
 # 
 #################################################################################
 
 
 #################################################################################
 #
-# js-annoyances: Get rid of particularly annoying JavaScript abuse
+# js-annoyances: Get rid of particularly annoying JavaScript abuse.
 #
 #################################################################################
-FILTER: js-annoyances Get rid of particularly annoying JavaScript abuse
+FILTER: js-annoyances Get rid of particularly annoying JavaScript abuse.
 
 # Note: Most of these jobs would be safer if restricted to a
 # <script> context as in:
 #
 # s/(<script.*)nasty-item(?=.*<\/script>)/$1replacement/sigU
 #
-# but that would make them match only the first occurance of
+# but that would make them match only the first occurrence of
 # nasty-item in each <script>. We need nestable jobs!
 
 # Get rid of Javascript referrer tracking. 
@@ -81,8 +96,11 @@ FILTER: js-annoyances Get rid of particularly annoying JavaScript abuse
 s|(?:\w+\.)+referrer|"Not Your Business!"|gisU
 
 # The status bar is for displaying link targets, not pointless blahblah
-# 
-s/(\W\s*)((this|window)\.(default)?status)\s*=\s*((['"]).*?(?<!\\)\6)/$1if(typeof(this.href) != 'undefined') $2 = $5 + ' URL: ' + this.href;else return false/ig
+#
+s@([\W]\s*)((?:this|window)\.(?:default)?status)\s*=\s*((['"]).*?\4)@$1$2 =\
+ (typeof(this.href) != 'undefined')?($3 + ' URL: ' + this.href):($2)@ig
+
+s/(?:(?:this|window)\.(?:default)?status)\s*=\s*\w*\s*;//ig
 
 # Kill OnUnload popups. Yummy.
 # Test: http://www.zdnet.com/zdsubs/yahoo/tree/yfs.html
@@ -110,10 +128,10 @@ s/(open\s*\([^\)]+always(?:raised|lowered)=)(["']?)(?:yes|1)\2/$1$2no$2/sigU
 
 #################################################################################
 #
-# js-events: Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites)
+# js-events: Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
 #
 #################################################################################
-FILTER: js-events Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites)
+FILTER: js-events Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
 
 s/(on|event\.)((mouse(over|out|down|up|move))|(un)?load|contextmenu|selectstart)/never/ig
 # Not events, but abused on the same type of sites:
@@ -122,10 +140,10 @@ s/settimeout\(/concat(/ig
 
 #################################################################################
 #
-# html-annoyances: Get rid of particularly annoying HTML abuse
+# html-annoyances: Get rid of particularly annoying HTML abuse.
 #
 #################################################################################
-FILTER: html-annoyances Get rid of particularly annoying HTML abuse
+FILTER: html-annoyances Get rid of particularly annoying HTML abuse.
 
 # New browser windows (if allowed -- see no-popups filter below) should be
 # resizeable and have a location and status bar
@@ -143,10 +161,10 @@ s-</?(blink|marquee).*>--sigU
 
 #################################################################################
 #
-# content-cookies: Kill cookies that come in the HTML or JS content
+# content-cookies: Kill cookies that come in the HTML or JS content.
 #
 #################################################################################
-FILTER: content-cookies Kill cookies that come in the HTML or JS content
+FILTER: content-cookies Kill cookies that come in the HTML or JS content.
 
 # JS cookies, except those used by antiadbuster.com to detect us:
 #
@@ -159,10 +177,10 @@ s|<meta\s+http-equiv=['"]?set-cookie.*>|<!-- ZappedCookie -->|igU
 
 #################################################################################
 #
-# refresh-tags: Kill automatic refresh tags (for dial-on-demand setups)
+# refresh-tags: Kill automatic refresh tags (for dial-on-demand setups).
 #
 #################################################################################
-FILTER: refresh-tags Kill automatic refresh tags (for dial-on-demand setups)
+FILTER: refresh-tags Kill automatic refresh tags (for dial-on-demand setups).
 
 # Note: Only deactivates refreshes with more than 9 seconds delay to
 #       preserve monster-stupid but common redirections via meta tags.
@@ -172,33 +190,33 @@ s/<meta\s+http-equiv\s*=\s*(['"]?)refresh\1\s+content\s*=\s*(['"]?)\d{2,}\s*(;\s
 
 #################################################################################
 #
-# unsolicited-popups: Disable unsolicited pop-up windows
+# unsolicited-popups: Disable unsolicited pop-up windows.
 #
 #################################################################################
-FILTER: unsolicited-popups Disable only unsolicited pop-up windows
+FILTER: unsolicited-popups Disable only unsolicited pop-up windows.
 
 s+([^'"]\s*<head.*>)(?=\s*[^'"])+$1<script>function PrivoxyWindowOpen(){return(null);}</script>+isU
-s+([^\w\s.]\s*)((window|this|parent)\.)?open\s*\(+$1PrivoxyWindowOpen(+ig
+s@([^\w\s.]\s*)((?:map)?(window|this|parent)\.?)?open\s*\(@$1PrivoxyWindowOpen(@ig
 s+([^'"]\s*</html>)(?!\s*(\\n|'|"))+$1<script>function PrivoxyWindowOpen(a, b, c){return(window.open(a, b, c));}</script>+iU     
 
 
 ##################################################################################
 #
-# all-popups: Kill all popups in JavaScript and HTML
+# all-popups: Kill all popups in JavaScript and HTML.
 #
 #################################################################################
-FILTER: all-popups Kill all popups in JavaScript and HTML
+FILTER: all-popups Kill all popups in JavaScript and HTML.
 
-s/((\W\s*)(window|this|parent)\.)open\s*\\?\(/$1concat(/ig  # JavaScript
-s/\starget\s*=\s*(['"]?)_?(blank|new)\1?/ notarget/ig        # HTML
-
+s@((\W\s*)(?:map)?(window|this|parent)\.?)open\s*\\?\(@$1concat(@ig  # JavaScript
+#s/\starget\s*=\s*(['"]?)_?(blank|new)\1?/ notarget/ig        # HTML
+s/\starget\s*=\s*(['"]?)_?(blank|new)\1?/ /ig        # (X)HTML
 
 ##################################################################################
 #
-# img-reorder: Reorder attributes in <img> tags to make the banners-by-* filters more effective
+# img-reorder: Reorder attributes in <img> tags to make the banners-by-* filters more effective.
 #
 #################################################################################
-FILTER: img-reorder Reorder attributes in &lt;img> tags to make the banners-by-* filters more effective
+FILTER: img-reorder Reorder attributes in <img> tags to make the banners-by-* filters more effective.
 
 # In the first step src is moved to the start, then width is moved to the second
 # place to guarantee an order of src, width, height.
@@ -213,7 +231,7 @@ s|<img (src=(?:(['"])[^>\\\\2]*\2\|[^'">\\\s]+?))([^>]*)\s+width\s*=\s*(["']?)(\
 
 #################################################################################
 #
-# banners-by-size: Kill banners by size
+# banners-by-size: Kill banners by size.
 #
 #################################################################################
 #
@@ -226,71 +244,83 @@ s|<img (src=(?:(['"])[^>\\\\2]*\2\|[^'">\\\s]+?))([^>]*)\s+width\s*=\s*(["']?)(\
 # Note2: Use img-reorder before this filter to ensure maximum matching success
 #
 #################################################################################
-FILTER: banners-by-size Kill banners by size
+FILTER: banners-by-size Kill banners by size.
 
 # 88*31
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)88\4)[^>]*?(height=(['"]?)31\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)88\4)[^>]*?(height=(['"]?)31\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 120*60, 120*90, 120*240, 120*600
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)120\4)[^>]*?(height=(['"]?)(?:600?|90|240)\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)120\4)[^>]*?(height=(['"]?)(?:600?|90|240)\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 125*125
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)125\4)[^>]*?(height=(['"]?)125\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)125\4)[^>]*?(height=(['"]?)125\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 160*600
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)160\4)[^>]*?(height=(['"]?)600\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)160\4)[^>]*?(height=(['"]?)600\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 180*150
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)180\4)[^>]*?(height=(['"]?)150\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)180\4)[^>]*?(height=(['"]?)150\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 234*60, 468*60 (Most Banners!)
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:234|468)\4)[^>]*?(height=(['"]?)60\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:234|468)\4)[^>]*?(height=(['"]?)60\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 240*400
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)240\4)[^>]*?(height=(['"]?)400\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)240\4)[^>]*?(height=(['"]?)400\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 250*250, 300*250
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:250|300)\4)[^>]*?(height=(['"]?)250\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)(?:250|300)\4)[^>]*?(height=(['"]?)250\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 # 336*280
-s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)336\4)[^>]*?(height=(['"]?)280\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)336\4)[^>]*?(height=(['"]?)280\6)[^>]*?(?=/?>)@\
+  <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 
 # Note: 200*50 was also proposed, but it probably causes too much collateral damage:
 #
-#s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)200\4)[^>]*?(height=(['"]?)50\6)[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed-$2-by-size$1 $3 $5>@sig
+#s@<img\s+(?:src\s*=\s*(['"]?)([^>\\\1\s]+)\1)?[^>]*?(width=(['"]?)200\4)[^>]*?(height=(['"]?)50\6)[^>]*?(?=/?>)@\
+#   <img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed-$2-by-size" $3 $5@sig
 
 
 #################################################################################
 #
-# banners-by-link: Kill banners by their links to known clicktrackers (Experimental)
+# banners-by-link: Kill banners by their links to known clicktrackers (Experimental).
 #
 #################################################################################
-FILTER: banners-by-link Kill banners by their links to known clicktrackers
+FILTER: banners-by-link Kill banners by their links to known clicktrackers.
 
 # Common case with width and height attributes:
 #
 s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:\
   adclick                             # See www.dn.se \
+| advert                              # see dict.leo.org \
 | atwola\.com/(?:link|redir)          # see www.cnn.com \
 | /jump/                              # redirs for doublecklick.net ads \
-| tracker | counter                   # common \
+| counter                             # common \
+| (?<!&type=)tracker                  # (&type=tracker is used in sf's project statistics) \
 | adlog\.pl                           # see sf.net \
-)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\6)[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\8)[^>]*>\
-@<img $5 $7 src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed $4 by link to $2$1>@sigx
+)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\6)[^>]*((?:width|height)\s*=\s*(['"]?)\d+?\8)[^>]*?(?=/?>)\
+@<img $5 $7 src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed $4 by link to $2"@sigx
 
 # Rare case w/o explicit dimensions:
 #
-s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:adclick|atwola\.com/(?:link|redir)|doubleclick\.net/jump/|tracker|counter|adlog\.pl)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*>@<img src=$1http://config.privoxy.org/send-banner?type=auto$1 border="0" title=$1Killed $4 by link to $2$1>@sig
+s@<a\s+href\s*=\s*(['"]?)([^>\1\s]*?(?:ad(?:click|vert)|atwola\.com/(?:link|redir)|doubleclick\.net/jump/|(?<!&type=)tracker|counter|adlog\.pl)[^>\1\s]*)\1[^>]*>\s*<img\s+(?:src\s*=\s*(['"]?)([^>\\\3\s]+)\3)?[^>]*?(?=/?>)@<img src="http://config.privoxy.org/send-banner?type=auto" border="0" title="Killed $4 by link to $2"@sig
 
 
 ################################################################################
 #
-# webbugs: Squish WebBugs (1x1 invisible GIFs used for user tracking)
+# webbugs: Squish WebBugs (1x1 invisible GIFs used for user tracking).
 #
 #################################################################################
-FILTER: webbugs Squish WebBugs (1x1 invisible GIFs used for user tracking)
+FILTER: webbugs Squish WebBugs (1x1 invisible GIFs used for user tracking).
 
 s@<img[^>]*\s(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*\s(?:width|height)\s*=\s*['"]?[01](?=\D)[^>]*?>@@siUg
 
 
 #################################################################################
 #
-# tiny-textforms: Extend those tiny textareas up to 40x80 and kill the hard wrap
+# tiny-textforms: Extend those tiny textareas up to 40x80 and kill the hard wrap.
 #
 #################################################################################
-FILTER: tiny-textforms Extend those tiny textareas up to 40x80 and kill the hard wrap
+FILTER: tiny-textforms Extend those tiny textareas up to 40x80 and kill the hard wrap.
 
 s/(<textarea[^>]*?)(?:\s*(?:rows|cols)=(['"]?)\d+\2)+/$1 rows=$2\40$2 cols=$2\80$2/ig 
 s/(<textarea[^>]*?)wrap=(['"]?)hard\2/$1/ig
@@ -298,19 +328,19 @@ s/(<textarea[^>]*?)wrap=(['"]?)hard\2/$1/ig
 
 #################################################################################
 #
-# jumping-windows: Prevent windows from resizing and moving themselves
+# jumping-windows: Prevent windows from resizing and moving themselves.
 #
 #################################################################################
-FILTER: jumping-windows Prevent windows from resizing and moving themselves
+FILTER: jumping-windows Prevent windows from resizing and moving themselves.
 
 s/(?<=[\W])(?:window|this|self)\.(?:move|resize)(?:to|by)\(/''.concat(/ig
 
 #################################################################################
 #
-# frameset-borders: Give frames a border, make them resizable and scrollable
+# frameset-borders: Give frames a border, make them resizable and scrollable.
 #
 #################################################################################
-FILTER: frameset-borders Give frames a border and make them resizable
+FILTER: frameset-borders Give frames a border and make them resizable.
 
 s/(<frameset\s+[^>]*)framespacing=(['"]?)(no|0)\2/$1/igU
 s/(<frameset\s+[^>]*)frameborder=(['"]?)(no|0)\2/$1/igU
@@ -331,7 +361,7 @@ s/(<frame\s+[^>]*)scrolling=(['"]?)(no|0)\2/$1/igU
 #         John Walker -- January 1998, http://www.fourmilab.ch/webtools/demoroniser
 #
 #################################################################################
-FILTER: demoronizer Fix MS's non-standard use of standard charsets
+FILTER: demoronizer Fix MS's non-standard use of standard charsets.
 
 s/(&\#[0-2]\d\d)\s/$1; /g
 # per Robert Lynch: http://slate.msn.com//?id=2067547, just a guess.
@@ -360,11 +390,11 @@ s/\x9B/>/g                  # 155
 
 #################################################################################
 #
-# shockwave-flash: Kill embedded Shockwave Flash objects
+# shockwave-flash: Kill embedded Shockwave Flash objects.
 #                  Note: Better just block "/.*\.swf$"!
 #
 #################################################################################
-FILTER: shockwave-flash Kill embedded Shockwave Flash objects
+FILTER: shockwave-flash Kill embedded Shockwave Flash objects.
 
 s|<object [^>]*macromedia.*</object>|<!-- Squished Shockwave Object -->|sigU
 s|<embed [^>]*(application/x-shockwave-flash\|\.swf).*>(.*</embed>)?|<!-- Squished Shockwave Flash Embed -->|sigU
@@ -372,10 +402,10 @@ s|<embed [^>]*(application/x-shockwave-flash\|\.swf).*>(.*</embed>)?|<!-- Squish
 
 #################################################################################
 #
-# quicktime-kioskmode: Make Quicktime movies saveable
+# quicktime-kioskmode: Make Quicktime movies saveable.
 #
 #################################################################################
-FILTER: quicktime-kioskmode Make Quicktime movies saveable
+FILTER: quicktime-kioskmode Make Quicktime movies saveable.
 
 s/(<embed\s+[^>]*)kioskmode\s*=\s*(["']?)true\2/$1/ig 
 
@@ -412,25 +442,55 @@ s/(M|m)edien(?![^<]*>)/$1&auml;dchen/Ug
 
 #################################################################################
 #
-# crude-parental: Crude parental filtering?  (Use along with a suitable blocklist).
-#                 Shows how to deny access to whole page based on a keyword.
+# crude-parental: Crude parental filtering. Use with a suitable blocklist.
+#                 Pages are "blocked" based on keyword matching.
 #
 #################################################################################
-FILTER: crude-parental Crude parental filtering (demo only)
+FILTER: crude-parental Crude parental filtering. Note that this filter doesn't work reliable.
 
 # (Note: Middlesex, Sussex and Essex are counties in the UK, not rude words)
 # (Note #2: Is 'sex' a rude word?!)
 
-s%^.*(?<!middle)(?<!sus)(?<!es)sex.*$%<html><head><title>Blocked</title></head><body><h3>Blocked due to possible adult content. Please see <a href="http://dmoz.org/Kids_and_Teens/">this site</a>.</h3></body></html>%is
+s%^.*(?<!middle)(?<!sus)(?<!es)sex.*$%<html><head><title>Blocked</title></head><body>\
+<h3>Blocked by Privoxy's crude-parental filter due to possible adult content.</h3></body></html>%is
+
 s+^.*warez.*$+<html><head><title>No Warez</title></head><body><h3>You're not searching for illegal stuff, are you?</h3></body></html>+is
 
+# Remove by description
+s/^.*\
+(?:(suck|lick|tounge|rub|fuck|fingering|finger|chicks?)\s*)?\
+(?:(her|your|my|hard|with|big|wet|tight|pink|hot|moist|young|teen)\s*)+\
+(dicks?|penis|cocks?|balls?|tits?|pussy|cunt|clit|ass|mouth).*$\
+/This page has been blocked by Privoxy's crude-parental content filter\
+/is
+
+#Remove by link text
+s/^.*\
+(download|broadband|view|watch|free|get|extreem)?\s*\
+(sex|xxx|porn|cumshot|fuck(ing|s)?|anal|ass|asian|adult|Amateur|org(y|ies)|close ups?|hand?job|nail(ed)?)+\s*\
+(movies?|pics?|videos?|dvds?|dvd's|links?).*$\
+/This page has been blocked by Privoxy's crude-parental content filter\
+/is
+
+#Remove by age disclaimer
+s/^.*\
+(models?|chicks?|girls?|women|persons)\s*\
+(who|are|were)+ (over|at least) (16|18|21) years (old|of age).*$\
+/This page has been blocked by Privoxy's crude-parental content filter\
+/is
+
+#Remove by regulations
+s/^.*(Section 2257|18 U.?S.?C.? 2257).*$\
+/This page has been blocked by Privoxy's crude-parental content filter\
+/is 
+
 
 #################################################################################
 #
-# IE-Exploits: Disable some known Internet Explorer bug exploits
+# IE-Exploits: Disable some known Internet Explorer bug exploits.
 #
 #################################################################################
-FILTER: ie-exploits Disable some known Internet Explorer bug exploits
+FILTER: ie-exploits Disable some known Internet Explorer bug exploits.
 
 # Note: This is basically a demo and waits for someone more interested in IE
 # security (sic!) to take over.
@@ -500,7 +560,7 @@ s|<INPUT name="\d{2,4}" type="RADIO" value="3" |$0 checked|g
 # no-ping: Removes non-standard ping attributes in <a> and <area> tags.
 #          
 #################################################################################
-FILTER: no-ping Removes non-standard ping attributes in &lt;a> and &lt;area> tags.
+FILTER: no-ping Removes non-standard ping attributes in <a> and <area> tags.
 s@(<a(?:rea)?[^>]*?)\sping=(['"]?)([^"'>]+)\2([>\s]?)@\
 <strong style="color:white; background-color:red;" title="Privoxy removed ping target '$3'">PING!</strong>\n$1$4@ig
 
@@ -511,11 +571,12 @@ s@(<a(?:rea)?[^>]*?)\sping=(['"]?)([^"'>]+)\2([>\s]?)@\
 #
 #################################################################################
 FILTER: google CSS-based block for Google text ads. Also removes a width limitation and the toolbar advertisement.
+
 s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's google filter. */\n\
  \#fbc, \#fbl, \#ra, .rhh {visibility: hidden !important;}\n\
  \#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, .ch, \#ads,\
- \#toolbar, \#google_ads_frame{display: none !important;}\n\
+ \#toolbar, \#google_ads_frame, \#mbEnd {display: none !important;}\n\
  .main_body, .j {width: 100%}\n</style>\n$0@
 s@<div style=\"padding-top:11px;min-width:500px\">@<div id="main_body">@
 s@(<table cellspacing=0 cellpadding=0 width=25% align=right bgcolor=\#ffffff border=0\
@@ -531,10 +592,12 @@ s@(<br clear=all><table)( border=0 cellpadding=9><tr><td)@$1 id="toolbar"$2@
 #
 #################################################################################
 FILTER: yahoo CSS-based block for Yahoo text ads. Also removes a width limitation.
+
 s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
- \#symadbn, \#ymadbn, .yschbox, \#yschsec, .yschhd, \#yschanswr, .yschftad,\
- .yschspn, .yschspns, \#ygrp-sponsored-links {display: none !important;}\n\
+ \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
+ \#yschanswr, .yschftad,\ .yschspn, .yschspns, \#ygrp-sponsored-links,\
+ \#ks-ypn-ads {display: none !important;}\n\
  \#yschpri, \#yschweb {width: 100% !important; max-width: 100% !important;}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
 </style>\n$0@
@@ -546,6 +609,7 @@ s@</head>@\n<style type="text/css">\n\
 #
 #################################################################################
 FILTER: msn CSS-based block for MSN text ads. Also removes tracking URLs and a width limitation.
+
 s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's msn filter. */\n\
  .msn_ads {display: none !important;}\n\
@@ -565,6 +629,8 @@ s@</head>@<style type="text/css">\n\
 s@(<div[^>]*) id=(["']?)ads_[^\2]*\2@$1 class="msn_ads"@Uig
 s@(<a[^>]*href=\")http://g.msn.com/.*\?(http://.*)(&amp;&amp;DI=.*)(\")@$1$2$4@Ug
 s@(<a[^>]*)gping=\".*\"@$1 title="URL cleaned up by Privoxy's msn filter"@Ug
+s@<div id=\"ar\">(<h2>Sponsored sites</h2>)@<div class="msn_ads">$1@
+s@(</script><div) id=\"at\"@$1 class="msn_ads"@
 
 #################################################################################
 #
@@ -577,6 +643,7 @@ s@(<a[^>]*)gping=\".*\"@$1 title="URL cleaned up by Privoxy's msn filter"@Ug
 #
 #################################################################################
 FILTER: blogspot Cleans up some Blogspot blogs. Read the fine print before using this.
+
 s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's blogspot filter. */\n\
  \#powered-by {display: none !important;}\n\
@@ -595,36 +662,38 @@ s@(background:\#[a-f\d]{3})( url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*
 
 #################################################################################
 #
-# x-httpd-php-to-html: Header filter to change the Content-Type from
+# x-httpd-php-to-html: Changes the Content-Type header from
 #                      x-httpd-php to html. "Content-Type: x-httpd-php"
 #                      is set by clueless PHP users and causes many
 #                      browsers do open a download menu instead of
 #                      rendering the page.
 #
 #################################################################################
-FILTER: x-httpd-php-to-html Header filter to change the Content-Type from x-httpd-php to html.
-s@^(Content-Type:) application/x-httpd-php@$1 text/html@
+SERVER-HEADER-FILTER: x-httpd-php-to-html Changes the Content-Type header from x-httpd-php to html.
+
+s@^(Content-Type:)\s*application/x-httpd-php@$1 text/html@i
 
 #################################################################################
 #
-# html-to-xml: Header filter to change the Content-Type from html to xml.
+# html-to-xml: Changes the Content-Type header from html to xml.
 #
 #################################################################################
-FILTER: html-to-xml Header filter to change the Content-Type from html to xml.
-s@^(Content-Type:) text/html(;.*)?$@$1 application/xhtml+xml$2@
+SERVER-HEADER-FILTER: html-to-xml Changes the Content-Type header from html to xml.
+
+s@^(Content-Type:)\s*text/html(;.*)?$@$1 application/xhtml+xml$2@i
 
 #################################################################################
 #
-# xml-to-html: Header filter to change the Content-Type from xml to html.
+# xml-to-html: Changes the Content-Type header from xml to html.
 #
 #################################################################################
-FILTER: xml-to-html Header filter to change the Content-Type from xml to html.
-s@^(Content-Type:) (?:application|text)/(?:xhtml\+)?xml(;.*)?$@$1 text/html$2@
+SERVER-HEADER-FILTER: xml-to-html Changes the Content-Type header from xml to html.
+
+s@^(Content-Type:)\s*(?:application|text)/(?:xhtml\+)?xml(;.*)?$@$1 text/html$2@i
 
 #################################################################################
 #
-# hide-tor-exit-notation: Header filter to remove the Tor exit node notation
-#                         in Host and Referer headers.
+# hide-tor-exit-notation: Remove the Tor exit node notation in Host and Referer headers.
 #
 #   Note: If Privoxy and Tor are chained and Privoxy is configured to
 #         use socks4a, one can use http://www.example.org.foobar.exit/
@@ -646,14 +715,204 @@ s@^(Content-Type:) (?:application|text)/(?:xhtml\+)?xml(;.*)?$@$1 text/html$2@
 #         coming from.
 #
 #################################################################################
-FILTER: hide-tor-exit-notation Header filter to remove the Tor exit node notation in Host and Referer headers.
+CLIENT-HEADER-FILTER: hide-tor-exit-notation Removes the Tor exit node notation in Host and Referer headers.
+
 s@^((?:Referer|Host):\s*(?:https?://)?[^/]*)\.[^\./]*?\.exit@$1@i
+
+#################################################################################
+#
+# less-download-windows: Prevents annoying download windows for content types
+#                        the browser can handle itself.
+#
+#################################################################################
+SERVER-HEADER-FILTER: less-download-windows Prevent annoying download windows for content types the browser can handle itself.
+
+s@^Content-Disposition:.*filename=(["']?).*\.(png|gif|jpe?g|diff?|d?patch|c|h|pl|shar)\1.*$@@i
+s@^(Content-Type:)\s*(?:message/(?:news|rfc822)|text/x-.*|application/x-sh)\s*@$1 text/plain@i
+
+#################################################################################
+#
+# image-requests: Tags detected image requests as "IMAGE-REQUEST". Whether
+#                 or not the detection actually works depends on the browser.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: image-requests Tags detected image requests as "IMAGE-REQUEST".
+
+s@Accept:\s*image/.*@IMAGE-REQUEST@i
+
+#################################################################################
+#
+# css-requests:  Tags detected CSS requests as "CSS-REQUEST". Whether
+#                or not the detection actually works depends on the browser.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: css-requests Tags detected CSS requests as "CSS-REQUEST".
+
+s@Accept:\s*text/css.*@CSS-REQUEST@i
+
+#################################################################################
+#
+# client-ip-address: Tags the request with the client's IP address.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: client-ip-address Tags the request with the client's IP address.
+
+s@^\w*\s+.*\s+HTTP/\d\.\d\s*@IP-ADDRESS: $origin@D
+
+#################################################################################
+#
+# http-method: Tags the request with its HTTP method.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: http-method Tags the request with its HTTP method.
+
+s@^(\w*).*HTTP/\d\.\d\s*$@$1@i
+
+#################################################################################
+#
+# allow-post: Tags POST requests as "ALLOWED-POST".
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: allow-post Tags POST requests as "ALLOWED-POST".
+
+s@^(?:POST)\s+.*\s+HTTP/\d\.\d\s*@ALLOWED-POST@i
+
+#################################################################################
+#
+# complete-url: Tags the request with the whole request URL.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: complete-url Tags the request with the whole request URL.
+
+s@^\w*\s+(.*)\s+HTTP/\d\.\d\s*$@$1@i
+
+#################################################################################
+#
+# user-agent: Tags the request with the complete User-Agent header.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: user-agent Tags the request with the complete User-Agent header.
+
+s@^User-Agent:.*@$0@i
+
+#################################################################################
+#
+# content-type: Tags the request with the content type declarded by the server.
+#
+#################################################################################
+SERVER-HEADER-TAGGER: content-type Tags the request with the content type declarded by the server.
+
+s@^Content-Type:\s*([^;]*).*@$1@i
+
+#################################################################################
+#
+# privoxy-control: The taggers create tags with the content of X-Privoxy-Control
+#                  headers, the filters remove said headers.
+#
+#################################################################################
+CLIENT-HEADER-TAGGER: privoxy-control Creates tags with the content of X-Privoxy-Control headers.
+
+s@^X-Privoxy-Control:\s*@@i
+
+CLIENT-HEADER-FILTER: privoxy-control Removes X-Privoxy-Control headers.
+
+s@^X-Privoxy-Control:.*@@i
+
+SERVER-HEADER-TAGGER: privoxy-control Creates tags with the content of X-Privoxy-Control headers.
+
+s@^X-Privoxy-Control:\s*@@i
+
+SERVER-HEADER-FILTER: privoxy-control Removes X-Privoxy-Control headers.
+
+s@^X-Privoxy-Control:.*@@i
 
 
 ############################################################################## 
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.52  2007/11/27 18:35:48  fabiankeil
+#     Update CSS for the yahoo filter.
+#
+#     Revision 1.51  2007/11/04 16:15:11  fabiankeil
+#     - Add client-header taggers: client-ip-address,
+#       http-method, allow-post, complete-url and user-agent.
+#     - Add server-header tagger: content-type.
+#
+#     Revision 1.50  2007/11/03 15:05:30  fabiankeil
+#     Consistently use an empty line between the description and the PCRS code
+#     and end descriptions with dots. Patch submitted by Simon Ruderich.
+#
+#     Revision 1.49  2007/11/03 14:29:41  fabiankeil
+#     Spelling fixes mostly submitted by Simon Ruderich.
+#
+#     Revision 1.48  2007/10/17 18:11:32  fabiankeil
+#     Add privoxy-control header filters and taggers.
+#
+#     Revision 1.47  2007/10/06 15:45:25  fabiankeil
+#     Let msn hide sponsored links in #at divs.
+#
+#     Revision 1.46  2007/10/06 09:54:13  fabiankeil
+#     - Let msn hide sponsored links in #ar divs.
+#     - Teach banners-by-link not to block the graphs for sf's tracker statistics.
+#
+#     Revision 1.45  2007/08/11 16:54:12  fabiankeil
+#     - Complete the changes from r1.42.
+#     - Make crude-parental less sensitive to the amount of white-space,
+#       add the note that it doesn't work too well again and replace the
+#       DMOZ link with a less confusing explanation.
+#
+#     Revision 1.44  2007/07/18 11:06:56  hal9
+#     Replace notarget with '' in all popups filter to keep from breaking xhmtl per
+#     report from Siegfried Gipp.
+#
+#     Revision 1.43  2007/06/01 14:17:04  fabiankeil
+#     Mention possible delimiter conflicts with variables in dynamic pcrs commands.
+#
+#     Revision 1.42  2007/05/17 15:55:36  fabiankeil
+#     Undo an improperly tested last-minute change
+#     and turn "text-requests" back into "css-requests".
+#
+#     Revision 1.41  2007/05/17 15:45:41  fabiankeil
+#     - Mention new filter types and the 'D' option.
+#     - Header filters are now case-insensitive and accept a
+#       varying amount of whitespace after the colon.
+#     - Add another selector for yahoo ads.
+#     - New server-header filter: less-download-windows
+#     - New client-header taggers: text-requests and image-requests.
+#
+#     Revision 1.40  2007/03/20 15:40:00  fabiankeil
+#     Adjust to new world order with dedicated header-filter actions.
+#
+#     Revision 1.39  2007/02/21 14:10:23  fabiankeil
+#     - Fix a js-annoyances pcrs command that broke
+#       evaluated code. (BR #1124071, thanks to Bor Gergely)
+#     - Have unsolicited-popups and all-popups catch the
+#       wheather.com popup reported in in AF #1640173.
+#
+#     Revision 1.38  2007/02/19 11:22:48  hal9
+#     Adding back the orginal filter content to offset problems found by Fabian.
+#
+#     Revision 1.37  2007/02/17 13:29:44  hal9
+#     Updates to the crude parental filter per Feature Requests item #1648657.
+#
+#     Revision 1.36  2007/02/05 16:47:31  fabiankeil
+#     - Let banners-by-link look for "advert".
+#     - Fix XML systax problems with banners-by-link
+#       and banners-by-size (AF#1651570).
+#
+#     Revision 1.35  2006/12/21 12:28:12  fabiankeil
+#     Escaping special characters in filter descriptions is no
+#     longer necessary, it's done by Privoxy now.
+#
+#     Revision 1.34  2006/12/12 17:32:23  fabiankeil
+#     Added id mbEnd to google filter, it's now and then
+#     used for the sponsored links.
+#
+#     Have js-annoyances try to prevent status bar
+#     modifications where the status bar text is
+#     inside another variable. Fixes 1605710.
+#
 #     Revision 1.33  2006/11/16 17:10:43  fabiankeil
 #     Removed webbugs debugging comment again.
 #     The apostrophe could break JavaScript and

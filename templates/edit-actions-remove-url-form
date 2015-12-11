@@ -33,6 +33,10 @@
 #
 # Revisions   :
 #    $Log: edit-actions-remove-url-form,v $
+#    Revision 1.17  2007/01/23 16:03:16  fabiankeil
+#    - Add favicon links.
+#    - Remove useless W3C validator links.
+#
 #    Revision 1.16  2006/07/18 14:49:14  david__schmidt
 #    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
 #    with what was really the latest development (the v_3_0_branch branch)
@@ -121,6 +125,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@favicon.ico" type="image/x-icon">
 
   <title>Privoxy@@my-hostname@: Remove URL Pattern</title>
 </head>
@@ -184,12 +189,6 @@
       </td>
     </tr>
 <!-- if-have-help-info-end@ -->
-
-    <tr>
-      <td>
-        <small><small>Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></small></small>
-      </td>
-    </tr>
 
   </table>
 </body>

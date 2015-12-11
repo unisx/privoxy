@@ -1,24 +1,57 @@
-        <h2>Support and Service via Sourceforge:</h2>
+##############################################################################
+#
+# File        :  $Source: /cvsroot/ijbswa/current/templates/mod-support-and-service,v $
+#
+# Purpose     :  Template that is included from most of Privoxy's CGI pages
+#                to show the user how to get help or report problems.
+# 
+#
+# Copyright   :  Written by and Copyright (C) 2002-2007 members of
+#                the SourceForge Privoxy team. http://www.privoxy.org/
+#
+#                This template is free software; you can redistribute it 
+#                and/or modify it under the terms of the GNU General
+#                Public License as published by the Free Software
+#                Foundation; either version 2 of the License, or (at
+#                your option) any later version.
+#
+# Revisions   :
+#    $Log: mod-support-and-service,v $
+#    Revision 1.10  2007/03/17 11:31:36  fabiankeil
+#    - Add revision log and copyright header.
+#    - Reword instructions and link to the FAQ
+#      in an attempt to reduce the number of
+#      incomplete reports.
+#
+##############################################################################
+       <h2>Support and Service:</h2>
         <p>
-          We value your feedback. To provide you with the best support,
+          The Privoxy Team values your feedback. To provide you with the best support,
           we ask that you:
         </p>
         <ul>
           <li>
-            use the <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=211118">support forum</a> to get help.
+            use the <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=211118">Support Tracker</a>
+            if you need help.
           </li>
           <li>
-            submit ads and configuration related problems with the actions file  through the
-            <a
-            href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">
-            Actionsfile Feedback Tracker.</a>
+            submit ads and configuration related problems with the actions files through the
+            <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">Actionsfile Feedback Tracker</a>.
           </li>
           <li>
-            submit bugs only through our <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">bug tracker</a>.
-            Make sure that the bug has not yet been submitted.
+            submit bugs only through the
+            <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">Bug Tracker</a>.
+            Please make sure that the bug has not been submitted yet.
           </li>
           <li>
-            submit feature requests only through our <a href="http://sourceforge.net/tracker/?atid=361118&amp;group_id=11118&amp;func=browse">feature
-            request tracker</a>.
+            submit feature requests only through the
+            <a href="http://sourceforge.net/tracker/?atid=361118&amp;group_id=11118&amp;func=browse">Feature
+            Request Tracker</a>.
+          </li>
+          <li>
+            read the instructions in the
+            <a title="FAQ entry: Contacting the developers, Bug Reporting and Feature Requests"
+             href="http://www.privoxy.org/faq/contact.html">Privoxy FAQ</a>
+            to make sure your request contains all the information we need.
           </li>
         </ul>

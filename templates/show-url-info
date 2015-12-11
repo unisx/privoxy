@@ -1,8 +1,52 @@
-##########################################################
+########################################################################
 #
-# Show-Url-Info-CGI Output template for Privoxy.
+# File        :  $Source: /cvsroot/ijbswa/current/templates/show-url-info,v $
+#
+# Purpose     :  Template for Privoxy's show-url-info CGI page.
+#
+# Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+#                Privoxy team. http://www.privoxy.org/
+#
+#                This program is free software; you can redistribute it 
+#                and/or modify it under the terms of the GNU General
+#                Public License as published by the Free Software
+#                Foundation; either version 2 of the License, or (at
+#                your option) any later version.
+#
+#                This program is distributed in the hope that it will
+#                be useful, but WITHOUT ANY WARRANTY; without even the
+#                implied warranty of MERCHANTABILITY or FITNESS FOR A
+#                PARTICULAR PURPOSE.  See the GNU General Public
+#                License for more details.
+#
+#                The GNU General Public License should be included with
+#                this file.  If not, you can view it at
+#                http://www.gnu.org/copyleft/gpl.html
+#                or write to the Free Software Foundation, Inc., 59
+#                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+# Revisions   :
+#    $Log: show-url-info,v $
+#    Revision 1.22  2007/12/08 14:29:06  fabiankeil
+#    Use CSS to let the URL and pattern input fields scale with
+#    the browser width and try to prevent vertical scroll bars
+#    if the width is less than 80 characters. Closes #1843596,
+#    thanks to Gerry Murphy and Lee.
+#
+#    Revision 1.21  2007/11/15 19:11:11  fabiankeil
+#    Reword HTTPS URL information.
+#
+#    Revision 1.20  2007/07/21 12:19:50  fabiankeil
+#    If show-url-info is called with an URL that Privoxy
+#    would reject as invalid, don't show unresolved forwarding
+#    variables, "final matches" or claim the site's secure.
+#
+#    Revision 1.19  2007/02/10 16:55:22  fabiankeil
+#    - Show forwarding settings on the show-url-info page
+#    - Fix some HTML syntax errors.
 #
 #
+#########################################################################
 # USING HTML TEMPLATES:
 # ---------------------
 #
@@ -28,24 +72,22 @@
 # --------------------------------
 #
 #  my-ip-addr:
-#    The IP-address that the client used to reach this proxy
+#    The IP-address that the client used to reach Privoxy
 #  my-hostname:
 #    The hostname associated with my-ip-addr
 #  admin-address:
-#    The email address of the pxoxy's administrator, as configured
+#    The email address of the Privoxy administrator, as configured
 #    in the config file
 #  default-cgi:
-#    The URL for the "main menu" builtin CGI of this proxy
+#    The URL for Privoxy's "main menu" builtin CGI page
 #  menu:
 #    List of <li> elements linking to the other available CGIs
 #  version:
-#    The version number of the proxy software
+#    Privoxy's version number
 #  code-status:
-#    The development status of the proxy software: "alpha", "beta",
-#    or "stable".
+#    Privoxy's development status: "alpha", "beta", or "stable".
 #  homepage:
-#    The URL of the SourceForge ijbswa project, who maintains this
-#    software.
+#    The Privoxy web site.
 #
 # CONDITIONAL SYMBOLS FOR THIS TEMPLATE AND THEIR DEPANDANT SYMBOLS:
 # ------------------------------------------------------------------
@@ -78,6 +120,21 @@
 #    final:
 #      The actions that are associated with the URL at the end of
 #      the matching process
+#  no-forwarder: Requests to url will be made directly.
+#  http-forwarder:
+#      Requests to url will be made through a HTTP proxy
+#      forward-host:
+#         The IP address or its hostname
+#      forward-port.
+#         The proxy port
+#  socks-forwarder:
+#      Requests to url will be made through a socks proxy
+#      socks-type:
+#         The socks type: socks4 or socks4a
+#      gateway-host:
+#         The IP address or its hostname
+#      gateway-port:
+#         The proxy port.
 #
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -89,11 +146,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@favicon.ico" type="image/x-icon">
 </head>
 
 <body>
 
-  <table cellpadding="20" cellspacing="10" border="0" width="100%">
+  <table summary="" cellpadding="20" cellspacing="10" border="0" width="100%">
     <tr>
       <td class="title">
 
@@ -116,26 +174,74 @@
 <!-- @if-url-given-start -->
     <tr>
       <td class="box">
-<!-- @if-https-start -->
-        <h2>NOTE:</h2>
-        <p>This is a secure (https:) URL, so the part after the "/" is ignored.
-          This is a feature of the HTTPS protocol - the exact address of the
-          page you're visiting is hidden.  Privoxy can only detect the host
-          part of the URL.</p>
-        <p>&nbsp;</p>
-<!-- if-https-end@ -->
-        <h2>Matches for <a href="@url@">@url@</a>:</h2>
-        <p>@matches@</p>
+<!-- @if-valid-url-start -->
+        <h2>Forwarding settings:</h2>
+        <p>
+          Requests for <a href="@url@">@url@</a> will be <!--
+
+# "Interesting" formatting to prevent white space at the end of the sentence.
+
+          @if-no-forwarder-start -->
+
+             made <b>directly</b>, no forwarding settings apply<!--
+
+          if-no-forwarder-end@--><!--
+          @if-http-forwarder-start --><!-- @if-socks-forwarder-start -->
+
+             first <!--
+
+          if-socks-forwarder-end@ --><!-- if-http-forwarder-end@ --><!--
+          @if-socks-forwarder-start -->
+
+             forwarded through <b>@socks-type@-proxy @gateway-host@:@gateway-port@</b><!--
+
+          if-socks-forwarder-end@ --><!--
+          @if-http-forwarder-start --><!-- @if-socks-forwarder-start -->
+
+             and then <!--
+
+          if-socks-forwarder-end@ --><!-- if-http-forwarder-end@ --><!--
+          @if-http-forwarder-start -->
+
+             forwarded through <b>HTTP-proxy @forward-host@:@forward-port@</b><!--
+
+          if-http-forwarder-end@ -->.
       </td>
     </tr>
-
+    <tr>
+      <td class="box">
+<!-- @if-https-start -->
+        <h2>NOTE:</h2>
+        <p>This is a HTTPS URL, so the part after the "/" is ignored
+          as Privoxy doesn't see the path for real HTTPS requests either.</p>
+<!-- if-https-end@ -->
+<!-- if-valid-url-end@ -->
+        <h2>Matches for <a href="@url@">@url@</a>:</h2>
+        @matches@
+      </td>
+    </tr>
+<!-- @if-valid-url-start -->
     <tr>
       <td class="box">
         <h2>Final results:</h2>
         <p><b>@final@</b></p>
       </td>
     </tr>
+<!-- if-valid-url-end@ -->
 <!-- if-url-given-end@ -->
+
+<!-- @if-privoxy-is-toggled-off-start -->
+
+    <tr>
+      <td class="warning">
+        <h2>Warning:</h2>
+        <p>
+          <strong>Privoxy is currently toggled off. Matching actions will not apply
+          unless you <a href="@default-cgi@toggle?set=enable">toggle Privoxy on</a> first.</strong>
+        </p>
+      </td>
+    </tr>
+<!-- if-privoxy-is-toggled-off-end@ -->
 
     <tr>
       <td class="box">
@@ -144,7 +250,7 @@
           URL:</h2>
         <form method="GET" action="@default-cgi@show-url-info">
           <p>
-            <input type="text" name="url" size="80" value="@url@"> 
+            <input type="text" name="url" size="80" value="@url@" class="url"> 
             <input type="submit" value="Go">
           </p>
         </form>
@@ -175,13 +281,7 @@
       </td>
     </tr>
 <!-- if-have-help-info-end@ -->
-    
 
-     <tr>
-      <td>
-        <p class="small">Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></p>
-      </td>
-    </tr>   
   </table>
 
 </body>

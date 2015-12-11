@@ -8,8 +8,8 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.6">
-<!entity p-status "stable">
+<!entity p-version "3.0.7">
+<!entity p-status "beta">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
@@ -23,9 +23,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $
+ $Id: developer-manual.sgml,v 2.13 2007/10/30 17:59:31 fabiankeil Exp $
 
- Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -44,13 +44,13 @@
      <subscript>
     <!-- Completely the wrong markup, but very little is allowed  -->
     <!-- in this part of an article. FIXME -->
-      <link linkend="copyright">Copyright</link> &my-copy; 2001-2006 by 
-      <ulink url="http://www.privoxy.org">Privoxy Developers</ulink>
+      <link linkend="copyright">Copyright</link> &my-copy; 2001-2007 by 
+      <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
      </subscript>
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.13 2007/10/30 17:59:31 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -84,7 +84,8 @@ Hal.
  The developer manual provides guidance on coding, testing, packaging, documentation
  and other issues of importance to those involved with
  <application>Privoxy</application> development. It is mandatory (and helpful!) reading
- for anyone who wants to join the team.
+ for anyone who wants to join the team. Note that it's currently out of date
+ and may not be entirely correct. As always, patches are welcome.
 </para>
 
 <!-- Include privoxy.sgml boilerplate text: -->
@@ -119,16 +120,17 @@ Hal.
  --> 
     <para>
      <application>Privoxy</application>, as an heir to
-     <application>Junkbuster</application>, is an Open Source project 
-     and licensed under the GPL. As such, <application>Privoxy</application>
-     development is potentially open to anyone who has the time, knowledge,
-     and desire to contribute in any capacity. Our goals are simply to
-     continue the mission, to improve <application>Privoxy</application>, and
+     <application>Junkbuster</application>, is a Free Software project 
+     and the code is licensed under the GPL. As such,
+     <application>Privoxy</application> development is potentially open
+     to anyone who has the time, knowledge, and desire to contribute
+     in any capacity. Our goals are simply to continue the mission,
+     to improve <application>Privoxy</application>, and
      to make it available to as wide an audience as possible. 
     </para>
     <para>
      One does not have to be a programmer to contribute. Packaging, testing,
-     and porting, are all important jobs as well.
+     documenting and porting, are all important jobs as well.
     </para>
 
   <!--   ~~~~~       New section      ~~~~~     -->
@@ -731,8 +733,8 @@ Hal.
     <para><emphasis>Explanation:</emphasis></para>
 
     <para>Comment as much as possible without commenting the obvious.
-    For example do not comment "aVariable is equal to bVariable".
-    Instead explain why aVariable should be equal to the bVariable.
+    For example do not comment "variable_a is equal to variable_b".
+    Instead explain why variable_a should be equal to the variable_b.
     Just because a person can read code does not mean they will
     understand why or what is being done. A reader may spend a lot
     more time figuring out what is going on when a simple comment
@@ -746,13 +748,13 @@ Hal.
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
 /* if page size greater than 1k ... */
-if ( PageLength() > 1024 )
+if ( page_length() > 1024 )
 {
     ... "block" the page up ...
 }
 
 /* if page size is small, send it in blocks */
-if ( PageLength() > 1024 )
+if ( page_length() > 1024 )
 {
     ... "block" the page up ...
 }
@@ -780,22 +782,22 @@ is actually being done.
 /*********************************************************************
  * This will stand out clearly in your code!
  *********************************************************************/
-if ( thisVariable == thatVariable )
+if ( this_variable == that_variable )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
 }
 
 
 /* unfortunately, this may not */
-if ( thisVariable == thatVariable )
+if ( this_variable == that_variable )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
 }
 
 
-if ( thisVariable == thatVariable ) /* this may not either */
+if ( this_variable == that_variable ) /* this may not either */
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
 }</programlisting>
 
     <para><emphasis>Exception:</emphasis></para>
@@ -827,14 +829,14 @@ if ( thisVariable == thatVariable ) /* this may not either */
  * This will stand out clearly in your code,
  * But the second example won't.
  *********************************************************************/
-if ( thisVariable == thatVariable )
+if ( this_variable == this_variable )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
 }
 
-if ( thisVariable == thatVariable ) /*can you see me?*/
+if ( this_variable == this_variable ) /*can you see me?*/
 {
-   DoSomethingVeryImportant(); /*not easily*/
+   do_something_very_important(); /*not easily*/
 }
 
 
@@ -846,17 +848,17 @@ int urls_rejected = 0;     /* # of urls rejected */
 
 if ( 1 == X )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
 }
 
 
-short DoSomethingVeryImportant(
+short do_something_very_important(
    short firstparam,   /* represents something */
    short nextparam     /* represents something else */ )
 {
    ...code here...
 
-}   /* -END- DoSomethingVeryImportant */
+}   /* -END- do_something_very_important */
 </programlisting>
   </sect3>
     
@@ -923,7 +925,7 @@ short DoSomethingVeryImportant(
 <programlisting>
 if ( 1 == X )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
    ...some long list of commands...
 } /* -END- if x is 1 */
 
@@ -931,7 +933,7 @@ or:
 
 if ( 1 == X )
 {
-   DoSomethingVeryImportant();
+   do_something_very_important();
    ...some long list of commands...
 } /* -END- if ( 1 == X ) */
 </programlisting>
@@ -1148,17 +1150,17 @@ while ( more lines are read )
 <programlisting>
 if ( this == that )
 {
-   DoSomething();
-   DoSomethingElse();
+   do_something();
+   do_something_else();
 }</programlisting>
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>if ( this == that ) DoSomething(); DoSomethingElse();</para>
+    <para>if ( this == that ) do_something(); do_something_else();</para>
 
     <para>or</para>
 
-    <para>if ( this == that ) DoSomething();</para>
+    <para>if ( this == that ) do_something();</para>
 
     <para><emphasis>Note:</emphasis> The first example in "Instead of" will execute
     in a manner other than that which the developer desired (per
@@ -1201,14 +1203,14 @@ structure->flag = ( condition );</programlisting>
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-int firstValue   = 0;
-int someValue    = 0;
-int anotherValue = 0;
-int thisVariable = 0;
+int first_value   = 0;
+int some_value    = 0;
+int another_value = 0;
+int this_variable = 0;
 
-if ( thisVariable == thatVariable )
+if ( this_variable == this_variable )
 
-firstValue = oldValue + ( ( someValue - anotherValue ) - whatever )
+first_value = old_value + ( ( some_value - another_value ) - whatever )
 </programlisting>
   </sect3>
     
@@ -1228,12 +1230,12 @@ firstValue = oldValue + ( ( someValue - anotherValue ) - whatever )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-aStruct->aMember;
-aStruct.aMember;
-FunctionName();</programlisting>
+a_struct->a_member;
+a_struct.a_member;
+function_name();</programlisting>
 
-    <para><emphasis>Instead of:</emphasis> aStruct -> aMember; aStruct . aMember;
-    FunctionName ();</para>
+    <para><emphasis>Instead of:</emphasis> a_struct -> a_member; a_struct . a_member;
+    function_name ();</para>
 
     
   </sect3>
@@ -1247,7 +1249,7 @@ FunctionName();</programlisting>
 int function1( ... )
 {
    ...code...
-   return( retCode );
+   return( ret_code );
 
 }   /* -END- function1 */
 
@@ -1259,7 +1261,7 @@ int function2( ... )
 
     <para><emphasis>Instead of:</emphasis></para>
 
-    <para>int function1( ... ) { ...code... return( retCode ); } int
+    <para>int function1( ... ) { ...code... return( ret_code ); } int
     function2( ... ) { }</para>
 
     <para><emphasis>Note:</emphasis> Use 1 blank line before the closing brace and 2
@@ -1329,14 +1331,14 @@ int function1( ... )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-short anShort = 0;
-float aFloat  = 0;
+short a_short = 0;
+float a_float  = 0;
 struct *ptr = NULL;</programlisting>
 
     <para><emphasis>Note:</emphasis> It is much easier to debug a SIGSEGV if the
     message says you are trying to access memory address 00000000
-    and not 129FA012; or arrayPtr[20] causes a SIGSEV vs.
-    arrayPtr[0].</para>
+    and not 129FA012; or array_ptr[20] causes a SIGSEV vs.
+    array_ptr[0].</para>
 
     <para><emphasis>Status:</emphasis> developer-discretion if and only if the
     variable is assigned a value "shortly after" declaration.</para>
@@ -1359,9 +1361,9 @@ struct *ptr = NULL;</programlisting>
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-ShouldWeBlockThis();
-ContainsAnImage();
-IsWebPageBlank();
+should_we_block_this();
+contains_an_image();
+is_web_page_blank();
 </programlisting>
   </sect3>
     
@@ -1390,7 +1392,7 @@ IsWebPageBlank();
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-for ( size_t cnt = 0; cnt &lt; blockListLength(); cnt ++ )
+for ( size_t cnt = 0; cnt &lt; block_list_length(); cnt++ )
 {
    ....
 }</programlisting>
@@ -1399,10 +1401,10 @@ for ( size_t cnt = 0; cnt &lt; blockListLength(); cnt ++ )
     each and every iteration. This increases the overhead in the
     program, because the compiler has to look up the function each
     time, call it, and return a value. Depending on what occurs in
-    the blockListLength() call, it might even be creating and
+    the block_list_length() call, it might even be creating and
     destroying structures with each iteration, even though in each
     case it is comparing "cnt" to the same value, over and over.
-    Remember too - even a call to blockListLength() is a function
+    Remember too - even a call to block_list_length() is a function
     call, with the same overhead.</para>
 
     <para>Instead of using a function call during the iterations,
@@ -1411,15 +1413,15 @@ for ( size_t cnt = 0; cnt &lt; blockListLength(); cnt ++ )
 
     <para><emphasis>Example:</emphasis></para>
 <programlisting>
-size_t len = blockListLength();
+size_t len = block_list_length();
 
-for ( size_t cnt = 0; cnt &lt; len; cnt ++ )
+for ( size_t cnt = 0; cnt &lt; len; cnt++ )
 {
    ....
 }</programlisting>
 
-    <para><emphasis>Exceptions:</emphasis> if the value of blockListLength() *may*
-    change or could *potentially* change, then you must code the
+    <para><emphasis>Exceptions:</emphasis> if the value of block_list_length()
+    *may* change or could *potentially* change, then you must code the
     function call in the for/while loop.</para>
 
     
@@ -1625,7 +1627,7 @@ switch( hash_string( cmd ) )
     <para><emphasis>Another Note:</emphasis> This is not so much a readability issue
     as a robust programming issue. The "anomaly code goes here" may
     be no more than a print to the STDERR stream (as in
-    load_config). Or it may really be an ABEND condition.</para>
+    load_config). Or it may really be an abort condition.</para>
 
     <para><emphasis>Status:</emphasis> Programmer discretion is advised.</para>
 
@@ -1684,8 +1686,7 @@ switch( hash_string( cmd ) )
     assumptions about whether it is signed or unsigned, or about
     how long it is. Do not compare a size_t against another
     variable of a different type (or even against a constant)
-    without casting one of the values. Try to avoid using size_t if
-    you can.</para>
+    without casting one of the values.</para>
 
     
   </sect3>
@@ -1717,7 +1718,7 @@ long c = 0;</programlisting>
 
     <para><emphasis>Exceptions:</emphasis> when you want to declare a bunch of loop
     variables or other trivial variables; feel free to declare them
-    on 1 line. You should, although, provide a good comment on
+    on one line. You should, although, provide a good comment on
     their functions.</para>
 
     <para><emphasis>Status:</emphasis> developer-discretion.</para>
@@ -1795,7 +1796,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
     
 
     <sect3 id="s45"><title>"Uncertain" new code and/or changes to
-    existing code, use FIXME</title>
+    existing code, use FIXME or XXX</title>
 
     <para><emphasis>Explanation:</emphasis></para>
 
@@ -1832,14 +1833,14 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.13 2007/10/30 17:59:31 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -1893,14 +1894,14 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.13 2007/10/30 17:59:31 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -3025,6 +3026,13 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.13  2007/10/30 17:59:31  fabiankeil
+  - Bump p-version, p-status and copyright date.
+  - Mention that the manual is out of date.
+  - Don't use examples with HardToReadCamelCase after
+    explaining that we actually don't like that.
+  - Minor cosmetics.
+
   Revision 2.12  2006/11/14 01:57:46  hal9
   Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
   manual.

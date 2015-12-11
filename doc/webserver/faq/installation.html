@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Installation</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,16 +74,16 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="INSTALLATION"
-></A
->2. Installation</H1
+>2. Installation</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
 NAME="WHICHBROWSERS"
-></A
->2.1. Which browsers are supported by Privoxy?</H3
+>2.1. Which browsers are supported by Privoxy?</A
+></H3
 ><P
 > Any browser that can be configured to use a proxy, which 
  should be virtually all browsers, including
@@ -94,9 +94,13 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Internet
  Explorer</SPAN
->, and <SPAN
+>, <SPAN
 CLASS="APPLICATION"
 >Opera</SPAN
+>, and 
+ <SPAN
+CLASS="APPLICATION"
+>Safari</SPAN
 > among others.
  Direct browser support is not an absolute requirement since
  <SPAN
@@ -112,16 +116,16 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WHICHOS"
-></A
->2.2. Which operating systems are supported?</H3
+>2.2. Which operating systems are supported?</A
+></H3
 ><P
 > At present, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is known to run on
- Windows(95, 98, ME, 2000, XP), Linux (RedHat, SuSE, Debian, Fedora, Gentoo, 
- Slackware and others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD,
- Solaris, and various other flavors of Unix.</P
+ Windows(95, 98, ME, 2000, XP, Vista), GNU/Linux (RedHat, SuSE, Debian,
+ Fedora, Gentoo, Slackware and others), Mac OSX, OS/2, AmigaOS, FreeBSD,
+ NetBSD, OpenBSD, Solaris, and various other flavors of Unix.</P
 ><P
 > But any operating system that runs TCP/IP, can conceivably take advantage of
  <SPAN
@@ -147,8 +151,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="EMAIL-CLIENT"
-></A
->2.3. Can I use Privoxy with my email client?</H3
+>2.3. Can I use Privoxy with my email client?</A
+></H3
 ><P
 > As long as there is some way to set a HTTP proxy for the client, then yes,
  any application can be used, whether it is strictly speaking a
@@ -179,66 +183,33 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="NEWINSTALL"
-></A
->2.4. Can I install  
- Privoxy over Junkbuster?</H3
-><P
->   We recommend you un-install <SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
->
-   first to minimize conflicts and confusion. You may want to 
-   save your old configuration files for future reference. The configuration
-   files and syntax have substantially changed, so you will need to manually
-   port your old patterns. See the <A
-HREF="../user-manual/upgradersnote.html"
-TARGET="_top"
->note
-   to upgraders</A
-> and <A
-HREF="../user-manual/installation.html"
-TARGET="_top"
->installation
-   chapter</A
-> in the <A
-HREF="../user-manual/index.html"
-TARGET="_top"
->User Manual</A
->
-   for details.
- </P
-><P
->  Note: Some installers may automatically un-install
-  <SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
->, if present!
- </P
-></DIV
-><DIV
-CLASS="SECT2"
-><H3
-CLASS="SECT2"
-><A
 NAME="FIRSTSTEP"
-></A
->2.5. I just installed Privoxy. Is there anything 
-special I have to do now?</H3
+>2.4. I just installed Privoxy. Is there anything 
+special I have to do now?</A
+></H3
 ><P
-> All browsers must be told to use <SPAN
+> All browsers should be told to use <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > 
  as a proxy by specifying the correct proxy address and port number 
- in the appropriate configuration area for the browser. See 
+ in the appropriate configuration area for the browser. It's possible
+ to combine <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with a packet filter to intercept HTTP requests
+ even if the client isn't explicitly configured to use <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>,
+ but where possible, configuring the client is recommended. See 
  <A
 HREF="../user-manual/startup.html"
 TARGET="_top"
 >the User Manual for more
  details</A
->. You should also flush your browser's memory and disk cache to get rid of any
- cached junk items, and remove any stored 
+>. You should also flush your browser's memory and disk
+ cache to get rid of any cached junk items, and remove any stored 
  <A
 HREF="http://en.wikipedia.org/wiki/Browser_cookie"
 TARGET="_top"
@@ -251,8 +222,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOCALHOST"
-></A
->2.6. What is the proxy address of Privoxy?</H3
+>2.5. What is the proxy address of Privoxy?</A
+></H3
 ><P
 >  If you set up the <SPAN
 CLASS="APPLICATION"
@@ -268,15 +239,16 @@ CLASS="QUOTE"
 >"localhost"</SPAN
 >,
   which is the special name used by every computer on the Internet to refer
-  to itself) and the port will be 8118 (unless you have <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->
-  to run on a different port with the <A
+  to itself) and the port will be 8118 (unless you used the <A
 HREF="../user-manual/config.html#LISTEN-ADDRESS"
 TARGET="_top"
 >listen-address</A
-> config option). 
+>
+  config option to tell <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to run on
+  a different port).
  </P
 ><P
 >  When configuring your browser's proxy settings you typically enter
@@ -333,8 +305,7 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > does not currently handle
-  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. Be sure that
-  proxying any of these other protocols is not activated.
+  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc.
  </P
 ></DIV
 ><DIV
@@ -343,9 +314,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOTHING"
-></A
->2.7. I just installed Privoxy, and nothing is happening.
-All the ads are there. What's wrong?</H3
+>2.6. I just installed Privoxy, and nothing is happening.
+All the ads are there. What's wrong?</A
+></H3
 ><P
 > Did you configure your browser to use <SPAN
 CLASS="APPLICATION"
@@ -416,12 +387,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOTUSED"
-></A
->2.8. I get a <SPAN
+>2.7. I get a <SPAN
 CLASS="QUOTE"
 >"Privoxy is not being used"</SPAN
 > dummy page although
-Privoxy is running and being used.</H3
+Privoxy is running and being used.</A
+></H3
 ><P
 > First, make sure that Privoxy is <SPAN
 CLASS="emphasis"
@@ -504,10 +475,10 @@ CLASS="GUIBUTTON"
 >Clear Disk Cache</SPAN
 >"</SPAN
 >.
- And, <SPAN
+ In some <SPAN
 CLASS="APPLICATION"
 >Firefox</SPAN
-> users would click 
+> versions it's
  <SPAN
 CLASS="GUIBUTTON"
 >Tools</SPAN
@@ -528,7 +499,8 @@ CLASS="QUOTE"
 CLASS="GUIBUTTON"
 >Clear Cache Now</SPAN
 >"</SPAN
->.&#13;</P
+>.
+ </P
 ></DIV
 ></DIV
 ><DIV

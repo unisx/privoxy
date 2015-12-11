@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.41 2006/11/13 19:05:51 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.45 2007/09/30 16:59:22 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -8,7 +8,7 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.41 2006/11/13 19:05:51 fabian
  *                OS-independent.  Contains #ifdefs to make this work
  *                on many platforms.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,26 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.41 2006/11/13 19:05:51 fabian
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.45  2007/09/30 16:59:22  fabiankeil
+ *    Set the maximum listen() backlog to 128. Apparently SOMAXCONN is
+ *    neither high enough, nor a hard limit on mingw32. Again for BR#1795281.
+ *
+ *    Revision 1.44  2007/09/15 13:01:31  fabiankeil
+ *    Increase listen() backlog to SOMAXCONN (or 128) to decrease
+ *    chances of dropped connections under load. Problem reported
+ *    and fix suggested by nobody in BR#1795281.
+ *
+ *    Revision 1.43  2007/06/01 18:16:36  fabiankeil
+ *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
+ *    deadlocks and crashes on OpenBSD and possibly other OS with neither
+ *    gethostbyname_r() nor gethostaddr_r(). Closes BR#1729174.
+ *    Thanks to Ralf Horstmann for report and solution.
+ *
+ *    Revision 1.42  2007/04/01 17:37:07  fabiankeil
+ *    - Add DNS retries for Solaris and other systems
+ *      whose gethostbyname_r version takes five arguments.
+ *    - Move maximum number of DNS retries into a macro.
+ *
  *    Revision 1.41  2006/11/13 19:05:51  fabiankeil
  *    Make pthread mutex locking more generic. Instead of
  *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
@@ -287,6 +307,15 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.41 2006/11/13 19:05:51 fabian
 #include "errlog.h"
 
 const char jbsockets_h_rcs[] = JBSOCKETS_H_VERSION;
+
+/*
+ * Maximum number of gethostbyname(_r) retries in case of
+ * soft errors (TRY_AGAIN).
+ * XXX: Does it make sense to make this a config option?
+ */
+#define MAX_DNS_RETRIES 10
+
+#define MAX_LISTEN_BACKLOG 128
 
 
 /*********************************************************************
@@ -636,7 +665,7 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
     * duplicate instances of Privoxy from being caught.
     *
     * On UNIX, we assume the user is sensible enough not
-    * to start Junkbuster multiple times on the same IP.
+    * to start Privoxy multiple times on the same IP.
     * Without this, stopping and restarting Privoxy
     * from a script fails.
     * Note: SO_REUSEADDR is meant to only take over
@@ -665,7 +694,7 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
       }
    }
 
-   while (listen(fd, 5) == -1)
+   while (listen(fd, MAX_LISTEN_BACKLOG) == -1)
    {
       if (errno != EINTR)
       {
@@ -763,10 +792,10 @@ int accept_connection(struct client_state * csp, jb_socket fd)
          host = NULL;
       }
 #elif FEATURE_PTHREAD
-      pthread_mutex_lock(&gethostbyaddr_mutex);
+      pthread_mutex_lock(&resolver_mutex);
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
-      pthread_mutex_unlock(&gethostbyaddr_mutex);
+      pthread_mutex_unlock(&resolver_mutex);
 #else
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -828,17 +857,28 @@ unsigned long resolve_hostname_to_ip(const char *host)
    if ((inaddr.sin_addr.s_addr = inet_addr(host)) == -1)
    {
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS)
-       while ( gethostbyname_r(host, &result, hbuf,
-                      HOSTENT_BUFFER_SIZE, &hostp, &thd_err)
-               && (thd_err == TRY_AGAIN) && (dns_retries++ < 10) )
+      while (gethostbyname_r(host, &result, hbuf,
+                HOSTENT_BUFFER_SIZE, &hostp, &thd_err)
+             && (thd_err == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
       {   
-         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
-                                                dns_retries, host);
+         log_error(LOG_LEVEL_ERROR,
+            "Timeout #%u while trying to resolve %s. Trying again.",
+            dns_retries, host);
       }
 #elif defined(HAVE_GETHOSTBYNAME_R_5_ARGS)
-      hostp = gethostbyname_r(host, &result, hbuf,
-                      HOSTENT_BUFFER_SIZE, &thd_err);
+      while (NULL == (hostp = gethostbyname_r(host, &result,
+                                 hbuf, HOSTENT_BUFFER_SIZE, &thd_err))
+             && (thd_err == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
+      {   
+         log_error(LOG_LEVEL_ERROR,
+            "Timeout #%u while trying to resolve %s. Trying again.",
+            dns_retries, host);
+      }
 #elif defined(HAVE_GETHOSTBYNAME_R_3_ARGS)
+      /*
+       * XXX: Doesn't retry in case of soft errors.
+       * Does this gethostbyname_r version set h_errno?
+       */
       if (0 == gethostbyname_r(host, &result, &hdata))
       {
          hostp = &result;
@@ -848,20 +888,22 @@ unsigned long resolve_hostname_to_ip(const char *host)
          hostp = NULL;
       }
 #elif FEATURE_PTHREAD
-      pthread_mutex_lock(&gethostbyname_mutex);
-      while ( NULL == (hostp = gethostbyname(host))
-            && (h_errno == TRY_AGAIN) && (dns_retries++ < 10) )
+      pthread_mutex_lock(&resolver_mutex);
+      while (NULL == (hostp = gethostbyname(host))
+             && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
       {   
-         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
-                                                dns_retries, host);
+         log_error(LOG_LEVEL_ERROR,
+            "Timeout #%u while trying to resolve %s. Trying again.",
+            dns_retries, host);
       }
-      pthread_mutex_unlock(&gethostbyname_mutex);
+      pthread_mutex_unlock(&resolver_mutex);
 #else
-      while ( NULL == (hostp = gethostbyname(host))
-            && (h_errno == TRY_AGAIN) && (dns_retries++ < 10) )
+      while (NULL == (hostp = gethostbyname(host))
+             && (h_errno == TRY_AGAIN) && (dns_retries++ < MAX_DNS_RETRIES))
       {
-         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
-                                                dns_retries, host);
+         log_error(LOG_LEVEL_ERROR,
+            "Timeout #%u while trying to resolve %s. Trying again.",
+            dns_retries, host);
       }
 #endif /* def HAVE_GETHOSTBYNAME_R_(6|5|3)_ARGS */
       /*

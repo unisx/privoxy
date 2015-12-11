@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Filter Files</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Actions Files"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -76,17 +76,10 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="FILTER-FILE"
-></A
->9. Filter Files</H1
+>9. Filter Files</A
+></H1
 ><P
-> On-the-fly text substitutions that can be invoked through the
- <TT
-CLASS="LITERAL"
-><A
-HREF="actions-file.html#FILTER"
->filter</A
-></TT
-> action need
+> On-the-fly text substitutions need
  to be defined in a <SPAN
 CLASS="QUOTE"
 >"filter file"</SPAN
@@ -94,15 +87,72 @@ CLASS="QUOTE"
  can then be invoked as an <SPAN
 CLASS="QUOTE"
 >"action"</SPAN
->. Multiple filter files can be
- defined through the <TT
+>.</P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> supports three different filter actions:
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER"
+>filter</A
+></TT
+> to
+ rewrite the content that is send to the client,
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CLIENT-HEADER-FILTER"
+>client-header-filter</A
+></TT
+>
+ to rewrite headers that are send by the client, and
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#SERVER-HEADER-FILTER"
+>server-header-filter</A
+></TT
+>
+ to rewrite headers that are send by the server.</P
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> also supports two tagger actions:
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CLIENT-HEADER-TAGGER"
+>client-header-tagger</A
+></TT
+>
+ and
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#SERVER-HEADER-TAGGER"
+>server-header-tagger</A
+></TT
+>.
+ Taggers and filters use the same syntax in the filter files, the difference
+ is that taggers don't modify the text they are filtering, but use a rewritten
+ version of the filtered text as tag. The tags can then be used to change the
+ applying actions through sections with <A
+HREF="actions-file.html#TAG-PATTERN"
+>tag-patterns</A
+>.</P
+><P
+> Multiple filter files can be defined through the <TT
 CLASS="LITERAL"
 > <A
 HREF="config.html#FILTERFILE"
 >filterfile</A
 ></TT
 > config directive. The filters
- as supplied by the developers will be found in
+ as supplied by the developers are located in
  <TT
 CLASS="FILENAME"
 >default.filter</TT
@@ -114,44 +164,34 @@ CLASS="FILENAME"
 >.
  </P
 ><P
-> Typical reasons for doing these kinds of substitutions are to eliminate
- common annoyances in HTML and JavaScript, such as pop-up windows,
+> Common tasks for content filters are to eliminate common annoyances in
+ HTML and JavaScript, such as pop-up windows,
  exit consoles, crippled windows without navigation tools, the
  infamous &#60;BLINK&#62; tag etc, to suppress images with certain
  width and height attributes (standard banner sizes or web-bugs),
- or just to have fun. The possibilities are endless.</P
+ or just to have fun.</P
 ><P
-> Filtering works on any text-based document type, including 
- HTML, JavaScript, CSS etc. (all <TT
-CLASS="LITERAL"
->text/*</TT
->
- MIME types, <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->except</I
-></SPAN
-> <TT
+> Enabled content filters are applied to any content whose
+ <SPAN
+CLASS="QUOTE"
+>"Content Type"</SPAN
+> header is recognised as a sign
+ of text-based content, with the exception of <TT
 CLASS="LITERAL"
 >text/plain</TT
->).
- Substitutions are made at the source level, so if you want to <SPAN
+>.
+ Use the <A
+HREF="actions-file.html#FORCE-TEXT-MODE"
+>force-text-mode</A
+> action
+ to also filter other content.</P
+><P
+> Substitutions are made at the source level, so if you want to <SPAN
 CLASS="QUOTE"
 >"roll
  your own"</SPAN
 > filters, you should first be familiar with HTML syntax, 
- and, of course, regular expressions. By default, filters are only applied 
- to the raw document content, but can be extended to the HTTP headers with 
- the supplemental actions: 
- <A
-HREF="actions-file.html#FILTER-CLIENT-HEADERS"
->filter-client-headers</A
->  and 
- <A
-HREF="actions-file.html#FILTER-SERVER-HEADERS"
->filter-server-headers</A
->.</P
+ and, of course, regular expressions.</P
 ><P
 > Just like the <A
 HREF="actions-file.html"
@@ -164,18 +204,25 @@ CLASS="EMPHASIS"
 >filters</I
 ></SPAN
 >
- here. Each filter consists of a heading line, that starts with the
+ here. Each filter consists of a heading line, that starts with one of the
  <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->keyword</I
+>keywords</I
 ></SPAN
 > <TT
 CLASS="LITERAL"
 >FILTER:</TT
->, followed by
- the filter's <SPAN
+>,
+ <TT
+CLASS="LITERAL"
+>CLIENT-HEADER-FILTER:</TT
+> or <TT
+CLASS="LITERAL"
+>SERVER-HEADER-FILTER:</TT
+>
+ followed by the filter's <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
@@ -235,7 +282,9 @@ HREF="actions-file.html"
 >actions file</A
 >.</P
 ><P
-> A filter header line for a filter called <SPAN
+> Filter definitions start with a header line that contains the filter
+ type, the filter name and the filter description.
+ A content filter header line for a filter called <SPAN
 CLASS="QUOTE"
 >"foo"</SPAN
 > could look
@@ -314,14 +363,14 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN4346"
-></A
->9.1. Filter File Tutorial</H2
+NAME="AEN4607"
+>9.1. Filter File Tutorial</A
+></H2
 ><P
 > Now, let's complete our <SPAN
 CLASS="QUOTE"
 >"foo"</SPAN
-> filter. We have already defined
+> content filter. We have already defined
  the heading, but the jobs are still missing. Since all it does is to replace
  <SPAN
 CLASS="QUOTE"
@@ -842,8 +891,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="PREDEFINED-FILTERS"
-></A
->9.2. The Pre-defined Filters</H2
+>9.2. The Pre-defined Filters</A
+></H2
 ><P
 >The distribution <TT
 CLASS="FILENAME"
@@ -1414,7 +1463,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DD
 ><P
->    Header filter to change the Content-Type from xml to html.
+>    Server-header filter to change the Content-Type from xml to html.
    </P
 ></DD
 ><DT
@@ -1427,7 +1476,7 @@ CLASS="EMPHASIS"
 ></DT
 ><DD
 ><P
->    Header filter to change the Content-Type from html to xml.
+>    Server-header filter to change the Content-Type from html to xml.
    </P
 ></DD
 ><DT
@@ -1457,11 +1506,80 @@ CLASS="EMPHASIS"
 ></DT
 ><DD
 ><P
->    Header filter to remove the <B
+>    Client-header filter to remove the <B
 CLASS="COMMAND"
 >Tor</B
 > exit node notation
     found in Host and Referer headers.
+   </P
+><P
+>    If <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and <B
+CLASS="COMMAND"
+>Tor</B
+> are chained and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    is configured to use socks4a, one can use <SPAN
+CLASS="QUOTE"
+>"http://www.example.org.foobar.exit/"</SPAN
+>
+    to access the host <SPAN
+CLASS="QUOTE"
+>"www.example.org"</SPAN
+> through the
+    <B
+CLASS="COMMAND"
+>Tor</B
+> exit node <SPAN
+CLASS="QUOTE"
+>"foobar"</SPAN
+>.
+   </P
+><P
+>    As the HTTP client isn't aware of this notation, it treats the
+    whole string <SPAN
+CLASS="QUOTE"
+>"www.example.org.foobar.exit"</SPAN
+> as host and uses it
+    for the <SPAN
+CLASS="QUOTE"
+>"Host"</SPAN
+> and <SPAN
+CLASS="QUOTE"
+>"Referer"</SPAN
+> headers. From the
+    server's point of view the resulting headers are invalid and can cause problems.
+   </P
+><P
+>    An invalid <SPAN
+CLASS="QUOTE"
+>"Referer"</SPAN
+> header can trigger <SPAN
+CLASS="QUOTE"
+>"hot-linking"</SPAN
+>
+    protections, an invalid <SPAN
+CLASS="QUOTE"
+>"Host"</SPAN
+> header will make it impossible for
+    the server to find the right vhost (several domains hosted on the same IP address).
+   </P
+><P
+>    This client-header filter removes the <SPAN
+CLASS="QUOTE"
+>"foo.exit"</SPAN
+> part in those headers
+    to prevent the mentioned problems. Note that it only modifies
+    the HTTP headers, it doesn't make it impossible for the server
+    to detect your <B
+CLASS="COMMAND"
+>Tor</B
+> exit node based on the IP address
+    the request is coming from.
    </P
 ></DD
 ></DL

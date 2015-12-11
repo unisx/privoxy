@@ -1,6 +1,6 @@
 #ifndef DEANIMATE_H_INCLUDED
 #define DEANIMATE_H_INCLUDED
-#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.10 2006/07/18 14:48:45 david__schmidt Exp $"
+#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.11 2007/01/12 15:41:00 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/deanimate.h,v $
@@ -44,6 +44,9 @@
  *
  * Revisions   :
  *    $Log: deanimate.h,v $
+ *    Revision 1.11  2007/01/12 15:41:00  fabiankeil
+ *    Remove some white space at EOL.
+ *
  *    Revision 1.10  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -92,9 +95,9 @@ extern "C" {
  */
 struct binbuffer
 {
-   char *buffer; 
-   size_t offset;   
-   size_t size;    
+   char *buffer;
+   size_t offset;
+   size_t size;
 };
 
 /*

@@ -3,12 +3,12 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "PRIVOXY" "1" "13 November 2006" "Privoxy 3.0.6" ""
+.TH "PRIVOXY" "1" "08 December 2007" "Privoxy 3.0.7 beta" ""
 .SH NAME
 privoxy \- Privacy Enhancing Proxy
 .SH SYNOPSIS
 
-\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB--chroot\fR ] [\fB\fIconfigfile\fB\fR ]
+\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB--chroot\fR ] [\fB--pre-chroot-nslookup \fIhostname\fB\fR ] [\fB\fIconfigfile\fB\fR ]
 
 .SH "OPTIONS"
 .PP
@@ -46,6 +46,11 @@ that user's home directory, i.e. make the kernel pretend to the
 there. If set up carefully, this can limit the impact of possible
 vulnerabilities in \fBPrivoxy\fR to the files contained in
 that hierarchy. 
+.TP
+\fB--pre-chroot-nslookup \fIhostname\fB\fR
+Initialize the resolver library using \fIhostname\fR
+before chroot'ing. On some systems this reduces the number of files
+that must be copied into the chroot tree.
 .PP
 If the \fIconfigfile\fR is not specified on  the  command  line,
 \fBPrivoxy\fR  will  look for a file named
@@ -54,23 +59,26 @@ If the \fIconfigfile\fR is not specified on  the  command  line,
 fail to start.
 .SH "DESCRIPTION"
 .PP
-Privoxy is a 
+Privoxy is a non-caching
 web proxy
-with advanced filtering capabilities for protecting
-privacy, modifying web page data, managing 
+with advanced filtering capabilities for enhancing privacy,
+modifying web page data, managing HTTP
 cookies, 
 controlling access, and removing ads, banners, pop-ups and other obnoxious
-Internet junk. Privoxy has a very flexible configuration and can be
+Internet junk. Privoxy has a flexible configuration and can be
 customized to suit individual needs and tastes. Privoxy has application for
 both stand-alone systems and multi-user networks.
 .PP
 Privoxy is based on Internet Junkbuster (tm).
 .SH "INSTALLATION AND USAGE"
 .PP
-Browsers must be individually configured to use \fBPrivoxy\fR as
-a HTTP proxy.  The default setting is  for  localhost,  on port  8118
-(configurable in the main config file).  To set the HTTP proxy in Netscape
-and Mozilla, go through:  \fBEdit\fR;
+Browsers can either be individually configured to use
+\fBPrivoxy\fR as a HTTP proxy (recommended),
+or \fBPrivoxy\fR can be combined with a packet
+filter to build an intercepting proxy
+(see \fIconfig\fR).  The default setting is  for
+localhost,  on port  8118 (configurable in the main config file).  To set the
+HTTP proxy in Netscape and Mozilla, go through:  \fBEdit\fR;
 \fBPreferences\fR;  \fBAdvanced\fR;
 \fBProxies\fR;  \fBManual Proxy Configuration\fR;
 \fBView\fR. 
@@ -112,7 +120,8 @@ that can be defined using wildcards and regular expressions. The result is
 that the user has greatly enhanced control and freedom.
 .PP
 The actions list (ad blocks, etc) can also be configured with your
-web browser at http://config.privoxy.org/.
+web browser at http://config.privoxy.org/ 
+(assuming the configuration allows it).
 \fBPrivoxy's\fR configuration parameters  can also  be viewed at
 the same page. In addition, \fBPrivoxy\fR can be toggled on/off.
 This is an internal page, and does not require Internet access.
@@ -143,69 +152,18 @@ configuration might look like:
  ## otherwise with the '+' operator.
 
 { \\
--add-header \\
--block \\
--content-type-overwrite \\
--crunch-client-header \\
--crunch-if-none-match \\
--crunch-outgoing-cookies \\
--crunch-incoming-cookies \\
--crunch-server-header \\
 +deanimate-gifs{last} \\
--downgrade-http-version \\
--fast-redirects \\
--filter{js-annoyances} \\
--filter{js-events} \\
--filter{html-annoyances} \\
--filter{content-cookies} \\
 +filter{refresh-tags} \\
--filter{unsolicited-popups} \\
--filter{all-popups} \\
--filter{img-reorder} \\
--filter{banners-by-size} \\
--filter{banners-by-link} \\
++filter{img-reorder} \\
++filter{banners-by-size} \\
 +filter{webbugs} \\
--filter{tiny-textforms} \\
 +filter{jumping-windows} \\
--filter{frameset-borders} \\
--filter{demoronizer} \\
--filter{shockwave-flash} \\
--filter{quicktime-kioskmode} \\
--filter{fun} \\
--filter{crude-parental} \\
 +filter{ie-exploits} \\
--filter{site-specifics} \\
--filter{google} \\
--filter{yahoo} \\
--filter{msn} \\
--filter{blogspot} \\
--filter{xml-to-html} \\
--filter{html-to-xml} \\
--filter{no-ping} \\
--filter{hide-tor-exit-notation} \\
--filter-client-headers \\
--filter-server-headers \\
--force-text-mode \\
--handle-as-empty-document
--handle-as-image \\
--hide-accept-language \\
--hide-content-disposition \\
--hide-if-modified-since \\
 +hide-forwarded-for-headers \\
 +hide-from-header{block} \\
-+hide-referrer{forge} \\
--hide-user-agent \\
--inspect-jpegs \\
--kill-popups \\
--limit-connect \\
--overwrite-last-modified \\
--redirect \\
-+prevent-compression \\
--send-vanilla-wafer \\
--send-wafer \\
++hide-referrer{conditional-block} \\
 +session-cookies-only \\
 +set-image-blocker{pattern} \\
--treat-forbidden-connects-like-blocks \\
 }
 / # '/' Match *all* URL patterns
 
@@ -256,14 +214,14 @@ narrowly defined exceptions:
   .sun.com
   .msdn.microsoft.com
  
- # These sites breaks easily. Use our "fragile" alias here.
+ # These sites break easily. Use our "fragile" alias here.
  { fragile }
   .forbes.com
   mybank.example.com
 
  # Replace example.com's style sheet with one of my choosing
  { +redirect{http://localhost/css-replacements/example.com.css} }
-  example.com/stylesheet.css
+  .example.com/stylesheet.css
 .fi
 .PP
 See the comments in the configuration files themselves, or the 
@@ -300,6 +258,9 @@ config file changes by \fBSIGHUP\fR -- it will detect them
 automatically. 
 .SH "NOTES"
 .PP
+This is a beta version of \fBPrivoxy\fR. Not 
+all features are well tested.
+.PP
 Please see the \fIUser Manual\fR on how to contact the
 developers, for feature requests, reporting problems, and other questions.
 .SH "SEE ALSO"
@@ -334,8 +295,13 @@ the original Internet Junkbuster.
 http://privacy.net/, a useful site
 to check what information about you is leaked while you browse the web.
 
-http://www.squid-cache.org/, a very popular
+http://www.squid-cache.org/, a popular
 caching proxy, which is often used together with \fBPrivoxy\fR.
+
+http://www.pps.jussieu.fr/~jch/software/polipo/,
+\fBPolipo\fR is a caching proxy with advanced features
+like pipelining, multiplexing and caching of partial instances. In many setups
+it can be used as \fBSquid\fR replacement.
 
 http://tor.eff.org/, 
 \fBTor\fR can help anonymize web browsing, 
@@ -346,17 +312,17 @@ the \fBPrivoxy\fR developer manual.
 .SH "DEVELOPMENT TEAM"
 
 .nf
- Fabian Keil, developer
+ Fabian Keil, lead developer
  David Schmidt, developer
  
  Hal Burgiss
- Ian Cummings
  Roland Rosenfeld
+ Jörg Strohmayer
 .fi
 .SH "COPYRIGHT AND LICENSE"
 .SS "COPYRIGHT"
 .PP
-Copyright (C) 2001 - 2006 by Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
+Copyright (C) 2001-2007 by Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
 .PP
 Some source code is based on code Copyright (C) 1997 by Anonymous Coders
 and Junkbusters, Inc. and licensed under the \fIGNU General Public

@@ -1,6 +1,6 @@
 #ifndef MISCUTIL_H_INCLUDED
 #define MISCUTIL_H_INCLUDED
-#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.24 2006/08/17 17:15:10 fabiankeil Exp $"
+#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.29 2007/09/09 18:20:20 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/miscutil.h,v $
@@ -10,7 +10,7 @@
  *                each too small to deserve their own file but don't 
  *                really fit in any other file.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -37,6 +37,28 @@
  *
  * Revisions   :
  *    $Log: miscutil.h,v $
+ *    Revision 1.29  2007/09/09 18:20:20  fabiankeil
+ *    Turn privoxy_strlcpy() into a function and try to work with
+ *    b0rked snprintf() implementations too. Reported by icmp30.
+ *
+ *    Revision 1.28  2007/05/11 11:48:16  fabiankeil
+ *    - Delete strsav() which was replaced
+ *      by string_append() years ago.
+ *    - Add a strlcat() look-alike.
+ *    - Use strlcat() and strlcpy() in those parts
+ *      of the code that are run on unixes.
+ *
+ *    Revision 1.27  2007/04/09 17:48:51  fabiankeil
+ *    Check for HAVE_SNPRINTF instead of __OS2__
+ *    before including the portable snprintf() code.
+ *
+ *    Revision 1.26  2007/04/08 17:04:51  fabiankeil
+ *    Add macro for strlcpy() in case the libc lacks it.
+ *
+ *    Revision 1.25  2007/01/18 15:03:20  fabiankeil
+ *    Don't include replacement timegm() if
+ *    putenv() or tzset() isn't available.
+ *
  *    Revision 1.24  2006/08/17 17:15:10  fabiankeil
  *    - Back to timegm() using GnuPG's replacement if necessary.
  *      Using mktime() and localtime() could add a on hour offset if
@@ -180,7 +202,6 @@ extern char *safe_strerror(int err);
 extern int strcmpic(const char *s1, const char *s2);
 extern int strncmpic(const char *s1, const char *s2, size_t n);
 
-extern char *strsav(char *old, const char *text_to_append);
 extern jb_err string_append(char **target_string, const char *text_to_append);
 extern jb_err string_join  (char **target_string,       char *text_to_append);
 
@@ -198,13 +219,26 @@ long int pick_from_range(long int range);
 extern char *strdup(const char *s);
 #endif /* def __MINGW32__ */
 
-#ifdef __OS2__
+#ifndef HAVE_SNPRINTF
 extern int snprintf(char *, size_t, const char *, /*args*/ ...);
-#endif /* def __OS2__ */
+#endif /* ndef HAVE_SNPRINTF */
 
-#ifndef HAVE_TIMEGM
+#if !defined(HAVE_TIMEGM) && defined(HAVE_TZSET) && defined(HAVE_PUTENV)
 time_t timegm(struct tm *tm);
-#endif /* ndef HAVE_TIMEGM */
+#endif /* !defined(HAVE_TIMEGM) && defined(HAVE_TZSET) && defined(HAVE_PUTENV) */
+
+/* Here's looking at you, Ulrich. */
+#if !defined(HAVE_STRLCPY)
+size_t privoxy_strlcpy(char *destination, const char *source, size_t size);
+#define strlcpy privoxy_strlcpy
+#define USE_PRIVOXY_STRLCPY 1
+#define HAVE_STRLCPY 1
+#endif /* ndef HAVE_STRLCPY*/
+
+#ifndef HAVE_STRLCAT
+size_t privoxy_strlcat(char *destination, const char *source, size_t size);
+#define strlcat privoxy_strlcat
+#endif /* ndef HAVE_STRLCAT */
 
 /* Revision control strings from this header and associated .c file */
 extern const char miscutil_rcs[];

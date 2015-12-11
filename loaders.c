@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.56 2006/09/07 10:40:30 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.65 2007/12/07 18:29:23 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -8,7 +8,7 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.56 2006/09/07 10:40:30 fabiankeil
  *                the list of active loaders, and to automatically
  *                unload files that are no longer in use.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,40 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.56 2006/09/07 10:40:30 fabiankeil
  *
  * Revisions   :
  *    $Log: loaders.c,v $
+ *    Revision 1.65  2007/12/07 18:29:23  fabiankeil
+ *    Remove now-obsolete csp member x_forwarded.
+ *
+ *    Revision 1.64  2007/06/01 14:12:38  fabiankeil
+ *    Add unload_forward_spec() in preparation for forward-override{}.
+ *
+ *    Revision 1.63  2007/05/14 10:41:15  fabiankeil
+ *    Ditch the csp member cookie_list[] which isn't used anymore.
+ *
+ *    Revision 1.62  2007/04/30 15:02:18  fabiankeil
+ *    Introduce dynamic pcrs jobs that can resolve variables.
+ *
+ *    Revision 1.61  2007/04/15 16:39:21  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.60  2007/03/20 15:16:34  fabiankeil
+ *    Use dedicated header filter actions instead of abusing "filter".
+ *    Replace "filter-client-headers" and "filter-client-headers"
+ *    with "server-header-filter" and "client-header-filter".
+ *
+ *    Revision 1.59  2007/01/25 13:38:20  fabiankeil
+ *    Freez csp->error_message in sweep().
+ *
+ *    Revision 1.58  2006/12/31 14:25:20  fabiankeil
+ *    Fix gcc43 compiler warnings.
+ *
+ *    Revision 1.57  2006/12/21 12:22:22  fabiankeil
+ *    html_encode filter descriptions.
+ *
+ *    Have "Ignoring job ..." error messages
+ *    print the filter file name correctly.
+ *
  *    Revision 1.56  2006/09/07 10:40:30  fabiankeil
  *    Turns out trusted referrers above our arbitrary
  *    limit are downgraded too ordinary trusted URLs.
@@ -347,6 +381,7 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.56 2006/09/07 10:40:30 fabiankeil
 #include "errlog.h"
 #include "actions.h"
 #include "urlmatch.h"
+#include "encode.h"
 
 const char loaders_h_rcs[] = LOADERS_H_VERSION;
 
@@ -366,6 +401,10 @@ static struct file_list *current_re_filterfile[MAX_AF_FILES]  = {
    NULL, NULL, NULL, NULL, NULL
 };
 
+/*
+ * Pseudo filter type for load_one_re_filterfile
+ */
+#define NO_NEW_FILTER -1
 
 
 /*********************************************************************
@@ -466,13 +505,18 @@ void sweep(void)
          freez(csp->ip_addr_str);
          freez(csp->my_ip_addr_str);
          freez(csp->my_hostname);
-         freez(csp->x_forwarded);
          freez(csp->iob->buf);
+         freez(csp->error_message);
 
+         if (csp->action->flags & ACTION_FORWARD_OVERRIDE &&
+             NULL != csp->fwd)
+         {
+            unload_forward_spec(csp->fwd);
+         }
          free_http_request(csp->http);
 
          destroy_list(csp->headers);
-         destroy_list(csp->cookie_list);
+         destroy_list(csp->tags);
 
          free_current_action(csp->action);
 
@@ -701,7 +745,7 @@ jb_err simple_read_line(FILE *fp, char **dest, int *newline)
          return JB_ERR_OK;
       }
 
-      *p++ = ch;
+      *p++ = (char)ch;
 
       if (++len >= buflen)
       {
@@ -1283,6 +1327,30 @@ static void unload_re_filterfile(void *f)
    return;
 }
 
+/*********************************************************************
+ *
+ * Function    :  unload_forward_spec
+ *
+ * Description :  Unload the forward spec settings by freeing all 
+ *                memory referenced by members and the memory for
+ *                the spec itself.
+ *
+ * Parameters  :
+ *          1  :  fwd = the forward spec.
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+void unload_forward_spec(struct forward_spec *fwd)
+{
+   free_url_spec(fwd->url);
+   freez(fwd->gateway_host);
+   freez(fwd->forward_host);
+   free(fwd);
+
+   return;
+}
+
 
 #ifdef FEATURE_GRACEFUL_TERMINATION
 /*********************************************************************
@@ -1353,6 +1421,7 @@ int load_re_filterfile(struct client_state *csp)
    return 0;
 }
 
+
 /*********************************************************************
  *
  * Function    :  load_one_re_filterfile
@@ -1409,24 +1478,62 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
     */
    while (read_config_line(buf, sizeof(buf), fp, &linenum) != NULL)
    {
+      int new_filter = NO_NEW_FILTER;
+
+      if (strncmp(buf, "FILTER:", 7) == 0)
+      {
+         new_filter = FT_CONTENT_FILTER;
+      }
+      else if (strncmp(buf, "SERVER-HEADER-FILTER:", 21) == 0)
+      {
+         new_filter = FT_SERVER_HEADER_FILTER;
+      }
+      else if (strncmp(buf, "CLIENT-HEADER-FILTER:", 21) == 0)
+      {
+         new_filter = FT_CLIENT_HEADER_FILTER;
+      }
+      else if (strncmp(buf, "CLIENT-HEADER-TAGGER:", 21) == 0)
+      {
+         new_filter = FT_CLIENT_HEADER_TAGGER;
+      }
+      else if (strncmp(buf, "SERVER-HEADER-TAGGER:", 21) == 0)
+      {
+         new_filter = FT_SERVER_HEADER_TAGGER;
+      }
+
       /*
        * If this is the head of a new filter block, make it a
        * re_filterfile spec of its own and chain it to the list:
        */
-      if (strncmp(buf, "FILTER:", 7) == 0)
+      if (new_filter != NO_NEW_FILTER)
       {
          new_bl = (struct re_filterfile_spec  *)zalloc(sizeof(*bl));
          if (new_bl == NULL)
          {
             goto load_re_filterfile_error;
          }
+         if (new_filter == FT_CONTENT_FILTER)
+         {
+            new_bl->name = chomp(buf + 7);
+         }
+         else
+         {
+            new_bl->name = chomp(buf + 21);
+         }
+         new_bl->type = new_filter;
 
-         new_bl->name = chomp(buf + 7);
-
+         /*
+          * If a filter description is available,
+          * encode it to HTML and save it.
+          */
          if (NULL != (new_bl->description = strpbrk(new_bl->name, " \t")))
          {
             *new_bl->description++ = '\0';
-            new_bl->description = strdup(chomp(new_bl->description));
+            new_bl->description = html_encode(chomp(new_bl->description));
+            if (NULL == new_bl->description)
+            {
+               new_bl->description = strdup("Out of memory while encoding this filter's description to HTML");
+            }
          }
          else
          {
@@ -1461,12 +1568,46 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
        */
       if (bl != NULL)
       {
-         enlist(bl->patterns, buf);
+         error = enlist(bl->patterns, buf);
+         if (JB_ERR_MEMORY == error)
+         {
+            log_error(LOG_LEVEL_FATAL,
+               "Out of memory while enlisting re_filter job \'%s\' for filter %s.", buf, bl->name);
+         }
+         assert(JB_ERR_OK == error);
+
+         if (pcrs_job_is_dynamic(buf))
+         {
+            /*
+             * Dynamic pattern that might contain variables
+             * and has to be recompiled for every request
+             */
+            if (bl->joblist != NULL)
+            {
+                pcrs_free_joblist(bl->joblist);
+                bl->joblist = NULL;
+            }
+            bl->dynamic = 1;
+            log_error(LOG_LEVEL_RE_FILTER,
+               "Adding dynamic re_filter job \'%s\' to filter %s succeeded.", buf, bl->name);
+            continue;             
+         }
+         else if (bl->dynamic)
+         {
+            /*
+             * A previous job was dynamic and as we
+             * recompile the whole filter anyway, it
+             * makes no sense to compile this job now.
+             */
+            log_error(LOG_LEVEL_RE_FILTER,
+               "Adding static re_filter job \'%s\' to dynamic filter %s succeeded.", buf, bl->name);
+            continue;
+         }
 
          if ((dummy = pcrs_compile_command(buf, &error)) == NULL)
          {
             log_error(LOG_LEVEL_ERROR,
-                      "Adding re_filter job %s to filter %s failed with error %d.", buf, bl->name, error);
+               "Adding re_filter job \'%s\' to filter %s failed with error %d.", buf, bl->name, error);
             continue;
          }
          else
@@ -1480,12 +1621,13 @@ int load_one_re_filterfile(struct client_state *csp, int fileid)
                lastjob->next = dummy;
             }
             lastjob = dummy;
-            log_error(LOG_LEVEL_RE_FILTER, "Adding re_filter job %s to filter %s succeeded.", buf, bl->name);
+            log_error(LOG_LEVEL_RE_FILTER, "Adding re_filter job \'%s\' to filter %s succeeded.", buf, bl->name);
          }
       }
       else
       {
-         log_error(LOG_LEVEL_ERROR, "Ignoring job %s outside filter block in %s, line %d", buf, csp->config->re_filterfile, linenum);
+         log_error(LOG_LEVEL_ERROR, "Ignoring job %s outside filter block in %s, line %d",
+            buf, csp->config->re_filterfile[fileid], linenum);
       }
    }
 

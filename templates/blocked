@@ -92,7 +92,10 @@
   <meta http-equiv="Content-Script-Type" content="text/javascript">
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@error-favicon.ico" type="image/x-icon">
+  <style type="text/css">
+#include cgi-style.css
+  </style>
   <script type="text/javascript" language="javascript">
   <!--
     /*

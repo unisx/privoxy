@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Privoxy's Template Files</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Filter Files"
@@ -40,7 +40,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -77,8 +77,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="TEMPLATES"
-></A
->10. Privoxy's Template Files</H1
+>10. Privoxy's Template Files</A
+></H1
 ><P
 > All <SPAN
 CLASS="APPLICATION"
@@ -141,20 +141,32 @@ CLASS="FILENAME"
  or exports), which <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> fills at run time. You can
- edit the templates with a normal text editor, should you want to customize them.
- (<SPAN
+> fills at run time. It
+ is possible to edit the templates with a normal text editor, should you want
+ to customize them. (<SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->Not recommended for the casual user</I
+>Not recommended for the casual
+ user</I
 ></SPAN
->). Note that
- just like in configuration files, lines starting with <TT
+>). Should you create your own custom templates, you should use 
+ the <TT
+CLASS="FILENAME"
+>config</TT
+> setting <A
+HREF="config.html#TEMPLDIR"
+>templdir</A
+>
+ to specify an alternate location, so your templates do not get overwritten
+ during upgrades. 
+ </P
+><P
+> Note that just like in configuration files, lines starting
+ with <TT
 CLASS="LITERAL"
 >#</TT
-> are
- ignored when the templates are filled in.</P
+> are ignored when the templates are filled in.</P
 ><P
 > The place-holders are of the form <TT
 CLASS="LITERAL"

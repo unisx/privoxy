@@ -1,9 +1,9 @@
-const char ssplit_rcs[] = "$Id: ssplit.c,v 1.8 2006/07/18 14:48:47 david__schmidt Exp $";
+const char ssplit_rcs[] = "$Id: ssplit.c,v 1.9 2007/11/03 14:35:45 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/ssplit.c,v $
  *
- * Purpose     :  A function to split a string at specified deliminters.
+ * Purpose     :  A function to split a string at specified delimiters.
  *
  * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
@@ -32,6 +32,9 @@ const char ssplit_rcs[] = "$Id: ssplit.c,v 1.8 2006/07/18 14:48:47 david__schmid
  *
  * Revisions   :
  *    $Log: ssplit.c,v $
+ *    Revision 1.9  2007/11/03 14:35:45  fabiankeil
+ *    Fix spelling in Purpose line. Patch submitted by Simon Ruderich.
+ *
  *    Revision 1.8  2006/07/18 14:48:47  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)

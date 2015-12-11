@@ -1,6 +1,6 @@
 #ifndef ACTIONS_H_INCLUDED
 #define ACTIONS_H_INCLUDED
-#define ACTIONS_H_VERSION "$Id: actions.h,v 1.14 2006/07/18 14:48:45 david__schmidt Exp $"
+#define ACTIONS_H_VERSION "$Id: actions.h,v 1.16 2007/04/17 18:21:45 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.h,v $
@@ -8,7 +8,7 @@
  * Purpose     :  Declares functions to work with actions files
  *                Functions declared include: FIXME
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,16 @@
  *
  * Revisions   :
  *    $Log: actions.h,v $
+ *    Revision 1.16  2007/04/17 18:21:45  fabiankeil
+ *    Split update_action_bits() into
+ *    update_action_bits_for_all_tags()
+ *    and update_action_bits_for_tag().
+ *
+ *    Revision 1.15  2007/04/15 16:39:20  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
  *    Revision 1.14  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -126,6 +136,8 @@ extern void init_action(struct action_spec *dest);
 extern void free_action(struct action_spec *src);
 extern jb_err merge_actions (struct action_spec *dest, 
                              const struct action_spec *src);
+extern int update_action_bits_for_all_tags(struct client_state *csp);
+extern int update_action_bits_for_tag(struct client_state *csp, const char *tag);
 extern jb_err copy_action (struct action_spec *dest, 
                            const struct action_spec *src);
 extern char * actions_to_text     (struct action_spec *action);

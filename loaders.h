@@ -1,6 +1,6 @@
 #ifndef LOADERS_H_INCLUDED
 #define LOADERS_H_INCLUDED
-#define LOADERS_H_VERSION "$Id: loaders.h,v 1.21 2006/07/18 14:48:46 david__schmidt Exp $"
+#define LOADERS_H_VERSION "$Id: loaders.h,v 1.22 2007/06/01 14:12:38 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.h,v $
@@ -37,6 +37,9 @@
  *
  * Revisions   :
  *    $Log: loaders.h,v $
+ *    Revision 1.22  2007/06/01 14:12:38  fabiankeil
+ *    Add unload_forward_spec() in preparation for forward-override{}.
+ *
  *    Revision 1.21  2006/07/18 14:48:46  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -220,6 +223,7 @@ void unload_current_trust_file(void);
 void unload_current_re_filterfile(void);
 #endif /* FEATURE_GRACEFUL_TERMINATION */
 
+void unload_forward_spec(struct forward_spec *fwd);
 
 extern void add_loader(int (*loader)(struct client_state *), 
                        struct configuration_spec * config);

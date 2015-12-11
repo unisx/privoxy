@@ -1,6 +1,6 @@
 #ifndef ENCODE_H_INCLUDED
 #define ENCODE_H_INCLUDED
-#define ENCODE_H_VERSION "$Id: encode.h,v 1.7 2006/07/18 14:48:45 david__schmidt Exp $"
+#define ENCODE_H_VERSION "$Id: encode.h,v 1.8 2007/08/18 14:34:27 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.h,v $
@@ -35,6 +35,9 @@
  *
  * Revisions   :
  *    $Log: encode.h,v $
+ *    Revision 1.8  2007/08/18 14:34:27  fabiankeil
+ *    Make xtoi() extern so it can be used in pcrs.c.
+ *
  *    Revision 1.7  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -69,7 +72,7 @@ extern char * html_encode(const char *s);
 extern char * cookie_encode(const char *s);
 extern char * url_encode(const char *s);
 extern char * url_decode(const char *str);
-
+extern int    xtoi(const char *s);
 extern char * html_encode_and_free_original(char *s);
 
 /* Revision control strings from this header and associated .c file */

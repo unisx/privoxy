@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
->Privoxy 3.0.6 User Manual</TITLE
+>Privoxy 3.0.7 User Manual</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="NEXT"
 TITLE="Introduction"
 HREF="introduction.html"><LINK
@@ -29,15 +29,15 @@ CLASS="TITLEPAGE"
 CLASS="TITLE"
 ><A
 NAME="AEN2"
-></A
->Privoxy 3.0.6 User Manual</H1
+>Privoxy 3.0.7 User Manual</A
+></H1
 ><P
 CLASS="PUBDATE"
 > <SUB
 > <A
 HREF="copyright.html"
 >Copyright</A
-> © 2001 - 2006 by 
+> © 2001 - 2007 by 
  <A
 HREF="http://www.privoxy.org/"
 TARGET="_top"
@@ -47,15 +47,15 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.27 2006/11/14 02:06:20 hal9 Exp $<BR></P
+>$Id: index.html,v 1.38 2007/12/08 14:40:18 hal9 Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
+><P
+></P
 ><A
 NAME="AEN9"
 ></A
-><P
-></P
 ><P
 >  The <I
 CLASS="CITETITLE"
@@ -68,21 +68,21 @@ TARGET="_top"
 >.
  </P
 ><P
-> Privoxy is a 
+> Privoxy is a non-caching
  <A
 HREF="http://en.wikipedia.org/wiki/Proxy_server"
 TARGET="_top"
 >web proxy</A
 >
- with advanced filtering capabilities for protecting
- privacy, modifying web page data, managing 
+ with advanced filtering capabilities for enhancing privacy,
+ modifying web page data, managing HTTP
  <A
 HREF="http://en.wikipedia.org/wiki/Browser_cookie"
 TARGET="_top"
 >cookies</A
 >, 
  controlling access, and removing ads, banners, pop-ups and other obnoxious
- Internet junk. Privoxy has a very flexible configuration and can be
+ Internet junk. Privoxy has a flexible configuration and can be
  customized to suit individual needs and tastes. Privoxy has application for
  both stand-alone systems and multi-user networks.</P
 ><P
@@ -150,7 +150,7 @@ HREF="installation.html#INSTALLATION-PACK-RPM"
 ><DT
 >2.1.2. <A
 HREF="installation.html#INSTALLATION-DEB"
->Debian</A
+>Debian and Ubuntu</A
 ></DT
 ><DT
 >2.1.3. <A
@@ -160,7 +160,7 @@ HREF="installation.html#INSTALLATION-PACK-WIN"
 ><DT
 >2.1.4. <A
 HREF="installation.html#INSTALLATION-PACK-BINTGZ"
->Solaris, NetBSD, FreeBSD, HP-UX</A
+>Solaris</A
 ></DT
 ><DT
 >2.1.5. <A
@@ -179,6 +179,11 @@ HREF="installation.html#INSTALLATION-AMIGA"
 ></DT
 ><DT
 >2.1.8. <A
+HREF="installation.html#INSTALLATION-TBZ"
+>FreeBSD</A
+></DT
+><DT
+>2.1.9. <A
 HREF="installation.html#INSTALLATTION-GENTOO"
 >Gentoo</A
 ></DT
@@ -287,7 +292,7 @@ HREF="configuration.html"
 ><DL
 ><DT
 >6.1. <A
-HREF="configuration.html#AEN841"
+HREF="configuration.html#AEN816"
 >Controlling Privoxy with Your Web Browser</A
 ></DT
 ><DT
@@ -347,31 +352,36 @@ HREF="config.html#CONFDIR"
 ></DT
 ><DT
 >7.2.2. <A
+HREF="config.html#TEMPLDIR"
+>templdir</A
+></DT
+><DT
+>7.2.3. <A
 HREF="config.html#LOGDIR"
 >logdir</A
 ></DT
 ><DT
->7.2.3. <A
+>7.2.4. <A
 HREF="config.html#ACTIONSFILE"
 >actionsfile</A
 ></DT
 ><DT
->7.2.4. <A
+>7.2.5. <A
 HREF="config.html#FILTERFILE"
 >filterfile</A
 ></DT
 ><DT
->7.2.5. <A
+>7.2.6. <A
 HREF="config.html#LOGFILE"
 >logfile</A
 ></DT
 ><DT
->7.2.6. <A
+>7.2.7. <A
 HREF="config.html#JARFILE"
 >jarfile</A
 ></DT
 ><DT
->7.2.7. <A
+>7.2.8. <A
 HREF="config.html#TRUSTFILE"
 >trustfile</A
 ></DT
@@ -430,11 +440,16 @@ HREF="config.html#ENABLE-EDIT-ACTIONS"
 ></DT
 ><DT
 >7.4.6. <A
+HREF="config.html#ENFORCE-BLOCKS"
+>enforce-blocks</A
+></DT
+><DT
+>7.4.7. <A
 HREF="config.html#ACLS"
 >ACLs: permit-access and deny-access</A
 ></DT
 ><DT
->7.4.7. <A
+>7.4.8. <A
 HREF="config.html#BUFFER-LIMIT"
 >buffer-limit</A
 ></DT
@@ -467,6 +482,21 @@ HREF="config.html#ADVANCED-FORWARDING-EXAMPLES"
 HREF="config.html#FORWARDED-CONNECT-RETRIES"
 >forwarded-connect-retries</A
 ></DT
+><DT
+>7.5.5. <A
+HREF="config.html#ACCEPT-INTERCEPTED-REQUESTS"
+>accept-intercepted-requests</A
+></DT
+><DT
+>7.5.6. <A
+HREF="config.html#ALLOW-CGI-REQUEST-CRUNCHING"
+>allow-cgi-request-crunching</A
+></DT
+><DT
+>7.5.7. <A
+HREF="config.html#SPLIT-LARGE-FORMS"
+>split-large-forms</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -485,18 +515,18 @@ HREF="actions-file.html"
 ><DL
 ><DT
 >8.1. <A
-HREF="actions-file.html#AEN2102"
+HREF="actions-file.html#AEN2270"
 >Finding the Right Mix</A
 ></DT
 ><DT
 >8.2. <A
-HREF="actions-file.html#AEN2109"
+HREF="actions-file.html#AEN2277"
 >How to Edit</A
 ></DT
 ><DT
 >8.3. <A
 HREF="actions-file.html#ACTIONS-APPLY"
->How Actions are Applied to URLs</A
+>How Actions are Applied to Requests</A
 ></DT
 ><DT
 >8.4. <A
@@ -507,13 +537,18 @@ HREF="actions-file.html#AF-PATTERNS"
 ><DL
 ><DT
 >8.4.1. <A
-HREF="actions-file.html#AEN2192"
+HREF="actions-file.html#AEN2368"
 >The Domain Pattern</A
 ></DT
 ><DT
 >8.4.2. <A
-HREF="actions-file.html#AEN2263"
+HREF="actions-file.html#AEN2439"
 >The Path Pattern</A
+></DT
+><DT
+>8.4.3. <A
+HREF="actions-file.html#TAG-PATTERN"
+>The Tag Pattern</A
 ></DT
 ></DL
 ></DD
@@ -536,63 +571,63 @@ HREF="actions-file.html#BLOCK"
 ></DT
 ><DT
 >8.5.3. <A
+HREF="actions-file.html#CLIENT-HEADER-FILTER"
+>client-header-filter</A
+></DT
+><DT
+>8.5.4. <A
+HREF="actions-file.html#CLIENT-HEADER-TAGGER"
+>client-header-tagger</A
+></DT
+><DT
+>8.5.5. <A
 HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
 >content-type-overwrite</A
 ></DT
 ><DT
->8.5.4. <A
+>8.5.6. <A
 HREF="actions-file.html#CRUNCH-CLIENT-HEADER"
 >crunch-client-header</A
 ></DT
 ><DT
->8.5.5. <A
+>8.5.7. <A
 HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
 >crunch-if-none-match</A
 ></DT
 ><DT
->8.5.6. <A
+>8.5.8. <A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
 ></DT
 ><DT
->8.5.7. <A
+>8.5.9. <A
 HREF="actions-file.html#CRUNCH-SERVER-HEADER"
 >crunch-server-header</A
 ></DT
 ><DT
->8.5.8. <A
+>8.5.10. <A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 ></DT
 ><DT
->8.5.9. <A
+>8.5.11. <A
 HREF="actions-file.html#DEANIMATE-GIFS"
 >deanimate-gifs</A
 ></DT
 ><DT
->8.5.10. <A
+>8.5.12. <A
 HREF="actions-file.html#DOWNGRADE-HTTP-VERSION"
 >downgrade-http-version</A
 ></DT
 ><DT
->8.5.11. <A
+>8.5.13. <A
 HREF="actions-file.html#FAST-REDIRECTS"
 >fast-redirects</A
 ></DT
 ><DT
->8.5.12. <A
+>8.5.14. <A
 HREF="actions-file.html#FILTER"
 >filter</A
-></DT
-><DT
->8.5.13. <A
-HREF="actions-file.html#FILTER-CLIENT-HEADERS"
->filter-client-headers</A
-></DT
-><DT
->8.5.14. <A
-HREF="actions-file.html#FILTER-SERVER-HEADERS"
->filter-server-headers</A
 ></DT
 ><DT
 >8.5.15. <A
@@ -601,56 +636,61 @@ HREF="actions-file.html#FORCE-TEXT-MODE"
 ></DT
 ><DT
 >8.5.16. <A
+HREF="actions-file.html#FORWARD-OVERRIDE"
+>forward-override</A
+></DT
+><DT
+>8.5.17. <A
 HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
 >handle-as-empty-document</A
 ></DT
 ><DT
->8.5.17. <A
+>8.5.18. <A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
 ></DT
 ><DT
->8.5.18. <A
+>8.5.19. <A
 HREF="actions-file.html#HIDE-ACCEPT-LANGUAGE"
 >hide-accept-language</A
 ></DT
 ><DT
->8.5.19. <A
+>8.5.20. <A
 HREF="actions-file.html#HIDE-CONTENT-DISPOSITION"
 >hide-content-disposition</A
 ></DT
 ><DT
->8.5.20. <A
+>8.5.21. <A
 HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
 >hide-if-modified-since</A
 ></DT
 ><DT
->8.5.21. <A
+>8.5.22. <A
 HREF="actions-file.html#HIDE-FORWARDED-FOR-HEADERS"
 >hide-forwarded-for-headers</A
 ></DT
 ><DT
->8.5.22. <A
+>8.5.23. <A
 HREF="actions-file.html#HIDE-FROM-HEADER"
 >hide-from-header</A
 ></DT
 ><DT
->8.5.23. <A
+>8.5.24. <A
 HREF="actions-file.html#HIDE-REFERRER"
 >hide-referrer</A
 ></DT
 ><DT
->8.5.24. <A
+>8.5.25. <A
 HREF="actions-file.html#HIDE-USER-AGENT"
 >hide-user-agent</A
 ></DT
 ><DT
->8.5.25. <A
+>8.5.26. <A
 HREF="actions-file.html#INSPECT-JPEGS"
 >inspect-jpegs</A
 ></DT
 ><DT
->8.5.26. <A
+>8.5.27. <A
 HREF="actions-file.html#KILL-POPUPS"
 >kill-popups<A
 NAME="KILL-POPUP"
@@ -658,53 +698,63 @@ NAME="KILL-POPUP"
 ></A
 ></DT
 ><DT
->8.5.27. <A
+>8.5.28. <A
 HREF="actions-file.html#LIMIT-CONNECT"
 >limit-connect</A
 ></DT
 ><DT
->8.5.28. <A
+>8.5.29. <A
 HREF="actions-file.html#PREVENT-COMPRESSION"
 >prevent-compression</A
 ></DT
 ><DT
->8.5.29. <A
+>8.5.30. <A
 HREF="actions-file.html#OVERWRITE-LAST-MODIFIED"
 >overwrite-last-modified</A
 ></DT
 ><DT
->8.5.30. <A
+>8.5.31. <A
 HREF="actions-file.html#REDIRECT"
 >redirect</A
 ></DT
 ><DT
->8.5.31. <A
+>8.5.32. <A
 HREF="actions-file.html#SEND-VANILLA-WAFER"
 >send-vanilla-wafer</A
 ></DT
 ><DT
->8.5.32. <A
+>8.5.33. <A
 HREF="actions-file.html#SEND-WAFER"
 >send-wafer</A
 ></DT
 ><DT
->8.5.33. <A
+>8.5.34. <A
+HREF="actions-file.html#SERVER-HEADER-FILTER"
+>server-header-filter</A
+></DT
+><DT
+>8.5.35. <A
+HREF="actions-file.html#SERVER-HEADER-TAGGER"
+>server-header-tagger</A
+></DT
+><DT
+>8.5.36. <A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
 ></DT
 ><DT
->8.5.34. <A
+>8.5.37. <A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
 ></DT
 ><DT
->8.5.35. <A
+>8.5.38. <A
 HREF="actions-file.html#TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
 >treat-forbidden-connects-like-blocks</A
 ></DT
 ><DT
->8.5.36. <A
-HREF="actions-file.html#AEN3952"
+>8.5.39. <A
+HREF="actions-file.html#AEN4251"
 >Summary</A
 ></DT
 ></DL
@@ -723,12 +773,12 @@ HREF="actions-file.html#ACT-EXAMPLES"
 ><DL
 ><DT
 >8.7.1. <A
-HREF="actions-file.html#AEN4017"
+HREF="actions-file.html#AEN4316"
 >default.action</A
 ></DT
 ><DT
 >8.7.2. <A
-HREF="actions-file.html#AEN4206"
+HREF="actions-file.html#AEN4452"
 >user.action</A
 ></DT
 ></DL
@@ -744,7 +794,7 @@ HREF="filter-file.html"
 ><DL
 ><DT
 >9.1. <A
-HREF="filter-file.html#AEN4346"
+HREF="filter-file.html#AEN4607"
 >Filter File Tutorial</A
 ></DT
 ><DT
@@ -812,7 +862,7 @@ HREF="copyright.html"
 ><DL
 ><DT
 >12.1. <A
-HREF="copyright.html#AEN4796"
+HREF="copyright.html#AEN5080"
 >License</A
 ></DT
 ><DT
@@ -846,7 +896,7 @@ HREF="appendix.html#REGEX"
 ></DT
 ><DT
 >14.2. <A
-HREF="appendix.html#AEN5046"
+HREF="appendix.html#AEN5337"
 >Privoxy's Internal Pages</A
 ></DT
 ><DD

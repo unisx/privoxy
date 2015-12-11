@@ -75,6 +75,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@error-favicon.ico">
 </head>
 
 <body>
@@ -102,7 +103,7 @@
     <tr>
       <td class="warning">
         <h2>Actions file not found</h2>
-        <p>The actions file you are trying to edit (<code>@f@.action</code>)
+        <p>The actions file you are trying to edit (index <code>@f@</code>)
            does not exist, or cannot be read.</p>
       </td>
     </tr>

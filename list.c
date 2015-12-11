@@ -1,4 +1,4 @@
-const char list_rcs[] = "$Id: list.c,v 1.17 2006/07/18 14:48:46 david__schmidt Exp $";
+const char list_rcs[] = "$Id: list.c,v 1.20 2007/05/14 16:56:07 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/list.c,v $
@@ -7,7 +7,7 @@ const char list_rcs[] = "$Id: list.c,v 1.17 2006/07/18 14:48:46 david__schmidt E
  *                Functions declared include:
  *                   `destroy_list', `enlist' and `list_to_text'
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -34,6 +34,20 @@ const char list_rcs[] = "$Id: list.c,v 1.17 2006/07/18 14:48:46 david__schmidt E
  *
  * Revisions   :
  *    $Log: list.c,v $
+ *    Revision 1.20  2007/05/14 16:56:07  fabiankeil
+ *    - Stop using strcpy().
+ *    - enlist_unique_header() now behaves as advertised
+ *      and checks for existing headers with the same name
+ *      but ignores the values.
+ *
+ *    Revision 1.19  2007/04/17 18:14:06  fabiankeil
+ *    Add list_contains_item().
+ *
+ *    Revision 1.18  2006/12/28 19:21:23  fabiankeil
+ *    Fixed gcc43 warning and enabled list_is_valid()'s loop
+ *    detection again. It was ineffective since the removal of
+ *    the arbitrary list length limit two years ago.
+ *
  *    Revision 1.17  2006/07/18 14:48:46  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -154,7 +168,7 @@ static int list_is_valid (const struct list *the_list);
 
 /*********************************************************************
  *
- * Function    :  list_init
+ * Function    :  init_list
  *
  * Description :  Create a new, empty list in user-allocated memory.
  *                Caller should allocate a "struct list" variable,
@@ -243,7 +257,7 @@ static int list_is_valid (const struct list *the_list)
 #if 1
    const struct list_entry *cur_entry;
    const struct list_entry *last_entry = NULL;
-   int length = 0;
+   int entry = 0;
 
    assert(the_list);
 
@@ -257,25 +271,25 @@ static int list_is_valid (const struct list *the_list)
           * Just check that this string can be accessed - i.e. it's a valid
           * pointer.
           */
-         strlen(cur_entry->str);
+         (void)strlen(cur_entry->str);
       }
 
       /*
        * Check for looping back to first
        */
-      if ((length != 0) && (cur_entry == the_list->first))
+      if ((entry++ != 0) && (cur_entry == the_list->first))
       {
          return 0;
       }
 
       /*
-       * Arbitrarily limit length to prevent infinite loops.
+       * Arbitrarily limit list length to prevent infinite loops.
        * Note that the 1000 limit was hit by a real user in tracker 911950;
-       * removing it for now.  Symptoms of a real circular reference will
-       * include 100% CPU usage, I'd imagine.  It'll be obvious, anyway.
+       * removing it for now.  Real circular references should eventually
+       * be caught by the check above, anyway.
        */         
       /*
-      if (++length > 1000)
+      if (entry > 1000)
       {           
          return 0;
       }           
@@ -489,30 +503,28 @@ jb_err enlist_unique(struct list *the_list, const char *str,
 jb_err enlist_unique_header(struct list *the_list, const char *name,
                             const char *value)
 {
-   size_t length;
-   jb_err result;
-   char *str;
+   jb_err result = JB_ERR_MEMORY;
+   char *header;
+   size_t header_size;
 
    assert(the_list);
    assert(list_is_valid(the_list));
    assert(name);
    assert(value);
 
-   length = strlen(name) + 2;
-   if (NULL == (str = (char *)malloc(length + strlen(value) + 1)))
+   /* + 2 for the ': ', + 1 for the \0 */
+   header_size = strlen(name) + 2 + strlen(value) + 1;
+   header = (char *)malloc(header_size);
+
+   if (NULL != header)
    {
-      return JB_ERR_MEMORY;
+      const size_t bytes_to_compare = strlen(name) + 2;
+
+      snprintf(header, header_size, "%s: %s", name, value);
+      result = enlist_unique(the_list, header, bytes_to_compare);
+      free(header);
+      assert(list_is_valid(the_list));
    }
-   strcpy(str, name);
-   str[length - 2] = ':';
-   str[length - 1] = ' ';
-   strcpy(str + length, value);
-
-   result = enlist_unique(the_list, str, length);
-
-   free(str);
-
-   assert(list_is_valid(the_list));
 
    return result;
 
@@ -564,6 +576,9 @@ void list_remove_all(struct list *the_list)
  *                adding an empty line at the end.  NULL entries are ignored.
  *                This function does not change the_list.
  *
+ *                XXX: Should probably be renamed as it's only
+ *                useful (and used) to flatten header lists.
+ *
  * Parameters  :
  *          1  :  the_list = pointer to list
  *
@@ -574,42 +589,62 @@ void list_remove_all(struct list *the_list)
 char *list_to_text(const struct list *the_list)
 {
    struct list_entry *cur_entry;
-   char *ret = NULL;
-   char *s;
-   size_t size = 2;
+   char *text;
+   size_t text_length;
+   char *cursor;
+   size_t bytes_left;
 
    assert(the_list);
    assert(list_is_valid(the_list));
 
-   for (cur_entry = the_list->first; cur_entry ; cur_entry = cur_entry->next)
+   /*
+    * Calculate the lenght of the final text.
+    * '2' because of the '\r\n' at the end of
+    * each string and at the end of the text.
+    */
+   text_length = 2;
+   for (cur_entry = the_list->first; cur_entry; cur_entry = cur_entry->next)
    {
       if (cur_entry->str)
       {
-         size += strlen(cur_entry->str) + 2;
+         text_length += strlen(cur_entry->str) + 2;
       }
    }
 
-   if ((ret = (char *)malloc(size + 1)) == NULL)
+   bytes_left = text_length + 1;
+
+   text = (char *)malloc(bytes_left);
+   if (NULL == text)
    {
       return NULL;
    }
 
-   ret[size] = '\0';
+   cursor = text;
 
-   s = ret;
-
-   for (cur_entry = the_list->first; cur_entry ; cur_entry = cur_entry->next)
+   for (cur_entry = the_list->first; cur_entry; cur_entry = cur_entry->next)
    {
       if (cur_entry->str)
       {
-         strcpy(s, cur_entry->str);
-         s += strlen(s);
-         *s++ = '\r'; *s++ = '\n';
+         const int written = snprintf(cursor, bytes_left, "%s\r\n", cur_entry->str);
+
+         assert(written > 0);
+         assert(written < bytes_left);
+
+         bytes_left -= (size_t)written;
+         cursor += (size_t)written;
       }
    }
-   *s++ = '\r'; *s++ = '\n';
 
-   return ret;
+   assert(bytes_left == 3);
+
+   *cursor++ = '\r';
+   *cursor++ = '\n';
+   *cursor   = '\0';
+
+   assert(text_length == cursor - text);
+   assert(text[text_length] == '\0');
+
+   return text;
 }
 
 
@@ -866,7 +901,7 @@ jb_err list_append_list_unique(struct list *dest, const struct list *src)
  * Parameters  :
  *          1  :  the_list = pointer to list to test.
  *
- * Returns     :  Nonzero iff the list contains no entries.
+ * Returns     :  Nonzero if the list contains no entries.
  *
  *********************************************************************/
 int list_is_empty(const struct list *the_list)
@@ -875,6 +910,52 @@ int list_is_empty(const struct list *the_list)
    assert(list_is_valid(the_list));
 
    return (the_list->first == NULL);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  list_contains_item
+ *
+ * Description :  Tests whether a list item is already set.
+ *                Does not change the list.
+ *
+ * Parameters  :
+ *          1  :  the_list = list to search in
+ *          2  :  str = string to search for
+ *
+ * Returns     :  TRUE if the item was found,
+ *                FALSE otherwise.
+ *
+ *********************************************************************/
+int list_contains_item(const struct list *the_list, const char *str)
+{
+   struct list_entry *entry;
+
+   assert(the_list);
+   assert(list_is_valid(the_list));
+   assert(str);
+
+   for (entry = the_list->first; entry != NULL; entry = entry->next)
+   {
+      if (entry->str == NULL)
+      {
+         /*
+          * NULL pointers are allowed in some lists. 
+          * For example for csp->headers in case a
+          * header was removed.
+          */
+         continue;
+      }
+
+      if (0 == strcmp(str, entry->str))
+      {
+         /* Item found */
+         return TRUE;
+      }
+   }
+
+   return FALSE;
 }
 
 

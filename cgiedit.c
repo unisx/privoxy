@@ -1,4 +1,4 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__schmidt Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.58 2007/11/28 17:57:01 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.c,v $
@@ -15,7 +15,7 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__sch
  *
  *                Stick to the short names in this file for consistency.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -42,6 +42,72 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__sch
  *
  * Revisions   :
  *    $Log: cgiedit.c,v $
+ *    Revision 1.58  2007/11/28 17:57:01  fabiankeil
+ *    Fix double free in cgi_edit_actions_list().
+ *    Reported by adlab in BR#1840145.
+ *
+ *    Revision 1.57  2007/10/27 13:32:23  fabiankeil
+ *    Plug minor 5-year-old memory leak. Spotted by
+ *    Valgrind and triggered by Privoxy-Regression-Test.
+ *
+ *    Revision 1.56  2007/08/05 13:47:03  fabiankeil
+ *    #1763173 from Stefan Huehner: s@const static@static const@.
+ *
+ *    Revision 1.55  2007/05/31 11:50:20  fabiankeil
+ *    Re-enable support for old-school URLs like
+ *    http://config.privoxy.org/edit-actions-list?f=default
+ *    in the action editor.
+ *
+ *    They are no longer used by the CGI pages, but make it easier
+ *    to reach the editor directly, without knowing the requested
+ *    file's index in csp->config->actions_file[].
+ *
+ *    Revision 1.54  2007/05/14 10:33:51  fabiankeil
+ *    - Use strlcpy() and strlcat() instead of strcpy() and strcat().
+ *
+ *    Revision 1.53  2007/04/15 16:39:20  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.52  2007/04/12 10:41:23  fabiankeil
+ *    - Don't mistake VC++'s _snprintf() for a snprintf() replacement.
+ *    - Move some cgi_edit_actions_for_url() variables into structs.
+ *    - Remove bogus comment.
+ *
+ *    Revision 1.51  2007/04/08 13:21:05  fabiankeil
+ *    Reference action files in CGI URLs by id instead
+ *    of using the first part of the file name.
+ *    Fixes BR 1694250 and BR 1590556.
+ *
+ *    Revision 1.50  2007/03/29 11:40:34  fabiankeil
+ *    Divide @filter-params@ into @client-header-filter-params@
+ *    @content-filter-params@ and @server-header-filter-params@.
+ *
+ *    Revision 1.49  2007/03/20 15:16:34  fabiankeil
+ *    Use dedicated header filter actions instead of abusing "filter".
+ *    Replace "filter-client-headers" and "filter-client-headers"
+ *    with "server-header-filter" and "client-header-filter".
+ *
+ *    Revision 1.48  2007/02/13 14:35:25  fabiankeil
+ *    Replace hash escaping code to prevent
+ *    crashes, memory and file corruption.
+ *
+ *    Revision 1.47  2006/12/28 18:04:25  fabiankeil
+ *    Fixed gcc43 conversion warnings.
+ *
+ *    Revision 1.46  2006/12/27 18:44:52  fabiankeil
+ *    Stop shadowing string.h's index().
+ *
+ *    Revision 1.45  2006/12/21 12:57:48  fabiankeil
+ *    Add config option "split-large-forms"
+ *    to work around the browser bug reported
+ *    in BR #1570678.
+ *
+ *    Revision 1.44  2006/12/09 13:49:16  fabiankeil
+ *    Fix configure option --disable-toggle.
+ *    Thanks to Peter Thoenen for reporting this.
+ *
  *    Revision 1.43  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -319,10 +385,6 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__sch
 #include <assert.h>
 #include <sys/stat.h>
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif /* def _WIN32 */
-
 #include "project.h"
 #include "cgi.h"
 #include "cgiedit.h"
@@ -333,8 +395,10 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__sch
 #include "miscutil.h"
 #include "errlog.h"
 #include "loaders.h"
-#include "loadcfg.h"
+#ifdef FEATURE_TOGGLE
 /* loadcfg.h is for global_toggle_state only */
+#include "loadcfg.h"
+#endif /* def FEATURE_TOGGLE */
 #include "urlmatch.h"
 
 const char cgiedit_h_rcs[] = CGIEDIT_H_VERSION;
@@ -444,8 +508,7 @@ struct editable_file
 {
    struct file_line * lines;  /**< The contents of the file.  A linked list of lines. */
    const char * filename;     /**< Full pathname - e.g. "/etc/privoxy/wibble.action". */
-   const char * identifier;   /**< Filename stub - e.g. "wibble".  Use for CGI param. */
-                              /**< Pre-encoded with url_encode() for ease of use. */
+   unsigned identifier;       /**< The file name's position in csp->config->actions_file[]. */
    const char * version_str;  /**< Last modification time, as a string.  For CGI param. */
                               /**< Can be used in URL without using url_param(). */
    unsigned version;          /**< Last modification time - prevents chaos with
@@ -462,13 +525,60 @@ struct editable_file
                                         (Statically allocated) */
 };
 
+/**
+ * Information about the filter types.
+ * Used for macro replacement in cgi_edit_actions_for_url.
+ */
+struct filter_type_info
+{
+   const int multi_action_index; /**< The multi action index as defined in project.h */
+   const char *macro_name;       /**< Name of the macro that has to be replaced
+                                      with the prepared templates.
+                                      For example "content-filter-params" */
+   const char *type;             /**< Name of the filter type,
+                                      for example "server-header-filter". */
+   const char *abbr_type;        /**< Abbreviation of the filter type, usually the
+                                      first or second character capitalized */
+   const char *anchor;           /**< Anchor for the User Manual link,
+                                      for example "SERVER-HEADER-FILTER"  */
+};
+
+/* Accessed by index, keep the order in the way the FT_ macros are defined. */
+static const struct filter_type_info filter_type_info[] =
+{
+   {
+      ACTION_MULTI_FILTER,
+      "content-filter-params", "filter",
+      "F", "FILTER"
+   },
+   {
+      ACTION_MULTI_CLIENT_HEADER_FILTER,
+      "client-header-filter-params", "client-header-filter",
+      "C", "CLIENT-HEADER-FILTER"
+   },
+   {
+      ACTION_MULTI_SERVER_HEADER_FILTER,
+      "server-header-filter-params", "server-header-filter",
+      "S", "SERVER-HEADER-FILTER"
+   },
+   {
+      ACTION_MULTI_CLIENT_HEADER_TAGGER,
+      "client-header-tagger-params", "client-header-tagger",
+      "L", "CLIENT-HEADER-TAGGER"
+   },
+   {
+      ACTION_MULTI_SERVER_HEADER_TAGGER,
+      "server-header-tagger-params", "server-header-tagger",
+      "E", "SERVER-HEADER-TAGGER"
+   },
+};
+
 /* FIXME: Following non-static functions should be prototyped in .h or made static */
 
 /* Functions to read and write arbitrary config files */
 jb_err edit_read_file(struct client_state *csp,
                       const struct map *parameters,
                       int require_version,
-                      const char *suffix,
                       struct editable_file **pfile);
 jb_err edit_write_file(struct editable_file * file);
 void   edit_free_file(struct editable_file * file);
@@ -504,13 +614,6 @@ static int match_actions_file_header_line(const char * line, const char * name);
 static jb_err split_line_on_equals(const char * line, char ** pname, char ** pvalue);
 
 /* Internal parameter parsing functions */
-static jb_err get_file_name_param(struct client_state *csp,
-                                  const struct map *parameters,
-                                  const char *param_name,
-                                  const char *suffix,
-                                  char **pfilename,
-                                  const char **pparam);
-
 static jb_err get_url_spec_param(struct client_state *csp,
                                  const struct map *parameters,
                                  const char *name,
@@ -537,6 +640,11 @@ static jb_err map_copy_parameter_url(struct map *out,
                                      const char *name);
 #endif /* unused function */
 
+static jb_err get_file_name_param(struct client_state *csp, 	 
+	                                   const struct map *parameters, 	 
+	                                   const char *param_name, 	 
+	                                   const char **pfilename);
+
 /* Internal convenience functions */
 static char *section_target(const unsigned sectionid);
 
@@ -547,6 +655,10 @@ static char *section_target(const unsigned sectionid);
  * Description :  Given an unsigned (section id) n, produce a dynamically
  *                allocated string of the form #l<n>, for use in link
  *                targets.
+ *
+ *                XXX: The hash should be moved into the templates
+ *                to make this function more generic and render
+ *                stringify() obsolete.
  *
  * Parameters  :
  *          1  :  sectionid = start line number of section
@@ -562,6 +674,27 @@ static char *section_target(const unsigned sectionid)
    snprintf(buf, 30, "#l%d", sectionid);
    return(strdup(buf));
 
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  stringify
+ *
+ * Description :  Convert a number into a dynamically allocated string.
+ *
+ * Parameters  :
+ *          1  :  number = The number to convert.
+ *
+ * Returns     :  String with link target, or NULL if out of memory
+ *
+ *********************************************************************/
+static char *stringify(const unsigned number)
+{
+   char buf[6];
+
+   snprintf(buf, sizeof(buf), "%i", number);
+   return strdup(buf);
 }
 
 
@@ -662,6 +795,7 @@ static jb_err map_copy_parameter_url(struct map *out,
 }
 #endif /* 0 - unused function */
 
+
 /*********************************************************************
  *
  * Function    :  cgi_edit_actions_url_form
@@ -675,7 +809,7 @@ static jb_err map_copy_parameter_url(struct map *out,
  *          3  :  parameters = map of cgi parameters
  *
  * CGI Parameters
- *           f : (filename) Identifies the file to edit
+ *           i : (action index) Identifies the file to edit
  *           v : (version) File's last-modified time
  *           p : (pattern) Line number of pattern to edit
  *
@@ -746,7 +880,7 @@ jb_err cgi_edit_actions_url_form(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   err = map(exports, "f", 1, file->identifier, 1);
+   err = map(exports, "f", 1, stringify(file->identifier), 0);
    if (!err) err = map(exports, "v", 1, file->version_str, 1);
    if (!err) err = map(exports, "p", 1, url_encode(lookup(parameters, "p")), 0);
    if (!err) err = map(exports, "u", 1, html_encode(cur_line->unprocessed), 0);
@@ -835,7 +969,7 @@ jb_err cgi_edit_actions_add_url_form(struct client_state *csp,
  *          3  :  parameters = map of cgi parameters
  *
  * CGI Parameters :
- *           f : (filename) Identifies the file to edit
+ *           f : (number)  The action file identifier.
  *           v : (version) File's last-modified time
  *           p : (pattern) Line number of pattern to edit
  *
@@ -906,11 +1040,12 @@ jb_err cgi_edit_actions_remove_url_form(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   err = map(exports, "f", 1, file->identifier, 1);
+   err = map(exports, "f", 1, stringify(file->identifier), 0);
    if (!err) err = map(exports, "v", 1, file->version_str, 1);
    if (!err) err = map(exports, "p", 1, url_encode(lookup(parameters, "p")), 0);
    if (!err) err = map(exports, "u", 1, html_encode(cur_line->unprocessed), 0);
    if (!err) err = map(exports, "jumptarget", 1, section_target(section_start_line_number), 0);
+   if (!err) err = map(exports, "actions-file", 1, html_encode(file->filename), 0);
 
    edit_free_file(file);
 
@@ -984,7 +1119,7 @@ jb_err edit_write_file(struct editable_file * file)
             {
                /* Must quote '#' characters */
                int numhash = 0;
-               int len;
+               size_t len;
                char * src;
                char * dest;
                char * str;
@@ -999,29 +1134,44 @@ jb_err edit_write_file(struct editable_file * file)
                assert(numhash > 0);
 
                /* Allocate new memory for string */
-               len = strlen(cur_line->unprocessed);
-               if (NULL == (str = malloc((size_t) len + 1 + numhash)))
+               len = strlen(cur_line->unprocessed) + (size_t)numhash;
+               if (NULL == (str = malloc(len + 1)))
                {
                   /* Uh oh, just trashed file! */
                   fclose(fp);
                   return JB_ERR_MEMORY;
                }
 
-               /* Loop through string from end */
-               src  = cur_line->unprocessed + len;
-               dest = str + len + numhash;
-               for ( ; len >= 0; len--)
+               /* Copy string but quote hashes */
+               src  = cur_line->unprocessed;
+               dest = str;
+               while (*src)
                {
-                  if ((*dest-- = *src--) == '#')
+                  if (*src == '#')
                   {
-                     *dest-- = '\\';
+                     *dest++ = '\\';
                      numhash--;
                      assert(numhash >= 0);
                   }
+                  *dest++ = *src++;
                }
+               *dest = '\0';
+
                assert(numhash == 0);
-               assert(src  + 1 == cur_line->unprocessed);
-               assert(dest + 1 == str);
+               assert(strlen(str) == len);
+               assert(str == dest - len);
+               assert(src - len <= cur_line->unprocessed);
+
+               if ((strlen(str) != len) || (numhash != 0))
+               {
+                  /*
+                   * Escaping didn't work as expected, go spread the news.
+                   * Only reached in non-debugging builds.
+                   */
+                  log_error(LOG_LEVEL_ERROR,
+                     "Looks like hash escaping failed. %s might be corrupted now.",
+                     file->filename);
+               }
 
                if (fputs(str, fp) < 0)
                {
@@ -1104,8 +1254,6 @@ void edit_free_file(struct editable_file * file)
    }
 
    edit_free_file_lines(file->lines);
-   freez(file->filename);
-   freez(file->identifier);
    freez(file->version_str);
    file->version = 0;
    file->parse_error_text = NULL; /* Statically allocated */
@@ -1282,7 +1430,7 @@ static jb_err split_line_on_equals(const char * line, char ** pname, char ** pva
       name_end--;
    }
 
-   name_len = name_end - line + 1; /* Length excluding \0 */
+   name_len = (size_t)(name_end - line) + 1; /* Length excluding \0 */
    if (NULL == (*pname = (char *) malloc(name_len + 1)))
    {
       return JB_ERR_MEMORY;
@@ -1700,13 +1848,11 @@ jb_err edit_read_file_lines(FILE *fp, struct file_line ** pfile, int *newline)
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  parameters = map of cgi parameters.
  *          3  :  require_version = true to check "ver" parameter.
- *          4  :  suffix = File extension, e.g. ".action".
- *          5  :  pfile = Destination for the file.  Will be set
+ *          4  :  pfile = Destination for the file.  Will be set
  *                        to NULL on error.
  *
  * CGI Parameters :
- *    filename :  The name of the file to read, without the
- *                path or ".action" extension.
+ *           f :  The action file identifier.
  *         ver :  (Only if require_version is nonzero)
  *                Timestamp of the actions file.  If wrong, this
  *                function fails with JB_ERR_MODIFIED.
@@ -1725,19 +1871,18 @@ jb_err edit_read_file_lines(FILE *fp, struct file_line ** pfile, int *newline)
 jb_err edit_read_file(struct client_state *csp,
                       const struct map *parameters,
                       int require_version,
-                      const char *suffix,
                       struct editable_file **pfile)
 {
    struct file_line * lines;
    FILE * fp;
    jb_err err;
-   char * filename;
-   const char * identifier;
+   const char *filename = NULL;
    struct editable_file * file;
    unsigned version = 0;
    struct stat statbuf[1];
    char version_buf[22];
    int newline = NEWLINE_UNKNOWN;
+   unsigned i;
 
    assert(csp);
    assert(parameters);
@@ -1745,17 +1890,23 @@ jb_err edit_read_file(struct client_state *csp,
 
    *pfile = NULL;
 
-   err = get_file_name_param(csp, parameters, "f", suffix,
-                             &filename, &identifier);
-   if (err)
+   err = get_number_param(csp, parameters, "f", &i);
+   if ((JB_ERR_OK == err) && (i < MAX_AF_FILES) && (NULL != csp->config->actions_file[i]))
    {
-      return err;
+      filename = csp->config->actions_file[i];
+   }
+   else if (JB_ERR_CGI_PARAMS == err)
+   {
+      /*
+       * Probably an old-school URL like
+       * http://config.privoxy.org/edit-actions-list?f=default
+       */
+      err = get_file_name_param(csp, parameters, "f", &filename);
    }
 
-   if (stat(filename, statbuf) < 0)
+   if (NULL == filename || stat(filename, statbuf) < 0)
    {
       /* Error, probably file not found. */
-      free(filename);
       return JB_ERR_FILE;
    }
    version = (unsigned) statbuf->st_mtime;
@@ -1766,7 +1917,6 @@ jb_err edit_read_file(struct client_state *csp,
       err = get_number_param(csp, parameters, "v", &specified_version);
       if (err)
       {
-         free(filename);
          return err;
       }
 
@@ -1778,7 +1928,6 @@ jb_err edit_read_file(struct client_state *csp,
 
    if (NULL == (fp = fopen(filename,"rb")))
    {
-      free(filename);
       return JB_ERR_FILE;
    }
 
@@ -1788,14 +1937,12 @@ jb_err edit_read_file(struct client_state *csp,
 
    if (err)
    {
-      free(filename);
       return err;
    }
 
    file = (struct editable_file *) zalloc(sizeof(*file));
    if (err)
    {
-      free(filename);
       edit_free_file_lines(lines);
       return err;
    }
@@ -1804,13 +1951,7 @@ jb_err edit_read_file(struct client_state *csp,
    file->newline = newline;
    file->filename = filename;
    file->version = version;
-   file->identifier = url_encode(identifier);
-
-   if (file->identifier == NULL)
-   {
-      edit_free_file(file);
-      return JB_ERR_MEMORY;
-   }
+   file->identifier = i;
 
    /* Correct file->version_str */
    freez(file->version_str);
@@ -1850,8 +1991,7 @@ jb_err edit_read_file(struct client_state *csp,
  *                        to NULL on error.
  *
  * CGI Parameters :
- *    filename :  The name of the actions file to read, without the
- *                path or ".action" extension.
+ *           f :  The actions file identifier.
  *         ver :  (Only if require_version is nonzero)
  *                Timestamp of the actions file.  If wrong, this
  *                function fails with JB_ERR_MODIFIED.
@@ -1881,7 +2021,7 @@ jb_err edit_read_actions_file(struct client_state *csp,
 
    *pfile = NULL;
 
-   err = edit_read_file(csp, parameters, require_version, ".action", &file);
+   err = edit_read_file(csp, parameters, require_version, &file);
    if (err)
    {
       /* Try to handle if possible */
@@ -1933,32 +2073,16 @@ jb_err edit_read_actions_file(struct client_state *csp,
  * Function    :  get_file_name_param
  *
  * Description :  Get the name of the file to edit from the parameters
- *                passed to a CGI function.  This function handles
- *                security checks such as blocking urls containing
- *                "/" or ".", prepending the config file directory,
- *                and adding the specified suffix.
- *
- *                (This is an essential security check, otherwise
- *                users may be able to pass "../../../etc/passwd"
- *                and overwrite the password file [linux], "prn:"
- *                and print random data [Windows], etc...)
- *
- *                This function only allows filenames contining the
- *                characters '-', '_', 'A'-'Z', 'a'-'z', and '0'-'9'.
- *                That's probably too restrictive but at least it's
- *                secure.
+ *                passed to a CGI function using the old syntax.
+ *                This function handles security checks and only
+ *                accepts files that Privoxy already knows.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  parameters = map of cgi parameters
  *          3  :  param_name = The name of the parameter to read
- *          4  :  suffix = File extension, e.g. ".actions"
- *          5  :  pfilename = destination for full filename.  Caller
- *                free()s.  Set to NULL on error.
- *          6  :  pparam = destination for partial filename,
- *                suitable for use in another URL.  Allocated as part
- *                of the map "parameters", so don't free it.
- *                Set to NULL if not specified.
+ *          4  :  pfilename = pointer to the filename in
+ *                csp->config->actions_file[] if found. Set to NULL on error.
  *
  * Returns     :  JB_ERR_OK         on success
  *                JB_ERR_MEMORY     on out-of-memory
@@ -1969,33 +2093,29 @@ jb_err edit_read_actions_file(struct client_state *csp,
 static jb_err get_file_name_param(struct client_state *csp,
                                   const struct map *parameters,
                                   const char *param_name,
-                                  const char *suffix,
-                                  char **pfilename,
-                                  const char **pparam)
+                                  const char **pfilename)
 {
    const char *param;
+   const char suffix[] = ".action";
    const char *s;
    char *name;
    char *fullpath;
    char ch;
-   int len;
+   size_t len;
+   size_t name_size;
+   int i;
 
    assert(csp);
    assert(parameters);
-   assert(suffix);
    assert(pfilename);
-   assert(pparam);
 
    *pfilename = NULL;
-   *pparam = NULL;
 
    param = lookup(parameters, param_name);
    if (!*param)
    {
       return JB_ERR_CGI_PARAMS;
    }
-
-   *pparam = param;
 
    len = strlen(param);
    if (len >= FILENAME_MAX)
@@ -2004,7 +2124,10 @@ static jb_err get_file_name_param(struct client_state *csp,
       return JB_ERR_CGI_PARAMS;
    }
 
-   /* Check every character to see if it's legal */
+   /*
+    * Check every character to see if it's legal.
+    * Totally unnecessary but we do it anyway.
+    */
    s = param;
    while ((ch = *s++) != '\0')
    {
@@ -2020,13 +2143,14 @@ static jb_err get_file_name_param(struct client_state *csp,
    }
 
    /* Append extension */
-   name = malloc(len + strlen(suffix) + 1);
+   name_size = len + strlen(suffix) + 1;
+   name = malloc(name_size);
    if (name == NULL)
    {
       return JB_ERR_MEMORY;
    }
-   strcpy(name, param);
-   strcpy(name + len, suffix);
+   strlcpy(name, param, name_size);
+   strlcat(name, suffix, name_size);
 
    /* Prepend path */
    fullpath = make_path(csp->config->confdir, name);
@@ -2037,10 +2161,22 @@ static jb_err get_file_name_param(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   /* Success */
-   *pfilename = fullpath;
+   /* Check if the file is known */
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if (NULL != csp->config->actions_file[i] &&
+          !strcmp(fullpath, csp->config->actions_file[i]))
+      {
+         /* Success */
+         *pfilename = csp->config->actions_file[i];
+         freez(fullpath);
 
-   return JB_ERR_OK;
+         return JB_ERR_OK;
+      }
+   }
+   freez(fullpath);
+
+   return JB_ERR_CGI_PARAMS;
 }
 
 
@@ -2202,23 +2338,25 @@ static jb_err map_radio(struct map * exports,
                         const char * values,
                         int value)
 {
-   size_t len;
    char * buf;
    char * p;
    char c;
+   const size_t len = strlen(optionname);
+   const size_t buf_size = len + 3;
 
    assert(exports);
    assert(optionname);
    assert(values);
 
-   len = strlen(optionname);
-   buf = malloc(len + 3);
+   buf = malloc(buf_size);
    if (buf == NULL)
    {
       return JB_ERR_MEMORY;
    }
 
-   strcpy(buf, optionname);
+   strlcpy(buf, optionname, buf_size);
+
+   /* XXX: this looks ... interesting */
    p = buf + len;
    *p++ = '-';
    p[1] = '\0';
@@ -2235,7 +2373,7 @@ static jb_err map_radio(struct map * exports,
       }
    }
 
-   *p = value;
+   *p = (char)value;
    return map(exports, buf, 0, "checked", 1);
 }
 
@@ -2320,7 +2458,7 @@ jb_err cgi_error_parse(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   err = map(exports, "f", 1, file->identifier, 1);
+   err = map(exports, "f", 1, stringify(file->identifier), 0);
    if (!err) err = map(exports, "parse-error", 1, html_encode(file->parse_error_text), 0);
 
    cur_line = file->parse_error;
@@ -2386,7 +2524,7 @@ jb_err cgi_error_file(struct client_state *csp,
 
 /*********************************************************************
  *
- * Function    :  cgi_error_file
+ * Function    :  cgi_error_file_read_only
  *
  * Description :  CGI function that is called when a file cannot be
  *                opened for writing by the CGI editor.
@@ -2524,6 +2662,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
    if (err)
    {
       /* No filename specified, can't read file, or out of memory. */
+      free_map(exports);
       return (err == JB_ERR_FILE ? JB_ERR_OK : err);
    }
 
@@ -2654,13 +2793,14 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
 
    /* Set up global exports */
 
-   if (!err) err = map(exports, "f", 1, file->identifier, 1);
+   if (!err) err = map(exports, "actions-file", 1, html_encode(file->filename), 0);
+   if (!err) err = map(exports, "f", 1, stringify(file->identifier), 0);
    if (!err) err = map(exports, "v", 1, file->version_str, 1);
 
    /* Discourage private additions to default.action */
 
    if (!err) err = map_conditional(exports, "default-action",
-                                   (strcmp("default", lookup(parameters, "f")) == 0));
+                                   (strstr("default.action", file->filename) != NULL));
    if (err)
    {
       edit_free_file(file);
@@ -2703,7 +2843,6 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
       free(url_template);
       edit_free_file(file);
       free_map(exports);
-      free(url_template);
       return err;
    }
 
@@ -3021,11 +3160,40 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   err = map(exports, "f", 1, file->identifier, 1);
+   err = map(exports, "f", 1, stringify(file->identifier), 0);
    if (!err) err = map(exports, "v", 1, file->version_str, 1);
    if (!err) err = map(exports, "s", 1, url_encode(lookup(parameters, "s")), 0);
 
    if (!err) err = actions_to_radio(exports, cur_line->data.action);
+
+   /*
+    * XXX: Some browsers (at least IE6 and IE7) have an artifical URL
+    * length limitation and ignore clicks on the Submit buttons if
+    * the resulting GET URL would be longer than their limit.
+    *
+    * In Privoxy 3.0.5 beta the standard edit-actions-for-url template
+    * reached this limit and action editing stopped working in these
+    * browsers (BR #1570678).
+    *
+    * The config option split-large-forms works around this browser
+    * bug (HTTP has no URL lenght limitation) by deviding the action
+    * list form into multiple smaller ones. It means the URLs are shorter
+    * and work in broken browsers as well, but the user can no longer change
+    * all actions with one submit.
+    *
+    * A better solution would be to switch to POST requests,
+    * but this will do for now.
+    */
+   if(!err && (csp->config->feature_flags & RUNTIME_FEATURE_SPLIT_LARGE_FORMS))
+   {
+      /* Generate multiple smaller form by killing the big one. */
+      err = map_block_killer(exports, "one-form-only");
+   }
+   else
+   {
+      /* Default: Generate one large form by killing the smaller ones. */
+      err = map_block_killer(exports, "multiple-forms");
+   }
 
    for (i = 0; i < MAX_AF_FILES; i++)
    {
@@ -3045,13 +3213,22 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
    }
 
    if (0 == have_filters)
+   {
       err = map(exports, "filter-params", 1, "", 1);
+   }
    else
    {
-      /* We have some entries in the filter list */
-      char * result;
-      int index = 0;
-      char * filter_template;
+      /*
+       * List available filters and their settings.
+       */
+      char *filter_template;
+      int filter_identifier = 0;
+      char *prepared_templates[MAX_FILTER_TYPES];
+
+      for (i = 0; i < MAX_FILTER_TYPES; i++)
+      {
+         prepared_templates[i] = strdup("");
+      }
 
       err = template_load(csp, &filter_template, "edit-actions-for-url-filter", 0);
       if (err)
@@ -3067,8 +3244,6 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
 
       err = template_fill(&filter_template, exports);
 
-      result = strdup("");
-
       for (i = 0; i < MAX_AF_FILES; i++)
       {
          if ((csp->rlist[i] != NULL) && (csp->rlist[i]->f != NULL))
@@ -3077,12 +3252,15 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
             for (;(!err) && (filter_group != NULL); filter_group = filter_group->next)
             {
                char current_mode = 'x';
-               struct list_entry *filter_name;
-               char * this_line;
-               struct map *line_exports;
                char number[20];
+               struct list_entry *filter_name;
+               struct map *line_exports;
+               const int type = filter_group->type;
+               const int multi_action_index = filter_type_info[type].multi_action_index;
 
-               filter_name = cur_line->data.action->multi_add[ACTION_MULTI_FILTER]->first;
+               assert(type < MAX_FILTER_TYPES);
+
+               filter_name = cur_line->data.action->multi_add[multi_action_index]->first;
                while ((filter_name != NULL)
                    && (0 != strcmp(filter_group->name, filter_name->str)))
                {
@@ -3095,7 +3273,7 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
                }
                else
                {
-                  filter_name = cur_line->data.action->multi_remove[ACTION_MULTI_FILTER]->first;
+                  filter_name = cur_line->data.action->multi_remove[multi_action_index]->first;
                   while ((filter_name != NULL)
                       && (0 != strcmp(filter_group->name, filter_name->str)))
                   {
@@ -3108,30 +3286,33 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
                }
 
                /* Generate a unique serial number */
-               snprintf(number, sizeof(number), "%x", index++);
+               snprintf(number, sizeof(number), "%x", filter_identifier++);
                number[sizeof(number) - 1] = '\0';
 
                line_exports = new_map();
                if (line_exports == NULL)
                {
                   err = JB_ERR_MEMORY;
-                  freez(result);
                }
                else
                {
+                  char *filter_line;
+
                   if (!err) err = map(line_exports, "index", 1, number, 1);
                   if (!err) err = map(line_exports, "name",  1, filter_group->name, 1);
                   if (!err) err = map(line_exports, "description",  1, filter_group->description, 1);
                   if (!err) err = map_radio(line_exports, "this-filter", "ynx", current_mode);
+                  if (!err) err = map(line_exports, "filter-type", 1, filter_type_info[type].type, 1);
+                  if (!err) err = map(line_exports, "abbr-filter-type", 1, filter_type_info[type].abbr_type, 1);
+                  if (!err) err = map(line_exports, "anchor", 1, filter_type_info[type].anchor, 1);
 
-                  this_line = NULL;
                   if (!err)
                   {
-                     this_line = strdup(filter_template);
-                     if (this_line == NULL) err = JB_ERR_MEMORY;
+                     filter_line = strdup(filter_template);
+                     if (filter_line == NULL) err = JB_ERR_MEMORY;
                   }
-                  if (!err) err = template_fill(&this_line, line_exports);
-                  string_join(&result, this_line);
+                  if (!err) err = template_fill(&filter_line, line_exports);
+                  string_join(&prepared_templates[type], filter_line);
 
                   free_map(line_exports);
                }
@@ -3140,13 +3321,20 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
       }
       freez(filter_template);
 
-      if (!err)
+      /* Replace all filter macros with the aggregated templates */
+      for (i = 0; i < MAX_FILTER_TYPES; i++)
       {
-         err = map(exports, "filter-params", 1, result, 0);
+         if (err) break;
+         err = map(exports, filter_type_info[i].macro_name, 1, prepared_templates[i], 0);
       }
-      else
+
+      if (err)
       {
-         freez(result);
+         /* Free aggregated templates */
+         for (i = 0; i < MAX_FILTER_TYPES; i++)
+         {
+            freez(prepared_templates[i]);
+         }
       }
    }
 
@@ -3191,13 +3379,14 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
    unsigned sectionid;
    char * actiontext;
    char * newtext;
+   size_t newtext_size;
    size_t len;
    struct editable_file * file;
    struct file_line * cur_line;
    unsigned line_number;
    char target[1024];
    jb_err err;
-   int index;
+   int filter_identifier;
    const char * action_set_name;
    char ch;
    struct file_list * fl;
@@ -3241,9 +3430,9 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
    get_string_param(parameters, "p", &action_set_name);
    if (action_set_name != NULL)
    {
-      for (index = 0; index < MAX_AF_FILES; index++)
+      for (filter_identifier = 0; filter_identifier < MAX_AF_FILES; filter_identifier++)
       {
-         if (((fl = csp->actions_list[index]) != NULL) && ((b = fl->f) != NULL))
+         if (((fl = csp->actions_list[filter_identifier]) != NULL) && ((b = fl->f) != NULL))
          {
             for (b = b->next; NULL != b; b = b->next)
             {
@@ -3284,18 +3473,29 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
       cur_line->data.action->multi_remove_all[ACTION_MULTI_FILTER] = 0;
    }
 
-   for (index = 0; !err; index++)
+   for (filter_identifier = 0; !err; filter_identifier++)
    {
       char key_value[30];
       char key_name[30];
+      char key_type[30];
       const char *name;
-      char value;
+      char value; /*
+                   * Filter state. Valid states are: 'Y' (active),
+                   * 'N' (inactive) and 'X' (no change).
+                   * XXX: bad name.
+                   */
+      char type;  /*
+                   * Abbreviated filter type. Valid types are: 'F' (content filter),
+                   * 'S' (server-header filter) and 'C' (client-header filter).
+                   */
+      int multi_action_index = 0;
 
       /* Generate the keys */
-      snprintf(key_value, sizeof(key_value), "filter_r%x", index);
-      key_value[sizeof(key_value) - 1] = '\0';
-      snprintf(key_name, sizeof(key_name), "filter_n%x", index);
-      key_name[sizeof(key_name) - 1] = '\0';
+      snprintf(key_value, sizeof(key_value), "filter_r%x", filter_identifier);
+      key_value[sizeof(key_value) - 1] = '\0'; /* XXX: Why? */
+      snprintf(key_name, sizeof(key_name), "filter_n%x", filter_identifier);
+      key_name[sizeof(key_name) - 1] = '\0'; /* XXX: Why? */
+      snprintf(key_type, sizeof(key_type), "filter_t%x", filter_identifier);
 
       err = get_string_param(parameters, key_name, &name);
       if (err) break;
@@ -3306,26 +3506,51 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
          break;
       }
 
+      type = get_char_param(parameters, key_type);
+      switch (type)
+      {
+         case 'F':
+            multi_action_index = ACTION_MULTI_FILTER;
+            break;
+         case 'S':
+            multi_action_index = ACTION_MULTI_SERVER_HEADER_FILTER;
+            break;
+         case 'C':
+            multi_action_index = ACTION_MULTI_CLIENT_HEADER_FILTER;
+            break;
+         case 'L':
+            multi_action_index = ACTION_MULTI_CLIENT_HEADER_TAGGER;
+            break;
+         case 'E':
+            multi_action_index = ACTION_MULTI_SERVER_HEADER_TAGGER;
+            break;
+         default:
+            log_error(LOG_LEVEL_ERROR,
+               "Unknown filter type: %c for filter %s. Filter ignored.", type, name);
+            continue;
+      }
+      assert(multi_action_index);
+
       value = get_char_param(parameters, key_value);
       if (value == 'Y')
       {
-         list_remove_item(cur_line->data.action->multi_add[ACTION_MULTI_FILTER], name);
-         if (!err) err = enlist(cur_line->data.action->multi_add[ACTION_MULTI_FILTER], name);
-         list_remove_item(cur_line->data.action->multi_remove[ACTION_MULTI_FILTER], name);
+         list_remove_item(cur_line->data.action->multi_add[multi_action_index], name);
+         if (!err) err = enlist(cur_line->data.action->multi_add[multi_action_index], name);
+         list_remove_item(cur_line->data.action->multi_remove[multi_action_index], name);
       }
       else if (value == 'N')
       {
-         list_remove_item(cur_line->data.action->multi_add[ACTION_MULTI_FILTER], name);
-         if (!cur_line->data.action->multi_remove_all[ACTION_MULTI_FILTER])
+         list_remove_item(cur_line->data.action->multi_add[multi_action_index], name);
+         if (!cur_line->data.action->multi_remove_all[multi_action_index])
          {
-            list_remove_item(cur_line->data.action->multi_remove[ACTION_MULTI_FILTER], name);
-            if (!err) err = enlist(cur_line->data.action->multi_remove[ACTION_MULTI_FILTER], name);
+            list_remove_item(cur_line->data.action->multi_remove[multi_action_index], name);
+            if (!err) err = enlist(cur_line->data.action->multi_remove[multi_action_index], name);
          }
       }
       else if (value == 'X')
       {
-         list_remove_item(cur_line->data.action->multi_add[ACTION_MULTI_FILTER], name);
-         list_remove_item(cur_line->data.action->multi_remove[ACTION_MULTI_FILTER], name);
+         list_remove_item(cur_line->data.action->multi_add[multi_action_index], name);
+         list_remove_item(cur_line->data.action->multi_remove[multi_action_index], name);
       }
    }
 
@@ -3353,14 +3578,15 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
       len = 1;
    }
 
-   if (NULL == (newtext = malloc(len + 2)))
+   newtext_size = len + 2;
+   if (NULL == (newtext = malloc(newtext_size)))
    {
       /* Out of memory */
       free(actiontext);
       edit_free_file(file);
       return JB_ERR_MEMORY;
    }
-   strcpy(newtext, actiontext);
+   strlcpy(newtext, actiontext, newtext_size);
    free(actiontext);
    newtext[0]       = '{';
    newtext[len]     = '}';
@@ -3377,13 +3603,13 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s#l%d",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i#l%d",
             (long) time(NULL), file->identifier, sectionid);
 
    edit_free_file(file);
@@ -3498,13 +3724,13 @@ jb_err cgi_edit_actions_url(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s#l%d",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i#l%d",
             (long) time(NULL), file->identifier, section_start_line_number);
 
    edit_free_file(file);
@@ -3627,13 +3853,13 @@ jb_err cgi_edit_actions_add_url(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s#l%d",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i#l%d",
             (long) time(NULL), file->identifier, sectionid);
 
    edit_free_file(file);
@@ -3738,13 +3964,13 @@ jb_err cgi_edit_actions_remove_url(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s#l%d",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i#l%d",
             (long) time(NULL), file->identifier, section_start_line_number);
 
    edit_free_file(file);
@@ -3860,13 +4086,13 @@ jb_err cgi_edit_actions_section_remove(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i",
             (long) time(NULL), file->identifier);
 
    edit_free_file(file);
@@ -4029,13 +4255,13 @@ jb_err cgi_edit_actions_section_add(struct client_state *csp,
       if (err == JB_ERR_FILE)
       {
          /* Read-only file. */
-         err = cgi_error_file_read_only(csp, rsp, file->identifier);
+         err = cgi_error_file_read_only(csp, rsp, file->filename);
       }
       edit_free_file(file);
       return err;
    }
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i",
             (long) time(NULL), file->identifier);
 
    edit_free_file(file);
@@ -4217,14 +4443,14 @@ jb_err cgi_edit_actions_section_swap(struct client_state *csp,
          if (err == JB_ERR_FILE)
          {
             /* Read-only file. */
-            err = cgi_error_file_read_only(csp, rsp, file->identifier);
+            err = cgi_error_file_read_only(csp, rsp, file->filename);
          }
          edit_free_file(file);
          return err;
       }
    } /* END if (section1 != section2) */
 
-   snprintf(target, 1024, CGI_PREFIX "edit-actions-list?foo=%lu&f=%s",
+   snprintf(target, sizeof(target), CGI_PREFIX "edit-actions-list?foo=%lu&f=%i",
             (long) time(NULL), file->identifier);
 
    edit_free_file(file);
@@ -4232,7 +4458,7 @@ jb_err cgi_edit_actions_section_swap(struct client_state *csp,
    return cgi_redirect(rsp, target);
 }
 
-
+#ifdef FEATURE_TOGGLE
 /*********************************************************************
  *
  * Function    :  cgi_toggle
@@ -4300,7 +4526,7 @@ jb_err cgi_toggle(struct client_state *csp,
 
    return template_fill_for_cgi(csp, template_name, exports, rsp);
 }
-
+#endif /* def FEATURE_TOGGLE */
 
 /*********************************************************************
  *

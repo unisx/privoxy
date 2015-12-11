@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Appendix</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="See Also"
@@ -36,7 +36,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -69,16 +69,16 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="APPENDIX"
-></A
->14. Appendix</H1
+>14. Appendix</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
 NAME="REGEX"
-></A
->14.1. Regular Expressions</H2
+>14.1. Regular Expressions</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -745,9 +745,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN5046"
-></A
->14.2. Privoxy's Internal Pages</H2
+NAME="AEN5337"
+>14.2. Privoxy's Internal Pages</A
+></H2
 ><P
 > Since <SPAN
 CLASS="APPLICATION"
@@ -791,7 +791,7 @@ CLASS="APPLICATION"
    Privoxy main page: 
   </P
 ><A
-NAME="AEN5060"
+NAME="AEN5351"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -824,7 +824,7 @@ CLASS="APPLICATION"
     editing of actions files:
   </P
 ><A
-NAME="AEN5068"
+NAME="AEN5359"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -844,7 +844,7 @@ TARGET="_top"
     Show the source code version numbers:
   </P
 ><A
-NAME="AEN5073"
+NAME="AEN5364"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -864,7 +864,7 @@ TARGET="_top"
    Show the browser's request headers:
   </P
 ><A
-NAME="AEN5078"
+NAME="AEN5369"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -884,7 +884,7 @@ TARGET="_top"
    Show which actions apply to a URL and why:
   </P
 ><A
-NAME="AEN5083"
+NAME="AEN5374"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -901,14 +901,22 @@ TARGET="_top"
 ><LI
 ><P
 >  
-   Toggle Privoxy on or off. In this case, <SPAN
+   Toggle Privoxy on or off. This feature can be turned off/on in the main 
+   <TT
+CLASS="FILENAME"
+>config</TT
+> file. When toggled <SPAN
+CLASS="QUOTE"
+>"off"</SPAN
+>, <SPAN
 CLASS="QUOTE"
 >"Privoxy"</SPAN
-> continues 
-   to run, but only as a pass-through proxy, with no actions taking place:
+>
+   continues to run, but only as a pass-through proxy, with no actions taking
+   place:
   </P
 ><A
-NAME="AEN5089"
+NAME="AEN5382"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -925,7 +933,7 @@ TARGET="_top"
 >   Short cuts. Turn off, then on: 
   </P
 ><A
-NAME="AEN5093"
+NAME="AEN5386"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -939,7 +947,7 @@ TARGET="_top"
    </P
 ></BLOCKQUOTE
 ><A
-NAME="AEN5096"
+NAME="AEN5389"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -963,8 +971,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="BOOKMARKLETS"
-></A
->14.2.1. Bookmarklets</H3
+>14.2.1. Bookmarklets</A
+></H3
 ><P
 > Below are some <SPAN
 CLASS="QUOTE"
@@ -1070,8 +1078,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CHAIN"
-></A
->14.3. Chain of Events</H2
+>14.3. Chain of Events</A
+></H2
 ><P
 > Let's take a quick look at how some of <SPAN
 CLASS="APPLICATION"
@@ -1321,8 +1329,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACTIONSANAT"
-></A
->14.4. Troubleshooting: Anatomy of an Action</H2
+>14.4. Troubleshooting: Anatomy of an Action</A
+></H2
 ><P
 > The way <SPAN
 CLASS="APPLICATION"
@@ -1369,7 +1377,15 @@ HREF="appendix.html#BOOKMARKLETS"
 >the Bookmarklets</A
 > section on a quick 
  and easy way to do this (be sure to flush caches afterward!). Looking at the 
- logs is a good idea too.</P
+ logs is a good idea too. (Note that both the toggle feature and logging are 
+ enabled via <TT
+CLASS="FILENAME"
+>config</TT
+> file settings, and may need to be 
+ turned <SPAN
+CLASS="QUOTE"
+>"on"</SPAN
+>.)</P
 ><P
 > Another easy troubleshooting step to try is if you have done any
  customization of your installation, revert back to the installed
@@ -1434,7 +1450,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-> Matches for http://google.com:
+> Matches for http://www.google.com:
 
  In file: default.action <SPAN
 CLASS="GUIBUTTON"
@@ -1444,69 +1460,19 @@ CLASS="GUIBUTTON"
 >[ Edit ]</SPAN
 >
 
- {-add-header
- -block
- -content-type-overwrite
- -crunch-client-header
- -crunch-if-none-match
- -crunch-incoming-cookies
- -crunch-outgoing-cookies
- -crunch-server-header
- +deanimate-gifs {last}
- -downgrade-http-version
+ {+deanimate-gifs {last}
  +fast-redirects {check-decoded-url}
- -filter {js-events}
- -filter {content-cookies}
- -filter {all-popups}
- -filter {banners-by-link}
- -filter {tiny-textforms}
- -filter {frameset-borders}
- -filter {demoronizer}
- -filter {shockwave-flash}
- -filter {quicktime-kioskmode}
- -filter {fun}
- -filter {crude-parental}
- -filter {site-specifics}
- -filter {js-annoyances}
- -filter {html-annoyances}
  +filter {refresh-tags}
- -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
- -filter {google}
- -filter {yahoo}
- -filter {msn}
- -filter {blogspot}
- -filter {xml-to-html}
- -filter {html-to-xml}
- -filter {no-ping}
- -filter{hide-tor-exit-notation}
- -filter-client-headers
- -filter-server-headers
- -force-text-mode
- -handle-as-empty-document
- -handle-as-image
- -hide-accept-language
- -hide-content-disposition
  +hide-forwarded-for-headers
  +hide-from-header {block}
- -hide-if-modified-since
  +hide-referrer {forge}
- -hide-user-agent
- -inspect-jpegs
- -kill-popups
- -limit-connect
- -overwrite-last-modified
- +prevent-compression
- -redirect
- -send-vanilla-wafer
- -send-wafer
  +session-cookies-only
  +set-image-blocker {pattern}
- -treat-forbidden-connects-like-blocks }
 /
  
  { -session-cookies-only }
@@ -1681,6 +1647,7 @@ CLASS="SCREEN"
  
  -add-header
  -block
+ -client-header-filter{hide-tor-exit-notation}
  -content-type-overwrite
  -crunch-client-header
  -crunch-if-none-match
@@ -1689,7 +1656,7 @@ CLASS="SCREEN"
  -crunch-server-header
  +deanimate-gifs {last}
  -downgrade-http-version
- +fast-redirects {check-decoded-url}
+ -fast-redirects
  -filter {js-events}
  -filter {content-cookies}
  -filter {all-popups}
@@ -1715,12 +1682,7 @@ CLASS="SCREEN"
  -filter {yahoo}
  -filter {msn}
  -filter {blogspot}
- -filter {xml-to-html}
- -filter {html-to-xml}
  -filter {no-ping}
- -filter{hide-tor-exit-notation}
- -filter-client-headers
- -filter-server-headers
  -force-text-mode
  -handle-as-empty-document
  -handle-as-image
@@ -1735,10 +1697,12 @@ CLASS="SCREEN"
  -kill-popups
  -limit-connect
  -overwrite-last-modified
- +prevent-compression
+ -prevent-compression
  -redirect
  -send-vanilla-wafer
  -send-wafer
+ -server-header-filter{xml-to-html}
+ -server-header-filter{html-to-xml} 
  -session-cookies-only
  +set-image-blocker {pattern}
  -treat-forbidden-connects-like-blocks </PRE
@@ -1874,6 +1838,7 @@ CLASS="GUIBUTTON"
 
  {-add-header 
   -block
+  -client-header-filter{hide-tor-exit-notation}
   -content-type-overwrite
   -crunch-client-header
   -crunch-if-none-match
@@ -1908,12 +1873,7 @@ CLASS="GUIBUTTON"
   -filter {yahoo}
   -filter {msn}
   -filter {blogspot}
-  -filter {xml-to-html}
-  -filter {html-to-xml}
   -filter {no-ping}
-  -filter{hide-tor-exit-notation}
-  -filter-client-headers
-  -filter-server-headers
   -force-text-mode
   -handle-as-empty-document
   -handle-as-image 
@@ -1929,7 +1889,9 @@ CLASS="GUIBUTTON"
   +prevent-compression 
   -redirect
   -send-vanilla-wafer 
-  -send-wafer 
+  -send-wafer
+  -server-header-filter{xml-to-html}
+  -server-header-filter{html-to-xml} 
   +session-cookies-only 
   +set-image-blocker{blank} 
   -treat-forbidden-connects-like-blocks }
@@ -2171,13 +2133,13 @@ CLASS="LITERAL"
  <SPAN
 CLASS="QUOTE"
 >".com"</SPAN
->. This will effectively match any TLD with 
+>). This will effectively match any TLD with 
  <TT
 CLASS="LITERAL"
 >google</TT
 > in it, such as <TT
 CLASS="LITERAL"
->mail.google.de</TT
+>mail.google.de.</TT
 >, 
  just as an example.</P
 ><P

@@ -1,6 +1,6 @@
 ##########################################################
 #
-# No-Such-Domain Error Output template for Privoxy.
+# Feature disabled or referrer untrusted Error Output template for Privoxy.
 #
 #
 # USING HTML TEMPLATES:
@@ -75,11 +75,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@error-favicon.ico">
 </head>
 
 <body>
 
-  <table cellpadding="20" cellspacing="10" border="0" width="100%">
+  <table summary="" cellpadding="20" cellspacing="10" border="0" width="100%">
     <tr>
       <td class="title">
 
@@ -102,12 +103,38 @@
     <tr>
       <td class="warning">
         <h2>Privoxy Configuration access denied</h2>
-          <p>The feature you are trying to access has either been disabled
-             by the Privoxy administrator, or you came here by following an
-             unsafe external link.</p>
+          <p>Access to <b>@url@</b> has been denied because:</p>
+
+          <ul>
+            <li>it requires a feature that has been disabled by the Privoxy administrator,</li>
+            <li>you didn't come here through one of Privoxy's CGI pages, or</li>
+            <li>the <q>Referer:</q> header is blocked.</li>
+          </ul>
+
+          <p>Note that the following features which used to be enabled in earlier
+             releases are now off by default:
+          </p>
+          <ul>
+           <li><a href="@user-manual@config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions</a></li>
+           <li><a href="@user-manual@config.html#ENABLE-REMOTE-TOGGLE">enable-remote-toggle</a></li>
+           <li><a href="@user-manual@config.html#ENABLE-REMOTE-HTTP-TOGGLE">enable-remote-http-toggle</a>
+           (Most likely you don't need this anyway.)</li>
+          </ul>
+
+          <p>Please refer to the documentation behind the links to learn how to
+             enable them again and what the consequences are.</p>
 
           <p>All enabled features are accessible from the
-             <a href="@default-cgi@">main menu</a>.</p>
+             <a href="@default-cgi@">main menu</a>, some of them
+             are <em>protected</em> with a referrer check though.
+             If you got caught by the referrer check, but are <strong>absolutely</strong> sure
+             you know what you are doing, please <a title="Retry from a trusted referrer"
+              href="@url@">try again</a>.</p>
+
+          <p>If the <q>Referer:</q> header is blocked, you'll have to make an exception for
+             Privoxy's web interface first. Note that <em>dumb</em> referrer blocking
+             is a bad idea anyway, as it makes it easier to fingerprint your
+             requests. Consider using Privoxy's conditional referrer block instead.</p>
       </td>
     </tr>
 
@@ -136,12 +163,6 @@
     </tr>
 <!-- if-have-help-info-end@ -->
     
-    <tr>
-      <td>
-        <p class="small">Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></p>
-      </td>
-    </tr>
-
   </table>
 
 </body>

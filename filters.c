@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.66 2006/09/23 13:26:38 roro Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.97 2007/11/30 15:37:03 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
@@ -10,9 +10,10 @@ const char filters_rcs[] = "$Id: filters.c,v 1.66 2006/09/23 13:26:38 roro Exp $
  *                   `filter_popups', `forward_url', 'redirect_url',
  *                   `ij_untrusted_url', `intercept_url', `pcrs_filter_respose',
  *                   `ijb_send_banner', `trust_url', `gif_deanimate_response',
- *                   `jpeg_inspect_response'
+ *                   `jpeg_inspect_response', `execute_single_pcrs_command',
+ *                   `rewrite_url', `get_last_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001, 2004 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001, 2004-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -39,6 +40,139 @@ const char filters_rcs[] = "$Id: filters.c,v 1.66 2006/09/23 13:26:38 roro Exp $
  *
  * Revisions   :
  *    $Log: filters.c,v $
+ *    Revision 1.97  2007/11/30 15:37:03  fabiankeil
+ *    Use freez instead of free.
+ *
+ *    Revision 1.96  2007/10/19 16:53:28  fabiankeil
+ *    Add helper function to check if any content filters are enabled.
+ *
+ *    Revision 1.95  2007/10/17 19:31:20  fabiankeil
+ *    Omitting the zero chunk that ends the chunk transfer encoding seems
+ *    to be the new black. Log the problem and continue filtering anyway.
+ *
+ *    Revision 1.94  2007/09/29 13:20:20  fabiankeil
+ *    Remove two redundant and one useless log messages.
+ *
+ *    Revision 1.93  2007/09/29 10:21:16  fabiankeil
+ *    - Move get_filter_function() from jcc.c to filters.c
+ *      so the filter functions can be static.
+ *    - Don't bother filtering body-less responses.
+ *
+ *    Revision 1.92  2007/09/28 16:38:55  fabiankeil
+ *    - Execute content filters through execute_content_filter().
+ *    - Add prepare_for_filtering() so filter functions don't have to
+ *      care about de-chunking and decompression. As a side effect this enables
+ *      decompression for gif_deanimate_response() and jpeg_inspect_response().
+ *    - Change remove_chunked_transfer_coding()'s return type to jb_err.
+ *      Some clowns feel like chunking empty responses in which case
+ *      (size == 0) is valid but previously would be interpreted as error.
+ *
+ *    Revision 1.91  2007/09/02 15:31:20  fabiankeil
+ *    Move match_portlist() from filter.c to urlmatch.c.
+ *    It's used for url matching, not for filtering.
+ *
+ *    Revision 1.90  2007/09/02 12:44:17  fabiankeil
+ *    Remove newline at the end of a log_error() message.
+ *
+ *    Revision 1.89  2007/08/05 13:42:23  fabiankeil
+ *    #1763173 from Stefan Huehner: declare some more functions static.
+ *
+ *    Revision 1.88  2007/06/01 16:41:11  fabiankeil
+ *    Add forward-override{} to change the forwarding settings through
+ *    action sections. This is mainly interesting to forward different
+ *    clients differently (for example based on User-Agent or request
+ *    origin).
+ *
+ *    Revision 1.87  2007/04/30 15:53:10  fabiankeil
+ *    Make sure filters with dynamic jobs actually use them.
+ *
+ *    Revision 1.86  2007/04/30 15:03:28  fabiankeil
+ *    - Introduce dynamic pcrs jobs that can resolve variables.
+ *    - Don't run redirect functions more than once,
+ *      unless they are activated more than once.
+ *
+ *    Revision 1.85  2007/03/21 12:24:47  fabiankeil
+ *    - Log the content size after decompression in decompress_iob()
+ *      instead of pcrs_filter_response().
+ *
+ *    Revision 1.84  2007/03/20 15:16:34  fabiankeil
+ *    Use dedicated header filter actions instead of abusing "filter".
+ *    Replace "filter-client-headers" and "filter-client-headers"
+ *    with "server-header-filter" and "client-header-filter".
+ *
+ *    Revision 1.83  2007/03/17 15:20:05  fabiankeil
+ *    New config option: enforce-blocks.
+ *
+ *    Revision 1.82  2007/03/13 11:28:43  fabiankeil
+ *    - Fix port handling in acl_addr() and use a temporary acl spec
+ *      copy so error messages don't contain a truncated version.
+ *    - Log size of iob before and after decompression.
+ *
+ *    Revision 1.81  2007/03/05 14:40:53  fabiankeil
+ *    - Cosmetical changes for LOG_LEVEL_RE_FILTER messages.
+ *    - Hide the "Go there anyway" link for blocked CONNECT
+ *      requests where going there anyway doesn't work anyway.
+ *
+ *    Revision 1.80  2007/02/07 10:55:20  fabiankeil
+ *    - Save the reason for generating http_responses.
+ *    - Block (+block) with status code 403 instead of 404.
+ *    - Use a different kludge to remember a failed decompression.
+ *
+ *    Revision 1.79  2007/01/31 16:21:38  fabiankeil
+ *    Search for Max-Forwards headers case-insensitive,
+ *    don't generate the "501 unsupported" message for invalid
+ *    Max-Forwards values and don't increase negative ones.
+ *
+ *    Revision 1.78  2007/01/28 13:41:18  fabiankeil
+ *    - Add HEAD support to finish_http_response.
+ *    - Add error favicon to internal HTML error messages.
+ *
+ *    Revision 1.77  2007/01/12 15:36:44  fabiankeil
+ *    Mark *csp as immutable for is_untrusted_url()
+ *    and is_imageurl(). Closes FR 1237736.
+ *
+ *    Revision 1.76  2007/01/01 19:36:37  fabiankeil
+ *    Integrate a modified version of Wil Mahan's
+ *    zlib patch (PR #895531).
+ *
+ *    Revision 1.75  2006/12/29 18:30:46  fabiankeil
+ *    Fixed gcc43 conversion warnings,
+ *    changed sprintf calls to snprintf.
+ *
+ *    Revision 1.74  2006/12/24 17:37:38  fabiankeil
+ *    Adjust comment in pcrs_filter_response()
+ *    to recent pcrs changes. Hohoho.
+ *
+ *    Revision 1.73  2006/12/23 16:01:02  fabiankeil
+ *    Don't crash if pcre returns an error code
+ *    that pcrs didn't expect. Fixes BR 1621173.
+ *
+ *    Revision 1.72  2006/12/22 18:52:53  fabiankeil
+ *    Modified is_untrusted_url to complain in case of
+ *    write errors and to give a reason when adding new
+ *    entries to the trustfile. Closes FR 1097611.
+ *
+ *    Revision 1.71  2006/12/22 14:24:52  fabiankeil
+ *    Skip empty filter files in pcrs_filter_response,
+ *    but don't ignore the ones that come afterwards.
+ *    Fixes parts of BR 1619208.
+ *
+ *    Revision 1.70  2006/12/09 13:33:15  fabiankeil
+ *    Added some sanity checks for get_last_url().
+ *    Fixed possible segfault caused by my last commit.
+ *
+ *    Revision 1.69  2006/12/08 12:39:13  fabiankeil
+ *    Let get_last_url() catch https URLs as well.
+ *
+ *    Revision 1.68  2006/12/05 14:45:48  fabiankeil
+ *    Make sure get_last_url() behaves like advertised
+ *    and fast-redirects{} can be combined with redirect{}.
+ *
+ *    Revision 1.67  2006/11/28 15:19:43  fabiankeil
+ *    Implemented +redirect{s@foo@bar@} to generate
+ *    a redirect based on a rewritten version of the
+ *    original URL.
+ *
  *    Revision 1.66  2006/09/23 13:26:38  roro
  *    Replace TABs by spaces in source code.
  *
@@ -498,6 +632,7 @@ const char filters_rcs[] = "$Id: filters.c,v 1.66 2006/09/23 13:26:38 roro Exp $
 #include "list.h"
 #include "deanimate.h"
 #include "urlmatch.h"
+#include "loaders.h"
 
 #ifdef _WIN32
 #include "win32.h"
@@ -514,6 +649,8 @@ const char filters_h_rcs[] = FILTERS_H_VERSION;
  */
 #define ijb_isdigit(__X) isdigit((int)(unsigned char)(__X))
 
+static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size);
+static jb_err prepare_for_filtering(struct client_state *csp);
 
 #ifdef FEATURE_ACL
 /*********************************************************************
@@ -589,20 +726,33 @@ int block_acl(struct access_control_addr *dst, struct client_state *csp)
  * Returns     :  0 => Ok, everything else is an error.
  *
  *********************************************************************/
-int acl_addr(char *aspec, struct access_control_addr *aca)
+int acl_addr(const char *aspec, struct access_control_addr *aca)
 {
-   int i, masklength, port;
+   int i, masklength;
+   long port;
    char *p;
+   char *acl_spec = NULL;
 
    masklength = 32;
    port       =  0;
 
-   if ((p = strchr(aspec, '/')) != NULL)
+   /*
+    * Use a temporary acl spec copy so we can log
+    * the unmodified original in case of parse errors.
+    */
+   acl_spec = strdup(aspec);
+   if (acl_spec == NULL)
+   {
+      /* XXX: This will be logged as parse error. */
+      return(-1);
+   }
+
+   if ((p = strchr(acl_spec, '/')) != NULL)
    {
       *p++ = '\0';
-
       if (ijb_isdigit(*p) == 0)
       {
+         freez(acl_spec);
          return(-1);
       }
       masklength = atoi(p);
@@ -610,26 +760,32 @@ int acl_addr(char *aspec, struct access_control_addr *aca)
 
    if ((masklength < 0) || (masklength > 32))
    {
+      freez(acl_spec);
       return(-1);
    }
 
-   if ((p = strchr(aspec, ':')) != NULL)
+   if ((p = strchr(acl_spec, ':')) != NULL)
    {
-      *p++ = '\0';
+      char *endptr;
 
-      if (ijb_isdigit(*p) == 0)
+      *p++ = '\0';
+      port = strtol(p, &endptr, 10);
+
+      if (port <= 0 || port > 65535 || *endptr != '\0')
       {
+         freez(acl_spec);
          return(-1);
       }
-      port = atoi(p);
    }
 
-   aca->port = port;
+   aca->port = (unsigned long)port;
 
-   aca->addr = ntohl(resolve_hostname_to_ip(aspec));
+   aca->addr = ntohl(resolve_hostname_to_ip(acl_spec));
+   freez(acl_spec);
 
    if (aca->addr == INADDR_NONE)
    {
+      /* XXX: This will be logged as parse error. */
       return(-1);
    }
 
@@ -649,86 +805,6 @@ int acl_addr(char *aspec, struct access_control_addr *aca)
 
 }
 #endif /* def FEATURE_ACL */
-
-
-/*********************************************************************
- *
- * Function    :  match_portlist
- *
- * Description :  Check if a given number is covered by a comma
- *                separated list of numbers and ranges (a,b-c,d,..)
- *
- * Parameters  :
- *          1  :  portlist = String with list
- *          2  :  port = port to check
- *
- * Returns     :  0 => no match
- *                1 => match
- *
- *********************************************************************/
-int match_portlist(const char *portlist, int port)
-{
-   char *min, *max, *next, *portlist_copy;
-
-   min = next = portlist_copy = strdup(portlist);
-
-   /*
-    * Zero-terminate first item and remember offset for next
-    */
-   if (NULL != (next = strchr(portlist_copy, (int) ',')))
-   {
-      *next++ = '\0';
-   }
-
-   /*
-    * Loop through all items, checking for match
-    */
-   while(min)
-   {
-      if (NULL == (max = strchr(min, (int) '-')))
-      {
-         /*
-          * No dash, check for equality
-          */
-         if (port == atoi(min))
-         {
-            free(portlist_copy);
-            return(1);
-         }
-      }
-      else
-      {
-         /*
-          * This is a range, so check if between min and max,
-          * or, if max was omitted, between min and 65K
-          */
-         *max++ = '\0';
-         if(port >= atoi(min) && port <= (atoi(max) ? atoi(max) : 65535))
-         {
-            free(portlist_copy);
-            return(1);
-         }
-
-      }
-
-      /*
-       * Jump to next item
-       */
-      min = next;
-
-      /*
-       * Zero-terminate next item and remember offset for n+1
-       */
-      if ((NULL != next) && (NULL != (next = strchr(next, (int) ','))))
-      {
-         *next++ = '\0';
-      }
-   }
-
-   free(portlist_copy);
-   return 0;
-
-}
 
 
 /*********************************************************************
@@ -899,7 +975,6 @@ struct http_response *block_url(struct client_state *csp)
             return cgi_error_memory();
          }
       }
-
    }
    else
 #endif /* def FEATURE_IMAGE_BLOCKING */
@@ -928,7 +1003,7 @@ struct http_response *block_url(struct client_state *csp)
       }
       else
       {
-         rsp->status = strdup("404 Request for blocked URL");
+         rsp->status = strdup("403 Request for blocked URL");
       }
 
       if (rsp->status == NULL)
@@ -946,7 +1021,15 @@ struct http_response *block_url(struct client_state *csp)
 
 #ifdef FEATURE_FORCE_LOAD
       err = map(exports, "force-prefix", 1, FORCE_PREFIX, 1);
-      if (csp->http->ssl != 0)
+      /*
+       * Export the force conditional block killer if
+       *
+       * - Privoxy was compiled without FEATURE_FORCE_LOAD, or
+       * - Privoxy is configured to enforce blocks, or
+       * - it's a CONNECT request and enforcing wouldn't work anyway.
+       */
+      if ((csp->config->feature_flags & RUNTIME_FEATURE_ENFORCE_BLOCKS)
+       || (0 == strcmpic(csp->http->gpc, "connect")))
 #endif /* ndef FEATURE_FORCE_LOAD */
       {
          err = map_block_killer(exports, "force-support");
@@ -971,8 +1054,9 @@ struct http_response *block_url(struct client_state *csp)
          return cgi_error_memory();
       }
    }
+   rsp->reason = RSP_REASON_BLOCKED;
 
-   return finish_http_response(rsp);
+   return finish_http_response(csp, rsp);
 
 }
 
@@ -1054,7 +1138,7 @@ struct http_response *trust_url(struct client_state *csp)
    p = strdup("");
    for (tl = csp->config->trust_list; (t = *tl) != NULL ; tl++)
    {
-      sprintf(buf, "<li>%s</li>\n", t->spec);
+      snprintf(buf, sizeof(buf), "<li>%s</li>\n", t->spec);
       string_append(&p, buf);
    }
    err = map(exports, "trusted-referrers", 1, p, 0);
@@ -1076,7 +1160,7 @@ struct http_response *trust_url(struct client_state *csp)
       p = strdup("");
       for (l = csp->config->trust_info->first; l ; l = l->next)
       {
-         sprintf(buf, "<li> <a href=\"%s\">%s</a><br>\n",l->str, l->str);
+         snprintf(buf, sizeof(buf), "<li> <a href=\"%s\">%s</a><br>\n", l->str, l->str);
          string_append(&p, buf);
       }
       err = map(exports, "trust-info", 1, p, 0);
@@ -1094,10 +1178,22 @@ struct http_response *trust_url(struct client_state *csp)
    }
 
    /*
-    * Export the force prefix or the force conditional block killer
+    * Export the force conditional block killer if
+    *
+    * - Privoxy was compiled without FEATURE_FORCE_LOAD, or
+    * - Privoxy is configured to enforce blocks, or
+    * - it's a CONNECT request and enforcing wouldn't work anyway.
     */
 #ifdef FEATURE_FORCE_LOAD
-   err = map(exports, "force-prefix", 1, FORCE_PREFIX, 1);
+   if ((csp->config->feature_flags & RUNTIME_FEATURE_ENFORCE_BLOCKS)
+    || (0 == strcmpic(csp->http->gpc, "connect")))
+   {
+      err = map_block_killer(exports, "force-support");
+   }
+   else
+   {
+      err = map(exports, "force-prefix", 1, FORCE_PREFIX, 1);
+   }
 #else /* ifndef FEATURE_FORCE_LOAD */
    err = map_block_killer(exports, "force-support");
 #endif /* ndef FEATURE_FORCE_LOAD */
@@ -1118,112 +1214,357 @@ struct http_response *trust_url(struct client_state *csp)
       free_http_response(rsp);
       return cgi_error_memory();
    }
+   rsp->reason = RSP_REASON_UNTRUSTED;
 
-   return finish_http_response(rsp);
+   return finish_http_response(csp, rsp);
 }
 #endif /* def FEATURE_TRUST */
+
+
+/*********************************************************************
+ *
+ * Function    :  compile_dynamic_pcrs_job_list
+ *
+ * Description :  Compiles a dynamic pcrs job list (one with variables
+ *                resolved at request time)
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  b = The filter list to compile
+ *
+ * Returns     :  NULL in case of errors, otherwise the
+ *                pcrs job list.  
+ *
+ *********************************************************************/
+pcrs_job *compile_dynamic_pcrs_job_list(const struct client_state *csp, const struct re_filterfile_spec *b)
+{
+   struct list_entry *pattern;
+   pcrs_job *job_list = NULL;
+   pcrs_job *dummy = NULL;
+   pcrs_job *lastjob = NULL;
+   int error = 0;
+
+   const struct pcrs_variable variables[] =
+   {
+      {"url",    csp->http->url,   1},
+      {"path",   csp->http->path,  1},
+      {"host",   csp->http->host,  1},
+      {"origin", csp->ip_addr_str, 1},
+      {NULL,     NULL,             1}
+   };
+
+   for (pattern = b->patterns->first; pattern != NULL; pattern = pattern->next)
+   {
+      assert(pattern->str != NULL);
+
+      dummy = pcrs_compile_dynamic_command(pattern->str, variables, &error);
+      if (NULL == dummy)
+      {
+         assert(error < 0);
+         log_error(LOG_LEVEL_ERROR,
+            "Adding filter job \'%s\' to dynamic filter %s failed: %s",
+            pattern->str, b->name, pcrs_strerror(error));
+         continue;
+      }
+      else
+      {
+         if (error == PCRS_WARN_TRUNCATION)
+         {
+            log_error(LOG_LEVEL_ERROR,
+               "At least one of the variables in \'%s\' had to "
+               "be truncated before compilation", pattern->str);
+         }
+         if (job_list == NULL)
+         {
+            job_list = dummy;
+         }
+         else
+         {
+            lastjob->next = dummy;
+         }
+         lastjob = dummy;
+      }
+   }
+
+   return job_list;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  rewrite_url
+ *
+ * Description :  Rewrites a URL with a single pcrs command
+ *                and returns the result if it differs from the
+ *                original and isn't obviously invalid.
+ *
+ * Parameters  :
+ *          1  :  old_url = URL to rewrite.
+ *          2  :  pcrs_command = pcrs command formatted as string (s@foo@bar@)
+ *
+ *
+ * Returns     :  NULL if the pcrs_command didn't change the url, or 
+ *                the result of the modification.
+ *
+ *********************************************************************/
+char *rewrite_url(char *old_url, const char *pcrs_command)
+{
+   char *new_url = NULL;
+   int hits;
+
+   assert(old_url);
+   assert(pcrs_command);
+
+   new_url = pcrs_execute_single_command(old_url, pcrs_command, &hits);
+
+   if (hits == 0)
+   {
+      log_error(LOG_LEVEL_REDIRECTS,
+         "pcrs command \"%s\" didn't change \"%s\".",
+         pcrs_command, old_url);
+      freez(new_url);
+   }
+   else if (hits < 0)
+   {
+      log_error(LOG_LEVEL_REDIRECTS,
+         "executing pcrs command \"%s\" to rewrite %s failed: %s",
+         pcrs_command, old_url, pcrs_strerror(hits));
+      freez(new_url);
+   }
+   else if (strncmpic(new_url, "http://", 7) && strncmpic(new_url, "https://", 8))
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "pcrs command \"%s\" changed \"%s\" to \"%s\" (%u hi%s), "
+         "but the result doesn't look like a valid URL and will be ignored.",
+         pcrs_command, old_url, new_url, hits, (hits == 1) ? "t" : "ts");
+      freez(new_url);
+   }
+   else
+   {
+      log_error(LOG_LEVEL_REDIRECTS,
+         "pcrs command \"%s\" changed \"%s\" to \"%s\" (%u hi%s).",
+         pcrs_command, old_url, new_url, hits, (hits == 1) ? "t" : "ts");
+   }
+
+   return new_url;
+
+}
 
 
 #ifdef FEATURE_FAST_REDIRECTS
 /*********************************************************************
  *
+ * Function    :  get_last_url
+ *
+ * Description :  Search for the last URL inside a string.
+ *                If the string already is a URL, it will
+ *                be the first URL found.
+ *
+ * Parameters  :
+ *          1  :  subject = the string to check
+ *          2  :  redirect_mode = +fast-redirect{} mode 
+ *
+ * Returns     :  NULL if no URL was found, or
+ *                the last URL found.
+ *
+ *********************************************************************/
+char *get_last_url(char *subject, const char *redirect_mode)
+{
+   char *new_url = NULL;
+   char *tmp;
+
+   assert(subject);
+   assert(redirect_mode);
+
+   subject = strdup(subject);
+   if (subject == NULL)
+   {
+      log_error(LOG_LEVEL_ERROR, "Out of memory while searching for redirects.");
+      return NULL;
+   }
+
+   if (0 == strcmpic(redirect_mode, "check-decoded-url"))
+   {  
+      log_error(LOG_LEVEL_REDIRECTS, "Decoding \"%s\" if necessary.", subject);
+      new_url = url_decode(subject);
+      if (new_url != NULL)
+      {
+         freez(subject);
+         subject = new_url;
+      }
+      else
+      {
+         log_error(LOG_LEVEL_ERROR, "Unable to decode \"%s\".", subject);
+      }
+   }
+
+   log_error(LOG_LEVEL_REDIRECTS, "Checking \"%s\" for redirects.", subject);
+
+   /*
+    * Find the last URL encoded in the request
+    */
+   tmp = subject;
+   while ((tmp = strstr(tmp, "http://")) != NULL)
+   {
+      new_url = tmp++;
+   }
+   tmp = (new_url != NULL) ? new_url : subject;
+   while ((tmp = strstr(tmp, "https://")) != NULL)
+   {
+      new_url = tmp++;
+   }
+
+   if ((new_url != NULL)
+      && (  (new_url != subject)
+         || (0 == strncmpic(subject, "http://", 7))
+         || (0 == strncmpic(subject, "https://", 8))
+         ))
+   {
+      /*
+       * Return new URL if we found a redirect 
+       * or if the subject already was a URL.
+       *
+       * The second case makes sure that we can
+       * chain get_last_url after another redirection check
+       * (like rewrite_url) without losing earlier redirects.
+       */
+      new_url = strdup(new_url);
+      freez(subject);
+      return new_url;
+   }
+
+   freez(subject);
+   return NULL;
+
+}
+#endif /* def FEATURE_FAST_REDIRECTS */
+
+
+/*********************************************************************
+ *
  * Function    :  redirect_url
  *
- * Description :  Checks for redirection URLs and returns a HTTP redirect
- *                to the destination URL, if necessary
+ * Description :  Checks if Privoxy should answer the request with
+ *                a HTTP redirect and generates the redirect if
+ *                necessary.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *
- * Returns     :  NULL if URL was clean, HTTP redirect otherwise.
+ * Returns     :  NULL if the request can pass, HTTP redirect otherwise.
  *
  *********************************************************************/
 struct http_response *redirect_url(struct client_state *csp)
 {
-   char *p, *q;
    struct http_response *rsp;
-   char *redirect_mode = NULL;
-   int x, y;
+#ifdef FEATURE_FAST_REDIRECTS
+   /*
+    * XXX: Do we still need FEATURE_FAST_REDIRECTS
+    * as compile-time option? The user can easily disable
+    * it in his action file.
+    */
+   char * redirect_mode;
+#endif /* def FEATURE_FAST_REDIRECTS */
+   char *old_url = NULL;
+   char *new_url = NULL;
+   char *redirection_string;
 
    if ((csp->action->flags & ACTION_REDIRECT))
    {
-      q = csp->action->string[ACTION_STRING_REDIRECT];
-   }
-   else if ((csp->action->flags & ACTION_FAST_REDIRECTS))
-   {
-      redirect_mode = csp->action->string[ACTION_STRING_FAST_REDIRECTS];
-      if (0 == strcmpic(redirect_mode, "check-decoded-url"))
-      {  
-         p = q = csp->http->path; 
-         log_error(LOG_LEVEL_REDIRECTS, "Decoding path: %s if necessary.", p);
-         while (*p)
-         {
-            if (*p == '%') /* Escape sequence? */
-            {
-               /* Yes, translate from hexadecimal to decimal */
-               p++;
-               /* First byte */
-               x=((int)*p++)-48;
-               if (x>9) x-=7;
-               x<<=4;
-               /* Second byte */
-               y=((int)*p++)-48;
-               if (y>9)y-=7;
-               /* Merge */
-               *q++=(char)(x|y);
-            }
-            else
-            {
-               /* No, forward character. */
-               *q++=*p++;
-            }
-         }
-         *q='\0';
-      }
-      p = q = csp->http->path;
-      log_error(LOG_LEVEL_REDIRECTS, "Checking path for redirects: %s", p);
+      redirection_string = csp->action->string[ACTION_STRING_REDIRECT];
 
       /*
-       * find the last URL encoded in the request
+       * If the redirection string begins with 's',
+       * assume it's a pcrs command, otherwise treat it as
+       * properly formatted URL and use it for the redirection
+       * directly.
+       *
+       * According to RFC 2616 section 14.30 the URL
+       * has to be absolute and if the user tries:
+       * +redirect{shit/this/will/be/parsed/as/pcrs_command.html}
+       * she would get undefined results anyway.
+       *
        */
-      while ((p = strstr(p, "http://")) != NULL)
+
+      if (*redirection_string == 's')
       {
-         q = p++;
+         old_url = csp->http->url;
+         new_url = rewrite_url(old_url, redirection_string);
+      }
+      else
+      {
+         log_error(LOG_LEVEL_REDIRECTS,
+            "No pcrs command recognized, assuming that \"%s\" is already properly formatted.",
+            redirection_string);
+         new_url = strdup(redirection_string);
       }
    }
-   else
+
+#ifdef FEATURE_FAST_REDIRECTS
+   if ((csp->action->flags & ACTION_FAST_REDIRECTS))
    {
-      /* All redirection actions are disabled */
-      return NULL;
+      redirect_mode = csp->action->string[ACTION_STRING_FAST_REDIRECTS];
+
+      /*
+       * If it exists, use the previously rewritten URL as input
+       * otherwise just use the old path.
+       */
+      old_url = (new_url != NULL) ? new_url : strdup(csp->http->path);
+      new_url = get_last_url(old_url, redirect_mode);
+      freez(old_url);
    }
+
    /*
-    * if there was any, generate and return a HTTP redirect
+    * Disable redirect checkers, so that they
+    * will be only run more than once if the user
+    * also enables them through tags.
+    *
+    * From a performance point of view
+    * it doesn't matter, but the duplicated
+    * log messages are annoying.
     */
-   if (q != csp->http->path)
+   csp->action->flags &= ~ACTION_FAST_REDIRECTS;
+#endif /* def FEATURE_FAST_REDIRECTS */
+   csp->action->flags &= ~ACTION_REDIRECT;
+
+   /* Did any redirect action trigger? */   
+   if (new_url)
    {
-      log_error(LOG_LEVEL_REDIRECTS, "redirecting to: %s", q);
-
-      if (NULL == (rsp = alloc_http_response()))
+      if (0 == strcmpic(new_url, csp->http->url))
       {
-         return cgi_error_memory();
+         log_error(LOG_LEVEL_ERROR,
+            "New URL \"%s\" and old URL \"%s\" are the same. Redirection loop prevented.",
+            csp->http->url, new_url);
+            freez(new_url);
       }
-
-      if ( enlist_unique_header(rsp->headers, "Location", q)
-        || (NULL == (rsp->status = strdup("302 Local Redirect from Privoxy"))) )
+      else
       {
-         free_http_response(rsp);
-         return cgi_error_memory();
-      }
+         log_error(LOG_LEVEL_REDIRECTS, "New URL is: %s", new_url);
 
-      return finish_http_response(rsp);
+         if (NULL == (rsp = alloc_http_response()))
+         {
+            freez(new_url);
+            return cgi_error_memory();
+         }
+
+         if ( enlist_unique_header(rsp->headers, "Location", new_url)
+           || (NULL == (rsp->status = strdup("302 Local Redirect from Privoxy"))) )
+         {
+            freez(new_url);
+            free_http_response(rsp);
+            return cgi_error_memory();
+         }
+         rsp->reason = RSP_REASON_REDIRECTED;
+         freez(new_url);
+
+         return finish_http_response(csp, rsp);
+      }
    }
-   else
-   {
-      return NULL;
-   }
+
+   /* Only reached if no redirect is required */
+   return NULL;
 
 }
-#endif /* def FEATURE_FAST_REDIRECTS */
 
 
 #ifdef FEATURE_IMAGE_BLOCKING
@@ -1244,7 +1585,7 @@ struct http_response *redirect_url(struct client_state *csp)
  *                otherwise
  *
  *********************************************************************/
-int is_imageurl(struct client_state *csp)
+int is_imageurl(const struct client_state *csp)
 {
 #ifdef FEATURE_IMAGE_DETECT_MSIE
    char *tmp;
@@ -1291,7 +1632,7 @@ int is_imageurl(struct client_state *csp)
  * Returns     :  0 => trusted, 1 => untrusted
  *
  *********************************************************************/
-int is_untrusted_url(struct client_state *csp)
+int is_untrusted_url(const struct client_state *csp)
 {
    struct file_list *fl;
    struct block_spec *b;
@@ -1343,7 +1684,7 @@ int is_untrusted_url(struct client_state *csp)
       {
          /* if the URL's referrer is from a trusted referrer, then
           * add the target spec to the trustfile as an unblocked
-          * domain and return NULL (which means it's OK).
+          * domain and return 0 (which means it's OK).
           */
 
          FILE *fp;
@@ -1374,10 +1715,20 @@ int is_untrusted_url(struct client_state *csp)
                string_join(&new_entry, path);
             }
 
+            /*
+             * Give a reason for generating this entry.
+             */
+            string_append(&new_entry, " # Trusted referrer was: ");
+            string_append(&new_entry, referer);
+
             if (new_entry != NULL)
             {
-               fprintf(fp, "%s\n", new_entry);
-               free(new_entry);
+               if (-1 == fprintf(fp, "%s\n", new_entry))
+               {
+                  log_error(LOG_LEVEL_ERROR, "Failed to append \'%s\' to trustfile \'%s\': %E",
+                     new_entry, csp->config->trustfile);
+               }
+               freez(new_entry);
             }
             else
             {
@@ -1387,9 +1738,15 @@ int is_untrusted_url(struct client_state *csp)
 
             fclose(fp);
          }
+         else
+         {
+            log_error(LOG_LEVEL_ERROR, "Failed to append new entry for \'%s\' to trustfile \'%s\': %E",
+               csp->http->hostport, csp->config->trustfile);
+         }
          return 0;
       }
    }
+
    return 1;
 }
 #endif /* def FEATURE_TRUST */
@@ -1400,10 +1757,8 @@ int is_untrusted_url(struct client_state *csp)
  * Function    :  pcrs_filter_response
  *
  * Description :  Execute all text substitutions from all applying
- *                +filter actions on the text buffer that's been accumulated
- *                in csp->iob->buf. If this changes the contents, set
- *                csp->content_length to the modified size and raise the
- *                CSP_FLAG_MODIFIED flag.
+ *                +filter actions on the text buffer that's been
+ *                accumulated in csp->iob->buf.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -1412,12 +1767,13 @@ int is_untrusted_url(struct client_state *csp)
  *                or NULL if there were no hits or something went wrong
  *
  *********************************************************************/
-char *pcrs_filter_response(struct client_state *csp)
+static char *pcrs_filter_response(struct client_state *csp)
 {
    int hits=0;
    size_t size, prev_size;
 
-   char *old = csp->iob->cur, *new = NULL;
+   char *old = NULL;
+   char *new = NULL;
    pcrs_job *job;
 
    struct file_list *fl;
@@ -1433,7 +1789,6 @@ char *pcrs_filter_response(struct client_state *csp)
    {
       return(NULL);
    }
-   size = csp->iob->eod - csp->iob->cur;
 
    /*
     * Need to check the set of re_filterfiles...
@@ -1454,29 +1809,28 @@ char *pcrs_filter_response(struct client_state *csp)
    if (0 == found_filters)
    {
       log_error(LOG_LEVEL_ERROR, "Unable to get current state of regexp filtering.");
-         return(NULL);
+      return(NULL);
    }
 
-   /*
-    * If the body has a "chunked" transfer-encoding,
-    * get rid of it first, adjusting size and iob->eod
-    */
-   if (csp->flags & CSP_FLAG_CHUNKED)
-   {
-      log_error(LOG_LEVEL_RE_FILTER, "Need to de-chunk first");
-      if (0 == (size = remove_chunked_transfer_coding(csp->iob->cur, size)))
-      {
-         return(NULL);
-      }
-      csp->iob->eod = csp->iob->cur + size;
-      csp->flags |= CSP_FLAG_MODIFIED;
-   }
+   size = (size_t)(csp->iob->eod - csp->iob->cur);
+   old = csp->iob->cur;
 
    for (i = 0; i < MAX_AF_FILES; i++)
    {
      fl = csp->rlist[i];
      if ((NULL == fl) || (NULL == fl->f))
-       break;
+     {
+        /*
+         * Either there are no filter files
+         * left, or this filter file just
+         * contains no valid filters.
+         *
+         * Continue to be sure we don't miss
+         * valid filter files that are chained
+         * after empty or invalid ones.
+         */
+        continue;
+     }
    /*
     * For all applying +filter actions, look if a filter by that
     * name exists and if yes, execute it's pcrs_joblist on the
@@ -1484,14 +1838,25 @@ char *pcrs_filter_response(struct client_state *csp)
     */
    for (b = fl->f; b; b = b->next)
    {
+      if (b->type != FT_CONTENT_FILTER)
+      {
+         /* Skip header filters */
+         continue;
+      }
+
       for (filtername = csp->action->multi[ACTION_MULTI_FILTER]->first;
            filtername ; filtername = filtername->next)
       {
          if (strcmp(b->name, filtername->str) == 0)
          {
-            int current_hits = 0;
+            int current_hits = 0; /* Number of hits caused by this filter */
+            int job_number   = 0; /* Which job we're currently executing  */
+            int job_hits     = 0; /* How many hits the current job caused */
+            pcrs_job *joblist = b->joblist;
 
-            if ( NULL == b->joblist )
+            if (b->dynamic) joblist = compile_dynamic_pcrs_job_list(csp, b);
+
+            if (NULL == joblist)
             {
                log_error(LOG_LEVEL_RE_FILTER, "Filter %s has empty joblist. Nothing to do.", b->name);
                continue;
@@ -1499,15 +1864,54 @@ char *pcrs_filter_response(struct client_state *csp)
 
             prev_size = size;
             /* Apply all jobs from the joblist */
-            for (job = b->joblist; NULL != job; job = job->next)
+            for (job = joblist; NULL != job; job = job->next)
             {
-               current_hits += pcrs_execute(job, old, size, &new, &size);
-               if (old != csp->iob->cur) free(old);
-               old=new;
+               job_number++;
+               job_hits = pcrs_execute(job, old, size, &new, &size);
+
+               if (job_hits >= 0)
+               {
+                  /*
+                   * That went well. Continue filtering
+                   * and use the result of this job as
+                   * input for the next one.
+                   */
+                  current_hits += job_hits;
+                  if (old != csp->iob->cur)
+                  {
+                     freez(old);
+                  }
+                  old = new;
+               }
+               else
+               {
+                  /*
+                   * This job caused an unexpected error. Inform the user
+                   * and skip the rest of the jobs in this filter. We could
+                   * continue with the next job, but usually the jobs
+                   * depend on each other or are similar enough to
+                   * fail for the same reason.
+                   *
+                   * At the moment our pcrs expects the error codes of pcre 3.4,
+                   * but newer pcre versions can return additional error codes.
+                   * As a result pcrs_strerror()'s error message might be
+                   * "Unknown error ...", therefore we print the numerical value
+                   * as well.
+                   *
+                   * XXX: Is this important enough for LOG_LEVEL_ERROR or
+                   * should we use LOG_LEVEL_RE_FILTER instead?
+                   */
+                  log_error(LOG_LEVEL_ERROR, "Skipped filter \'%s\' after job number %u: %s (%d)",
+                     b->name, job_number, pcrs_strerror(job_hits), job_hits);
+                  break;
+               }
             }
 
-            log_error(LOG_LEVEL_RE_FILTER, "re_filtering %s%s (size %d) with filter %s produced %d hits (new size %d).",
-                      csp->http->hostport, csp->http->path, prev_size, b->name, current_hits, size);
+            if (b->dynamic) pcrs_free_joblist(joblist);
+
+            log_error(LOG_LEVEL_RE_FILTER,
+               "filtering %s%s (size %d) with \'%s\' produced %d hits (new size %d).",
+               csp->http->hostport, csp->http->path, prev_size, b->name, current_hits, size);
 
             hits += current_hits;
          }
@@ -1521,7 +1925,7 @@ char *pcrs_filter_response(struct client_state *csp)
     */
    if (!hits)
    {
-      free(new);
+      freez(new);
       return(NULL);
    }
 
@@ -1549,26 +1953,13 @@ char *pcrs_filter_response(struct client_state *csp)
  *                or NULL in case something went wrong.
  *
  *********************************************************************/
-char *gif_deanimate_response(struct client_state *csp)
+static char *gif_deanimate_response(struct client_state *csp)
 {
    struct binbuffer *in, *out;
    char *p;
-   size_t size = csp->iob->eod - csp->iob->cur;
+   size_t size;
 
-   /*
-    * If the body has a "chunked" transfer-encoding,
-    * get rid of it first, adjusting size and iob->eod
-    */
-   if (csp->flags & CSP_FLAG_CHUNKED)
-   {
-      log_error(LOG_LEVEL_DEANIMATE, "Need to de-chunk first");
-      if (0 == (size = remove_chunked_transfer_coding(csp->iob->cur, size)))
-      {
-         return(NULL);
-      }
-      csp->iob->eod = csp->iob->cur + size;
-      csp->flags |= CSP_FLAG_MODIFIED;
-   }
+   size = (size_t)(csp->iob->eod - csp->iob->cur);
 
    if (  (NULL == (in =  (struct binbuffer *)zalloc(sizeof *in )))
       || (NULL == (out = (struct binbuffer *)zalloc(sizeof *out))) )
@@ -1583,7 +1974,7 @@ char *gif_deanimate_response(struct client_state *csp)
    if (gif_deanimate(in, out, strncmp("last", csp->action->string[ACTION_STRING_DEANIMATE], 4)))
    {
       log_error(LOG_LEVEL_DEANIMATE, "failed! (gif parsing)");
-      free(in);
+      freez(in);
       buf_free(out);
       return(NULL);
    }
@@ -1600,8 +1991,8 @@ char *gif_deanimate_response(struct client_state *csp)
       csp->content_length = out->offset;
       csp->flags |= CSP_FLAG_MODIFIED;
       p = out->buffer;
-      free(in);
-      free(out);
+      freez(in);
+      freez(out);
       return(p);
    }
 
@@ -1621,26 +2012,14 @@ char *gif_deanimate_response(struct client_state *csp)
  *                or NULL in case something went wrong.
  *
  *********************************************************************/
-char *jpeg_inspect_response(struct client_state *csp)
+static char *jpeg_inspect_response(struct client_state *csp)
 {
-   struct binbuffer *in = NULL, *out = NULL;
+   struct binbuffer  *in = NULL;
+   struct binbuffer *out = NULL;
    char *p = NULL;
-   size_t size = csp->iob->eod - csp->iob->cur;
+   size_t size;
 
-   /*
-    * If the body has a "chunked" transfer-encoding,
-    * get rid of it first, adjusting size and iob->eod
-    */
-   if (csp->flags & CSP_FLAG_CHUNKED)
-   {
-      log_error(LOG_LEVEL_DEANIMATE, "Need to de-chunk first");
-      if (0 == (size = remove_chunked_transfer_coding(csp->iob->cur, size)))
-      {
-         return(NULL);
-      }
-      csp->iob->eod = csp->iob->cur + size;
-      csp->flags |= CSP_FLAG_MODIFIED;
-   }
+   size = (size_t)(csp->iob->eod - csp->iob->cur);
 
    if (NULL == (in =  (struct binbuffer *)zalloc(sizeof *in )))
    {
@@ -1664,7 +2043,7 @@ char *jpeg_inspect_response(struct client_state *csp)
    if (jpeg_inspect(in, out))
    {
       log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg parsing)");
-      free(in);
+      freez(in);
       buf_free(out);
       return(NULL);
 
@@ -1674,11 +2053,92 @@ char *jpeg_inspect_response(struct client_state *csp)
       csp->content_length = out->offset;
       csp->flags |= CSP_FLAG_MODIFIED;
       p = out->buffer;
-      free(in);
-      free(out);
+      freez(in);
+      freez(out);
       return(p);
    }
 
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_filter_function
+ *
+ * Description :  Decides which content filter function has
+ *                to be applied (if any).
+ *
+ *                XXX: Doesn't handle filter_popups()
+ *                because of the different prototype. Probably
+ *                we should ditch filter_popups() anyway, it's
+ *                even less reliable than popup blocking based
+ *                on pcrs filters.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  The content filter function to run, or
+ *                NULL if no content filter is active
+ *
+ *********************************************************************/
+filter_function_ptr get_filter_function(struct client_state *csp)
+{
+   filter_function_ptr filter_function = NULL;
+
+   /*
+    * Are we enabling text mode by force?
+    */
+   if (csp->action->flags & ACTION_FORCE_TEXT_MODE)
+   {
+      /*
+       * Do we really have to?
+       */
+      if (csp->content_type & CT_TEXT)
+      {
+         log_error(LOG_LEVEL_HEADER, "Text mode is already enabled.");   
+      }
+      else
+      {
+         csp->content_type |= CT_TEXT;
+         log_error(LOG_LEVEL_HEADER, "Text mode enabled by force. Take cover!");   
+      }
+   }
+
+   if (!(csp->content_type & CT_DECLARED))
+   {
+      /*
+       * The server didn't bother to declare a MIME-Type.
+       * Assume it's text that can be filtered.
+       *
+       * This also regulary happens with 304 responses,
+       * therefore logging anything here would cause
+       * too much noise.
+       */
+      csp->content_type |= CT_TEXT;
+   }
+
+   /*
+    * Choose the applying filter function based on
+    * the content type and action settings.
+    */
+   if ((csp->content_type & CT_TEXT) &&
+       (csp->rlist != NULL) &&
+       (!list_is_empty(csp->action->multi[ACTION_MULTI_FILTER])))
+   {
+      filter_function = pcrs_filter_response;
+   }
+   else if ((csp->content_type & CT_GIF)  &&
+            (csp->action->flags & ACTION_DEANIMATE))
+   {
+      filter_function = gif_deanimate_response;
+   }
+   else if ((csp->content_type & CT_JPEG)  &&
+            (csp->action->flags & ACTION_JPEG_INSPECT))
+   {
+      filter_function = jpeg_inspect_response;
+   }
+
+   return filter_function;
 }
 
 
@@ -1691,14 +2151,15 @@ char *jpeg_inspect_response(struct client_state *csp)
  *
  * Parameters  :
  *          1  :  buffer = Pointer to the text buffer
- *          2  :  size = Number of bytes to be processed
+ *          2  :  size =  In: Number of bytes to be processed,
+ *                       Out: Number of bytes after de-chunking.
+ *                       (undefined in case of errors)
  *
- * Returns     :  The new size, i.e. the number of bytes from buffer which
- *                are occupied by the stripped body, or 0 in case something
- *                went wrong
+ * Returns     :  JB_ERR_OK for success,
+ *                JB_ERR_PARSE otherwise
  *
  *********************************************************************/
-int remove_chunked_transfer_coding(char *buffer, const size_t size)
+static jb_err remove_chunked_transfer_coding(char *buffer, size_t *size)
 {
    size_t newsize = 0;
    unsigned int chunksize = 0;
@@ -1710,7 +2171,7 @@ int remove_chunked_transfer_coding(char *buffer, const size_t size)
    if (sscanf(buffer, "%x", &chunksize) != 1)
    {
       log_error(LOG_LEVEL_ERROR, "Invalid first chunksize while stripping \"chunked\" transfer coding");
-      return(0);
+      return JB_ERR_PARSE;
    }
 
    while (chunksize > 0)
@@ -1718,13 +2179,13 @@ int remove_chunked_transfer_coding(char *buffer, const size_t size)
       if (NULL == (from_p = strstr(from_p, "\r\n")))
       {
          log_error(LOG_LEVEL_ERROR, "Parse error while stripping \"chunked\" transfer coding");
-         return(0);
+         return JB_ERR_PARSE;
       }
 
-      if ((newsize += chunksize) >= size)
+      if ((newsize += chunksize) >= *size)
       {
          log_error(LOG_LEVEL_ERROR, "Chunksize exceeds buffer in  \"chunked\" transfer coding");
-         return(0);
+         return JB_ERR_PARSE;
       }
       from_p += 2;
 
@@ -1734,15 +2195,138 @@ int remove_chunked_transfer_coding(char *buffer, const size_t size)
 
       if (sscanf(from_p, "%x", &chunksize) != 1)
       {
-         log_error(LOG_LEVEL_ERROR, "Parse error while stripping \"chunked\" transfer coding");
-         return(0);
+         log_error(LOG_LEVEL_INFO, "Invalid \"chunked\" transfer encoding detected and ignored.");
+         break;
+      }
+   }
+   
+   /* XXX: Should get its own loglevel. */
+   log_error(LOG_LEVEL_RE_FILTER, "De-chunking successful. Shrunk from %d to %d", *size, newsize);
+
+   *size = newsize;
+
+   return JB_ERR_OK;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  prepare_for_filtering
+ *
+ * Description :  If necessary, de-chunks and decompresses
+ *                the content so it can get filterd.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  JB_ERR_OK for success,
+ *                JB_ERR_PARSE otherwise
+ *
+ *********************************************************************/
+static jb_err prepare_for_filtering(struct client_state *csp)
+{
+   jb_err err = JB_ERR_OK;
+
+   /*
+    * If the body has a "chunked" transfer-encoding,
+    * get rid of it, adjusting size and iob->eod
+    */
+   if (csp->flags & CSP_FLAG_CHUNKED)
+   {
+      size_t size = (size_t)(csp->iob->eod - csp->iob->cur);
+
+      log_error(LOG_LEVEL_RE_FILTER, "Need to de-chunk first");
+      err = remove_chunked_transfer_coding(csp->iob->cur, &size);
+      if (JB_ERR_OK == err)
+      {
+         csp->iob->eod = csp->iob->cur + size;
+         csp->flags |= CSP_FLAG_MODIFIED;
+      }
+      else
+      {
+         return JB_ERR_PARSE;
       }
    }
 
-   /* FIXME: Should this get its own loglevel? */
-   log_error(LOG_LEVEL_RE_FILTER, "De-chunking successful. Shrunk from %d to %d\n", size, newsize);
-   return(newsize);
+#ifdef FEATURE_ZLIB
+   /*
+    * If the body has a supported transfer-encoding,
+    * decompress it, adjusting size and iob->eod.
+    */
+   if (csp->content_type & (CT_GZIP|CT_DEFLATE))
+   {
+      if (0 == csp->iob->eod - csp->iob->cur)
+      {
+         /* Nothing left after de-chunking. */
+         return JB_ERR_OK;
+      }
 
+      err = decompress_iob(csp);
+
+      if (JB_ERR_OK == err)
+      {
+         csp->flags |= CSP_FLAG_MODIFIED;
+         csp->content_type &= ~CT_TABOO;
+      }
+      else
+      {
+         /*
+          * Unset CT_GZIP and CT_DEFLATE to remember not
+          * to modify the Content-Encoding header later.
+          */
+         csp->content_type &= ~CT_GZIP;
+         csp->content_type &= ~CT_DEFLATE;
+      }
+   }
+#endif
+
+   return err;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  execute_content_filter
+ *
+ * Description :  Executes a given content filter.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  content_filter = The filter function to execute
+ *
+ * Returns     :  Pointer to the modified buffer, or
+ *                NULL if filtering failed or wasn't necessary.
+ *
+ *********************************************************************/
+char *execute_content_filter(struct client_state *csp, filter_function_ptr content_filter)
+{
+   if (0 == csp->iob->eod - csp->iob->cur)
+   {
+      /*
+       * No content (probably status code 301, 302 ...),
+       * no filtering necessary.
+       */
+      return NULL;
+   }
+
+   if (JB_ERR_OK != prepare_for_filtering(csp))
+   {
+      /*
+       * failed to de-chunk or decompress.
+       */
+      return NULL;
+   }
+
+   if (0 == csp->iob->eod - csp->iob->cur)
+   {
+      /*
+       * Clown alarm: chunked and/or compressed nothing delivered.
+       */
+      return NULL;
+   }
+
+   return ((*content_filter)(csp));
 }
 
 
@@ -1818,9 +2402,153 @@ void apply_url_actions(struct current_action_spec *action,
 
 /*********************************************************************
  *
+ * Function    :  get_forward_override_settings
+ *
+ * Description :  Returns forward settings as specified with the
+ *                forward-override{} action. forward-override accepts
+ *                forward lines similar to the one used in the
+ *                configuration file, but without the URL pattern.
+ *
+ *                For example:
+ *
+ *                   forward / .
+ *
+ *                in the configuration file can be replaced with
+ *                the action section:
+ *
+ *                 {+forward-override{forward .}}
+ *                 /
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  Pointer to forwarding structure in case of success.
+ *                Invalid syntax is fatal.
+ *
+ *********************************************************************/
+static const struct forward_spec *get_forward_override_settings(struct client_state *csp)
+{
+   const char *forward_override_line = csp->action->string[ACTION_STRING_FORWARD_OVERRIDE];
+   char forward_settings[BUFFER_SIZE];
+   char *http_parent = NULL;
+   /* variable names were chosen for consistency reasons. */
+   struct forward_spec *fwd = NULL;
+   int vec_count;
+   char *vec[3];
+
+   assert(csp->action->flags & ACTION_FORWARD_OVERRIDE);
+   /* Should be enforced by load_one_actions_file() */
+   assert(strlen(forward_override_line) < sizeof(forward_settings) - 1);
+
+   /* Create a copy ssplit can modify */
+   strlcpy(forward_settings, forward_override_line, sizeof(forward_settings));
+
+   if (NULL != csp->fwd)
+   {
+      /*
+       * XXX: Currently necessary to prevent memory
+       * leaks when the show-url-info cgi page is visited.
+       */
+      unload_forward_spec(csp->fwd);
+   }
+
+   /*
+    * allocate a new forward node, valid only for
+    * the lifetime of this request. Save its location
+    * in csp as well, so sweep() can free it later on.
+    */
+   fwd = csp->fwd = zalloc(sizeof(*fwd));
+   if (NULL == fwd)
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "can't allocate memory for forward-override{%s}", forward_override_line);
+      /* Never get here - LOG_LEVEL_FATAL causes program exit */
+   }
+
+   vec_count = ssplit(forward_settings, " \t", vec, SZ(vec), 1, 1);
+   if ((vec_count == 2) && !strcasecmp(vec[0], "forward"))
+   {
+      fwd->type = SOCKS_NONE;
+
+      /* Parse the parent HTTP proxy host:port */
+      http_parent = vec[1];
+
+   }
+   else if (vec_count == 3)
+   {
+      char *socks_proxy = NULL;
+
+      if  (!strcasecmp(vec[0], "forward-socks4"))
+      {
+         fwd->type = SOCKS_4;
+         socks_proxy = vec[1];
+      }
+      else if (!strcasecmp(vec[0], "forward-socks4a"))
+      {
+         fwd->type = SOCKS_4A;
+         socks_proxy = vec[1];
+      }
+
+      if (NULL != socks_proxy)
+      {
+         /* Parse the SOCKS proxy host[:port] */
+         fwd->gateway_host = strdup(socks_proxy);
+
+         if (NULL != (socks_proxy = strchr(fwd->gateway_host, ':')))
+         {
+            *socks_proxy++ = '\0';
+            fwd->gateway_port = strtol(socks_proxy, NULL, 0);
+         }
+
+         if (fwd->gateway_port <= 0)
+         {
+            fwd->gateway_port = 1080;
+         }
+
+         http_parent = vec[2];
+      }
+   }
+
+   if (NULL == http_parent)
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Invalid forward-override syntax in: %s", forward_override_line);
+      /* Never get here - LOG_LEVEL_FATAL causes program exit */
+   }
+
+   /* Parse http forwarding settings */
+   if (strcmp(http_parent, ".") != 0)
+   {
+      fwd->forward_host = strdup(http_parent);
+
+      if (NULL != (http_parent = strchr(fwd->forward_host, ':')))
+      {
+         *http_parent++ = '\0';
+         fwd->forward_port = strtol(http_parent, NULL, 0);
+      }
+
+      if (fwd->forward_port <= 0)
+      {
+         fwd->forward_port = 8000;
+      }
+   }
+
+   assert (NULL != fwd);
+
+   log_error(LOG_LEVEL_CONNECT,
+      "Overriding forwarding settings based on \'%s\'", forward_override_line);
+
+   return fwd;
+}
+
+
+/*********************************************************************
+ *
  * Function    :  forward_url
  *
  * Description :  Should we forward this to another proxy?
+ *
+ *                XXX: Should be changed to make use of csp->fwd.
  *
  * Parameters  :
  *          1  :  http = http_request request for current URL
@@ -1834,6 +2562,11 @@ const struct forward_spec * forward_url(struct http_request *http,
 {
    static const struct forward_spec fwd_default[1] = { FORWARD_SPEC_INITIALIZER };
    struct forward_spec *fwd = csp->config->forward;
+
+   if (csp->action->flags & ACTION_FORWARD_OVERRIDE)
+   {
+      return get_forward_override_settings(csp);
+   }
 
    if (fwd == NULL)
    {
@@ -1880,35 +2613,68 @@ struct http_response *direct_response(struct client_state *csp)
    {
       for (p = csp->headers->first; (p != NULL) ; p = p->next)
       {
-         if (!strncmp("Max-Forwards:", p->str, 13)
-             && (*(p->str+13) != '\0') && (atoi(p->str+13) == 0))
+         if (!strncmpic("Max-Forwards:", p->str, 13))
          {
-            /* FIXME: We could handle at least TRACE here,
-               but that would require a verbatim copy of
-               the request which we don't have anymore */
+            unsigned int max_forwards;
 
-            log_error(LOG_LEVEL_HEADER, "Found Max-Forwards:0 in OPTIONS or TRACE request -- Returning 501");
-
-            /* Get mem for response or fail*/
-            if (NULL == (rsp = alloc_http_response()))
+            /*
+             * If it's a Max-Forwards value of zero,
+             * we have to intercept the request.
+             */
+            if (1 == sscanf(p->str+12, ": %u", &max_forwards) && max_forwards == 0)
             {
-               return cgi_error_memory();
-            }
+               /*
+                * FIXME: We could handle at least TRACE here,
+                * but that would require a verbatim copy of
+                * the request which we don't have anymore
+                */
+                log_error(LOG_LEVEL_HEADER,
+                  "Detected header \'%s\' in OPTIONS or TRACE request. Returning 501.",
+                  p->str);
+
+               /* Get mem for response or fail*/
+               if (NULL == (rsp = alloc_http_response()))
+               {
+                  return cgi_error_memory();
+               }
             
-            if (NULL == (rsp->status = strdup("501 Not Implemented")))
-            {
-               free_http_response(rsp);
-               return cgi_error_memory();
-            }
+               if (NULL == (rsp->status = strdup("501 Not Implemented")))
+               {
+                  free_http_response(rsp);
+                  return cgi_error_memory();
+               }
 
-            rsp->is_static = 1;
-            return(finish_http_response(rsp));
+               rsp->is_static = 1;
+               rsp->reason = RSP_REASON_UNSUPPORTED;
+
+               return(finish_http_response(csp, rsp));
+            }
          }
       }
    }
    return NULL;
 }
 
+
+/*********************************************************************
+ *
+ * Function    :  content_filters_enabled
+ *
+ * Description :  Checks whether there are any content filters
+ *                enabled for the current request.
+ *
+ * Parameters  :  
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  TRUE for yes, FALSE otherwise
+ *
+ *********************************************************************/
+inline int content_filters_enabled(const struct client_state *csp)
+{
+   return (((csp->rlist != NULL) &&
+      (!list_is_empty(csp->action->multi[ACTION_MULTI_FILTER]))) ||
+      (csp->action->flags & (ACTION_DEANIMATE|ACTION_JPEG_INSPECT|ACTION_NO_POPUPS)));
+}
 
 /*
   Local Variables:

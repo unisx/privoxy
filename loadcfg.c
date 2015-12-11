@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.54 2006/10/21 16:04:22 fabiankeil Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.69 2007/10/27 13:02:27 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -8,7 +8,7 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.54 2006/10/21 16:04:22 fabiankeil
  *                routine to load the configuration and the global
  *                variables it writes to.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,69 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.54 2006/10/21 16:04:22 fabiankeil
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.69  2007/10/27 13:02:27  fabiankeil
+ *    Relocate daemon-mode-related log messages to make sure
+ *    they aren't shown again in case of configuration reloads.
+ *
+ *    Revision 1.68  2007/10/19 16:32:34  fabiankeil
+ *    Plug memory leak introduced with my last commit.
+ *
+ *    Revision 1.67  2007/10/14 14:12:41  fabiankeil
+ *    When in daemon mode, close stderr after the configuration file has been
+ *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
+ *
+ *    Revision 1.66  2007/08/05 14:02:09  fabiankeil
+ *    #1763173 from Stefan Huehner: declare unload_configfile() static.
+ *
+ *    Revision 1.65  2007/07/21 11:51:36  fabiankeil
+ *    As Hal noticed, checking dispatch_cgi() as the last cruncher
+ *    looks like a bug if CGI requests are blocked unintentionally,
+ *    so don't do it unless the user enabled the new config option
+ *    "allow-cgi-request-crunching".
+ *
+ *    Revision 1.64  2007/05/21 10:44:08  fabiankeil
+ *    - Use strlcpy() instead of strcpy().
+ *    - Stop treating actions files special. Expect a complete file name
+ *      (with or without path) like it's done for the rest of the files.
+ *      Closes FR#588084.
+ *    - Remove an unnecessary temporary memory allocation.
+ *    - Don't log anything to the console when running as
+ *      daemon and no errors occurred.
+ *
+ *    Revision 1.63  2007/04/09 18:11:36  fabiankeil
+ *    Don't mistake VC++'s _snprintf() for a snprintf() replacement.
+ *
+ *    Revision 1.62  2007/03/17 15:20:05  fabiankeil
+ *    New config option: enforce-blocks.
+ *
+ *    Revision 1.61  2007/03/16 16:47:35  fabiankeil
+ *    - Mention other reasons why acl directive loading might have failed.
+ *    - Don't log the acl source if the acl destination is to blame.
+ *
+ *    Revision 1.60  2007/01/27 13:09:16  fabiankeil
+ *    Add new config option "templdir" to
+ *    change the templates directory.
+ *
+ *    Revision 1.59  2006/12/31 17:56:38  fabiankeil
+ *    Added config option accept-intercepted-requests
+ *    and disabled it by default.
+ *
+ *    Revision 1.58  2006/12/31 14:24:29  fabiankeil
+ *    Fix gcc43 compiler warnings.
+ *
+ *    Revision 1.57  2006/12/21 12:57:48  fabiankeil
+ *    Add config option "split-large-forms"
+ *    to work around the browser bug reported
+ *    in BR #1570678.
+ *
+ *    Revision 1.56  2006/12/17 17:04:51  fabiankeil
+ *    Move the <br> in the generated HTML for the config
+ *    options from the beginning of the string to its end.
+ *    Keeps the white space in balance.
+ *
+ *    Revision 1.55  2006/11/28 15:31:52  fabiankeil
+ *    Fix memory leak in case of config file reloads.
+ *
  *    Revision 1.54  2006/10/21 16:04:22  fabiankeil
  *    Modified kludge for win32 to make ming32 menu
  *    "Options/Edit Filters" (sort of) work again.
@@ -382,9 +445,6 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.54 2006/10/21 16:04:22 fabiankeil
 #  include "w32log.h"
 # endif /* ndef _WIN_CONSOLE */
 
-/* VC++ has "_snprintf", not "snprintf" */
-#define snprintf _snprintf
-
 #else /* ifndef _WIN32 */
 
 #ifndef __OS2__
@@ -452,42 +512,47 @@ static struct file_list *current_configfile = NULL;
  * console and GUI specific options last).
  */
 
-#define hash_actions_file              1196306641ul /* "actionsfile" */
-#define hash_admin_address             4112573064ul /* "admin-address" */
-#define hash_buffer_limit              1881726070ul /* "buffer-limit */
-#define hash_confdir                      1978389ul /* "confdir" */
-#define hash_debug                          78263ul /* "debug" */
-#define hash_deny_access               1227333715ul /* "deny-access" */
-#define hash_enable_edit_actions       2517097536ul /* "enable-edit-actions" */
-#define hash_enable_remote_toggle      2979744683ul /* "enable-remote-toggle" */
-#define hash_enable_remote_http_toggle 110543988ul  /* "enable-remote-http-toggle" */
-#define hash_filterfile                 250887266ul /* "filterfile" */
-#define hash_forward                      2029845ul /* "forward" */
-#define hash_forward_socks4            3963965521ul /* "forward-socks4" */
-#define hash_forward_socks4a           2639958518ul /* "forward-socks4a" */
-#define hash_forwarded_connect_retries  101465292ul /* "forwarded-connect-retries" */
-#define hash_jarfile                      2046641ul /* "jarfile" */
-#define hash_listen_address            1255650842ul /* "listen-address" */
-#define hash_logdir                        422889ul /* "logdir" */
-#define hash_logfile                      2114766ul /* "logfile" */
-#define hash_permit_access             3587953268ul /* "permit-access" */
-#define hash_proxy_info_url            3903079059ul /* "proxy-info-url" */
-#define hash_single_threaded           4250084780ul /* "single-threaded" */
-#define hash_suppress_blocklists       1948693308ul /* "suppress-blocklists" */
-#define hash_toggle                        447966ul /* "toggle" */
-#define hash_trust_info_url             430331967ul /* "trust-info-url" */
-#define hash_trustfile                   56494766ul /* "trustfile" */
-#define hash_usermanual                1416668518ul /* "user-manual" */
-#define hash_activity_animation        1817904738ul /* "activity-animation" */
-#define hash_close_button_minimizes    3651284693ul /* "close-button-minimizes" */
-#define hash_hide_console              2048809870ul /* "hide-console" */
-#define hash_log_buffer_size           2918070425ul /* "log-buffer-size" */
-#define hash_log_font_name             2866730124ul /* "log-font-name" */
-#define hash_log_font_size             2866731014ul /* "log-font-size" */
-#define hash_log_highlight_messages    4032101240ul /* "log-highlight-messages" */
-#define hash_log_max_lines             2868344173ul /* "log-max-lines" */
-#define hash_log_messages              2291744899ul /* "log-messages" */
-#define hash_show_on_task_bar           215410365ul /* "show-on-task-bar" */
+#define hash_actions_file                1196306641ul /* "actionsfile" */
+#define hash_accept_intercepted_requests 1513024973ul /* "accept-intercepted-requests" */
+#define hash_admin_address               4112573064ul /* "admin-address" */
+#define hash_allow_cgi_request_crunching  258915987ul /* "allow-cgi-request-crunching" */
+#define hash_buffer_limit                1881726070ul /* "buffer-limit */
+#define hash_confdir                        1978389ul /* "confdir" */
+#define hash_debug                            78263ul /* "debug" */
+#define hash_deny_access                 1227333715ul /* "deny-access" */
+#define hash_enable_edit_actions         2517097536ul /* "enable-edit-actions" */
+#define hash_enable_remote_toggle        2979744683ul /* "enable-remote-toggle" */
+#define hash_enable_remote_http_toggle    110543988ul /* "enable-remote-http-toggle" */
+#define hash_enforce_blocks              1862427469ul /* "enforce-blocks" */
+#define hash_filterfile                   250887266ul /* "filterfile" */
+#define hash_forward                        2029845ul /* "forward" */
+#define hash_forward_socks4              3963965521ul /* "forward-socks4" */
+#define hash_forward_socks4a             2639958518ul /* "forward-socks4a" */
+#define hash_forwarded_connect_retries    101465292ul /* "forwarded-connect-retries" */
+#define hash_jarfile                        2046641ul /* "jarfile" */
+#define hash_listen_address              1255650842ul /* "listen-address" */
+#define hash_logdir                          422889ul /* "logdir" */
+#define hash_logfile                        2114766ul /* "logfile" */
+#define hash_permit_access               3587953268ul /* "permit-access" */
+#define hash_proxy_info_url              3903079059ul /* "proxy-info-url" */
+#define hash_single_threaded             4250084780ul /* "single-threaded" */
+#define hash_split_large_cgi_forms        671658948ul /* "split-large-cgi-forms" */
+#define hash_suppress_blocklists         1948693308ul /* "suppress-blocklists" */
+#define hash_templdir                      11067889ul /* "templdir" */
+#define hash_toggle                          447966ul /* "toggle" */
+#define hash_trust_info_url               430331967ul /* "trust-info-url" */
+#define hash_trustfile                     56494766ul /* "trustfile" */
+#define hash_usermanual                  1416668518ul /* "user-manual" */
+#define hash_activity_animation          1817904738ul /* "activity-animation" */
+#define hash_close_button_minimizes      3651284693ul /* "close-button-minimizes" */
+#define hash_hide_console                2048809870ul /* "hide-console" */
+#define hash_log_buffer_size             2918070425ul /* "log-buffer-size" */
+#define hash_log_font_name               2866730124ul /* "log-font-name" */
+#define hash_log_font_size               2866731014ul /* "log-font-size" */
+#define hash_log_highlight_messages      4032101240ul /* "log-highlight-messages" */
+#define hash_log_max_lines               2868344173ul /* "log-max-lines" */
+#define hash_log_messages                2291744899ul /* "log-messages" */
+#define hash_show_on_task_bar             215410365ul /* "show-on-task-bar" */
 
 
 static void savearg(char *command, char *argument, struct configuration_spec * config);
@@ -504,7 +569,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
  * Returns     :  N/A
  *
  *********************************************************************/
-void unload_configfile (void * data)
+static void unload_configfile (void * data)
 {
    struct configuration_spec * config = (struct configuration_spec *)data;
    struct forward_spec *cur_fwd = config->forward;
@@ -544,6 +609,7 @@ void unload_configfile (void * data)
 
    freez(config->confdir);
    freez(config->logdir);
+   freez(config->templdir);
 
    freez(config->haddr);
    freez(config->logfile);
@@ -552,6 +618,8 @@ void unload_configfile (void * data)
    {
       freez(config->actions_file_short[i]);
       freez(config->actions_file[i]);
+      freez(config->re_filterfile_short[i]);
+      freez(config->re_filterfile[i]);
    }
 
    freez(config->admin_address);
@@ -607,6 +675,9 @@ void unload_current_config_file(void)
  *
  * Description :  Load the config file and all parameters.
  *
+ *                XXX: more than thousand lines long
+ *                and thus in serious need of refactoring.
+ *
  * Parameters  :  None
  *
  * Returns     :  The configuration_spec, or NULL on error.
@@ -622,6 +693,7 @@ struct configuration_spec * load_config(void)
    struct file_list *fs;
    unsigned long linenum = 0;
    int i;
+   char *logfile = NULL;
 
    if ( !check_file_changed(current_configfile, configfile, &fs))
    {
@@ -634,7 +706,10 @@ struct configuration_spec * load_config(void)
                 configfile);
    }
 
-   log_error(LOG_LEVEL_INFO, "loading configuration file '%s':", configfile);
+   if (NULL != current_configfile)
+   {
+      log_error(LOG_LEVEL_INFO, "Reloading configuration file '%s'", configfile);
+   }
 
 #ifdef FEATURE_TOGGLE
    global_toggle_state      = 1;
@@ -671,6 +746,8 @@ struct configuration_spec * load_config(void)
    config->proxy_args                = strdup("");
    config->forwarded_connect_retries = 0;
    config->feature_flags            &= ~RUNTIME_FEATURE_CGI_TOGGLE;
+   config->feature_flags            &= ~RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
+   config->feature_flags            &= ~RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
 
    if ((configfp = fopen(configfile, "r")) == NULL)
    {
@@ -691,7 +768,7 @@ struct configuration_spec * load_config(void)
       int vec_count;
       char *vec[3];
 
-      strcpy(tmp, buf);
+      strlcpy(tmp, buf, sizeof(tmp));
 
       /* Copy command (i.e. up to space or tab) into cmd */
       p = buf;
@@ -709,7 +786,7 @@ struct configuration_spec * load_config(void)
       }
 
       /* Copy the argument into arg */
-      strcpy(arg, p);
+      strlcpy(arg, p, sizeof(arg));
 
       /* Should never happen, but check this anyway */
       if (*cmd == '\0')
@@ -722,7 +799,7 @@ struct configuration_spec * load_config(void)
       {
          if (ijb_isupper(*p))
          {
-            *p = ijb_tolower(*p);
+            *p = (char)ijb_tolower(*p);
          }
       }
 
@@ -750,15 +827,21 @@ struct configuration_spec * load_config(void)
                   MAX_AF_FILES);
             }
             config->actions_file_short[i] = strdup(arg);
-            p = malloc(strlen(arg) + sizeof(".action"));
-            if (p == NULL)
+            config->actions_file[i] = make_path(config->confdir, arg);
+
+            continue;
+/* *************************************************************************
+ * accept-intercepted-requests
+ * *************************************************************************/
+         case hash_accept_intercepted_requests:
+            if ((*arg != '\0') && (0 != atoi(arg)))
             {
-               log_error(LOG_LEVEL_FATAL, "Out of memory");
+               config->feature_flags |= RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
             }
-            strcpy(p, arg);
-            strcat(p, ".action");
-            config->actions_file[i] = make_path(config->confdir, p);
-            free(p);
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS;
+            }
             continue;
 
 /* *************************************************************************
@@ -770,10 +853,24 @@ struct configuration_spec * load_config(void)
             continue;
 
 /* *************************************************************************
+ * allow-cgi-request-crunching
+ * *************************************************************************/
+         case hash_allow_cgi_request_crunching:
+            if ((*arg != '\0') && (0 != atoi(arg)))
+            {
+               config->feature_flags |= RUNTIME_FEATURE_CGI_CRUNCHING;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_CGI_CRUNCHING;
+            }
+            continue;
+
+/* *************************************************************************
  * buffer-limit n
  * *************************************************************************/
          case hash_buffer_limit :
-            config->buffer_limit = (size_t) 1024 * atoi(arg);
+            config->buffer_limit = (size_t)(1024 * atoi(arg));
             continue;
 
 /* *************************************************************************
@@ -822,11 +919,11 @@ struct configuration_spec * load_config(void)
 
             if (acl_addr(vec[0], cur_acl->src) < 0)
             {
-               log_error(LOG_LEVEL_ERROR, "Invalid source IP for deny-access "
-                     "directive in configuration file: \"%s\"", vec[0]);
+               log_error(LOG_LEVEL_ERROR, "Invalid source address, port or netmask "
+                  "for deny-access directive in configuration file: \"%s\"", vec[0]);
                string_append(&config->proxy_args,
-                  "<br>\nWARNING: Invalid source IP for deny-access directive"
-                  " in configuration file: \"");
+                  "<br>\nWARNING: Invalid source address, port or netmask "
+                  "for deny-access directive in configuration file: \"");
                string_append(&config->proxy_args,
                   vec[0]);
                string_append(&config->proxy_args,
@@ -838,13 +935,13 @@ struct configuration_spec * load_config(void)
             {
                if (acl_addr(vec[1], cur_acl->dst) < 0)
                {
-                  log_error(LOG_LEVEL_ERROR, "Invalid destination IP for deny-access "
-                        "directive in configuration file: \"%s\"", vec[0]);
+                  log_error(LOG_LEVEL_ERROR, "Invalid destination address, port or netmask "
+                     "for deny-access directive in configuration file: \"%s\"", vec[1]);
                   string_append(&config->proxy_args,
-                     "<br>\nWARNING: Invalid destination IP for deny-access directive"
-                     " in configuration file: \"");
+                     "<br>\nWARNING: Invalid destination address, port or netmask "
+                     "for deny-access directive in configuration file: \"");
                   string_append(&config->proxy_args,
-                     vec[0]);
+                     vec[1]);
                   string_append(&config->proxy_args,
                      "\"<br><br>\n");
                   freez(cur_acl);
@@ -914,6 +1011,22 @@ struct configuration_spec * load_config(void)
             continue;
 
 /* *************************************************************************
+ * hash_enforce_blocks 0|1
+ * *************************************************************************/
+#ifdef FEATURE_FORCE_LOAD
+         case hash_enforce_blocks:
+            if ((*arg != '\0') && (0 != atoi(arg)))
+            {
+               config->feature_flags |= RUNTIME_FEATURE_ENFORCE_BLOCKS;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_ENFORCE_BLOCKS;
+            }
+            continue;
+#endif /* def FEATURE_FORCE_LOAD */
+
+/* *************************************************************************
  * filterfile file-name
  * In confdir by default.
  * *************************************************************************/
@@ -931,14 +1044,8 @@ struct configuration_spec * load_config(void)
                   MAX_AF_FILES);
             }
             config->re_filterfile_short[i] = strdup(arg);
-            p = malloc(strlen(arg) + 1);
-            if (p == NULL)
-            {
-               log_error(LOG_LEVEL_FATAL, "Out of memory");
-            }
-            strcpy(p, arg);
-            config->re_filterfile[i] = make_path(config->confdir, p);
-            free(p);
+            config->re_filterfile[i] = make_path(config->confdir, arg);
+
             continue;
 
 /* *************************************************************************
@@ -1202,8 +1309,14 @@ struct configuration_spec * load_config(void)
  * In logdir by default
  * *************************************************************************/
          case hash_logfile :
-            freez(config->logfile);
-            config->logfile = no_daemon ? NULL : make_path(config->logdir, arg);
+            if (!no_daemon)
+            {
+               logfile = make_path(config->logdir, arg);
+               if (NULL == logfile)
+               {
+                  log_error(LOG_LEVEL_FATAL, "Out of memory while creating logfile path");
+               }
+            }
             continue;
 
 /* *************************************************************************
@@ -1237,11 +1350,11 @@ struct configuration_spec * load_config(void)
 
             if (acl_addr(vec[0], cur_acl->src) < 0)
             {
-               log_error(LOG_LEVEL_ERROR, "Invalid source IP for permit-access "
-                     "directive in configuration file: \"%s\"", vec[0]);
+               log_error(LOG_LEVEL_ERROR, "Invalid source address, port or netmask "
+                  "for permit-access directive in configuration file: \"%s\"", vec[0]);
                string_append(&config->proxy_args,
-                  "<br>\nWARNING: Invalid source IP for permit-access directive"
-                  " in configuration file: \"");
+                  "<br>\nWARNING: Invalid source address, port or netmask for "
+                  "permit-access directive in configuration file: \"");
                string_append(&config->proxy_args,
                   vec[0]);
                string_append(&config->proxy_args,
@@ -1253,14 +1366,13 @@ struct configuration_spec * load_config(void)
             {
                if (acl_addr(vec[1], cur_acl->dst) < 0)
                {
-                  log_error(LOG_LEVEL_ERROR, "Invalid destination IP for "
-                        "permit-access directive in configuration file: \"%s\"",
-                        vec[0]);
+                  log_error(LOG_LEVEL_ERROR, "Invalid destination address, port or netmask "
+                     "for permit-access directive in configuration file: \"%s\"", vec[1]);
                   string_append(&config->proxy_args,
-                     "<br>\nWARNING: Invalid destination IP for permit-access directive"
-                     " in configuration file: \"");
+                     "<br>\nWARNING: Invalid destination address, port or netmask for "
+                     "permit-access directive in configuration file: \"");
                   string_append(&config->proxy_args,
-                     vec[0]);
+                     vec[1]);
                   string_append(&config->proxy_args,
                      "\"<br><br>\n");
                   freez(cur_acl);
@@ -1296,6 +1408,28 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_single_threaded :
             config->multi_threaded = 0;
+            continue;
+
+/* *************************************************************************
+ * split-large-cgi-forms
+ * *************************************************************************/
+         case hash_split_large_cgi_forms :
+            if ((*arg != '\0') && (0 != atoi(arg)))
+            {
+               config->feature_flags |= RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_SPLIT_LARGE_FORMS;
+            }
+            continue;
+
+/* *************************************************************************
+ * templdir directory-name
+ * *************************************************************************/
+         case hash_templdir :
+            freez(config->templdir);
+            config->templdir = make_path(NULL, arg);
             continue;
 
 /* *************************************************************************
@@ -1483,12 +1617,27 @@ struct configuration_spec * load_config(void)
 
    fclose(configfp);
 
+   set_debug_level(config->debug);
+
+   freez(config->logfile);
+
+   if (!no_daemon)
+   {
+      if (NULL != logfile)
+      {
+         config->logfile = logfile;
+         init_error_log(Argv[0], config->logfile);
+      }
+      else
+      {
+         disable_logging();
+      }
+   }
+
    if (NULL == config->proxy_args)
    {
       log_error(LOG_LEVEL_FATAL, "Out of memory loading config - insufficient memory for config->proxy_args");
    }
-
-   init_error_log(Argv[0], config->logfile, config->debug);
 
    if (config->actions_file[0])
    {
@@ -1655,7 +1804,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
     * Add config option name embedded in
     * link to it's section in the user-manual
     */
-   buf = strdup("\n<br><a href=\"");
+   buf = strdup("\n<a href=\"");
    if (!strncmpic(config->usermanual, "file://", 7) ||
        !strncmpic(config->usermanual, "http", 4))
    {
@@ -1703,6 +1852,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
       }
    }
 
+   string_append(&buf, "<br>");
    string_join(&config->proxy_args, buf);
 }
 

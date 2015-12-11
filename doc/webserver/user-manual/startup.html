@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Starting Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Quickstart to Using Privoxy"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -76,8 +76,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="STARTUP"
-></A
->5. Starting Privoxy</H1
+>5. Starting Privoxy</A
+></H1
 ><P
 > Before launching <SPAN
 CLASS="APPLICATION"
@@ -111,7 +111,7 @@ CLASS="APPLICATION"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN654"
+NAME="AEN624"
 ></A
 ><P
 ><B
@@ -245,7 +245,7 @@ CLASS="EMPHASIS"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN698"
+NAME="AEN668"
 ></A
 ><P
 ><B
@@ -302,8 +302,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-REDHAT"
-></A
->5.1. Red Hat and Fedora</H2
+>5.1. Red Hat and Fedora</A
+></H2
 ><P
 > A default Red Hat installation may not start <SPAN
 CLASS="APPLICATION"
@@ -351,8 +351,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-DEBIAN"
-></A
->5.2. Debian</H2
+>5.2. Debian</A
+></H2
 ><P
 > We use a script. Note that Debian typically starts <SPAN
 CLASS="APPLICATION"
@@ -385,8 +385,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-WINDOWS"
-></A
->5.3. Windows</H2
+>5.3. Windows</A
+></H2
 ><P
 >Click on the <SPAN
 CLASS="APPLICATION"
@@ -433,8 +433,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-UNICES"
-></A
->5.4. Solaris, NetBSD, FreeBSD, HP-UX and others</H2
+>5.4. Solaris, NetBSD, FreeBSD, HP-UX and others</A
+></H2
 ><P
 >Example Unix startup command:</P
 ><P
@@ -458,8 +458,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-OS2"
-></A
->5.5. OS/2</H2
+>5.5. OS/2</A
+></H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -481,8 +481,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-MACOSX"
-></A
->5.6. Mac OSX</H2
+>5.6. Mac OSX</A
+></H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -525,8 +525,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-AMIGAOS"
-></A
->5.7. AmigaOS</H2
+>5.7. AmigaOS</A
+></H2
 ><P
 > Start <SPAN
 CLASS="APPLICATION"
@@ -557,8 +557,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-GENTOO"
-></A
->5.8. Gentoo</H2
+>5.8. Gentoo</A
+></H2
 ><P
 > A script is again used. It will use the file <TT
 CLASS="FILENAME"
@@ -613,8 +613,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CMDOPTIONS"
-></A
->5.9. Command Line Options</H2
+>5.9. Command Line Options</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -677,7 +677,6 @@ CLASS="EMPHASIS"
 >--pidfile FILE</I
 ></SPAN
 >
-  
   </P
 ><P
 >   On startup, write the process ID to <SPAN
@@ -719,7 +718,6 @@ CLASS="EMPHASIS"
 >--user USER[.GROUP]</I
 ></SPAN
 >
-  
   </P
 ><P
 >   After (optionally) writing the PID file, assume the user  ID  of
@@ -742,7 +740,6 @@ CLASS="EMPHASIS"
 >--chroot</I
 ></SPAN
 >
-  
   </P
 ><P
 >   Before changing to the user ID given in the <SPAN
@@ -762,6 +759,29 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > to the files contained in that hierarchy.
    Unix only.
+  </P
+></LI
+><LI
+><P
+>   <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--pre-chroot-nslookup hostname</I
+></SPAN
+>
+  </P
+><P
+>   Specifies a hostname to look up before doing a chroot. On some systems, initializing the
+   resolver library involves reading config files from /etc and/or loading additional shared
+   libraries from /lib. On these systems, doing a hostname lookup before the chroot reduces
+   the number of files that must be copied into the chroot tree.
+  </P
+><P
+>   For fastest startup speed, a good value is a hostname that is not in /etc/hosts but that
+   your local name server (listed in /etc/resolv.conf) can resolve without recursion
+   (that is, without having to ask any other name servers). The hostname need not exist,
+   but if it doesn't, an error message (which can be ignored) will be output.
   </P
 ></LI
 ><LI

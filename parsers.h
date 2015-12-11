@@ -1,6 +1,6 @@
 #ifndef PARSERS_H_INCLUDED
 #define PARSERS_H_INCLUDED
-#define PARSERS_H_VERSION "$Id: parsers.h,v 1.31 2006/08/17 17:15:10 fabiankeil Exp $"
+#define PARSERS_H_VERSION "$Id: parsers.h,v 1.40 2007/08/11 14:47:26 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.h,v $
@@ -43,6 +43,45 @@
  *
  * Revisions   :
  *    $Log: parsers.h,v $
+ *    Revision 1.40  2007/08/11 14:47:26  fabiankeil
+ *    Remove the prototypes for functions that are only
+ *    used in parsers.c and thus should be static.
+ *
+ *    Revision 1.39  2007/06/01 16:31:55  fabiankeil
+ *    Change sed() to return a jb_err in preparation for forward-override{}.
+ *
+ *    Revision 1.38  2007/03/25 14:27:11  fabiankeil
+ *    Let parse_header_time() return a jb_err code
+ *    instead of a pointer that can only be used to
+ *    check for NULL anyway.
+ *
+ *    Revision 1.37  2007/03/20 15:22:17  fabiankeil
+ *    - Remove filter_client_header() and filter_client_header(),
+ *      filter_header() now checks the shiny new
+ *      CSP_FLAG_CLIENT_HEADER_PARSING_DONE flag instead.
+ *
+ *    Revision 1.36  2007/03/05 13:25:32  fabiankeil
+ *    - Cosmetical changes for LOG_LEVEL_RE_FILTER messages.
+ *    - Handle "Cookie:" and "Connection:" headers a bit smarter
+ *      (don't crunch them just to recreate them later on).
+ *    - Add another non-standard time format for the cookie
+ *      expiration date detection.
+ *    - Fix a valgrind warning.
+ *
+ *    Revision 1.35  2007/01/01 19:36:37  fabiankeil
+ *    Integrate a modified version of Wil Mahan's
+ *    zlib patch (PR #895531).
+ *
+ *    Revision 1.34  2006/12/29 19:08:22  fabiankeil
+ *    Reverted parts of my last commit
+ *    to keep error handling working.
+ *
+ *    Revision 1.33  2006/12/29 18:04:40  fabiankeil
+ *    Fixed gcc43 conversion warnings.
+ *
+ *    Revision 1.32  2006/12/06 19:14:23  fabiankeil
+ *    Added prototype for get_destination_from_headers().
+ *
  *    Revision 1.31  2006/08/17 17:15:10  fabiankeil
  *    - Back to timegm() using GnuPG's replacement if necessary.
  *      Using mktime() and localtime() could add a on hour offset if
@@ -224,51 +263,12 @@ extern const add_header_func_ptr add_server_headers[];
 
 extern int flush_socket(jb_socket fd, struct client_state *csp);
 extern jb_err add_to_iob(struct client_state *csp, char *buf, int n);
+extern jb_err decompress_iob(struct client_state *csp);
 extern char *get_header(struct client_state *csp);
 extern char *get_header_value(const struct list *header_list, const char *header_name);
-extern char *sed(const struct parsers pats[], const add_header_func_ptr more_headers[], struct client_state *csp);
+extern jb_err sed(const struct parsers pats[], const add_header_func_ptr more_headers[], struct client_state *csp);
 extern void get_http_time(int time_offset, char *buf);
-struct tm *parse_header_time(char *header, time_t *tm);
-
-extern jb_err crumble                (struct client_state *csp, char **header);
-extern jb_err client_referrer        (struct client_state *csp, char **header);
-extern jb_err client_uagent          (struct client_state *csp, char **header);
-extern jb_err client_ua              (struct client_state *csp, char **header);
-extern jb_err client_from            (struct client_state *csp, char **header);
-extern jb_err client_send_cookie     (struct client_state *csp, char **header);
-extern jb_err client_x_forwarded     (struct client_state *csp, char **header);
-extern jb_err client_accept_encoding (struct client_state *csp, char **header);
-extern jb_err client_te              (struct client_state *csp, char **header);
-extern jb_err client_max_forwards    (struct client_state *csp, char **header);
-extern jb_err client_host(struct client_state *csp, char **header);
-extern jb_err client_if_modified_since(struct client_state *csp, char **header);
-extern jb_err client_accept_language  (struct client_state *csp, char **header);
-extern jb_err client_if_none_match    (struct client_state *csp, char **header);
-extern jb_err crunch_client_header    (struct client_state *csp, char **header);
-extern jb_err filter_header           (struct client_state *csp, char **header);
-extern jb_err filter_client_header    (struct client_state *csp, char **header);
-extern jb_err filter_server_header    (struct client_state *csp, char **header);
-extern jb_err client_x_filter         (struct client_state *csp, char **header);
-
-
-extern jb_err client_host_adder           (struct client_state *csp);
-extern jb_err client_cookie_adder         (struct client_state *csp);
-extern jb_err client_xtra_adder           (struct client_state *csp);
-extern jb_err client_accept_encoding_adder(struct client_state *csp);
-extern jb_err client_x_forwarded_adder    (struct client_state *csp);
-
-extern jb_err connection_close_adder      (struct client_state *csp); 
-
-extern jb_err server_set_cookie      (struct client_state *csp, char **header);
-extern jb_err server_content_type    (struct client_state *csp, char **header);
-extern jb_err server_content_length  (struct client_state *csp, char **header);
-extern jb_err server_content_md5     (struct client_state *csp, char **header);
-extern jb_err server_content_encoding(struct client_state *csp, char **header);
-extern jb_err server_transfer_coding (struct client_state *csp, char **header);
-extern jb_err server_http            (struct client_state *csp, char **header);
-extern jb_err crunch_server_header   (struct client_state *csp, char **header);
-extern jb_err server_last_modified   (struct client_state *csp, char **header);
-extern jb_err server_content_disposition(struct client_state *csp, char **header);
+extern jb_err get_destination_from_headers(const struct list *headers, struct http_request *http);
 
 #ifdef FEATURE_FORCE_LOAD
 extern int strclean(const char *string, const char *substring);

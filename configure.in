@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.96 2006/11/18 14:42:51 fabiankeil Exp $
+dnl $Id: configure.in,v 1.107 2007/11/15 02:50:14 hal9 Exp $
 dnl 
-dnl Written by and Copyright (C) 2001 - 2004 the SourceForge
+dnl Written by and Copyright (C) 2001 - 2007 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
@@ -28,6 +28,44 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.107  2007/11/15 02:50:14  hal9
+dnl Setting to "beta" (for doc builds, etc).
+dnl
+dnl Revision 1.106  2007/05/11 11:49:41  fabiankeil
+dnl Check for strlcat().
+dnl
+dnl Revision 1.105  2007/04/09 17:34:58  fabiankeil
+dnl Check for snprintf().
+dnl
+dnl Revision 1.104  2007/03/31 13:35:11  fabiankeil
+dnl Add checks for gettimeofday() and strlcpy().
+dnl
+dnl Revision 1.103  2007/01/20 16:29:38  fabiankeil
+dnl Suppress edit buttons for action files if Privoxy has
+dnl no write access. Suggested by Roland in PR 1564026.
+dnl
+dnl Revision 1.102  2007/01/18 14:55:45  fabiankeil
+dnl Check for tzset() and putenv() to make sure the
+dnl replacement timegm() isn't included on systems
+dnl where it fails to compile.
+dnl
+dnl Revision 1.101  2007/01/12 15:20:17  fabiankeil
+dnl Temporarily ignore external libpcrs to prevent
+dnl problems that are fixed in Privoxy's own version.
+dnl
+dnl Revision 1.100  2007/01/07 07:38:10  joergs
+dnl Disabled -pipe for AmigaOS4.
+dnl
+dnl Revision 1.99  2007/01/01 19:36:37  fabiankeil
+dnl Integrate a modified version of Wil Mahan's
+dnl zlib patch (PR #895531).
+dnl
+dnl Revision 1.98  2006/12/17 19:15:26  fabiankeil
+dnl Added ./configure switch for FEATURE_GRACEFUL_TERMINATION.
+dnl
+dnl Revision 1.97  2006/11/21 18:32:46  hal9
+dnl Setting version to 3.0.7 UNRELEASED for lack of a better setting.
+dnl
 dnl Revision 1.96  2006/11/18 14:42:51  fabiankeil
 dnl Mark as stable.
 dnl
@@ -464,7 +502,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.96 $)
+AC_REVISION($Revision: 1.107 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -510,8 +548,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=6
-CODE_STATUS="stable"
+VERSION_POINT=7
+CODE_STATUS="beta"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
@@ -675,7 +713,9 @@ dnl additional gcc flags
 dnl =================================================================
 dnl 
 if test "$GCC"; then
-  CFLAGS="-pipe $CFLAGS"
+  if test "$host" != "powerpc-unknown-amigaos"; then
+    CFLAGS="-pipe $CFLAGS"
+  fi
 fi
 
 
@@ -721,7 +761,7 @@ dnl Note: PTHREAD_LIB is always set, even if pthread is disabled.
 dnl This is because we don't know yet whether pthread is enabled.
 
 AC_ARG_ENABLE(mingw32,
-[  --enable-mingw32        Use mingw32 for a Windows GUI],
+[  --enable-mingw32                Use mingw32 for a Windows GUI],
 [if test $enableval = yes; then
   target_type=mingw
 fi])
@@ -847,7 +887,7 @@ dnl =================================================================
 AC_CHECK_HEADER(pthread.h, [have_pthread=yes], [have_pthread=no])
 
 AC_ARG_ENABLE(pthread,
-[  --disable-pthread       Don't use POSIX threads (pthreads)],
+[  --disable-pthread               Don't use POSIX threads (pthreads)],
 [if test $enableval = no; then
   # Disable pthreads
   have_pthread=no
@@ -1129,7 +1169,7 @@ AC_FUNC_SETPGRP
 AC_TYPE_SIGNAL
 dnl uncommenting does not work for swa. suse linux
 dnl AC_FUNC_STAT
-AC_CHECK_FUNCS([atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r inet_ntoa localtime_r memchr memmove memset random regcomp select setlocale socket strchr strdup strerror strftime strptime strstr strtoul timegm])
+AC_CHECK_FUNCS([access atexit getcwd gethostbyaddr gethostbyaddr_r gethostbyname gethostbyname_r gettimeofday inet_ntoa localtime_r memchr memmove memset putenv random regcomp select setlocale snprintf socket strchr strdup strerror strftime strlcat strlcpy strptime strstr strtoul timegm tzset])
 
 
 dnl =================================================================
@@ -1158,7 +1198,16 @@ AC_CHECK_LIB(pcreposix, regcomp, [
    ])
 ], [have_pcreposix=no], -lpcre) 
 
-AC_CHECK_LIB(pcrs, pcrs_compile, [AC_CHECK_HEADER(pcrs.h, [have_pcrs=yes], [have_pcrs=no])], [have_pcrs=no], -lpcre)
+dnl ================================================================
+dnl libpcrs is temporarily disabled.
+dnl
+dnl Privoxy's own pcrs version fixes some problems that
+dnl are present in libpcrs 0.3, the last pcrs release we
+dnl know of, and as libpcrs seems to be currently unmaintained
+dnl we can't send these fixes upstream.
+dnl ================================================================
+dnl
+dnl AC_CHECK_LIB(pcrs, pcrs_compile, [AC_CHECK_HEADER(pcrs.h, [have_pcrs=yes], [have_pcrs=no])], [have_pcrs=no], -lpcre)
 
 dnl =================================================================
 dnl Always defined
@@ -1171,101 +1220,127 @@ dnl Features
 dnl =================================================================
 
 AC_ARG_ENABLE(toggle,
-[  --disable-toggle         Don't support temporary disable],
+[  --disable-toggle                Don't support temporary disable],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_TOGGLE)
 fi],AC_DEFINE(FEATURE_TOGGLE))
 
 AC_ARG_ENABLE(force,
-[  --disable-force          Don't allow single-page disable],
+[  --disable-force                 Don't allow single-page disable],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_FORCE_LOAD)
 fi],AC_DEFINE(FEATURE_FORCE_LOAD))
 
 AC_ARG_ENABLE(fast-redirects,
-[  --disable-fast-redirects Don't support fast redirects],
+[  --disable-fast-redirects        Don't support fast redirects],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_FAST_REDIRECTS)
 fi], AC_DEFINE(FEATURE_FAST_REDIRECTS))
 
 AC_ARG_ENABLE(killpopup,
-[  --disable-killpopup      Never block popups],
+[  --disable-killpopup             Never block popups],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_KILL_POPUPS)
 fi],AC_DEFINE(FEATURE_KILL_POPUPS))
 
 AC_ARG_ENABLE(stats,
-[  --disable-stats          Don't keep statistics],
+[  --disable-stats                 Don't keep statistics],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_STATISTICS)
 fi],AC_DEFINE(FEATURE_STATISTICS))
 
 AC_ARG_ENABLE(ie-images,
-[  --enable-ie-images       Enable a quick but not always reliable auto-detect whether requests from
-                           MS Internet Explorer are for an image or not.],
+[  --enable-ie-images              Enable a quick but not always reliable auto-detect whether requests from
+                                  MS Internet Explorer are for an image or not.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_IMAGE_DETECT_MSIE)
 fi],)
 
 AC_ARG_ENABLE(image-blocking,
-[  --disable-image-blocking Don't try to figure out whether a request is 
-                           for an image or HTML - assume HTML.],
+[  --disable-image-blocking        Don't try to figure out whether a request is 
+                                  for an image or HTML - assume HTML.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_IMAGE_BLOCKING)
 fi],
 AC_DEFINE(FEATURE_IMAGE_BLOCKING))
 
 AC_ARG_ENABLE(acl-files,
-[  --disable-acl-files      Prevents the use of ACL files to control access to
-                           the proxy by IP address.],
+[  --disable-acl-files             Prevents the use of ACL files to control access to
+                                  Privoxy by IP address.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_ACL)
 fi],
 AC_DEFINE(FEATURE_ACL))
 
 AC_ARG_ENABLE(trust-files,
-[  --disable-trust-files    Prevents the use of trust files.],
+[  --disable-trust-files           Prevents the use of trust files.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_TRUST)
 fi],
 AC_DEFINE(FEATURE_TRUST))
 
 AC_ARG_ENABLE(jar-files,
-[  --disable-jar-files      Prevents the use of jar files to capture cookies.],
+[  --disable-jar-files             Prevents the use of jar files to capture cookies.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_COOKIE_JAR)
 fi],
 AC_DEFINE(FEATURE_COOKIE_JAR))
 
 AC_ARG_ENABLE(editor,
-[  --disable-editor         Prevents the use of the web-based actions file
-                           editor and web-based temporary disable setting.],
+[  --disable-editor                Prevents the use of the web-based actions file
+                                  editor and web-based temporary disable setting.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_CGI_EDIT_ACTIONS)
 fi],
 AC_DEFINE(FEATURE_CGI_EDIT_ACTIONS))
 
 AC_ARG_ENABLE(no-gifs,
-[  --enable-no-gifs         Use politically correct PNG format instead of GIF
-                           for built-in images. May not work with all browsers.],
+[  --enable-no-gifs                Use politically correct PNG format instead of GIF
+                                  for built-in images. May not work with all browsers.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_NO_GIFS)
 fi])
 
+AC_ARG_ENABLE(graceful-termination,
+[  --enable-graceful-termination   Allow to shutdown Privoxy through the webinterface.],
+[if test $enableval = yes; then
+  AC_DEFINE(FEATURE_GRACEFUL_TERMINATION)
+fi])
 
 dnl pcre/pcrs is needed for CGI anyway, so
 dnl the choice is only between static and
 dnl dynamic:
 
 AC_ARG_ENABLE(dynamic-pcre,
-[  --disable-dynamic-pcre        Use the built-in, static pcre, even if
-                                libpcre is available],
+[  --disable-dynamic-pcre          Use the built-in, static pcre, even if libpcre is available],
 [ if test $enableval = "no"; then have_pcre=no; fi ])
 
-AC_ARG_ENABLE(dynamic-pcrs,
-[  --disable-dynamic-pcrs        Use the built-in, static pcrs, even if
-                                libpcrs is available],
-[ if test $enableval = "no"; then have_pcrs=no; fi ])
+dnl =================================================
+dnl libpcrs is temporarily disabled,
+dnl see comment above for the reason.
+dnl =================================================
+dnl AC_ARG_ENABLE(dynamic-pcrs,
+dnl [  --disable-dynamic-pcrs          Use the built-in, static pcrs, even if libpcrs is available],
+dnl [ if test $enableval = "no"; then have_pcrs=no; fi ])
+
+
+dnl ====================================================
+dnl This check is incomplete. For mingw32 zlib is found
+dnl by configure, but not necessarily by the compiler.
+dnl ====================================================
+AC_ARG_ENABLE(zlib,
+[  --enable-zlib                   Use an external zlib library to allow decompressing
+                                  data on the fly.],
+[enableval2=$enableval],
+[enableval2=no])
+if test $enableval2 = yes; then
+  AC_CHECK_LIB(z, zlibVersion, , [
+    AC_MSG_ERROR([Unable to find a copy of zlib. The zlib library
+is necessary to enable compresion support. ])
+  ]) 
+  AC_DEFINE(FEATURE_ZLIB,1,
+    [ Define to 1 to use compression through the zlib library. ])
+fi
 
 
 # If we have libpcre and either we also have pcreposix or
@@ -1284,19 +1359,23 @@ else
   STATIC_PCRE_ONLY=
 fi
 
-# If we have libpcrs and pcre is linked dynamically
-# then also link pcrs dynamically, else build and link
-# pcrs statically
-#
-if test $have_pcrs = "yes" -a $pcre_dyn = "yes"; then
-  echo "using libpcrs"
-  STATIC_PCRS_ONLY=#
-  LIBS="$LIBS -lpcrs"
-else
+dnl =================================================
+dnl libpcrs is temporarily disabled,
+dnl see comment above for the reason.
+dnl =================================================
+dnl # If we have libpcrs and pcre is linked dynamically
+dnl # then also link pcrs dynamically, else build and link
+dnl # pcrs statically
+dnl
+dnl if test $have_pcrs = "yes" -a $pcre_dyn = "yes"; then
+dnl  echo "using libpcrs"
+dnl  STATIC_PCRS_ONLY=#
+dnl  LIBS="$LIBS -lpcrs"
+dnl else
   echo "using built-in static pcrs"
   AC_DEFINE(STATIC_PCRS)
   STATIC_PCRS_ONLY=
-fi
+dnl fi
 
 AC_SUBST(STATIC_PCRE_ONLY)
 AC_SUBST(STATIC_PCRS_ONLY)

@@ -5,9 +5,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: privoxy-man-page.sgml,v 2.12 2006/11/14 01:57:47 hal9 Exp $
+ $Id: privoxy-man-page.sgml,v 2.15 2007/11/14 18:29:51 fabiankeil Exp $
 
- Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -42,10 +42,10 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "3.0.6">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.7">
+<!entity p-status "UNRELEASED">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">           <!-- define we are not a text only doc -->
 <!entity % p-authors-formal "IGNORE"> <!-- exclude additional formating      -->
 <!entity my-copy "(C)">               <!-- db2man barfs on copyright symbol  -->
@@ -53,7 +53,7 @@
 
 <refentry id="privoxy">
 <refentryinfo>
- <date>2006-08-24</date>
+ <date>2007-04-12</date>
 </refentryinfo>
 <refmeta>
  <refentrytitle>privoxy</refentrytitle> 
@@ -77,6 +77,7 @@
   <arg><option>--pidfile </option><replaceable class="parameter">pidfile</replaceable></arg>  
   <arg><option>--user </option><replaceable class="parameter">user[.group]</replaceable></arg> 
   <arg><option>--chroot</option></arg>
+  <arg><option>--pre-chroot-nslookup </option><replaceable class="parameter">hostname</replaceable></arg> 
   <arg><replaceable class="parameter">configfile</replaceable></arg>        
  </cmdsynopsis>
 
@@ -159,6 +160,16 @@
       </para>
     </listitem>
   </varlistentry>
+  <varlistentry>
+    <term>--pre-chroot-nslookup <replaceable class="parameter">hostname</replaceable></term>
+     <listitem>
+      <para>
+        Initialize the resolver library using <replaceable class="parameter">hostname</replaceable>
+        before chroot'ing. On some systems this reduces the number of files
+        that must be copied into the chroot tree.
+     </para>
+    </listitem>
+  </varlistentry>
  </variablelist>
 
  <para>
@@ -183,10 +194,13 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <refsect1><title>Installation and Usage</title>
 <para>
- Browsers must be individually configured to use <command>Privoxy</command> as
- a HTTP proxy.  The default setting is  for  localhost,  on port  8118
- (configurable in the main config file).  To set the HTTP proxy in Netscape
- and Mozilla, go through:  <command>Edit</command>;
+ Browsers can either be individually configured to use
+ <command>Privoxy</command> as a HTTP proxy (recommended),
+ or <command>Privoxy</command> can be combined with a packet
+ filter to build an intercepting proxy
+ (see <filename>config</filename>).  The default setting is  for
+ localhost,  on port  8118 (configurable in the main config file).  To set the
+ HTTP proxy in Netscape and Mozilla, go through:  <command>Edit</command>;
  <command>Preferences</command>;  <command>Advanced</command>;
  <command>Proxies</command>;  <command>Manual Proxy Configuration</command>;
  <command>View</command>. 
@@ -240,7 +254,8 @@
 </para>
 <para>
  The actions list (ad blocks, etc) can also be configured with your
- web browser at <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>.
+ web browser at <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink> 
+ (assuming the configuration allows it).
  <command>Privoxy's</command> configuration parameters  can also  be viewed at
  the same page. In addition, <command>Privoxy</command> can be toggled on/off.
  This is an internal page, and does not require Internet access.
@@ -279,69 +294,18 @@
  ## otherwise with the '+' operator.
 
 { \
--add-header \
--block \
--content-type-overwrite \
--crunch-client-header \
--crunch-if-none-match \
--crunch-outgoing-cookies \
--crunch-incoming-cookies \
--crunch-server-header \
 +deanimate-gifs{last} \
--downgrade-http-version \
--fast-redirects \
--filter{js-annoyances} \
--filter{js-events} \
--filter{html-annoyances} \
--filter{content-cookies} \
 +filter{refresh-tags} \
--filter{unsolicited-popups} \
--filter{all-popups} \
--filter{img-reorder} \
--filter{banners-by-size} \
--filter{banners-by-link} \
++filter{img-reorder} \
++filter{banners-by-size} \
 +filter{webbugs} \
--filter{tiny-textforms} \
 +filter{jumping-windows} \
--filter{frameset-borders} \
--filter{demoronizer} \
--filter{shockwave-flash} \
--filter{quicktime-kioskmode} \
--filter{fun} \
--filter{crude-parental} \
 +filter{ie-exploits} \
--filter{site-specifics} \
--filter{google} \
--filter{yahoo} \
--filter{msn} \
--filter{blogspot} \
--filter{xml-to-html} \
--filter{html-to-xml} \
--filter{no-ping} \
--filter{hide-tor-exit-notation} \
--filter-client-headers \
--filter-server-headers \
--force-text-mode \
--handle-as-empty-document
--handle-as-image \
--hide-accept-language \
--hide-content-disposition \
--hide-if-modified-since \
 +hide-forwarded-for-headers \
 +hide-from-header{block} \
-+hide-referrer{forge} \
--hide-user-agent \
--inspect-jpegs \
--kill-popups \
--limit-connect \
--overwrite-last-modified \
--redirect \
-+prevent-compression \
--send-vanilla-wafer \
--send-wafer \
++hide-referrer{conditional-block} \
 +session-cookies-only \
 +set-image-blocker{pattern} \
--treat-forbidden-connects-like-blocks \
 }
 / # '/' Match *all* URL patterns
 
@@ -394,14 +358,14 @@
   .sun.com
   .msdn.microsoft.com
  
- # These sites breaks easily. Use our "fragile" alias here.
+ # These sites break easily. Use our "fragile" alias here.
  { fragile }
   .forbes.com
   mybank.example.com
 
  # Replace example.com's style sheet with one of my choosing
  { +redirect{http://localhost/css-replacements/example.com.css} }
-  example.com/stylesheet.css
+  .example.com/stylesheet.css
 
 </literallayout>
 

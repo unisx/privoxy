@@ -5,7 +5,7 @@
 # Purpose     :  Template used to edit the actions file.
 # 
 #
-# Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
+# Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
 #                Privoxy team. http://www.privoxy.org/
 #
 #                Original Author: Copyright (C) 2001 Jonathan Foster
@@ -31,6 +31,22 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list,v $
+#    Revision 1.34  2007/05/21 10:54:46  fabiankeil
+#    - Use strlcpy() instead of strcpy().
+#    - Stop treating actions files special. Expect a complete file name
+#      (with or without path) like it's done for the rest of the files.
+#      Closes FR#588084.
+#    - Don't rerun sed() in cgi_show_request().
+#
+#    Revision 1.33  2007/04/08 13:21:06  fabiankeil
+#    Reference action files in CGI URLs by id instead
+#    of using the first part of the file name.
+#    Fixes BR 1694250 and BR 1590556.
+#
+#    Revision 1.32  2007/01/23 16:03:16  fabiankeil
+#    - Add favicon links.
+#    - Remove useless W3C validator links.
+#
 #    Revision 1.31  2006/09/10 14:39:24  hal9
 #    Fix typo + minor change.
 #
@@ -191,8 +207,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@favicon.ico" type="image/x-icon">
 
-  <title>Privoxy: Edit actions file @f@.action</title>
+  <title>Privoxy: Edit actions file @actions-file@</title>
 
   <style type="text/css">
 
@@ -329,7 +346,7 @@ function a_p(link,section)
     <tr>
       <td class="box">
         <div class="buttons">
-          <h2>Editing Actions File @f@.action</h2>
+          <h2>Editing Actions File @actions-file@</h2>
           <!-- @if-all-urls-present-then@@else-not-all-urls-present@ -->
           <p><a class="cmd" href="edit-actions-section-add?f=@f@&amp;v=@v@&amp;s=0">Insert new section at top</a></p>
           <!-- @endif-all-urls-present@ -->
@@ -388,12 +405,6 @@ function a_p(link,section)
       </td>
     </tr>
 <!-- if-have-help-info-end@ -->
-
-    <tr>
-      <td>
-        <small><small>Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></small></small>
-      </td>
-    </tr>
 
   </table>
 </body>

@@ -9,9 +9,9 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.45 2006/11/18 10:36:17 hal9 Exp $
+#  $Id: default.action.master,v 1.102 2007/12/08 12:56:32 fabiankeil Exp $
 #
-#  Requires    :  This version requires Privoxy v3.0.5 or later due to 
+#  Requires    :  This version requires Privoxy v3.0.7 or later due to 
 #                 syntax changes.
 #
 #  Purpose     :  Default actions file, see
@@ -19,7 +19,7 @@
 #                 This file is subject to periodic updating. Local exceptions
 #                 and enhancements are better placed in user.action. 
 #
-#  Copyright   :  Written by and Copyright (C) 2001 - 2006 the
+#  Copyright   :  Written by and Copyright (C) 2001 - 2007 the
 #                 Privoxy team. http://www.privoxy.org/
 #
 #  Note: Updated versions of this file will be made available from time
@@ -122,7 +122,7 @@
 # Additionally, there are wildcards that you can use in the domain names
 # themselves. They work pretty similar to shell wildcards: "*" stands for
 # zero or more arbitrary characters, "?" stands for one, and you can define
-# charachter classes in square brackets and they can be freely mixed:
+# character classes in square brackets and they can be freely mixed:
 # 
 # ad*.example.com
 #   matches adserver.example.com, ads.example.com, etc but not sfads.example.com
@@ -158,7 +158,7 @@
 #   will match only documents whose path starts with PaTtErN in exactly this
 #   capitalization.
 #
-# Partially case-sensetive and partially case-insensitive patterns are
+# Partially case-sensitive and partially case-insensitive patterns are
 # possible, but the rules about splitting them up are extremely complex
 # - see the PCRE documentation for more information.
 # 
@@ -202,6 +202,21 @@
 #    Block this URL. Privoxy will ignore this URL completely, and not request
 #    it.
 #
+# +client-header-filter{name}
+#    All client headers to which this action applies are filtered on-the-fly
+#    through the specified regular expression based substitutions.
+#
+#    Client-header filters predefined in the supplied default.filter include:
+#
+#     hide-tor-exit-notation: Removes the Tor exit node notation in Host and Referer headers
+#
+# +client-header-tagger{string}
+#    Block requests based on their headers. Client headers to which this
+#    action applies are filtered on-the-fly through the specified regular
+#    expression based substitutions, the result is used as a tag.
+#    Client-header taggers are the first actions that are executed and their
+#    tags can be used to control every other action.
+#
 # +content-type-overwrite
 #    Replaces the "Content-Type:" HTTP server header, so that unwanted
 #    download menus will not pop up, or changes the browser's rendering mode.
@@ -244,10 +259,10 @@
 #    http://some.place/some_script?http://some.where-else
 #
 #    Sometimes, there are even multiple consecutive redirects encoded
-#    in the URL. These redirections via scripts make your web browing
+#    in the URL. These redirections via scripts make your web browsing
 #    more traceable, since the server from which you follow such a link
 #    can see where you go to. Apart from that, valuable bandwidth and
-#    time is wasted, while your browser aks the server for one redirect
+#    time is wasted, while your browser asks the server for one redirect
 #    after the other. Plus, it feeds the advertisers.
 #
 #    The +fast-redirects{check-decoded-url} option enables interception of 
@@ -265,7 +280,7 @@
 #    be seen with View Source), not the headers. Repeat for multiple filters.
 #    Use with caution: filters can be very intrusive.
 #   
-#    Filters predefined in the supplied default.action include:
+#    Filters predefined in the supplied default.filter include:
 #
 #     js-annoyances:         Get rid of particularly annoying JavaScript abuse
 #     js-events:             Kill all JS event bindings (Radically destructive! Use only on real suckers)
@@ -292,18 +307,7 @@
 #     yahoo:                 Removes text ads and other Yahoo specific improvements
 #     msn:                   Removes text ads and other MSN specific improvements
 #     blogspot:              Cleans up Blogspot blogs
-#     html-to-xml:           Header filter to change the Content-Type from html to xml
-#     xml-to-html:           Header filter to change the Content-Type from xml to html
 #     no-ping:               Removes non-standard ping attributes from anchor and area tags
-#     hide-tor-exit-notation: Header filter to remove the Tor exit node notation in Host and Referer headers
-#
-# +filter-client-headers
-#    By default, filters only apply to the document content itself. This will
-#    extend those filters to include the client's headers as well.
-#
-# +filter-server-headers
-#    By default, filters only apply to the document content itself. This will
-#    extend those filters to include the server's headers as well.
 #
 # +force-text-mode
 #    Declares a document as plain text, even if the "Content-Type:" isn't detected 
@@ -336,7 +340,7 @@
 #   specified e-mail address.
 #
 # +hide-if-modified-since{block}
-# +hide-if-modified-since{-1}
+# +hide-if-modified-since{-60}
 #   Deletes the "If-Modified-Since:" HTTP client header or modifies its 
 #   value, preventing another way to track users.
 #
@@ -371,26 +375,11 @@
 # +inspect-jpegs
 #    Scan jpeg headers for malformed comment blocks and correct them.
 #
-# +set-image-blocker{blank}
-# +set-image-blocker{pattern}
-# +set-image-blocker{<URL>} with <url> being any valid image URL
-#    Decides what to do with URLs that end up tagged with {+block +handle-as-image}.
-#    There are 4 options:
-#      * "-set-image-blocker" will send a HTML "blocked" page, usually
-#         resulting in a "broken image" icon.
-#      * "+set-image-blocker{blank}" will send a 1x1 transparent image
-#      * "+set-image-blocker{pattern}" will send a 4x4 grey/white pattern
-#        which is less intrusive than the logo but easier to recognize
-#        than the transparent one.
-#      * "+set-image-blocker{<URL>}" will send a HTTP temporary redirect
-#        to the specified image URL.
-#
-#
 # +limit-connect{portlist}
 #   The CONNECT methods exists in HTTP to allow access to secure websites
 #   (https:// URLs) through proxies. It works very simply: The proxy
 #   connects to the server on the specified port, and then short-circuits
-#   its connections to the cliant and to the remote proxy.
+#   its connections to the client and to the remote proxy.
 #   This can be a big security hole, since CONNECT-enabled proxies can
 #   be abused as TCP relays very easily.
 #   By default, i.e. in the absence of a +limit-connect action, Privoxy
@@ -428,12 +417,43 @@
 #    and +gif-deanimate will not work on compressed data. Will slow down
 #    connections to those websites, though.
 #
-# +prevent-keeping-cookies
+# +server-header-filter{name}
+#    All server headers to which this action applies are filtered on-the-fly
+#    through the specified regular expression based substitutions.
+#
+#    Server-header filters predefined in the supplied default.filter include:
+#
+#     html-to-xml:           Changes the Content-Type header from html to xml
+#     xml-to-html:           Changes the Content-Type header from xml to html
+#
+# +server-header-tagger{content-type}
+#    Server headers to which this action applies are filtered on-the-fly
+#    through the specified regular expression based substitutions, the result
+#    is used as a tag. Server-header taggers are executed before all other
+#    header actions that modify server headers. Their tags can be used to
+#    control all of the other server-header actions, the content filters and
+#    the crunch actions (redirect and block). 
+#
 # +session-cookies-only
 #    If the website sets cookies, make sure they are erased when you exit
 #    and restart your web browser.  This makes profiling cookies useless,
 #    but won't break sites which require cookies so that you can log in
 #    or for transactions.
+#
+# +set-image-blocker{blank}
+# +set-image-blocker{pattern}
+# +set-image-blocker{<URL>} with <url> being any valid image URL
+#    Decides what to do with URLs that end up tagged with {+block +handle-as-image}.
+#    There are 4 options:
+#      * "-set-image-blocker" will send a HTML "blocked" page, usually
+#         resulting in a "broken image" icon.
+#      * "+set-image-blocker{blank}" will send a 1x1 transparent image
+#      * "+set-image-blocker{pattern}" will send a 4x4 grey/white pattern
+#        which is less intrusive than the logo but easier to recognize
+#        than the transparent one.
+#      * "+set-image-blocker{<URL>}" will send a HTTP temporary redirect
+#        to the specified image URL.
+#
 #
 # +crunch-outgoing-cookies
 #    Prevent the website from reading cookies
@@ -447,6 +467,7 @@
 #    equivalent.
 #
 # +redirect{<URL>}
+# +redirect{<pcrs command>}
 #    Convinces the browser that the requested document has been moved to
 #    another location and the browser should get it from the specified
 #    URL.
@@ -481,7 +502,7 @@
 {{settings}}
 #############################################################################
 #MASTER# COMMENT: The minimum Privoxy version:
-for-privoxy-version=3.0.6
+for-privoxy-version=3.0.7
 
 #############################################################################
 # Aliases
@@ -534,69 +555,9 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 # Defaults
 #############################################################################
 { \
--add-header \
--block \
--content-type-overwrite \
--crunch-client-header \
--crunch-if-none-match \
--crunch-outgoing-cookies \
--crunch-incoming-cookies \
--crunch-server-header \
--deanimate-gifs \
--downgrade-http-version \
--fast-redirects \
--filter{js-annoyances} \
--filter{js-events} \
--filter{html-annoyances} \
--filter{content-cookies} \
--filter{refresh-tags} \
--filter{unsolicited-popups} \
--filter{all-popups} \
--filter{img-reorder} \
--filter{banners-by-size} \
--filter{banners-by-link} \
--filter{webbugs} \
--filter{tiny-textforms} \
--filter{jumping-windows} \
--filter{frameset-borders} \
--filter{demoronizer} \
--filter{shockwave-flash} \
--filter{quicktime-kioskmode} \
--filter{fun} \
--filter{crude-parental} \
--filter{ie-exploits} \
--filter{site-specifics} \
--filter{google} \
--filter{yahoo} \
--filter{msn} \
--filter{blogspot} \
--filter{xml-to-html} \
--filter{html-to-xml} \
--filter{no-ping} \
--filter{hide-tor-exit-notation} \
--filter-client-headers \
--filter-server-headers \
--force-text-mode \
--handle-as-empty-document \
--handle-as-image \
--hide-accept-language \
--hide-content-disposition \
--hide-if-modified-since \
 +hide-forwarded-for-headers \
 +hide-from-header{block} \
--hide-referrer \
--hide-user-agent \
--inspect-jpegs \
--kill-popups \
--limit-connect \
--prevent-compression \
--overwrite-last-modified \
--redirect \
--send-vanilla-wafer \
--send-wafer \
--session-cookies-only \
 +set-image-blocker{pattern} \
--treat-forbidden-connects-like-blocks \
 }
 / # Match all URLs
 
@@ -659,19 +620,22 @@ countr*.
 {+block}
 #MASTER# DONT-VERIFY (generic)
 /(.*/)?ad(\?|/|s|v|_?(image|se?rv|box)|cycle|rotate|mentor|click|f[ra]m|script|stream|fetch|log|space)
-/.*ads(new)?/
+/phpads(new)?/
 /(.*/)?(ad|all|nn|db|promo(tion)?)?[-_]?banner
 /(.*/)?(publicite|werbung|reklaa?m|annonse|maino(kset|nta|s)?/)
 /.*(count|track|compteur|(?<!relo)adframe|adse?rve?|banner)(er|run)?(\?|\.(pl|cgi|exe|dll|asp|php|cpt))
 /(.*/)?clicktrack
+#MASTER# REMARKS: Added 12/28/06 per Adam Piggott
+/(.*/)?(full)?pop[-_]?(up|over|under|open(er)?)?s?(/|\.)
+/(.*/)?((flash)?pop|live(cnt|count(er)?)).*\.(js|php|cgi)
 
 #############################################################################
 # Generic unblockers by path:
 #############################################################################
 {-block}
 #MASTER# DONT-VERIFY (generic)
-/.*ad(sl|v(i[cs]|o|an|ertencia|ent|.*search)) # advice/advisories/advan*/advertencia (spanish)
-/.*(lo|thre|he|d|gr|l|ro|re|squ)ads
+/.*ad(sl|v(i[cs]|o|an|ertencia|ent|.*search|erse)) # advice/advisories/advan*/advertencia (spanish) adverse
+/.*(lo|thre|he|d|gr|l|ro|re|squ|class(ified)?)ads
 /.*account
 support./(.*/)?track
 
@@ -699,6 +663,10 @@ support./(.*/)?track
 .ads[erv][rv]*.
 .ads.
 /(.*/)?ad(se?rv|click|stream|image|log|farm|script)
+#MASTER# PROBLEM URL: http://www.torrentportal.com/topad.html
+#MASTER# REMARKS: Action tracker 1637648 and a bit of imagination. Added 2007-01-20.
+#MASTER# REMARKS: Added "text" 20070730 as per http://www.pcworld.com/textad?Keywords=System Resources Tune-Up.&type=pcworld_downloads_search&count=3&ord=906010128&serveUrl=http%3A%2F%2Fwww.pcworld.com%2Fdownloads%2Ffile%2Ffid%2C7661-order%2C1-page%2C1-c%2Csystemresourcestuneup%2Fdescription.html Adam Piggott
+/.*(top|bottom|left|right|text)_?ad
 
 #############################################################################
 # Site-specific block patterns;
@@ -742,13 +710,16 @@ rcm.amazon.com
 .intellitxt.com
 #MASTER# REMARKS: per Actions File tracker: #1597893 11/17/06, similar to intellitxt
 .kontera.com
+#MASTER# REMARKS: 2007-08-17 HB, similar to intellitxt
+#MASTER# BLOCK-REFERRER: http://www.webhostingtalk.com/archive/index.php/t-533369.html
+.tribalfusion.com/ctxt
 #MASTER# REMARKS: Video advertizer, owned by doubleclick.net.
 #MASTER# BLOCK-REFERRER: http://www.ign.com/ 09/17/06
 .klipmart.com
 #MASTER# BLOCK-REFERRER: http://gamespot.com 09/26/06
 #MASTER# REMARKS: adlog.com.com and ads.com.com
 ad*.com.com
-dw.com.com
+#MASTER# REMARKS: used in redirects: dw.com.com 12/18/06
 #MASTER# BLOCK-REFERRER: http://verizon.net 09/29/06
 sales.liveperson.net
 #MASTER# BLOCK-REFERRER: www.avclub.com/ 10/14/06
@@ -790,6 +761,34 @@ ad.theadhost.com
 .zedo.com
 #MASTER# BLOCK-REFERRER: http://realtor.org 11/03/06
 .trk.sodoit.com/
+#MASTER# BLOCK-REFERRER: http://www.freenews.fr 11/23/06 Actionsfile feedback item #1597034
+.espace.netavenir.com
+#MASTER# BLOCK-REFERRER: http://www.powerdvd.com/ 12/28/06
+.hitfarm.com
+#MASTER# BLOCK-REFERRER: http://www.uk-businessdirectory.co.uk/
+#MASTER# REMARKS: Action tracker 1616457. Added 2007-01-20.
+.topnemo.com/engine
+.top100categories.com/engine
+#MASTER# REMARKS: Actionsfile feedback item #1647852 2007-01-30
+#MASTER# REMARKS: Domain squatting onload pop-ups
+#MASTER# BLOCK-REFERRER: http://www.memtest.com/
+/(t|search)\.php\?uid=ws[a-z0-9]+\.[a-z0-9]+
+#MASTER# BLOCK-REFERRER: via Yahoo groups
+#MASTER# REMARKS: Actionsfile tracker 1645513 2007-01-26
+.adinterax.com/(?!(.*)\.(js|gif|jpg))
+#MASTER# BLOCK-REFERRER:  http://www.weilpod.com
+#MASTER# REMARKS: Actionsfile feedback item #1710951 2007-05-02
+img.bluehost.com
+#MASTER# BLOCK-REFERRER: http://www.linuxinsider.com/story/57759.html
+#MASTER# REMARKS: Actionsfile feedback item #1736213 at 2007-06-12
+linuxinsider.com/images/sda/
+#MASTER# REMARKS: 20070711 Adam Piggott Actionsfile feedback #1700692
+#MASTER# REMARKS: Tracking JavaScript
+#MASTER# BLOCK-REFERRER: http://www.hants.gov.uk/record-office/
+[a-z].clickdensity.com
+#MASTER# REMARKS: Obnoxious "widget" adverts
+#MASTER# BLOCK-REFERRER: http://www.quickonlinetips.com/archives/2007/08/nokia-offers-free-bl-5c-battery-replacement-for-overheating/
+.widgetbucks.com
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -855,9 +854,30 @@ stats./.*\.gif\?
 #MASTER# BLOCK-REFERRER: http://www.homedepot.com/ 11/08/06
 #MASTER# BLOCK-REFERRER: http://www.williams-sonoma.com/ 11/08/06
 /cm\?[tc]
+#MASTER# BLOCK-REFERRER: http://www.snapfiles.com/feedback/ 12/13/06 SF tracker
+.snapfiles.net/rotation/.*\.asp
+#MASTER# BLOCK-REFERRER: not provided. SF tracker #1616034 12/16/06
+#MASTER# COMMENT: JS pop-ups
+spa.snap.com/
+#MASTER# BLOCK-REFERRER: http://www.gamefaqs.com/computer/doswin/game/914819.html 12/18/06
+#MASTER# COMMENT: user tracking, and run-away assorted 'junk'
+#MASTER# BLOCK-REFERRER: http://formwood.com 2007-11-12
+.insitemetrics.com/
+#MASTER# COMMENT: user tracking, and assorted 'junk'
+#MASTER# BLOCK-REFERRER: http://blogblog.com 2007-11-12
+.extreme-dm.com/
+#MASTER# COMMENT: user tracking, and assorted 'junk'
+#MASTER# BLOCK-REFERRER: http://www.schillmania.com 2007-11-12
+stats.reinvigorate.net/
+#MASTER# COMMENT: user tracking, and assorted 'junk'
+#MASTER# BLOCK-REFERRER: http://wordpress.com 2007-11-12
+.getclicky.com/
+#MASTER# COMMENT: user tracking, and assorted 'junk'
+#MASTER# BLOCK-REFERRER: http://infoworld.com 2007-11-12
+.quantserve.com
 
 #----------------------------------------------------------------------------
-# JavaScripts for ad and popup generation
+# JavaScripts and Texts for ad and popup generation
 #----------------------------------------------------------------------------
 #MASTER# BLOCK-REFERRER: http://www.chip.de/artikel/c_artikelunterseite_10423683.html
 pagead*.googlesyndication./.*\.js
@@ -865,6 +885,29 @@ pagead*.googlesyndication./.*\.js
 /js\.ng/
 #MASTER# BLOCK-REFERRER: http://www.britannica.com/ 10/23/06
 /popunder
+#MASTER# BLOCK-REFERRER: http://www.pcmag.com/ 11/22/06 per SF Tracker # 1601148
+/js/slider\.js
+#MASTER# BLOCK-REFERRER: http://www.earthcore.com/ feedback item #1605385 12/14/06
+/t\.php\?cat=.*&kw=.*&sc=
+#MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 SF tracker
+scripts.chitika.net/.*\.js
+#MASTER# REMARKS: Actionsfile tracker #1674363 2007-03-05, text ads
+#MASTER# BLOCK-REFERRER: http://www.securityfocus.com/archive/1/461489/30/0/threaded
+jlinks.industrybrains.com/
+#MASTER# BLOCK-REFERRER: via Yahoo groups
+#MASTER# REMARKS: Actionsfile tracker 1645513 2007-01-26
+.adinterax.com/.*\.js
+#MASTER# BLOCK-REFERRER: http://dictionary.reference.com/search?q=privacy&db=*
+#MASTER# REMARKS: Actionsfile tracker 1650798 2007-02-02
+.googleadservices.com/gampad/.*\.js
+#MASTER# BLOCK-REFERRER: http://www.linuxworld.com/news/2007/061307-brian-aker-interview.html
+#MASTER# REMARKS: Actionsfile feedback item #1736794 2007-06-13
+js.adsonar.
+#MASTER# BLOCK-REFERRER: http://news.zdnet.co.uk/software/0,1000000121,39209666,00.htm
+#MASTER# REMARKS: Actionsfile feedback item #1736879 2007-06-13, sponsored
+links. 2007-08-02, more hosts using this scheme, broadening scope.
+#bwp.zdnet.
+bwp.
 
 #############################################################################
 # Generic block-as-image patterns:
@@ -885,6 +928,11 @@ pagead*.googlesyndication./.*\.js
 /.*client_?ad\.(php|cgi)
 #MASTER# COMMENT: SF tracker 09/15/06
 /.*AIM_UAC.adp
+#MASTER# BLOCK-REFERRER: http://www.wunderground.com/ 2007-01-20
+#MASTER# COMMENT: banner at top of page http://server2.as5000.com/AS5000/adserver/click?ID=ADST-00015&C=0&T=1169332403
+/(.*/)?adserver/image
+#MASTER# COMMENT: Also from wunderground.com: http://icons-aa.wunderground.com/ads/images/TripAdvisor-Blinky.gif 2007-01-20
+/(.*/)?ads/images/
 
 #############################################################################
 # Site-specific block-as-image patterns:
@@ -904,11 +952,13 @@ pagead*.googlesyndication./.*\.js
 #MASTER# BLOCK-REFERRER: http://www.joecartoon.com/  10/17/06
 .*servedby.advertising.com
 #MASTER# BLOCK-REFERRER: http://www.yahoo.com/
-.a.yimg.com/(?:(?!/i/).)*$
-.a[0-9].yimg.com/(?:(?!/i/).)*$
-.yimg.com/(.*/)?a/
-.yimg.com/.*/(flash|java)/promotions
-.yimg.com/a/.*/flash/
+#.a.yimg.com/(?:(?!/i/).)*$
+#.a[0-9].yimg.com/(?:(?!/i/).)*$
+#.yimg.com/(.*/)?a/
+#.yimg.com/.*/(flash|java)/promotions
+#.yimg.com/a/.*/flash/
+#MASTER# REMARKS: The above replaced with below. Actions file tracker #1645616 2007-01-27
+.yimg.com/.*\.yimg\.com/a/
 #MASTER# DONT-VERIFY
 bs*.gsanet.com
 bs*.einets.com
@@ -956,14 +1006,14 @@ jmcms.cydoor.com/
 #MASTER# BLOCK-REFERRER: http://discussion.brighthand.com/forumdisplay.php?s=fee44a5b2a6fc2e9e79d6472bc8fbe94&forumid=197 10/19/06
 *[0-9].tribalfusion.com/
 #MASTER# REMARKS: Actions file tracker 1547656 09/02/06
-img.mediaplex.com
+#MASTER# REMARKS: Update pattern: Actionsfile feedback item #1698822, was opened at 2007-04-11 to catch https://secure.img-cdn.mediaplex.com/0....
+img*.mediaplex.com
 #MASTER# BLOCK-REFERRER: http://www.tomshardware.com/ 09/28/06
 #MASTER# REMARKS: There is adfarm and altfarm.mediaplex
-a*farm.mediaplex.com
+#MASTER# REMARKS: 20070711 Actionsfile feedback #1749013 /ad/fm/ appended, as click-throughs were being blocked. Could only find adverts being served from /ad/fm/
+a*farm.mediaplex.com/ad/fm/
 #MASTER# REMARKS: Support request 1312362 09/08/06
 #MASTER# DUPLICATED: adserver.itsfogo.com
-#MASTER# BLOCK-REFERRER: http://www.multiproxy.org/anon_proxy.htm 09/10/06
-view.atdmt.com
 #MASTER# REMARKS: Actionsfile feedback 09/11/06 http://matrix.mediavantage.de/mx.one?                                              p=210&pa=1060&pb=1906&pd=10944&aid=399&x=120&y=240&ts=2005.06.27.21.38.08
 #MASTER# BLOCK-REFERRER: http://www.heise.de/newsticker/meldung/61067
 matrix.mediavantage.
@@ -997,7 +1047,19 @@ searchportal.information.com/
 images.ibsys.com/
 #MASTER# BLOCK-REFERRER: http://www.rentalhouses.com/search_results.php?searchnew=1&citys_city=&citys_county=&citys_state=&ssubmit=Search&Szip=40205&keyword=&listingid=&strs_state=&strs_city=&strs_street= 11/05/06
 .lduhtrp.net/image
-
+#MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 SF tracker
+scripts.chitika.net/.*\.(gif|png|jpg)
+#MASTER# REMARKS: Actionsfile feedback item #1648478 2007-01-30
+.projectwonderful.com/gen.php
+#MASTER# BLOCK-REFERRER: http://www.multimap.com/ (sporadic)
+#MASTER# REMARKS: Actionsfile feedback item #1665682 2007-02-21
+.akamai.net/.*\.adtech\.de/.*\.(gif|png)
+#MASTER# BLOCK-REFERRER: via Yahoo groups
+#MASTER# REMARKS: Actionsfile tracker 1645513 2007-01-26
+.adinterax.com/.*\.(gif|jpg)
+#MASTER# BLOCK-REFERRER: http://www.wotzon.com/profilepage.html?comp_id=1002310&CatID=2
+#MASTER# REMARKS: Ad generator per Actionsfile feedback item #1749870 2007-07-08
+img.directtrack.com
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1012,8 +1074,9 @@ statse.webtrendslive.com
 spinbox.versiontracker.com/.*\.(gif|jpg)
 #MASTER# BLOCK-REFERRER: http://mycroft.mozdev.org/ 10/07/06
 stat.onestat.com
-#MASTER# BLOCK-REFERRER: http://www.global.net.uk/ 10/07/06
-.[a-vx-z]*.tradedoubler.com
+#MASTER# BLOCK-REFERRER: http://www.meparecebien.com/noticias/discograficas/sinnamon-records/sinnamon-records-libera-a-sus-artistas-nacionales-para-el-mercado-digital-401/
+#MASTER# REMARKS: Actionsfile feedback item #1644583 2007-03-05
+imp*.tradedoubler.com
 #MASTER# BLOCK-REFERRER: http://www.sharepoint.boo.pl/
 #MASTER# REMARKS: Not found, but left 10/07/06
 stat.webmedia.
@@ -1051,12 +1114,31 @@ content.ipro.com
 log.go.com/log
 #MASTER# BLOCK-REFERRER: http://www.care2.com 10/18/06
 stats.indextools.com
+#MASTER# BLOCK-REFERRER: http://www.techcrunch.com/ 12/16/06 #1616497 3 urls.
+tra*.measuremap.com
+.eurekster.com/sidebar
+tra*.mybloglog.com
+#MASTER# BLOCK-REFERRER:  http://www.polymervision.com/ 
+#MASTER# REMARKS: Actionsfile feedback item #1629370 01/16/07
+.guesttrace.
+#MASTER# BLOCK-REFERRER: http://dictionary.com
+#MASTER# REMARKS: Actionsfile feedback item #165078 2007-02-05
+insightxe./data/
+#MASTER# BLOCK-REFERRER:  http://www.unitedairlines.com
+#MASTER# REMARKS: Actionsfile feedback item #1650797 2007-02-05
+.insightfirst.com
+#MASTER# BLOCK-REFERRER: http://rss.slashdot.org/Slashdot/slashdot
+#MASTER# PROBLEM URL: rss.slashdot.org/~a/Slashdot/slashdot?i=ofbWqX
+rss.slashdot.org/~a/Slashdot/slashdot\?
+#MASTER# PROBLEM URL: rss.slashdot.org/~r/Slashdot/slashdot/~4/102113044
+rss.slashdot.org/~r/Slashdot/slashdot/~4/
 
 #----------------------------------------------------------------------------
 # Specific counters (see above for generic patterns)
 #----------------------------------------------------------------------------
 #MASTER# BLOCK-REFERRER: http://www.distrowatch.com/table.php?distribution=linex 10/19/06
-s*.sitemeter.com/meter
+#MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 tracker  #1641102
+s*.sitemeter.com/(meter|js/counter.js)
 #MASTER# BLOCK-REFERRER: http://personales.mundivia.es/lbouza/ 10/19/06
 fastcounter.bcentral.com/
 #MASTER# BLOCK-REFERRER: http://osnews.com/ 10/19/06
@@ -1100,7 +1182,14 @@ smartad.*.*.*
 #MASTER# BLOCK-REFERRER: http://www.heise.de/ 10/08/06
 #MASTER# BLOCK-REFERRER: http://www.spiegel.de/
 /RealMedia/ads/
-
+#MASTER# REMARKS: Variation 2007-11-12
+/RealMediaAds/
+#MASTER# BLOCK-REFERRER: http://www.powerdvd.com 12/28/06 per SF tracker
+/top\.php\?d=.*\.[a-z]{2,5}
+#MASTER# REMARKS: Actionsfile feedback item #1764161 2007-07-31
+#MASTER# BLOCK-REFERRER: http://www.webster.com/dictionary/revering
+.google.com/afsonline
+  
 #############################################################################
 # Site-specific unblockers:
 #############################################################################
@@ -1212,7 +1301,9 @@ adbusters.org/
 #MASTER# UNBLOCK-REFERRER:  http://www.cels.org/db/keep-track.pl?cat:1 09/11/06
 cels.org/.*track
 #MASTER# UNBLOCK-REFERRER: http://www.nic.ad.jp/ See http://jprs.co.jp/en/jpdomain.html 09/11/06
-.nic.ad.jp
+#MASTER# REMARKS: 2007-10-04, increase scope per Actionsfile feedback item #1807613
+#.nic.ad.jp
+.ad.jp
 #MASTER# UNBLOCK-REFERRER: http://www.flickr.com/photo_zoom.gne?id=32594118&size=l 09/11/06
 #MASTER# REMARKS: creativecommons.org worthwhile organization 09/11/06
 /(.*/)?somerights20.gif
@@ -1226,8 +1317,9 @@ cels.org/.*track
 .freebsd.org
 .fsf.org
 .gnu.org
-#MASTER# REMARKS: SF tracker 09/15/06
-adiumx.com
+#MASTER# REMARKS: SF tracker 09/15/06, and #1750779 2007-07-09
+#MASTER# REMARKS: New home? http://adiumx.cachefly.net/Adium_1.0.5.dmg
+adium*.*.
 #MASTER# UNBLOCK-REFERRER: http://google.com 10/01/06
 #MASTER# REMARKS: This allows many (but not all) Google "Sponsored Links" to function. 
 #MASTER# REMARKS: Presumably if someone clicks these they want to go there.
@@ -1249,6 +1341,39 @@ edge.macworld.com
 .google.com/reader/
 #MASTER# REMARKS: Actionsfile Tracker 1587079 10/30/06
 .parcel2go.com/track
+#MASTER# REMARKS: Actionsfile Tracker #1612950 12/11/06
+.amazon.com/gp/gift-central/.*recip/
+#MASTER# UNBLOCK-REFERRER: http://yahoo.com 2007-01-27
+#MASTER# REMARKS: Actionsfile Tracker #1645501, this is a UI page element.
+.yimg.com/.*/themes/ad/
+#MASTER# UNBLOCK-REFERRER: http://mozilla.hongo.wide.ad.jp/pub/mozilla.org//thunderbird/releases/
+#MASTER# REMARKS: Actionsfile feedback item #1672918 2007-03-03
+.ad.*/pub/mozilla.org/
+#MASTER# UNBLOCK-REFERRER: http://lads.myspace.com/mini/mini.swf?b=NDgwNzU1ODE=&o=NjQwNzIzMA==&d=MTE3NDI4ODcwNg==&i=MA==&a=VHJ1ZQ==
+#MASTER# UNBLOCK-REFERRER: http://profile.myspace.com/index.cfm?fuseaction=user.viewprofile&friendid=5282733
+#MASTER# UNBLOCK-REFERRER: http://lads.myspace.com/videos/vplayer.swf
+#MASTER# REMARKS: MySpace videos caught by .*ads. The above profile.myspace.com link grabs the vplayer.swf file (which does not work when directly fetched)
+lads.myspace.com
+#MASTER# REMARKS: 20070402 Adam Piggott first-party tracking. 20070411 Moved from generic unblockers by path to site-specific unblockers.
+#MASTER# UNBLOCK-REFERRER: http://www.shockwave.com/servlet/DownloadEcommTracker?sku=fizzball-pc&promoCode=SiteShockwaveLandingPage
+.shockwave.com/servlet/DownloadEcommTracker
+#MASTER# UNBLOCK-REFERRER: http://www.fish4.co.uk/iad/lettings/advert?adId=12389712&src=nestoria
+#MASTER# REMARKS: 20070411 Adam Piggott fish4.co.uk is a popular UK advertising site for cars, properties and jobs and uses ad/advert all over the place, understandably.
+.fish4.co.uk/.*ad
+#MASTER# REMARKS: Actionsfile feedback item #1700037 2007-04-13 HB
+#MASTER# UNBLOCK-REFERRER: http://www.mp3.com.au/popup/popup.asp?id=110433
+.mp3.com.au/.*popup
+#MASTER# REMARKS Actionsfile feedback #1700915 2007-04-15
+#MASTER# UNBLOCK-REFERRER: http://www.svd.se/ego/339/http://www.e24.se/dynamiskt/reklam_media/did_15092793.asp
+#MASTER# UNBLOCK-REFERRER: http://www.e24.se/dynamiskt/reklam_media/did_15092793.asp
+/(.*/)?dynamiskt/reklam_media/did_
+#MASTER# REMARKS 20070710 Actionsfile feedback #1751020
+switch.atdmt.com/action/
+#MASTER# UNBLOCK-REFERRER: http://www.parcelforce.com/portal/pw/track?catId=7500082
+.parcelforce.com/.*track
+#MASTER# UNBLOCK-REFERRER: redirect from http://go.microsoft.com/fwlink?linkid=51093
+#MASTER# REMARKS: Actionsfile feedback item #1757121 2007-07-19
+.microsoft.com/.*/adschema/
 
 #############################################################################
 # Site-specific special rules:
@@ -1276,6 +1401,9 @@ mail.google.
 #----------------------------------------------------------------------------
 { -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups -prevent-compression }
 #MASTER# REMARKS: Problem URL: adserver.yahoo.com 10/01/06
+#MASTER# REMARKS: This is much too broad for my taste. It forces me to add
+#MASTER# REMARKS: a special yahoo section in my user.action file, just to
+#MASTER# REMARKS: confirm my defaults in default.action. fk 2007-01-19
 .yahoo.com
 
 #----------------------------------------------------------------------------
@@ -1327,7 +1455,8 @@ i.cnn.net/cnn/.*/clickability/button
 .rosettaproject.org
 #MASTER# PROBLEM-URL: http://www.quantum.com requires popups for downloads, etc. 09/11/06
 .quantum.com
-
+#MASTER# PROBLEM-URL: http://www.liberation.fr 11/23/06 Actions tracker
+.liberation.fr
 
 #----------------------------------------------------------------------------
 # Sometimes (i.e. often!) fast-redirects catches things by mistake
@@ -1343,8 +1472,14 @@ www.ukc.ac.uk/cgi-bin/wac\.cgi\?
 .speedfind.de
 #MASTER# PROBLEM-URL: http://www.nytimes.com/
 .nytimes.com
-#MASTER# PROBLEM-URL: http://groups.yahoo.com/
-.yahoo.com/.*done=
+#MASTER# PROBLEM-URL: http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
+#MASTER# REMARKS: Yahoo logout URL after first redirect. fk 2007-01-19
+#MASTER# REMARKS: Logout fails if we fast-redirect to the URL after "done=".
+#MASTER# REMARKS: Reported in support request #1635354.
+.yahoo.com/.*done=http
+#MASTER# PROBLEM-URL: http://us.rd.yahoo.com/reg/login1/lisu/login/uk/ym/*http://edit.europe.yahoo.com/c onfig/login?.tries=1&.src=ym&.md5=&.hash=&.js=1&.last=&...kP=Y&.done=http://mail .yahoo.com&.pd=ym_ver=0&c=&login=XXX&passwd=XXX&.persistent =&.hash=1&.md5=1
+#MASTER# REMARKS: Reported in support request #1802365.
+.rd.yahoo.com/reg/login1/
 #MASTER# PROBLEM-URL: http://validator.w3.org/check
 .w3.org
 #MASTER# PROBLEM-URL: http://www.ask.com/
@@ -1359,11 +1494,10 @@ login.passport.com/logout\.(asp|srf)\?
 #MASTER# PROBLEM-URL: http://www.fileplanet.com
 download.com.com/redir\?
 www.fileplanet.com/redir\.asp\?
-#MASTER# PROBLEM-URL: http://web.archive.org/web/19970715180251/http://www.gmd.de/
-web.archive.org
 #MASTER# PROBLEM-URL: http://cyber.law.harvard.edu/filtering/china/test/
 .edu
 #MASTER# PROBLEM-URL: http://web.archive.org
+#MASTER# PROBLEM-URL: http://web.archive.org/web/19970715180251/http://www.gmd.de/
 .archive.org
 #MASTER# PROBLEM-URL: http://www.guenstiger.de/gt/link.asp?url=http://www.edv-supermarkt.de&source=produkt=238284&USID=00086443917155&hnr=2199&pnr=238284&ppr=158,00
 www.guenstiger.de
@@ -1381,18 +1515,32 @@ www.translate.ru/url/
 schneegans.de/
 #MASTER# PROBLEM-URL: http://config.privoxy.org/edit-actions-submit?f=user ... &redirect_mode=http%3A%2F%2Fwww.privoxy.org%2F
 config.privoxy.org/
+#MASTER# PROBLEM-URL: http://users.wsj.com/lmda/do/checkLogin?mg=evo-wsj&url=http%3A%2F%2Fonline.wsj.com%2Farticle%2FSB117313867582027623.html
+.wsj.com/lmda/do/checkLogin
+#MASTER# PROBLEM-URL: http://del.icio.us/url/check\?url=http%3A%2F%2Fwww.privoxy.org
+#MASTER# REMARKS: As we already have five other PROBLEM-URLs that contain '?url=',
+#MASTER# REMARKS: it might make sense to allow '/.*?url=' in general
+del.icio.us/
+#MASTER# PROBLEM-URL: http://calgary.ctv.ca/servlet/RTGAMArticleHTMLTemplate/B/20070615/goexpo?brand=generic&hub=&tf=CFCNPlus/generic/hubs/frontpage.html&cf=CFCNPlus/generic/hubs/frontpage.cfg&slug=goexpo&date=20070615&archive=CFCNPlus&ad_page_name=&nav=home&subnav=fullstory&site_cfcn=http://calgary.ctv.ca
+.ctv.ca/.*&site_cfcn=http://
+#MASTER# PROBLEM-URL: http://memberservices.informit.com/checkLogin.ashx?partner=8&r=http%3a%2f%2fwww.informit.com%2farticles%2farticle.asp%3fp%3d766375%26seqNum%3d1
+.informit.com/.*&r=http%3a%2f%2f
+#MASTER# PROBLEM-URL: http://access.adobe.com/access/getStatus.do?jobid=&srcPdfUrl=http://cups.cs.cmu.edu/soups/2007/proceedings/p41_clark.pdf&convertTo=html&visuallyImpaired=preferhtml&preferHTMLReason=&platform=&comments=&starttime=1187362172109 
+access.adobe.com/access/getStatus.do\?jobid=&srcPdfUrl=
+#MASTER# PROBLEM-URL: http://view.samurajdata.se/ps.php?url=http%3A%2F%2Fcups.cs.cmu.edu%2Fsoups%2F2007%2Fproceedings%2Fp41_clark.pdf&submit=View%21
+view.samurajdata.se/ps\.php\?url=
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode or other automatically parsed content
 #----------------------------------------------------------------------------
 {-filter -prevent-compression}
-#MASTER# PROBLEM-URL: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/current/
-cvs.
+#MASTER# PROBLEM-URL: http://ijbswa.cvs.sourceforge.net/ijbswa/current/
+.cvs.
 /.*(cvs(view|web)|viewcvs)
 #MASTER# REMARKS: The same for Subversion
 #MASTER# PROBLEM-URL: http://svn.sourceforge.net/
-svn.
-websvn.
+.svn.
+.websvn.
 /(.*/)?svn/
 #MASTER# PROBLEM-URL: http://liveupdate.symantec.com/ennlu.x86
 #MASTER# REMARKS: Jeez, could you please stay with one of them?
@@ -1592,21 +1740,10 @@ schneegans.de/sv/\?url=referer
 .rubberslug.com
 
 #----------------------------------------------------------------------------
-# These sites are so abusive that we need to kill all JS event bindings (and
-# probably a break a lot along the way)
-#----------------------------------------------------------------------------
-#MASTER# REMARKS: Surely this has changed. Commenting out 10/15/06 HB
-#{+filter{js-radical}}
-##MASTER# PROBLEM-URL: http://www.planetspiele.de/
-#.planetspiele.de
-#216.12.219.40
-
-#----------------------------------------------------------------------------
 # The "site-specifics" filter has special cures for problems found here:
 #----------------------------------------------------------------------------
 #MASTER# REMARKS: This section NOT checked 10/15/06 HB.
-{+filter{site-specifics} +prevent-compression}
-#MASTER# REMARKS: +prevent-compression in case its off as a default setting.
+{+filter{site-specifics}}
 #MASTER# PROBLEM-URL: http://www.spiegel.de/static/js/flash-plugin.js
 .spiegel.de/static/js/flash-plugin\.js
 #MASTER# PROBLEM-URL: http://www.quelle-bausparkasse.de/
@@ -1681,10 +1818,18 @@ blogs.msdn.com
 blogs.msdn.com
 
 {+fast-redirects{check-decoded-url} -block}
-#MASTER# COMMENTS: This section not checked 10/17/06 HB
-#MASTER# PROBLEM-URL: http://uk.rd.yahoo.com/M=200059723.200849546.202365062.200414073/D=ukhmpg/S=15426100:TEAR/A=200396897/R=1119/id=img1_nocap_dial/*http://ad.uk.doubleclick.net/clk;5982435;8261020;g?http://www.lunnpoly.com
-#MASTER# REMARKS: Basically all of Yahoo's outbound links
-.*rd.yahoo.com/
+#MASTER# REMARKS: Yahoo search results. Added 2007-01-19 fk
+#MASTER# REDIRECT-REFERRER: http://search.yahoo.com/search?p=privoxy
+#MASTER# PROBLEM-URL: http://rds.yahoo.com/_ylt=A0geuryczbBF._YAEmxXNyoA;_ylu=X3oDMTB2b2gzdDdtBGNvbG8DZQRsA1dTMQRwb3MDMQRzZWMDc3IEdnRpZAM-/SIG=11b3qg40n/EXP=1169301276/**http%3a//www.privoxy.org/
+rds.yahoo.com/
+#MASTER# COMMENTS: Verified 2007-01-19 fk
+#MASTER# REDIRECT-REFERRER: http://www.gamefaqs.com/computer/doswin/game/914819.html
+#MASTER# PROBLEM-URL: http://dw.com.com/redir?asid=0&astid=8&siteid=19&edid=107&destCat=33862&destURL=http%3A%2F%2Fdb.gamefaqs.com%2Fcomputer%2Fdoswin%2Ffile%2Fvampire_tmb_b.txt
+dw.com.com/
+#MASTER# REMARKS: Action tracker 1593393. Added 2007-01-20.
+#MASTER# PROBLEM-URL: http://wzus.bloglines.com/r?t=a&d=us&s=bl&c=blen&ti=1&ai=51060&l=dir&o=0&sv=z6f537f5b&ip=971AC44B&u=http%3A%2F%2Fwww.skweezer.net%2Fbloglines%2Fskweeze.aspx%3F%26i%3Dd%26l%3Den%26r%3Dhttp%253A%252F%252Fwww.bloglines.com%252Fmyblogs_display%253Fsub%253D29302699%2526site%253D5382440%26url%3Dhttp%253A%252F%252Fpermalink.gmane.org%252Fgmane.linux.debian.devel.changes.unstable%252F97340
+.bloglines.com/r\?
+www.skweezer.net/bloglines
 
 {+block}
 #MASTER# COMMENTS: This section not checked 10/17/06 HB. Still out there?
@@ -1692,20 +1837,16 @@ blogs.msdn.com
 #MASTER# REMARKS: Lame attempt at banning ad-blockers. Used by other websites as well.
 /antitheft\.php
 
-{+filter{tiny-textforms} +prevent-compression}
+{ +prevent-compression }
+.compusa.com/
+
+{+filter{tiny-textforms}}
 .sourceforge.net/tracker
 
 {+downgrade-http-version}
 #MASTER# COMMENTS: This section not checked 10/17/06 HB
 #MASTER# REMARKS: This is work-around for CUPS http configuration.
 :631
-
-#MASTER# REMARKS: What is this? Something special?
-#{ -crunch-outgoing-cookies \
-#  -crunch-incoming-cookies \
-#  +session-cookies-only \
-#}
-#www.versiontracker.com/
 
 #MASTER# REMARKS: If Privoxy is disabled, requests for config.privoxy.org/
 #MASTER# REMARKS: reach privoxy.org and are redirected to privoxy.org/config.
@@ -1716,4 +1857,41 @@ blogs.msdn.com
 {+redirect{http://config.privoxy.org/}}
 .privoxy.org/config
 
+#MASTER# REMARKS: Privoxy's "unsafe" CGI pages check the referrer 
+#MASTER# REMARKS: to make sure the user reached them intentionally.
+#MASTER# REMARKS: Disabling hide-referrer so there's a referrer left to check.
+#MASTER# REMARKS: Disabling fast-redirects because if CGI crunching gets
+#MASTER# REMARKS: enabled it could be leveraged to fool the referrer check.
+{-hide-referrer -fast-redirects}
+p.p/
+config.privoxy.org/
+
+#MASTER# REMARKS: Yahoo logout URLs need special treatment,
+#MASTER# REMARKS: the URL after "done=" is no fast-redirect. 2007-01-19 fk
+#MASTER# REMARKS: Reported in support request #1635354.
+#MASTER# PROBLEM-URL: http://us.ard.yahoo.com/SIG=AAAAAAAAA/M=NNNNNN.NNNNNNN.NNNNNNN.NNNNNNN/D=mail/S=NNNNNNNNN:HEADR/Y=YAHOO/EXP=NNNNNNNNNN/A=NNNNNNN/R=N/SIG=AAAAAAAAA/*http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
+{-fast-redirects +redirect{s@^.*\*(http://login\.yahoo\.com/.*)$@$1@i}}
+.yahoo./.*http://login.yahoo.com/config/login.*http://
+
 #MASTER# set vi:nowrap
+
+#----------------------------------------------------------------------------
+# Sections that modify the action settings based on tags.
+#----------------------------------------------------------------------------
+
+#############################################################################
+# Depends on +client-header-tagger{image-requests}
+#############################################################################
+{-handle-as-empty-document \
+ +handle-as-image \
+}
+TAG:^IMAGE-REQUEST$
+
+#############################################################################
+# Depends on +client-header-tagger{css-requests}
+#############################################################################
+{+handle-as-empty-document \
+ -handle-as-image \
+}
+TAG:^CSS-REQUEST$
+

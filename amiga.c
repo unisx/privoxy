@@ -1,4 +1,4 @@
-const char amiga_rcs[] = "$Id: amiga.c,v 1.11 2006/07/18 14:48:45 david__schmidt Exp $";
+const char amiga_rcs[] = "$Id: amiga.c,v 1.12 2007/01/07 07:40:52 joergs Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/amiga.c,v $
@@ -28,6 +28,9 @@ const char amiga_rcs[] = "$Id: amiga.c,v 1.11 2006/07/18 14:48:45 david__schmidt
  *
  * Revisions   :
  *    $Log: amiga.c,v $
+ *    Revision 1.12  2007/01/07 07:40:52  joergs
+ *    Added AmigaOS4 support and made it work on AmigaOS 3.x with current sources.
+ *
  *    Revision 1.11  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -95,24 +98,37 @@ const char amiga_rcs[] = "$Id: amiga.c,v 1.11 2006/07/18 14:48:45 david__schmidt
 
 const char amiga_h_rcs[] = AMIGA_H_VERSION;
 
+static char *ver USED = "$VER: Privoxy " __AMIGAVERSION__ " (" __AMIGADATE__ ")";
+#ifdef __amigaos4__
+static char *stack USED = "$STACK: 524288";
+#else
 unsigned long __stack = 100*1024;
-static char ver[] = "$VER: Privoxy " __AMIGAVERSION__ " (" __AMIGADATE__ ")";
+#endif
 struct Task *main_task = NULL;
 int childs = 0;
 
 void serve(struct client_state *csp);
 
-__saveds ULONG server_thread(void)
+SAVEDS ULONG server_thread(void)
 {
    struct client_state *local_csp;
    struct UserData UserData;
    struct Task *me=FindTask(NULL);
+#ifdef __amigaos4__
+   struct Library *SocketBase;
+#endif
 
    Wait(SIGF_SINGLE);
    local_csp=(struct client_state *)(me->tc_UserData);
    me->tc_UserData=&UserData;
    SocketBase=(APTR)OpenLibrary("bsdsocket.library",3);
-   if(SocketBase)
+   if (SocketBase)
+#ifdef __amigaos4__
+   {
+      ISocket = (struct SocketIFace *)GetInterface(SocketBase, "main", 1, NULL);
+   }
+   if (ISocket)
+#endif
    {
       SetErrnoPtr(&(UserData.eno),sizeof(int));
       local_csp->cfd=ObtainSocket(local_csp->cfd, AF_INET, SOCK_STREAM, 0);
@@ -124,8 +140,14 @@ __saveds ULONG server_thread(void)
          local_csp->flags &= ~CSP_FLAG_ACTIVE;
          Signal(main_task,SIGF_SINGLE);
       }
+#ifdef __amigaos4__
+      DropInterface((struct Interface *)ISocket);
+#endif
       CloseLibrary(SocketBase);
    } else {
+#ifdef __amigaos4__
+      CloseLibrary(SocketBase);
+#endif
       local_csp->flags &= ~CSP_FLAG_ACTIVE;
       Signal(main_task,SIGF_SINGLE);
    }
@@ -137,19 +159,33 @@ static BPTR olddir;
 
 void amiga_exit(void)
 {
-   if(SocketBase)
+#ifdef __amigaos4__
+   if (ISocket)
+#else
+   if (SocketBase)
+#endif
    {
+#ifdef __amigaos4__
+      struct Library *SocketBase = ISocket->Data.LibBase;
+      DropInterface((struct Interface *)ISocket);
+#endif
       CloseLibrary(SocketBase);
    }
    CurrentDir(olddir);
 }
 
+#ifndef __amigaos4__
 static struct SignalSemaphore memsem;
 static struct SignalSemaphore *memsemptr = NULL;
+#endif
 static struct UserData GlobalUserData;
 
 void InitAmiga(void)
 {
+#ifdef __amigaos4__
+   struct Library *SocketBase;
+#endif
+
    main_task = FindTask(NULL);
    main_task->tc_UserData = &GlobalUserData;
 
@@ -160,19 +196,33 @@ void InitAmiga(void)
 
    signal(SIGINT,SIG_IGN);
    SocketBase = (APTR)OpenLibrary("bsdsocket.library",3);
-   if (!SocketBase)
+#ifdef __amigaos4__
+   if (SocketBase)
    {
+      ISocket = (struct SocketIFace *)GetInterface(SocketBase, "main", 1, NULL);
+   }
+   if (!ISocket)
+#else
+   if (!SocketBase)
+#endif
+   {
+#ifdef __amigaos4__
+      CloseLibrary(SocketBase);
+#endif
       fprintf(stderr, "Can't open bsdsocket.library V3+\n");
       exit(RETURN_ERROR);
    }
    SetErrnoPtr(&(GlobalUserData.eno),sizeof(int));
+#ifndef __amigaos4__
    InitSemaphore(&memsem);
    memsemptr = &memsem;
+#endif
 
    olddir=CurrentDir(GetProgramDir());
    atexit(amiga_exit);
 }
 
+#ifndef __amigaos4__
 #ifdef __GNUC__
 #ifdef libnix
 /* multithreadingsafe libnix replacements */
@@ -286,5 +336,6 @@ ADD2EXIT(__memCleanUp,-50);
 #else
 #error Only GCC is supported, multithreading safe malloc/free required.
 #endif /* __GNUC__ */
+#endif /* !__amigaos4__ */
 
 #endif /* def AMIGA */

@@ -75,6 +75,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" type="text/css" href="@default-cgi@send-stylesheet">
+  <link rel="shortcut icon" href="@default-cgi@error-favicon.ico">
 </head>
 
 <body>
@@ -150,12 +151,6 @@
     </tr>
 <!-- if-have-help-info-end@ -->
         
-    <tr>
-      <td>
-        <p class="small">Valid <a href="http://validator.w3.org/">HTML 4.01 Strict</a></p>
-      </td>
-    </tr>
-    
   </table>
 
 </body>

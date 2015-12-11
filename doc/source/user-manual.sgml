@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.6">
-<!entity p-status "stable">
+<!entity p-version "3.0.7">
+<!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -33,9 +33,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.27 2006/11/14 01:57:47 hal9 Exp $
+ $Id: user-manual.sgml,v 2.50 2007/12/08 12:44:36 fabiankeil Exp $
 
- Copyright (C) 2001- 2006 Privoxy Developers http://www.privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -54,12 +54,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2006 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2007 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.27 2006/11/14 01:57:47 hal9 Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.50 2007/12/08 12:44:36 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -177,6 +177,8 @@ Hal.
 How to install the binary packages depends on your operating system:
 </para>
 
+<!-- XXX: The installation sections should be sorted -->
+
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 id="installation-pack-rpm"><title>Red Hat and Fedora RPMs</title>
 
@@ -208,7 +210,7 @@ How to install the binary packages depends on your operating system:
 </sect3>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-deb"><title>Debian</title>
+<sect3 id="installation-deb"><title>Debian and Ubuntu</title>
 <para>
  DEBs can be installed with <literal>apt-get install privoxy</literal>,
  and will use <filename>/etc/privoxy</filename> for the location of 
@@ -225,7 +227,7 @@ How to install the binary packages depends on your operating system:
  in the same directory as you installed <application>Privoxy</application> in. 
 </para>
 <para>
- Version 3.0.4 introduced full <application>Windows</application> service
+ Version 3.0.5 beta introduced full <application>Windows</application> service
  functionality. On Windows only, the <application>Privoxy</application>
  program has two new command line arguments to install and uninstall
  <application>Privoxy</application> as a <emphasis>service</emphasis>.
@@ -260,7 +262,7 @@ How to install the binary packages depends on your operating system:
 </sect3>
 
 <!--   ~~~~~       New section      ~~~~~     -->
-<sect3 id="installation-pack-bintgz"><title>Solaris, NetBSD, FreeBSD, HP-UX</title>
+<sect3 id="installation-pack-bintgz"><title>Solaris <!--, NetBSD, HP-UX--></title>
 
 <para>
  Create a new directory, <literal>cd</literal> to it, then unzip and
@@ -332,6 +334,25 @@ How to install the binary packages depends on your operating system:
  All necessary files will be installed into <application>Privoxy</application>
  directory, including all configuration and log files. To uninstall, just 
  remove this directory.
+</para>
+</sect3>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 id="installation-tbz"><title>FreeBSD</title>
+
+<para>
+ Privoxy is part of FreeBSD's Ports Collection, you can build and install
+ it with <literal>cd /usr/ports/www/privoxy; make install clean</literal>.
+</para>
+<para>
+ If you don't use the ports, you can fetch and install
+ the package with <literal>pkg_add -r privoxy</literal>.
+</para>
+<para>
+ The port skeleton and the package can also be downloaded from the
+ <ulink url="https://sourceforge.net/project/showfiles.php?group_id=11118">File Release
+ Page</ulink>, but there's no reason to use them unless you're interested in the
+ beta releases which are only available there.
 </para>
 </sect3>
 
@@ -423,167 +444,155 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- There are many improvements and new features since <application>Privoxy 3.0.3</application>, the last stable release:
+ There are many improvements and new features since <application>Privoxy 3.0.6</application>, the last stable release:
 </para>
 
 <para>
  <itemizedlist>
   <listitem>
    <para>
-    Multiple <link linkend="filter-file">filter files</link> can now be specified in <filename>config</filename>. This allows for 
-    locally defined filters that can be maintained separately from the filters as
-    supplied by the developers, i.e. <filename>default.filter</filename>.
+    Two new actions <link
+          linkend="server-header-tagger">server-header-tagger</link>
+          and <link
+          linkend="client-header-tagger">client-header-tagger</link>
+          that can be used to create arbitrary <quote>tags</quote>
+          based on client and server headers.
+          These <quote>tags</quote> can then subsequently be used
+          to control the other actions used for the current request,
+          greatly increasing &my-app;'s flexibility and selectivity. See <link
+          linkend="tag-pattern">tag patterns</link> for more information on tags.
    </para>
   </listitem>
- 
- <listitem>
-  <para>  
-   There are a number of new <link linkend="actions-file">actions</link>:
+
+  <listitem>
+   <para>
+    Header filtering is done with dedicated header filters now. As a result
+    the actions <quote>filter-client-headers</quote> and <quote>filter-server-headers</quote>
+    that were introduced with <application>Privoxy 3.0.5</application> to apply
+    content filters to the headers have been removed.
+    See the new actions <link
+          linkend="server-header-filter">server-header-filter</link>
+          and <link
+          linkend="client-header-filter">client-header-filter</link> for details.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+     There are four new options for the main <filename>config</filename> file:
+   </para>
+
+     <itemizedlist>
+       <listitem>
+        <para>
+          <link
+          linkend="allow-cgi-request-crunching">allow-cgi-request-crunching</link>
+          which allows requests for Privoxy's internal CGI pages to be
+          blocked, redirected or (un)trusted like ordinary requests.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+          <link
+          linkend="split-large-forms">split-large-forms</link>
+          that will work around a browser bug that caused IE6 and IE7 to
+          ignore the Submit button on the Privoxy's edit-actions-for-url CGI
+          page.
+          </para>
+       </listitem>
+       <listitem>
+        <para>
+          <link
+          linkend="accept-intercepted-requests">accept-intercepted-requests</link>
+          which allows to combine Privoxy with any packet filter to create an
+          intercepting proxy for HTTP/1.1 requests (and for HTTP/1.0 requests
+          with Host header set). This means clients can be forced to use
+          &my-app; even if their proxy settings are configured differently.
+         </para>
+       </listitem>
+       <listitem>
+        <para>
+          <link
+          linkend="templdir">templdir</link>
+          to designate an alternate location for &my-app;'s 
+          locally customized CGI templates so that
+          these are not overwritten during upgrades.         
+        </para>
+       </listitem>
+       </itemizedlist>
+    </listitem>
+
+  <listitem>
+   <para>
+   A new command line option <literal>--pre-chroot-nslookup hostname</literal> to
+   initialize the resolver library before chroot'ing. On some systems this
+   reduces the number of files that must be copied into the chroot tree.
+   (Patch provided by Stephen Gildea)
+   </para>
+  </listitem>
+
+  <listitem>
+   <para>
+     The <link
+          linkend="forward-override">forward-override</link> action 
+     allows changing of the forwarding settings through the actions files.
+     Combined with tags, this allows to choose the forwarder based on
+     client headers like the <literal>User-Agent</literal>, or the request origin.
   </para>
-  
-  <para>
-  <itemizedlist>
-     
-     <listitem>
-      <para>
-       <literal><link linkend="content-type-overwrite">content-type-overwrite</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="crunch-client-header">crunch-client-header</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="crunch-if-none-match">crunch-if-none-match</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="crunch-server-header">crunch-server-header</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="filter-client-headers">filter-client-headers</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="filter-server-headers">filter-server-headers</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="force-text-mode">force-text-mode</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="handle-as-empty-document">handle-as-empty-document</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="hide-accept-language">hide-accept-language</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="hide-content-disposition">hide-content-disposition</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="hide-if-modified-since">hide-if-modified-since</link></literal>
-      </para>
-     </listitem>
+  </listitem>
+
+  <listitem>
+   <para>
+     The  <link
+          linkend="redirect">redirect</link> action can now use regular
+          expression substitutions against the original URL.
+   </para>
+  </listitem>
+
+  <listitem>
+   <para>
+     <application>zlib</application> support is now available as a compile
+     time option to filter compressed content. Patch provided by Wil Mahan.
+   </para>
+  </listitem>
     <listitem>
-      <para>
-       <literal><link linkend="inspect-jpegs">inspect-jpegs</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="overwrite-last-modified">overwrite-last-modified</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="redirect">redirect</link></literal>
-      </para>
-     </listitem>
-     <listitem>
-      <para>
-       <literal><link linkend="treat-forbidden-connects-like-blocks">treat-forbidden-connects-like-blocks</link></literal>
-      </para>
-     </listitem>
-
-  </itemizedlist>
-  </para>
-  <para>
-     In addition, <literal><link linkend="fast-redirects">fast-redirects</link></literal>
-     has been significantly improved with enhanced syntax.
-  </para>
-   <para>
-     And <literal><link linkend="hide-referrer">hide-referrer</link></literal>
-     has a new option, <literal>conditional block</literal>.
+    <para>
+     Improve various filters, and add new ones.
    </para>
- 
- </listitem>
+  </listitem>
+
 
   <listitem>
    <para>
-    <application>MS-Windows</application> versions can now be 
-    <link
-    linkend="installation-pack-win">installed and 
-    started as a <emphasis>Windows service</emphasis></link>.
+    Include support for RFC 3253 so that <filename>Subversion</filename> works
+    with &my-app;. Patch provided by Petr Kadlec.
    </para>
   </listitem>
 
   <listitem>
    <para>
-    <filename>config</filename> has two new options: 
-    <link
-    linkend="enable-remote-http-toggle">enable-remote-http-toggle</link>, 
-    and <link
-    linkend="forwarded-connect-retries">forwarded-connect-retries</link>.
-   </para>
-   <para>
-    And there is improved handling of the <link
-    linkend="user-manual">user-manual</link>
-    option, for placing documentation and help files on the local system.
+     Logging can be completely turned off by not specifying a logfile directive.
    </para>
   </listitem>
-  
+
+
   <listitem>
    <para>
-    There are six new <link linkend="FILTER">filters</link>.
+     A number of improvements to Privoxy's internal CGI pages, including the
+     use of favicons for error and control pages.
    </para>
   </listitem>
 
   <listitem>
    <para>
-    Actions files problems and suggestions are now being directed to: 
-    <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288">http://sourceforge.net/tracker/?group_id=11118&amp;atid=460288</ulink>.
-    Please use this to report such configuration related problems as missed
-    ads, sites that don't function properly due to one action or another, 
-    innocent images being blocked, etc.
+     Many bugfixes, memory leaks addressed, code improvements, and logging 
+     improvements.
    </para>
   </listitem>
-  
-  <listitem>
-   <para>
-    In addition, there are numerous bug fixes and significant enhancements,
-    including error pages should no longer be cached if the problem is fixed,
-    much better DNS error handling, various logging improvements, and 
-    configuration updates for better ad blocking and junk elimination.
-   </para>
-  </listitem>
-
 
  </itemizedlist>
+</para>
+<para>
+ For a more detailed list of changes please have a look at the ChangeLog.
 </para>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -600,45 +609,73 @@ How to install the binary packages depends on your operating system:
  <itemizedlist>
 
  <listitem>
-  <para>  
-    Some installers may remove earlier versions completely, including 
-    configuration files. Save any important configuration files!
+  <para>
+   The recommended way to upgrade &my-app; is to backup your old 
+   configuration files, install the new ones, verify that &my-app;
+   is working correctly and finally merge back your changes using
+   <application>diff</application> and maybe <application>patch</application>.
+  </para>
+  <para>
+   There are a number of new features in each &my-app; release and
+   most of them have to be explicitly enabled in the configuration
+   files. Old configuration files obviously don't do that and due
+   to syntax changes using old configuration files with a new
+   &my-app; isn't always possible anyway.
   </para>
  </listitem>
  <listitem>
   <para>  
-   On the other hand, other installers may not overwrite any existing configuration 
-   files, thinking you will want to do that. You may want to manually check 
-   your saved files against the newer versions to see if the improvements have
-   merit, or whether there are new options that you may want to consider.
-   There are a number of new features, but most won't be available unless 
-   these features are incorporated into your configuration somehow.
+    Note that some installers remove earlier versions completely,
+    including configuration files, therefore you should really save
+    any important configuration files!
   </para>
  </listitem>
  <listitem>
-    <para>
-     See the full documentation on 
-     <literal><link linkend="fast-redirects">fast-redirects</link></literal>
-     which has changed syntax, and will require adjustments to local configs, 
-     such as <filename>user.action</filename>. You must reference the new 
-     syntax: 
-   </para>
-   <para>
- <screen>
-  { +fast-redirects{check-decoded-url} }
-   .example.com
-   mybank.com
-   .google.</screen>
-</para>
+  <para>  
+   On the other hand, other installers don't overwrite existing configuration 
+   files, thinking you will want to do that yourself.
+  </para>
+ </listitem>
+ <listitem>
+  <para>  
+   <filename>standard.action</filename> now only includes the enabled actions.
+   Not all actions as before.
+  </para>
+ </listitem>
+ <listitem>
+  <para>
+   In the default configuration only fatal errors are logged now.
+   You can change that in the <link linkend="DEBUG">debug section</link>
+   of the configuration file. You may also want to enable more verbose
+   logging until you verified that the new &my-app; version is working
+   as expected.
+  </para>
+ </listitem>
 
-  </listitem>
  <listitem>
     <para>
-     The <filename>jarfile</filename>, 
-     <ulink url="http://en.wikipedia.org/wiki/Browser_cookie">cookie</ulink> logger, is off by default now.
+     Three other config file settings are now off by default: 
+     <link linkend="enable-remote-toggle">enable-remote-toggle</link>,
+     <link linkend="enable-remote-http-toggle">enable-remote-http-toggle</link>,
+     and  <link linkend="enable-edit-actions">enable-edit-actions</link>. 
+     If you use or want these, you will need to explicitly enable them, and
+     be aware of the security issues involved. 
     </para>
   </listitem>
 
+  <listitem>
+   <para>
+    The <quote>filter-client-headers</quote> and
+    <quote>filter-server-headers</quote> actions that were introduced with
+    <application>Privoxy 3.0.5</application> to apply content filters to
+    the headers  have been removed and replaced with new actions.
+    See the <link
+          linkend="whatsnew">What's New section</link> above.
+   </para>
+  </listitem>
+
+
+<!--
  <listitem>
   <para>  
    What constitutes a <quote>default</quote> configuration has changed, 
@@ -650,7 +687,8 @@ How to install the binary packages depends on your operating system:
    settings as yet (see above).
   </para>
  </listitem>
-
+-->
+<!--
   <listitem>
    <para>
     The default actions setting is now <literal>Cautious</literal>. Previous
@@ -695,16 +733,15 @@ How to install the binary packages depends on your operating system:
 
   <listitem>
   <para>
-<!-- I think it is best to keep this somewhat vague, in case  -->
-<!-- the situation changes under our feet. -->   
    Some installers may not automatically start
    <application>Privoxy</application> after installation.
   </para>
  </listitem> 
-
+-->
 
  </itemizedlist>
 </para>
+
 </sect2>
 </sect1>
 
@@ -746,7 +783,8 @@ How to install the binary packages depends on your operating system:
    by setting the proxy configuration for address of
    <literal>127.0.0.1</literal> and port <literal>8118</literal>.
    <emphasis>DO NOT</emphasis> activate proxying for <literal>FTP</literal> or 
-   any protocols besides HTTP and HTTPS (SSL)! It won't work!
+   any protocols besides HTTP and HTTPS (SSL) unless you intend to prevent your
+   browser from using these protocols.
   </para>
  </listitem>  
 
@@ -764,7 +802,10 @@ How to install the binary packages depends on your operating system:
    A default installation should provide a reasonable starting point for 
    most. There will undoubtedly be occasions where you will want to adjust the
    configuration, but that can be dealt with as the need arises. Little 
-   to no initial configuration is required in most cases.
+   to no initial configuration is required in most cases, you may want
+   to enable the
+   <ulink url="config.html#ENABLE-EDIT-ACTIONS">web-based action editor</ulink> though.
+   Be sure to read the warnings first.
   </para>
   <para>
    See the <link linkend="configuration">Configuration section</link> for more
@@ -791,6 +832,9 @@ How to install the binary packages depends on your operating system:
   </para>
  </listitem> 
 
+<!--
+ Did anyone test these lately?
+ fk 2007-11-10
  <listitem>
   <para>
    For easy access to &my-app;'s most important controls, drag the provided
@@ -798,6 +842,7 @@ How to install the binary packages depends on your operating system:
    personal toolbar.
   </para>
  </listitem> 
+-->
 
  <listitem>
   <para>
@@ -812,7 +857,7 @@ How to install the binary packages depends on your operating system:
    Now enjoy surfing with enhanced control, comfort and privacy!
   </para>
  </listitem> 
- 
+
  </itemizedlist>
 </para>
 
@@ -852,7 +897,7 @@ How to install the binary packages depends on your operating system:
  Secondly, a brief explanation of <application>Privoxy's </application>
  <quote>actions</quote>. <quote>Actions</quote> in this context, are 
  the directives we use to tell <application>Privoxy</application> to perform
- some task relating to WWW transactions (i.e. web browsing). We tell
+ some task relating to HTTP transactions (i.e. web browsing). We tell
  <application>Privoxy</application> to take some <quote>action</quote>. Each
  action has a unique name and function. While there are many potential
  <application>actions</application> in <application>Privoxy's</application>
@@ -969,12 +1014,37 @@ How to install the binary packages depends on your operating system:
 </para>
 
 <para>
+ Advanced users will eventually want to explore &my-app;
+ <literal><link linkend="filter">filters</link></literal> as well. Filters 
+ are very different from <literal><link
+ linkend="block">blocks</link></literal>.
+ A <quote>block</quote> blocks a site, page, or unwanted contented. Filters
+ are a way of filtering or modifying what is actually on the page. An example
+ filter usage: a text replacement of <quote>no-no</quote> for
+ <quote>nasty-word</quote>. That is a very simple example. This process can be
+ used for ad blocking, but it is more in the realm of advanced usage and has
+ some pitfalls to be wary off.
+</para>
+
+<para>
  The quickest way to adjust any of these settings is with your browser through
  the special <application>Privoxy</application> editor at <ulink
  url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>
  (shortcut: <ulink url="http://p.p/">http://p.p/show-status</ulink>). This 
- is an internal page, and does not require Internet access. Select the
- appropriate <quote>actions</quote> file, and click
+ is an internal page, and does not require Internet access.
+</para>
+
+<para>
+ Note that as of <application>Privoxy</application> 3.0.7 beta the
+ action editor is disabled by default. Check the
+ <ulink url="config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions
+  section in the configuration file</ulink> to learn why and in which
+ cases it's safe to enable again.
+</para>
+
+<para>
+ If you decided to enable the action editor, select the appropriate
+ <quote>actions</quote> file, and click
  <quote><guibutton>Edit</guibutton></quote>. It is best to put personal or
  local preferences in <filename>user.action</filename> since this is not
  meant to be overwritten during upgrades, and will over-ride the settings in
@@ -1392,9 +1462,9 @@ must find a better place for this paragraph
 </para>
 
 <para>
- <application>Privoxy</application> is HTTP/1.1 compliant,  but not all of
- the optional 1.1 features are as yet supported. In the unlikely event that
- you experience inexplicable problems with browsers that use HTTP/1.1 per default
+ <application>Privoxy</application> does not support all of the optional HTTP/1.1
+ features yet. In the unlikely event that you experience inexplicable problems
+ with browsers that use HTTP/1.1 per default
  (like <application>Mozilla</application> or recent versions of I.E.), you might
  try to force HTTP/1.0 compatibility. For Mozilla, look under <literal>Edit -&gt;
  Preferences -&gt; Debug -&gt; Networking</literal>.
@@ -1490,7 +1560,6 @@ must find a better place for this paragraph
  <listitem>
   <para>
    <emphasis>--pidfile FILE</emphasis>
-  
   </para>
   <para>
    On startup, write the process ID to <emphasis>FILE</emphasis>. Delete the
@@ -1502,7 +1571,6 @@ must find a better place for this paragraph
  <listitem>
   <para>
    <emphasis>--user USER[.GROUP]</emphasis>
-  
   </para>
   <para>
    After (optionally) writing the PID file, assume the user  ID  of
@@ -1510,10 +1578,9 @@ must find a better place for this paragraph
    privileges are not sufficient to do so. Unix only.
   </para>
  </listitem>
-  <listitem>
+ <listitem>
   <para>
    <emphasis>--chroot</emphasis>
-  
   </para>
   <para>
    Before changing to the user ID given in the <emphasis>--user</emphasis> option, 
@@ -1523,6 +1590,24 @@ must find a better place for this paragraph
    Unix only.
   </para>
  </listitem>
+ <listitem>
+  <para>
+   <emphasis>--pre-chroot-nslookup hostname</emphasis>
+  </para>
+  <para>
+   Specifies a hostname to look up before doing a chroot. On some systems, initializing the
+   resolver library involves reading config files from /etc and/or loading additional shared
+   libraries from /lib. On these systems, doing a hostname lookup before the chroot reduces
+   the number of files that must be copied into the chroot tree.
+  </para>
+  <para>
+   For fastest startup speed, a good value is a hostname that is not in /etc/hosts but that
+   your local name server (listed in /etc/resolv.conf) can resolve without recursion
+   (that is, without having to ask any other name servers). The hostname need not exist,
+   but if it doesn't, an error message (which can be ignored) will be output.
+  </para>
+ </listitem>
+
  <listitem>
   <para>
     <emphasis>configfile</emphasis>
@@ -1629,6 +1714,14 @@ for details.
  your browser.
 </para>
 
+<para>
+ Note that several of the features described above are disabled by default
+ in <application>Privoxy</application> 3.0.7 beta and later.
+ Check the
+ <ulink url="config.html">configuration file</ulink> to learn why
+ and in which cases it's safe to enable them again.
+</para>
+
 </sect2>
 
 <!--  ~  End section  ~  -->
@@ -1715,12 +1808,9 @@ for details.
 </para>
 
 <para>
- The syntax of all configuration files has remained the same throughout the
- 3.x series. There have been enhancements, but no changes that would preclude
- the use of any configuration file from one version to the next. (There is 
- one exception: <link linkend="FAST-REDIRECTS">+fast-redirects</link> which 
- has enhanced syntax and will require updating any local configs from earlier 
- versions.)
+ The syntax of the configuration and filter files may change between different
+ Privoxy versions, unfortunately some enhancements cost backwards compatibility.
+ <!-- Add link to documentation-->
 </para>
 
 <para>
@@ -1863,7 +1953,7 @@ for details.
     </para>
     <para>
      The default profiles, and their associated actions, as pre-defined in
-     <filename>standard.action</filename> are:
+     <filename>standard.action</filename> are<!-- different than this table which is out of date -->:
     </para>
     <para>
     <table frame=all><title>Default Configurations</title>
@@ -1994,12 +2084,12 @@ for details.
 <para>
  The list of actions files to be used are defined in the main configuration 
  file, and are processed in the order they are defined (e.g.
- <filename>default.action</filename> is typically process before
+ <filename>default.action</filename> is typically processed before
  <filename>user.action</filename>). The content of these can all be viewed and
  edited from <ulink
  url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>.
  The over-riding principle when applying actions, is that the last action that
- matches a given URL, wins. The broadest, most general rules go first
+ matches a given URL wins. The broadest, most general rules go first
  (defined in <filename>default.action</filename>),
  followed by any exceptions (typically also in
  <filename>default.action</filename>), which are then followed lastly by any
@@ -2018,15 +2108,15 @@ for details.
  from consulting any previous file). And then below that,
  exceptions to the defined universal policies. You can regard
  <filename>user.action</filename> as an appendix to <filename>default.action</filename>,
- with the advantage that is a separate file, which makes preserving your
+ with the advantage that it is a separate file, which makes preserving your
  personal settings across <application>Privoxy</application> upgrades easier.
 </para>
 
 <para> 
  Actions can be used to block anything you want, including ads, banners, or
- just some obnoxious URL that you would rather not see. Cookies can be accepted
+ just some obnoxious URL whose content you would rather not see. Cookies can be accepted
  or rejected, or accepted only during the current browser session (i.e. not
- written to disk), content can be modified, JavaScripts tamed, user-tracking
+ written to disk), content can be modified, some JavaScripts tamed, user-tracking
  fooled, and much more. See below for a <link linkend="actions">complete list
  of actions</link>.
 </para>
@@ -2045,7 +2135,7 @@ for details.
  will have to make later. If, for example, you want to crunch all cookies per
  default, you'll have to make exceptions from that rule for sites that you
  regularly use and that require cookies for actually useful purposes, like maybe
- your bank, favorite shop, or newspaper. 
+ your bank, favorite shop, or newspaper.
 </para>
 
 <para>
@@ -2063,12 +2153,15 @@ for details.
  The easiest way to edit the actions files is with a browser by
  using our browser-based editor, which can be reached from <ulink
  url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>.
- The editor allows both fine-grained control over every single feature on a
- per-URL basis, and easy choosing from wholesale sets of defaults like
- <quote>Cautious</quote>, <quote>Medium</quote> or <quote>Advanced</quote>.
- Warning: the <quote>Advanced</quote> setting is more aggressive, and 
- will be more likely to cause problems for some sites. Experienced users only!
-</para>
+ Note: the config file option <link
+ linkend="enable-edit-actions">enable-edit-actions</link> must be enabled for
+ this to work. The editor allows both fine-grained control over every single
+ feature on a per-URL basis, and easy choosing from wholesale sets of defaults
+ like <quote>Cautious</quote>, <quote>Medium</quote> or
+ <quote>Advanced</quote>. Warning: the <quote>Advanced</quote> setting is more
+ aggressive, and will be more likely to cause problems for some sites.
+ Experienced users only! 
+ </para>
 
 <para>
  If you prefer plain text editing to GUIs, you can of course also directly edit the
@@ -2080,24 +2173,28 @@ for details.
 
 
 <sect2 id="actions-apply">
-<title>How Actions are Applied to URLs</title>
+<title>How Actions are Applied to Requests</title>
 <para>
  Actions files are divided into sections. There are special sections,
  like the <quote><link linkend="aliases">alias</link></quote> sections which will
  be discussed later. For now let's concentrate on regular sections: They have a
  heading line (often split up to multiple lines for readability) which consist
  of a list of actions, separated by whitespace and enclosed in curly braces.
- Below that, there is a list of URL patterns, each on a separate line.
+ Below that, there is a list of URL and tag patterns, each on a separate line.
 </para>
 
 <para>
  To determine which actions apply to a request, the URL of the request is
- compared to all patterns in each <quote>action file</quote> file. Every time it matches, the list of
- applicable actions for the URL is incrementally updated, using the heading
- of the section in which the pattern is located. If multiple matches for
- the same URL set the same action differently, the last match wins. If not, 
- the effects are aggregated. E.g. a URL might match a regular section with 
- a heading line of <literal>{ 
+ compared to all URL patterns in each <quote>action file</quote>.
+ Every time it matches, the list of applicable actions for the request is
+ incrementally updated, using the heading of the section in which the
+ pattern is located. The same is done again for tags and tag patterns later on.
+</para>
+
+<para>
+ If multiple applying sections set the same action differently,
+ the last match wins. If not, the effects are aggregated.
+ E.g. a URL might match a regular section with a heading line of <literal>{ 
  +<link linkend="handle-as-image">handle-as-image</link> }</literal>,
  then later another one with just <literal>{
  +<link linkend="block">block</link> }</literal>, resulting
@@ -2116,7 +2213,7 @@ for details.
  </para>
 
 <para>
- You can trace this process for any given URL by visiting <ulink
+ You can trace this process for URL patterns and any given URL by visiting <ulink
  url="http://config.privoxy.org/show-url-info">http://config.privoxy.org/show-url-info</ulink>.
 </para>
 
@@ -2139,7 +2236,7 @@ for details.
 </para>
  
 <para>
- Generally, a <application>Privoxy</application> pattern has the form
+ Generally, an URL pattern has the form
  <literal>&lt;domain&gt;/&lt;path&gt;</literal>, where both the
  <literal>&lt;domain&gt;</literal> and <literal>&lt;path&gt;</literal> are
  optional. (This is why the special <literal>/</literal> pattern matches all
@@ -2177,7 +2274,16 @@ for details.
   </listitem>
  </varlistentry>
  <varlistentry>
-  <term><literal>www.example.com/index.html</literal></term>
+  <term><literal>www.example.com/index.html$</literal></term>
+  <listitem>
+   <para>
+    matches all the documents on <literal>www.example.com</literal>
+    whose name starts with <literal>/index.html</literal>.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term><literal>www.example.com/index.html$</literal></term>
   <listitem>
    <para>
     matches only the single document <literal>/index.html</literal>
@@ -2186,7 +2292,7 @@ for details.
   </listitem>
  </varlistentry>
  <varlistentry>
-  <term><literal>/index.html</literal></term>
+  <term><literal>/index.html$</literal></term>
   <listitem>
    <para>
     matches the document <literal>/index.html</literal>, regardless of the domain,
@@ -2198,7 +2304,7 @@ for details.
   <term><literal>index.html</literal></term>
   <listitem>
    <para>
-    matches nothing, since it would be  interpreted as a domain name and
+    matches nothing, since it would be interpreted as a domain name and
     there is no top-level domain called <literal>.html</literal>. So its 
     a mistake.
    </para>
@@ -2360,7 +2466,7 @@ for details.
   </listitem>
  </varlistentry>
  <varlistentry>
-  <term><literal>.example.com/.*/index.html</literal></term>
+  <term><literal>.example.com/.*/index.html$</literal></term>
   <listitem>
    <para>
     Will match any page in the domain of <quote>example.com</quote> that is
@@ -2375,7 +2481,7 @@ for details.
   </listitem>
  </varlistentry>
  <varlistentry>
-  <term><literal>.example.com/(.*/)?index\.html</literal></term>
+  <term><literal>.example.com/(.*/)?index\.html$</literal></term>
   <listitem>
    <para>
     This regular expression is conditional so it will match any page 
@@ -2411,6 +2517,69 @@ for details.
 <para>
  There are many, many good examples to be found in <filename>default.action</filename>, 
  and more tutorials below in <link linkend="regex">Appendix on regular expressions</link>.
+</para>
+
+</sect3>
+
+<!--  ~  End section  ~  -->
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 id="tag-pattern"><title>The Tag Pattern</title>
+
+<para>
+ Tag patterns are used to change the applying actions based on the
+ request's tags. Tags can be created with either the
+ <link linkend="CLIENT-HEADER-TAGGER">client-header-tagger</link>
+ or the  <link linkend="SERVER-HEADER-TAGGER">server-header-tagger</link> action.
+</para>
+
+<para>
+ Tag patterns have to start with <quote>TAG:</quote>, so &my-app;
+ can tell them apart from URL patterns. Everything after the colon
+ including white space, is interpreted as a regular expression with
+ path pattern syntax, except that tag patterns aren't left-anchored
+ automatically (&my-app; doesn't silently add a <quote>^</quote>,
+ you have to do it yourself if you need it).
+</para>
+
+<para>
+ To match all requests that are tagged with <quote>foo</quote>
+ your pattern line should be <quote>TAG:^foo$</quote>,
+ <quote>TAG:foo</quote> would work as well, but it would also
+ match requests whose tags contain <quote>foo</quote> somewhere.
+ <quote>TAG: foo</quote> wouldn't work as it requires white space.
+</para>
+
+<para>
+ Sections can contain URL and tag patterns at the same time,
+ but tag patterns are checked after the URL patterns and thus
+ always overrule them, even if they are located before the URL patterns.
+</para>
+
+<para>
+ Once a new tag is added, Privoxy checks right away if it's matched by one
+ of the tag patterns and updates the action settings accordingly. As a result
+ tags can be used to activate other tagger actions, as long as these other
+ taggers look for headers that haven't already be parsed.
+</para>
+
+<para>
+ For example you could tag client requests which use the
+ <literal>POST</literal> method,
+ then use this tag to activate another tagger that adds a tag if cookies
+ are sent, and then use a block action based on the cookie tag. This allows
+ the outcome of one action, to be input into a subsequent action. However if
+ you'd reverse the position of the described taggers, and activated the
+ method tagger based on the cookie tagger, no method tags would be created.
+ The method tagger would look for the request line, but at the time
+ the cookie tag is created, the request line has already been parsed.
+</para>
+
+<para>
+ While this is a limitation you should be aware of, this kind of
+ indirection is seldom needed anyway and even the example doesn't
+ make too much sense.
 </para>
 
 </sect3>
@@ -2483,7 +2652,7 @@ for details.
    the last match wins, i.e. the params from earlier matches are simply ignored.
   </para>
   <para>  
-   Example: <literal>+hide-user-agent{ Mozilla 1.0 }</literal>
+   Example: <literal>+hide-user-agent{Mozilla/5.0 (X11; U; FreeBSD i386; en-US; rv:1.8.1.4) Gecko/20070602 Firefox/2.0.0.4}</literal>
   </para>
  </listitem>
  
@@ -2515,14 +2684,14 @@ for details.
 <para>
  If nothing is specified in any actions file, no <quote>actions</quote> are
  taken. So in this case <application>Privoxy</application> would just be a
- normal, non-blocking, non-anonymizing proxy. You must specifically enable the
+ normal, non-blocking, non-filtering proxy. You must specifically enable the
  privacy and blocking features you need (although the provided default actions
  files will give a good starting point).
 </para>
 
 <para>
- Later defined actions always over-ride earlier ones.  So exceptions 
- to any rules you make, should come in the latter part of the file (or 
+ Later defined action sections always over-ride earlier ones of the same type.
+ So exceptions to any rules you make, should come in the latter part of the file (or 
  in a file that is processed later when using multiple actions files such 
  as <filename>user.action</filename>). For multi-valued actions, the actions
  are applied in the order they are specified. Actions files are processed in
@@ -2720,10 +2889,167 @@ for details.
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="client-header-filter">
+<title>client-header-filter</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>
+   Rewrite or remove single client headers.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    All client headers to which this action applies are filtered on-the-fly through
+    the specified regular expression based substitutions.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- boolean, parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <para>
+    The name of a client-header filter, as defined in one of the
+    <link linkend="filter-file">filter files</link>.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Client-header filters are applied to each header on its own, not to
+    all at once. This makes it easier to diagnose problems, but on the downside
+    you can't write filters that only change header x if header y's value is z.
+    You can do that by using tags though.
+   </para>
+   <para>
+    Client-header filters are executed after the other header actions have finished
+    and use their output as input.
+   </para>
+   <para>
+    If the request URL gets changed, &my-app; will detect that and use the new
+    one. This can be used to rewrite the request destination behind the client's
+    back, for example to specify a Tor exit relay for certain requests.
+   </para>
+   <para>
+    Please refer to the <link linkend="filter-file">filter file chapter</link>
+    to learn which client-header filters are available by default, and how to
+    create your own.
+   </para>
+
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Example usage (section):</term>
+  <listitem>
+    <para>
+     <screen>
+{+client-header-filter{hide-tor-exit-notation}}
+.exit/
+    </screen>
+    </para>
+  </listitem>
+ </varlistentry>
+
+</variablelist>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="client-header-tagger">
+<title>client-header-tagger</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>
+   Block requests based on their headers.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    Client headers to which this action applies are filtered on-the-fly through
+    the specified regular expression based substitutions, the result is used as
+    tag. 
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- boolean, parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <para>
+    The name of a client-header tagger, as defined in one of the
+    <link linkend="filter-file">filter files</link>.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Client-header taggers are applied to each header on its own,
+    and as the header isn't modified, each tagger <quote>sees</quote>
+    the original.
+   </para>
+   <para>
+    Client-header taggers are the first actions that are executed
+    and their tags can be used to control every other action.
+   </para>
+ </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Example usage (section):</term>
+  <listitem>
+    <para>
+     <screen>
+# Tag every request with the User-Agent header
+{+client-header-tagger{user-agent}}
+/
+    </screen>
+    </para>
+  </listitem>
+ </varlistentry>
+
+</variablelist>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="content-type-overwrite">
-<!-- 
-new action 
--->
 <title>content-type-overwrite</title>
 
 <variablelist>
@@ -2798,10 +3124,9 @@ new action
     This limitation exists for a reason, think twice before circumventing it.
    </para>
    <para>
-    Most of the time it's easier to enable
-    <literal><link linkend="filter-server-headers">filter-server-headers</link></literal>
-    and replace this action with a custom regular expression. It allows you
-    to activate it for every document of a certain site and it will still
+    Most of the time it's easier to replace this action with a custom
+    <literal><link linkend="server-header-filter">server-header filter</link></literal>.
+    It allows you to activate it for every document of a certain site and it will still
     only replace the content types you aimed at.
    </para>
    <para>
@@ -2822,8 +3147,8 @@ www.example.net/
 
 # but leave the content type unmodified if the URL looks like a style sheet
 {-content-type-overwrite}
-www.example.net/*.\.css$
-www.example.net/*.style
+www.example.net/.*\.css$
+www.example.net/.*style
 </screen>
    </para>
   </listitem>
@@ -2890,9 +3215,8 @@ new action
    <para>
     <literal>crunch-client-header</literal> is only meant for quick tests.
     If you have to block several different headers, or only want to modify
-    parts of them, you should enable
-    <literal><link linkend="filter-client-headers">filter-client-headers</link></literal>
-    and create your own filter.
+    parts of them, you should use a
+    <literal><link linkend="client-header-filter">client-header filter</link></literal>.
    </para>
     <warning>
      <para>
@@ -2968,12 +3292,12 @@ new action
    </para>
    <para>
     It is also useful to make sure the header isn't used as a cookie
-    replacement.
+    replacement (unlikely but possible).
    </para>
    <para>
     Blocking the <quote>If-None-Match:</quote> header shouldn't cause any
     caching problems, as long as the <quote>If-Modified-Since:</quote> header
-    isn't blocked as well.
+    isn't blocked or missing as well.
    </para>
    <para>
     It is recommended to use this action together with
@@ -2988,8 +3312,9 @@ new action
   <term>Example usage (section):</term>
   <listitem>
     <para>
-     <screen># Let the browser revalidate cached documents without being tracked across sessions
-{ +hide-if-modified-since{-60} \
+     <screen># Let the browser revalidate cached documents but don't
+# allow the server to use the revalidation headers for user tracking.
+{+hide-if-modified-since{-60} \
  +overwrite-last-modified{randomize} \
  +crunch-if-none-match}
 /   </screen>
@@ -3009,7 +3334,7 @@ new action
   <term>Typical use:</term>
   <listitem>
    <para>
-    Prevent the web server from setting any cookies on your system
+    Prevent the web server from setting HTTP cookies on your system
    </para>
   </listitem>
  </varlistentry>
@@ -3044,10 +3369,10 @@ new action
   <term>Notes:</term>
   <listitem>
    <para>
-    This action is only concerned with <emphasis>incoming</emphasis> cookies. For
-    <emphasis>outgoing</emphasis> cookies, use
+    This action is only concerned with <emphasis>incoming</emphasis> HTTP cookies. For
+    <emphasis>outgoing</emphasis> HTTP cookies, use
     <literal><link linkend="crunch-outgoing-cookies">crunch-outgoing-cookies</link></literal>.
-    Use <emphasis>both</emphasis> to disable cookies completely.
+    Use <emphasis>both</emphasis> to disable HTTP cookies completely.
    </para>
    <para>
     It makes <emphasis>no sense at all</emphasis> to use this action in conjunction
@@ -3126,9 +3451,8 @@ new action
    <para>
     <literal>crunch-server-header</literal> is only meant for quick tests.
     If you have to block several different headers, or only want to modify
-    parts of them, you should enable
-    <literal><link linkend="filter-server-headers">filter-server-headers</link></literal>
-    and create your own filter.
+    parts of them, you should use a custom
+    <literal><link linkend="server-header-filter">server-header filter</link></literal>.
    </para>
     <warning>
      <para>
@@ -3161,7 +3485,7 @@ new action
   <term>Typical use:</term>
   <listitem>
    <para>
-    Prevent the web server from reading any cookies from your system
+    Prevent the web server from reading any HTTP cookies from your system
    </para>
   </listitem>
  </varlistentry>
@@ -3196,10 +3520,10 @@ new action
   <term>Notes:</term>
   <listitem>
    <para>
-    This action is only concerned with <emphasis>outgoing</emphasis> cookies. For
-    <emphasis>incoming</emphasis> cookies, use
+    This action is only concerned with <emphasis>outgoing</emphasis> HTTP cookies. For
+    <emphasis>incoming</emphasis> HTTP cookies, use
     <literal><link linkend="crunch-incoming-cookies">crunch-incoming-cookies</link></literal>.
-    Use <emphasis>both</emphasis> to disable cookies completely.
+    Use <emphasis>both</emphasis> to disable HTTP cookies completely.
    </para>
    <para>
     It makes <emphasis>no sense at all</emphasis> to use this action in conjunction
@@ -3335,8 +3659,8 @@ new action
     This is a left-over from the time when <application>Privoxy</application>
     didn't support important HTTP/1.1 features well. It is left here for the
     unlikely case that you experience HTTP/1.1 related problems with some server
-    out there. Not all (optional) HTTP/1.1 features are supported yet, so there
-    is a chance you might need this action.
+    out there. Not all HTTP/1.1 features and requirements are supported yet,
+    so there is a chance you might need this action.
    </para>
   </listitem>
  </varlistentry>
@@ -3444,9 +3768,9 @@ problem-host.example.com</screen>
     followed by another parameter. <literal>fast-redirects</literal> doesn't know that
     and will cause a redirect to <quote>http://www.example.net/&amp;foo=bar</quote>.
     Depending on the target server configuration, the parameter will be silently ignored
-    or lead to a <quote>page not found</quote> error. It is possible to fix these redirected
-    requests with <literal><link linkend="filter-client-headers">filter-client-headers</link></literal>
-    but it requires a little effort.
+    or lead to a <quote>page not found</quote> error. You can prevent this problem by
+    first using the <literal><link linkend="redirect">redirect</link></literal> action
+    to remove the last part of the URL, but it requires a little effort.
    </para>
    <para>
     To detect a redirection URL, <literal>fast-redirects</literal> only
@@ -3466,7 +3790,7 @@ problem-host.example.com</screen>
     <para>
      <screen>
  { +fast-redirects{simple-check} }
-   .example.com 
+   one.example.com 
 
  { +fast-redirects{check-decoded-url} }
    another.example.com/testing</screen>
@@ -3495,15 +3819,11 @@ problem-host.example.com</screen>
   <term>Effect:</term>
   <listitem>
    <para>
-    All files of text-based type, most notably HTML and
-    JavaScript, to which this action applies, can be filtered on-the-fly
-    through the specified regular expression based substitutions. (Note: as of
-    version 3.0.3 plain text documents are exempted from filtering, because
-    web servers often use the <literal>text/plain</literal> MIME type for all
-    files whose type they don't know.) By default, filtering works only on the
-    raw document content itself (that which can be seen with <literal>View
-    Source</literal>), 
-    not the headers.
+    All instances of text-based type, most notably HTML and JavaScript, to which
+    this action applies, can be filtered on-the-fly through the specified regular
+    expression based substitutions. (Note: as of version 3.0.3 plain text documents
+    are exempted from filtering, because web servers often use the
+   <literal>text/plain</literal> MIME type for all files whose type they don't know.)
    </para>
   </listitem>
  </varlistentry>
@@ -3520,7 +3840,7 @@ problem-host.example.com</screen>
   <term>Parameter:</term>
   <listitem>
    <para>
-    The name of a filter, as defined in the <link linkend="filter-file">filter file</link>.
+    The name of a content filter, as defined in the <link linkend="filter-file">filter file</link>.
     Filters can be defined in one or more  files as defined by the 
     <literal><link linkend="filterfile">filterfile</link></literal>
     option in the <link linkend="config">config file</link>. 
@@ -3576,14 +3896,19 @@ problem-host.example.com</screen>
     by defining appropriate <literal>-filter</literal> exceptions.
    </para>
    <para>
-    At this time, <application>Privoxy</application> cannot uncompress compressed
-    documents. If you want filtering to work on all documents, even those that
-    would normally be sent compressed, you must use the
-    <literal><link linkend="prevent-compression">prevent-compression</link></literal>
+    Compressed content can't be filtered either, unless &my-app;
+    is compiled with zlib support (requires at least &my-app; 3.0.7),
+    in which case &my-app; will decompress the content before filtering
+    it.
+   </para>
+   <para>
+    If you use a &my-app; version without zlib support, but want filtering to work on
+    as much documents as possible, even those that would normally be sent compressed,
+    you must use the <literal><link linkend="prevent-compression">prevent-compression</link></literal>
     action in conjunction with <literal>filter</literal>.
    </para>
    <para>
-    Filtering can achieve some of the same effects as the 
+    Content filtering can achieve some of the same effects as the 
     <literal><link linkend="block">block</link></literal>
     action, i.e. it can be used to block ads and banners. But the mechanism 
     works quite differently. One effective use, is to block ad banners 
@@ -3686,7 +4011,7 @@ problem-host.example.com</screen>
    </para>
    <para>
     <anchor id="filter-ie-exploits">
-    <screen>+filter{ie-exploits}         # Disable some known Internet Explorer bug exploits</screen>
+    <screen>+filter{ie-exploits}         # Disable a known Internet Explorer bug exploits</screen>
    </para>
    <para>
     <anchor id="filter-site-specifics">
@@ -3709,213 +4034,11 @@ problem-host.example.com</screen>
     <screen>+filter{blogspot}            # Cleans up Blogspot blogs</screen>
    </para>
    <para>
-    <anchor id="filter-html-to-xml">
-    <screen>+filter{html-to-xml}         # Header filter to change the Content-Type from html to xml</screen>
-   </para>
-   <para>
-    <anchor id="filter-xml-to-html">
-    <screen>+filter{xml-to-html}         # Header filter to change the Content-Type from xml to html</screen>
-   </para>
-   <para>
     <anchor id="filter-no-ping">
     <screen>+filter{no-ping}             # Removes non-standard ping attributes from anchor and area tags</screen>
    </para>
-   <para>
-    <anchor id="filter-hide-tor-exit-notation">
-    <screen>+filter{hide-tor-exit-notation} # Header filter to remove the Tor exit node notation in Host and Referer headers</screen>
-   </para>
   </listitem>
  </varlistentry>
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="filter-client-headers">
-<title>filter-client-headers</title>
-
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>
-   To apply filtering to the client's (browser's) headers
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    By default, <application>Privoxy's</application> filters only apply 
-    to the document content itself. This will extend those filters to 
-    include the client's headers as well.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- boolean, parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
-<varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    Regular expressions can be used to filter headers as well. Check your
-    filters closely before activating this action, as it can easily lead to broken
-    requests.
-   </para>
-   <para> 
-    These filters are applied to each header on its own, not to them
-    all at once. This makes it easier to diagnose problems, but on the downside
-    you can't write filters that only change header x if header y's value is
-    z.
-   </para>
-   <para>
-    The filters are used after the other header actions have finished and can
-    use their output as input.
-   </para>
-  
-   <para>
-    Whenever possible one should specify <literal>^</literal>,
-    <literal>$</literal>, the whole header name and the colon, to make sure
-    the filter doesn't cause havoc to other headers or the
-    page itself. For example if you want to transform
-    <application>Galeon</application> User-Agents to 
-    <application>Firefox</application> User-Agents you
-    shouldn't use:
-</para>
-<para>
-<screen>
-s@Galeon/\d\.\d\.\d @@
-</screen>
-</para><para>
-    but:
-</para><para>
-<screen>
-s@^(User-Agent:.*) Galeon/\d\.\d\.\d (Firefox/\d\.\d\.\d\.\d)$@$1 $2@
-</screen>
-</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage (section):</term>
-  <listitem>
-    <para>
-     <screen>
-{+filter-client-headers +filter{test_filter}}
-problem-host.example.com
-    </screen>
-    </para>
-  </listitem>
- </varlistentry>
-
-</variablelist>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="filter-server-headers">
-<title>filter-server-headers</title>
-
-<variablelist>
- <varlistentry>
-  <term>Typical use:</term>
-  <listitem>
-   <para>
-   To apply filtering to the server's headers
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Effect:</term>
-  <listitem>
-   <para>
-    By default, <application>Privoxy's</application> filters only apply 
-    to the document content itself. This will extend those filters to 
-    include the server's headers as well.
-   </para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Type:</term>
-  <!-- boolean, parameterized, Multi-value -->
-  <listitem>
-   <para>Boolean.</para>
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Parameter:</term>
-  <listitem>
-   <para>
-    N/A
-   </para>
-  </listitem>
- </varlistentry>
- 
-<varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    Similar to <literal>filter-client-headers</literal>, but works on 
-    the server instead. To filter both server and client, use both.
-   </para>
-   <para>
-    As with <literal>filter-client-headers</literal>, check your
-    filters before activating this action, as it can easily lead to broken
-    requests.
-   </para>
-   <para> 
-    These filters are applied to each header on its own, not to them
-    all at once. This makes it easier to diagnose problems, but on the downside
-    you can't write filters that only change header x if header y's value is
-    z.
-   </para>
-   <para>
-    The filters are used after the other header actions have finished and can
-    use their output as input.
-   </para>
-   <para>
-    Remember too, whenever possible one should specify <literal>^</literal>,
-    <literal>$</literal>, the whole header name and the colon, to make sure
-    the filter doesn't cause havoc to other headers or the
-    page itself. See above for example.
-   </para>
-
-  </listitem>
- </varlistentry>
-
- <varlistentry>
-  <term>Example usage (section):</term>
-  <listitem>
-    <para>
-     <screen>
-{+filter-server-headers +filter{test_filter}}
-problem-host.example.com
-    </screen>
-    </para>
-  </listitem>
- </varlistentry>
-
 </variablelist>
 </sect3>
 
@@ -3986,6 +4109,122 @@ new action
    <para>
      <screen>
 +force-text-mode
+     </screen>
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="forward-override">
+<title>forward-override</title>
+<!--
+new action
+-->
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>Change the forwarding settings based on User-Agent or request origin</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    Overrules the forward directives in the configuration file.
+   </para>    
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- Boolean, Parameterized, Multi-value -->
+  <listitem>
+   <para>Multi-value.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <itemizedlist>
+    <listitem>
+     <para><quote>forward .</quote> to use a direct connection without any additional proxies.</para>
+    </listitem>
+    <listitem>
+     <para>
+      <quote>forward 127.0.0.1:8123</quote> to use the HTTP proxy listening at 127.0.0.1 port 8123.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <quote>forward-socks4a 127.0.0.1:9050 .</quote> to use the socks4a proxy listening at
+      127.0.0.1 port 9050. Replace <quote>forward-socks4a</quote> with <quote>forward-socks4</quote>
+      to use a socks4 connection  (with local DNS resolution) instead.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <quote>forward-socks4a 127.0.0.1:9050 proxy.example.org:8000</quote> to use the socks4a proxy
+      listening at 127.0.0.1 port 9050 to reach the HTTP proxy listening at proxy.example.org port 8000.
+      Replace <quote>forward-socks4a</quote> with <quote>forward-socks4</quote> to use a socks4 connection
+      (with local DNS resolution) instead.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    This action takes parameters similar to the <!-- I hope this link actual works -->
+    <link linkend="forwarding">forward</link> directives in the configuration
+    file, but without the URL pattern. It can be used as replacement, but normally it's only
+    used in cases where matching based on the request URL isn't sufficient.
+   </para>
+   <warning> 
+    <para>
+     Please read the description for the <link linkend="forwarding">forward</link> directives before
+     using this action. Forwarding to the wrong people will reduce your privacy and increase the
+     chances of man-in-the-middle attacks.
+    </para>
+    <para>
+     If the ports are missing or invalid, default values will be used. This might change
+     in the future and you shouldn't rely on it. Otherwise incorrect syntax causes Privoxy
+     to exit.
+    </para>
+    <para>
+     Use the <ulink url="http://config.privoxy.org/show-url-info">show-url-info CGI page</ulink>
+     to verify that your forward settings do what you thought the do.
+    </para>
+   </warning>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Example usage:</term>
+  <listitem>
+   <para>
+     <screen>
+# Always use direct connections for requests previously tagged as
+# <quote>User-Agent: fetch libfetch/2.0</quote> and make sure
+# resuming downloads continues to work.
+# This way you can continue to use Tor for your normal browsing,
+# without overloading the Tor network with your FreeBSD ports updates
+# or downloads of bigger files like ISOs.
+# Note that HTTP headers are easy to fake and therefore their
+# values are as (un)trustworthy as your clients and users.
+{+forward-override{forward .} \
+ -hide-if-modified-since      \
+ -overwrite-last-modified     \
+}
+TAG:^User-Agent: fetch libfetch/2\.0$
      </screen>
    </para>
   </listitem>
@@ -4150,7 +4389,7 @@ example.org/.*\.js$
 # blocked as images:
 #
 {+block +handle-as-image}
-some.nasty-banner-server.com/junk.cgi?output=trash
+some.nasty-banner-server.com/junk.cgi\?output=trash
 
 # Banner source! Who cares if they also have non-image content?
 ad.doubleclick.net 
@@ -4315,6 +4554,10 @@ new action
     to another one, but in most cases it isn't worth the time to set
     it up.
    </para>
+   <para>
+    This action will probably be removed in the future,
+    use server-header filters instead.
+   </para>
   </listitem>
  </varlistentry>
 
@@ -4326,7 +4569,7 @@ new action
 { -filter \
  +content-type-overwrite{text/plain}\
  +hide-content-disposition{block} }
- .sourceforge.net/tracker/download.php</screen>
+ .sourceforge.net/tracker/download\.php</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -4391,8 +4634,8 @@ new action
    </para>
    <para>
     Randomizing the value of the <quote>If-Modified-Since:</quote> makes
-    sure it isn't used as a cookie replacement, but you will run into
-    caching problems if the random range is too high.  
+    it less likely that the server can use the time as a cookie replacement,
+    but you will run into caching problems if the random range is too high.
    </para>
    <para>
     It is a good idea to only use a small negative value and let
@@ -4401,7 +4644,8 @@ new action
    </para>
    <para>
     It is also recommended to use this action together with
-    <literal><link linkend="crunch-if-none-match">crunch-if-none-match</link></literal>.
+    <literal><link linkend="crunch-if-none-match">crunch-if-none-match</link></literal>,
+    otherwise it's more or less pointless.
    </para>
   </listitem>
  </varlistentry>
@@ -4410,8 +4654,8 @@ new action
   <term>Example usage (section):</term>
   <listitem>
     <para>
-     <screen># Let the browser revalidate without being tracked across sessions
-{ +hide-if-modified-since{-60} \
+     <screen># Let the browser revalidate but make tracking based on the time less likely.
+{+hide-if-modified-since{-60} \
  +overwrite-last-modified{randomize} \
  +crunch-if-none-match}
 /</screen>
@@ -4425,14 +4669,11 @@ new action
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="hide-forwarded-for-headers">
 <title>hide-forwarded-for-headers</title>
-<!--
-new action
--->
 <variablelist>
  <varlistentry>
   <term>Typical use:</term>
   <listitem>
-   <para>Improve privacy by hiding the true source of the request</para>
+   <para>Improve privacy by not forwarding the source of the request in the HTTP headers.</para>
   </listitem>
  </varlistentry>
 
@@ -4440,8 +4681,7 @@ new action
   <term>Effect:</term>
   <listitem>
    <para>
-    Deletes any existing <quote>X-Forwarded-for:</quote> HTTP header from client requests,
-    and prevents adding a new one.
+    Deletes any existing <quote>X-Forwarded-for:</quote> HTTP header from client requests.
    </para>
   </listitem>
  </varlistentry>
@@ -4467,13 +4707,7 @@ new action
   <term>Notes:</term>
   <listitem>
    <para>
-    It is fairly safe to leave this on.
-   </para>
-   <para>
-    This action is scheduled for improvement: It should be able to generate forged 
-    <quote>X-Forwarded-for:</quote> headers using random IP addresses from a specified network,
-    to make successive requests from the same client look like requests from a pool of different
-    users sharing the same proxy.
+    It is safe and recommended to leave this on.
    </para>
   </listitem>
  </varlistentry>
@@ -4600,6 +4834,9 @@ new action
      <para><quote>conditional-block</quote> to delete the header completely if the host has changed.</para>
     </listitem>
     <listitem>
+     <para><quote>conditional-forge</quote> to forge the header if the host has changed.</para>
+    </listitem>
+    <listitem>
      <para><quote>block</quote> to delete the header unconditionally.</para>
     </listitem>
     <listitem>
@@ -4632,7 +4869,7 @@ new action
    <para>
     Always blocking the referrer, or using a custom one, can lead to
     failures on servers that check the referrer before they answer any
-    requests, in an attempt to prevent their valuable content from being
+    requests, in an attempt to prevent their content from being
     embedded or linked to elsewhere.
    </para>
    <para>
@@ -4671,7 +4908,7 @@ new action
  <varlistentry>
   <term>Typical use:</term>
   <listitem>
-   <para>Conceal your type of browser and client operating system</para>
+   <para>Try to conceal your type of browser and client operating system</para>
   </listitem>
  </varlistentry>
 
@@ -4711,10 +4948,6 @@ new action
      order to customize their content for different browsers (which, by the
      way, is <emphasis>NOT</emphasis> the right thing to do: good web sites
      work browser-independently). 
-     <!-- 
-     <ulink url="http://www.javascriptkit.com/javaindex.shtml">smart way to do
-     that</ulink>!).
-     -->
     </para>
    </warning>
    <para>
@@ -4731,7 +4964,10 @@ new action
     (Must be just a silly MS goof, I'm sure :-).
    </para>
    <para>
-    This action is scheduled for improvement.
+     More information on known user-agent strings can be found at 
+     <ulink url="http://www.user-agents.org/">http://www.user-agents.org/</ulink>
+     and 
+     <ulink url="http://en.wikipedia.org/wiki/User_agent">http://en.wikipedia.org/wiki/User_agent</ulink>.
    </para>
    </listitem>
  </varlistentry>
@@ -4751,14 +4987,11 @@ new action
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="inspect-jpegs">
 <title>inspect-jpegs</title>
-<!--
-new action
--->
 <variablelist>
  <varlistentry>
   <term>Typical use:</term>
   <listitem>
-   <para>To protect against the MS buffer over-run in JPEG processing</para>
+   <para>Try to protect against a MS buffer over-run in JPEG processing</para>
   </listitem>
  </varlistentry>
 
@@ -4797,7 +5030,13 @@ new action
     allow execution of code on the target system, giving an attacker access 
     to the system in question by merely planting an altered JPEG image, which 
     would have no obvious indications of what lurks inside. This action
-    prevents unwanted intrusion.
+    tries to prevent this exploit if delivered through unencrypted HTTP.
+   </para>
+   <para>
+    Note that the exploit mentioned is several years old
+    and it's unlikely that your client is still vulnerable
+    against it. This action may be removed in one of the
+    next releases.
    </para>
   
   </listitem>
@@ -4811,8 +5050,6 @@ new action
  </varlistentry>
 </variablelist>
 </sect3>
-
-
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -4894,13 +5131,9 @@ new action
     This action is most appropriate for browsers that don't have any controls 
     for unwanted pop-ups. Not recommended for general usage.
    </para>
-
-  <!-- 
    <para>
-    An alternate spelling is <literal>+kill-popup</literal>, which is 
-    interchangeable.
+    This action doesn't work very reliable and may be removed in future releases.
    </para>
- --> 
   </listitem>
  </varlistentry>
 
@@ -4968,8 +5201,7 @@ new action
     (<quote>https://</quote> URLs) through proxies. It works very simply:
     the proxy connects to the server on the specified port, and then
     short-circuits its connections to the client and to the remote server.
-    This can be a big security hole, since CONNECT-enabled proxies can be
-    abused as TCP relays very easily.
+    This means CONNECT-enabled proxies can be used as TCP relays very easily.
   </para>
   <para>
    <application>Privoxy</application> relays HTTPS traffic without seeing
@@ -5046,23 +5278,33 @@ new action
   <listitem>
    <para>
     More and more websites send their content compressed by default, which
-    is generally a good idea and saves bandwidth. But for the <literal><link
+    is generally a good idea and saves bandwidth. But the <literal><link
     linkend="filter">filter</link></literal>, <literal><link linkend="deanimate-gifs">deanimate-gifs</link></literal>
-    and <literal><link linkend="kill-popups">kill-popups</link></literal> actions to work,
-    <application>Privoxy</application> needs access to the  uncompressed data.
-    Unfortunately, <application>Privoxy</application> can't yet(!)  uncompress, filter, and
-    re-compress the content on the fly. So if you want to ensure that all websites, including
-    those that normally compress, can be filtered, you need to use this action.
+    and <literal><link linkend="kill-popups">kill-popups</link></literal> actions need
+    access to the uncompressed data.
    </para>
    <para>
-    This will slow down transfers from those websites, though. If you use any of the above-mentioned
-    actions, you will typically want to use <literal>prevent-compression</literal> in conjunction
-    with them.
+    When compiled with zlib support (available since &my-app; 3.0.7), content that should be
+    filtered is decompressed on-the-fly and you don't have to worry about this action.
+    If you are using an older &my-app; version, or one that hasn't been compiled with zlib
+    support, this action can be used to convince the server to send the content uncompressed.
+   </para>
+   <para>
+    Most text-based instances compress very well, the size is seldom decreased by less than 50%,
+    for markup-heavy instances like news feeds saving more than 90% of the original size isn't
+    unusual. 
+   </para>
+   <para>
+    Not using compression will therefore slow down the transfer, and you should only
+    enable this action if you really need it. As of &my-app; 3.0.7 it's disabled in all
+    predefined action settings.
    </para>
    <para>
     Note that some (rare) ill-configured sites don't handle requests for uncompressed
-    documents correctly (they send an empty document body). If you use <literal>prevent-compression</literal>
-    per default, you'll have to add exceptions for those sites. See the example for how to do that.
+    documents correctly. Broken PHP applications tend to send an empty document body,
+    some IIS versions only send the beginning of the content. If you enable
+    <literal>prevent-compression</literal> per default, you might want to add
+    exceptions for those sites. See the example for how to do that.
    </para>
   </listitem>
  </varlistentry>
@@ -5085,11 +5327,10 @@ new action
 { +prevent-compression }
  / # Match all sites
 
-# Then maybe make exceptions for ill-behaved sites:
+# Then maybe make exceptions for broken sites:
 #
 { -prevent-compression }
- .debianhelp.org
- www.pclinuxonline.com</screen>
+.compusa.com/</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -5233,7 +5474,7 @@ new action
   <term>Parameter:</term>
   <listitem>
    <para>
-    Any URL.
+    An absolute URL or a single pcrs command.
    </para>
   </listitem>
  </varlistentry>
@@ -5242,21 +5483,22 @@ new action
   <term>Notes:</term>
   <listitem>
    <para>
-    This action is useful to replace whole documents with ones of your 
-    choosing. This can be used to enforce safe surfing, or just as a simple 
-    convenience.
-   </para>
-   <para>
-    You can do the same by combining the actions
-    <literal><link linkend="block">block</link></literal>,
-    <literal><link linkend="handle-as-image">handle-as-image</link></literal> and
-    <literal><link linkend="set-image-blocker">set-image-blocker{URL}</link></literal>.
-    It doesn't sound right for non-image documents, and that's why this action
-    was created.
+    Requests to which this action applies are answered with a
+    HTTP redirect to URLs of your choosing. The new URL is
+    either provided as parameter, or derived by applying a
+    single pcrs command to the original URL.
    </para>
    <para>
     This action will be ignored if you use it together with
     <literal><link linkend="block">block</link></literal>.
+    It can be combined with
+    <literal><link linkend="fast-redirects">fast-redirects{check-decoded-url}</link></literal>
+    to redirect to a decoded version of a rewritten URL.
+   </para>
+   <para>
+    Use this action carefully, make sure not to create redirection loops
+    and be aware that using your own redirects might make it
+    possible to fingerprint your requests.
    </para>
   </listitem>
  </varlistentry>
@@ -5267,11 +5509,18 @@ new action
    <para>
     <screen># Replace example.com's style sheet with another one
 { +redirect{http://localhost/css-replacements/example.com.css} }
- example.com/stylesheet.css
+ example.com/stylesheet\.css
 
 # Create a short, easy to remember nickname for a favorite site
+# (relies on the browser accept and forward invalid URLs to &my-app;)
 { +redirect{http://www.privoxy.org/user-manual/actions-file.html} }
- a</screen>
+ a
+
+# Always use the expanded view for Undeadly.org articles
+# (Note the $ at the end of the URL pattern to make sure
+# the request for the rewritten URL isn't redirected as well)
+{+redirect{s@$@&amp;mode=expanded@}}
+undeadly.org/cgi\?action=article&amp;sid=\d*$</screen>
    </para>
   </listitem>
  </varlistentry>
@@ -5408,6 +5657,171 @@ my-internal-testing-server.void</screen>
    </para>
   </listitem>
  </varlistentry>
+</variablelist>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="server-header-filter">
+<title>server-header-filter</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>
+   Rewrite or remove single server headers.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    All server headers to which this action applies are filtered on-the-fly
+    through the specified regular expression based substitutions.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- boolean, parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <para>
+    The name of a server-header filter, as defined in one of the
+    <link linkend="filter-file">filter files</link>.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Server-header filters are applied to each header on its own, not to
+    all at once. This makes it easier to diagnose problems, but on the downside
+    you can't write filters that only change header x if header y's value is z.
+    You can do that by using tags though.
+   </para>
+   <para>
+    Server-header filters are executed after the other header actions have finished
+    and use their output as input.
+   </para>
+   <para>
+    Please refer to the <link linkend="filter-file">filter file chapter</link>
+    to learn which server-header filters are available by default, and how to
+    create your own.
+   </para>
+ </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Example usage (section):</term>
+  <listitem>
+    <para>
+     <screen>
+{+server-header-filter{html-to-xml}}
+example.org/xml-instance-that-is-delivered-as-html
+
+{+server-header-filter{xml-to-html}}
+example.org/instance-that-is-delivered-as-xml-but-is-not
+    </screen>
+    </para>
+  </listitem>
+ </varlistentry>
+
+</variablelist>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="server-header-tagger">
+<title>server-header-tagger</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Typical use:</term>
+  <listitem>
+   <para>
+   Enable or disable filters based on the Content-Type header.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Effect:</term>
+  <listitem>
+   <para>
+    Server headers to which this action applies are filtered on-the-fly through
+    the specified regular expression based substitutions, the result is used as
+    tag.
+   </para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Type:</term>
+  <!-- boolean, parameterized, Multi-value -->
+  <listitem>
+   <para>Parameterized.</para>
+  </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Parameter:</term>
+  <listitem>
+   <para>
+    The name of a server-header tagger, as defined in one of the
+    <link linkend="filter-file">filter files</link>.
+   </para>
+  </listitem>
+ </varlistentry>
+ 
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Server-header taggers are applied to each header on its own,
+    and as the header isn't modified, each tagger <quote>sees</quote>
+    the original.
+   </para>
+   <para>
+    Server-header taggers are executed before all other header actions
+    that modify server headers. Their tags can be used to control
+    all of the other server-header actions, the content filters
+    and the crunch actions (<link linkend="redirect">redirect</link>
+    and <link linkend="block">block</link>).
+   </para>
+   <para>
+    Obviously crunching based on tags created by server-header taggers
+    doesn't prevent the request from showing up in the server's log file.
+   </para>
+
+ </listitem>
+ </varlistentry>
+
+ <varlistentry>
+  <term>Example usage (section):</term>
+  <listitem>
+    <para>
+     <screen>
+# Tag every request with the content type declared by the server
+{+server-header-tagger{content-type}}
+/
+    </screen>
+    </para>
+  </listitem>
+ </varlistentry>
+
 </variablelist>
 </sect3>
 
@@ -5603,7 +6017,7 @@ my-internal-testing-server.void</screen>
     <screen>+set-image-blocker{pattern}</screen>
    </para>
    <para>
-    Redirect to the BSD devil:
+    Redirect to the BSD daemon:
    </para>
    <para>
     <screen>+set-image-blocker{http://www.freebsd.org/gifs/dae_up3.gif}</screen>
@@ -5678,15 +6092,7 @@ new action
     For <quote>Connect</quote> requests the clients tell
     <application>Privoxy</application> which host they are interested
     in, but not which document they plan to get later. As a result, the
-    <quote>Go there anyway</quote> link becomes rather useless:
-    it lets the client request the home page of the forbidden host
-    through unencrypted HTTP, still using the port of the last request.
-   </para>
-   <para>
-    If you previously configured <application>Privoxy</application> to do the
-    request through a SSL tunnel, everything will work. Most likely you haven't
-    and the server will respond with an error message because it is expecting
-    HTTPS (SSL).
+    <quote>Go there anyway</quote> wouldn't work and is therefore suppressed.
    </para>
   </listitem>
  </varlistentry>
@@ -5921,8 +6327,7 @@ that also explains why and how aliases are used:
 
 <para>
  Again, at the start of matching, all actions are disabled, so there is
- no real need to disable any actions here, but we will do that nonetheless,
- to have a complete listing for your reference. (Remember: a <quote>+</quote>
+ no need to disable any actions here. (Remember: a <quote>+</quote>
  preceding the action name enables the action, a <quote>-</quote> disables!).
  Also note how this long line has been made more readable by splitting it into
  multiple lines with line continuation.
@@ -5934,79 +6339,34 @@ that also explains why and how aliases are used:
 # "Defaults" section:
 ##########################################################################
  { \
- -<link linkend="ADD-HEADER">add-header</link> \
- -<link linkend="BLOCK">block</link> \
- -<link linkend="CONTENT-TYPE-OVERWRITE">content-type-overwrite</link> \
- -<link linkend="CRUNCH-CLIENT-HEADER">crunch-client-header</link> \
- -<link linkend="CRUNCH-IF-NONE-MATCH">crunch-if-none-match</link> \
- -<link linkend="CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</link> \
- -<link linkend="CRUNCH-SERVER-HEADER">crunch-server-header</link> \
- -<link linkend="CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</link> \
  +<link linkend="DEANIMATE-GIFS">deanimate-gifs</link> \
- -<link linkend="DOWNGRADE-HTTP-VERSION">downgrade-http-version</link> \
- -<link linkend="FAST-REDIRECTS">fast-redirects{check-decoded-url}</link> \
- -<link linkend="FILTER-JS-ANNOYANCES">filter{js-annoyances}</link> \
- -<link linkend="FILTER-JS-EVENTS">filter{js-events}</link> \
  +<link linkend="FILTER-HTML-ANNOYANCES">filter{html-annoyances}</link> \
- -<link linkend="FILTER-CONTENT-COOKIES">filter{content-cookies}</link> \
  +<link linkend="FILTER-REFRESH-TAGS">filter{refresh-tags}</link> \
- -<link linkend="FILTER-UNSOLICITED-POPUPS">filter{unsolicited-popups}</link> \
- -<link linkend="FILTER-ALL-POPUPS">filter{all-popups}</link> \
- -<link linkend="FILTER-IMG-REORDER">filter{img-reorder}</link> \
- -<link linkend="FILTER-BANNERS-BY-SIZE">filter{banners-by-size}</link> \
- -<link linkend="FILTER-BANNERS-BY-LINK">filter{banners-by-link}</link> \
  +<link linkend="FILTER-WEBBUGS">filter{webbugs}</link> \
- -<link linkend="FILTER-TINY-TEXTFORMS">filter{tiny-textforms}</link> \
- -<link linkend="FILTER-JUMPING-WINDOWS">filter{jumping-windows}</link> \
- -<link linkend="FILTER-FRAMESET-BORDERS">filter{frameset-borders}</link> \
- -<link linkend="FILTER-DEMORONIZER">filter{demoronizer}</link> \
- -<link linkend="FILTER-SHOCKWAVE-FLASH">filter{shockwave-flash}</link> \
- -<link linkend="FILTER-QUICKTIME-KIOSKMODE">filter{quicktime-kioskmode}</link> \
- -<link linkend="FILTER-FUN">filter{fun}</link> \
- -<link linkend="FILTER-CRUDE-PARENTAL">filter{crude-parental}</link> \
  +<link linkend="FILTER-IE-EXPLOITS">filter{ie-exploits}</link> \     
- -<link linkend="FILTER-CLIENT-HEADERS">filter-client-headers</link> \
- -<link linkend="FILTER-SERVER-HEADERS">filter-server-headers</link> \
- -<link linkend="FILTER-GOOGLE">filter-google</link> \
- -<link linkend="FILTER-YAHOO">filter-yahoo</link> \
- -<link linkend="FILTER-MSN">filter-msn</link> \
- -<link linkend="FILTER-BLOGSPOT">filter-blogspot</link> \
- -<link linkend="FILTER-XML-TO-HTML">filter-xml-to-html</link> \
- -<link linkend="FILTER-HTML-TO-XML">filter-html-to-xml</link> \
- -<link linkend="FILTER-NO-PING">filter-no-ping</link> \
- -<link linkend="FILTER-HIDE-TOR-EXIT-NOTATION">filter-hide-tor-exit-notation</link> \
- -<link linkend="FORCE-TEXT-MODE">force-text-mode</link> \
- -<link linkend="HANDLE-AS-EMPTY-DOCUMENT">handle-as-empty-document</link> \
- -<link linkend="HANDLE-AS-IMAGE">handle-as-image</link> \
- -<link linkend="HIDE-ACCEPT-LANGUAGE">hide-accept-language</link> \
- -<link linkend="HIDE-CONTENT-DISPOSITION">hide-content-disposition</link> \
- -<link linkend="HIDE-IF-MODIFIED-SINCE">hide-if-modified-since</link> \
  +<link linkend="HIDE-FORWARDED-FOR-HEADERS">hide-forwarded-for-headers</link> \
  +<link linkend="HIDE-FROM-HEADER">hide-from-header{block}</link> \
  +<link linkend="HIDE-REFERER">hide-referrer{forge}</link> \
- -<link linkend="HIDE-USER-AGENT">hide-user-agent</link> \
- -<link linkend="INSPECT-JPEGS">inspect-jpegs</link> \
- -<link linkend="KILL-POPUPS">kill-popups</link> \
- -<link linkend="LIMIT-CONNECT">limit-connect</link> \
  +<link linkend="PREVENT-COMPRESSION">prevent-compression</link> \
- -<link linkend="OVERWRITE-LAST-MODIFIED">overwrite-last-modified</link> \
- -<link linkend="REDIRECT">redirect</link> \
- -<link linkend="SEND-VANILLA-WAFER">send-vanilla-wafer</link> \
- -<link linkend="SEND-WAFER">send-wafer</link> \
  +<link linkend="SESSION-COOKIES-ONLY">session-cookies-only</link> \
  +<link linkend="SET-IMAGE-BLOCKER">set-image-blocker{pattern}</link> \
- -<link linkend="TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS">treat-forbidden-connects-like-blocks</link> \
  }
  / # forward slash will match *all* potential URL patterns.</screen>
 </para>
 
 <para>
- The default behavior is now set. Note that some actions, like not hiding
+ The default behavior is now set.
+ <!--
+ This needs rewording, but it can wait for now.
+ fk 2007-11-17
+
+ Note that some actions, like not hiding
  the user agent, are part of a <quote>general policy</quote> that applies
  universally and won't get any exceptions defined later. Other choices,
  like not blocking (which is <emphasis>understandably</emphasis> the
  default!) need exceptions, i.e. we need to specify explicitly what we
  want to block in later sections.
+ -->
 </para>
 
 <para>
@@ -6295,7 +6655,7 @@ wiki.
 
 <para>
  <screen>
-# My user.action file. &lt;fred@foobar.com&gt;</screen>
+# My user.action file. &lt;fred@example.com&gt;</screen>
 </para>
 
 <para>
@@ -6397,8 +6757,8 @@ stupid-server.example.com/</screen>
 <para>
  <screen>
 { +<link linkend="BLOCK">block</link> }
- www.example.com/nasty-ads/sponsor.gif
- another.popular.site.net/more/junk/here/</screen>
+ www.example.com/nasty-ads/sponsor\.gif
+ another.example.net/more/junk/here/</screen>
 </para>
 
 <para>
@@ -6444,8 +6804,8 @@ stupid-server.example.com/</screen>
 
 <para>
  You like the <quote>fun</quote> text replacements in <filename>default.filter</filename>,
- but it is disabled in the distributed actions file. (My colleagues on the team just
- don't have a sense of humour, that's why! ;-). So you'd like to turn it on in your private,
+ but it is disabled in the distributed actions file.
+ So you'd like to turn it on in your private,
  update-safe config, once and for all:
 </para>
 
@@ -6529,47 +6889,72 @@ stupid-server.example.com/</screen>
 <title>Filter Files</title>
 
 <para>
- On-the-fly text substitutions that can be invoked through the
- <literal><link linkend="filter">filter</link></literal> action need
+ On-the-fly text substitutions need
  to be defined in a <quote>filter file</quote>. Once defined, they 
- can then be invoked as an <quote>action</quote>. Multiple filter files can be
- defined through the <literal> <link
+ can then be invoked as an <quote>action</quote>.
+</para>
+
+<para>
+ &my-app; supports three different filter actions:
+ <literal><link linkend="filter">filter</link></literal> to
+ rewrite the content that is send to the client,
+ <literal><link linkend="client-header-filter">client-header-filter</link></literal>
+ to rewrite headers that are send by the client, and
+ <literal><link linkend="server-header-filter">server-header-filter</link></literal>
+ to rewrite headers that are send by the server.
+</para>
+
+<para>
+ &my-app; also supports two tagger actions:
+ <literal><link linkend="client-header-tagger">client-header-tagger</link></literal>
+ and
+ <literal><link linkend="server-header-tagger">server-header-tagger</link></literal>.
+ Taggers and filters use the same syntax in the filter files, the difference
+ is that taggers don't modify the text they are filtering, but use a rewritten
+ version of the filtered text as tag. The tags can then be used to change the
+ applying actions through sections with <link linkend="tag-pattern">tag-patterns</link>.
+</para>
+
+
+<para>
+ Multiple filter files can be defined through the <literal> <link
  linkend="filterfile">filterfile</link></literal> config directive. The filters
- as supplied by the developers will be found in
+ as supplied by the developers are located in
  <filename>default.filter</filename>. It is recommended that any locally
  defined or modified filters go in a separately defined file such as
  <filename>user.filter</filename>.
- 
-</para>
+ </para>
 
 <para>
- Typical reasons for doing these kinds of substitutions are to eliminate
- common annoyances in HTML and JavaScript, such as pop-up windows,
+ Common tasks for content filters are to eliminate common annoyances in
+ HTML and JavaScript, such as pop-up windows,
  exit consoles, crippled windows without navigation tools, the
  infamous &lt;BLINK&gt; tag etc, to suppress images with certain
  width and height attributes (standard banner sizes or web-bugs),
- or just to have fun. The possibilities are endless.
+ or just to have fun.
 </para>
 
 <para>
- Filtering works on any text-based document type, including 
- HTML, JavaScript, CSS etc. (all <literal>text/*</literal>
- MIME types, <emphasis>except</emphasis> <literal>text/plain</literal>).
+ Enabled content filters are applied to any content whose
+ <quote>Content Type</quote> header is recognised as a sign
+ of text-based content, with the exception of <literal>text/plain</literal>.
+ Use the <link linkend="FORCE-TEXT-MODE">force-text-mode</link> action
+ to also filter other content.
+</para>
+
+<para>
  Substitutions are made at the source level, so if you want to <quote>roll
  your own</quote> filters, you should first be familiar with HTML syntax, 
- and, of course, regular expressions. By default, filters are only applied 
- to the raw document content, but can be extended to the HTTP headers with 
- the supplemental actions: 
- <link linkend="filter-client-headers">filter-client-headers</link>  and 
- <link linkend="filter-server-headers">filter-server-headers</link>.
+ and, of course, regular expressions.
 </para>
 
 <para>
  Just like the <link linkend="actions-file">actions files</link>, the
  filter file is organized in sections, which are called <emphasis>filters</emphasis>
- here. Each filter consists of a heading line, that starts with the
- <emphasis>keyword</emphasis> <literal>FILTER:</literal>, followed by
- the filter's <emphasis>name</emphasis>, and a short (one line) 
+ here. Each filter consists of a heading line, that starts with one of the
+ <emphasis>keywords</emphasis> <literal>FILTER:</literal>,
+ <literal>CLIENT-HEADER-FILTER:</literal> or <literal>SERVER-HEADER-FILTER:</literal>
+ followed by the filter's <emphasis>name</emphasis>, and a short (one line) 
  <emphasis>description</emphasis> of what it does. Below that line
  come the <emphasis>jobs</emphasis>, i.e. lines that define the actual
  text substitutions. By convention, the name of a filter
@@ -6586,7 +6971,9 @@ stupid-server.example.com/</screen>
 </para>
  
 <para>
- A filter header line for a filter called <quote>foo</quote> could look
+ Filter definitions start with a header line that contains the filter
+ type, the filter name and the filter description.
+ A content filter header line for a filter called <quote>foo</quote> could look
  like this:
 </para>
 
@@ -6624,7 +7011,7 @@ stupid-server.example.com/</screen>
 
 <sect2><title>Filter File Tutorial</title>
 <para>
- Now, let's complete our <quote>foo</quote> filter. We have already defined
+ Now, let's complete our <quote>foo</quote> content filter. We have already defined
  the heading, but the jobs are still missing. Since all it does is to replace
  <quote>foo</quote> with <quote>bar</quote>, there is only one (trivial) job
  needed:
@@ -7247,7 +7634,7 @@ pre-defined filters for your convenience:
   <term><emphasis>xml-to-html</emphasis></term>
   <listitem>
    <para>
-    Header filter to change the Content-Type from xml to html.
+    Server-header filter to change the Content-Type from xml to html.
    </para>
   </listitem>
  </varlistentry>
@@ -7256,7 +7643,7 @@ pre-defined filters for your convenience:
   <term><emphasis>html-to-xml</emphasis></term>
   <listitem>
    <para>
-    Header filter to change the Content-Type from html to xml.
+    Server-header filter to change the Content-Type from html to xml.
    </para>
   </listitem>
  </varlistentry>
@@ -7275,8 +7662,32 @@ pre-defined filters for your convenience:
   <term><emphasis>hide-tor-exit-notation</emphasis></term>
   <listitem>
    <para>
-    Header filter to remove the <command>Tor</command> exit node notation
+    Client-header filter to remove the <command>Tor</command> exit node notation
     found in Host and Referer headers.
+   </para>
+   <para>
+    If &my-app; and <command>Tor</command> are chained and &my-app;
+    is configured to use socks4a, one can use <quote>http://www.example.org.foobar.exit/</quote>
+    to access the host <quote>www.example.org</quote> through the
+    <command>Tor</command> exit node <quote>foobar</quote>.
+   </para>
+   <para>
+    As the HTTP client isn't aware of this notation, it treats the
+    whole string <quote>www.example.org.foobar.exit</quote> as host and uses it
+    for the <quote>Host</quote> and <quote>Referer</quote> headers. From the
+    server's point of view the resulting headers are invalid and can cause problems.
+   </para>
+   <para>
+    An invalid <quote>Referer</quote> header can trigger <quote>hot-linking</quote>
+    protections, an invalid <quote>Host</quote> header will make it impossible for
+    the server to find the right vhost (several domains hosted on the same IP address).
+   </para>
+   <para>
+    This client-header filter removes the <quote>foo.exit</quote> part in those headers
+    to prevent the mentioned problems. Note that it only modifies
+    the HTTP headers, it doesn't make it impossible for the server
+    to detect your <command>Tor</command> exit node based on the IP address
+    the request is coming from.
    </para>
   </listitem>
  </varlistentry>
@@ -7326,11 +7737,17 @@ pre-defined filters for your convenience:
 
 <para>
  The templates are basically normal HTML files, but with place-holders (called symbols
- or exports), which <application>Privoxy</application> fills at run time. You can
- edit the templates with a normal text editor, should you want to customize them.
- (<emphasis>Not recommended for the casual user</emphasis>). Note that
- just like in configuration files, lines starting with <literal>#</literal> are
- ignored when the templates are filled in.
+ or exports), which <application>Privoxy</application> fills at run time. It
+ is possible to edit the templates with a normal text editor, should you want
+ to customize them. (<emphasis>Not recommended for the casual
+ user</emphasis>). Should you create your own custom templates, you should use 
+ the <filename>config</filename> setting <link linkend="templdir">templdir</link>
+ to specify an alternate location, so your templates do not get overwritten
+ during upgrades. 
+ </para>
+ <para>
+ Note that just like in configuration files, lines starting
+ with <literal>#</literal> are ignored when the templates are filled in.
 </para>
 
 <para>
@@ -7770,8 +8187,10 @@ Requests</title>
  
  <listitem>
   <para>  
-   Toggle Privoxy on or off. In this case, <quote>Privoxy</quote> continues 
-   to run, but only as a pass-through proxy, with no actions taking place:
+   Toggle Privoxy on or off. This feature can be turned off/on in the main 
+   <filename>config</filename> file. When toggled <quote>off</quote>, <quote>Privoxy</quote>
+   continues to run, but only as a pass-through proxy, with no actions taking
+   place:
   </para>
    <blockquote>
    <para> 
@@ -8034,7 +8453,9 @@ Requests</title>
  or not, is to disable it temporarily. This should be the first troubleshooting 
  step. See <link linkend="bookmarklets">the Bookmarklets</link> section on a quick 
  and easy way to do this (be sure to flush caches afterward!). Looking at the 
- logs is a good idea too.
+ logs is a good idea too. (Note that both the toggle feature and logging are 
+ enabled via <filename>config</filename> file settings, and may need to be 
+ turned <quote>on</quote>.)
 </para>
 <para>
  Another easy troubleshooting step to try is if you have done any
@@ -8076,73 +8497,23 @@ Requests</title>
 
 <para>
  <screen>
- Matches for http://google.com:
+ Matches for http://www.google.com:
 
  In file: default.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibutton>
 
- {-add-header
- -block
- -content-type-overwrite
- -crunch-client-header
- -crunch-if-none-match
- -crunch-incoming-cookies
- -crunch-outgoing-cookies
- -crunch-server-header
- +deanimate-gifs {last}
- -downgrade-http-version
+ {+deanimate-gifs {last}
  +fast-redirects {check-decoded-url}
- -filter {js-events}
- -filter {content-cookies}
- -filter {all-popups}
- -filter {banners-by-link}
- -filter {tiny-textforms}
- -filter {frameset-borders}
- -filter {demoronizer}
- -filter {shockwave-flash}
- -filter {quicktime-kioskmode}
- -filter {fun}
- -filter {crude-parental}
- -filter {site-specifics}
- -filter {js-annoyances}
- -filter {html-annoyances}
  +filter {refresh-tags}
- -filter {unsolicited-popups}
  +filter {img-reorder}
  +filter {banners-by-size}
  +filter {webbugs}
  +filter {jumping-windows}
  +filter {ie-exploits}
- -filter {google}
- -filter {yahoo}
- -filter {msn}
- -filter {blogspot}
- -filter {xml-to-html}
- -filter {html-to-xml}
- -filter {no-ping}
- -filter{hide-tor-exit-notation}
- -filter-client-headers
- -filter-server-headers
- -force-text-mode
- -handle-as-empty-document
- -handle-as-image
- -hide-accept-language
- -hide-content-disposition
  +hide-forwarded-for-headers
  +hide-from-header {block}
- -hide-if-modified-since
  +hide-referrer {forge}
- -hide-user-agent
- -inspect-jpegs
- -kill-popups
- -limit-connect
- -overwrite-last-modified
- +prevent-compression
- -redirect
- -send-vanilla-wafer
- -send-wafer
  +session-cookies-only
  +set-image-blocker {pattern}
- -treat-forbidden-connects-like-blocks }
 /
  
  { -session-cookies-only }
@@ -8220,6 +8591,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  
  -add-header
  -block
+ -client-header-filter{hide-tor-exit-notation}
  -content-type-overwrite
  -crunch-client-header
  -crunch-if-none-match
@@ -8228,7 +8600,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -crunch-server-header
  +deanimate-gifs {last}
  -downgrade-http-version
- +fast-redirects {check-decoded-url}
+ -fast-redirects
  -filter {js-events}
  -filter {content-cookies}
  -filter {all-popups}
@@ -8254,12 +8626,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -filter {yahoo}
  -filter {msn}
  -filter {blogspot}
- -filter {xml-to-html}
- -filter {html-to-xml}
  -filter {no-ping}
- -filter{hide-tor-exit-notation}
- -filter-client-headers
- -filter-server-headers
  -force-text-mode
  -handle-as-empty-document
  -handle-as-image
@@ -8274,10 +8641,12 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  -kill-popups
  -limit-connect
  -overwrite-last-modified
- +prevent-compression
+ -prevent-compression
  -redirect
  -send-vanilla-wafer
  -send-wafer
+ -server-header-filter{xml-to-html}
+ -server-header-filter{html-to-xml} 
  -session-cookies-only
  +set-image-blocker {pattern}
  -treat-forbidden-connects-like-blocks </screen>
@@ -8347,6 +8716,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 
  {-add-header 
   -block
+  -client-header-filter{hide-tor-exit-notation}
   -content-type-overwrite
   -crunch-client-header
   -crunch-if-none-match
@@ -8381,12 +8751,7 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   -filter {yahoo}
   -filter {msn}
   -filter {blogspot}
-  -filter {xml-to-html}
-  -filter {html-to-xml}
   -filter {no-ping}
-  -filter{hide-tor-exit-notation}
-  -filter-client-headers
-  -filter-server-headers
   -force-text-mode
   -handle-as-empty-document
   -handle-as-image 
@@ -8402,7 +8767,9 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
   +prevent-compression 
   -redirect
   -send-vanilla-wafer 
-  -send-wafer 
+  -send-wafer
+  -server-header-filter{xml-to-html}
+  -server-header-filter{html-to-xml} 
   +session-cookies-only 
   +set-image-blocker{blank} 
   -treat-forbidden-connects-like-blocks }
@@ -8531,8 +8898,8 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
 <para>
  <emphasis>Remember to flush caches!</emphasis> Note that the 
  <literal>mail.google</literal> reference lacks the TLD portion (e.g. 
- <quote>.com</quote>. This will effectively match any TLD with 
- <literal>google</literal> in it, such as <literal>mail.google.de</literal>, 
+ <quote>.com</quote>). This will effectively match any TLD with 
+ <literal>google</literal> in it, such as <literal>mail.google.de.</literal>, 
  just as an example.
 </para>
 <para> 
@@ -8566,6 +8933,98 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.50  2007/12/08 12:44:36  fabiankeil
+ - Remove already commented out pre-3.0.7 changes.
+ - Update the "new log defaults" paragraph.
+
+ Revision 2.49  2007/12/06 18:21:55  fabiankeil
+ Update hide-forwarded-for-headers description.
+
+ Revision 2.48  2007/11/24 19:07:17  fabiankeil
+ - Mention request rewriting.
+ - Enable the conditional-forge paragraph.
+ - Minor rewordings.
+
+ Revision 2.47  2007/11/18 14:59:47  fabiankeil
+ A few "Note to Upgraders" updates.
+
+ Revision 2.46  2007/11/17 17:24:44  fabiankeil
+ - Use new action defaults.
+ - Minor fixes and rewordings.
+
+ Revision 2.45  2007/11/16 11:48:46  hal9
+ Fix one typo, and add a couple of small refinements.
+
+ Revision 2.44  2007/11/15 03:30:20  hal9
+ Results of spell check.
+
+ Revision 2.43  2007/11/14 18:45:39  fabiankeil
+ - Mention some more contributors in the "New in this Release" list.
+ - Minor rewordings.
+
+ Revision 2.42  2007/11/12 03:32:40  hal9
+ Updates for "What's New" and "Notes to Upgraders". Various other changes in
+ preparation for new release. User Manual is almost ready.
+
+ Revision 2.41  2007/11/11 16:32:11  hal9
+ This is primarily syncing What's New and Note to Upgraders sections with the many
+ new features and changes (gleaned from memory but mostly from ChangeLog).
+
+ Revision 2.40  2007/11/10 17:10:59  fabiankeil
+ In the first third of the file, mention several times that
+ the action editor is disabled by default in 3.0.7 beta and later.
+
+ Revision 2.39  2007/11/05 02:34:49  hal9
+ Various changes in preparation for the upcoming release. Much yet to be done.
+
+ Revision 2.38  2007/09/22 16:01:42  fabiankeil
+ Update embedded show-url-info output.
+
+ Revision 2.37  2007/08/27 16:09:55  fabiankeil
+ Fix pre-chroot-nslookup description which I failed to
+ copy and paste properly. Reported by Stephen Gildea.
+
+ Revision 2.36  2007/08/26 16:47:14  fabiankeil
+ Add Stephen Gildea's pre-chroot-nslookup patch [#1276666],
+ extensive comments moved to user manual.
+
+ Revision 2.35  2007/08/26 14:59:49  fabiankeil
+ Minor rewordings and fixes.
+
+ Revision 2.34  2007/08/05 15:19:50  fabiankeil
+ - Don't claim HTTP/1.1 compliance.
+ - Use $ in some of the path pattern examples.
+ - Use a hide-user-agent example argument without
+   leading and trailing space.
+ - Make it clear that the cookie actions work with
+   HTTP cookies only.
+ - Rephrase the inspect-jpegs text to underline
+   that it's only meant to protect against a single
+   exploit.
+
+ Revision 2.33  2007/07/27 10:57:35  hal9
+ Add references for user-agent strings for hide-user-agenet
+
+ Revision 2.32  2007/06/07 12:36:22  fabiankeil
+ Apply Roland's 29_usermanual.dpatch to fix a bunch
+ of syntax errors I collected over the last months.
+
+ Revision 2.31  2007/06/02 14:01:37  fabiankeil
+ Start to document forward-override{}.
+
+ Revision 2.30  2007/04/25 15:10:36  fabiankeil
+ - Describe installation for FreeBSD.
+ - Start to document taggers and tag patterns.
+ - Don't confuse devils and daemons.
+
+ Revision 2.29  2007/04/05 11:47:51  fabiankeil
+ Some updates regarding header filtering,
+ handling of compressed content and redirect's
+ support for pcrs commands.
+
+ Revision 2.28  2006/12/10 23:42:48  hal9
+ Fix various typos reported by Adam P. Thanks.
+
  Revision 2.27  2006/11/14 01:57:47  hal9
  Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
  manual.

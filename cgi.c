@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.79 2006/11/13 19:05:50 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.100 2007/10/17 18:40:53 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -11,8 +11,8 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.79 2006/11/13 19:05:50 fabiankeil Exp $";
  *                Functions declared include:
  * 
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
- *                Privoxy team. http://www.privoxy.org/
+ * Copyright   :  Written by and Copyright (C) 2001-2004, 2006-2007
+ *                the SourceForge Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
  *                by and Copyright (C) 1997 Anonymous Coders and 
@@ -38,6 +38,92 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.79 2006/11/13 19:05:50 fabiankeil Exp $";
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.100  2007/10/17 18:40:53  fabiankeil
+ *    - Send CGI pages as HTTP/1.1 unless the client asked for HTTP/1.0.
+ *    - White space fix.
+ *
+ *    Revision 1.99  2007/08/05 13:42:22  fabiankeil
+ *    #1763173 from Stefan Huehner: declare some more functions static.
+ *
+ *    Revision 1.98  2007/05/14 10:33:51  fabiankeil
+ *    - Use strlcpy() and strlcat() instead of strcpy() and strcat().
+ *
+ *    Revision 1.97  2007/04/09 18:11:35  fabiankeil
+ *    Don't mistake VC++'s _snprintf() for a snprintf() replacement.
+ *
+ *    Revision 1.96  2007/03/08 17:41:05  fabiankeil
+ *    Use sizeof() more often.
+ *
+ *    Revision 1.95  2007/02/10 17:01:37  fabiankeil
+ *    Don't overlook map result for the forwarding-type.
+ *
+ *    Revision 1.94  2007/02/08 19:44:49  fabiankeil
+ *    Use a transparent background for the PNG replacement pattern.
+ *
+ *    Revision 1.93  2007/02/07 10:45:22  fabiankeil
+ *    - Save the reason for generating http_responses.
+ *    - Fix --disable-toggle (again).
+ *    - Use TBL birthday hack for 403 responses as well.
+ *    - Uglify the @menu@ again to fix JavaScript
+ *      errors on the "blocked" template.
+ *    - Escape an ampersand in cgi_error_unknown().
+ *
+ *    Revision 1.92  2007/01/28 13:41:17  fabiankeil
+ *    - Add HEAD support to finish_http_response.
+ *    - Add error favicon to internal HTML error messages.
+ *
+ *    Revision 1.91  2007/01/27 13:09:16  fabiankeil
+ *    Add new config option "templdir" to
+ *    change the templates directory.
+ *
+ *    Revision 1.90  2007/01/25 13:47:26  fabiankeil
+ *    Added "forwarding-failed" template support for error_response().
+ *
+ *    Revision 1.89  2007/01/23 15:51:16  fabiankeil
+ *    Add favicon delivery functions.
+ *
+ *    Revision 1.88  2007/01/23 13:14:32  fabiankeil
+ *    - Map variables that aren't guaranteed to be
+ *      pure ASCII html_encoded.
+ *    - Use CGI_PREFIX to generate URL for user manual
+ *      CGI page to make sure CGI_SITE_2_PATH is included.
+ *
+ *    Revision 1.87  2007/01/22 15:34:13  fabiankeil
+ *    - "Protect" against a rather lame JavaScript-based
+ *      Privoxy detection "attack" and check the referrer
+ *      before delivering the CGI style sheet.
+ *    - Move referrer check for unsafe CGI pages into
+ *      referrer_is_safe() and log the result.
+ *    - Map @url@ in cgi-error-disabled page.
+ *      It's required for the "go there anyway" link.
+ *    - Mark *csp as immutable for grep_cgi_referrer().
+ *
+ *    Revision 1.86  2007/01/09 11:54:26  fabiankeil
+ *    Fix strdup() error handling in cgi_error_unknown()
+ *    and cgi_error_no_template(). Reported by Markus Elfring.
+ *
+ *    Revision 1.85  2007/01/05 14:19:02  fabiankeil
+ *    Handle pcrs_execute() errors in template_fill() properly.
+ *
+ *    Revision 1.84  2006/12/28 17:54:22  fabiankeil
+ *    Fixed gcc43 conversion warnings and replaced sprintf
+ *    calls with snprintf to give OpenBSD's gcc one less reason
+ *    to complain.
+ *
+ *    Revision 1.83  2006/12/17 19:35:19  fabiankeil
+ *    Escape ampersand in Privoxy menu.
+ *
+ *    Revision 1.82  2006/12/17 17:53:39  fabiankeil
+ *    Suppress the toggle link if remote toggling is disabled.
+ *
+ *    Revision 1.81  2006/12/09 13:49:16  fabiankeil
+ *    Fix configure option --disable-toggle.
+ *    Thanks to Peter Thoenen for reporting this.
+ *
+ *    Revision 1.80  2006/12/08 14:45:32  fabiankeil
+ *    Don't lose the FORCE_PREFIX in case of
+ *    connection problems. Fixes #612235.
+ *
  *    Revision 1.79  2006/11/13 19:05:50  fabiankeil
  *    Make pthread mutex locking more generic. Instead of
  *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
@@ -510,16 +596,13 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.79 2006/11/13 19:05:50 fabiankeil Exp $";
 #include <limits.h>
 #include <assert.h>
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif /* def _WIN32 */
-
 #include "project.h"
 #include "cgi.h"
 #include "list.h"
 #include "encode.h"
 #include "ssplit.h"
 #include "errlog.h"
+#include "filters.h"
 #include "miscutil.h"
 #include "cgisimple.h"
 #ifdef FEATURE_CGI_EDIT_ACTIONS
@@ -553,7 +636,7 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
    { "show-status", 
          cgi_show_status,  
 #ifdef FEATURE_CGI_EDIT_ACTIONS
-        "View & change the current configuration",
+        "View &amp; change the current configuration",
 #else
         "View the current configuration",
 #endif
@@ -571,10 +654,12 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
          "Look up which actions apply to a URL and why",
          TRUE },
 #ifdef FEATURE_CGI_EDIT_ACTIONS
+#ifdef FEATURE_TOGGLE
    { "toggle",
          cgi_toggle, 
          "Toggle Privoxy on or off",
          FALSE },
+#endif /* def FEATURE_TOGGLE */
    { "edit-actions", /* Edit the actions list */
          cgi_edit_actions, 
          NULL, FALSE },
@@ -642,6 +727,12 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
          cgi_edit_actions_section_swap, 
          NULL, FALSE /* Swap two sections in the actionsfile */ },
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
+   { "error-favicon.ico", 
+         cgi_send_error_favicon,  
+         NULL, TRUE /* Sends the favicon image for error pages. */ },
+   { "favicon.ico", 
+         cgi_send_default_favicon,  
+         NULL, TRUE /* Sends the default favicon image. */ },
    { "robots.txt", 
          cgi_robots_txt,  
          NULL, TRUE /* Sends a robots.txt file to tell robots to go away. */ }, 
@@ -650,7 +741,7 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
          NULL, TRUE /* Send a built-in image */ },
    { "send-stylesheet",
          cgi_send_stylesheet, 
-         NULL, TRUE /* Send templates/cgi-style.css */ },
+         NULL, FALSE /* Send templates/cgi-style.css */ },
    { "t",
          cgi_transparent_image, 
          NULL, TRUE /* Send a transparent image (short name) */ },
@@ -677,12 +768,12 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
  */
 const char image_pattern_data[] =
    "\211\120\116\107\015\012\032\012\000\000\000\015\111\110\104"
-   "\122\000\000\000\004\000\000\000\004\010\002\000\000\000\046"
-   "\223\011\051\000\000\000\006\142\113\107\104\000\310\000\310"
-   "\000\310\052\045\225\037\000\000\000\032\111\104\101\124\170"
-   "\332\143\070\161\342\304\377\377\377\041\044\003\234\165\342"
-   "\304\011\006\234\062\000\125\200\052\251\125\174\360\223\000"
-   "\000\000\000\111\105\116\104\256\102\140\202";
+   "\122\000\000\000\004\000\000\000\004\010\006\000\000\000\251"
+   "\361\236\176\000\000\000\006\142\113\107\104\000\000\000\000"
+   "\000\000\371\103\273\177\000\000\000\033\111\104\101\124\010"
+   "\327\143\140\140\140\060\377\377\377\077\003\234\106\341\060"
+   "\060\230\063\020\124\001\000\161\021\031\241\034\364\030\143"
+   "\000\000\000\000\111\105\116\104\256\102\140\202";
 
 /*
  * 1x1 transparant PNG.
@@ -817,7 +908,7 @@ struct http_response *dispatch_cgi(struct client_state *csp)
  * Returns     :  pointer to value (no copy!), or NULL if none found.
  *
  *********************************************************************/
-char *grep_cgi_referrer(struct client_state *csp)
+static char *grep_cgi_referrer(const struct client_state *csp)
 {
    struct list_entry *p;
 
@@ -833,6 +924,54 @@ char *grep_cgi_referrer(struct client_state *csp)
 
 }
 
+
+/*********************************************************************
+ * 
+ * Function    :  referrer_is_safe
+ *
+ * Description :  Decides whether we trust the Referer for
+ *                CGI pages which are only meant to be reachable
+ *                through Privoxy's web interface directly.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  TRUE  if the referrer is safe, or
+ *                FALSE if the referrer is unsafe or not set.
+ *
+ *********************************************************************/
+static int referrer_is_safe(const struct client_state *csp)
+{
+   char *referrer;
+   const char alternative_prefix[] = "http://" CGI_SITE_1_HOST "/";
+
+   referrer = grep_cgi_referrer(csp);
+
+   if (NULL == referrer)
+   {
+      /* No referrer, no access  */
+      log_error(LOG_LEVEL_ERROR, "Denying access to %s. No referrer found.",
+         csp->http->url);
+   }
+   else if ((0 == strncmp(referrer, CGI_PREFIX, sizeof(CGI_PREFIX)-1)
+         || (0 == strncmp(referrer, alternative_prefix, strlen(alternative_prefix)))))
+   {
+      /* Trustworthy referrer */
+      log_error(LOG_LEVEL_CGI, "Granting access to %s, referrer %s is trustworthy.",
+         csp->http->url, referrer);
+
+      return TRUE;
+   }
+   else
+   {
+      /* Untrustworthy referrer */
+      log_error(LOG_LEVEL_ERROR, "Denying access to %s, referrer %s isn't trustworthy.",
+         csp->http->url, referrer);
+   }
+
+   return FALSE;
+
+}
 
 /*********************************************************************
  * 
@@ -862,7 +1001,6 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
    struct http_response *rsp;
    char *query_args_start;
    char *path_copy;
-   char *referrer;
    jb_err err;
 
    if (NULL == (path_copy = strdup(path)))
@@ -909,10 +1047,6 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
       return cgi_error_memory();
    }
 
-   log_error(LOG_LEVEL_GPC, "%s%s cgi call", csp->http->hostport, csp->http->path);
-   log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 3", 
-                            csp->ip_addr_str, csp->http->cmd); 
-
    /* 
     * Find and start the right CGI function
     */
@@ -925,10 +1059,7 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
           * If the called CGI is either harmless, or referred
           * from a trusted source, start it.
           */
-         if (d->harmless
-             || ((NULL != (referrer = grep_cgi_referrer(csp)))
-                 && (0 == strncmp(referrer, CGI_PREFIX, sizeof(CGI_PREFIX)-1)))
-             )
+         if (d->harmless || referrer_is_safe(csp))
          {
             err = (d->handler)(csp, rsp, param_list);
          }
@@ -965,7 +1096,8 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
          if (!err)
          {
             /* It worked */
-            return finish_http_response(rsp);
+            rsp->reason = RSP_REASON_CGI_CALL;
+            return finish_http_response(csp, rsp);
          }
          else
          {
@@ -1059,7 +1191,7 @@ char get_char_param(const struct map *parameters,
    ch = *(lookup(parameters, param_name));
    if ((ch >= 'a') && (ch <= 'z'))
    {
-      ch = ch - 'a' + 'A';
+      ch = (char)(ch - 'a' + 'A');
    }
 
    return ch;
@@ -1191,7 +1323,7 @@ jb_err get_number_param(struct client_state *csp,
          return JB_ERR_CGI_PARAMS;
       }
 
-      ch -= '0';
+      ch = (char)(ch - '0');
 
       /* Note:
        *
@@ -1205,7 +1337,7 @@ jb_err get_number_param(struct client_state *csp,
          return JB_ERR_CGI_PARAMS;
       }
 
-      value = value * 10 + ch;
+      value = value * 10 + (unsigned)ch;
    }
 
    /* Success */
@@ -1238,7 +1370,9 @@ struct http_response *error_response(struct client_state *csp,
 {
    jb_err err;
    struct http_response *rsp;
-   struct map * exports = default_exports(csp, NULL);
+   struct map *exports = default_exports(csp, NULL);
+   char *path = NULL;
+
    if (exports == NULL)
    {
       return cgi_error_memory();
@@ -1250,9 +1384,21 @@ struct http_response *error_response(struct client_state *csp,
       return cgi_error_memory();
    }
 
-   err = map(exports, "host", 1, html_encode(csp->http->host), 0);
+#ifdef FEATURE_FORCE_LOAD
+   if (csp->flags & CSP_FLAG_FORCED)
+   {
+      path = strdup(FORCE_PREFIX);
+   }
+   else
+#endif /* def FEATURE_FORCE_LOAD */
+   {
+      path = strdup("");
+   }
+   err = string_append(&path, csp->http->path);
+
+   if (!err) err = map(exports, "host", 1, html_encode(csp->http->host), 0);
    if (!err) err = map(exports, "hostport", 1, html_encode(csp->http->hostport), 0);
-   if (!err) err = map(exports, "path", 1, html_encode(csp->http->path), 0);
+   if (!err) err = map(exports, "path", 1, html_encode_and_free_original(path), 0);
    if (!err) err = map(exports, "error", 1, html_encode_and_free_original(safe_strerror(sys_err)), 0);
    if (!err) err = map(exports, "protocol", 1, csp->http->ssl ? "https://" : "http://", 1); 
    if (!err)
@@ -1282,6 +1428,48 @@ struct http_response *error_response(struct client_state *csp,
          free_http_response(rsp);
          return cgi_error_memory();
       }
+      rsp->reason = RSP_REASON_NO_SUCH_DOMAIN;
+   }
+   else if (!strcmp(templatename, "forwarding-failed"))
+   {
+      const struct forward_spec * fwd = forward_url(csp->http, csp);
+      if (fwd == NULL)
+      {
+         log_error(LOG_LEVEL_FATAL, "gateway spec is NULL. This shouldn't happen!");
+         /* Never get here - LOG_LEVEL_FATAL causes program exit */
+      }
+
+      /*
+       * XXX: While the template is called forwarding-failed,
+       * it currently only handles socks forwarding failures.
+       */
+      assert(fwd->type != SOCKS_NONE);
+
+      /*
+       * Map failure reason, forwarding type and forwarder.
+       */
+      if (NULL == csp->error_message)
+      {
+         /*
+          * Either we forgot to record the failure reason,
+          * or the memory allocation failed.
+          */
+         log_error(LOG_LEVEL_ERROR, "Socks failure reason missing.");
+         csp->error_message = strdup("Failure reason missing. Check the log file for details.");
+      }
+      if (!err) err = map(exports, "gateway", 1, fwd->gateway_host, 1);
+      if (!err) err = map(exports, "forwarding-type", 1, (fwd->type == SOCKS_4) ?
+                         "socks4-" : "socks4a-", 1);
+      if (!err) err = map(exports, "error-message", 1, html_encode(csp->error_message), 0);
+
+      if (!err) rsp->status = strdup("503 Forwarding failure");
+      if ((rsp->status == NULL) || (NULL == csp->error_message) || err)
+      {
+         free_map(exports);
+         free_http_response(rsp);
+         return cgi_error_memory();
+      }
+      rsp->reason = RSP_REASON_FORWARDING_FAILED;
    }
    else if (!strcmp(templatename, "connect-failed"))
    {
@@ -1292,6 +1480,7 @@ struct http_response *error_response(struct client_state *csp,
          free_http_response(rsp);
          return cgi_error_memory();
       }
+      rsp->reason = RSP_REASON_CONNECT_FAILED;
    }
 
    err = template_fill_for_cgi(csp, templatename, exports, rsp);
@@ -1301,7 +1490,7 @@ struct http_response *error_response(struct client_state *csp,
       return cgi_error_memory();
    }
 
-   return finish_http_response(rsp);
+   return finish_http_response(csp, rsp);
 }
 
 
@@ -1312,7 +1501,9 @@ struct http_response *error_response(struct client_state *csp,
  * Description :  CGI function that is called to generate an error
  *                response if the actions editor or toggle CGI are
  *                accessed despite having being disabled at compile-
- *                or run-time.
+ *                or run-time, or if the user followed an untrusted link
+ *                to access a unsafe CGI feature that is only reachable
+ *                through Privoxy directly.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -1332,9 +1523,14 @@ jb_err cgi_error_disabled(struct client_state *csp,
    assert(csp);
    assert(rsp);
 
-   if (NULL == (exports = default_exports(csp, NULL)))
+   if (NULL == (exports = default_exports(csp, "cgi-error-disabled")))
    {
       return JB_ERR_MEMORY;
+   }
+   if (map(exports, "url", 1, html_encode(csp->http->url), 0))
+   {
+      /* Not important enough to do anything */
+      log_error(LOG_LEVEL_ERROR, "Failed to fill in url.");
    }
 
    return template_fill_for_cgi(csp, "cgi-error-disabled", exports, rsp);
@@ -1362,7 +1558,10 @@ void cgi_init_error_messages(void)
       "\r\n";
    cgi_error_memory_response->body =
       "<html>\r\n"
-      "<head><title>500 Internal Privoxy Error</title></head>\r\n"
+      "<head>\r\n"
+      " <title>500 Internal Privoxy Error</title>\r\n"
+      " <link rel=\"shortcut icon\" href=\"" CGI_PREFIX "error-favicon.ico\" type=\"image/x-icon\">"
+      "</head>\r\n"
       "<body>\r\n"
       "<h1>500 Internal Privoxy Error</h1>\r\n"
       "<p>Privoxy <b>ran out of memory</b> while processing your request.</p>\r\n"
@@ -1374,6 +1573,7 @@ void cgi_init_error_messages(void)
       strlen(cgi_error_memory_response->head);
    cgi_error_memory_response->content_length =
       strlen(cgi_error_memory_response->body);
+   cgi_error_memory_response->reason = RSP_REASON_OUT_OF_MEMORY;
 }
 
 
@@ -1426,7 +1626,10 @@ jb_err cgi_error_no_template(struct client_state *csp,
       "500 Internal Privoxy Error";
    static const char body_prefix[] =
       "<html>\r\n"
-      "<head><title>500 Internal Privoxy Error</title></head>\r\n"
+      "<head>\r\n"
+      " <title>500 Internal Privoxy Error</title>\r\n"
+      " <link rel=\"shortcut icon\" href=\"" CGI_PREFIX "error-favicon.ico\" type=\"image/x-icon\">"
+      "</head>\r\n"
       "<body>\r\n"
       "<h1>500 Internal Privoxy Error</h1>\r\n"
       "<p>Privoxy encountered an error while processing your request:</p>\r\n"
@@ -1445,6 +1648,7 @@ jb_err cgi_error_no_template(struct client_state *csp,
       ").</p>\r\n"
       "</body>\r\n"
       "</html>\r\n";
+   const size_t body_size = strlen(body_prefix) + strlen(template_name) + strlen(body_suffix) + 1;
 
    assert(csp);
    assert(rsp);
@@ -1458,17 +1662,17 @@ jb_err cgi_error_no_template(struct client_state *csp,
    rsp->head_length = 0;
    rsp->is_static = 0;
 
-   rsp->body = malloc(strlen(body_prefix) + strlen(template_name) + strlen(body_suffix) + 1);
+   rsp->body = malloc(body_size);
    if (rsp->body == NULL)
    {
       return JB_ERR_MEMORY;
    }
-   strcpy(rsp->body, body_prefix);
-   strcat(rsp->body, template_name);
-   strcat(rsp->body, body_suffix);
+   strlcpy(rsp->body, body_prefix, body_size);
+   strlcat(rsp->body, template_name, body_size);
+   strlcat(rsp->body, body_suffix, body_size);
 
    rsp->status = strdup(status);
-   if (rsp->body == NULL)
+   if (rsp->status == NULL)
    {
       return JB_ERR_MEMORY;
    }
@@ -1509,7 +1713,10 @@ jb_err cgi_error_unknown(struct client_state *csp,
       "500 Internal Privoxy Error";
    static const char body_prefix[] =
       "<html>\r\n"
-      "<head><title>500 Internal Privoxy Error</title></head>\r\n"
+      "<head>\r\n"
+      " <title>500 Internal Privoxy Error</title>\r\n"
+      " <link rel=\"shortcut icon\" href=\"" CGI_PREFIX "error-favicon.ico\" type=\"image/x-icon\">"
+      "</head>\r\n"
       "<body>\r\n"
       "<h1>500 Internal Privoxy Error</h1>\r\n"
       "<p>Privoxy encountered an error while processing your request:</p>\r\n"
@@ -1517,11 +1724,16 @@ jb_err cgi_error_unknown(struct client_state *csp,
    static const char body_suffix[] =
       "</b></p>\r\n"
       "<p>Please "
-      "<a href=\"http://sourceforge.net/tracker/?group_id=11118&atid=111118\">"
+      "<a href=\"http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118\">"
       "file a bug report</a>.</p>\r\n"
       "</body>\r\n"
       "</html>\r\n";
    char errnumbuf[30];
+   /*
+    * Due to sizeof(errnumbuf), body_size will be slightly
+    * bigger than necessary but it doesn't really matter.
+    */
+   const size_t body_size = strlen(body_prefix) + sizeof(errnumbuf) + strlen(body_suffix) + 1;
    assert(csp);
    assert(rsp);
 
@@ -1532,20 +1744,21 @@ jb_err cgi_error_unknown(struct client_state *csp,
    rsp->content_length = 0;
    rsp->head_length = 0;
    rsp->is_static = 0;
+   rsp->reason = RSP_REASON_INTERNAL_ERROR;
 
-   sprintf(errnumbuf, "%d", error_to_report);
+   snprintf(errnumbuf, sizeof(errnumbuf), "%d", error_to_report);
 
-   rsp->body = malloc(strlen(body_prefix) + strlen(errnumbuf) + strlen(body_suffix) + 1);
+   rsp->body = malloc(body_size);
    if (rsp->body == NULL)
    {
       return JB_ERR_MEMORY;
    }
-   strcpy(rsp->body, body_prefix);
-   strcat(rsp->body, errnumbuf);
-   strcat(rsp->body, body_suffix);
+   strlcpy(rsp->body, body_prefix, body_size);
+   strlcat(rsp->body, errnumbuf,   body_size);
+   strlcat(rsp->body, body_suffix, body_size);
 
    rsp->status = strdup(status);
-   if (rsp->body == NULL)
+   if (rsp->status == NULL)
    {
       return JB_ERR_MEMORY;
    }
@@ -1683,6 +1896,9 @@ char *add_help_link(const char *item,
  *                HTTP header - e.g.:
  *                "Sun, 06 Nov 1994 08:49:37 GMT"
  *
+ *                XXX: Should probably get a third parameter for
+ *                the buffer size.
+ *
  * Parameters  :  
  *          1  :  time_offset = Time returned will be current time
  *                              plus this number of seconds.
@@ -1752,6 +1968,8 @@ void get_http_time(int time_offset, char *buf)
  *
  * Description :  Fill in the missing headers in an http response,
  *                and flatten the headers to an http head.
+ *                For HEAD requests the body is freed once
+ *                the Content-Length header is set.
  *
  * Parameters  :
  *          1  :  rsp = pointer to http_response to be processed
@@ -1760,7 +1978,7 @@ void get_http_time(int time_offset, char *buf)
  *                On error, free()s rsp and returns cgi_error_memory()
  *
  *********************************************************************/
-struct http_response *finish_http_response(struct http_response *rsp)
+struct http_response *finish_http_response(const struct client_state *csp, struct http_response *rsp)
 {
    char buf[BUFFER_SIZE];
    jb_err err;
@@ -1774,9 +1992,12 @@ struct http_response *finish_http_response(struct http_response *rsp)
    }
 
    /* 
-    * Fill in the HTTP Status
+    * Fill in the HTTP Status, using HTTP/1.1
+    * unless the client asked for HTTP/1.0.
     */
-   sprintf(buf, "HTTP/1.0 %s", rsp->status ? rsp->status : "200 OK");
+   snprintf(buf, sizeof(buf), "%s %s",
+      strcmpic(csp->http->ver, "HTTP/1.0") ? "HTTP/1.1" : "HTTP/1.0",
+      rsp->status ? rsp->status : "200 OK");
    err = enlist_first(rsp->headers, buf);
 
    /* 
@@ -1788,18 +2009,36 @@ struct http_response *finish_http_response(struct http_response *rsp)
    }
    if (!err)
    {
-      sprintf(buf, "Content-Length: %d", (int)rsp->content_length);
+      snprintf(buf, sizeof(buf), "Content-Length: %d", (int)rsp->content_length);
       err = enlist(rsp->headers, buf);
+   }
+
+   if (0 == strcmpic(csp->http->gpc, "head"))
+   {
+      /*
+       * The client only asked for the head. Dispose
+       * the body and log an offensive message.
+       *
+       * While it may seem to be a bit inefficient to
+       * prepare the body if it isn't needed, it's the
+       * only way to get the Content-Length right for
+       * dynamic pages. We could have disposed the body
+       * earlier, but not without duplicating the
+       * Content-Length setting code above.
+       */
+      log_error(LOG_LEVEL_CGI, "Preparing to give head to %s.", csp->ip_addr_str);
+      freez(rsp->body);
+      rsp->content_length = 0;
    }
 
    if (strncmpic(rsp->status, "302", 3))
    {
-     /*
-      * If it's not a redirect without any content,
-      * set the Content-Type to text/html if it's
-      * not already specified.
-      */
-     if (!err) err = enlist_unique(rsp->headers, "Content-Type: text/html", 13);
+      /*
+       * If it's not a redirect without any content,
+       * set the Content-Type to text/html if it's
+       * not already specified.
+       */
+      if (!err) err = enlist_unique(rsp->headers, "Content-Type: text/html", 13);
    }
 
    /*
@@ -1853,7 +2092,7 @@ struct http_response *finish_http_response(struct http_response *rsp)
        * is older than Privoxy's error message, the server would send status code
        * 304 and the browser would display the outdated error message again and again.
        *
-       * For documents delivered with status code 404 or 503 we set "Last-Modified"
+       * For documents delivered with status code 403, 404 and 503 we set "Last-Modified"
        * to Tim Berners-Lee's birthday, which predates the age of any page on the web
        * and can be safely used to "revalidate" without getting a status code 304.
        *
@@ -1864,7 +2103,9 @@ struct http_response *finish_http_response(struct http_response *rsp)
 
       get_http_time(0, buf);
       if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
-      if (!strncmpic(rsp->status, "404", 3) || !strncmpic(rsp->status, "503", 3))
+      if (!strncmpic(rsp->status, "403", 3)
+       || !strncmpic(rsp->status, "404", 3)
+       || !strncmpic(rsp->status, "503", 3))
       {
          if (!err) err = enlist_unique_header(rsp->headers, "Last-Modified", "Wed, 08 Jun 1955 12:00:00 GMT");
       }
@@ -1952,9 +2193,8 @@ void free_http_response(struct http_response *rsp)
  * Function    :  template_load
  *
  * Description :  CGI support function that loads a given HTML
- *                template from the confdir, ignoring comment
- *                lines and following #include statements up to
- *                a depth of 1.
+ *                template, ignoring comment lines and following
+ *                #include statements up to a depth of 1.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -2001,11 +2241,23 @@ jb_err template_load(struct client_state *csp, char **template_ptr,
       }
    }
 
-   /* Generate full path */
+   /*
+    * Generate full path using either templdir
+    * or confdir/templates as base directory.
+    */
+   if (NULL != csp->config->templdir)
+   {
+      templates_dir_path = strdup(csp->config->templdir);
+   }
+   else
+   {
+      templates_dir_path = make_path(csp->config->confdir, "templates");
+   }
 
-   templates_dir_path = make_path(csp->config->confdir, "templates");
    if (templates_dir_path == NULL)
    {
+      log_error(LOG_LEVEL_ERROR, "Out of memory while generating template path for %s.",
+         templatename);
       return JB_ERR_MEMORY;
    }
 
@@ -2013,6 +2265,8 @@ jb_err template_load(struct client_state *csp, char **template_ptr,
    free(templates_dir_path);
    if (full_path == NULL)
    {
+      log_error(LOG_LEVEL_ERROR, "Out of memory while generating full template path for %s.",
+         templatename);
       return JB_ERR_MEMORY;
    }
 
@@ -2021,6 +2275,7 @@ jb_err template_load(struct client_state *csp, char **template_ptr,
    file_buffer = strdup("");
    if (file_buffer == NULL)
    {
+      log_error(LOG_LEVEL_ERROR, "Not enough free memory to buffer %s.", full_path);
       free(full_path);
       return JB_ERR_MEMORY;
    }
@@ -2102,7 +2357,7 @@ jb_err template_load(struct client_state *csp, char **template_ptr,
  *                                    Caller must free().
  *          2  :  exports = map with fill in symbol -> name pairs
  *
- * Returns     :  JB_ERR_OK on success
+ * Returns     :  JB_ERR_OK on success (and for uncritical errors)
  *                JB_ERR_MEMORY on out-of-memory error
  *
  *********************************************************************/
@@ -2173,15 +2428,35 @@ jb_err template_fill(char **template_ptr, const struct map *exports)
       }
       else
       {
-         pcrs_execute(job, file_buffer, size, &tmp_out_buffer, &size);
-         free(file_buffer);
+         error = pcrs_execute(job, file_buffer, size, &tmp_out_buffer, &size);
+
          pcrs_free_job(job);
          if (NULL == tmp_out_buffer)
          {
             *template_ptr = NULL;
             return JB_ERR_MEMORY;
          }
-         file_buffer = tmp_out_buffer;
+
+         if (error < 0)
+         {
+            /* 
+             * Substitution failed, keep the original buffer,
+             * log the problem and ignore it.
+             * 
+             * The user might see some unresolved @CGI_VARIABLES@,
+             * but returning a special CGI error page seems unreasonable
+             * and could mask more important error messages.
+             */
+            free(tmp_out_buffer);
+            log_error(LOG_LEVEL_ERROR, "Failed to execute s/%s/%s/%s. %s",
+               buf, m->value, flags, pcrs_strerror(error));
+         }
+         else
+         {
+            /* Substitution succeeded, use modified buffer. */
+            free(file_buffer);
+            file_buffer = tmp_out_buffer;
+         }
       }
    }
 
@@ -2277,16 +2552,18 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map(exports, "my-hostname",   1, html_encode(csp->my_hostname ? csp->my_hostname : "unknown"), 0);
    if (!err) err = map(exports, "homepage",      1, html_encode(HOME_PAGE_URL), 0);
    if (!err) err = map(exports, "default-cgi",   1, html_encode(CGI_PREFIX), 0);
-   if (!err) err = map(exports, "menu",          1, make_menu(caller), 0);
+   if (!err) err = map(exports, "menu",          1, make_menu(caller, csp->config->feature_flags), 0);
    if (!err) err = map(exports, "code-status",   1, CODE_STATUS, 1);
    if (!strncmpic(csp->config->usermanual, "file://", 7) ||
        !strncmpic(csp->config->usermanual, "http", 4))
    {
-      if (!err) err = map(exports, "user-manual", 1, csp->config->usermanual ,1);
+      /* Manual is located somewhere else, just link to it. */
+      if (!err) err = map(exports, "user-manual", 1, html_encode(csp->config->usermanual), 0);
    }
    else
    {
-      if (!err) err = map(exports, "user-manual", 1, "http://"CGI_SITE_2_HOST"/user-manual/" ,1);
+      /* Manual is delivered by Privoxy. */
+      if (!err) err = map(exports, "user-manual", 1, html_encode(CGI_PREFIX"user-manual/"), 0);
    }
    if (!err) err = map(exports, "actions-help-prefix", 1, ACTIONS_HELP_PREFIX ,1);
 #ifdef FEATURE_TOGGLE
@@ -2295,7 +2572,7 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map_block_killer(exports, "can-toggle");
 #endif
 
-   snprintf(buf, 20, "%d", csp->config->hport);
+   snprintf(buf, sizeof(buf), "%d", csp->config->hport);
    if (!err) err = map(exports, "my-port", 1, buf, 1);
 
    if(!strcmp(CODE_STATUS, "stable"))
@@ -2364,7 +2641,7 @@ jb_err map_block_killer(struct map *exports, const char *name)
    assert(name);
    assert(strlen(name) < 490);
 
-   snprintf(buf, 1000, "if-%s-start.*if-%s-end", name, name);
+   snprintf(buf, sizeof(buf), "if-%s-start.*if-%s-end", name, name);
    return map(exports, buf, 1, "", 1);
 }
 
@@ -2394,7 +2671,7 @@ jb_err map_block_keep(struct map *exports, const char *name)
    assert(name);
    assert(strlen(name) < 490);
 
-   snprintf(buf, 500, "if-%s-start", name);
+   snprintf(buf, sizeof(buf), "if-%s-start", name);
    err = map(exports, buf, 1, "", 1);
 
    if (err)
@@ -2402,7 +2679,7 @@ jb_err map_block_keep(struct map *exports, const char *name)
       return err;
    }
 
-   snprintf(buf, 500, "if-%s-end", name);
+   snprintf(buf, sizeof(buf), "if-%s-end", name);
    return map(exports, buf, 1, "", 1);
 }
 
@@ -2441,7 +2718,7 @@ jb_err map_conditional(struct map *exports, const char *name, int choose_first)
    assert(name);
    assert(strlen(name) < 480);
 
-   snprintf(buf, 1000, (choose_first
+   snprintf(buf, sizeof(buf), (choose_first
       ? "else-not-%s@.*@endif-%s"
       : "if-%s-then@.*@else-not-%s"),
       name, name);
@@ -2452,7 +2729,7 @@ jb_err map_conditional(struct map *exports, const char *name, int choose_first)
       return err;
    }
 
-   snprintf(buf, 1000, (choose_first ? "if-%s-then" : "endif-%s"), name);
+   snprintf(buf, sizeof(buf), (choose_first ? "if-%s-then" : "endif-%s"), name);
    return map(exports, buf, 1, "", 1);
 }
 
@@ -2463,14 +2740,18 @@ jb_err map_conditional(struct map *exports, const char *name, int choose_first)
  *
  * Description :  Returns an HTML-formatted menu of the available 
  *                unhidden CGIs, excluding the one given in <self>
+ *                and the toggle CGI if toggling is disabled.
  *
- * Parameters  :  self = name of CGI to leave out, can be NULL for
+ * Parameters  :
+ *          1  :  self = name of CGI to leave out, can be NULL for
  *                complete listing.
+ *          2  :  feature_flags = feature bitmap from csp->config
+ *                
  *
  * Returns     :  menu string, or NULL on out-of-memory error.
  *
  *********************************************************************/
-char *make_menu(const char *self)
+char *make_menu(const char *self, const unsigned feature_flags)
 {
    const struct cgi_dispatcher *d;
    char *result = strdup("");
@@ -2483,9 +2764,36 @@ char *make_menu(const char *self)
    /* List available unhidden CGI's and export as "other-cgis" */
    for (d = cgi_dispatchers; d->name; d++)
    {
+
+#ifdef FEATURE_TOGGLE
+      if (!(feature_flags & RUNTIME_FEATURE_CGI_TOGGLE) && !strcmp(d->name, "toggle"))
+      {
+         /*
+          * Suppress the toggle link if remote toggling is disabled.
+          */
+         continue;
+      }
+#endif /* def FEATURE_TOGGLE */
+
       if (d->description && strcmp(d->name, self))
       {
-         string_append(&result, "<li><a href=\"" CGI_PREFIX);
+         char *html_encoded_prefix;
+
+         /*
+          * Line breaks would be great, but break
+          * the "blocked" template's JavaScript.
+          */
+         string_append(&result, "<li><a href=\"");
+         html_encoded_prefix = html_encode(CGI_PREFIX);
+         if (html_encoded_prefix == NULL)
+         {
+            return NULL;  
+         }
+         else
+         {
+            string_append(&result, html_encoded_prefix);
+            free(html_encoded_prefix);
+         }
          string_append(&result, d->name);
          string_append(&result, "\">");
          string_append(&result, d->description);

@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.46 2006/11/13 19:05:51 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.62 2007/11/30 15:33:46 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -6,7 +6,7 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.46 2006/11/13 19:05:51 fabiankeil E
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,67 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.46 2006/11/13 19:05:51 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.62  2007/11/30 15:33:46  fabiankeil
+ *    Unbreak LOG_LEVEL_FATAL. It wasn't fatal with logging disabled
+ *    and on mingw32 fatal log messages didn't end up in the log file.
+ *
+ *    Revision 1.61  2007/11/04 19:03:01  fabiankeil
+ *    Fix another deadlock Hal spotted and that mysteriously didn't affect FreeBSD.
+ *
+ *    Revision 1.60  2007/11/03 19:03:31  fabiankeil
+ *    - Prevent the Windows GUI from showing the version two times in a row.
+ *    - Stop using the imperative in the "(Re-)Open logfile" message.
+ *    - Ditch the "Switching to daemon mode" message as the detection
+ *      whether or not we're already in daemon mode doesn't actually work.
+ *
+ *    Revision 1.59  2007/11/01 12:50:56  fabiankeil
+ *    Here's looking at you, deadlock.
+ *
+ *    Revision 1.58  2007/10/28 19:04:21  fabiankeil
+ *    Don't mention daemon mode in "Logging disabled" message. Some
+ *    platforms call it differently and it's not really relevant anyway.
+ *
+ *    Revision 1.57  2007/10/27 13:02:26  fabiankeil
+ *    Relocate daemon-mode-related log messages to make sure
+ *    they aren't shown again in case of configuration reloads.
+ *
+ *    Revision 1.56  2007/10/14 14:26:56  fabiankeil
+ *    Remove the old log_error() version.
+ *
+ *    Revision 1.55  2007/10/14 14:12:41  fabiankeil
+ *    When in daemon mode, close stderr after the configuration file has been
+ *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
+ *
+ *    Revision 1.54  2007/09/22 16:15:34  fabiankeil
+ *    - Let it compile with pcc.
+ *    - Move our includes below system includes to prevent macro conflicts.
+ *
+ *    Revision 1.53  2007/08/05 13:53:14  fabiankeil
+ *    #1763173 from Stefan Huehner: declare some more functions
+ *    static and use void instead of empty parameter lists.
+ *
+ *    Revision 1.52  2007/07/14 07:28:47  fabiankeil
+ *    Add translation function for JB_ERR_FOO codes.
+ *
+ *    Revision 1.51  2007/05/11 11:51:34  fabiankeil
+ *    Fix a type mismatch warning.
+ *
+ *    Revision 1.50  2007/04/11 10:55:44  fabiankeil
+ *    Enforce some assertions that could be triggered
+ *    on mingw32 and other systems where we use threads
+ *    but no locks.
+ *
+ *    Revision 1.49  2007/04/08 16:44:15  fabiankeil
+ *    We need <sys/time.h> for gettimeofday(), not <time.h>.
+ *
+ *    Revision 1.48  2007/03/31 13:33:28  fabiankeil
+ *    Add alternative log_error() with timestamps
+ *    that contain milliseconds and without using
+ *    strcpy(), strcat() or sprintf().
+ *
+ *    Revision 1.47  2006/11/28 15:25:15  fabiankeil
+ *    Only unlink the pidfile if it's actually used.
+ *
  *    Revision 1.46  2006/11/13 19:05:51  fabiankeil
  *    Make pthread mutex locking more generic. Instead of
  *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
@@ -260,13 +321,16 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.46 2006/11/13 19:05:51 fabiankeil E
  *********************************************************************/
 
 
-#include "config.h"
-#include "miscutil.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+
+#include "config.h"
+#include "miscutil.h"
+
+/* For gettimeofday() */
+#include <sys/time.h>
 
 #if !defined(_WIN32) && !defined(__OS2__)
 #include <unistd.h>
@@ -324,19 +388,19 @@ static char *os2_socket_strerr(int errcode, char *tmp_buf);
 #endif
 
 #ifdef FEATURE_PTHREAD
-static inline void lock_logfile()
+static inline void lock_logfile(void)
 {
    pthread_mutex_lock(&log_mutex);
 }
-static inline void unlock_logfile()
+static inline void unlock_logfile(void)
 {
    pthread_mutex_unlock(&log_mutex);
 }
-static inline void lock_loginit()
+static inline void lock_loginit(void)
 {
    pthread_mutex_lock(&log_init_mutex);
 }
-static inline void unlock_loginit()
+static inline void unlock_loginit(void)
 {
    pthread_mutex_unlock(&log_init_mutex);
 }
@@ -374,13 +438,18 @@ static void fatal_error(const char * error_message)
 
    /* Cleanup - remove taskbar icon etc. */
    TermLogWindow();
-
-#else /* if !defined(_WIN32) || defined(_WIN_CONSOLE) */
-   fputs(error_message, stderr);
 #endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
 
+   if (logfp != NULL)
+   {
+      fputs(error_message, logfp);
+   }
+
 #if defined(unix)
-   unlink(pidfile);
+   if (pidfile)
+   {
+      unlink(pidfile);
+   }
 #endif /* unix */
 
    exit(1);
@@ -389,10 +458,103 @@ static void fatal_error(const char * error_message)
 
 /*********************************************************************
  *
+ * Function    :  show_version
+ *
+ * Description :  Logs the Privoxy version and the program name.
+ *
+ * Parameters  :
+ *          1  :  prog_name = The program name.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+static void show_version(const char *prog_name)
+{
+   log_error(LOG_LEVEL_INFO, "Privoxy version " VERSION);
+   if (prog_name != NULL)
+   {
+      log_error(LOG_LEVEL_INFO, "Program name: %s", prog_name);
+   }
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  init_log_module
+ *
+ * Description :  Initializes the logging module to log to stderr.
+ *                Can only be called while stderr hasn't been closed
+ *                yet and is only supposed to be called once.
+ *
+ * Parameters  :
+ *          1  :  prog_name = The program name.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+void init_log_module(const char *prog_name)
+{
+   lock_logfile();
+   logfp = stderr;
+   unlock_logfile();
+   set_debug_level(debug);
+   show_version(prog_name);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  set_debug_level
+ *
+ * Description :  Sets the debug level to the provided value
+ *                plus LOG_LEVEL_MINIMUM.
+ *
+ *                XXX: we should only use the LOG_LEVEL_MINIMUM
+ *                until the frist time the configuration file has
+ *                been parsed.
+ *                
+ * Parameters  :  1: debug_level = The debug level to set.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+void set_debug_level(int debug_level)
+{
+   debug = debug_level | LOG_LEVEL_MINIMUM;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  disable_logging
+ *
+ * Description :  Disables logging.
+ *                
+ * Parameters  :  None.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+void disable_logging(void)
+{
+   if (logfp != NULL)
+   {
+      log_error(LOG_LEVEL_INFO, "No logfile configured. Logging disabled.");
+      lock_logfile();
+      fclose(logfp);
+      logfp = NULL;
+      unlock_logfile();
+   }
+}
+
+
+/*********************************************************************
+ *
  * Function    :  init_error_log
  *
- * Description :  Initializes the logging module.  Must call before
- *                calling log_error.
+ * Description :  Initializes the logging module to log to a file.
+ *
+ *                XXX: should be renamed.
  *
  * Parameters  :
  *          1  :  prog_name  = The program name.
@@ -402,47 +564,49 @@ static void fatal_error(const char * error_message)
  * Returns     :  N/A
  *
  *********************************************************************/
-void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
+void init_error_log(const char *prog_name, const char *logfname)
 {
    FILE *fp;
 
+   assert(NULL != logfname);
+
    lock_loginit();
 
-   /* set the logging detail level */
-   debug = debuglevel | LOG_LEVEL_MINIMUM;
-
-   if ((logfp != NULL) && (logfp != stderr))
+   if (logfp != NULL)
    {
-      log_error(LOG_LEVEL_INFO, "(Re-)Open logfile %s", logfname ? logfname : "none");
-      lock_logfile();
-      fclose(logfp);
-   } else {
-      lock_logfile();
+      log_error(LOG_LEVEL_INFO, "(Re-)Opening logfile \'%s\'", logfname);
    }
-   logfp = stderr;
-   unlock_logfile();
 
    /* set the designated log file */
-   if( logfname )
+   fp = fopen(logfname, "a");
+   if (NULL == fp)
    {
-      if( NULL == (fp = fopen(logfname, "a")) )
-      {
-         log_error(LOG_LEVEL_FATAL, "init_error_log(): can't open logfile: %s", logfname);
-      }
-
-      /* set logging to be completely unbuffered */
-      setbuf(fp, NULL);
-
-      lock_logfile();
-      logfp = fp;
-      unlock_logfile();
+      log_error(LOG_LEVEL_FATAL, "init_error_log(): can't open logfile: \'%s\'", logfname);
    }
 
-   log_error(LOG_LEVEL_INFO, "Privoxy version " VERSION);
-   if (prog_name != NULL)
+   /* set logging to be completely unbuffered */
+   setbuf(fp, NULL);
+
+   lock_logfile();
+   if (logfp != NULL)
    {
-      log_error(LOG_LEVEL_INFO, "Program name: %s", prog_name);
+      fclose(logfp);
    }
+   logfp = fp;
+   unlock_logfile();
+
+#if !defined(_WIN32)
+   /*
+    * Prevent the Windows GUI from showing the version two
+    * times in a row on startup. It already displayed the show_version()
+    * call from init_log_module() that other systems write to stderr.
+    *
+    * This means mingw32 users will never see the version in their
+    * log file, but I assume they wouldn't look for it there anyway
+    * and simply use the "Help/About Privoxy" menu.
+    */
+   show_version(prog_name);
+#endif /* def unix */
 
    unlock_loginit();
 
@@ -451,51 +615,25 @@ void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
 
 /*********************************************************************
  *
- * Function    :  log_error
+ * Function    :  get_thread_id
  *
- * Description :  This is the error-reporting and logging function.
+ * Description :  Returns a number that is different for each thread.
  *
- * Parameters  :
- *          1  :  loglevel  = the type of message to be logged
- *          2  :  fmt       = the main string we want logged, printf-like
- *          3  :  ...       = arguments to be inserted in fmt (printf-like).
+ *                XXX: Should be moved elsewhere (miscutil.c?)
+ *                
+ * Parameters  :  None
  *
- * Returns     :  N/A
+ * Returns     :  thread_id
  *
  *********************************************************************/
-void log_error(int loglevel, char *fmt, ...)
+static long get_thread_id(void)
 {
-   va_list ap;
-   char *outbuf= NULL;
-   static char *outbuf_save = NULL;
-   char * src = fmt;
-   int outc = 0;
    long this_thread = 1;  /* was: pthread_t this_thread;*/
+
 #ifdef __OS2__
    PTIB     ptib;
-   APIRET   ulrc;
+   APIRET   ulrc; /* XXX: I have no clue what this does */
 #endif /* __OS2__ */
-
-#if defined(_WIN32) && !defined(_WIN_CONSOLE)
-   /*
-    * Irrespective of debug setting, a GET/POST/CONNECT makes
-    * the taskbar icon animate.  (There is an option to disable
-    * this but checking that is handled inside LogShowActivity()).
-    */
-   if (loglevel == LOG_LEVEL_GPC)
-   {
-      LogShowActivity();
-   }
-#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
-
-   /* verify if loglevel applies to current settings and bail out if negative */
-   if ((loglevel & debug) == 0)
-   {
-      return;
-   }
-
-   /* protect the whole function because of the static buffer (outbuf) */
-   lock_logfile();
 
    /* FIXME get current thread id */
 #ifdef FEATURE_PTHREAD
@@ -517,144 +655,338 @@ void log_error(int loglevel, char *fmt, ...)
      this_thread = ptib -> tib_ptib2 -> tib2_ultid;
 #endif /* def FEATURE_PTHREAD */
 
-   if ( !outbuf_save ) 
-   {
-      outbuf_save = outbuf = (char*)malloc(BUFFER_SIZE);
-      assert(outbuf);
-   }
-   outbuf = outbuf_save;
+   return this_thread;
+}
 
-    {
-       /*
-        * Write timestamp into tempbuf.
-        *
-        * Complex because not all OSs have tm_gmtoff or
-        * the %z field in strftime()
-        */
-       time_t now; 
-       struct tm tm_now; 
-       time (&now);
+
+/*********************************************************************
+ *
+ * Function    :  get_log_timestamp
+ *
+ * Description :  Generates the time stamp for the log message prefix.
+ *
+ * Parameters  :
+ *          1  :  buffer = Storage buffer
+ *          2  :  buffer_size = Size of storage buffer
+ *
+ * Returns     :  Number of written characters or 0 for error.
+ *
+ *********************************************************************/
+static inline size_t get_log_timestamp(char *buffer, size_t buffer_size)
+{
+   size_t length;
+   time_t now; 
+   struct tm tm_now;
+   struct timeval tv_now; /* XXX: stupid name */
+   long msecs;
+   int msecs_length = 0;
+
+   gettimeofday(&tv_now, NULL);
+   msecs = tv_now.tv_usec / 1000;
+
+   time(&now);
+
 #ifdef HAVE_LOCALTIME_R
-       tm_now = *localtime_r(&now, &tm_now);
+   tm_now = *localtime_r(&now, &tm_now);
 #elif FEATURE_PTHREAD
-       pthread_mutex_lock(&localtime_mutex);
-       tm_now = *localtime (&now); 
-       pthread_mutex_unlock(&localtime_mutex);
+   pthread_mutex_lock(&localtime_mutex);
+   tm_now = *localtime(&now); 
+   pthread_mutex_unlock(&localtime_mutex);
 #else
-       tm_now = *localtime (&now); 
+   tm_now = *localtime(&now); 
 #endif
-       strftime(outbuf, BUFFER_SIZE-6, "%b %d %H:%M:%S ", &tm_now); 
-       outbuf += strlen( outbuf );
-    }
+
+   length = strftime(buffer, buffer_size, "%b %d %H:%M:%S", &tm_now);
+   if (length > 0);
+   {
+      msecs_length = snprintf(buffer+length, buffer_size - length, ".%.3ld", msecs);               
+   }
+   if (msecs_length > 0)
+   {
+      length += (size_t)msecs_length;
+   }
+   else
+   {
+      length = 0;
+   }
+
+   return length;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_clf_timestamp
+ *
+ * Description :  Generates a Common Log Format time string.
+ *
+ * Parameters  :
+ *          1  :  buffer = Storage buffer
+ *          2  :  buffer_size = Size of storage buffer
+ *
+ * Returns     :  Number of written characters or 0 for error.
+ *
+ *********************************************************************/
+static inline size_t get_clf_timestamp(char *buffer, size_t buffer_size)
+{
+   /*
+    * Complex because not all OSs have tm_gmtoff or
+    * the %z field in strftime()
+    */
+   time_t now;
+   struct tm *tm_now; 
+   struct tm gmt;
+#ifdef HAVE_LOCALTIME_R
+   struct tm dummy;
+#endif
+   int days, hrs, mins;
+   size_t length;
+   int tz_length = 0;
+
+   time (&now); 
+#ifdef HAVE_GMTIME_R
+   gmt = *gmtime_r(&now, &gmt);
+#elif FEATURE_PTHREAD
+   pthread_mutex_lock(&gmtime_mutex);
+   gmt = *gmtime(&now);
+   pthread_mutex_unlock(&gmtime_mutex);
+#else
+   gmt = *gmtime(&now);
+#endif
+#ifdef HAVE_LOCALTIME_R
+   tm_now = localtime_r(&now, &dummy);
+#elif FEATURE_PTHREAD
+   pthread_mutex_lock(&localtime_mutex);
+   tm_now = localtime(&now); 
+   pthread_mutex_unlock(&localtime_mutex);
+#else
+   tm_now = localtime(&now); 
+#endif
+   days = tm_now->tm_yday - gmt.tm_yday; 
+   hrs = ((days < -1 ? 24 : 1 < days ? -24 : days * 24) + tm_now->tm_hour - gmt.tm_hour); 
+   mins = hrs * 60 + tm_now->tm_min - gmt.tm_min; 
+
+   length = strftime(buffer, buffer_size, "%d/%b/%Y:%H:%M:%S ", tm_now);
+
+   if (length > 0);
+   {
+      tz_length = snprintf(buffer+length, buffer_size-length,
+                     "%+03d%02d", mins / 60, abs(mins) % 60);
+   }
+   if (tz_length > 0)
+   {
+      length += (size_t)tz_length;
+   }
+   else
+   {
+      length = 0;
+   }
+
+   return length;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_log_level_string
+ *
+ * Description :  Translates a numerical loglevel into a string.
+ *
+ * Parameters  :  
+ *          1  :  loglevel = LOG_LEVEL_FOO
+ *
+ * Returns     :  Log level string.
+ *
+ *********************************************************************/
+static inline const char *get_log_level_string(int loglevel)
+{
+   char *log_level_string = NULL;
+
+   assert(0 < loglevel);
+
    switch (loglevel)
    {
       case LOG_LEVEL_ERROR:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Error: ", this_thread);
+         log_level_string = "Error";
          break;
       case LOG_LEVEL_FATAL:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Fatal error: ", this_thread);
+         log_level_string = "Fatal error";
          break;
       case LOG_LEVEL_GPC:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Request: ", this_thread);
+         log_level_string = "Request";
          break;
       case LOG_LEVEL_CONNECT:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Connect: ", this_thread);
+         log_level_string = "Connect";
          break;
       case LOG_LEVEL_LOG:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Writing: ", this_thread);
+         log_level_string = "Writing";
          break;
       case LOG_LEVEL_HEADER:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Header: ", this_thread);
+         log_level_string = "Header";
          break;
       case LOG_LEVEL_INFO:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Info: ", this_thread);
+         log_level_string = "Info";
          break;
       case LOG_LEVEL_RE_FILTER:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Re-Filter: ", this_thread);
+         log_level_string = "Re-Filter";
          break;
 #ifdef FEATURE_FORCE_LOAD
       case LOG_LEVEL_FORCE:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Force: ", this_thread);
+         log_level_string = "Force";
          break;
 #endif /* def FEATURE_FORCE_LOAD */
 #ifdef FEATURE_FAST_REDIRECTS
       case LOG_LEVEL_REDIRECTS:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Redirect: ", this_thread);
+         log_level_string = "Redirect";
          break;
 #endif /* def FEATURE_FAST_REDIRECTS */
       case LOG_LEVEL_DEANIMATE:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Gif-Deanimate: ", this_thread);
-         break;
-      case LOG_LEVEL_CLF:
-         outbuf = outbuf_save;
-         outc = 0;
-         outbuf[0] = '\0';
+         log_level_string = "Gif-Deanimate";
          break;
 #ifdef FEATURE_KILL_POPUPS
       case LOG_LEVEL_POPUPS:
-         outc = sprintf(outbuf, "Privoxy(%08lx) Kill-Popups: ", this_thread);
+         log_level_string = "Kill-Popups";
          break;
 #endif /* def FEATURE_KILL_POPUPS */
       case LOG_LEVEL_CGI:
-         outc = sprintf(outbuf, "Privoxy(%08lx) CGI: ", this_thread);
+         log_level_string = "CGI";
          break;
       default:
-         outc = sprintf(outbuf, "Privoxy(%08lx) UNKNOWN LOG TYPE(%d): ", this_thread, loglevel);
+         log_level_string = "Unknown log level";
          break;
    }
-   
+   assert(NULL != log_level_string);
+
+   return log_level_string;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  log_error
+ *
+ * Description :  This is the error-reporting and logging function.
+ *
+ * Parameters  :
+ *          1  :  loglevel  = the type of message to be logged
+ *          2  :  fmt       = the main string we want logged, printf-like
+ *          3  :  ...       = arguments to be inserted in fmt (printf-like).
+ *
+ * Returns     :  N/A
+ *
+ *********************************************************************/
+void log_error(int loglevel, const char *fmt, ...)
+{
+   va_list ap;
+   char *outbuf = NULL;
+   static char *outbuf_save = NULL;
+   char tempbuf[BUFFER_SIZE];
+   size_t length = 0;
+   const char * src = fmt;
+   long thread_id;
+   char timestamp[30];
+   /*
+    * XXX: Make this a config option,
+    * why else do we allocate instead of using
+    * an array?
+    */
+   size_t log_buffer_size = BUFFER_SIZE;
+
+#if defined(_WIN32) && !defined(_WIN_CONSOLE)
+   /*
+    * Irrespective of debug setting, a GET/POST/CONNECT makes
+    * the taskbar icon animate.  (There is an option to disable
+    * this but checking that is handled inside LogShowActivity()).
+    */
+   if (loglevel == LOG_LEVEL_GPC)
+   {
+      LogShowActivity();
+   }
+#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
+
+   /*
+    * verify that the loglevel applies to current
+    * settings and that logging is enabled.
+    * Bail out otherwise.
+    */
+   if ((loglevel != LOG_LEVEL_FATAL) &&
+       ((0 == (loglevel & debug)) || (logfp == NULL)))
+   {
+      return;
+   }
+
+   thread_id = get_thread_id();
+   get_log_timestamp(timestamp, sizeof(timestamp));
+
+   /* protect the whole function because of the static buffer (outbuf) */
+   lock_logfile();
+
+   if (NULL == outbuf_save) 
+   {
+      outbuf_save = (char*)zalloc(log_buffer_size + 1); /* +1 for paranoia */
+      if (NULL == outbuf_save)
+      {
+         snprintf(tempbuf, sizeof(tempbuf),
+            "%s Privoxy(%08lx) Fatal error: log_error() failed to allocate buffer memory.\n"
+            "\nExiting.", timestamp, thread_id);
+         fatal_error(tempbuf); /* Exit */
+      }
+   }
+   outbuf = outbuf_save;
+
+   /*
+    * Memsetting the whole buffer to zero (in theory)
+    * makes things easier later on.
+    */
+   memset(outbuf, 0, log_buffer_size);
+
+   /* Add prefix for everything but Common Log Format messages */
+   if (loglevel != LOG_LEVEL_CLF)
+   {
+      length = (size_t)snprintf(outbuf, log_buffer_size, "%s Privoxy(%08lx) %s: ",
+                                timestamp, thread_id, get_log_level_string(loglevel));
+   }
+
    /* get ready to scan var. args. */
-   va_start( ap, fmt );
+   va_start(ap, fmt);
 
    /* build formatted message from fmt and var-args */
-   while ((*src) && (outc < BUFFER_SIZE-2))
+   while ((*src) && (length < log_buffer_size-2))
    {
-      char tempbuf[BUFFER_SIZE];
-      char *sval = NULL;
-      int ival;
-      unsigned uval;
-      long lval;
-      unsigned long ulval;
-      int oldoutc;
+      const char *sval = NULL; /* %N string  */
+      int ival;                /* %N string length or an error code */
+      unsigned uval;           /* %u value */
+      long lval;               /* %l value */
+      unsigned long ulval;     /* %ul value */
       char ch;
-      
+      const char *format_string = tempbuf;
+
       ch = *src++;
-      if( ch != '%' )
+      if (ch != '%')
       {
-         outbuf[outc++] = ch;
+         outbuf[length++] = ch;
+         /*
+          * XXX: Only necessary on platforms which don't use pthread
+          * mutexes (mingw32 for example), where multiple threads can
+          * write to the buffer at the same time.
+          */
+         outbuf[length] = '\0';
          continue;
       }
-
+      outbuf[length] = '\0';
       ch = *src++;
       switch (ch) {
          case '%':
-            outbuf[outc++] = '%';
+            tempbuf[0] = '%';
+            tempbuf[1] = '\0';
             break;
          case 'd':
             ival = va_arg( ap, int );
-            oldoutc = outc;
-            outc += sprintf(tempbuf, "%d", ival);
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, tempbuf);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
-            }
+            snprintf(tempbuf, sizeof(tempbuf), "%d", ival);
             break;
          case 'u':
             uval = va_arg( ap, unsigned );
-            oldoutc = outc;
-            outc += sprintf(tempbuf, "%u", uval);
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, tempbuf);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
-            }
+            snprintf(tempbuf, sizeof(tempbuf), "%u", uval);
             break;
          case 'l':
             /* this is a modifier that must be followed by u or d */
@@ -662,37 +994,17 @@ void log_error(int loglevel, char *fmt, ...)
             if (ch == 'd')
             {
                lval = va_arg( ap, long );
-               oldoutc = outc;
-               outc += sprintf(tempbuf, "%ld", lval);
+               snprintf(tempbuf, sizeof(tempbuf), "%ld", lval);
             }
             else if (ch == 'u')
             {
                ulval = va_arg( ap, unsigned long );
-               oldoutc = outc;
-               outc += sprintf(tempbuf, "%lu", ulval);
+               snprintf(tempbuf, sizeof(tempbuf), "%lu", ulval);
             }
             else
             {
-               /* Error */
-               sprintf(outbuf, "Privoxy(%08lx) Error: log_error(): Bad format string:\n"
-                               "Format = \"%s\"\n"
-                               "Exiting.", this_thread, fmt);
-               if( !logfp )
-               {
-                  logfp = stderr;
-               }
-               fputs(outbuf, logfp);
-               fatal_error(outbuf);
-               /* Never get here */
-               break;
-            }
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, tempbuf);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
+               snprintf(tempbuf, sizeof(tempbuf), "Bad format string: \"%s\"", fmt);
+               loglevel = LOG_LEVEL_FATAL;
             }
             break;
          case 'c':
@@ -700,199 +1012,148 @@ void log_error(int loglevel, char *fmt, ...)
              * Note that char paramaters are converted to int, so we need to
              * pass "int" to va_arg.  (See K&R, 2nd ed, section A7.3.2, page 202)
              */
-            outbuf[outc++] = (char) va_arg( ap, int );
+            tempbuf[0] = (char) va_arg(ap, int);
+            tempbuf[1] = '\0';
             break;
          case 's':
-            sval = va_arg( ap, char * );
-            if (sval == NULL)
+            format_string = va_arg(ap, char *);
+            if (format_string == NULL)
             {
-               sval = "[null]";
-            }
-            oldoutc = outc;
-            outc += strlen(sval);
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, sval);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
+               format_string = "[null]";
             }
             break;
          case 'N':
-            /* Non-standard: Print a counted string.  Takes 2 parameters:
-             * int length, const char * string
+            /*
+             * Non-standard: Print a counted unterminated string.
+             * Takes 2 parameters: int length, const char * string.
              */
-            ival = va_arg( ap, int );
-            sval = va_arg( ap, char * );
+            ival = va_arg(ap, int);
+            sval = va_arg(ap, char *);
             if (sval == NULL)
             {
-               sval = "[null]";
+               format_string = "[null]";
             }
-            if (ival < 0)
+            else if (ival <= 0)
             {
-               ival = 0;
+               if (0 == ival)
+               {
+                  /* That's ok (but stupid) */
+                  tempbuf[0] = '\0';
+               }
+               else
+               {
+                  /*
+                   * That's not ok (and even more stupid)
+                   */
+                  assert(ival >= 0);
+                  format_string = "[counted string lenght < 0]";
+               }
             }
-            oldoutc = outc;
-            outc += ival;
-            if (outc < BUFFER_SIZE-1)
+            else if (ival >= sizeof(tempbuf))
             {
-               memcpy(outbuf + oldoutc, sval, (size_t) ival);
+               /*
+                * String is too long, copy as much as possible.
+                * It will be further truncated later.
+                */
+               memcpy(tempbuf, sval, sizeof(tempbuf)-1);
+               tempbuf[sizeof(tempbuf)-1] = '\0';
             }
             else
             {
-               outbuf[oldoutc] = '\0';
+               memcpy(tempbuf, sval, (size_t) ival);
+               tempbuf[ival] = '\0';
             }
             break;
          case 'E':
             /* Non-standard: Print error code from errno */
 #ifdef _WIN32
             ival = WSAGetLastError();
-            sval = w32_socket_strerr(ival, tempbuf);
+            format_string = w32_socket_strerr(ival, tempbuf);
 #elif __OS2__
             ival = sock_errno();
             if (ival != 0)
-              sval = os2_socket_strerr(ival, tempbuf);
+            {
+               format_string = os2_socket_strerr(ival, tempbuf);
+            }
             else
             {
-              ival = errno;
-              sval = strerror(ival);
+               ival = errno;
+               format_string = strerror(ival);
             }
 #else /* ifndef _WIN32 */
             ival = errno; 
 #ifdef HAVE_STRERROR
-            sval = strerror(ival);
+            format_string = strerror(ival);
 #else /* ifndef HAVE_STRERROR */
-            sval = NULL;
+            format_string = NULL;
 #endif /* ndef HAVE_STRERROR */
             if (sval == NULL)
             {
-               sprintf(tempbuf, "(errno = %d)", ival);
-               sval = tempbuf;
+               snprintf(tempbuf, sizeof(tempbuf), "(errno = %d)", ival);
             }
 #endif /* ndef _WIN32 */
-            oldoutc = outc;
-            outc += strlen(sval);
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, sval);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
-            }
             break;
          case 'T':
             /* Non-standard: Print a Common Log File timestamp */
-            {
-               /*
-                * Write timestamp into tempbuf.
-                *
-                * Complex because not all OSs have tm_gmtoff or
-                * the %z field in strftime()
-                */
-               time_t now; 
-               struct tm *tm_now; 
-               struct tm gmt;
-#ifdef HAVE_LOCALTIME_R
-               struct tm dummy;
-#endif
-               int days, hrs, mins; 
-               time (&now); 
-#ifdef HAVE_GMTIME_R
-               gmt = *gmtime_r(&now, &gmt);
-#elif FEATURE_PTHREAD
-               pthread_mutex_lock(&gmtime_mutex);
-               gmt = *gmtime(&now);
-               pthread_mutex_unlock(&gmtime_mutex);
-#else
-               gmt = *gmtime(&now);
-#endif
-#ifdef HAVE_LOCALTIME_R
-               tm_now = localtime_r(&now, &dummy);
-#elif FEATURE_PTHREAD
-               pthread_mutex_lock(&localtime_mutex);
-               tm_now = localtime (&now); 
-               pthread_mutex_unlock(&localtime_mutex);
-#else
-               tm_now = localtime (&now); 
-#endif
-               days = tm_now->tm_yday - gmt.tm_yday; 
-               hrs = ((days < -1 ? 24 : 1 < days ? -24 : days * 24) + tm_now->tm_hour - gmt.tm_hour); 
-               mins = hrs * 60 + tm_now->tm_min - gmt.tm_min; 
-               strftime (tempbuf, BUFFER_SIZE-6, "%d/%b/%Y:%H:%M:%S ", tm_now); 
-               sprintf (tempbuf + strlen(tempbuf), "%+03d%02d", mins / 60, abs(mins) % 60); 
-            }
-            oldoutc = outc;
-            outc += strlen(tempbuf);
-            if (outc < BUFFER_SIZE-1) 
-            {
-               strcpy(outbuf + oldoutc, tempbuf);
-            }
-            else
-            {
-               outbuf[oldoutc] = '\0';
-            }
+            get_clf_timestamp(tempbuf, sizeof(tempbuf));
             break;
          default:
-            sprintf(outbuf, "Privoxy(%08lx) Error: log_error(): Bad format string:\n"
-                            "Format = \"%s\"\n"
-                            "Exiting.", this_thread, fmt);
-            if( !logfp )
-            {
-               logfp = stderr;
-            }
-            fputs(outbuf_save, logfp);
-            unlock_logfile();
-            fatal_error(outbuf_save);
-            /* Never get here */
+            snprintf(tempbuf, sizeof(tempbuf), "Bad format string: \"%s\"", fmt);
+            loglevel = LOG_LEVEL_FATAL;
             break;
-
       } /* switch( p ) */
 
-   } /* for( p ... ) */
-   
-   /* done with var. args */
-   va_end( ap );
-   
-   if (outc >= BUFFER_SIZE-2)
-   {
-      /* insufficient room for newline and trailing null. */
+      assert(length < log_buffer_size);
+      length += strlcpy(outbuf + length, format_string, log_buffer_size - length);
 
-      static const char warning[] = "... [too long, truncated]\n";
-
-      if (outc < BUFFER_SIZE)
+      if (length >= log_buffer_size-2)
       {
-         /* Need to add terminating null in this case. */
-         outbuf[outc] = '\0';
+         static char warning[] = "... [too long, truncated]";
+
+         length = log_buffer_size - sizeof(warning) - 1;
+         length += strlcpy(outbuf + length, warning, log_buffer_size - length);
+         assert(length < log_buffer_size);
+
+         break;
       }
+   } /* for( p ... ) */
 
-      /* Truncate output */
-      outbuf[BUFFER_SIZE - sizeof(warning)] = '\0';
+   /* done with var. args */
+   va_end(ap);
 
-      /* Append warning */
-      strcat(outbuf, warning);
-   }
-   else
+   assert(length < log_buffer_size);
+   length += strlcpy(outbuf + length, "\n", log_buffer_size - length);
+
+   /* Some sanity checks */
+   if (!(length < log_buffer_size)
+    || !(outbuf[log_buffer_size-1] == '\0')
+    || !(outbuf[log_buffer_size] == '\0')
+      )
    {
-      /* Add terminating newline and null */
-      outbuf[outc++] = '\n';
-      outbuf[outc] = '\0';
+      /* Repeat as assertions */
+      assert(length < log_buffer_size);
+      assert(outbuf[log_buffer_size-1] == '\0');
+      /*
+       * outbuf's real size is log_buffer_size+1,
+       * so while this looks like an off-by-one,
+       * we're only checking our paranoia byte.
+       */
+      assert(outbuf[log_buffer_size] == '\0');
+
+      snprintf(outbuf, log_buffer_size,
+         "%s Privoxy(%08lx) Fatal error: log_error()'s sanity checks failed. length: %d\n"
+         "Exiting.", timestamp, thread_id, (int)length);
+      loglevel = LOG_LEVEL_FATAL;
    }
 
-   /* deal with glibc stupidity - it won't let you initialize logfp */
-   if( !logfp )
-   {
-      logfp = stderr;
-   }
-
-   fputs(outbuf_save, logfp);
+   assert(NULL != logfp || loglevel == LOG_LEVEL_FATAL);
 
    if (loglevel == LOG_LEVEL_FATAL)
    {
       fatal_error(outbuf_save);
       /* Never get here */
    }
+   fputs(outbuf_save, logfp);
 
    unlock_logfile();
 
@@ -903,6 +1164,48 @@ void log_error(int loglevel, char *fmt, ...)
 
 }
 
+
+/*********************************************************************
+ *
+ * Function    :  jb_err_to_string
+ *
+ * Description :  Translates JB_ERR_FOO codes into strings.
+ *
+ *                XXX: the type of error codes is jb_err
+ *                but the typedef'inition is currently not
+ *                visible to all files that include errlog.h.
+ *
+ * Parameters  :
+ *          1  :  error = a valid jb_err code
+ *
+ * Returns     :  A string with the jb_err translation
+ *
+ *********************************************************************/
+const char *jb_err_to_string(int error)
+{
+   switch (error)
+   {
+      case JB_ERR_OK:
+         return "Success, no error";
+      case JB_ERR_MEMORY:
+         return "Out of memory";
+      case JB_ERR_CGI_PARAMS:
+         return "Missing or corrupt CGI parameters";
+      case JB_ERR_FILE:
+         return "Error opening, reading or writing a file";
+      case JB_ERR_PARSE:
+         return "Parse error";
+      case JB_ERR_MODIFIED:
+         return "File has been modified outside of the CGI actions editor.";
+      case JB_ERR_COMPRESS:
+         return "(De)compression failure";
+      default:
+         assert(0);
+         return "Unknown error";
+   }
+   assert(0);
+   return "Internal error";
+}
 
 #ifdef _WIN32
 /*********************************************************************

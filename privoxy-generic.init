@@ -39,6 +39,11 @@
 # 
 #  Revisions   :
 #     $Log: privoxy-generic.init,v $
+#     Revision 1.8  2007/06/09 12:35:54  fabiankeil
+#     Add /usr/xpg4/bin to the PATH to make sure the POSIX
+#     version of id is used on Solaris. Closes BR#1733788.
+#     Thanks to Brent Chivers for report and fix.
+#
 #     Revision 1.7  2006/10/14 14:12:22  fabiankeil
 #     Print warnings if the user tries to run Privoxy as root
 #     or if the script is run without root privileges;
@@ -92,7 +97,7 @@
 # logfile is writable by $P_USER (logfile is defined in config), and that 
 # there is suitable write access for $P_PIDFILE.
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin/:/usr/bin:/sbin:/bin
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/xpg4/bin:/usr/bin:/sbin:/bin
 P_NAME=Privoxy
 # Path to executable.
 P_DAEMON=privoxy

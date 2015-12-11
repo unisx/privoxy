@@ -1,6 +1,6 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.15 2006/07/18 14:48:46 david__schmidt Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.19 2007/10/14 14:12:41 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
@@ -8,7 +8,7 @@
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,23 @@
  *
  * Revisions   :
  *    $Log: errlog.h,v $
+ *    Revision 1.19  2007/10/14 14:12:41  fabiankeil
+ *    When in daemon mode, close stderr after the configuration file has been
+ *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
+ *
+ *    Revision 1.18  2007/07/14 07:28:47  fabiankeil
+ *    Add translation function for JB_ERR_FOO codes.
+ *
+ *    Revision 1.17  2007/03/31 13:33:28  fabiankeil
+ *    Add alternative log_error() with timestamps
+ *    that contain milliseconds and without using
+ *    strcpy(), strcat() or sprintf().
+ *
+ *    Revision 1.16  2006/11/28 15:29:50  fabiankeil
+ *    Define LOG_LEVEL_REDIRECTS independently of
+ *    FEATURE_FAST_REDIRECTS. It is used by redirect{}
+ *    as well.
+ *
  *    Revision 1.15  2006/07/18 14:48:46  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -149,9 +166,7 @@ extern "C" {
 #define LOG_LEVEL_FORCE      0x0020
 #endif /* def FEATURE_FORCE_LOAD */
 #define LOG_LEVEL_RE_FILTER  0x0040
-#ifdef FEATURE_FAST_REDIRECTS
 #define LOG_LEVEL_REDIRECTS  0x0080
-#endif /* def FEATURE_FAST_REDIRECTS */
 #define LOG_LEVEL_DEANIMATE  0x0100
 
 #define LOG_LEVEL_CLF        0x0200 /* Common Log File format */
@@ -166,8 +181,12 @@ extern "C" {
 #define LOG_LEVEL_ERROR   0x2000
 #define LOG_LEVEL_FATAL   0x4000 /* Exits after writing log */
 
-extern void init_error_log(const char *prog_name, const char *logfname, int debuglevel);
-extern void log_error(int loglevel, char *fmt, ...);
+extern void init_error_log(const char *prog_name, const char *logfname);
+extern void set_debug_level(int debuglevel);
+void disable_logging(void);
+void init_log_module(const char *prog_name);
+extern void log_error(int loglevel, const char *fmt, ...);
+extern const char *jb_err_to_string(int error);
 
 /* Revision control strings from this header and associated .c file */
 extern const char errlog_rcs[];

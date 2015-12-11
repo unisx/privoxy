@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.41 2006/10/09 19:18:28 roro Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.60 2007/10/27 13:12:13 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -9,7 +9,7 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.41 2006/10/09 19:18:28 roro E
  *                Functions declared include:
  * 
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -36,6 +36,97 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.41 2006/10/09 19:18:28 roro E
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.60  2007/10/27 13:12:13  fabiankeil
+ *    Finish 1.49 and check write access before
+ *    showing edit buttons on show-url-info page.
+ *
+ *    Revision 1.59  2007/10/19 16:42:36  fabiankeil
+ *    Plug memory leak I introduced five months ago.
+ *    Yay Valgrind and Privoxy-Regression-Test.
+ *
+ *    Revision 1.58  2007/07/21 12:19:50  fabiankeil
+ *    If show-url-info is called with an URL that Privoxy
+ *    would reject as invalid, don't show unresolved forwarding
+ *    variables, "final matches" or claim the site's secure.
+ *
+ *    Revision 1.57  2007/06/01 16:53:05  fabiankeil
+ *    Adjust cgi_show_url_info() to show what forward-override{}
+ *    would do with the requested URL (instead of showing how the
+ *    request for the CGI page would be forwarded if it wasn't a
+ *    CGI request).
+ *
+ *    Revision 1.56  2007/05/21 10:50:35  fabiankeil
+ *    - Use strlcpy() instead of strcpy().
+ *    - Stop treating actions files special. Expect a complete file name
+ *      (with or without path) like it's done for the rest of the files.
+ *      Closes FR#588084.
+ *    - Don't rerun sed() in cgi_show_request().
+ *
+ *    Revision 1.55  2007/04/13 13:36:46  fabiankeil
+ *    Reference action files in CGI URLs by id instead
+ *    of using the first part of the file name.
+ *    Fixes BR 1694250 and BR 1590556.
+ *
+ *    Revision 1.54  2007/04/09 18:11:35  fabiankeil
+ *    Don't mistake VC++'s _snprintf() for a snprintf() replacement.
+ *
+ *    Revision 1.53  2007/04/08 13:21:04  fabiankeil
+ *    Reference action files in CGI URLs by id instead
+ *    of using the first part of the file name.
+ *    Fixes BR 1694250 and BR 1590556.
+ *
+ *    Revision 1.52  2007/02/13 15:10:26  fabiankeil
+ *    Apparently fopen()ing in "binary" mode doesn't require
+ *    #ifdefs, it's already done without them in cgiedit.c.
+ *
+ *    Revision 1.51  2007/02/10 16:55:22  fabiankeil
+ *    - Show forwarding settings on the show-url-info page
+ *    - Fix some HTML syntax errors.
+ *
+ *    Revision 1.50  2007/01/23 15:51:17  fabiankeil
+ *    Add favicon delivery functions.
+ *
+ *    Revision 1.49  2007/01/20 16:29:38  fabiankeil
+ *    Suppress edit buttons for action files if Privoxy has
+ *    no write access. Suggested by Roland in PR 1564026.
+ *
+ *    Revision 1.48  2007/01/20 15:31:31  fabiankeil
+ *    Display warning if show-url-info CGI page
+ *    is used while Privoxy is toggled off.
+ *
+ *    Revision 1.47  2007/01/12 15:07:10  fabiankeil
+ *    Use zalloc in cgi_send_user_manual.
+ *
+ *    Revision 1.46  2007/01/02 12:49:46  fabiankeil
+ *    Add FEATURE_ZLIB to the list of conditional
+ *    defines at the show-status page.
+ *
+ *    Revision 1.45  2006/12/28 18:16:41  fabiankeil
+ *    Fixed gcc43 compiler warnings, zero out cgi_send_user_manual's
+ *    body memory before using it, replaced sprintf calls with snprintf.
+ *
+ *    Revision 1.44  2006/12/22 14:19:27  fabiankeil
+ *    Removed checks whether or not AF_FILES have
+ *    data structures associated with them in cgi_show_status.
+ *    It doesn't matter as we're only interested in the file names.
+ *
+ *    For the action files the checks were always true,
+ *    but they prevented empty filter files from being
+ *    listed. Fixes parts of BR 1619208.
+ *
+ *    Revision 1.43  2006/12/17 17:57:56  fabiankeil
+ *    - Added FEATURE_GRACEFUL_TERMINATION to the
+ *      "conditional #defines" section
+ *    - Escaped ampersands in generated HTML.
+ *    - Renamed re-filter-filename to re-filter-filenames
+ *
+ *    Revision 1.42  2006/11/21 15:43:12  fabiankeil
+ *    Add special treatment for WIN32 to make sure
+ *    cgi_send_user_manual opens the files in binary mode.
+ *    Fixes BR 1600411 and unbreaks image delivery.
+ *
+ *    Remove outdated comment.
+ *
  *    Revision 1.41  2006/10/09 19:18:28  roro
  *    Redirect http://p.p/user-manual (without trailing slash) to
  *    http://p.p/user-manual/ (with trailing slash), otherwise links will be broken.
@@ -248,9 +339,9 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.41 2006/10/09 19:18:28 roro E
 #include <string.h>
 #include <assert.h>
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#endif /* def _WIN32 */
+#ifdef HAVE_ACCESS
+#include <unistd.h>
+#endif /* def HAVE_ACCESS */
 
 #include "project.h"
 #include "cgi.h"
@@ -272,6 +363,41 @@ const char cgisimple_h_rcs[] = CGISIMPLE_H_VERSION;
 static char *show_rcs(void);
 static jb_err show_defines(struct map *exports);
 
+/*
+ * 16x16 ico blobs for favicon delivery functions.
+ */
+const char default_favicon_data[] =
+   "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
+   "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
+   "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
+   "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
+   "\000\000\377\377\377\000\377\000\052\000\017\360\000\000\077"
+   "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
+   "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
+   "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
+   "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
+   "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
+   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+   "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
+   "\017\000\000";
+const char error_favicon_data[] =
+   "\000\000\001\000\001\000\020\020\002\000\000\000\000\000\260"
+   "\000\000\000\026\000\000\000\050\000\000\000\020\000\000\000"
+   "\040\000\000\000\001\000\001\000\000\000\000\000\100\000\000"
+   "\000\000\000\000\000\000\000\000\000\002\000\000\000\000\000"
+   "\000\000\377\377\377\000\000\000\377\000\017\360\000\000\077"
+   "\374\000\000\161\376\000\000\161\376\000\000\361\377\000\000"
+   "\361\377\000\000\360\017\000\000\360\007\000\000\361\307\000"
+   "\000\361\307\000\000\361\307\000\000\360\007\000\000\160\036"
+   "\000\000\177\376\000\000\077\374\000\000\017\360\000\000\360"
+   "\017\000\000\300\003\000\000\200\001\000\000\200\001\000\000"
+   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+   "\000\000\200\001\000\000\200\001\000\000\300\003\000\000\360"
+   "\017\000\000";
+const size_t default_favicon_length  = sizeof(default_favicon_data) - 1;
+const size_t error_favicon_length  = sizeof(error_favicon_data) - 1;
 
 /*********************************************************************
  *
@@ -449,8 +575,8 @@ jb_err cgi_show_request(struct client_state *csp,
       return JB_ERR_MEMORY;
    }
 
-   if (map(exports, "processed-request", 1, html_encode_and_free_original(
-      sed(client_patterns, add_client_headers, csp)), 0))
+   if (map(exports, "processed-request", 1,
+         html_encode_and_free_original(list_to_text(csp->headers)), 0))
    {
       free_map(exports);
       return JB_ERR_MEMORY;
@@ -636,6 +762,88 @@ jb_err cgi_transparent_image(struct client_state *csp,
 
 /*********************************************************************
  *
+ * Function    :  cgi_send_default_favicon
+ *
+ * Description :  CGI function that sends the standard favicon.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *          3  :  parameters = map of cgi parameters
+ *
+ * CGI Parameters : None
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+jb_err cgi_send_default_favicon(struct client_state *csp,
+                                struct http_response *rsp,
+                                const struct map *parameters)
+{
+   rsp->body = bindup(default_favicon_data, default_favicon_length);
+   rsp->content_length = default_favicon_length;
+
+   if (rsp->body == NULL)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   if (enlist(rsp->headers, "Content-Type: image/x-icon"))
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   rsp->is_static = 1;
+
+   return JB_ERR_OK;
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  cgi_send_error_favicon
+ *
+ * Description :  CGI function that sends the favicon for error pages.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *          3  :  parameters = map of cgi parameters
+ *
+ * CGI Parameters : None
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+jb_err cgi_send_error_favicon(struct client_state *csp,
+                              struct http_response *rsp,
+                              const struct map *parameters)
+{
+   rsp->body = bindup(error_favicon_data, error_favicon_length);
+   rsp->content_length = error_favicon_length;
+
+   if (rsp->body == NULL)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   if (enlist(rsp->headers, "Content-Type: image/x-icon"))
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   rsp->is_static = 1;
+
+   return JB_ERR_OK;
+
+}
+
+
+/*********************************************************************
+ *
  * Function    :  cgi_send_stylesheet
  *
  * Description :  CGI function that sends a css stylesheet found
@@ -740,7 +948,7 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    }
 
    /* Open user-manual file */
-   if (NULL == (fp = fopen(full_path, "r")))
+   if (NULL == (fp = fopen(full_path, "rb")))
    {
       log_error(LOG_LEVEL_ERROR, "Cannot open user-manual file %s: %E", full_path);
       err = cgi_error_no_template(csp, rsp, full_path);
@@ -750,11 +958,11 @@ jb_err cgi_send_user_manual(struct client_state *csp,
 
    /* Get file length */
    fseek(fp, 0, SEEK_END);
-   length = ftell(fp);
+   length = (size_t)ftell(fp);
    fseek(fp, 0, SEEK_SET);
 
    /* Allocate memory and load the file directly into the body */
-   rsp->body = (char *)malloc(length+1);
+   rsp->body = (char *)zalloc(length+1);
    if (!rsp->body)
    {
       fclose(fp);
@@ -764,16 +972,15 @@ jb_err cgi_send_user_manual(struct client_state *csp,
    if (!fread(rsp->body, length, 1, fp))
    {
       /*
-       * Why should this happen? If it does, we just log
-       * it and serve what we got, most likely padded with garbage.
+       * May happen if the file size changes between fseek() and fread().
+       * If it does, we just log it and serve what we got.
        */
       log_error(LOG_LEVEL_ERROR, "Couldn't completely read user-manual file %s.", full_path);
    }
    fclose(fp);
    free(full_path);
 
-   /* Privoxy only gets it right for non-binary content. */
-   rsp->content_length = (int)length;
+   rsp->content_length = length;
 
    /* Guess correct Content-Type based on the filename's ending */
    if (filename)
@@ -848,7 +1055,7 @@ jb_err cgi_show_version(struct client_state *csp,
  *
  * Function    :  cgi_show_status
  *
- * Description :  CGI function that returns a a web page describing the
+ * Description :  CGI function that returns a web page describing the
  *                current status of Privoxy.
  *
  * Parameters  :
@@ -885,8 +1092,6 @@ jb_err cgi_show_status(struct client_state *csp,
    int local_urls_read;
    int local_urls_rejected;
 #endif /* ndef FEATURE_STATISTICS */
-   struct file_list * fl;
-   struct url_actions * b;
    jb_err err = JB_ERR_OK;
 
    struct map *exports;
@@ -1007,13 +1212,13 @@ jb_err cgi_show_status(struct client_state *csp,
       perc_rej = (float)local_urls_rejected * 100.0F /
             (float)local_urls_read;
 
-      sprintf(buf, "%d", local_urls_read);
+      snprintf(buf, sizeof(buf), "%d", local_urls_read);
       if (!err) err = map(exports, "requests-received", 1, buf, 1);
 
-      sprintf(buf, "%d", local_urls_rejected);
+      snprintf(buf, sizeof(buf), "%d", local_urls_rejected);
       if (!err) err = map(exports, "requests-blocked", 1, buf, 1);
 
-      sprintf(buf, "%6.2f", perc_rej);
+      snprintf(buf, sizeof(buf), "%6.2f", perc_rej);
       if (!err) err = map(exports, "percent-blocked", 1, buf, 1);
    }
 
@@ -1030,18 +1235,30 @@ jb_err cgi_show_status(struct client_state *csp,
    s = strdup("");
    for (i = 0; i < MAX_AF_FILES; i++)
    {
-      if (((fl = csp->actions_list[i]) != NULL) && ((b = fl->f) != NULL))
+      if (csp->actions_list[i] != NULL)
       {
          if (!err) err = string_append(&s, "<tr><td>");
          if (!err) err = string_join(&s, html_encode(csp->actions_list[i]->filename));
-         snprintf(buf, 100, "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&index=%d\">View</a>", i);
+         snprintf(buf, sizeof(buf),
+            "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&amp;index=%d\">View</a>", i);
          if (!err) err = string_append(&s, buf);
 
 #ifdef FEATURE_CGI_EDIT_ACTIONS
          if (NULL == strstr(csp->actions_list[i]->filename, "standard.action") && NULL != csp->config->actions_file_short[i])
          {
-            snprintf(buf, 100, "&nbsp;&nbsp;<a href=\"/edit-actions-list?f=%s\">Edit</a>", csp->config->actions_file_short[i]);
-            if (!err) err = string_append(&s, buf);
+#ifdef HAVE_ACCESS
+            if (access(csp->config->actions_file[i], W_OK) == 0)
+            {
+#endif /* def HAVE_ACCESS */
+               snprintf(buf, sizeof(buf), "&nbsp;&nbsp;<a href=\"/edit-actions-list?f=%d\">Edit</a>", i);
+               if (!err) err = string_append(&s, buf);
+#ifdef HAVE_ACCESS
+            }
+            else
+            {
+               if (!err) err = string_append(&s, "&nbsp;&nbsp;<strong>No write access.</strong>");
+            }
+#endif /* def HAVE_ACCESS */
          }
 #endif
 
@@ -1064,22 +1281,23 @@ jb_err cgi_show_status(struct client_state *csp,
    s = strdup("");
    for (i = 0; i < MAX_AF_FILES; i++)
    {
-      if (((fl = csp->rlist[i]) != NULL) && ((b = fl->f) != NULL))
+      if (csp->rlist[i] != NULL)
       {
          if (!err) err = string_append(&s, "<tr><td>");
          if (!err) err = string_join(&s, html_encode(csp->rlist[i]->filename));
-         snprintf(buf, 100, "</td><td class=\"buttons\"><a href=\"/show-status?file=filter&index=%d\">View</a>", i);
+         snprintf(buf, 100,
+            "</td><td class=\"buttons\"><a href=\"/show-status?file=filter&amp;index=%d\">View</a>", i);
          if (!err) err = string_append(&s, buf);
          if (!err) err = string_append(&s, "</td></tr>\n");
       }
    }
    if (*s != '\0')   
    {
-      if (!err) err = map(exports, "re-filter-filename", 1, s, 0);
+      if (!err) err = map(exports, "re-filter-filenames", 1, s, 0);
    }
    else
    {
-      if (!err) err = map(exports, "re-filter-filename", 1, "<tr><td>None specified</td></tr>", 1);
+      if (!err) err = map(exports, "re-filter-filenames", 1, "<tr><td>None specified</td></tr>", 1);
       if (!err) err = map_block_killer(exports, "have-filterfile");
    }
 
@@ -1195,19 +1413,33 @@ jb_err cgi_show_url_info(struct client_state *csp,
       /*
        * Unknown prefix - assume http://
        */
-      char * url_param_prefixed = malloc(7 + 1 + strlen(url_param));
+      const size_t url_param_prefixed_size = 7 + 1 + strlen(url_param);
+      char * url_param_prefixed = malloc(url_param_prefixed_size);
       if (NULL == url_param_prefixed)
       {
          free(url_param);
          free_map(exports);
          return JB_ERR_MEMORY;
       }
-      strcpy(url_param_prefixed, "http://");
-      strcpy(url_param_prefixed + 7, url_param);
+      strlcpy(url_param_prefixed, "http://", url_param_prefixed_size);
+      strlcat(url_param_prefixed, url_param, url_param_prefixed_size);
       free(url_param);
       url_param = url_param_prefixed;
    }
 
+   /*
+    * Hide "toggle off" warning if Privoxy is toggled on.
+    */
+   if (
+#ifdef FEATURE_TOGGLE
+       (global_toggle_state == 1) &&
+#endif /* def FEATURE_TOGGLE */
+       map_block_killer(exports, "privoxy-is-toggled-off")
+      )
+   {
+      free_map(exports);
+      return JB_ERR_MEMORY;
+   }
 
    if (url_param[0] == '\0')
    {
@@ -1267,6 +1499,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
 
          err = map(exports, "matches", 1, "<b>[Invalid URL specified!]</b>" , 1);
          if (!err) err = map(exports, "final", 1, lookup(exports, "default"), 1);
+         if (!err) err = map_block_killer(exports, "valid-url");
 
          free_current_action(action);
          free_http_request(url_to_query);
@@ -1281,7 +1514,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
       }
 
       /*
-       * We have a warning about SSL paths.  Hide it for insecure sites.
+       * We have a warning about SSL paths.  Hide it for unencrypted sites.
        */
       if (!url_to_query->ssl)
       {
@@ -1294,12 +1527,12 @@ jb_err cgi_show_url_info(struct client_state *csp,
          }
       }
 
-      matches = strdup("<table class=\"transparent\">");
+      matches = strdup("<table summary=\"\" class=\"transparent\">");
 
       for (i = 0; i < MAX_AF_FILES; i++)
       {
          if (NULL == csp->config->actions_file_short[i]
-             || !strcmp(csp->config->actions_file_short[i], "standard")) continue;
+             || !strcmp(csp->config->actions_file_short[i], "standard.action")) continue;
 
          b = NULL;
          hits = 1;
@@ -1310,14 +1543,26 @@ jb_err cgi_show_url_info(struct client_state *csp,
                /* FIXME: Hardcoded HTML! */
                string_append(&matches, "<tr><th>In file: ");
                string_join  (&matches, html_encode(csp->config->actions_file_short[i]));
-               snprintf(buf, 150, ".action <a class=\"cmd\" href=\"/show-status?file=actions&index=%d\">", i);
+               snprintf(buf, sizeof(buf), " <a class=\"cmd\" href=\"/show-status?file=actions&amp;index=%d\">", i);
                string_append(&matches, buf);
                string_append(&matches, "View</a>");
 #ifdef FEATURE_CGI_EDIT_ACTIONS
-               string_append(&matches, " <a class=\"cmd\" href=\"/edit-actions-list?f=");
-               string_join  (&matches, html_encode(csp->config->actions_file_short[i]));
-               string_append(&matches, "\">Edit</a>");
-#endif
+#ifdef HAVE_ACCESS
+               if (access(csp->config->actions_file[i], W_OK) == 0)
+               {
+#endif /* def HAVE_ACCESS */
+                  snprintf(buf, sizeof(buf), " <a class=\"cmd\" href=\"/edit-actions-list?f=%d\">", i);
+                  string_append(&matches, buf);
+                  string_append(&matches, "Edit</a>");
+#ifdef HAVE_ACCESS
+               }
+               else
+               {
+                  string_append(&matches, " <strong>No write access.</strong>");
+               }
+#endif /* def HAVE_ACCESS */
+#endif /* FEATURE_CGI_EDIT_ACTIONS */
+
                string_append(&matches, "</th></tr>\n");
 
                hits = 0;
@@ -1331,7 +1576,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
             {
                string_append(&matches, "<tr><td>{");
                string_join  (&matches, actions_to_html(csp, b->action));
-               string_append(&matches, " }</b><br>\n<code>");
+               string_append(&matches, " }<br>\n<code>");
                string_join  (&matches, html_encode(b->url->spec));
                string_append(&matches, "</code></td></tr>\n");
 
@@ -1354,9 +1599,75 @@ jb_err cgi_show_url_info(struct client_state *csp,
       }
       string_append(&matches, "</table>\n");
 
+      /*
+       * XXX: Kludge to make sure the "Forward settings" section
+       * shows what forward-override{} would do with the requested URL.
+       * No one really cares how the CGI request would be forwarded
+       * if it wasn't intercepted as CGI request in the first place.
+       *
+       * From here on the action bitmask will no longer reflect
+       * the real url (http://config.privoxy.org/show-url-info?url=.*),
+       * but luckily it's no longer required later on anyway.
+       */
+      free_current_action(csp->action);
+      url_actions(url_to_query, csp);
+
+      /*
+       * Fill in forwarding settings.
+       *
+       * The possibilities are:
+       *  - no forwarding
+       *  - http forwarding only
+       *  - socks4(a) forwarding only
+       *  - socks4(a) and http forwarding.
+       *
+       * XXX: Parts of this code could be reused for the
+       * "forwarding-failed" template which currently doesn't
+       * display the proxy port and an eventual second forwarder.
+       */
+      {
+         const struct forward_spec * fwd = forward_url(url_to_query, csp);
+
+         if ((fwd->gateway_host == NULL) && (fwd->forward_host == NULL))
+         {
+            if (!err) err = map_block_killer(exports, "socks-forwarder");
+            if (!err) err = map_block_killer(exports, "http-forwarder");
+         }
+         else
+         {
+            char port[10]; /* We save proxy ports as int but need a string here */
+
+            if (!err) err = map_block_killer(exports, "no-forwarder");
+
+            if (fwd->gateway_host != NULL)
+            {
+               if (!err) err = map(exports, "socks-type", 1, (fwd->type == SOCKS_4) ?
+                                  "socks4" : "socks4a", 1);
+               if (!err) err = map(exports, "gateway-host", 1, fwd->gateway_host, 1);
+               snprintf(port, sizeof(port), "%d", fwd->gateway_port);
+               if (!err) err = map(exports, "gateway-port", 1, port, 1);
+            }
+            else
+            {
+               if (!err) err = map_block_killer(exports, "socks-forwarder");
+            }
+
+            if (fwd->forward_host != NULL)
+            {
+               if (!err) err = map(exports, "forward-host", 1, fwd->forward_host, 1);
+               snprintf(port, sizeof(port), "%d", fwd->forward_port);
+               if (!err) err = map(exports, "forward-port", 1, port, 1);
+            }
+            else
+            {
+               if (!err) err = map_block_killer(exports, "http-forwarder");
+            }
+         }
+      }
+
       free_http_request(url_to_query);
 
-      if (matches == NULL)
+      if (err || matches == NULL)
       {
          free_current_action(action);
          free_map(exports);
@@ -1483,6 +1794,12 @@ static jb_err show_defines(struct map *exports)
    if (!err) err = map(exports, "FORCE_PREFIX", 1, "(none - disabled)", 1);
 #endif /* ndef FEATURE_FORCE_LOAD */
 
+#ifdef FEATURE_GRACEFUL_TERMINATION
+   if (!err) err = map_conditional(exports, "FEATURE_GRACEFUL_TERMINATION", 1);
+#else /* ifndef FEATURE_GRACEFUL_TERMINATION */
+   if (!err) err = map_conditional(exports, "FEATURE_GRACEFUL_TERMINATION", 0);
+#endif /* ndef FEATURE_GRACEFUL_TERMINATION */
+
 #ifdef FEATURE_IMAGE_BLOCKING
    if (!err) err = map_conditional(exports, "FEATURE_IMAGE_BLOCKING", 1);
 #else /* ifndef FEATURE_IMAGE_BLOCKING */
@@ -1531,6 +1848,12 @@ static jb_err show_defines(struct map *exports)
    if (!err) err = map_conditional(exports, "FEATURE_TRUST", 0);
 #endif /* ndef FEATURE_TRUST */
 
+#ifdef FEATURE_ZLIB
+   if (!err) err = map_conditional(exports, "FEATURE_ZLIB", 1);
+#else /* ifndef FEATURE_ZLIB */
+   if (!err) err = map_conditional(exports, "FEATURE_ZLIB", 0);
+#endif /* ndef FEATURE_ZLIB */
+
 #ifdef STATIC_PCRE
    if (!err) err = map_conditional(exports, "STATIC_PCRE", 1);
 #else /* ifndef STATIC_PCRE */
@@ -1571,7 +1894,7 @@ static char *show_rcs(void)
 #define SHOW_RCS(__x)              \
    {                               \
       extern const char __x[];     \
-      sprintf(buf, "%s\n", __x);   \
+      snprintf(buf, sizeof(buf), " %s\n", __x);   \
       string_append(&result, buf); \
    }
 

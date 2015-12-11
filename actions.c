@@ -1,4 +1,4 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.35 2006/07/18 14:48:45 david__schmidt Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.40 2007/05/21 10:26:50 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/actions.c,v $
@@ -6,7 +6,7 @@ const char actions_rcs[] = "$Id: actions.c,v 1.35 2006/07/18 14:48:45 david__sch
  * Purpose     :  Declares functions to work with actions files
  *                Functions declared include: FIXME
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,27 @@ const char actions_rcs[] = "$Id: actions.c,v 1.35 2006/07/18 14:48:45 david__sch
  *
  * Revisions   :
  *    $Log: actions.c,v $
+ *    Revision 1.40  2007/05/21 10:26:50  fabiankeil
+ *    - Use strlcpy() instead of strcpy().
+ *    - Provide a reason why loading the actions
+ *      file might have failed.
+ *
+ *    Revision 1.39  2007/04/17 18:21:45  fabiankeil
+ *    Split update_action_bits() into
+ *    update_action_bits_for_all_tags()
+ *    and update_action_bits_for_tag().
+ *
+ *    Revision 1.38  2007/04/15 16:39:20  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.37  2007/03/11 15:56:12  fabiankeil
+ *    Add kludge to log unknown aliases and actions before exiting.
+ *
+ *    Revision 1.36  2006/12/28 17:15:42  fabiankeil
+ *    Fix gcc43 conversion warning.
+ *
  *    Revision 1.35  2006/07/18 14:48:45  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -736,6 +757,16 @@ jb_err get_actions(char *line,
             else
             {
                /* Bad action name */
+               /*
+                * XXX: This is a fatal error and Privoxy will later on exit
+                * in load_one_actions_file() because of an "invalid line".
+                *
+                * It would be preferable to name the offending option in that
+                * error message, but currently there is no way to do that and
+                * we have to live with two error messages for basically the
+                * same reason.
+                */
+               log_error(LOG_LEVEL_ERROR, "Unknown action or alias: %s", option);
                return JB_ERR_PARSE;
             }
          }
@@ -852,6 +883,99 @@ jb_err merge_current_action (struct current_action_spec *dest,
       }
    }
    return err;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  update_action_bits_for_all_tags
+ *
+ * Description :  Updates the action bits based on all matching tags.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  0 if no tag matched, or
+ *                1 otherwise
+ *
+ *********************************************************************/
+int update_action_bits_for_all_tags(struct client_state *csp)
+{
+   struct list_entry *tag;
+   int updated = 0;
+
+   for (tag = csp->tags->first; tag != NULL; tag = tag->next)
+   {
+      if (update_action_bits_for_tag(csp, tag->str))
+      {
+         updated = 1;
+      }
+   }
+
+   return updated;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  update_action_bits_for_tag
+ *
+ * Description :  Updates the action bits based on the action sections
+ *                whose tag patterns match a provided tag.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  tag = The tag on which the update should be based on
+ *
+ * Returns     :  0 if no tag matched, or
+ *                1 otherwise
+ *
+ *********************************************************************/
+int update_action_bits_for_tag(struct client_state *csp, const char *tag)
+{
+   struct file_list *fl;
+   struct url_actions *b;
+
+   int updated = 0;
+   int i;
+
+   assert(tag);
+   assert(list_contains_item(csp->tags, tag));
+
+   /* Run through all action files, */
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if (((fl = csp->actions_list[i]) == NULL) || ((b = fl->f) == NULL))
+      {
+         /* Skip empty files */
+         continue;
+      }
+
+      /* and through all the action patterns, */
+      for (b = b->next; NULL != b; b = b->next)
+      {
+         /* skip the URL patterns, */
+         if (NULL == b->url->tag_regex)
+         {
+            continue;
+         }
+
+         /* and check if one of the tag patterns matches the tag, */
+         if (0 == regexec(b->url->tag_regex, tag, 0, NULL, 0))
+         {
+            /* if it does, update the action bit map, */
+            if (merge_current_action(csp->action, b->action))
+            {
+               log_error(LOG_LEVEL_ERROR,
+                  "Out of memorey while changing action bits");
+            }
+            /* and signal the change. */
+            updated = 1;
+         }
+      }
+   }
+
+   return updated;
 }
 
 
@@ -1062,8 +1186,9 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
    }
    if (!fs)
    {
-      log_error(LOG_LEVEL_FATAL, "can't load actions file '%s': error finding file: %E",
-                csp->config->actions_file[fileid]);
+      log_error(LOG_LEVEL_FATAL, "can't load actions file '%s': %E. "
+         "Note that beginning with Privoxy 3.0.7, actions files have to be specified "
+         "with their complete file names.", csp->config->actions_file[fileid]);
       return 1; /* never get here */
    }
 
@@ -1090,7 +1215,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
          if (buf[1] == '{')
          {
             /* It's {{settings}} or {{alias}} */
-            int len = strlen(buf);
+            size_t len = strlen(buf);
             char * start = buf + 2;
             char * end = buf + len - 1;
             if ((len < 5) || (*end-- != '}') || (*end-- != '}'))
@@ -1228,7 +1353,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             init_action(cur_action);
 
             /* trim { */
-            strcpy(actions_buf, buf + 1);
+            strlcpy(actions_buf, buf + 1, sizeof(actions_buf));
 
             /* check we have a trailing } and then trim it */
             end = actions_buf + strlen(actions_buf) - 1;
@@ -1370,7 +1495,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             return 1; /* never get here */
          }
 
-         strcpy(actions_buf, start);
+         strlcpy(actions_buf, start, sizeof(actions_buf));
 
          if (get_actions(actions_buf, alias_list, new_alias->action))
          {
@@ -1466,7 +1591,7 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
  * Function    :  actions_to_text
  *
  * Description :  Converts a actionsfile entry from the internal
- *                structurt into a text line.  The output is split
+ *                structure into a text line.  The output is split
  *                into one line for each action with line continuation. 
  *
  * Parameters  :

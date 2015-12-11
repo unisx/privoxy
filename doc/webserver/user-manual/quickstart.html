@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Quickstart to Using Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="What's New in this Release"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -76,8 +76,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="QUICKSTART"
-></A
->4. Quickstart to Using Privoxy</H1
+>4. Quickstart to Using Privoxy</A
+></H1
 ><P
 > <P
 ></P
@@ -155,7 +155,8 @@ CLASS="EMPHASIS"
 CLASS="LITERAL"
 >FTP</TT
 > or 
-   any protocols besides HTTP and HTTPS (SSL)! It won't work!
+   any protocols besides HTTP and HTTPS (SSL) unless you intend to prevent your
+   browser from using these protocols.
   </P
 ></LI
 ><LI
@@ -178,7 +179,14 @@ TARGET="_top"
 >   A default installation should provide a reasonable starting point for 
    most. There will undoubtedly be occasions where you will want to adjust the
    configuration, but that can be dealt with as the need arises. Little 
-   to no initial configuration is required in most cases.
+   to no initial configuration is required in most cases, you may want
+   to enable the
+   <A
+HREF="config.html#ENABLE-EDIT-ACTIONS"
+TARGET="_top"
+>web-based action editor</A
+> though.
+   Be sure to read the warnings first.
   </P
 ><P
 >   See the <A
@@ -232,19 +240,6 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   For easy access to <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->'s most important controls, drag the provided
-   <A
-HREF="appendix.html#BOOKMARKLETS"
->Bookmarklets</A
-> into your browser's
-   personal toolbar.
-  </P
-></LI
-><LI
-><P
 >   Please see the section <A
 HREF="contact.html"
 >Contacting the
@@ -266,8 +261,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="QUICKSTART-AD-BLOCKING"
-></A
->4.1. Quickstart to Ad Blocking</H2
+>4.1. Quickstart to Ad Blocking</A
+></H2
 ><P
 > Ad blocking is but one of <SPAN
 CLASS="APPLICATION"
@@ -323,7 +318,7 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to perform
- some task relating to WWW transactions (i.e. web browsing). We tell
+ some task relating to HTTP transactions (i.e. web browsing). We tell
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -593,6 +588,40 @@ CLASS="EMPHASIS"
 ></UL
 ></P
 ><P
+> Advanced users will eventually want to explore <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER"
+>filters</A
+></TT
+> as well. Filters 
+ are very different from <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#BLOCK"
+>blocks</A
+></TT
+>.
+ A <SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+> blocks a site, page, or unwanted contented. Filters
+ are a way of filtering or modifying what is actually on the page. An example
+ filter usage: a text replacement of <SPAN
+CLASS="QUOTE"
+>"no-no"</SPAN
+> for
+ <SPAN
+CLASS="QUOTE"
+>"nasty-word"</SPAN
+>. That is a very simple example. This process can be
+ used for ad blocking, but it is more in the realm of advanced usage and has
+ some pitfalls to be wary off.</P
+><P
 > The quickest way to adjust any of these settings is with your browser through
  the special <SPAN
 CLASS="APPLICATION"
@@ -607,8 +636,23 @@ HREF="http://p.p/"
 TARGET="_top"
 >http://p.p/show-status</A
 >). This 
- is an internal page, and does not require Internet access. Select the
- appropriate <SPAN
+ is an internal page, and does not require Internet access.</P
+><P
+> Note that as of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> 3.0.7 beta the
+ action editor is disabled by default. Check the
+ <A
+HREF="config.html#ENABLE-EDIT-ACTIONS"
+TARGET="_top"
+>enable-edit-actions
+  section in the configuration file</A
+> to learn why and in which
+ cases it's safe to enable again.</P
+><P
+> If you decided to enable the action editor, select the appropriate
+ <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
 > file, and click
@@ -680,7 +724,7 @@ CLASS="GUIBUTTON"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN599"
+NAME="AEN569"
 ></A
 ><P
 ><B

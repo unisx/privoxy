@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.82 2006/09/20 15:50:31 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.101 2007/12/07 18:29:23 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -10,7 +10,7 @@
  *                project.  Does not define any variables or functions
  *                (though it does declare some macros).
  *
- * Copyright   :  Written by and Copyright (C) 2001 - 2004 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001 - 2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -37,6 +37,81 @@
  *
  * Revisions   :
  *    $Log: project.h,v $
+ *    Revision 1.101  2007/12/07 18:29:23  fabiankeil
+ *    Remove now-obsolete csp member x_forwarded.
+ *
+ *    Revision 1.100  2007/09/02 13:42:11  fabiankeil
+ *    - Allow port lists in url patterns.
+ *    - Ditch unused url_spec member pathlen.
+ *
+ *    Revision 1.99  2007/07/21 11:51:36  fabiankeil
+ *    As Hal noticed, checking dispatch_cgi() as the last cruncher
+ *    looks like a bug if CGI requests are blocked unintentionally,
+ *    so don't do it unless the user enabled the new config option
+ *    "allow-cgi-request-crunching".
+ *
+ *    Revision 1.98  2007/07/14 07:31:26  fabiankeil
+ *    Add new csp->content_type flag (CT_DECLARED).
+ *
+ *    Revision 1.97  2007/05/27 12:38:08  fabiankeil
+ *    - Remove some left-overs from the switch to dedicated header filters.
+ *    - Adjust "X-Filter: No" to disable dedicated header filters.
+ *    - Prepare for forward-override{}
+ *
+ *    Revision 1.96  2007/05/14 10:41:15  fabiankeil
+ *    Ditch the csp member cookie_list[] which isn't used anymore.
+ *
+ *    Revision 1.95  2007/04/30 15:02:19  fabiankeil
+ *    Introduce dynamic pcrs jobs that can resolve variables.
+ *
+ *    Revision 1.94  2007/04/15 16:39:21  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.93  2007/03/20 15:16:34  fabiankeil
+ *    Use dedicated header filter actions instead of abusing "filter".
+ *    Replace "filter-client-headers" and "filter-client-headers"
+ *    with "server-header-filter" and "client-header-filter".
+ *
+ *    Revision 1.92  2007/03/17 15:20:05  fabiankeil
+ *    New config option: enforce-blocks.
+ *
+ *    Revision 1.91  2007/03/05 13:28:03  fabiankeil
+ *    Add some CSP_FLAGs for the header parsers.
+ *
+ *    Revision 1.90  2007/02/07 10:36:16  fabiankeil
+ *    Add new http_response member to save
+ *    the reason why the response was generated.
+ *
+ *    Revision 1.89  2007/01/27 13:09:16  fabiankeil
+ *    Add new config option "templdir" to
+ *    change the templates directory.
+ *
+ *    Revision 1.88  2007/01/25 13:36:59  fabiankeil
+ *    Add csp->error_message for failure reasons
+ *    that should be embedded into the CGI pages.
+ *
+ *    Revision 1.87  2007/01/01 19:36:37  fabiankeil
+ *    Integrate a modified version of Wil Mahan's
+ *    zlib patch (PR #895531).
+ *
+ *    Revision 1.86  2006/12/31 17:56:37  fabiankeil
+ *    Added config option accept-intercepted-requests
+ *    and disabled it by default.
+ *
+ *    Revision 1.85  2006/12/31 15:03:31  fabiankeil
+ *    Fix gcc43 compiler warnings and a comment.
+ *
+ *    Revision 1.84  2006/12/21 12:57:48  fabiankeil
+ *    Add config option "split-large-forms"
+ *    to work around the browser bug reported
+ *    in BR #1570678.
+ *
+ *    Revision 1.83  2006/12/06 19:26:29  fabiankeil
+ *    Moved HTTP snipplets into jcc.c. They aren't
+ *    used anywhere else.
+ *
  *    Revision 1.82  2006/09/20 15:50:31  fabiankeil
  *    Doubled size of HOSTENT_BUFFER_SIZE to mask
  *    problems with gethostbyname_r and some
@@ -621,7 +696,7 @@ typedef int jb_err;
 #define JB_ERR_PARSE      4 /**< Error parsing file                       */
 #define JB_ERR_MODIFIED   5 /**< File has been modified outside of the  
                                  CGI actions editor.                      */
-
+#define JB_ERR_COMPRESS   6 /**< Error on decompression                   */
 
 /**
  * This macro is used to free a pointer that may be NULL.
@@ -786,6 +861,21 @@ struct http_request
    int    dcount;  /**< How many parts to this domain? (length of dvec)   */
 };
 
+/**
+ * Reasons for generating a http_response instead of delivering
+ * the requested resource. Mostly ordered the way they are checked
+ * for in chat().
+ */
+#define RSP_REASON_UNSUPPORTED        1
+#define RSP_REASON_BLOCKED            2
+#define RSP_REASON_UNTRUSTED          3
+#define RSP_REASON_REDIRECTED         4
+#define RSP_REASON_CGI_CALL           5
+#define RSP_REASON_NO_SUCH_DOMAIN     6
+#define RSP_REASON_FORWARDING_FAILED  7
+#define RSP_REASON_CONNECT_FAILED     8
+#define RSP_REASON_OUT_OF_MEMORY      9
+#define RSP_REASON_INTERNAL_ERROR     10
 
 /**
  * Response generated by CGI, blocker, or error handler
@@ -800,10 +890,11 @@ struct http_response
   size_t content_length;  /**< Length of body, REQUIRED if binary body. */
   int    is_static;       /**< Nonzero if the content will never change and
                                should be cached by the browser (e.g. images). */
+  int reason;             /**< Why the response was generated in the first place. */
 };
 
 /**
- * A URL pattern.
+ * A URL or a tag pattern.
  */
 struct url_spec
 {
@@ -816,17 +907,17 @@ struct url_spec
    int    dcount;      /**< How many parts to this domain? (length of dvec)   */
    int    unanchored;  /**< Bitmap - flags are ANCHOR_LEFT and ANCHOR_RIGHT.  */
 
-   int   port;         /**< The port number, or 0 to match all ports.         */
+   char  *port_list;   /**< List of acceptable ports, or NULL to match all ports */
 
-   char *path;         /**< The source for the regex.                         */
-   int   pathlen;      /**< ==strlen(path).  Needed for prefix matching.  FIXME: Now obsolete?     */
+   char  *path;        /**< The source for the regex.                         */
    regex_t *preg;      /**< Regex for matching path part                      */
+   regex_t *tag_regex; /**< Regex for matching tags                           */
 };
 
 /**
  * If you declare a static url_spec, this is the value to initialize it to zero.
  */
-#define URL_SPEC_INITIALIZER { NULL, NULL, NULL, 0, 0, 0, NULL, 0, NULL }
+#define URL_SPEC_INITIALIZER { NULL, NULL, NULL, 0, 0, NULL, NULL, NULL, NULL }
 
 /**
  * Constant for host part matching in URLs.  If set, indicates that the start of
@@ -873,15 +964,25 @@ struct iob
  */
 #define IOB_RESET(CSP) if(CSP->iob->buf) free(CSP->iob->buf); memset(CSP->iob, '\0', sizeof(CSP->iob));
 
-/* Bits for csp->content_type */
-#define CT_TEXT   1 /**< csp->content_type bitmask:
-                         Suitable for pcrs filtering. */
-#define CT_GIF    2 /**< csp->content_type bitmask:
-                         Suitable for GIF filtering.  */
-#define CT_TABOO  4 /**< csp->content_type bitmask:
-                         DO NOT filter, irrespective of other flags. */
-#define CT_JPEG   8 /**< csp->content_type bitmask:
-                         Suitable for JPEG filtering.  */
+/* Bits for csp->content_type bitmask: */
+#define CT_TEXT    0x0001U /**< Suitable for pcrs filtering. */
+#define CT_GIF     0x0002U /**< Suitable for GIF filtering.  */
+#define CT_TABOO   0x0004U /**< DO NOT filter, irrespective of other flags. */
+#define CT_JPEG    0x0008U /**< Suitable for JPEG filtering.  */
+
+/* Although these are not, strictly speaking, content types
+ * (they are content encodings), it is simple to handle them
+ * as such.
+ */
+#define CT_GZIP    0x0010U /**< gzip-compressed data. */
+#define CT_DEFLATE 0x0020U /**< zlib-compressed data. */
+
+/**
+ * Flag to signal that the server declared the content type,
+ * so we can differentiate between unknown and undeclared
+ * content types.
+ */
+#define CT_DECLARED 0x0040U
 
 /**
  * The mask which includes all actions.
@@ -953,10 +1054,8 @@ struct iob
 #define  ACTION_REDIRECT                             0x10000000UL
 /** Action bitmap: Answer blocked Connects verbosely */
 #define ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS  0x20000000UL
-/** Action bitmap: Filter server headers with pcre */
-#define ACTION_FILTER_SERVER_HEADERS                 0x40000000UL
-/** Action bitmap: Filter client headers with pcre */
-#define ACTION_FILTER_CLIENT_HEADERS                 0x80000000UL
+/** Action bitmap: Override the forward settings in the config file */
+#define ACTION_FORWARD_OVERRIDE                      0x40000000UL
 
 
 /** Action string index: How to deanimate GIFs */
@@ -989,22 +1088,32 @@ struct iob
 #define ACTION_STRING_REDIRECT             13
 /** Action string index: Decode before redirect? */
 #define ACTION_STRING_FAST_REDIRECTS       14
+/** Action string index: Overriding forward rule. */
+#define ACTION_STRING_FORWARD_OVERRIDE     15
 /** Number of string actions. */
-#define ACTION_STRING_COUNT                15
+#define ACTION_STRING_COUNT                16
 
 
-/*To make the ugly hack in sed easier to understand*/
+/* To make the ugly hack in sed easier to understand */
 #define CHECK_EVERY_HEADER_REMAINING 0
 
 
 /** Index into current_action_spec::multi[] for headers to add. */
-#define ACTION_MULTI_ADD_HEADER     0
+#define ACTION_MULTI_ADD_HEADER              0
 /** Index into current_action_spec::multi[] for headers to add. */
-#define ACTION_MULTI_WAFER          1
-/** Index into current_action_spec::multi[] for filters to apply. */
-#define ACTION_MULTI_FILTER         2
+#define ACTION_MULTI_WAFER                   1
+/** Index into current_action_spec::multi[] for content filters to apply. */
+#define ACTION_MULTI_FILTER                  2
+/** Index into current_action_spec::multi[] for server-header filters to apply. */
+#define ACTION_MULTI_SERVER_HEADER_FILTER    3
+/** Index into current_action_spec::multi[] for client-header filters to apply. */
+#define ACTION_MULTI_CLIENT_HEADER_FILTER    4
+/** Index into current_action_spec::multi[] for client-header tags to apply. */
+#define ACTION_MULTI_CLIENT_HEADER_TAGGER    5
+/** Index into current_action_spec::multi[] for server-header tags to apply. */
+#define ACTION_MULTI_SERVER_HEADER_TAGGER    6
 /** Number of multi-string actions. */
-#define ACTION_MULTI_COUNT          3
+#define ACTION_MULTI_COUNT                   7
 
 
 /**
@@ -1111,6 +1220,36 @@ struct url_actions
  */
 #define CSP_FLAG_TOGGLED_ON 0x20
 
+/**
+ * Flag for csp->flags: Set if adding the 'Connection: close' header
+ * for the client isn't necessary.
+ */
+#define CSP_FLAG_CLIENT_CONNECTION_CLOSE_SET   0x00000040UL
+
+/**
+ * Flag for csp->flags: Set if adding the 'Connection: close' header
+ * for the server isn't necessary.
+ */
+#define CSP_FLAG_SERVER_CONNECTION_CLOSE_SET   0x00000080UL
+
+/**
+ * Flag for csp->flags: Signals header parsers whether they
+ * are parsing server or client headers.
+ */
+#define CSP_FLAG_CLIENT_HEADER_PARSING_DONE    0x00000100UL
+
+/**
+ * Flag for csp->flags: Set if adding the Host: header
+ * isn't necessary.
+ */
+#define CSP_FLAG_HOST_HEADER_IS_SET            0x00000200UL
+
+/**
+ * Flag for csp->flags: Set if filtering is disabled by X-Filter: No
+ * XXX: As we now have tags we might as well ditch this.
+ */
+#define CSP_FLAG_NO_FILTERING                  0x00000400UL
+
 
 /*
  * Flags for use in return codes of child processes
@@ -1152,7 +1291,7 @@ struct client_state
    jb_socket sfd;
 
    /** Multi-purpose flag container, see CSP_FLAG_* above */
-   unsigned short int flags;
+   unsigned int flags;
 
    /** Client PC's IP address, as reported by the accept() function.
        As a string. */
@@ -1172,20 +1311,24 @@ struct client_state
    /** The URL that was requested */
    struct http_request http[1];
 
+   /*
+    * The final forwarding settings.
+    * XXX: Currently this is only used for forward-override,
+    * so we can free the space in sweep.
+    */
+   struct forward_spec * fwd;
+
    /** An I/O buffer used for buffering data read from the network */
    struct iob iob[1];
 
    /** List of all headers for this request */
    struct list headers[1];
 
-   /** List of all cookies for this request */
-   struct list cookie_list[1];
+   /** List of all tags that apply to this request */
+   struct list tags[1];
 
    /** MIME-Type key, see CT_* above */
-   unsigned short int content_type;
-
-   /** The "X-Forwarded-For:" header sent by the client */
-   char   *x_forwarded;
+   unsigned int content_type;
 
    /** Actions files associated with this client */
    struct file_list *actions_list[MAX_AF_FILES];
@@ -1202,6 +1345,12 @@ struct client_state
    struct file_list *tlist;
 
 #endif /* def FEATURE_TRUST */
+
+   /**
+    * Failure reason to embedded in the CGI error page,
+    * or NULL. Currently only used for socks errors.
+    */
+   char *error_message;
 
    /** Next thread in linked list. Only read or modify from the main thread! */
    struct client_state *next;
@@ -1315,8 +1464,7 @@ struct block_spec
 };
 
 /**
- * Arbitrary limit for the number of trusted referrers
- * Privoxy can print in its blocking message.
+ * Arbitrary limit for the number of trusted referrers.
  */
 #define MAX_TRUSTED_REFERRERS 512
 
@@ -1361,6 +1509,14 @@ struct forward_spec
  */
 #define FORWARD_SPEC_INITIALIZER { { URL_SPEC_INITIALIZER }, 0, NULL, 0, NULL, 0, NULL }
 
+/* Supported filter types */
+#define FT_CONTENT_FILTER       0
+#define FT_CLIENT_HEADER_FILTER 1
+#define FT_SERVER_HEADER_FILTER 2
+#define FT_CLIENT_HEADER_TAGGER 3
+#define FT_SERVER_HEADER_TAGGER 4
+
+#define MAX_FILTER_TYPES        5
 
 /**
  * This struct represents one filter (one block) from
@@ -1374,6 +1530,9 @@ struct re_filterfile_spec
    char *description;               /**< Description from FILTER: statement in re_filterfile. */
    struct list patterns[1];         /**< The patterns from the re_filterfile. */
    pcrs_job *joblist;               /**< The resulting compiled pcrs_jobs. */
+   int type;                        /**< Filter type (content, client-header, server-header). */
+   int dynamic;                     /**< Set to one if the pattern might contain variables
+                                         and has to be recompiled for every request. */
    struct re_filterfile_spec *next; /**< The pointer for chaining. */
 };
 
@@ -1415,13 +1574,26 @@ struct access_control_list
 
 
 /** configuration_spec::feature_flags: CGI actions editor. */
-#define RUNTIME_FEATURE_CGI_EDIT_ACTIONS  1
+#define RUNTIME_FEATURE_CGI_EDIT_ACTIONS             1
 
 /** configuration_spec::feature_flags: Web-based toggle. */
-#define RUNTIME_FEATURE_CGI_TOGGLE        2
+#define RUNTIME_FEATURE_CGI_TOGGLE                   2
 
 /** configuration_spec::feature_flags: HTTP-header-based toggle. */
-#define RUNTIME_FEATURE_HTTP_TOGGLE       4
+#define RUNTIME_FEATURE_HTTP_TOGGLE                  4
+
+/** configuration_spec::feature_flags: Split large forms to limit the number of GET arguments. */
+#define RUNTIME_FEATURE_SPLIT_LARGE_FORMS            8
+
+/** configuration_spec::feature_flags: Check the host header for requests with host-less request lines. */
+#define RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS 16
+
+/** configuration_spec::feature_flags: Don't allow to circumvent blocks with the force prefix. */
+#define RUNTIME_FEATURE_ENFORCE_BLOCKS              32
+
+/** configuration_spec::feature_flags: Allow to block or redirect CGI requests. */
+#define RUNTIME_FEATURE_CGI_CRUNCHING               64
+
 
 /**
  * Data loaded from the configuration file.
@@ -1443,6 +1615,7 @@ struct configuration_spec
     * - RUNTIME_FEATURE_CGI_EDIT_ACTIONS
     * - RUNTIME_FEATURE_CGI_TOGGLE
     * - RUNTIME_FEATURE_HTTP_TOGGLE
+    * - RUNTIME_FEATURE_SPLIT_LARGE_FORMS
     */
    unsigned feature_flags;
 
@@ -1451,6 +1624,9 @@ struct configuration_spec
 
    /** The config file directory. */
    const char *confdir;
+
+   /** The directory for customized CGI templates. */
+   const char *templdir;
 
    /** The log file directory. */
    const char *logdir;
@@ -1584,26 +1760,6 @@ struct configuration_spec
  * INCLUDES the trailing slash.
  */
 #define CGI_PREFIX  "http://" CGI_SITE_2_HOST CGI_SITE_2_PATH "/"
-
-
-/* HTTP snipplets.
- *
- * FIXME: This is very inefficient.  There could be one copy of these strings
- * for each .c file!!  They should be "extern", not "static".
- */
-static const char CSUCCEED[] =
-   "HTTP/1.0 200 Connection established\n"
-   "Proxy-Agent: Privoxy/" VERSION "\r\n\r\n";
-
-static const char CHEADER[] =
-   "HTTP/1.0 400 Invalid header received from browser\r\n\r\n";
-
-static const char CFORBIDDEN[] =
-   "HTTP/1.0 403 Connection not allowable\r\nX-Hint: If you read this message interactively, then you know why this happens ,-)\r\n\r\n";
-
-static const char FTP_RESPONSE[] =
-   "HTTP/1.0 400 Invalid header received from browser\r\n\r\nPrivoxy doesn't support FTP. Please fix your setup.";
-
 
 #ifdef __cplusplus
 } /* extern "C" */

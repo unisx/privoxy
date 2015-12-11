@@ -4,7 +4,7 @@
  *
  * Purpose     :  INSTALL file to help with installing from source.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,24 +33,26 @@
  *********************************************************************/
    
 
--------------------------------------------------------------------------------
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 To build Privoxy from source, autoconf, GNU make (gmake), and, of course, a C
 compiler like gcc are required.
 
 When building from a source tarball, first unpack the source:
 
- tar xzvf privoxy-3.0.6-src* [.tgz or .tar.gz]                                 
- cd privoxy-3.0.6                                                              
+ tar xzvf privoxy-3.0.7-beta-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.7-beta
+
 
 For retrieving the current CVS sources, you'll need a CVS client installed.
 Note that sources from CVS are typically development quality, and may not be
 stable, or well tested. To download CVS source, check the Sourceforge
 documentation, which might give commands like:
 
-  cvs -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa login          
-  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co current 
-  cd current                                                                         
+  cvs -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa login
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co current
+  cd current
+
 
 This will create a directory named current/, which will contain the source
 tree.
@@ -61,33 +63,37 @@ with the wanted branch name (Example: v_3_0_branch for the 3.0 cvs tree).
 It is also strongly recommended to not run Privoxy as root. You should
 configure/install/run Privoxy as an unprivileged user, preferably by creating a
 "privoxy" user and group just for this purpose. See your local documentation
-for the correct command line to do add new users and groups (something like 
+for the correct command line to do add new users and groups (something like
 adduser, but the command syntax may vary from platform to platform).
 
 /etc/passwd might then look like:
 
-  privoxy:*:7777:7777:privoxy proxy:/no/home:/no/shell                         
+  privoxy:*:7777:7777:privoxy proxy:/no/home:/no/shell
+
 
 And then /etc/group, like:
 
-  privoxy:*:7777:                                                              
+  privoxy:*:7777:
+
 
 Some binary packages may do this for you.
 
 Then, to build from either unpacked tarball or CVS source:
 
- autoheader                                                                    
- autoconf                                                                      
- ./configure      # (--help to see options)                                    
- make             # (the make from GNU, sometimes called gmake)                
- su               # Possibly required                                          
- make -n install  # (to see where all the files will go)                       
- make -s install  # (to really install, -s to silence output)                  
+ autoheader
+ autoconf
+ ./configure      # (--help to see options)
+ make             # (the make from GNU, sometimes called gmake)
+ su               # Possibly required
+ make -n install  # (to see where all the files will go)
+ make -s install  # (to really install, -s to silence output)
+
 
 Using GNU make, you can have the first four steps automatically done for you by
 just typing:
 
-  make                                                                         
+  make
+
 
 in the freshly downloaded or unpacked source directory.
 
@@ -95,9 +101,11 @@ To build an executable with security enhanced features so that users cannot
 easily bypass the proxy (e.g. "Go There Anyway"), or alter their own
 configurations, configure like this:
 
- ./configure  --disable-toggle  --disable-editor  --disable-force              
+ ./configure  --disable-toggle  --disable-editor  --disable-force
 
-Then build as above.
+
+Then build as above. In Privoxy 3.0.7 and later, all of these options can also
+be disabled through the configuration file.
 
 WARNING: If installing as root, the install will fail unless a non-root user or
 group is specified, or a privoxy user and group already exist on the system. If
@@ -114,7 +122,8 @@ be run as this same user to insure write access to configuration and log files!
 Alternately, you can specify user and group on the make command line, but be
 sure both already exist:
 
- make -s install  USER=privoxy GROUP=privoxy                                   
+ make -s install  USER=privoxy GROUP=privoxy
+
 
 The default installation path for make install is /usr/local. This may of
 course be customized with the various ./configure path options. If you are
@@ -148,11 +157,12 @@ If install finds previous versions of local configuration files, most of these
 will not be overwritten, and the new ones will be installed with a "new"
 extension. default.action, default.filter, and standard.action will be
 overwritten. You will then need to manually update the other installed
-configuration files as needed. All template files will be overwritten. If you
-have customized, local templates, you should save these first, and in fact it
-is wise to always save any important configuration files "just in case". If a
-previous version of Privoxy is already running, you will have to restart it
-manually.
+configuration files as needed. The default template files will be overwritten.
+If you have customized, local templates, these should be stored safely in a
+separate directory and defined in config by the "templdir" directive. It is of
+course wise to always back-up any important configuration files "just in case".
+If a previous version of Privoxy is already running, you will have to restart
+it manually.
 
 For more detailed instructions on how to build Redhat RPMs, Windows
 self-extracting installers, building on platforms with special requirements

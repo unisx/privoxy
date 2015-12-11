@@ -1,4 +1,4 @@
-const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.12 2006/07/18 14:48:47 david__schmidt Exp $";
+const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.20 2007/09/02 15:31:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.c,v $
@@ -6,7 +6,7 @@ const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.12 2006/07/18 14:48:47 david__s
  * Purpose     :  Declares functions to match URLs against URL
  *                patterns.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2003, 2006-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,43 @@ const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.12 2006/07/18 14:48:47 david__s
  *
  * Revisions   :
  *    $Log: urlmatch.c,v $
+ *    Revision 1.20  2007/09/02 15:31:20  fabiankeil
+ *    Move match_portlist() from filter.c to urlmatch.c.
+ *    It's used for url matching, not for filtering.
+ *
+ *    Revision 1.19  2007/09/02 13:42:11  fabiankeil
+ *    - Allow port lists in url patterns.
+ *    - Ditch unused url_spec member pathlen.
+ *
+ *    Revision 1.18  2007/07/30 16:42:21  fabiankeil
+ *    Move the method check into unknown_method()
+ *    and loop through the known methods instead
+ *    of using a screen-long OR chain.
+ *
+ *    Revision 1.17  2007/04/15 16:39:21  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.16  2007/02/13 13:59:24  fabiankeil
+ *    Remove redundant log message.
+ *
+ *    Revision 1.15  2007/01/28 16:11:23  fabiankeil
+ *    Accept WebDAV methods for subversion
+ *    in parse_http_request(). Closes FR 1581425.
+ *
+ *    Revision 1.14  2007/01/06 14:23:56  fabiankeil
+ *    Fix gcc43 warnings. Mark *csp as immutable
+ *    for parse_http_url() and url_match().
+ *    Replace a sprintf call with snprintf.
+ *
+ *    Revision 1.13  2006/12/06 19:50:54  fabiankeil
+ *    parse_http_url() now handles intercepted
+ *    HTTP request lines as well. Moved parts
+ *    of parse_http_url()'s code into
+ *    init_domain_components() so that it can
+ *    be reused in chat().
+ *
  *    Revision 1.12  2006/07/18 14:48:47  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
  *    with what was really the latest development (the v_3_0_branch branch)
@@ -171,6 +208,69 @@ void free_http_request(struct http_request *http)
    http->dcount = 0;
 }
 
+/*********************************************************************
+ *
+ * Function    :  init_domain_components
+ *
+ * Description :  Splits the domain name so we can compare it
+ *                against wildcards. It used to be part of
+ *                parse_http_url, but was separated because the
+ *                same code is required in chat in case of
+ *                intercepted requests.
+ *
+ * Parameters  :
+ *          1  :  http = pointer to the http structure to hold elements.
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out of memory
+ *                JB_ERR_PARSE on malformed command/URL
+ *                             or >100 domains deep.
+ *
+ *********************************************************************/
+jb_err init_domain_components(struct http_request *http)
+{
+   char *vec[BUFFER_SIZE];
+   size_t size;
+   char *p;
+
+   http->dbuffer = strdup(http->host);
+   if (NULL == http->dbuffer)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   /* map to lower case */
+   for (p = http->dbuffer; *p ; p++)
+   {
+      *p = (char)tolower((int)(unsigned char)*p);
+   }
+
+   /* split the domain name into components */
+   http->dcount = ssplit(http->dbuffer, ".", vec, SZ(vec), 1, 1);
+
+   if (http->dcount <= 0)
+   {
+      /*
+       * Error: More than SZ(vec) components in domain
+       *    or: no components in domain
+       */
+      log_error(LOG_LEVEL_ERROR, "More than SZ(vec) components in domain or none at all.");
+      return JB_ERR_PARSE;
+   }
+
+   /* save a copy of the pointers in dvec */
+   size = (size_t)http->dcount * sizeof(*http->dvec);
+
+   http->dvec = (char **)malloc(size);
+   if (NULL == http->dvec)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   memcpy(http->dvec, vec, size);
+
+   return JB_ERR_OK;
+}
 
 /*********************************************************************
  *
@@ -195,8 +295,10 @@ void free_http_request(struct http_request *http)
  *********************************************************************/
 jb_err parse_http_url(const char * url,
                       struct http_request *http,
-                      struct client_state *csp)
+                      const struct client_state *csp)
 {
+   int host_available = 1; /* A proxy can dream. */
+
    /*
     * Zero out the results structure
     */
@@ -257,6 +359,17 @@ jb_err parse_http_url(const char * url,
          url_noproto += 8;
          http->ssl = 1;
       }
+      else if (*url_noproto == '/')
+      {
+        /*
+         * Short request line without protocol and host.
+         * Most likely because the client's request
+         * was intercepted and redirected into Privoxy.
+         */
+         http->ssl = 0;
+         http->host = NULL;
+         host_available = 0;
+      }
       else
       {
          http->ssl = 0;
@@ -296,6 +409,11 @@ jb_err parse_http_url(const char * url,
       }
    }
 
+   if (!host_available)
+   {
+      /* Without host, there is nothing left to do here */
+      return JB_ERR_OK;
+   }
 
    /*
     * Split hostport into user/password (ignored), host, port.
@@ -352,49 +470,62 @@ jb_err parse_http_url(const char * url,
    /*
     * Split domain name so we can compare it against wildcards
     */
+   return init_domain_components(http);
 
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  unknown_method
+ *
+ * Description :  Checks whether a method is unknown.
+ *
+ * Parameters  :
+ *          1  :  method = points to a http method
+ *
+ * Returns     :  TRUE if it's unknown, FALSE otherwise.
+ *
+ *********************************************************************/
+static int unknown_method(const char *method)
+{
+   static const char *known_http_methods[] = {
+      /* Basic HTTP request type */
+      "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "CONNECT",
+      /* webDAV extensions (RFC2518) */
+      "PROPFIND", "PROPPATCH", "MOVE", "COPY", "MKCOL", "LOCK", "UNLOCK",
+      /*
+       * Microsoft webDAV extension for Exchange 2000.  See:
+       * http://lists.w3.org/Archives/Public/w3c-dist-auth/2002JanMar/0001.html
+       * http://msdn.microsoft.com/library/en-us/wss/wss/_webdav_methods.asp
+       */ 
+      "BCOPY", "BMOVE", "BDELETE", "BPROPFIND", "BPROPPATCH",
+      /*
+       * Another Microsoft webDAV extension for Exchange 2000.  See:
+       * http://systems.cs.colorado.edu/grunwald/MobileComputing/Papers/draft-cohen-gena-p-base-00.txt
+       * http://lists.w3.org/Archives/Public/w3c-dist-auth/2002JanMar/0001.html
+       * http://msdn.microsoft.com/library/en-us/wss/wss/_webdav_methods.asp
+       */ 
+      "SUBSCRIBE", "UNSUBSCRIBE", "NOTIFY", "POLL",
+      /*
+       * Yet another WebDAV extension, this time for
+       * Web Distributed Authoring and Versioning (RFC3253)
+       */
+      "VERSION-CONTROL", "REPORT", "CHECKOUT", "CHECKIN", "UNCHECKOUT",
+      "MKWORKSPACE", "UPDATE", "LABEL", "MERGE", "BASELINE-CONTROL", "MKACTIVITY",
+      NULL
+   };
+   int i;
+
+   for (i = 0; NULL != known_http_methods[i]; i++)
    {
-      char *vec[BUFFER_SIZE];
-      size_t size;
-      char *p;
-
-      http->dbuffer = strdup(http->host);
-      if (NULL == http->dbuffer)
+      if (0 == strcmpic(method, known_http_methods[i]))
       {
-         return JB_ERR_MEMORY;
+         return FALSE;
       }
-
-      /* map to lower case */
-      for (p = http->dbuffer; *p ; p++)
-      {
-         *p = tolower((int)(unsigned char)*p);
-      }
-
-      /* split the domain name into components */
-      http->dcount = ssplit(http->dbuffer, ".", vec, SZ(vec), 1, 1);
-
-      if (http->dcount <= 0)
-      {
-         /*
-          * Error: More than SZ(vec) components in domain
-          *    or: no components in domain
-          */
-         return JB_ERR_PARSE;
-      }
-
-      /* save a copy of the pointers in dvec */
-      size = http->dcount * sizeof(*http->dvec);
-
-      http->dvec = (char **)malloc(size);
-      if (NULL == http->dvec)
-      {
-         return JB_ERR_MEMORY;
-      }
-
-      memcpy(http->dvec, vec, size);
    }
 
-   return JB_ERR_OK;
+   return TRUE;
 
 }
 
@@ -419,10 +550,10 @@ jb_err parse_http_url(const char * url,
  *********************************************************************/
 jb_err parse_http_request(const char *req,
                           struct http_request *http,
-                          struct client_state *csp)
+                          const struct client_state *csp)
 {
    char *buf;
-   char *v[10];
+   char *v[10]; /* XXX: Why 10? We should only need three. */
    int n;
    jb_err err;
    int is_connect = 0;
@@ -442,57 +573,25 @@ jb_err parse_http_request(const char *req,
       return JB_ERR_PARSE;
    }
 
-   /* this could be a CONNECT request */
-   if (strcmpic(v[0], "connect") == 0)
+   /*
+    * Fail in case of unknown methods
+    * which we might not handle correctly.
+    *
+    * XXX: There should be a config option
+    * to forward requests with unknown methods
+    * anyway. Most of them don't need special
+    * steps.
+    */
+   if (unknown_method(v[0]))
    {
-      /* Secure */
-      is_connect = 1;
-   }
-   /* or it could be any other basic HTTP request type */
-   else if ((0 == strcmpic(v[0], "get"))
-         || (0 == strcmpic(v[0], "head"))
-         || (0 == strcmpic(v[0], "post"))
-         || (0 == strcmpic(v[0], "put"))
-         || (0 == strcmpic(v[0], "delete"))
-         || (0 == strcmpic(v[0], "options"))
-         || (0 == strcmpic(v[0], "trace"))
- 
-         /* or a webDAV extension (RFC2518) */
-         || (0 == strcmpic(v[0], "propfind"))
-         || (0 == strcmpic(v[0], "proppatch"))
-         || (0 == strcmpic(v[0], "move"))
-         || (0 == strcmpic(v[0], "copy"))
-         || (0 == strcmpic(v[0], "mkcol"))
-         || (0 == strcmpic(v[0], "lock"))
-         || (0 == strcmpic(v[0], "unlock"))
-
-         /* Or a Microsoft webDAV extension for Exchange 2000.  See: */
-         /*   http://lists.w3.org/Archives/Public/w3c-dist-auth/2002JanMar/0001.html */
-         /*   http://msdn.microsoft.com/library/en-us/wss/wss/_webdav_methods.asp */ 
-         || (0 == strcmpic(v[0], "bcopy"))
-         || (0 == strcmpic(v[0], "bmove"))
-         || (0 == strcmpic(v[0], "bdelete"))
-         || (0 == strcmpic(v[0], "bpropfind"))
-         || (0 == strcmpic(v[0], "bproppatch"))
-
-         /* Or another Microsoft webDAV extension for Exchange 2000.  See: */
-         /*   http://systems.cs.colorado.edu/grunwald/MobileComputing/Papers/draft-cohen-gena-p-base-00.txt */
-         /*   http://lists.w3.org/Archives/Public/w3c-dist-auth/2002JanMar/0001.html */
-         /*   http://msdn.microsoft.com/library/en-us/wss/wss/_webdav_methods.asp */ 
-         || (0 == strcmpic(v[0], "subscribe"))
-         || (0 == strcmpic(v[0], "unsubscribe"))
-         || (0 == strcmpic(v[0], "notify"))
-         || (0 == strcmpic(v[0], "poll"))
-         )
-   {
-      /* Normal */
-      is_connect = 0;
-   }
-   else
-   {
-      /* Unknown HTTP method */
+      log_error(LOG_LEVEL_ERROR, "Unknown HTTP method detected: %s", v[0]);
       free(buf);
       return JB_ERR_PARSE;
+   }
+
+   if (strcmpic(v[0], "CONNECT") == 0)
+   {
+      is_connect = 1;
    }
 
    err = parse_http_url(v[1], http, csp);
@@ -669,6 +768,9 @@ static int domain_match(const struct url_spec *pattern, const struct http_reques
 jb_err create_url_spec(struct url_spec * url, const char * buf)
 {
    char *p;
+   int errcode;
+   size_t errlen;
+   char rebuf[BUFFER_SIZE];
 
    assert(url);
    assert(buf);
@@ -686,26 +788,55 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
       return JB_ERR_MEMORY;
    }
 
-   if ((p = strchr(buf, '/')) != NULL)
+   /* Is it tag pattern? */
+   if (0 == strncmpic("TAG:", url->spec, 4))
    {
-      if (NULL == (url->path = strdup(p)))
+      if (NULL == (url->tag_regex = zalloc(sizeof(*url->tag_regex))))
       {
          freez(url->spec);
          return JB_ERR_MEMORY;
       }
-      url->pathlen = strlen(url->path);
+
+      /* buf + 4 to skip "TAG:" */
+      errcode = regcomp(url->tag_regex, buf + 4, (REG_EXTENDED|REG_NOSUB|REG_ICASE));
+      if (errcode)
+      {
+         errlen = regerror(errcode, url->preg, rebuf, sizeof(rebuf));
+         if (errlen > (sizeof(rebuf) - 1))
+         {
+            errlen = sizeof(rebuf) - 1;
+         }
+         rebuf[errlen] = '\0';
+
+         log_error(LOG_LEVEL_ERROR, "error compiling %s: %s", url->spec, rebuf);
+
+         freez(url->spec);
+         regfree(url->tag_regex);
+         freez(url->tag_regex);
+
+         return JB_ERR_PARSE;
+      }
+      return JB_ERR_OK;
+   }
+
+   /* Only reached for URL patterns */
+   p = strchr(buf, '/');
+   if (NULL != p)
+   {
+      url->path = strdup(p);
+      if (NULL == url->path)
+      {
+         freez(url->spec);
+         return JB_ERR_MEMORY;
+      }
       *p = '\0';
    }
    else
    {
-      url->path    = NULL;
-      url->pathlen = 0;
+      url->path = NULL;
    }
    if (url->path)
    {
-      int errcode;
-      char rebuf[BUFFER_SIZE];
-
       if (NULL == (url->preg = zalloc(sizeof(*url->preg))))
       {
          freez(url->spec);
@@ -713,14 +844,13 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
          return JB_ERR_MEMORY;
       }
 
-      sprintf(rebuf, "^(%s)", url->path);
+      snprintf(rebuf, sizeof(rebuf), "^(%s)", url->path);
 
       errcode = regcomp(url->preg, rebuf,
             (REG_EXTENDED|REG_NOSUB|REG_ICASE));
       if (errcode)
       {
-         size_t errlen = regerror(errcode,
-            url->preg, rebuf, sizeof(rebuf));
+         errlen = regerror(errcode, url->preg, rebuf, sizeof(rebuf));
 
          if (errlen > (sizeof(rebuf) - (size_t)1))
          {
@@ -739,14 +869,20 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
          return JB_ERR_PARSE;
       }
    }
-   if ((p = strchr(buf, ':')) == NULL)
+
+   p = strchr(buf, ':');
+   if (NULL != p)
    {
-      url->port = 0;
+      *p++ = '\0';
+      url->port_list = strdup(p);
+      if (NULL == url->port_list)
+      {
+         return JB_ERR_MEMORY;
+      }
    }
    else
    {
-      *p++ = '\0';
-      url->port = atoi(p);
+      url->port_list = NULL;
    }
 
    if (buf[0] != '\0')
@@ -784,7 +920,7 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
        */
       for (p = url->dbuffer; *p ; p++)
       {
-         *p = tolower((int)(unsigned char)*p);
+         *p = (char)tolower((int)(unsigned char)*p);
       }
 
       /* 
@@ -808,7 +944,7 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
          /* 
           * Save a copy of the pointers in dvec
           */
-         size = url->dcount * sizeof(*url->dvec);
+         size = (size_t)url->dcount * sizeof(*url->dvec);
 
          url->dvec = (char **)malloc(size);
          if (NULL == url->dvec)
@@ -857,10 +993,16 @@ void free_url_spec(struct url_spec *url)
    freez(url->dbuffer);
    freez(url->dvec);
    freez(url->path);
+   freez(url->port_list);
    if (url->preg)
    {
       regfree(url->preg);
       freez(url->preg);
+   }
+   if (url->tag_regex)
+   {
+      regfree(url->tag_regex);
+      freez(url->tag_regex);
    }
 }
 
@@ -875,17 +1017,108 @@ void free_url_spec(struct url_spec *url)
  *          1  :  pattern = a URL pattern
  *          2  :  url = URL to match
  *
- * Returns     :  0 iff the URL matches the pattern, else nonzero.
+ * Returns     :  Nonzero if the URL matches the pattern, else 0.
  *
  *********************************************************************/
 int url_match(const struct url_spec *pattern,
               const struct http_request *url)
 {
-   return ((pattern->port == 0) || (pattern->port == url->port))
-       && ((pattern->dbuffer == NULL) || (domain_match(pattern, url) == 0))
-       && ((pattern->path == NULL) ||
-            (regexec(pattern->preg, url->path, 0, NULL, 0) == 0)
-      );
+   int port_matches;
+   int domain_matches;
+   int path_matches;
+
+   if (pattern->tag_regex != NULL)
+   {
+      /* It's a tag pattern and shouldn't be matched against URLs */
+      return 0;
+   } 
+
+   port_matches = (NULL == pattern->port_list) || match_portlist(pattern->port_list, url->port);
+   domain_matches = (NULL == pattern->dbuffer) || (0 == domain_match(pattern, url));
+   path_matches = (NULL == pattern->path) || (0 == regexec(pattern->preg, url->path, 0, NULL, 0));
+
+   return (port_matches && domain_matches && path_matches);
+
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  match_portlist
+ *
+ * Description :  Check if a given number is covered by a comma
+ *                separated list of numbers and ranges (a,b-c,d,..)
+ *
+ * Parameters  :
+ *          1  :  portlist = String with list
+ *          2  :  port = port to check
+ *
+ * Returns     :  0 => no match
+ *                1 => match
+ *
+ *********************************************************************/
+int match_portlist(const char *portlist, int port)
+{
+   char *min, *max, *next, *portlist_copy;
+
+   min = next = portlist_copy = strdup(portlist);
+
+   /*
+    * Zero-terminate first item and remember offset for next
+    */
+   if (NULL != (next = strchr(portlist_copy, (int) ',')))
+   {
+      *next++ = '\0';
+   }
+
+   /*
+    * Loop through all items, checking for match
+    */
+   while(min)
+   {
+      if (NULL == (max = strchr(min, (int) '-')))
+      {
+         /*
+          * No dash, check for equality
+          */
+         if (port == atoi(min))
+         {
+            free(portlist_copy);
+            return(1);
+         }
+      }
+      else
+      {
+         /*
+          * This is a range, so check if between min and max,
+          * or, if max was omitted, between min and 65K
+          */
+         *max++ = '\0';
+         if(port >= atoi(min) && port <= (atoi(max) ? atoi(max) : 65535))
+         {
+            free(portlist_copy);
+            return(1);
+         }
+
+      }
+
+      /*
+       * Jump to next item
+       */
+      min = next;
+
+      /*
+       * Zero-terminate next item and remember offset for n+1
+       */
+      if ((NULL != next) && (NULL != (next = strchr(next, (int) ','))))
+      {
+         *next++ = '\0';
+      }
+   }
+
+   free(portlist_copy);
+   return 0;
+
 }
 
 

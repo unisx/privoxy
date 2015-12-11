@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.107 2006/11/13 19:05:51 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.162 2007/12/06 17:54:57 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -6,7 +6,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.107 2006/11/13 19:05:51 fabiankeil Exp $"
  * Purpose     :  Main file.  Contains main() method, main loop, and
  *                the main connection-handling function.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,6 +33,262 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.107 2006/11/13 19:05:51 fabiankeil Exp $"
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.162  2007/12/06 17:54:57  fabiankeil
+ *    Reword NO_SERVER_DATA_RESPONSE to make it harder
+ *    to misunderstand what the message is all about.
+ *
+ *    Revision 1.161  2007/12/04 19:44:22  fabiankeil
+ *    Unbreak trustfile which previously didn't work without
+ *    FEATURE_TOGGLE. Fixes BR#1843585, reported by Lee.
+ *
+ *    Revision 1.160  2007/11/29 18:00:29  fabiankeil
+ *    Plug memory leak. Spotted by Valgrind, triggered by
+ *    Privoxy-Regression-Test feeding proxyfuzz.py.
+ *
+ *    Revision 1.159  2007/11/24 14:34:09  fabiankeil
+ *    In the HTTP snipplets, refer to the client as client.
+ *
+ *    Revision 1.158  2007/11/11 16:44:17  fabiankeil
+ *    Emit a log message when activating the MS IIS5 hack.
+ *
+ *    Revision 1.157  2007/11/03 17:34:49  fabiankeil
+ *    Log the "weak randomization factor" warning only
+ *    once for mingw32 and provide some more details.
+ *
+ *    Revision 1.156  2007/11/01 18:20:58  fabiankeil
+ *    Initialize log module after initializing mutexes, future
+ *    deadlocks in that code should now work cross-platform.
+ *
+ *    Revision 1.155  2007/10/23 20:12:45  fabiankeil
+ *    Fix first CSUCCEED line to end in \r\n as required by RFC1945.
+ *    Reported by Bert van Leeuwen in BR#1818808.
+ *
+ *    Revision 1.154  2007/10/19 17:00:08  fabiankeil
+ *    Downgrade "Flushing header and buffers" message to LOG_LEVEL_INFO.
+ *
+ *    Revision 1.153  2007/10/14 14:12:41  fabiankeil
+ *    When in daemon mode, close stderr after the configuration file has been
+ *    parsed the first time. If logfile isn't set, stop logging. Fixes BR#897436.
+ *
+ *    Revision 1.152  2007/10/04 18:03:34  fabiankeil
+ *    - Fix a crash when parsing invalid requests whose first header
+ *      is rejected by get_header(). Regression (re?)introduced
+ *      in r1.143 by yours truly.
+ *    - Move ACTION_VANILLA_WAFER handling into parsers.c's
+ *      client_cookie_adder() to make sure send-vanilla-wafer can be
+ *      controlled through tags (and thus regression-tested).
+ *
+ *    Revision 1.151  2007/09/29 10:21:16  fabiankeil
+ *    - Move get_filter_function() from jcc.c to filters.c
+ *      so the filter functions can be static.
+ *    - Don't bother filtering body-less responses.
+ *
+ *    Revision 1.150  2007/09/28 16:39:29  fabiankeil
+ *    Execute content filters through execute_content_filter().
+ *
+ *    Revision 1.149  2007/09/04 15:08:48  fabiankeil
+ *    Initialize req to NULL to make sure it's defined if the
+ *    first read_socket() call fails. Reported by icmp30.
+ *
+ *    Revision 1.148  2007/08/26 16:47:13  fabiankeil
+ *    Add Stephen Gildea's --pre-chroot-nslookup patch [#1276666],
+ *    extensive comments moved to user manual.
+ *
+ *    Revision 1.147  2007/08/25 14:42:40  fabiankeil
+ *    Don't crash if a broken header filter wiped out the request line.
+ *
+ *    Revision 1.146  2007/08/20 17:09:32  fabiankeil
+ *    Fix byte_count calculation in case of flushes
+ *    and don't parse the server headers a second time.
+ *
+ *    Revision 1.145  2007/08/19 13:13:31  fabiankeil
+ *    - If there's a connection problem after we already forwarded
+ *      parts of the original content, just hang up. Fixes BR#1776724.
+ *    - Fix warnings about unused code on mingw32.
+ *    - In case of flushes, calculate the byte count
+ *      less incorrectly (I think).
+ *
+ *    Revision 1.144  2007/08/11 14:43:22  fabiankeil
+ *    Add some more prototypes for static functions.
+ *
+ *    Revision 1.143  2007/08/05 13:58:19  fabiankeil
+ *    Comment out request_contains_null_bytes() until it's used again.
+ *
+ *    Revision 1.142  2007/08/05 13:50:26  fabiankeil
+ *    #1763173 from Stefan Huehner: s@const static@static const@
+ *    and declare some more functions static.
+ *
+ *    Revision 1.141  2007/08/04 09:56:23  fabiankeil
+ *    - Log rejected CONNECT requests with LOG_LEVEL_INFO
+ *      and explain why they were rejected in the first place.
+ *    - Fix the LOG_LEVEL_CLF message for crunches of unallowed
+ *      CONNECT requests. The request line was missing.
+ *    - Add two more XXX reminders as we don't have enough already.
+ *
+ *    Revision 1.140  2007/07/21 11:51:36  fabiankeil
+ *    As Hal noticed, checking dispatch_cgi() as the last cruncher
+ *    looks like a bug if CGI requests are blocked unintentionally,
+ *    so don't do it unless the user enabled the new config option
+ *    "allow-cgi-request-crunching".
+ *
+ *    Revision 1.139  2007/07/14 07:46:41  fabiankeil
+ *    - Allow to rewrite the request destination behind the client's back.
+ *    - Turn the weird-looking unconditional for loop that
+ *      reads the client request into a conditional while loop.
+ *      Move the stuff that only runs once out of the loop.
+ *    - Move parts of chat(), server_content_type() and the
+ *      necessary stuff to fix BR#1750917 into get_filter_function().
+ *
+ *    Revision 1.138  2007/06/03 18:45:18  fabiankeil
+ *    Temporary workaround for BR#1730105.
+ *
+ *    Revision 1.137  2007/06/01 18:16:36  fabiankeil
+ *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
+ *    deadlocks and crashes on OpenBSD and possibly other OS with neither
+ *    gethostbyname_r() nor gethostaddr_r(). Closes BR#1729174.
+ *    Thanks to Ralf Horstmann for report and solution.
+ *
+ *    Revision 1.136  2007/06/01 16:41:11  fabiankeil
+ *    Add forward-override{} to change the forwarding settings through
+ *    action sections. This is mainly interesting to forward different
+ *    clients differently (for example based on User-Agent or request
+ *    origin).
+ *
+ *    Revision 1.135  2007/05/24 17:03:50  fabiankeil
+ *    - Let usage() mention the --chroot parameter.
+ *    - Use read_socket() consistently and always leave
+ *      the last buffer byte alone, even in cases where
+ *      null termination (currently) doesn't matter.
+ *
+ *    Revision 1.134  2007/05/16 14:59:46  fabiankeil
+ *    - Fix config file loading on Unix if no config file is specified.
+ *      Since r1.97 Privoxy would always interpret the last argument as
+ *      config file, even if it's a valid command line option.
+ *    - Abort in case of unrecognized command line options. Closes #1719696.
+ *    - Remove a bunch of unnecessary strcpy() calls (yay for c&p without thinking).
+ *    - Replace the remaining strcpy() and strcat() calls with strlcpy() and strcat().
+ *
+ *    Revision 1.133  2007/05/04 11:23:19  fabiankeil
+ *    - Don't rerun crunchers that only depend on the request URL.
+ *    - Don't count redirects and CGI requests as "blocked requests".
+ *
+ *    Revision 1.132  2007/04/25 15:15:17  fabiankeil
+ *    Support crunching based on tags created by server-header taggers.
+ *
+ *    Revision 1.131  2007/04/22 13:24:50  fabiankeil
+ *    Make HTTP snippets static (again). Add a Content-Type for those
+ *    with content so the browser doesn't guess it based on the URL.
+ *
+ *    Revision 1.130  2007/04/19 13:47:34  fabiankeil
+ *    Move crunching and request line rebuilding out of chat().
+ *
+ *    Revision 1.129  2007/04/15 16:39:20  fabiankeil
+ *    Introduce tags as alternative way to specify which
+ *    actions apply to a request. At the moment tags can be
+ *    created based on client and server headers.
+ *
+ *    Revision 1.128  2007/03/25 16:55:54  fabiankeil
+ *    Don't CLF-log CONNECT requests twice.
+ *
+ *    Revision 1.127  2007/03/20 13:53:17  fabiankeil
+ *    Log the source address for ACL-related connection drops.
+ *
+ *    Revision 1.126  2007/03/17 15:20:05  fabiankeil
+ *    New config option: enforce-blocks.
+ *
+ *    Revision 1.125  2007/03/09 14:12:00  fabiankeil
+ *    - Move null byte check into separate function.
+ *    - Don't confuse the client with error pages
+ *      if a CONNECT request was already confirmed.
+ *
+ *    Revision 1.124  2007/02/23 14:59:54  fabiankeil
+ *    Speed up NULL byte escaping and only log the complete
+ *    NULL byte requests with header debugging enabled.
+ *
+ *    Revision 1.123  2007/02/21 18:42:10  fabiankeil
+ *    Answer requests that contain NULL bytes with
+ *    a custom response instead of waiting for more
+ *    data until the client eventually hangs up.
+ *
+ *    Revision 1.122  2007/02/07 11:12:02  fabiankeil
+ *    - Move delivery and logging of crunched responses
+ *      from chat() into send_crunch_response().
+ *    - Display the reason for generating http_responses.
+ *    - Log the content length for LOG_LEVEL_CLF correctly
+ *      (still incorrect for some fixed responses).
+ *    - Reword an incorrect comment about
+ *      treat-forbidden-connects-like-blocks violating
+ *      the specs.
+ *    - Add some log messages.
+ *
+ *    Revision 1.121  2007/01/27 10:52:56  fabiankeil
+ *    Move mutex initialization into separate
+ *    function and exit in case of errors.
+ *
+ *    Revision 1.120  2007/01/26 14:18:42  fabiankeil
+ *    - Start to reduce chat()'s line count and move
+ *      parts of it into separate functions.
+ *    - Add "HTTP/1.1 100 Continue" hack for BR 756734.
+ *
+ *    Revision 1.119  2007/01/25 14:02:30  fabiankeil
+ *    - Add Proxy-Agent header to HTTP snippets that are
+ *      supposed to reach HTTP clients only.
+ *    - Made a few CONNECT log messages more descriptive.
+ *    - Catch completely empty server responses (as seen
+ *      with Tor's fake ".noconnect" top level domain).
+ *    - Use shiny new "forwarding-failed" template for socks errors.
+ *
+ *    Revision 1.118  2007/01/07 07:43:43  joergs
+ *    AmigaOS4 support added.
+ *
+ *    Revision 1.117  2006/12/31 17:56:37  fabiankeil
+ *    Added config option accept-intercepted-requests
+ *    and disabled it by default.
+ *
+ *    Revision 1.116  2006/12/29 19:08:22  fabiankeil
+ *    Reverted parts of my last commit
+ *    to keep error handling working.
+ *
+ *    Revision 1.115  2006/12/29 17:38:57  fabiankeil
+ *    Fixed gcc43 conversion warnings.
+ *
+ *    Revision 1.114  2006/12/27 18:52:02  fabiankeil
+ *    Fix -pedantic ISO C warning about converting
+ *    from function pointer to object pointer.
+ *
+ *    Revision 1.113  2006/12/26 17:38:50  fabiankeil
+ *    Silence compiler warning I introduced with my last commit.
+ *
+ *    Revision 1.112  2006/12/26 17:31:41  fabiankeil
+ *    Mutex protect rand() if POSIX threading
+ *    is used, warn the user if that's not possible
+ *    and stop using it on _WIN32 where it could
+ *    cause crashes.
+ *
+ *    Revision 1.111  2006/12/23 16:15:06  fabiankeil
+ *    Don't prevent core dumps by catching SIGABRT.
+ *    It's rude and makes debugging unreasonable painful.
+ *
+ *    Revision 1.110  2006/12/13 14:52:53  etresoft
+ *    Fix build failure on MacOS X. Global symbols can be either static or extern, but not both.
+ *
+ *    Revision 1.109  2006/12/06 19:41:40  fabiankeil
+ *    Privoxy is now able to run as intercepting
+ *    proxy in combination with any packet filter
+ *    that does the port redirection. The destination
+ *    is extracted from the "Host:" header which
+ *    should be available for nearly all requests.
+ *
+ *    Moved HTTP snipplets into jcc.c.
+ *    Added error message for gopher proxy requests.
+ *
+ *    Revision 1.108  2006/11/28 15:38:51  fabiankeil
+ *    Only unlink the pidfile if it's actually used.
+ *
+ *    Change order of interception checks to make
+ *    it possible to block or redirect requests for
+ *    the cgi pages.
+ *
  *    Revision 1.107  2006/11/13 19:05:51  fabiankeil
  *    Make pthread mutex locking more generic. Instead of
  *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
@@ -105,7 +361,8 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.107 2006/11/13 19:05:51 fabiankeil Exp $"
  *    Windows service integration
  *
  *    Revision 1.95  2006/08/03 02:46:41  david__schmidt
- *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *    Incorporate Fabian Keil's patch work:
+http://www.fabiankeil.de/sourcecode/privoxy/
  *
  *    Revision 1.94  2006/07/18 14:48:46  david__schmidt
  *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
@@ -695,6 +952,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.107 2006/11/13 19:05:51 fabiankeil Exp $"
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <assert.h>
 
 #ifdef _WIN32
 # ifndef FEATURE_PTHREAD
@@ -784,8 +1042,28 @@ int urls_rejected = 0;     /* total nr of urls rejected */
 int g_terminate = 0;
 #endif
 
-static void listen_loop(void);
+#if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
+static void sig_handler(int the_signal);
+#endif
+static int client_protocol_is_unsupported(const struct client_state *csp, char *req);
+static jb_err get_request_destination_elsewhere(struct client_state *csp, struct list *headers);
+static jb_err get_server_headers(struct client_state *csp);
+static const char *crunch_reason(const struct http_response *rsp);
+static void send_crunch_response(struct client_state *csp, struct http_response *rsp);
+/*
+ * static int request_contains_null_bytes(const struct client_state *csp, char *buf, int len);
+ */
+static void build_request_line(struct client_state *csp, const struct forward_spec *fwd, char **request_line);
+static jb_err change_request_destination(struct client_state *csp);
 static void chat(struct client_state *csp);
+static void serve(struct client_state *csp);
+#if defined(unix)
+static void usage(const char *myname);
+#endif
+static void initialize_mutexes(void);
+static jb_socket bind_port_helper(struct configuration_spec *config);
+static void listen_loop(void);
+
 #ifdef AMIGA
 void serve(struct client_state *csp);
 #else /* ifndef AMIGA */
@@ -808,6 +1086,10 @@ static int32 server_thread(void *data);
 pthread_mutex_t log_mutex;
 pthread_mutex_t log_init_mutex;
 
+#if !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R)
+pthread_mutex_t resolver_mutex;
+#endif /* !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R) */
+
 #ifndef HAVE_GMTIME_R
 pthread_mutex_t gmtime_mutex;
 #endif /* ndef HAVE_GMTIME_R */
@@ -816,13 +1098,10 @@ pthread_mutex_t gmtime_mutex;
 pthread_mutex_t localtime_mutex;
 #endif /* ndef HAVE_GMTIME_R */
 
-#ifndef HAVE_GETHOSTBYADDR_R
-pthread_mutex_t gethostbyaddr_mutex;
-#endif /* ndef HAVE_GETHOSTBYADDR_R */
+#ifndef HAVE_RANDOM
+pthread_mutex_t rand_mutex;
+#endif /* ndef HAVE_RANDOM */
 
-#ifndef HAVE_GETHOSTBYNAME_R
-pthread_mutex_t gethostbyname_mutex;
-#endif /* ndef HAVE_GETHOSTBYNAME_R */
 #endif /* FEATURE_PTHREAD */
 
 #if defined(unix) || defined(__EMX__)
@@ -831,15 +1110,108 @@ const char *pidfile = NULL;
 int received_hup_signal = 0;
 #endif /* defined unix */
 
-/* The vanilla wafer. */
-static const char VANILLA_WAFER[] =
-   "NOTICE=TO_WHOM_IT_MAY_CONCERN_"
-   "Do_not_send_me_any_copyrighted_information_other_than_the_"
-   "document_that_I_am_requesting_or_any_of_its_necessary_components._"
-   "In_particular_do_not_send_me_any_cookies_that_"
-   "are_subject_to_a_claim_of_copyright_by_anybody._"
-   "Take_notice_that_I_refuse_to_be_bound_by_any_license_condition_"
-   "(copyright_or_otherwise)_applying_to_any_cookie._";
+/* HTTP snipplets. */
+static const char CSUCCEED[] =
+   "HTTP/1.0 200 Connection established\r\n"
+   "Proxy-Agent: Privoxy/" VERSION "\r\n\r\n";
+
+static const char CHEADER[] =
+   "HTTP/1.0 400 Invalid header received from client\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Invalid header received from client.\r\n";
+
+static const char CFORBIDDEN[] =
+   "HTTP/1.0 403 Connection not allowable\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "X-Hint: If you read this message interactively, then you know why this happens ,-)\r\n"
+   "Connection: close\r\n\r\n";
+
+static const char FTP_RESPONSE[] =
+   "HTTP/1.0 400 Invalid request received from client\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Invalid request. Privoxy doesn't support FTP.\r\n";
+
+static const char GOPHER_RESPONSE[] =
+   "HTTP/1.0 400 Invalid request received from client\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Invalid request. Privoxy doesn't support gopher.\r\n";
+
+/* XXX: should be a template */
+static const char MISSING_DESTINATION_RESPONSE[] =
+   "HTTP/1.0 400 Bad request received from client\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Bad request. Privoxy was unable to extract the destination.\r\n";
+
+/* XXX: should be a template */
+static const char NO_SERVER_DATA_RESPONSE[] =
+   "HTTP/1.0 502 Server or forwarder response empty\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Empty server or forwarder response.\r\n"
+   "The connection has been closed but Privoxy didn't receive any data.\r\n";
+
+#if 0
+/* XXX: should be a template */
+static const char NULL_BYTE_RESPONSE[] =
+   "HTTP/1.0 400 Bad request received from client\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Bad request. Null byte(s) before end of request.\r\n";
+#endif
+
+/* XXX: should be a template */
+static const char MESSED_UP_REQUEST_RESPONSE[] =
+   "HTTP/1.0 400 Malformed request after rewriting\r\n"
+   "Proxy-Agent: Privoxy " VERSION "\r\n"
+   "Content-Type: text/plain\r\n"
+   "Connection: close\r\n\r\n"
+   "Bad request. Messed up with header filters.\r\n";
+
+/* A function to crunch a response */
+typedef struct http_response *(*crunch_func_ptr)(struct client_state *);
+
+/* Crunch function flags */
+#define CF_NO_FLAGS        0
+/* Cruncher applies to forced requests as well */
+#define CF_IGNORE_FORCE    1
+/* Crunched requests are counted for the block statistics */
+#define CF_COUNT_AS_REJECT 2
+
+/* A crunch function and its flags */
+struct cruncher
+{
+   const crunch_func_ptr cruncher;
+   const int flags;
+};
+
+static int crunch_response_triggered(struct client_state *csp, const struct cruncher crunchers[]);
+
+/* Complete list of cruncher functions */
+static const struct cruncher crunchers_all[] = {
+   { direct_response, CF_COUNT_AS_REJECT|CF_IGNORE_FORCE},
+   { block_url,       CF_COUNT_AS_REJECT },
+#ifdef FEATURE_TRUST
+   { trust_url,       CF_COUNT_AS_REJECT },
+#endif /* def FEATURE_TRUST */
+   { redirect_url,    CF_NO_FLAGS  },
+   { dispatch_cgi,    CF_IGNORE_FORCE},
+   { NULL,            0 }
+};
+
+/* Light version, used after tags are applied */
+static const struct cruncher crunchers_light[] = {
+   { block_url,       CF_COUNT_AS_REJECT },
+   { redirect_url,    CF_NO_FLAGS },
+   { NULL,            0 }
+};
 
 
 #if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
@@ -848,7 +1220,7 @@ static const char VANILLA_WAFER[] =
  * Function    :  sig_handler 
  *
  * Description :  Signal handler for different signals.
- *                Exit gracefully on ABRT, TERM and  INT
+ *                Exit gracefully on TERM and INT
  *                or set a flag that will cause the errlog
  *                to be reopened by the main thread on HUP.
  *
@@ -862,12 +1234,14 @@ static void sig_handler(int the_signal)
 {
    switch(the_signal)
    {
-      case SIGABRT:
       case SIGTERM:
       case SIGINT:
          log_error(LOG_LEVEL_INFO, "exiting by signal %d .. bye", the_signal);
 #if defined(unix)
-         unlink(pidfile);
+         if(pidfile)
+         {
+            unlink(pidfile);
+         }
 #endif /* unix */
          exit(the_signal);
          break;
@@ -891,6 +1265,600 @@ static void sig_handler(int the_signal)
 
 /*********************************************************************
  *
+ * Function    :  client_protocol_is_unsupported
+ *
+ * Description :  Checks if the client used a known unsupported
+ *                protocol and deals with it by sending an error
+ *                response.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  req = the first request line send by the client
+ *
+ * Returns     :  TRUE if an error response has been generated, or
+ *                FALSE if the request doesn't look invalid.
+ *
+ *********************************************************************/
+static int client_protocol_is_unsupported(const struct client_state *csp, char *req)
+{
+   char buf[BUFFER_SIZE];
+
+   /*
+    * If it's a FTP or gopher request, we don't support it.
+    *
+    * These checks are better than nothing, but they might
+    * not work in all configurations and some clients might
+    * have problems digesting the answer.
+    *
+    * They should, however, never cause more problems than
+    * Privoxy's old behaviour (returning the misleading HTML
+    * error message:
+    *
+    * "Could not resolve http://(ftp|gopher)://example.org").
+    */
+   if (!strncmpic(req, "GET ftp://", 10) || !strncmpic(req, "GET gopher://", 13))
+   {
+      if (!strncmpic(req, "GET ftp://", 10))
+      {
+         strlcpy(buf, FTP_RESPONSE, sizeof(buf));
+         log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as FTP proxy: %s",
+            csp->ip_addr_str, req);
+      }
+      else
+      {
+         strlcpy(buf, GOPHER_RESPONSE, sizeof(buf));
+         log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as gopher proxy: %s",
+            csp->ip_addr_str, req);
+      }
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 400 0", csp->ip_addr_str, req);
+      freez(req);
+      write_socket(csp->cfd, buf, strlen(buf));
+
+      return TRUE;
+   }
+
+   return FALSE;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_request_destination_elsewhere
+ *
+ * Description :  If the client's request was redirected into
+ *                Privoxy without the client's knowledge,
+ *                the request line lacks the destination host.
+ *
+ *                This function tries to get it elsewhere,
+ *                provided accept-intercepted-requests is enabled.
+ *
+ *                "Elsewhere" currently only means "Host: header",
+ *                but in the future we may ask the redirecting
+ *                packet filter to look the destination up.
+ *
+ *                If the destination stays unknown, an error
+ *                response is send to the client and headers
+ *                are freed so that chat() can return directly.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  headers = a header list
+ *
+ * Returns     :  JB_ERR_OK if the destination is now known, or
+ *                JB_ERR_PARSE if it isn't.
+ *
+ *********************************************************************/
+static jb_err get_request_destination_elsewhere(struct client_state *csp, struct list *headers)
+{
+   char *req;
+
+   if (!(csp->config->feature_flags & RUNTIME_FEATURE_ACCEPT_INTERCEPTED_REQUESTS))
+   {
+      log_error(LOG_LEVEL_ERROR, "%s's request: \'%s\' is invalid."
+         " Privoxy isn't configured to accept intercepted requests.",
+         csp->ip_addr_str, csp->http->cmd);
+      /* XXX: Use correct size */
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 400 0",
+         csp->ip_addr_str, csp->http->cmd);
+
+      write_socket(csp->cfd, CHEADER, strlen(CHEADER));
+      destroy_list(headers);
+
+      return JB_ERR_PARSE;
+   }
+   else if (JB_ERR_OK == get_destination_from_headers(headers, csp->http))
+   {
+      /* Split the domain we just got for pattern matching */
+      init_domain_components(csp->http);
+
+      return JB_ERR_OK;
+   }
+   else
+   {
+      /* We can't work without destination. Go spread the news.*/
+
+      req = list_to_text(headers);
+      chomp(req);
+      /* XXX: Use correct size */
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 400 0",
+         csp->ip_addr_str, csp->http->cmd);
+      log_error(LOG_LEVEL_ERROR,
+         "Privoxy was unable to get the destination for %s's request:\n%s\n%s",
+         csp->ip_addr_str, csp->http->cmd, req);
+      freez(req);
+
+      write_socket(csp->cfd, MISSING_DESTINATION_RESPONSE, strlen(MISSING_DESTINATION_RESPONSE));
+      destroy_list(headers);
+
+      return JB_ERR_PARSE;
+   }
+   /*
+    * TODO: If available, use PF's ioctl DIOCNATLOOK as last resort
+    * to get the destination IP address, use it as host directly
+    * or do a reverse DNS lookup first.
+    */
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  get_server_headers
+ *
+ * Description :  Parses server headers in iob and fills them
+ *                into csp->headers so that they can later be
+ *                handled by sed().
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  JB_ERR_OK if everything went fine, or
+ *                JB_ERR_PARSE if the headers were incomplete.
+ *
+ *********************************************************************/
+static jb_err get_server_headers(struct client_state *csp)
+{
+   int continue_hack_in_da_house = 0;
+   char * header;
+
+   while (((header = get_header(csp)) != NULL) || continue_hack_in_da_house)
+   {
+      if (header == NULL)
+      {
+         /*
+          * continue hack in da house. Ignore the ending of
+          * this head and continue enlisting header lines.
+          * The reason is described below.
+          */
+         enlist(csp->headers, "");
+         continue_hack_in_da_house = 0;
+         continue;
+      }
+      else if (0 == strncmpic(header, "HTTP/1.1 100", 12))
+      {
+         /*
+          * It's a bodyless continue response, don't
+          * stop header parsing after reaching it's end.
+          *
+          * As a result Privoxy will concatenate the
+          * next response's head and parse and deliver
+          * the headers as if they belonged to one request.
+          *
+          * The client will separate them because of the
+          * empty line between them.
+          *
+          * XXX: What we're doing here is clearly against
+          * the intended purpose of the continue header,
+          * and under some conditions (HTTP/1.0 client request)
+          * it's a standard violation.
+          *
+          * Anyway, "sort of against the spec" is preferable
+          * to "always getting confused by Continue responses"
+          * (Privoxy's behaviour before this hack was added)
+          */
+         log_error(LOG_LEVEL_HEADER, "Continue hack in da house.");
+         continue_hack_in_da_house = 1;
+      }
+      else if (*header == '\0') 
+      {
+         /*
+          * If the header is empty, but the Continue hack
+          * isn't active, we can assume that we reached the
+          * end of the buffer before we hit the end of the
+          * head.
+          *
+          * Inform the caller an let it decide how to handle it.
+          */
+         return JB_ERR_PARSE;
+      }
+
+      /* Enlist header */
+      if (JB_ERR_MEMORY == enlist(csp->headers, header))
+      {
+         /*
+          * XXX: Should we quit the request and return a
+          * out of memory error page instead?
+          */
+         log_error(LOG_LEVEL_ERROR,
+            "Out of memory while enlisting server headers. %s lost.",
+            header);
+      }
+      freez(header);
+   }
+
+   return JB_ERR_OK;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  crunch_reason
+ *
+ * Description :  Translates the crunch reason code into a string.
+ *
+ * Parameters  :
+ *          1  :  rsp = a http_response
+ *
+ * Returns     :  A string with the crunch reason or an error description.
+ *
+ *********************************************************************/
+static const char *crunch_reason(const struct http_response *rsp)
+{
+   char * reason = NULL;
+
+   assert(rsp != NULL);
+   if (rsp == NULL)
+   {
+      return "Internal error while searching for crunch reason";
+   }
+
+   switch (rsp->reason)
+   {
+      case RSP_REASON_UNSUPPORTED:
+         reason = "Unsupported HTTP feature";
+         break;
+      case RSP_REASON_BLOCKED:
+         reason = "Blocked";
+         break;
+      case RSP_REASON_UNTRUSTED:
+         reason = "Untrusted";
+         break;
+      case RSP_REASON_REDIRECTED:
+         reason = "Redirected";
+         break;
+      case RSP_REASON_CGI_CALL:
+         reason = "CGI Call";
+         break;
+      case RSP_REASON_NO_SUCH_DOMAIN:
+         reason = "DNS failure";
+         break;
+      case RSP_REASON_FORWARDING_FAILED:
+         reason = "Forwarding failed";
+         break;
+      case RSP_REASON_CONNECT_FAILED:
+         reason = "Connection failure";
+         break;
+      case RSP_REASON_OUT_OF_MEMORY:
+         reason = "Out of memory (may mask other reasons)";
+         break;
+      default:
+         reason = "No reason recorded";
+         break;
+   }
+
+   return reason;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  send_crunch_response
+ *
+ * Description :  Delivers already prepared response for
+ *                intercepted requests, logs the interception
+ *                and frees the response.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          1  :  rsp = Fully prepared response. Will be freed on exit.
+ *
+ * Returns     :  Nothing.
+ *
+ *********************************************************************/
+static void send_crunch_response(struct client_state *csp, struct http_response *rsp)
+{
+      const struct http_request *http = csp->http;
+      char status_code[4];
+
+      assert(rsp != NULL);
+      assert(rsp->head != NULL);
+
+      if (rsp == NULL)
+      {
+         /*
+          * Not supposed to happen. If it does
+          * anyway, treat it as an unknown error.
+          */
+         cgi_error_unknown(csp, rsp, RSP_REASON_INTERNAL_ERROR);
+         /* return code doesn't matter */
+      }
+
+      if (rsp == NULL)
+      {
+         /* If rsp is still NULL, we have serious internal problems. */
+         log_error(LOG_LEVEL_FATAL,
+            "NULL response in send_crunch_response and cgi_error_unknown failed as well.");
+      }
+
+      /*
+       * Extract the status code from the actual head
+       * that was send to the client. It is the only
+       * way to get it right for all requests, including
+       * the fixed ones for out-of-memory problems.
+       *
+       * A head starts like this: 'HTTP/1.1 200...'
+       *                           0123456789|11
+       *                                     10
+       */
+      status_code[0] = rsp->head[9];
+      status_code[1] = rsp->head[10];
+      status_code[2] = rsp->head[11];
+      status_code[3] = '\0';
+
+      /* Write the answer to the client */
+      if (write_socket(csp->cfd, rsp->head, rsp->head_length)
+       || write_socket(csp->cfd, rsp->body, rsp->content_length))
+      {
+         /* There is nothing we can do about it. */
+         log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", csp->http->host);
+      }
+
+      /* Log that the request was crunched and why. */
+      log_error(LOG_LEVEL_GPC, "%s%s crunch! (%s)",
+         http->hostport, http->path, crunch_reason(rsp));
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" %s %d",
+         csp->ip_addr_str, http->ocmd, status_code, rsp->content_length);
+
+      /* Clean up and return */
+      if (cgi_error_memory() != rsp)
+      {
+         free_http_response(rsp);
+      } 
+      return;
+}
+
+
+#if 0
+/*********************************************************************
+ *
+ * Function    :  request_contains_null_bytes
+ *
+ * Description :  Checks for NULL bytes in the request and sends
+ *                an error message to the client if any were found.
+ *
+ *                XXX: currently not used, see comment in chat().
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  buf = Data from the client's request to check.
+ *          3  :  len = The data length.
+ *
+ * Returns     :  TRUE if the request contained one or more NULL bytes, or
+ *                FALSE otherwise.
+ *
+ *********************************************************************/
+static int request_contains_null_bytes(const struct client_state *csp, char *buf, int len)
+{
+   size_t c_len; /* Request lenght when treated as C string */
+
+   c_len = strlen(buf);
+
+   if (c_len < len)
+   {
+      /*
+       * Null byte(s) found. Log the request,
+       * return an error response and hang up.
+       */
+      size_t tmp_len = c_len;
+
+      do
+      {
+        /*
+         * Replace NULL byte(s) with '°' characters
+         * so the request can be logged as string.
+         * XXX: Is there a better replacement character?
+         */
+         buf[tmp_len]='°';
+         tmp_len += strlen(buf+tmp_len);
+      } while (tmp_len < len);
+
+      log_error(LOG_LEVEL_ERROR, "%s\'s request contains at least one NULL byte "
+         "(length=%d, strlen=%d).", csp->ip_addr_str, len, c_len);
+      log_error(LOG_LEVEL_HEADER, 
+         "Offending request data with NULL bytes turned into \'°\' characters: %s", buf);
+
+      write_socket(csp->cfd, NULL_BYTE_RESPONSE, strlen(NULL_BYTE_RESPONSE));
+
+      /* XXX: Log correct size */
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"Invalid request\" 400 0", csp->ip_addr_str);
+
+      return TRUE;
+   }
+
+   return FALSE;
+}
+#endif
+
+
+/*********************************************************************
+ *
+ * Function    :  crunch_response_triggered
+ *
+ * Description :  Checks if the request has to be crunched,
+ *                and delivers the crunch response if necessary.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  crunchers = list of cruncher functions to run
+ *
+ * Returns     :  TRUE if the request was answered with a crunch response
+ *                FALSE otherwise.
+ *
+ *********************************************************************/
+static int crunch_response_triggered(struct client_state *csp, const struct cruncher crunchers[])
+{
+   struct http_response *rsp = NULL;
+   const struct cruncher *c;
+
+   /*
+    * If CGI request crunching is disabled,
+    * check the CGI dispatcher out of order to
+    * prevent unintentional blocks or redirects. 
+    */
+   if (!(csp->config->feature_flags & RUNTIME_FEATURE_CGI_CRUNCHING)
+       && (NULL != (rsp = dispatch_cgi(csp))))
+   {
+      /* Deliver, log and free the interception response. */
+      send_crunch_response(csp, rsp);
+      return TRUE;
+   }
+
+   for (c = crunchers; c->cruncher != NULL; c++)
+   {
+      /*
+       * Check the cruncher if either Privoxy is toggled
+       * on and the request isn't forced, or if the cruncher
+       * applies to forced requests as well.
+       */
+      if (((csp->flags & CSP_FLAG_TOGGLED_ON) &&
+          !(csp->flags & CSP_FLAG_FORCED)) ||
+          (c->flags & CF_IGNORE_FORCE))
+      {
+         rsp = c->cruncher(csp);
+         if (NULL != rsp)
+         {
+            /* Deliver, log and free the interception response. */
+            send_crunch_response(csp, rsp);
+#ifdef FEATURE_STATISTICS
+            if (c->flags & CF_COUNT_AS_REJECT)
+            {
+               csp->flags |= CSP_FLAG_REJECTED;
+            }
+#endif /* def FEATURE_STATISTICS */
+
+            return TRUE;
+         }
+      }
+   }
+
+   return FALSE;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  build_request_line
+ *
+ * Description :  Builds the HTTP request line.
+ *
+ *                If a HTTP forwarder is used it expects the whole URL,
+ *                web servers only get the path.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  fwd = The forwarding spec used for the request
+ *                XXX: Should use http->fwd instead.
+ *          3  :  request_line = The old request line which will be replaced.
+ *
+ * Returns     :  Nothing. Terminates in case of memory problems.
+ *
+ *********************************************************************/
+static void build_request_line(struct client_state *csp, const struct forward_spec *fwd, char **request_line)
+{
+   struct http_request *http = csp->http;
+
+   assert(http->ssl == 0);
+
+   /*
+    * Downgrade http version from 1.1 to 1.0
+    * if +downgrade action applies.
+    */
+   if ( (csp->action->flags & ACTION_DOWNGRADE)
+     && (!strcmpic(http->ver, "HTTP/1.1")))
+   {
+      freez(http->ver);
+      http->ver = strdup("HTTP/1.0");
+
+      if (http->ver == NULL)
+      {
+         log_error(LOG_LEVEL_FATAL, "Out of memory downgrading HTTP version");
+      }
+   }
+
+   /*
+    * Rebuild the request line.
+    */
+   freez(*request_line);
+   *request_line = strdup(http->gpc);
+   string_append(request_line, " ");
+
+   if (fwd->forward_host)
+   {
+      string_append(request_line, http->url);
+   }
+   else
+   {
+      string_append(request_line, http->path);
+   }
+   string_append(request_line, " ");
+   string_append(request_line, http->ver);
+
+   if (*request_line == NULL)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory writing HTTP command");
+   }
+   log_error(LOG_LEVEL_HEADER, "New HTTP Request-Line: %s", *request_line);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  change_request_destination
+ *
+ * Description :  Parse a (rewritten) request line and regenerate
+ *                the http request data.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  Forwards the parse_http_request() return code.
+ *                Terminates in case of memory problems.
+ *
+ *********************************************************************/
+static jb_err change_request_destination(struct client_state *csp)
+{
+   struct http_request *http = csp->http;
+   jb_err err;
+
+   log_error(LOG_LEVEL_INFO, "Rewrite detected: %s", csp->headers->first->str);
+   free_http_request(http);
+   err = parse_http_request(csp->headers->first->str, http, csp);
+   if (JB_ERR_OK != err)
+   {
+      log_error(LOG_LEVEL_ERROR, "Couldn't parse rewritten request: %s.",
+         jb_err_to_string(err));
+   }
+   http->ocmd = strdup(http->cmd); /* XXX: ocmd is a misleading name */
+   if (http->ocmd == NULL)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory copying rewritten HTTP request line");
+   }
+
+   return err;
+}
+
+
+/*********************************************************************
+ *
  * Function    :  chat
  *
  * Description :  Once a connection to the client has been accepted,
@@ -899,81 +1867,62 @@ static void sig_handler(int the_signal)
  *                function returns, the caller must close the client
  *                socket handle.
  *
+ *                FIXME: chat is nearly thousand lines long.
+ *                Ridiculous.
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *
- * Returns     :  On success, the number of bytes written are returned (zero
- *                indicates nothing was written).  On error, -1 is returned,
- *                and errno is set appropriately.  If count is zero and the
- *                file descriptor refers to a regular file, 0 will be
- *                returned without causing any other effect.  For a special
- *                file, the results are not portable.
+ * Returns     :  Nothing.
  *
  *********************************************************************/
 static void chat(struct client_state *csp)
 {
-/*
- * This next lines are a little ugly, but they simplifies the if statements
- * below.  Basically if TOGGLE, then we want the if to test if the
- * CSP_FLAG_TOGGLED_ON flag ist set, else we don't.  And if FEATURE_FORCE_LOAD,
- * then we want the if to test for CSP_FLAG_FORCED , else we don't
- */
-#ifdef FEATURE_TOGGLE
-#   define IS_TOGGLED_ON_AND (csp->flags & CSP_FLAG_TOGGLED_ON) &&
-#else /* ifndef FEATURE_TOGGLE */
-#   define IS_TOGGLED_ON_AND
-#endif /* ndef FEATURE_TOGGLE */
-#ifdef FEATURE_FORCE_LOAD
-#   define IS_NOT_FORCED_AND !(csp->flags & CSP_FLAG_FORCED) &&
-#else /* ifndef FEATURE_FORCE_LOAD */
-#   define IS_NOT_FORCED_AND
-#endif /* def FEATURE_FORCE_LOAD */
-
-#define IS_ENABLED_AND   IS_TOGGLED_ON_AND IS_NOT_FORCED_AND
-
    char buf[BUFFER_SIZE];
    char *hdr;
    char *p;
-   char *req;
+   char *req = NULL;
    fd_set rfds;
    int n;
    jb_socket maxfd;
    int server_body;
    int ms_iis5_hack = 0;
-   int byte_count = 0;
-   unsigned int forwarded_connect_retries = 0;
-   unsigned int max_forwarded_connect_retries = csp->config->forwarded_connect_retries;
+   size_t byte_count = 0;
+   int forwarded_connect_retries = 0;
+   int max_forwarded_connect_retries = csp->config->forwarded_connect_retries;
    const struct forward_spec * fwd;
    struct http_request *http;
-   int len; /* for buffer sizes */
+   int len; /* for buffer sizes (and negative error codes) */
+   jb_err err;
 #ifdef FEATURE_KILL_POPUPS
-   int block_popups;         /* bool, 1==will block popups */
    int block_popups_now = 0; /* bool, 1==currently blocking popups */
 #endif /* def FEATURE_KILL_POPUPS */
 
-   int pcrs_filter;        /* bool, 1==will filter through pcrs */
-   int gif_deanimate;      /* bool, 1==will deanimate gifs */
-   int jpeg_inspect;       /* bool, 1==will inspect jpegs */
-
    /* Function that does the content filtering for the current request */
-   char *(*content_filter)() = NULL;
+   filter_function_ptr content_filter = NULL;
 
    /* Skeleton for HTTP response, if we should intercept the request */
    struct http_response *rsp;
 
+   /* Temporary copy of the client's headers before they get enlisted in csp->headers */
+   struct list header_list;
+   struct list *headers = &header_list;
+
    http = csp->http;
+
+   memset(buf, 0, sizeof(buf));
 
    /*
     * Read the client's request.  Note that since we're not using select() we
     * could get blocked here if a client connected, then didn't say anything!
     */
 
-   for (;;)
+   do
    {
-      len = read_socket(csp->cfd, buf, sizeof(buf));
+      len = read_socket(csp->cfd, buf, sizeof(buf) - 1);
 
       if (len <= 0) break;      /* error! */
-      
+
       /*
        * If there is no memory left for buffering the
        * request, there is nothing we can do but hang up
@@ -985,67 +1934,207 @@ static void chat(struct client_state *csp)
 
       req = get_header(csp);
 
-      if (req == NULL)
-      {
-         break;    /* no HTTP request! */
-      }
+   } while ((NULL != req) && ('\0' == *req));
 
-      if (*req == '\0')
+   if ((NULL != req) && ('\0' != *req))
+   {
+      /* Request received. Validate and parse it. */
+
+#if 0
+      /*
+       * XXX: Temporary disabled to prevent problems
+       * with POST requests whose bodies are allowed to
+       * contain NULL bytes. BR#1730105.
+       *
+       * The main purpose of this check is to properly
+       * log stuff like BitTorrent traffic and other junk
+       * that hits public proxies. It's not required for
+       * Privoxy to functions as those requests are discarded
+       * later on anyway.
+       *
+       * It probably should be rewritten to only check
+       * the head of the request. Another option would
+       * be to let all POST requests pass, although that
+       * may not be good enough.
+       */
+      if (request_contains_null_bytes(csp, buf, len))
       {
-         continue;   /* more to come! */
+         /* NULL bytes found and dealt with, just hang up. */
+         return;
+      }
+#endif
+
+      /* Does the request line look invalid? */
+      if (client_protocol_is_unsupported(csp, req))
+      {
+         /* 
+          * Yes. The request has already been
+          * answered with a error response, the buffers
+          * were freed and we're done with chatting.
+          */
+         return;
       }
 
 #ifdef FEATURE_FORCE_LOAD
-      /* If this request contains the FORCE_PREFIX,
-       * better get rid of it now and set the force flag --oes
+      /*
+       * If this request contains the FORCE_PREFIX and blocks
+       * aren't enforced, get rid of it and set the force flag.
        */
-
       if (strstr(req, FORCE_PREFIX))
       {
-         strclean(req, FORCE_PREFIX);
-         log_error(LOG_LEVEL_FORCE, "Enforcing request \"%s\".\n", req);
-         csp->flags |= CSP_FLAG_FORCED;
+         if (csp->config->feature_flags & RUNTIME_FEATURE_ENFORCE_BLOCKS)
+         {
+            log_error(LOG_LEVEL_FORCE,
+               "Ignored force prefix in request: \"%s\".", req);
+         }
+         else
+         {
+            strclean(req, FORCE_PREFIX);
+            log_error(LOG_LEVEL_FORCE, "Enforcing request: \"%s\".", req);
+            csp->flags |= CSP_FLAG_FORCED;
+         }
       }
 
 #endif /* def FEATURE_FORCE_LOAD */
+      err = parse_http_request(req, http, csp);
+      if (JB_ERR_OK != err)
+      {
+         log_error(LOG_LEVEL_ERROR, "Couldn't parse request: %s.", jb_err_to_string(err));
+      }
 
-      parse_http_request(req, http, csp);
       freez(req);
-      break;
    }
 
    if (http->cmd == NULL)
    {
-      strcpy(buf, CHEADER);
-      write_socket(csp->cfd, buf, strlen(buf));
-
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 400 0", csp->ip_addr_str);
+      write_socket(csp->cfd, CHEADER, strlen(CHEADER));
+      /* XXX: Use correct size */
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"Invalid request\" 400 0", csp->ip_addr_str);
+      log_error(LOG_LEVEL_ERROR, "Invalid header received from %s.", csp->ip_addr_str);
 
       free_http_request(http);
       return;
    }
 
-   if (!strncmpic(http->cmd, "GET ftp://", 10))
+   /* grab the rest of the client's headers */
+   init_list(headers);
+   for (;;)
    {
-      strcpy(buf, FTP_RESPONSE);
-      write_socket(csp->cfd, buf, strlen(buf));
+      if ( ( ( p = get_header(csp) ) != NULL) && ( *p == '\0' ) )
+      {
+         len = read_socket(csp->cfd, buf, sizeof(buf) - 1);
+         if (len <= 0)
+         {
+            log_error(LOG_LEVEL_ERROR, "read from client failed: %E");
+            destroy_list(headers);
+            return;
+         }
+         
+         /*
+          * If there is no memory left for buffering the
+          * request, there is nothing we can do but hang up
+          */
+         if (add_to_iob(csp, buf, len))
+         {
+            destroy_list(headers);
+            return;
+         }
+         continue;
+      }
 
-      log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as FTP proxy: %s",
-         csp->ip_addr_str, http->cmd);
+      if (p == NULL) break;
+
+      enlist(headers, p);
+      freez(p);
+
+   }
+
+   if (http->host == NULL)
+   {
+      /*
+       * If we still don't know the request destination,
+       * the request is invalid or the client uses
+       * Privoxy without its knowledge.
+       */
+      if (JB_ERR_OK != get_request_destination_elsewhere(csp, headers))
+      {
+         /*
+          * Our attempts to get the request destination
+          * elsewhere failed or Privoxy is configured
+          * to only accept proxy requests.
+          *
+          * An error response has already been send
+          * and we're done here.
+          */
+         return;
+      }
+   }
+
+   /*
+    * Determine the actions for this URL
+    */
+#ifdef FEATURE_TOGGLE
+   if (!(csp->flags & CSP_FLAG_TOGGLED_ON))
+   {
+      /* Most compatible set of actions (i.e. none) */
+      init_current_action(csp->action);
+   }
+   else
+#endif /* ndef FEATURE_TOGGLE */
+   {
+      url_actions(http, csp);
+   }
+
+   /* 
+    * Save a copy of the original request for logging
+    */
+   http->ocmd = strdup(http->cmd);
+
+   if (http->ocmd == NULL)
+   {
+      log_error(LOG_LEVEL_FATAL, "Out of memory copying HTTP request line");
+   }
+
+   enlist(csp->headers, http->cmd);
+
+   /* Append the previously read headers */
+   list_append_list_unique(csp->headers, headers);
+   destroy_list(headers);
+
+   err = sed(client_patterns, add_client_headers, csp);
+   if (JB_ERR_OK != err)
+   {
+      assert(err == JB_ERR_PARSE);
+      log_error(LOG_LEVEL_FATAL, "Failed to parse client headers");
+   }
+   csp->flags |= CSP_FLAG_CLIENT_HEADER_PARSING_DONE;
+
+   /* Check request line for rewrites. */
+   if ((NULL == csp->headers->first->str)
+      || (strcmp(http->cmd, csp->headers->first->str) &&
+         (JB_ERR_OK != change_request_destination(csp))))
+   {
+      /*
+       * A header filter broke the request line - bail out.
+       */
+      write_socket(csp->cfd, MESSED_UP_REQUEST_RESPONSE, strlen(MESSED_UP_REQUEST_RESPONSE));
+      /* XXX: Use correct size */
+      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"Invalid request generated\" 500 0", csp->ip_addr_str);
+      log_error(LOG_LEVEL_ERROR, "Invalid request line after applying header filters.");
 
       free_http_request(http);
       return;
    }
 
    /* decide how to route the HTTP request */
-
-   if ((fwd = forward_url(http, csp)) == NULL)
+   if (NULL == (fwd = forward_url(http, csp)))
    {
       log_error(LOG_LEVEL_FATAL, "gateway spec is NULL!?!?  This can't happen!");
       /* Never get here - LOG_LEVEL_FATAL causes program exit */
    }
 
-   /* build the http request to send to the server
+   /*
+    * build the http request to send to the server
     * we have to do one of the following:
     *
     * create = use the original HTTP request to create a new
@@ -1082,22 +2171,6 @@ static void chat(struct client_state *csp)
     */
 
    /*
-    * Determine the actions for this URL
-    */
-#ifdef FEATURE_TOGGLE
-   if (!(csp->flags & CSP_FLAG_TOGGLED_ON))
-   {
-      /* Most compatible set of actions (i.e. none) */
-      init_current_action(csp->action);
-   }
-   else
-#endif /* ndef FEATURE_TOGGLE */
-   {
-      url_actions(http, csp);
-   }
-
-
-   /*
     * Check if a CONNECT request is allowable:
     * In the absence of a +limit-connect action, allow only port 443.
     * If there is an action, allow whatever matches the specificaton.
@@ -1110,192 +2183,75 @@ static void chat(struct client_state *csp)
       {
          if (csp->action->flags & ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
          {
-            /* The response will violate the specs, but makes unblocking easier. */
-            log_error(LOG_LEVEL_ERROR, "Marking suspicious CONNECT request from %s for blocking.",
-               csp->ip_addr_str);
+            /*
+             * The response may confuse some clients,
+             * but makes unblocking easier.
+             *
+             * XXX: It seems to work with all major browsers,
+             * so we should consider returning a body by default someday ... 
+             */
+            log_error(LOG_LEVEL_INFO, "Request from %s marked for blocking. "
+               "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
+               csp->ip_addr_str, csp->action->string[ACTION_STRING_LIMIT_CONNECT],
+               csp->http->port);
             csp->action->flags |= ACTION_BLOCK;
             http->ssl = 0;
          }
          else
          {
-            strcpy(buf, CFORBIDDEN);
-            write_socket(csp->cfd, buf, strlen(buf));
-            log_error(LOG_LEVEL_CONNECT, "Denying suspicious CONNECT request from %s", csp->ip_addr_str);
-            log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 403 0", csp->ip_addr_str);
+            write_socket(csp->cfd, CFORBIDDEN, strlen(CFORBIDDEN));
+            log_error(LOG_LEVEL_INFO, "Request from %s denied. "
+               "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
+               csp->ip_addr_str, csp->action->string[ACTION_STRING_LIMIT_CONNECT],
+               csp->http->port);
+            assert(NULL != csp->http->ocmd);
+            log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 403 0", csp->ip_addr_str, csp->http->ocmd);
+
+            list_remove_all(csp->headers);
+            /*
+             * XXX: For consistency we might want to log a crunch message here.
+             */
             return;
          }
       }
    }
 
-
-   /*
-    * Downgrade http version from 1.1 to 1.0 if +downgrade
-    * action applies
-    */
-   if ( (http->ssl == 0)
-     && (!strcmpic(http->ver, "HTTP/1.1"))
-     && (csp->action->flags & ACTION_DOWNGRADE))
-   {
-      freez(http->ver);
-      http->ver = strdup("HTTP/1.0");
-
-      if (http->ver == NULL)
-      {
-         log_error(LOG_LEVEL_FATAL, "Out of memory downgrading HTTP version");
-      }
-   }
-
-   /* 
-    * Save a copy of the original request for logging
-    */
-   http->ocmd = strdup(http->cmd);
-
-   if (http->ocmd == NULL)
-   {
-      log_error(LOG_LEVEL_FATAL, "Out of memory copying HTTP request line");
-   }
-
-   /*
-    * (Re)build the HTTP request for non-SSL requests.
-    * If forwarding, use the whole URL, else, use only the path.
-    */
    if (http->ssl == 0)
    {
-      freez(http->cmd);
-
-      http->cmd = strdup(http->gpc);
-      string_append(&http->cmd, " ");
-
-      if (fwd->forward_host)
-      {
-         string_append(&http->cmd, http->url);
-      }
-      else
-      {
-         string_append(&http->cmd, http->path);
-      }
-      string_append(&http->cmd, " ");
-      string_append(&http->cmd, http->ver);
-
-      if (http->cmd == NULL)
-      {
-         log_error(LOG_LEVEL_FATAL, "Out of memory writing HTTP command");
-      }
-      log_error(LOG_LEVEL_HEADER, "New HTTP Request-Line: %s", http->cmd);
-   }
-   enlist(csp->headers, http->cmd);
-
-
-   /*
-    * If the user has not supplied any wafers, and the user has not
-    * told us to suppress the vanilla wafer, then send the vanilla wafer.
-    */
-   if (list_is_empty(csp->action->multi[ACTION_MULTI_WAFER])
-       && ((csp->action->flags & ACTION_VANILLA_WAFER) != 0))
-   {
-      enlist(csp->action->multi[ACTION_MULTI_WAFER], VANILLA_WAFER);
+      freez(csp->headers->first->str);
+      build_request_line(csp, fwd, &csp->headers->first->str);
    }
 
-
-#ifdef FEATURE_KILL_POPUPS
-   block_popups               = ((csp->action->flags & ACTION_NO_POPUPS) != 0);
-#endif /* def FEATURE_KILL_POPUPS */
-
-   pcrs_filter                = (csp->rlist != NULL) &&  /* There are expressions to be used */
-                                (!list_is_empty(csp->action->multi[ACTION_MULTI_FILTER]));
-
-   gif_deanimate              = ((csp->action->flags & ACTION_DEANIMATE) != 0);
-
-   jpeg_inspect               = ((csp->action->flags & ACTION_JPEG_INSPECT) != 0);
-
-   /* grab the rest of the client's headers */
-
-   for (;;)
-   {
-      if ( ( ( p = get_header(csp) ) != NULL) && ( *p == '\0' ) )
-      {
-         len = read_socket(csp->cfd, buf, sizeof(buf));
-         if (len <= 0)
-         {
-            log_error(LOG_LEVEL_ERROR, "read from client failed: %E");
-            return;
-         }
-         
-         /*
-          * If there is no memory left for buffering the
-          * request, there is nothing we can do but hang up
-          */
-         if (add_to_iob(csp, buf, len))
-         {
-            return;
-         }
-         continue;
-      }
-
-      if (p == NULL) break;
-
-      enlist(csp->headers, p);
-      freez(p);
-   }
-
-   /*
-    * We have a request. Now, check to see if we need to
-    * intercept it, i.e. If ..
-    */
-
-   if (
-       /* We may not forward the request by rfc2616 sect 14.31 */
-       (NULL != (rsp = direct_response(csp)))
-
-       /* or a CGI call was detected and answered */
-       || (NULL != (rsp = dispatch_cgi(csp)))
-
-       /* or we are enabled and... */
-       || (IS_ENABLED_AND (
-
-            /* ..the request was blocked */
-          ( NULL != (rsp = block_url(csp)))
-
-          /* ..or untrusted */
-#ifdef FEATURE_TRUST
-          || ( NULL != (rsp = trust_url(csp)))
-#endif /* def FEATURE_TRUST */
-
-          /* ..or a fast redirect kicked in */
-#ifdef FEATURE_FAST_REDIRECTS
-          || ( NULL != (rsp = redirect_url(csp)))
-#endif /* def FEATURE_FAST_REDIRECTS */
-          ))
-      )
-   {
-      /* Write the answer to the client */
-      if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-       || write_socket(csp->cfd, rsp->body, rsp->content_length))
-      {
-         log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-      }
-
-#ifdef FEATURE_STATISTICS
-      /* Count as a rejected request */
-      csp->flags |= CSP_FLAG_REJECTED;
-#endif /* def FEATURE_STATISTICS */
-
-      /* Log (FIXME: All intercept reasons appear as "crunch" with Status 200) */
-      log_error(LOG_LEVEL_GPC, "%s%s crunch!", http->hostport, http->path);
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 3", csp->ip_addr_str, http->ocmd);
-
-      /* Clean up and return */
-      free_http_response(rsp);
-      return;
-   }
-
-   hdr = sed(client_patterns, add_client_headers, csp);
+   hdr = list_to_text(csp->headers);
    if (hdr == NULL)
    {
       /* FIXME Should handle error properly */
       log_error(LOG_LEVEL_FATAL, "Out of memory parsing client header");
    }
 
+   /*
+    * We have a request. Check if one of the crunchers wants it.
+    */
+   if (crunch_response_triggered(csp, crunchers_all))
+   {
+      /*
+       * Yes. The client got the crunch response
+       * and we are done here after cleaning up.
+       */
+      freez(hdr);
+      list_remove_all(csp->headers);
+
+      return;
+   }
+
+   /*
+    * The headers can't be removed earlier because
+    * they were still needed for the referrer check
+    * in case of CGI crunches.
+    *
+    * XXX: Would it be worth to move the referrer check
+    * into client_referrer() and set a flag if it's trusted?
+    */
    list_remove_all(csp->headers);
 
    log_error(LOG_LEVEL_GPC, "%s%s", http->hostport, http->path);
@@ -1321,41 +2277,32 @@ static void chat(struct client_state *csp)
 
    if (csp->sfd == JB_INVALID_SOCKET)
    {
-      log_error(LOG_LEVEL_CONNECT, "connect to: %s failed: %E",
-                http->hostport);
-
-      if (errno == EINVAL)
+      if (fwd->type != SOCKS_NONE)
+      {
+         /* Socks error. */
+         rsp = error_response(csp, "forwarding-failed", errno);
+      }
+      else if (errno == EINVAL)
       {
          rsp = error_response(csp, "no-such-domain", errno);
-
-         log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 404 0",
-                   csp->ip_addr_str, http->ocmd);
       }
       else
       {
          rsp = error_response(csp, "connect-failed", errno);
-
-         log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 503 0",
-                   csp->ip_addr_str, http->ocmd);
+         log_error(LOG_LEVEL_CONNECT, "connect to: %s failed: %E",
+                http->hostport);
       }
 
 
       /* Write the answer to the client */
-      if(rsp)
+      if (rsp != NULL)
       {
-         if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-          || write_socket(csp->cfd, rsp->body, rsp->content_length))
-         {
-            log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-         }
+         send_crunch_response(csp, rsp);
       }
 
-      free_http_response(rsp);
       freez(hdr);
       return;
    }
-
-   log_error(LOG_LEVEL_CONNECT, "OK");
 
    if (fwd->forward_host || (http->ssl == 0))
    {
@@ -1369,21 +2316,13 @@ static void chat(struct client_state *csp)
          log_error(LOG_LEVEL_CONNECT, "write header to: %s failed: %E",
                     http->hostport);
 
-         log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 503 0",
-                   csp->ip_addr_str, http->ocmd);
-
          rsp = error_response(csp, "connect-failed", errno);
 
          if(rsp)
          {
-            if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-             || write_socket(csp->cfd, rsp->body, rsp->content_length))
-            {
-               log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-            }
+            send_crunch_response(csp, rsp);
          }
 
-         free_http_response(rsp);
          freez(hdr);
          return;
       }
@@ -1395,16 +2334,15 @@ static void chat(struct client_state *csp)
        * so just send the "connect succeeded" message to the
        * client, flush the rest, and get out of the way.
        */
-      log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 2\n",
-                csp->ip_addr_str, http->ocmd);
-
-      if (write_socket(csp->cfd, CSUCCEED, sizeof(CSUCCEED)-1))
+      if (write_socket(csp->cfd, CSUCCEED, strlen(CSUCCEED)))
       {
          freez(hdr);
          return;
       }
       IOB_RESET(csp);
    }
+
+   log_error(LOG_LEVEL_CONNECT, "to %s successful", http->hostport);
 
    /* we're finished with the client's header */
    freez(hdr);
@@ -1445,7 +2383,7 @@ static void chat(struct client_state *csp)
 
       if (FD_ISSET(csp->cfd, &rfds))
       {
-         len = read_socket(csp->cfd, buf, sizeof(buf));
+         len = read_socket(csp->cfd, buf, sizeof(buf) - 1);
 
          if (len <= 0)
          {
@@ -1476,21 +2414,38 @@ static void chat(struct client_state *csp)
          {
             log_error(LOG_LEVEL_ERROR, "read from: %s failed: %E", http->host);
 
-            log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 503 0",
-                      csp->ip_addr_str, http->ocmd);
+            if (http->ssl && (fwd->forward_host == NULL))
+            {
+               /*
+                * Just hang up. We already confirmed the client's CONNECT
+                * request with status code 200 and unencrypted content is
+                * no longer welcome.
+                */
+               log_error(LOG_LEVEL_ERROR,
+                  "CONNECT already confirmed. Unable to tell the client about the problem.");
+               return;
+            }
+            else if (byte_count)
+            {
+               /*
+                * Just hang up. We already transmitted the original headers
+                * and parts of the original content and therefore missed the
+                * chance to send an error message (without risking data corruption).
+                *
+                * XXX: we could retry with a fancy range request here.
+                */
+               log_error(LOG_LEVEL_ERROR, "Already forwarded the original headers. "
+                  "Unable to tell the client about the problem.");
+               return;
+            }
 
             rsp = error_response(csp, "connect-failed", errno);
 
-            if(rsp)
+            if (rsp)
             {
-               if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-                || write_socket(csp->cfd, rsp->body, rsp->content_length))
-               {
-                  log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-               }
+               send_crunch_response(csp, rsp);
             }
 
-            free_http_response(rsp);
             return;
          }
 
@@ -1537,23 +2492,34 @@ static void chat(struct client_state *csp)
                 */
                if (content_filter)
                {
+                  p = execute_content_filter(csp, content_filter);
                   /*
                    * If the content filter fails, use the original
                    * buffer and length.
                    * (see p != NULL ? p : csp->iob->cur below)
                    */
-                  if (NULL == (p = (*content_filter)(csp)))
+                  if (NULL == p)
                   {
-                     csp->content_length = csp->iob->eod - csp->iob->cur;
+                     csp->content_length = (size_t)(csp->iob->eod - csp->iob->cur);
                   }
 
-                  hdr = sed(server_patterns_light, NULL, csp);
+                  if (JB_ERR_OK != sed(server_patterns_light, NULL, csp))
+                  {
+                     log_error(LOG_LEVEL_FATAL, "Failed to parse server headers.");
+                  }
 
+                  hdr = list_to_text(csp->headers);
                   if (hdr == NULL)
                   {
                      /* FIXME Should handle error properly */
                      log_error(LOG_LEVEL_FATAL, "Out of memory parsing server header");
                   }
+
+                  /*
+                   * Shouldn't happen because this was the second sed run
+                   * and tags are only created for the first one.
+                   */
+                  assert(!crunch_response_triggered(csp, crunchers_all));
 
                   if (write_socket(csp->cfd, hdr, strlen(hdr))
                    || write_socket(csp->cfd, p != NULL ? p : csp->iob->cur, csp->content_length))
@@ -1575,7 +2541,11 @@ static void chat(struct client_state *csp)
              * This is NOT the body, so
              * Let's pretend the server just sent us a blank line.
              */
-            len = sprintf(buf, "\r\n");
+            log_error(LOG_LEVEL_INFO,
+               "Malformerd HTTP headers detected and MS IIS5 hack enabled. "
+               "Expect an invalid response or even no response at all.");
+            snprintf(buf, sizeof(buf), "\r\n");
+            len = (int)strlen(buf);
 
             /*
              * Now, let the normal header parsing algorithm below do its
@@ -1605,9 +2575,9 @@ static void chat(struct client_state *csp)
                   size_t hdrlen;
                   int flushed;
 
-                  log_error(LOG_LEVEL_ERROR, "Flushing header and buffers. Stepping back from filtering.");
+                  log_error(LOG_LEVEL_INFO, "Flushing header and buffers. Stepping back from filtering.");
 
-                  hdr = sed(server_patterns, add_server_headers, csp);
+                  hdr = list_to_text(csp->headers);
                   if (hdr == NULL)
                   {
                      /* 
@@ -1616,20 +2586,15 @@ static void chat(struct client_state *csp)
                       */
                      log_error(LOG_LEVEL_ERROR, "Out of memory while trying to flush.");
                      rsp = cgi_error_memory();
+                     send_crunch_response(csp, rsp);
 
-                     if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-                         || write_socket(csp->cfd, rsp->body, rsp->content_length))
-                     {
-                        log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-                     }
                      return;
                   }
-
                   hdrlen = strlen(hdr);
 
                   if (write_socket(csp->cfd, hdr, hdrlen)
                    || ((flushed = flush_socket(csp->cfd, csp)) < 0)
-                   || (write_socket(csp->cfd, buf, (size_t) len)))
+                   || (write_socket(csp->cfd, buf, (size_t)len)))
                   {
                      log_error(LOG_LEVEL_CONNECT, "Flush header and buffers to client failed: %E");
 
@@ -1637,11 +2602,15 @@ static void chat(struct client_state *csp)
                      return;
                   }
 
-                  byte_count += hdrlen + flushed + len;
+                  /*
+                   * Reset the byte_count to the amount of bytes
+                   * we just flushed. len will be added a few lines below,
+                   * hdrlen doesn't matter for LOG_LEVEL_CLF.
+                   */
+                  byte_count = (size_t)flushed;
                   freez(hdr);
                   content_filter = NULL;
                   server_body = 1;
-
                }
             }
             else
@@ -1652,7 +2621,7 @@ static void chat(struct client_state *csp)
                   return;
                }
             }
-            byte_count += len;
+            byte_count += (size_t)len;
             continue;
          }
          else
@@ -1671,35 +2640,13 @@ static void chat(struct client_state *csp)
             {
                log_error(LOG_LEVEL_ERROR, "Out of memory while looking for end of server headers.");
                rsp = cgi_error_memory();
-               
-               if (write_socket(csp->cfd, rsp->head, rsp->head_length)
-                   || write_socket(csp->cfd, rsp->body, rsp->content_length))
-               {
-                  log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
-               }
+               send_crunch_response(csp, rsp);               
+
                return;
             }
 
-            /* get header lines from the iob */
-
-            while ((p = get_header(csp)) != NULL)
-            {
-               if (*p == '\0')
-               {
-                  /* see following note */
-                  break;
-               }
-               enlist(csp->headers, p);
-               freez(p);
-            }
-
-            /* NOTE: there are no "empty" headers so
-             * if the pointer `p' is not NULL we must
-             * assume that we reached the end of the
-             * buffer before we hit the end of the header.
-             */
-
-            if (p)
+            /* Convert iob into something sed() can digest */
+            if (JB_ERR_PARSE == get_server_headers(csp))
             {
                if (ms_iis5_hack)
                {
@@ -1722,61 +2669,61 @@ static void chat(struct client_state *csp)
                }
             }
 
+            /* Did we actually get anything? */
+            if (NULL == csp->headers->first)
+            {
+               log_error(LOG_LEVEL_ERROR, "Empty server or forwarder response.");
+               log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
+               write_socket(csp->cfd, NO_SERVER_DATA_RESPONSE, strlen(NO_SERVER_DATA_RESPONSE));
+               free_http_request(http);
+               return;
+            }
+
             /* we have now received the entire header.
              * filter it and send the result to the client
              */
-
-            hdr = sed(server_patterns, add_server_headers, csp);
+            if (JB_ERR_OK != sed(server_patterns, add_server_headers, csp))
+            {
+               log_error(LOG_LEVEL_FATAL, "Failed to parse server headers.");
+            }
+            hdr = list_to_text(csp->headers);
             if (hdr == NULL)
             {
                /* FIXME Should handle error properly */
                log_error(LOG_LEVEL_FATAL, "Out of memory parsing server header");
             }
 
-#ifdef FEATURE_KILL_POPUPS
-            /* Start blocking popups if appropriate. */
-
-            if ((csp->content_type & CT_TEXT) &&  /* It's a text / * MIME-Type */
-                !http->ssl    &&                  /* We talk plaintext */
-                block_popups)                     /* Policy allows */
+            if (crunch_response_triggered(csp, crunchers_light))
             {
-               block_popups_now = 1;
                /*
-                * Filter the part of the body that came in the same read
-                * as the last headers:
+                * One of the tags created by a server-header
+                * tagger triggered a crunch. We already
+                * delivered the crunch response to the client
+                * and are done here after cleaning up.
                 */
-               filter_popups(csp->iob->cur, csp);
+                freez(hdr);
+                return;
             }
-
-#endif /* def FEATURE_KILL_POPUPS */
-
             /* Buffer and pcrs filter this if appropriate. */
 
-            if ((csp->content_type & CT_TEXT) &&  /* It's a text / * MIME-Type */
-                !http->ssl    &&                  /* We talk plaintext */
-                pcrs_filter)                      /* Policy allows */
+            if (!http->ssl) /* We talk plaintext */
             {
-               content_filter = pcrs_filter_response;
+
+#ifdef FEATURE_KILL_POPUPS
+               /* Start blocking popups if appropriate. */
+               if ((csp->content_type & CT_TEXT) &&               /* It's a text / * MIME-Type */
+                   (csp->action->flags & ACTION_NO_POPUPS) != 0)  /* Policy allows */
+               {
+                  block_popups_now = 1;
+                  /*
+                   * Filter the part of the body that came in the same read
+                   * as the last headers:
+                   */
+                  filter_popups(csp->iob->cur, csp);
+               }
+#endif /* def FEATURE_KILL_POPUPS */
+               content_filter = get_filter_function(csp);
             }
-
-            /* Buffer and gif_deanimate this if appropriate. */
-
-            if ((csp->content_type & CT_GIF)  &&  /* It's an image/gif MIME-Type */
-                !http->ssl    &&                  /* We talk plaintext */
-                gif_deanimate)                    /* Policy allows */
-            {
-               content_filter = gif_deanimate_response;
-            }
-
-            /* Buffer and jpg_inspect this if appropriate. */
-
-            if ((csp->content_type & CT_JPEG)  &&  /* It's an image/jpeg MIME-Type */
-                !http->ssl    &&                   /* We talk plaintext */
-                jpeg_inspect)                      /* Policy allows */
-            {
-               content_filter = jpeg_inspect_response;
-            }
-
             /*
              * Only write if we're not buffering for content modification
              */
@@ -1800,7 +2747,7 @@ static void chat(struct client_state *csp)
                   return;
                }
 
-               byte_count += len;
+               byte_count += (size_t)len;
             }
 
             /* we're finished with the server's header */
@@ -1824,8 +2771,18 @@ static void chat(struct client_state *csp)
       return; /* huh? we should never get here */
    }
 
+   if (csp->content_length == 0)
+   {
+      /*
+       * If Privoxy didn't recalculate the
+       * Content-Lenght, byte_count is still
+       * correct.
+       */
+      csp->content_length = byte_count;
+   }
+
    log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 %d",
-             csp->ip_addr_str, http->ocmd, byte_count);
+      csp->ip_addr_str, http->ocmd, csp->content_length);
 }
 
 
@@ -1883,6 +2840,7 @@ static int32 server_thread(void *data)
 #endif
 
 
+#if defined(unix)
 /*********************************************************************
  *
  * Function    :  usage
@@ -1894,18 +2852,89 @@ static int32 server_thread(void *data)
  * Returns     :  No. ,-)
  *
  *********************************************************************/
-void usage(const char *myname)
+static void usage(const char *myname)
 {
    printf("Privoxy version " VERSION " (" HOME_PAGE_URL ")\n"
-#if !defined(unix)
-           "Usage: %s [--help] [--version] [configfile]\n"
-#else
-           "Usage: %s [--help] [--version] [--no-daemon] [--pidfile pidfile] [--user user[.group]] [configfile]\n"
-#endif
-           "Aborting.\n", myname);
- 
+          "Usage: %s "
+#if defined(unix)
+          "[--chroot] "
+#endif /* defined(unix) */
+          "[--help] "
+#if defined(unix)
+          "[--no-daemon] [--pidfile pidfile] [--pre-chroot-nslookup hostname] [--user user[.group]] "
+#endif /* defined(unix) */
+          "[--version] [configfile]\n"
+          "Aborting\n", myname);
+
    exit(2);
 
+}
+#endif /* defined(unix) */
+
+
+/*********************************************************************
+ *
+ * Function    :  initialize_mutexes
+ *
+ * Description :  Prepares mutexes if mutex support is available.
+ *
+ * Parameters  :  None
+ *
+ * Returns     :  Void, exits in case of errors.
+ *
+ *********************************************************************/
+static void initialize_mutexes(void)
+{
+   int err = 0;
+
+#ifdef FEATURE_PTHREAD
+   /*
+    * Prepare global mutex semaphores
+    */
+   err = pthread_mutex_init(&log_mutex, 0);
+
+   if (!err) err = pthread_mutex_init(&log_init_mutex, 0);
+
+   /*
+    * XXX: The assumptions below are a bit naive
+    * and can cause locks that aren't necessary.
+    *
+    * For example older FreeBSD versions (< 6.x?)
+    * have no gethostbyname_r, but gethostbyname is
+    * thread safe.
+    */
+#if !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R)
+   if (!err) err = pthread_mutex_init(&resolver_mutex, 0);
+#endif /* !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R) */
+   /*
+    * XXX: should we use a single mutex for
+    * localtime() and gmtime() as well?
+    */
+#ifndef HAVE_GMTIME_R
+   if (!err) err = pthread_mutex_init(&gmtime_mutex, 0);
+#endif /* ndef HAVE_GMTIME_R */
+
+#ifndef HAVE_LOCALTIME_R
+   if (!err) err = pthread_mutex_init(&localtime_mutex, 0);
+#endif /* ndef HAVE_GMTIME_R */
+
+#ifndef HAVE_RANDOM
+   if (!err) err = pthread_mutex_init(&rand_mutex, 0);
+#endif /* ndef HAVE_RANDOM */
+#endif /* FEATURE_PTHREAD */
+
+   /*
+    * TODO: mutex support for mingw32 would be swell.
+    */
+
+   if (err)
+   {
+      printf("Fatal error. Mutex initialization failed: %s.\n",
+         strerror(err));
+      exit(1);
+   }
+
+   return;
 }
 
 
@@ -1939,14 +2968,13 @@ int main(int argc, const char *argv[])
 #endif
 {
    int argc_pos = 0;
-#ifdef HAVE_RANDOM
    unsigned int random_seed;
-#endif /* ifdef HAVE_RANDOM */
 #ifdef unix
    struct passwd *pw = NULL;
    struct group *grp = NULL;
    char *p;
    int do_chroot = 0;
+   char *pre_chroot_nslookup_to_load_resolver = NULL;
 #endif
 
    Argc = argc;
@@ -1962,6 +2990,9 @@ int main(int argc, const char *argv[])
 
    /*
     * Parse the command line arguments
+    *
+    * XXX: simply printing usage information in case of
+    * invalid arguments isn't particular user friendly.
     */
    while (++argc_pos < argc)
    {
@@ -2006,7 +3037,7 @@ int main(int argc, const char *argv[])
 
 #if defined(unix)
 
-     else if (strcmp(argv[argc_pos], "--no-daemon" ) == 0)
+      else if (strcmp(argv[argc_pos], "--no-daemon" ) == 0)
       {
          no_daemon = 1;
       }
@@ -2038,12 +3069,29 @@ int main(int argc, const char *argv[])
          if (p != NULL) *--p = '\0';
       }
 
+      else if (strcmp(argv[argc_pos], "--pre-chroot-nslookup" ) == 0)
+      {
+         if (++argc_pos == argc) usage(argv[0]);
+         pre_chroot_nslookup_to_load_resolver = strdup(argv[argc_pos]);
+      }
+
       else if (strcmp(argv[argc_pos], "--chroot" ) == 0)
       {
          do_chroot = 1;
       }
-
 #endif /* defined(unix) */
+
+      else if (argc_pos + 1 != argc)
+      {
+         /*
+          * This is neither the last command line
+          * option, nor was it recognized before,
+          * therefore it must be invalid.
+          */
+         usage(argv[0]);
+      }
+      else
+
 #endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
       {
          configfile = argv[argc_pos];
@@ -2054,24 +3102,30 @@ int main(int argc, const char *argv[])
 #if defined(unix)
    if ( *configfile != '/' )
    {
-      char *abs_file, cwd[1024];
+      char cwd[BUFFER_SIZE];
+      char *abs_file;
+      size_t abs_file_size; 
 
       /* make config-filename absolute here */
-      if ( !(getcwd(cwd, sizeof(cwd))))
+      if (NULL == getcwd(cwd, sizeof(cwd)))
       {
-         perror("get working dir failed");
+         perror("failed to get current working directory");
          exit( 1 );
       }
 
-      if (!(basedir = strdup(cwd))
-      || (!(abs_file = malloc( strlen( basedir ) + strlen( configfile ) + 5 ))))
+      /* XXX: why + 5? */
+      abs_file_size = strlen(cwd) + strlen(configfile) + 5;
+      basedir = strdup(cwd);
+
+      if (NULL == basedir ||
+          NULL == (abs_file = malloc(abs_file_size)))
       {
          perror("malloc failed");
          exit( 1 );
       }
-      strcpy( abs_file, basedir );
-      strcat( abs_file, "/" );
-      strcat( abs_file, configfile );
+      strlcpy(abs_file, basedir, abs_file_size);
+      strlcat(abs_file, "/", abs_file_size );
+      strlcat(abs_file, configfile, abs_file_size);
       configfile = abs_file;
    }
 #endif /* defined unix */
@@ -2080,39 +3134,33 @@ int main(int argc, const char *argv[])
    files->next = NULL;
    clients->next = NULL;
 
+   /* XXX: factor out initialising after the next stable release. */
 #ifdef AMIGA
    InitAmiga();
 #elif defined(_WIN32)
    InitWin32();
 #endif
 
-#ifdef FEATURE_PTHREAD
-   /*
-    * Prepare global mutex semaphores
-    */
-   pthread_mutex_init(&log_mutex,0);
-   pthread_mutex_init(&log_init_mutex,0);
+   /* Prepare mutexes if supported and necessary. */
+   initialize_mutexes();
 
-#ifndef HAVE_GMTIME_R
-   pthread_mutex_init(&gmtime_mutex,0);
-#endif /* ndef HAVE_GMTIME_R */
+   /* Enable logging until further notice. */
+   init_log_module(Argv[0]);
 
-#ifndef HAVE_LOCALTIME_R
-   pthread_mutex_init(&localtime_mutex,0);
-#endif /* ndef HAVE_GMTIME_R */
-
-#ifndef HAVE_GETHOSTBYADDR_R
-   pthread_mutex_init(&gethostbyaddr_mutex,0);
-#endif /* ndef HAVE_GETHOSTBYADDR_R */
-
-#ifndef HAVE_GETHOSTBYNAME_R
-   pthread_mutex_init(&gethostbyname_mutex,0);
-#endif /* ndef HAVE_GETHOSTBYNAME_R */
-#endif /* FEATURE_PTHREAD */
-
-#ifdef HAVE_RANDOM
    random_seed = (unsigned int)time(NULL);
+#ifdef HAVE_RANDOM
    srandom(random_seed);
+#elif defined (_WIN32)
+   /*
+    * See pick_from_range() in miscutil.c for details.
+    */
+   log_error(LOG_LEVEL_INFO,
+      "No thread-safe PRNG implemented for your platform. "
+      "Using weak \'randomization\' factor which will "
+      "limit the already questionable usefulness of "
+      "header-time-randomizing actions (disabled by default).");
+#else
+   srand(random_seed);
 #endif /* ifdef HAVE_RANDOM */
 
    /*
@@ -2125,7 +3173,7 @@ int main(int argc, const char *argv[])
 #if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
 {
    int idx;
-   const int catched_signals[] = { SIGABRT, SIGTERM, SIGINT, SIGHUP, 0 };
+   const int catched_signals[] = { SIGTERM, SIGINT, SIGHUP, 0 };
    const int ignored_signals[] = { SIGPIPE, 0 };
 
    for (idx = 0; catched_signals[idx] != 0; idx++)
@@ -2155,7 +3203,7 @@ int main(int argc, const char *argv[])
     * We *are* in a windows console app.
     * Print a verbose messages about FAQ's and such
     */
-   printf(win32_blurb);
+   printf("%s", win32_blurb);
 # endif /* def _WIN_CONSOLE */
 #endif /* def _WIN32 */
 
@@ -2218,10 +3266,9 @@ int main(int argc, const char *argv[])
          close ( fd );
       }
 #endif /* 1 */
-      /* FIXME: should close stderr (fd 2) here too, but the test
-       * for existence
-       * and load config file is done in listen_loop() and puts
-       * some messages on stderr there.
+      /*
+       * stderr (fd 2) will be closed later on, when the
+       * log file has been parsed.
        */
 
       close( 0 );
@@ -2235,7 +3282,7 @@ int main(int argc, const char *argv[])
     * to the user and group ID indicated by the --user option
     */
    write_pid_file();
-   
+
    if (NULL != pw)
    {
       if (setgid((NULL != grp) ? grp->gr_gid : pw->pw_gid))
@@ -2247,6 +3294,14 @@ int main(int argc, const char *argv[])
          if (!pw->pw_dir)
          {
             log_error(LOG_LEVEL_FATAL, "Home directory for %s undefined", pw->pw_name);
+         }
+         /* Read the time zone file from /etc before doing chroot. */
+         tzset();
+         if (NULL != pre_chroot_nslookup_to_load_resolver
+             && '\0' != pre_chroot_nslookup_to_load_resolver[0])
+         {
+            /* Initialize resolver library. */
+            (void) resolve_hostname_to_ip(pre_chroot_nslookup_to_load_resolver);
          }
          if (chroot(pw->pw_dir) < 0)
          {
@@ -2265,13 +3320,13 @@ int main(int argc, const char *argv[])
       {
          char putenv_dummy[64];
 
-         strcpy(putenv_dummy, "HOME=/");
+         strlcpy(putenv_dummy, "HOME=/", sizeof(putenv_dummy));
          if (putenv(putenv_dummy) != 0)
          {
             log_error(LOG_LEVEL_FATAL, "Cannot putenv(): HOME");
          }                
 
-         snprintf(putenv_dummy, 64, "USER=%s", pw->pw_name);
+         snprintf(putenv_dummy, sizeof(putenv_dummy), "USER=%s", pw->pw_name);
          if (putenv(putenv_dummy) != 0)
          {
             log_error(LOG_LEVEL_FATAL, "Cannot putenv(): USER");
@@ -2452,7 +3507,7 @@ static void listen_loop(void)
        */
       if (received_hup_signal)
       {
-         init_error_log(Argv[0], config->logfile, config->debug);
+         init_error_log(Argv[0], config->logfile);
          received_hup_signal = 0;
       }
 #endif
@@ -2505,7 +3560,7 @@ static void listen_loop(void)
          bfd = bind_port_helper(config);
       }
 
-      log_error(LOG_LEVEL_CONNECT, "accept connection ... ");
+      log_error(LOG_LEVEL_CONNECT, "Listening for new connections ... ");
 
       if (!accept_connection(csp, bfd))
       {
@@ -2522,15 +3577,15 @@ static void listen_loop(void)
       }
       else
       {
-         log_error(LOG_LEVEL_CONNECT, "OK");
+         log_error(LOG_LEVEL_CONNECT, "accepted connection from %s", csp->ip_addr_str);
       }
 
 #ifdef FEATURE_TOGGLE
       if (global_toggle_state)
+#endif /* def FEATURE_TOGGLE */
       {
          csp->flags |= CSP_FLAG_TOGGLED_ON;
       }
-#endif /* def FEATURE_TOGGLE */
 
       if (run_loader(csp))
       {
@@ -2541,7 +3596,7 @@ static void listen_loop(void)
 #ifdef FEATURE_ACL
       if (block_acl(NULL,csp))
       {
-         log_error(LOG_LEVEL_CONNECT, "Connection dropped due to ACL");
+         log_error(LOG_LEVEL_CONNECT, "Connection from %s dropped due to ACL", csp->ip_addr_str);
          close_socket(csp->cfd);
          freez(csp);
          continue;
@@ -2569,7 +3624,7 @@ static void listen_loop(void)
             pthread_attr_init(&attrs);
             pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_DETACHED);
             errno = pthread_create(&the_thread, &attrs,
-               (void*)serve, csp);
+               (void * (*)(void *))serve, csp);
             child_id = errno ? -1 : 0;
             pthread_attr_destroy(&attrs);
          }
@@ -2613,13 +3668,22 @@ static void listen_loop(void)
 #define SELECTED_ONE_OPTION
          csp->cfd = ReleaseSocket(csp->cfd, -1);
          
-         if((child_id = (int)CreateNewProcTags(
-            NP_Entry, (ULONG)server_thread,
-            NP_Output, Output(),
-            NP_CloseOutput, FALSE,
-            NP_Name, (ULONG)"privoxy child",
-            NP_StackSize, 200*1024,
-            TAG_DONE)))
+#ifdef __amigaos4__
+         child_id = (int)CreateNewProcTags(NP_Entry, (ULONG)server_thread,
+                                           NP_Output, Output(),
+                                           NP_CloseOutput, FALSE,
+                                           NP_Name, (ULONG)"privoxy child",
+                                           NP_Child, TRUE,
+                                           TAG_DONE);
+#else
+         child_id = (int)CreateNewProcTags(NP_Entry, (ULONG)server_thread,
+                                           NP_Output, Output(),
+                                           NP_CloseOutput, FALSE,
+                                           NP_Name, (ULONG)"privoxy child",
+                                           NP_StackSize, 200*1024,
+                                           TAG_DONE);
+#endif
+         if(0 != child_id)
          {
             childs++;
             ((struct Task *)child_id)->tc_UserData = csp;
@@ -2711,7 +3775,7 @@ static void listen_loop(void)
 
             log_error(LOG_LEVEL_ERROR, "can't fork: %E");
 
-            sprintf(buf , "Privoxy: can't fork: errno = %d", errno);
+            snprintf(buf , sizeof(buf), "Privoxy: can't fork: errno = %d", errno);
 
             write_socket(csp->cfd, buf, strlen(buf));
             close_socket(csp->cfd);

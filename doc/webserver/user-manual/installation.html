@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Installation</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.6 User Manual"
+TITLE="Privoxy 3.0.7 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Introduction"
@@ -39,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.6 User Manual</TH
+>Privoxy 3.0.7 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -76,8 +76,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="INSTALLATION"
-></A
->2. Installation</H1
+>2. Installation</A
+></H1
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -111,8 +111,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="INSTALLATION-PACKAGES"
-></A
->2.1. Binary Packages</H2
+>2.1. Binary Packages</A
+></H2
 ><P
 >How to install the binary packages depends on your operating system:</P
 ><DIV
@@ -121,12 +121,12 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-PACK-RPM"
-></A
->2.1.1. Red Hat and Fedora RPMs</H3
+>2.1.1. Red Hat and Fedora RPMs</A
+></H3
 ><P
 > RPMs can be installed with <TT
 CLASS="LITERAL"
->rpm -Uvh privoxy-3.0.6-1.rpm</TT
+>rpm -Uvh privoxy-3.0.7-1.rpm</TT
 >,
  and will use <TT
 CLASS="FILENAME"
@@ -157,7 +157,7 @@ CLASS="COMMAND"
 > If you have problems with failed dependencies, try rebuilding the SRC RPM: 
  <TT
 CLASS="LITERAL"
->rpm --rebuild privoxy-3.0.6-1.src.rpm</TT
+>rpm --rebuild privoxy-3.0.7-1.src.rpm</TT
 >. This 
  will use your locally installed libraries and RPM version. </P
 ><P
@@ -181,8 +181,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-DEB"
-></A
->2.1.2. Debian</H3
+>2.1.2. Debian and Ubuntu</A
+></H3
 ><P
 > DEBs can be installed with <TT
 CLASS="LITERAL"
@@ -200,8 +200,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-PACK-WIN"
-></A
->2.1.3. Windows</H3
+>2.1.3. Windows</A
+></H3
 ><P
 > Just double-click the installer, which will guide you through
  the installation process. You will find the configuration files
@@ -210,7 +210,7 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > in. </P
 ><P
-> Version 3.0.4 introduced full <SPAN
+> Version 3.0.5 beta introduced full <SPAN
 CLASS="APPLICATION"
 >Windows</SPAN
 > service
@@ -306,8 +306,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-PACK-BINTGZ"
-></A
->2.1.4. Solaris, NetBSD, FreeBSD, HP-UX</H3
+>2.1.4. Solaris</A
+></H3
 ><P
 > Create a new directory, <TT
 CLASS="LITERAL"
@@ -322,8 +322,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-OS2"
-></A
->2.1.5. OS/2</H3
+>2.1.5. OS/2</A
+></H3
 ><P
 > First, make sure that no previous installations of
  <SPAN
@@ -364,8 +364,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-MAC"
-></A
->2.1.6. Mac OSX</H3
+>2.1.6. Mac OSX</A
+></H3
 ><P
 > Unzip the downloaded file (you can either double-click on the file
  from the finder, or from the desktop if you downloaded it there).
@@ -424,8 +424,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="INSTALLATION-AMIGA"
-></A
->2.1.7. AmigaOS</H3
+>2.1.7. AmigaOS</A
+></H3
 ><P
 > Copy and then unpack the <TT
 CLASS="FILENAME"
@@ -443,9 +443,39 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
+NAME="INSTALLATION-TBZ"
+>2.1.8. FreeBSD</A
+></H3
+><P
+> Privoxy is part of FreeBSD's Ports Collection, you can build and install
+ it with <TT
+CLASS="LITERAL"
+>cd /usr/ports/www/privoxy; make install clean</TT
+>.</P
+><P
+> If you don't use the ports, you can fetch and install
+ the package with <TT
+CLASS="LITERAL"
+>pkg_add -r privoxy</TT
+>.</P
+><P
+> The port skeleton and the package can also be downloaded from the
+ <A
+HREF="https://sourceforge.net/project/showfiles.php?group_id=11118"
+TARGET="_top"
+>File Release
+ Page</A
+>, but there's no reason to use them unless you're interested in the
+ beta releases which are only available there.</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
 NAME="INSTALLATTION-GENTOO"
-></A
->2.1.8. Gentoo</H3
+>2.1.9. Gentoo</A
+></H3
 ><P
 > Gentoo source packages (Ebuilds) for <SPAN
 CLASS="APPLICATION"
@@ -478,7 +508,7 @@ CLASS="FILENAME"
 >, the 
  documentation is in <TT
 CLASS="FILENAME"
->/usr/share/doc/privoxy-3.0.6</TT
+>/usr/share/doc/privoxy-3.0.7</TT
 >
  and the Log directory is in <TT
 CLASS="FILENAME"
@@ -492,8 +522,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="INSTALLATION-SOURCE"
-></A
->2.2. Building from Source</H2
+>2.2. Building from Source</A
+></H2
 ><P
 > The most convenient way to obtain the <SPAN
 CLASS="APPLICATION"
@@ -547,8 +577,8 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-> tar xzvf privoxy-3.0.6-src* [.tgz or .tar.gz]
- cd privoxy-3.0.6</PRE
+> tar xzvf privoxy-3.0.7-beta-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.7-beta</PRE
 ></TD
 ></TR
 ></TABLE
@@ -723,7 +753,8 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
->Then build as above.</P
+>Then build as above. In Privoxy 3.0.7 and later, all of these options
+can also be disabled through the configuration file.</P
 ><P
 > <SPAN
 CLASS="emphasis"
@@ -923,9 +954,23 @@ CLASS="EMPHASIS"
 >will be overwritten</I
 ></SPAN
 >. You will then need
- to manually update the other installed configuration files as needed. All
- template files will be overwritten. If you have customized, local templates,
- you should save these first, and in fact it is wise to always save any
+ to manually update the other installed configuration files as needed. The
+ default template files <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>will</I
+></SPAN
+> be overwritten. If you have
+ customized, local templates, these should be stored safely in a separate
+ directory and defined in <TT
+CLASS="FILENAME"
+>config</TT
+> by the
+ <SPAN
+CLASS="QUOTE"
+>"templdir"</SPAN
+> directive. It is of course wise to always back-up any
  important configuration files <SPAN
 CLASS="QUOTE"
 >"just in case"</SPAN
@@ -950,8 +995,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="INSTALLATION-KEEPUPDATED"
-></A
->2.3. Keeping your Installation Up-to-Date</H2
+>2.3. Keeping your Installation Up-to-Date</A
+></H2
 ><P
 > As user feedback comes in and development continues, we will make updated versions
  of both the main <A

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: contacting.sgml,v 2.10 2006/11/14 01:57:46 hal9 Exp $
+ $Id: contacting.sgml,v 2.12 2007/11/19 17:31:05 fabiankeil Exp $
 
- Copyright (C) 2001 - 2006 Privoxy Developers http://privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -45,6 +45,21 @@
  All users are of course welcome to discuss their issues on the <ulink
  url="http://lists.sourceforge.net/lists/listinfo/ijbswa-users">users
  mailing list</ulink>, where the developers also hang around.
+</para>
+
+<para>
+ Note that the Privoxy mailing lists are moderated. Posts from unsubscribed
+ addresses have to be accepted manually by a moderator. This may cause a
+ delay of several days and if you use a subject that doesn't clearly
+ mention Privoxy or one of its features, your message may be accidentally
+ discarded as spam.
+</para>
+
+<para>
+ If you aren't subscribed, you should therefore spend a few seconds
+ to come up with a proper subject. Additionally you should make it clear
+ that you want to get CC'd. Otherwise some responses will be directed to
+ the mailing list only, and you won't see them.
 </para>
 
 </sect2>
@@ -95,8 +110,7 @@
 
 <sect3 id="contact-bugs"><title>Reporting Bugs</title>
 <para>
- Please report all bugs <emphasis>only</emphasis> through our
- bug tracker: 
+ Please report all bugs through our bug tracker: 
  <ulink url="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118</ulink>. 
 </para>
 
@@ -108,21 +122,27 @@
   original report that might help to solve the issue.
 </para>
 
-<para> 
+<para>
   Please try to verify that it is a <application>Privoxy</application> bug,
-  and not a browser or site bug first. If unsure,
+  and not a browser or site bug or documented behaviour that just happens
+  to be different than what you expected. If unsure,
   try <ulink url="http://config.privoxy.org/toggle?set=disable">toggling
   off</ulink> <application>Privoxy</application>, and see if the problem persists.
-  If you are using your own custom configuration, please try
-  the stock configs to see if the problem is configuration related.
 </para>
 
 <para>
-  If not using the latest version, the bug may have been found
+  If you are using your own custom configuration, please try
+  the stock configs to see if the problem is configuration related.
+  If you're having problems with a feature that is disabled by default,
+  please ask around on the mailing list if others can reproduce the problem.
+</para>
+
+<para>
+  If you aren't using the latest Privoxy version, the bug may have been found
   and fixed in the meantime. We would appreciate if you could take the time
   to <ulink url="http://www.privoxy.org/user-manual/installation.html">upgrade
   to the latest version</ulink> (or  even the latest CVS snapshot) and verify
-  your bug.
+  that your bug still exists.
 </para>
 <para>
 Please be sure to provide the following information:
@@ -132,7 +152,7 @@ Please be sure to provide the following information:
 
   <listitem>
    <para>
-    The exact <application>Privoxy</application> version of the proxy software
+    The exact <application>Privoxy</application> version you are using
     (if you got the source from CVS, please also provide the source code revisions
      as shown in <ulink url="http://config.privoxy.org/show-version">http://config.privoxy.org/show-version</ulink>).
    </para>
@@ -143,7 +163,8 @@ Please be sure to provide the following information:
     The operating system and versions you run
     <application>Privoxy</application> on, (e.g. <application>Windows
     XP SP2</application>), if you are using a Unix flavor,
-    sending the output of <quote>uname -a</quote> should do.
+    sending the output of <quote>uname -a</quote> should do,
+    in case of GNU/Linux, please also name the distribution.
    </para>
   </listitem> 
 
@@ -164,16 +185,16 @@ Please be sure to provide the following information:
   <listitem>
    <para>
     Whether your version of <application>Privoxy</application> is one supplied
-    by the developers of <application>Privoxy</application> via SourceForge,
-    or somewhere else.
+    by the <application>Privoxy</application> developers via SourceForge,
+    or if you got your copy somewhere else.
    </para>
   </listitem> 
 
   <listitem>
    <para>
     Whether you are using <application>Privoxy</application> in tandem with 
-    another proxy such as <application>Tor</application>. If so, please try 
-    disabling the other proxy.
+    another proxy such as <application>Tor</application>. If so, please
+    temporary disable the other proxy to see if the symptoms change.
    </para>
   </listitem> 
 
@@ -192,15 +213,23 @@ Please be sure to provide the following information:
    </para>
   </listitem> 
 
-  <listitem>
-   <para>
-    <emphasis>Please provide your SF login, or email address</emphasis>, in case we 
-    need to contact you.
-   </para>
-  </listitem> 
-
 </itemizedlist>
 </para>
+
+<para>
+ You don't have to tell us your actual name when filing a problem
+ report, but please use a nickname so we can differentiate between
+ your messages and the ones entered by other "anonymous" users that
+ may respond to your request if they have the same problem or already
+ found a solution.
+</para>
+
+<para>
+ Please also check the status of your request a few days after submitting
+ it, as we may request additional information. If you use a SF id,
+ you should automatically get a mail when someone responds to your request.
+</para>
+
 <para>
   The <ulink url="http://www.privoxy.org/user-manual/appendix.html#ACTIONSANAT">appendix
   of the Privoxy User Manual</ulink> also has helpful information 

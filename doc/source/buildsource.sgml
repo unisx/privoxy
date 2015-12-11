@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: buildsource.sgml,v 2.12 2006/11/14 01:57:46 hal9 Exp $
+ $Id: buildsource.sgml,v 2.14 2007/11/22 17:38:40 hal9 Exp $
 
- Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -18,7 +18,7 @@
  This file is included into:
 
   user-manual
-  README
+  INSTALL
 
 -->
 <para>
@@ -144,7 +144,8 @@
  ./configure  --disable-toggle  --disable-editor  --disable-force</screen>
 </para> 
 <para>
-Then build as above.
+Then build as above. In Privoxy 3.0.7 and later, all of these options
+can also be disabled through the configuration file.
 </para>
 <para>
  <emphasis>WARNING:</emphasis> If installing as root, the install will fail
@@ -226,9 +227,11 @@ Then build as above.
  these will not be overwritten, and the new ones will be installed with a
  <quote>new</quote> extension. default.action, default.filter, and 
  standard.action <emphasis>will be overwritten</emphasis>. You will then need
- to manually update the other installed configuration files as needed. All
- template files will be overwritten. If you have customized, local templates,
- you should save these first, and in fact it is wise to always save any
+ to manually update the other installed configuration files as needed. The
+ default template files <emphasis>will</emphasis> be overwritten. If you have
+ customized, local templates, these should be stored safely in a separate
+ directory and defined in <filename>config</filename> by the
+ <quote>templdir</quote> directive. It is of course wise to always back-up any
  important configuration files <quote>just in case</quote>. If a previous
  version of <application>Privoxy</application> is already running, you will
  have to restart it manually.

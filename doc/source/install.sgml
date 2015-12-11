@@ -1,7 +1,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!entity % dummy "IGNORE"> 
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.6">
+<!entity p-version "3.0.7">
 <!entity p-status "stable">
 <!entity % p-stable "INCLUDE">
 <!entity % p-not-stable "IGNORE">
@@ -16,9 +16,9 @@
 
  Purpose     :  INSTALL file for Privoxy
                 
- $Id: install.sgml,v 2.4 2006/11/14 01:57:47 hal9 Exp $
+ $Id: install.sgml,v 2.5 2007/11/14 18:21:58 fabiankeil Exp $
 
- Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+ Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -58,7 +58,7 @@
  *
  * Purpose     :  INSTALL file to help with installing from source.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written

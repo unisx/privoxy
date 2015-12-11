@@ -1,6 +1,147 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Since 3.0.6 ***
+
+- Added zlib support to filter content with gzip and deflate
+  encoding. (Patch provided by Wil Mahan)
+- Dedicated filters and actions are used for header filtering.
+  "filter-client-headers" and "filter-client-headers" are no longer
+  supported, use server-header-filter{} and client-header-filter{}
+  instead.
+- Tags can be used to change actions based on HTTP headers.
+- New server-header filter: less-download-windows.
+- New client-header taggers: css-requests, image-requests,
+  client-ip-address, http-method, allow-post, complete-url,
+  user-agent and privoxy-control.
+- New server-header taggers: content-type and privoxy-control.
+- The forward-override{} action allows to change the forwarding
+  settings through the action files, for example based on client
+  headers like the User-Agent, or the request origin.
+- Socks errors are no longer handled by the CGI page for
+  DNS resolution failures.
+- CGI pages use favicons to signal whether they are error
+  or control pages. This is useful if you rely heavily on
+  browser tabs.
+- The show-url-info CGI page shows the forwarding settings.
+- "Crunch!" log messages (used when Privoxy answers requests
+  by itself) now also contain the reason.
+- Allow to rewrite the request destination behind the client's back.
+- Fix socks requests on big-endian platforms. Patch provided by Song Weijia.
+- Fixes possible deadlocks and crashes on OpenBSD.
+  Patch provided by Ralf Horstmann.
+- The CGI action editor allows to edit actionfiles with previously
+  forbidden characters like dots.
+- New trust entries are saved with a comment that contains the
+  trusted referring URL (Suggested by Daniel Griscom).
+- Filter descriptions are HTML encoded automatically. 	
+- New config option "split-large-forms" to work
+  around a browser bug that caused IE6 and IE7 to ignore
+  the Submit button on the edit-actions-for-url CGI page.
+- New config option "allow-cgi-request-crunching" to allow
+  requests for Privoxy's CGI pages to be blocked, redirected
+  or (un)trusted like ordinary requests.
+- Empty filter files no longer interrupt the filtering process
+  prematurely and are correctly listed on the show-status CGI page.
+- New config option "accept-intercepted-requests" to combine
+  Privoxy with any packet filter to build an intercepting proxy
+  for HTTP/1.1 requests (and for HTTP/1.0 requests with Host header set).
+- fast-redirects{} catch redirects to https URLs as well.
+- redirect{s@foo@bar@} can be used to redirect to a rewritten
+  version of the original URL.
+- Trap unsupported gopher proxy requests.
+- Fixed a bug in the User Manual delivery on Windows
+  (mingw32 only). Images now show up correctly and HTML
+  pages are no longer padded with garbage data.
+- Fixed several minor memory leaks, most of them discovered with Valgrind.
+- Only unlink the pidfile if it's actually used.
+- Retries after connection problems with forced requests
+  aren't blocked again.
+- On Unix SIGABRT causes a core dump as expected and is no
+  longer treated as normal shutdown signal.
+- The "access denied" CGI page is more descriptive and
+  allows retries to circumvent the referrer check.
+- Updated PCRS to handle unexpected PCRE errors properly.
+  Fixed crashes that could occur if Privoxy was build
+  with external PCRE versions newer than Privoxy's internal
+  one. (Reported by Chung-chieh Shan)
+- Fixed crashes with null bytes in PCRS replacement strings
+  (Patch provided by Felix Gröbert).
+- Fixed crashes with header time randomization on mingw32.
+- The CGI style sheet is no longer delivered if the referring
+  page isn't a Privoxy CGI page. This prevents a JavaScript-based
+  Privoxy detection "attack". Note that detecting Privoxy is
+  still possible through other ways and Privoxy was never intended
+  to be invisible anyway.
+- Added support for AmigaOS 4, fixed build for AmigaOS 3.x.	
+- The show-url-info CGI page displays a warning if Privoxy
+  is currently toggled off.
+- The show-status CGI page suppresses the edit button
+  for action files if Privoxy has no write access.	
+- Most CGI error pages react properly to HEAD requests.
+- Requests with RFC 3253 HTTP methods (used by Subversion)
+  are accepted. (Patch provided by Petr Kadlec)
+- New config option "templdir" to change the location
+  of the CGI templates to make sure customized templates
+  aren't "updated".
+- Better handling of "HTTP/1.1 100 Continue" responses.
+- The background of the PNG pattern is transparent.
+- Fixed XML syntax errors caused by banners-by-size and banners-by-url.
+- Fixed crashes and possible action file corruptions
+  when lines containing hashes are written through the CGI editor.
+- Supports dynamic filters which can contain variables.
+- Supports tags to change the actions based on client or server headers.
+- Incorrect actions are logged before program termination.
+- The "actionsfile" syntax in the configuration file is consistent
+  with the rest of the configuration options and requires the
+  whole file name. This is an incompatible change, if you use
+  an old configuration file you might have to append ".action"
+  to your "actionsfile" directives.
+- With the configuration file option "enforce-blocks" the
+  "go there anyway" mechanism can be disabled without recompiling
+  Privoxy.
+- More precise error messages in case of incorrect acl syntax.
+- Logs a warning if filtering is enabled but impossible due
+  to lack of zlib support or use of the prevent-compression action.
+- Less noisy handling of Cookie:" and "Connection:" headers.
+- Improved error messages in case of connection problems.
+- Fix a command-line-parsing bug that was introduced before 3.0.5
+  beta and caused Privoxy to treat the last argument as configuration
+  file if no configuration file was specified.
+- Treat unknown command line options as fatal errors instead
+  of silently ignoring them.
+- Use string functions with length checks more often.
+- Don't log CONNECT requests twice.
+- Allow to log the source address for ACL-related connection drops.
+- Don't ignore applying filters if the server didn't
+  specify a Content-Type. Bug reported by Amuro Namie.
+- Rejected CONNECT requests are logged with log level info
+  (enabled by default) and the reason for the block.
+- New command line option "--pre-chroot-nslookup hostname" to
+  intialize the resolver library before chroot'ing. On some systems this
+  reduces the number of files that must be copied into the chroot tree.
+  (Patch provided by Stephen Gildea)
+- Fix a long-standing memory corruption bug that could cause
+  Privoxy to overwrite a single byte in memory it didn't explicitly
+  allocate (but that probably was allocated anyway due to bucket size).
+- Send template-based CGI pages as HTTP/1.1 unless the client
+  asked for HTTP/1.0.
+- Let the first line in connection established responses
+  end in \r\n as required by RFC1945. Reported by Bert van Leeuwen.
+- If no log file has been specified, disable logging instead of logging
+  to stderr.
+- Don't block stderr when in daemon mode.
+- Ignore missing zero-chunks when filtering chunk-encoded content.
+  Earlier Privoxy versions would buffer and then forward the content
+  unmodified which caused some browsers to simply show empty pages.
+- Fix double free in cgi_edit_actions_list(). Reported by Venustech AD-LAB.
+- The code to add X-Forwarded-For headers has been removed.
+- Fixed trustfile feature which previously didn't work without FEATURE_TOGGLE.
+  Reported by Lee.
+- Minor code clean-ups, filter and action file updates.
+  (Some of them reported by Davide Alberani, Markus Elfring,
+   Stefan Huehner and Adam Piggott)
+
 *** Version 3.0.6 ***
 
 - New content filters: no-ping, google, msn, yahoo and blogspot.
@@ -332,12 +473,12 @@ being a mix of "U.S. English", "U.K. English" and "Irish English".
 
 
 ----------------------------------------------------------------------
-Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
                Privoxy team. http://www.privoxy.org/
 
                Based on the Internet Junkbuster originally written
                by and Copyright (C) 1997 Anonymous Coders and 
-               Junkbusters Corporation.  http://www.junkbusters.com
+               Junkbusters Corporation.  http://www.junkbusters.com/
 
                This program is free software; you can redistribute it 
                and/or modify it under the terms of the GNU General
@@ -357,4 +498,11 @@ Copyright   :  Written by and Copyright (C) 2001 the SourceForge
                or write to the Free Software Foundation, Inc., 59
                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+               Note that parts of Privoxy are under licenses that are
+               GPL-compatible but less restrictive - for details see
+               Privoxy's source code. The Privoxy team doesn't hold the
+               copyright for these parts and doesn't relicense them either.
+               You are free to extract them again to distribute them under
+               their own license.
+	
 set vi:tw=68

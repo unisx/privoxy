@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.18 2006/11/13 19:05:51 fabiankeil Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.22 2007/06/01 18:16:36 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
@@ -8,7 +8,7 @@
  * Purpose     :  Main file.  Contains main() method, main loop, and 
  *                the main connection-handling function.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -35,6 +35,31 @@
  *
  * Revisions   :
  *    $Log: jcc.h,v $
+ *    Revision 1.22  2007/06/01 18:16:36  fabiankeil
+ *    Use the same mutex for gethostbyname() and gethostbyaddr() to prevent
+ *    deadlocks and crashes on OpenBSD and possibly other OS with neither
+ *    gethostbyname_r() nor gethostaddr_r(). Closes BR#1729174.
+ *    Thanks to Ralf Horstmann for report and solution.
+ *
+ *    Revision 1.21  2007/04/22 13:18:06  fabiankeil
+ *    Keep the HTTP snippets local.
+ *
+ *    Revision 1.20  2006/12/26 17:31:41  fabiankeil
+ *    Mutex protect rand() if POSIX threading
+ *    is used, warn the user if that's not possible
+ *    and stop using it on _WIN32 where it could
+ *    cause crashes.
+ *
+ *    Revision 1.19  2006/12/06 19:41:39  fabiankeil
+ *    Privoxy is now able to run as intercepting
+ *    proxy in combination with any packet filter
+ *    that does the port redirection. The destination
+ *    is extracted from the "Host:" header which
+ *    should be available for nearly all requests.
+ *
+ *    Moved HTTP snipplets into jcc.c.
+ *    Added error message for gopher proxy requests.
+ *
  *    Revision 1.18  2006/11/13 19:05:51  fabiankeil
  *    Make pthread mutex locking more generic. Instead of
  *    checking for OSX and OpenBSD, check for FEATURE_PTHREAD
@@ -174,13 +199,14 @@ extern pthread_mutex_t gmtime_mutex;
 extern pthread_mutex_t localtime_mutex;
 #endif /* ndef HAVE_GMTIME_R */
 
-#ifndef HAVE_GETHOSTBYADDR_R
-extern pthread_mutex_t gethostbyaddr_mutex;
-#endif /* ndef HAVE_GETHOSTBYADDR_R */
+#if !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R)
+extern pthread_mutex_t resolver_mutex;
+#endif /* !defined(HAVE_GETHOSTBYADDR_R) || !defined(HAVE_GETHOSTBYNAME_R) */
 
-#ifndef HAVE_GETHOSTBYNAME_R
-extern pthread_mutex_t gethostbyname_mutex;
-#endif /* ndef HAVE_GETHOSTBYNAME_R */
+#ifndef HAVE_RANDOM
+extern pthread_mutex_t rand_mutex;
+#endif /* ndef HAVE_RANDOM */
+
 #endif /* FEATURE_PTHREAD */
 
 /* Functions */

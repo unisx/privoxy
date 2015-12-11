@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
 <HTML
 ><HEAD
 ><TITLE
 >Contacting the developers, Bug Reporting and Feature Requests</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -74,8 +74,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CONTACT"
-></A
->8. Contacting the developers, Bug Reporting and Feature Requests</H1
+>8. Contacting the developers, Bug Reporting and Feature Requests</A
+></H1
 ><P
 > We value your feedback. In fact, we rely on it to improve
  <SPAN
@@ -90,8 +90,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONTACT-SUPPORT"
-></A
->8.1. Get Support</H2
+>8.1. Get Support</A
+></H2
 ><P
 > For casual users, our 
  <A
@@ -112,6 +112,17 @@ TARGET="_top"
 >users
  mailing list</A
 >, where the developers also hang around.</P
+><P
+> Note that the Privoxy mailing lists are moderated. Posts from unsubscribed
+ addresses have to be accepted manually by a moderator. This may cause a
+ delay of several days and if you use a subject that doesn't clearly
+ mention Privoxy or one of its features, your message may be accidentally
+ discarded as spam.</P
+><P
+> If you aren't subscribed, you should therefore spend a few seconds
+ to come up with a proper subject. Additionally you should make it clear
+ that you want to get CC'd. Otherwise some responses will be directed to
+ the mailing list only, and you won't see them.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -119,8 +130,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="REPORTING"
-></A
->8.2. Reporting Problems</H2
+>8.2. Reporting Problems</A
+></H2
 ><P
 ><SPAN
 CLASS="QUOTE"
@@ -164,8 +175,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CONTACT-ADS"
-></A
->8.2.1. Reporting Ads or Other Configuration Problems</H3
+>8.2.1. Reporting Ads or Other Configuration Problems</A
+></H3
 ><P
 > Please send feedback on ads that slipped through, innocent images that were
  blocked, sites that don't work properly, and other configuration related problem of 
@@ -206,17 +217,10 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CONTACT-BUGS"
-></A
->8.2.2. Reporting Bugs</H3
+>8.2.2. Reporting Bugs</A
+></H3
 ><P
-> Please report all bugs <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->only</I
-></SPAN
-> through our
- bug tracker: 
+> Please report all bugs through our bug tracker: 
  <A
 HREF="http://sourceforge.net/tracker/?group_id=11118&atid=111118"
 TARGET="_top"
@@ -238,12 +242,12 @@ TARGET="_top"
 >. If already submitted, please feel free to add any info to the 
   original report that might help to solve the issue.</P
 ><P
-> 
-  Please try to verify that it is a <SPAN
+>  Please try to verify that it is a <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > bug,
-  and not a browser or site bug first. If unsure,
+  and not a browser or site bug or documented behaviour that just happens
+  to be different than what you expected. If unsure,
   try <A
 HREF="http://config.privoxy.org/toggle?set=disable"
 TARGET="_top"
@@ -252,11 +256,14 @@ TARGET="_top"
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->, and see if the problem persists.
-  If you are using your own custom configuration, please try
-  the stock configs to see if the problem is configuration related.</P
+>, and see if the problem persists.</P
 ><P
->  If not using the latest version, the bug may have been found
+>  If you are using your own custom configuration, please try
+  the stock configs to see if the problem is configuration related.
+  If you're having problems with a feature that is disabled by default,
+  please ask around on the mailing list if others can reproduce the problem.</P
+><P
+>  If you aren't using the latest Privoxy version, the bug may have been found
   and fixed in the meantime. We would appreciate if you could take the time
   to <A
 HREF="http://www.privoxy.org/user-manual/installation.html"
@@ -264,7 +271,7 @@ TARGET="_top"
 >upgrade
   to the latest version</A
 > (or  even the latest CVS snapshot) and verify
-  your bug.</P
+  that your bug still exists.</P
 ><P
 >Please be sure to provide the following information:</P
 ><P
@@ -276,7 +283,7 @@ TARGET="_top"
 >    The exact <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> version of the proxy software
+> version you are using
     (if you got the source from CVS, please also provide the source code revisions
      as shown in <A
 HREF="http://config.privoxy.org/show-version"
@@ -299,7 +306,8 @@ CLASS="APPLICATION"
     sending the output of <SPAN
 CLASS="QUOTE"
 >"uname -a"</SPAN
-> should do.
+> should do,
+    in case of GNU/Linux, please also name the distribution.
    </P
 ></LI
 ><LI
@@ -329,11 +337,11 @@ CLASS="LITERAL"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is one supplied
-    by the developers of <SPAN
+    by the <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> via SourceForge,
-    or somewhere else.
+> developers via SourceForge,
+    or if you got your copy somewhere else.
    </P
 ></LI
 ><LI
@@ -345,8 +353,8 @@ CLASS="APPLICATION"
     another proxy such as <SPAN
 CLASS="APPLICATION"
 >Tor</SPAN
->. If so, please try 
-    disabling the other proxy.
+>. If so, please
+    temporary disable the other proxy to see if the symptoms change.
    </P
 ></LI
 ><LI
@@ -365,20 +373,18 @@ CLASS="APPLICATION"
     action taken).
    </P
 ></LI
-><LI
-><P
->    <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->Please provide your SF login, or email address</I
-></SPAN
->, in case we 
-    need to contact you.
-   </P
-></LI
 ></UL
 ></P
+><P
+> You don't have to tell us your actual name when filing a problem
+ report, but please use a nickname so we can differentiate between
+ your messages and the ones entered by other "anonymous" users that
+ may respond to your request if they have the same problem or already
+ found a solution.</P
+><P
+> Please also check the status of your request a few days after submitting
+ it, as we may request additional information. If you use a SF id,
+ you should automatically get a mail when someone responds to your request.</P
 ><P
 >  The <A
 HREF="http://www.privoxy.org/user-manual/appendix.html#ACTIONSANAT"
@@ -401,8 +407,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONTACT-FEATURE"
-></A
->8.3. Request New Features</H2
+>8.3. Request New Features</A
+></H2
 ><P
 > You are welcome to submit ideas on new features or other proposals
  for improvement through our feature request tracker at
@@ -418,8 +424,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONTACT-OTHER"
-></A
->8.4. Other</H2
+>8.4. Other</A
+></H2
 ><P
 >For any other issues, feel free to use the mailing lists. Technically interested users
 and people who wish to contribute to the project are also welcome on the developers list!
