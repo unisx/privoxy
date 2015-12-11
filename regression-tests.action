@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.48 2012/11/11 12:42:00 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.50 2013/03/07 14:09:34 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -10,7 +10,7 @@
 #
 #############################################################################
 #
-# Copyright (c) 2007-2012 Fabian Keil <fk@fabiankeil.de>
+# Copyright (c) 2007-2013 Fabian Keil <fk@fabiankeil.de>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -27,7 +27,7 @@
 #############################################################################
 
 {{settings}}
-for-privoxy-version=3.0.20
+for-privoxy-version=3.0.21
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
@@ -44,6 +44,8 @@ for-privoxy-version=3.0.20
 # Level 19 needs = feature status FEATURE_GRACEFUL_TERMINATION Yes
 # Level 20 needs = feature status FEATURE_TOGGLE Yes
 # Level 21 needs = feature status FEATURE_TOGGLE No
+# Level 22 needs = config line enable-proxy-authentication-forwarding\s+0
+# Level 23 needs = config line enable-proxy-authentication-forwarding\s+1
 
 #######################################################
 # Enable taggers to activate the tests on demand
@@ -637,6 +639,18 @@ TAG:^Proxy-Connection removal$
 # Set Header = Max-Forwards: 3
 # Expect Header = NO CHANGE
 TAG:^Max-Forwards header without TRACE method$
+
+{}
+# Set Header = Proxy-Authorization: blafaseldieda
+# Expect Header = REMOVAL
+# Level = 22
+TAG:^Proxy-Authorization header removal$
+
+{}
+# Set Header = Proxy-Authorization: blafaseldieda
+# Expect Header = Proxy-Authorization: blafaseldieda
+# Level = 23
+TAG:^Proxy-Authorization header forwarding$
 
 ################################################################
 #

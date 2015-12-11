@@ -1,15 +1,75 @@
-               Announcing Privoxy 3.0.20 beta
+               Announcing Privoxy 3.0.21 stable
 --------------------------------------------------------------------
 
-This is a beta release that introduces new features and fixes a
-couple of bugs. One new feature (tolerate-pipelining) is enabled
-in the default configuration, depending on the feedback it may be
-disabled in the next release.
+Privoxy 3.0.21 stable is a bug-fix release for Privoxy 3.0.20 beta.
+It also addresses two security issues that affect all previous
+Privoxy versions.
 
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Version 3.0.20 Beta ***
+*** Version 3.0.21 stable ***
+
+- Bug fixes:
+  - On POSIX-like platforms, network sockets with file descriptor
+    values above FD_SETSIZE are properly rejected. Previously they
+    could cause memory corruption in configurations that allowed
+    the limit to be reached.
+  - Proxy authentication headers are removed unless the new directive
+    enable-proxy-authentication-forwarding is used. Forwarding the
+    headers potentionally allows malicious sites to trick the user
+    into providing them with login information.
+    Reported by Chris John Riley.
+  - Compiles on OS/2 again now that unistd.h is only included
+    on platforms that have it.
+
+- General improvements:
+  - The show-status page shows the FEATURE_STRPTIME_SANITY_CHECKS status.
+  - A couple of assert()s that could theoretically dereference
+    NULL pointers in debug builds have been relocated.
+  - Added an LSB info block to the generic start script.
+    Based on a patch from Natxo Asenjo.
+  - The max-client-connections default has been changed to 128
+    which should be more than enough for most setups.
+
+- Action file improvements:
+  - Block rover.ebay./ar.*\&adtype= instead of "/.*\&adtype=" which
+    caused too man false positives.
+    Reported by u302320 in #360284, additional feedback from Adam Piggott.
+  - Unblock '.advrider.com/' and '/.*ADVrider'.
+    Anonymously reported in #3603636.
+  - Stop blocking '/js/slider\.js'.
+    Reported by Adam Piggott in #3606635 and _lvm in #2791160.
+
+- Filter file improvements:
+  - Added an iframes filter.
+
+- Documentation improvements:
+  - The whole GPLv2 text is included in the user manual now,
+    so Privoxy can serve it itself and the user can read it
+    without having to wade through GPLv3 ads first.
+  - Properly numbered and underlined a couple of section titles
+    in the config that where previously overlooked due to a flaw
+    in the conversion script. Reported by Ralf Jungblut.
+  - Improved the support instruction to hopefully make it harder to
+    unintentionally provide insufficient information when requesting
+    support. Previously it wasn't obvious that the information we need
+    in bug reports is usually also required in support requests.
+  - Removed documentation about packages that haven't been provided
+    in years.
+
+- Privoxy-Regression-Test:
+  - Only log the test number when not running in verbose mode
+    The position of the test is rarely relevant and it previously
+    wasn't exactly obvious which one of the numbers was useful to
+    repeat the test with --test-number.
+
+- GNUmakefile improvements:
+  - Factor generate-config-file out of config-file to make testing
+    more convenient.
+  - The clean target now also takes care of patch leftovers.
+
+*** Version 3.0.20 beta ***
 
 - Bug fixes:
   - Client sockets are now properly shutdown and drained before being

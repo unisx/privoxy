@@ -1,6 +1,6 @@
-#        Sample Configuration File for Privoxy v3.0.20
+#        Sample Configuration File for Privoxy 3.0.21
 #
-#  $Id: config,v 1.101 2013/01/09 15:19:47 fabiankeil Exp $
+#  $Id: config,v 1.104 2013/03/07 14:11:51 fabiankeil Exp $
 #
 #  Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
 #
@@ -16,7 +16,8 @@
 #        3. DEBUGGING                                              #
 #        4. ACCESS CONTROL AND SECURITY                            #
 #        5. FORWARDING                                             #
-#        6. WINDOWS GUI OPTIONS                                    #
+#        6. MISCELLANEOUS                                          #
+#        7. WINDOWS GUI OPTIONS                                    #
 #                                                                  #
 ####################################################################
 #
@@ -68,14 +69,12 @@
 #  last character.
 #
 #
-#
 #  1. LOCAL SET-UP DOCUMENTATION
 #  ==============================
 #
 #  If you intend to operate Privoxy for more users than just
 #  yourself, it might be a good idea to let them know how to reach
 #  you, what you block and why you do that, your policies, etc.
-#
 #
 #
 #  1.1. user-manual
@@ -131,7 +130,6 @@
 #
 #user-manual http://www.privoxy.org/user-manual/
 #
-#
 #  1.2. trust-info-url
 #  ====================
 #
@@ -168,7 +166,6 @@
 #trust-info-url  http://www.example.com/why_we_block.html
 #trust-info-url  http://www.example.com/what_we_allow.html
 #
-#
 #  1.3. admin-address
 #  ===================
 #
@@ -196,7 +193,6 @@
 #      shown.
 #
 #admin-address privoxy-admin@example.com
-#
 #
 #  1.4. proxy-info-url
 #  ====================
@@ -229,7 +225,6 @@
 #
 #proxy-info-url http://www.example.com/proxy-service.html
 #
-#
 #  2. CONFIGURATION AND LOG FILE LOCATIONS
 #  ========================================
 #
@@ -240,7 +235,6 @@
 #  The user running Privoxy, must have read permission for all
 #  configuration files, and write permission to any files that would
 #  be modified, such as log files and actions files.
-#
 #
 #
 #  2.1. confdir
@@ -267,7 +261,6 @@
 #      No trailing "/", please.
 #
 confdir .
-#
 #
 #  2.2. templdir
 #  ==============
@@ -298,7 +291,6 @@ confdir .
 #
 #templdir .
 #
-#
 #  2.3. logdir
 #  ============
 #
@@ -324,7 +316,6 @@ confdir .
 #      No trailing "/", please.
 #
 logdir .
-#
 #
 #  2.4. actionsfile
 #  =================
@@ -372,7 +363,6 @@ actionsfile match-all.action # Actions that are applied to all sites and maybe o
 actionsfile default.action   # Main actions file
 actionsfile user.action      # User customizations
 #
-#
 #  2.5. filterfile
 #  ================
 #
@@ -417,7 +407,6 @@ actionsfile user.action      # User customizations
 #
 filterfile default.filter
 filterfile user.filter      # User customizations
-#
 #
 #  2.6. logfile
 #  =============
@@ -464,7 +453,6 @@ filterfile user.filter      # User customizations
 #      being run as (on Unix, default user id is "privoxy").
 #
 logfile logfile
-#
 #
 #  2.7. trustfile
 #  ===============
@@ -522,14 +510,12 @@ logfile logfile
 #
 #trustfile trust
 #
-#
 #  3. DEBUGGING
 #  =============
 #
 #  These options are mainly useful when tracing a problem. Note that
 #  you might also want to invoke Privoxy with the --no-daemon command
 #  line option when debugging.
-#
 #
 #
 #  3.1. debug
@@ -607,7 +593,6 @@ logfile logfile
 #debug  4096 # Startup banner and warnings
 #debug  8192 # Non-fatal errors
 #
-#
 #  3.2. single-threaded
 #  =====================
 #
@@ -634,7 +619,6 @@ logfile logfile
 #      drastically reduce performance.
 #
 #single-threaded
-#
 #
 #  3.3. hostname
 #  ==============
@@ -671,13 +655,11 @@ logfile logfile
 #
 #hostname hostname.example.org
 #
-#
 #  4. ACCESS CONTROL AND SECURITY
 #  ===============================
 #
 #  This section of the config file controls the security-relevant
 #  aspects of Privoxy's configuration.
-#
 #
 #
 #  4.1. listen-address
@@ -778,7 +760,6 @@ logfile logfile
 #
 listen-address  127.0.0.1:8118
 #
-#
 #  4.2. toggle
 #  ============
 #
@@ -806,7 +787,6 @@ listen-address  127.0.0.1:8118
 #      enable-remote-toggle below.
 #
 toggle  1
-#
 #
 #  4.3. enable-remote-toggle
 #  ==========================
@@ -850,7 +830,6 @@ toggle  1
 #
 enable-remote-toggle  0
 #
-#
 #  4.4. enable-remote-http-toggle
 #  ===============================
 #
@@ -888,7 +867,6 @@ enable-remote-toggle  0
 #      obsoleted by the more general header taggers.
 #
 enable-remote-http-toggle  0
-#
 #
 #  4.5. enable-edit-actions
 #  =========================
@@ -929,7 +907,6 @@ enable-remote-http-toggle  0
 #      feature, otherwise this option has no effect.
 #
 enable-edit-actions 0
-#
 #
 #  4.6. enforce-blocks
 #  ====================
@@ -978,7 +955,6 @@ enable-edit-actions 0
 #      enforce-blocks 1
 #
 enforce-blocks 0
-#
 #
 #  4.7. ACLs: permit-access and deny-access
 #  =========================================
@@ -1091,7 +1067,6 @@ enforce-blocks 0
 #        permit-access  [::ffff:192.0.2.0]/120
 #
 #
-#
 #  4.8. buffer-limit
 #  ==================
 #
@@ -1129,6 +1104,46 @@ enforce-blocks 0
 #
 buffer-limit 4096
 #
+#  4.9. enable-proxy-authentication-forwarding
+#  ============================================
+#
+#  Specifies:
+#
+#      Whether or not proxy authentication through Privoxy should
+#      work.
+#
+#  Type of value:
+#
+#      0 or 1
+#
+#  Default value:
+#
+#      0
+#
+#  Effect if unset:
+#
+#      Proxy authentication headers are removed.
+#
+#  Notes:
+#
+#      Privoxy itself does not support proxy authentication, but can
+#      allow clients to authenticate against Privoxy's parent proxy.
+#
+#      By default Privoxy (3.0.21 and later) don't do that and remove
+#      Proxy-Authorization headers in requests and Proxy-Authenticate
+#      headers in responses to make it harder for malicious sites to
+#      trick inexperienced users into providing login information.
+#
+#      If this option is enabled the headers are forwarded.
+#
+#      Enabling this option is not recommended if there is no parent
+#      proxy that requires authentication or if the local network
+#      between Privoxy and the parent proxy isn't trustworthy. If
+#      proxy authentication is only required for some requests, it is
+#      recommended to use a client header filter to remove the
+#      authentication headers for requests where they aren't needed.
+#
+enable-proxy-authentication-forwarding 0
 #
 #  5. FORWARDING
 #  ==============
@@ -1151,7 +1166,6 @@ buffer-limit 4096
 #
 #  Also specified here are SOCKS proxies. Privoxy supports the SOCKS
 #  4 and SOCKS 4A protocols.
-#
 #
 #
 #  5.1. forward
@@ -1219,7 +1233,6 @@ buffer-limit 4096
 #        forward  /                        parent-proxy.example.org:8000
 #        forward  ipv6-server.example.org  .
 #        forward  <[2-3][0-9a-f][0-9a-f][0-9a-f]:*>   .
-#
 #
 #
 #  5.2. forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t
@@ -1322,7 +1335,6 @@ buffer-limit 4096
 #       forward           localhost/     .
 #
 #
-#
 #  5.3. forwarded-connect-retries
 #  ===============================
 #
@@ -1371,10 +1383,8 @@ buffer-limit 4096
 #
 forwarded-connect-retries  0
 #
-#
 #  6. MISCELLANEOUS
 #  =================
-#
 #
 #  6.1. accept-intercepted-requests
 #  =================================
@@ -1414,7 +1424,6 @@ forwarded-connect-retries  0
 #
 accept-intercepted-requests 0
 #
-#
 #  6.2. allow-cgi-request-crunching
 #  =================================
 #
@@ -1451,7 +1460,6 @@ accept-intercepted-requests 0
 #      allow-cgi-request-crunching 1
 #
 allow-cgi-request-crunching 0
-#
 #
 #  6.3. split-large-forms
 #  =======================
@@ -1494,7 +1502,6 @@ allow-cgi-request-crunching 0
 #      split-large-forms 1
 #
 split-large-forms 0
-#
 #
 #  6.4. keep-alive-timeout
 #  ========================
@@ -1552,7 +1559,6 @@ split-large-forms 0
 #
 keep-alive-timeout 5
 #
-#
 #  6.5. tolerate-pipelining
 #  =========================
 #
@@ -1595,7 +1601,6 @@ keep-alive-timeout 5
 #      tolerate-pipelining 1
 #
 tolerate-pipelining 1
-#
 #
 #  6.6. default-server-timeout
 #  ============================
@@ -1647,7 +1652,6 @@ tolerate-pipelining 1
 #      default-server-timeout 60
 #
 #default-server-timeout 60
-#
 #
 #  6.7. connection-sharing
 #  ========================
@@ -1719,7 +1723,6 @@ tolerate-pipelining 1
 #
 #connection-sharing 1
 #
-#
 #  6.8. socket-timeout
 #  ====================
 #
@@ -1752,7 +1755,6 @@ tolerate-pipelining 1
 #
 socket-timeout 300
 #
-#
 #  6.9. max-client-connections
 #  ============================
 #
@@ -1766,7 +1768,7 @@ socket-timeout 300
 #
 #  Default value:
 #
-#      None
+#      128
 #
 #  Effect if unset:
 #
@@ -1802,13 +1804,21 @@ socket-timeout 300
 #      Obviously using this option only makes sense if you choose a
 #      limit below the one enforced by the operating system.
 #
+#      One most POSIX-compliant systems Privoxy can't properly deal
+#      with more than FD_SETSIZE file descriptors at the same time
+#      and has to reject connections if the limit is reached. This
+#      will likely change in a future version, but currently this
+#      limit can't be increased without recompiling Privoxy with a
+#      different FD_SETSIZE limit.
+#
 #  Examples:
 #
 #      max-client-connections 256
 #
 #max-client-connections 256
 #
-#  1.6.10. handle-as-empty-doc-returns-ok
+#  6.10. handle-as-empty-doc-returns-ok
+#  =====================================
 #
 #  Specifies:
 #
@@ -1845,7 +1855,8 @@ socket-timeout 300
 #
 #handle-as-empty-doc-returns-ok 1
 #
-#  1.6.11. enable-compression
+#  6.11. enable-compression
+#  =========================
 #
 #  Specifies:
 #
@@ -1885,7 +1896,8 @@ socket-timeout 300
 #
 #enable-compression 1
 #
-#  1.6.12. compression-level
+#  6.12. compression-level
+#  ========================
 #
 #  Specifies:
 #
@@ -1930,7 +1942,8 @@ socket-timeout 300
 #
 #compression-level 1
 #
-#  1.6.13. client-header-order
+#  6.13. client-header-order
+#  ==========================
 #
 #  Specifies:
 #
@@ -1970,11 +1983,11 @@ socket-timeout 300
 #   Proxy-Connection \
 #   Referer \
 #   Cookie \
+#   DNT \
 #   If-Modified-Since \
 #   Cache-Control \
 #   Content-Length \
 #   Content-Type
-#
 #
 #
 #  7. WINDOWS GUI OPTIONS

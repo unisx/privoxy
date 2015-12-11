@@ -6,7 +6,7 @@
   <title>Actions Files</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.21 User Manual" href="index.html">
   <link rel="PREVIOUS" title="The Main Configuration File" href=
   "config.html">
   <link rel="NEXT" title="Filter Files" href="filter-file.html">
@@ -21,7 +21,7 @@
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.21 User Manual</th>
       </tr>
 
       <tr>
@@ -117,7 +117,7 @@
         in <tt class="FILENAME">default.action</tt> are:</p>
 
         <div class="TABLE">
-          <a name="AEN2807" id="AEN2807"></a>
+          <a name="AEN2858" id="AEN2858"></a>
 
           <p><b>Table 1. Default Configurations</b></p>
 
@@ -314,7 +314,7 @@
     actions</a>.</p>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2906" id="AEN2906">8.1. Finding the Right
+      <h2 class="SECT2"><a name="AEN2957" id="AEN2957">8.1. Finding the Right
       Mix</a></h2>
 
       <p>Note that some <a href="actions-file.html#ACTIONS">actions</a>, like
@@ -339,7 +339,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="AEN2913" id="AEN2913">8.2. How to
+      <h2 class="SECT2"><a name="AEN2964" id="AEN2964">8.2. How to
       Edit</a></h2>
 
       <p>The easiest way to edit the actions files is with a browser by using
@@ -529,7 +529,7 @@
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN3025" id="AEN3025">8.4.1. The Domain
+        <h3 class="SECT3"><a name="AEN3076" id="AEN3076">8.4.1. The Domain
         Pattern</a></h3>
 
         <p>The matching of the domain part offers some flexible options: if
@@ -634,7 +634,7 @@
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN3101" id="AEN3101">8.4.2. The Path
+        <h3 class="SECT3"><a name="AEN3152" id="AEN3152">8.4.2. The Path
         Pattern</a></h3>
 
         <p><span class="APPLICATION">Privoxy</span> uses <span class=
@@ -2241,7 +2241,7 @@ problem-host.example.com
                 <tr>
                   <td>
                     <pre class="SCREEN">
-+filter{js-events}           # Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
++filter{js-events}           # Kill JavaScript event bindings and timers (Radically destructive! Only for extra nasty sites).
 </pre>
                   </td>
                 </tr>
@@ -2280,7 +2280,7 @@ problem-host.example.com
                 <tr>
                   <td>
                     <pre class="SCREEN">
-+filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups).
++filter{refresh-tags}        # Kill automatic refresh tags if refresh time is larger than 9 seconds.
 </pre>
                   </td>
                 </tr>
@@ -2293,7 +2293,7 @@ problem-host.example.com
                 <tr>
                   <td>
                     <pre class="SCREEN">
-+filter{unsolicited-popups}  # Disable only unsolicited pop-up windows. Useful if your browser lacks this ability.
++filter{unsolicited-popups}  # Disable only unsolicited pop-up windows.
 </pre>
                   </td>
                 </tr>
@@ -2305,7 +2305,7 @@ problem-host.example.com
                 <tr>
                   <td>
                     <pre class="SCREEN">
-+filter{all-popups}          # Kill all popups in JavaScript and HTML. Useful if your browser lacks this ability.
++filter{all-popups}          # Kill all popups in JavaScript and HTML.
 </pre>
                   </td>
                 </tr>
@@ -2396,6 +2396,18 @@ problem-host.example.com
                   <td>
                     <pre class="SCREEN">
 +filter{frameset-borders}    # Give frames a border and make them resizable.
+</pre>
+                  </td>
+                </tr>
+              </table>
+
+              <p><a name="FILTER-IFRAMES" id="FILTER-IFRAMES"></a></p>
+
+              <table border="0" bgcolor="#E0E0E0" width="90%">
+                <tr>
+                  <td>
+                    <pre class="SCREEN">
++filter{iframes}             # Removes all detected iframes. Should only be enabled for individual sites.
 </pre>
                   </td>
                 </tr>
@@ -4324,7 +4336,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4773" id="AEN4773">8.5.35.
+        <h3 class="SECT3"><a name="AEN4827" id="AEN4827">8.5.35.
         Summary</a></h3>
 
         <p>Note that many of these actions have the potential to cause a page
@@ -4483,7 +4495,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       together:</p>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4837" id="AEN4837">8.7.1.
+        <h3 class="SECT3"><a name="AEN4891" id="AEN4891">8.7.1.
         match-all.action</a></h3>
 
         <p>Remember <span class="emphasis"><i class="EMPHASIS">all actions
@@ -4532,7 +4544,7 @@ example.org/instance-that-is-delivered-as-xml-but-is-not
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4859" id="AEN4859">8.7.2.
+        <h3 class="SECT3"><a name="AEN4913" id="AEN4913">8.7.2.
         default.action</a></h3>
 
         <p>If you aren't a developer, there's no need for you to edit the
@@ -4875,7 +4887,7 @@ wiki.
       </div>
 
       <div class="SECT3">
-        <h3 class="SECT3"><a name="AEN4972" id="AEN4972">8.7.3.
+        <h3 class="SECT3"><a name="AEN5026" id="AEN5026">8.7.3.
         user.action</a></h3>
 
         <p>So far we are painting with a broad brush by setting general

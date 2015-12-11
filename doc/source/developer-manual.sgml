@@ -5,13 +5,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity history SYSTEM "history.sgml">
 <!entity seealso SYSTEM "seealso.sgml">
-<!entity contacting SYSTEM "contacting.sgml">
-<!entity copyright SYSTEM "copyright.sgml">
-<!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.20">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.21">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % seealso-extra "INCLUDE"> <!-- extra stuff from seealso.sgml    -->
@@ -24,7 +21,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: developer-manual.sgml,v 2.52 2013/01/06 11:25:52 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.57 2013/03/01 17:44:24 fabiankeil Exp $
 
  Copyright (C) 2001-2012 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -45,13 +42,14 @@
      <subscript>
     <!-- Completely the wrong markup, but very little is allowed  -->
     <!-- in this part of an article. FIXME -->
-      <link linkend="copyright">Copyright</link> &my-copy; 2001-2009 by
+      <ulink url="http://www.privoxy.org/user-manual/copyright.html">Copyright</ulink>
+      &my-copy; 2001-2013 by
       <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
      </subscript>
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.52 2013/01/06 11:25:52 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.57 2013/03/01 17:44:24 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -101,8 +99,9 @@ Hal.
  the state at the release of version &p-version;.
  You can find the latest version of the this manual at <ulink
  url="http://www.privoxy.org/developer-manual/">http://www.privoxy.org/developer-manual/</ulink>.
- Please see <link linkend="contact">the Contact section</link>
- on how to contact the developers.
+ Please have a look at the
+ <ulink url="http://www.privoxy.org/user-manual/contact.html">contact section in the user manual</ulink>
+ if you are interested in contacting the developers.
 </para>
 <!--        <para> -->
 <!--    Feel free to send a note to the developers at <email>ijbswa-developers@lists.sourceforge.net</email>. -->
@@ -2151,7 +2150,7 @@ at sourceforge. Three simple steps:
         Finished docs should be then be committed to CVS (for those
         without the ability to build these). Some docs may require
         rather obscure processing tools. <filename>config</filename>,
-        the man page (and the html version of the man page), and the PDF docs
+        the man page (and the html version of the man page)
         fall in this category. REAMDE, the man page, AUTHORS, and config
         should all also be committed to CVS for other packagers. The
         formal docs should be uploaded to the webserver. See the
@@ -2935,14 +2934,13 @@ at sourceforge. Three simple steps:
    </para>
    <para>
     <programlisting>
-  make dok dok-pdf # (or 'make redhat-dok dok-pdf' if 'make dok' doesn't work for you)
+  make dok
 </programlisting>
    </para>
    <para>
     That will generate <filename>doc/webserver/user-manual</filename>,
     <filename>doc/webserver/developer-manual</filename>,
     <filename>doc/webserver/faq</filename>,
-    <filename>doc/pdf/*.pdf</filename> and
     <filename>doc/webserver/index.html</filename> automatically.
    </para>
    <para>
@@ -2979,46 +2977,6 @@ at sourceforge. Three simple steps:
    </para>
   </sect1>
 
-  <!--   ~~~~~       New section      ~~~~~     -->
-  <sect1 id="contact"><title>Contacting the developers, Bug Reporting and Feature Requests</title>
-<!-- Include contacting.sgml  -->
- &contacting;
-<!-- end contacting -->
-  </sect1>
-
-
-<!--   ~~~~~~~~       New section Header    ~~~~~~~~~     -->
-<sect1 id="copyright"><title>Privoxy Copyright, License and History</title>
-
-<!-- Include copyright.sgml -->
- &copyright;
-<!-- end -->
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect2><title>License</title>
-<!-- Include copyright.sgml: -->
- &license;
-<!-- end copyright -->
-</sect2>
-<!--  ~  End section  ~  -->
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect2><title>History</title>
-<!-- Include history.sgml -->
- &history;
-<!-- end -->
-</sect2>
-
-</sect1>
-
-  <!--   ~~~~~       New section      ~~~~~     -->
-  <sect1 id="seealso"><title>See also</title>
-<!-- Include seealso.sgml -->
- &seealso;
-<!-- end  -->
-
-  </sect1>
-
   <!--
 
   This program is free software; you can redistribute it
@@ -3038,376 +2996,6 @@ at sourceforge. Three simple steps:
   http://www.gnu.org/copyleft/gpl.html
   or write to the Free Software Foundation, Inc., 59
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-  $Log: developer-manual.sgml,v $
-  Revision 2.52  2013/01/06 11:25:52  fabiankeil
-  Set entities to 3.0.20 beta
-
-  Revision 2.51  2012/06/19 12:48:04  fabiankeil
-  Prevent the CVS substitution in the generated example comment as well
-
-  Revision 2.50  2012/05/27 15:31:24  fabiankeil
-  Remove a duplicated 'the'
-
-  Spotted by igor.
-
-  Revision 2.49  2012/03/20 13:05:55  fabiankeil
-  We use XXX not FIXME
-
-  Revision 2.48  2012/03/20 13:05:39  fabiankeil
-  Remove bogus section about long and short being preferable to int
-
-  Revision 2.47  2012/03/20 13:05:14  fabiankeil
-  Adjust whitespace in examples to be closer to our style
-
-  Revision 2.46  2012/03/20 13:04:54  fabiankeil
-  IJB is dead, long live Privoxy
-
-  Revision 2.45  2012/03/20 13:04:41  fabiankeil
-  The redhat-dok target no longer exists so there's no point documenting it
-
-  Revision 2.44  2012/03/20 13:04:19  fabiankeil
-  We no longer build PDFs so stop pretending
-
-  Revision 2.43  2012/03/20 13:04:03  fabiankeil
-  Comment out references to multiple branches
-
-  We currently don't use any.
-
-  Revision 2.42  2012/03/20 13:03:05  fabiankeil
-  Bump copyright date
-
-  Revision 2.41  2012/03/19 12:56:08  fabiankeil
-  Untabify
-
-  Revision 2.40  2012/03/18 15:41:49  fabiankeil
-  Bump entities to 3.0.20 UNRELEASED
-
-  Revision 2.39  2012/03/18 01:16:35  diem
-  Brought OS X section up to date, deprecating the osxsetup module and adding a section referring to the OSXPackageBuilder module
-
-  Revision 2.38  2011/12/26 17:05:40  fabiankeil
-  Bump entities for 3.0.19
-
-  Revision 2.37  2011/11/13 17:03:54  fabiankeil
-  Bump entities for 3.0.18 stable
-
-  Revision 2.36  2011/09/04 11:10:12  fabiankeil
-  Ditch trailing whitespace
-
-  Revision 2.35  2011/08/17 10:40:07  fabiankeil
-  Update the entities.
-
-  This commit is chronological out of order.
-
-  Revision 2.34  2010/11/06 12:55:48  fabiankeil
-  Set p-version to 3.0.17
-
-  Revision 2.33  2010/02/13 17:38:27  fabiankeil
-  Update entities for 3.0.16 stable.
-
-  Revision 2.32  2009/11/15 14:24:12  fabiankeil
-  Prepare to generate docs for 3.0.16 UNRELEASED.
-
-  Revision 2.31  2009/10/10 05:48:55  fabiankeil
-  Prepare for 3.0.15 beta.
-
-  Revision 2.30  2009/07/18 16:24:39  fabiankeil
-  Bump entities for 3.0.14 beta.
-
-  Revision 2.29  2009/06/12 14:30:58  fabiankeil
-  Update entities for 3.0.13 beta.
-
-  Revision 2.28  2009/05/16 13:27:21  fabiankeil
-  Remove CVS revision logs. TODO item #33.
-
-  Revision 2.27  2009/02/19 02:20:22  hal9
-  Make some links in seealso conditional. Man page is now privoxy only links.
-
-  Revision 2.26  2009/02/12 16:08:26  fabiankeil
-  Declare the code stable.
-
-  Revision 2.25  2009/02/12 15:37:05  fabiankeil
-  Update templates.
-
-  Revision 2.24  2009/01/13 16:50:35  fabiankeil
-  The standard.action file is gone.
-
-  Revision 2.23  2008/09/26 17:02:01  fabiankeil
-  - Break some more CVS substitutions in examples.
-  - Remove Junkbusters reference in example header
-    for new files.
-
-  Revision 2.22  2008/08/30 15:37:35  fabiankeil
-  Update entities.
-
-  Revision 2.21  2008/08/16 08:51:28  fabiankeil
-  Update version-related entities.
-
-  Revision 2.20  2008/06/14 13:21:24  fabiankeil
-  Prepare for the upcoming 3.0.9 beta release.
-
-  Revision 2.19  2008/05/12 11:13:33  fabiankeil
-  Clarify that Privoxy is licensed under GPL version 2.
-
-  Revision 2.18  2008/02/04 12:14:06  fabiankeil
-  Change "Edit Packages" URL to use https.
-
-  Revision 2.17  2008/02/03 21:37:41  hal9
-  Apply patch from Mark: s/OSX/OS X/
-
-  Revision 2.16  2008/01/19 17:52:38  hal9
-  Re-commit to fix various minor issues for new release.
-
-  Revision 2.15  2008/01/19 15:03:05  hal9
-  Doc sources tagged for 3.0.8 release.
-
-  Revision 2.14  2008/01/17 01:49:51  hal9
-  Change copyright notice for docs s/2007/2008/. All these will be rebuilt soon
-  enough.
-
-  Revision 2.13  2007/10/30 17:59:31  fabiankeil
-  - Bump p-version, p-status and copyright date.
-  - Mention that the manual is out of date.
-  - Don't use examples with HardToReadCamelCase after
-    explaining that we actually don't like that.
-  - Minor cosmetics.
-
-  Revision 2.12  2006/11/14 01:57:46  hal9
-  Dump all docs prior to 3.0.6 release. Various minor changes to faq and user
-  manual.
-
-  Revision 2.11  2006/09/26 02:36:29  hal9
-  Fix broken link per bug tracker.
-
-  Revision 2.10  2006/09/22 01:27:55  hal9
-  Final commit of probably various minor changes here and there. Unless
-  something changes this should be ready for pending release.
-
-  Revision 2.9  2006/09/14 02:30:07  hal9
-  Fix ijbswa cvs links. Update notes on release process, and which config files
-  should be overwritten and which not.
-
-  Revision 2.8  2006/08/22 23:35:01  hal9
-  Fix email address, cvs URI, address branching changes and various other
-  small updates.
-
-  Revision 2.7  2006/07/18 14:48:50  david__schmidt
-  Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
-  with what was really the latest development (the v_3_0_branch branch)
-
-  Revision 1.46.2.11  2002/12/11 13:12:15  hal9
-  Rewrite cvs write access give-away section.
-
-  Revision 1.46.2.10  2002/09/26 21:53:45  hal9
-  Changes to reflect recent change in stable branch commit policy (hopefully
-  clearer now).
-
-  Revision 1.46.2.9  2002/09/26 01:21:40  hal9
-  Porting 3.1.1 changes: more on cvs and branches, more on versions and
-  releases.
-
-  Revision 1.46.2.8  2002/08/17 00:16:10  hal9
-  Add note on updating webserver for User-manual/CGI editor, which is version
-  dependent (and different from main UM link).
-
-  Revision 1.46.2.7  2002/08/14 17:29:25  hal9
-  Add small notes on post-release steps, and uploading docs to webserver.
-
-  Revision 1.46.2.6  2002/08/10 11:40:25  oes
-  Added disclaimer about probably being out-of-date and two small hints
-
-  Revision 1.46.2.5  2002/08/09 01:15:12  hal9
-  Added some notes on pre-release steps (test builds first, update ChangeLog).
-
-  Revision 1.46.2.4  2002/05/29 00:30:59  mal0rd
-  Fixed a little formatting.  Clarified debian section.
-
-  Revision 1.46.2.3  2002/05/28 04:32:45  hal9
-  Change hints on bundling index.html to privoxy-index.html
-
-  Revision 1.46.2.2  2002/05/26 17:04:24  hal9
-  -Spellcheck, very minor edits, and sync across branches
-
-  Revision 1.48  2002/05/26 12:48:31  roro
-  Add releasing information about Debian.
-
-  Revision 1.47  2002/05/26 04:55:11  mal0rd
-  Added debian-dist and debian-upload targets.  Also documented usage.
-
-  Revision 1.46  2002/05/22 17:15:00  oes
-  Updated intro
-
-  Revision 1.45  2002/05/19 23:01:54  hal9
-  Add small section on general packaging guidelines (e.g. actions files must
-  be writable).
-
-  Revision 1.44  2002/05/15 03:55:17  hal9
-  Fix ulink -> link, and minor modification to release process section for
-  clarification.
-
-  Revision 1.43  2002/05/10 01:48:19  hal9
-  This is mostly proposed copyright/licensing additions and changes. Docs
-  are still GPL, but licensing and copyright are more visible. Also, copyright
-  changed in doc header comments (eliminate references to JB except FAQ).
-
-  Revision 1.42  2002/05/05 20:26:02  hal9
-  Sorting out license vs copyright in these docs.
-
-  Revision 1.41  2002/05/04 08:44:44  swa
-  bumped version
-
-  Revision 1.40  2002/05/04 00:43:43  hal9
-  -Remove TOC/first page kludge with proper stylesheet fix.
-  -Combined the two very brief sections: Intro and Quickstart.
-
-  Revision 1.39  2002/05/02 15:08:25  oes
-  Added explanation about version numbers and RPM package revisions
-
-  Revision 1.38  2002/04/29 02:20:31  hal9
-  Add info on steps for uploading and the release process on SF.
-
-  Revision 1.37  2002/04/26 17:23:29  swa
-  bookmarks cleaned, changed structure of user manual, screen and programlisting cleanups, and numerous other changes that I forgot
-
-  Revision 1.36  2002/04/26 05:25:23  hal9
-  Mass commit to catch a few scattered fixes.
-
-  Revision 1.35  2002/04/17 15:16:15  oes
-  Added link to docbook crash course
-
-  Revision 1.34  2002/04/15 23:39:32  oes
-   - Extended & fixed the release section
-   - Added CVS guideline sections
-   - Separated webserver section from release section
-   - Commented out boilerplate inclusion (If you don't know yet what it is,
-     you shouldn't mess with its code ;-)
-   - Nits & fixes
-
-  Revision 1.33  2002/04/12 03:49:53  hal9
-  Spell checked. Clarification on where docs are kept.
-
-  Revision 1.32  2002/04/11 21:29:58  jongfoster
-  Documenting Win32 release procedure
-
-  Revision 1.31  2002/04/11 09:32:52  oes
-  more nits
-
-  Revision 1.30  2002/04/11 09:24:53  oes
-  nits
-
-  Revision 1.29  2002/04/10 18:45:14  swa
-  generated
-
-  Revision 1.28  2002/04/08 22:59:26  hal9
-  Version update. Spell chkconfig correctly :)
-
-  Revision 1.27  2002/04/08 15:31:18  hal9
-  Touch ups to documentation section.
-
-  Revision 1.26  2002/04/07 23:50:08  hal9
-  Documentation changes to reflect HTML docs now in CVS, and new generated files
-  list.
-
-  Revision 1.25  2002/04/06 05:07:28  hal9
-  -Add privoxy-man-page.sgml, for man page.
-  -Add authors.sgml for AUTHORS (and p-authors.sgml)
-  -Reworked various aspects of various docs.
-  -Added additional comments to sub-docs.
-
-  Revision 1.24  2002/04/04 21:33:37  hal9
-  More on documenting the documents.
-
-  Revision 1.23  2002/04/04 18:46:47  swa
-  consistent look. reuse of copyright, history et. al.
-
-  Revision 1.22  2002/04/04 17:27:56  swa
-  more single file to be included at multiple points. make maintaining easier
-
-  Revision 1.21  2002/04/04 06:48:37  hal9
-  Structural changes to allow for conditional inclusion/exclusion of content
-  based on entity toggles, e.g. 'entity % p-not-stable  "INCLUDE"'. And
-  definition of internal entities, e.g. 'entity p-version "2.9.13"' that will
-  eventually be set by Makefile.
-  More boilerplate text for use across multiple docs.
-
-  Revision 1.20  2002/04/04 03:28:27  david__schmidt
-  Add Mac OS X section
-
-  Revision 1.19  2002/04/03 15:09:42  david__schmidt
-  Add OS/2 build section
-
-  Revision 1.18  2002/04/03 03:51:48  hal9
-  Touch ups.
-
-  Revision 1.17  2002/04/03 01:21:17  hal9
-  Implementing Andreas's suggestions for Release sections.
-
-  Revision 1.16  2002/03/31 23:04:40  hal9
-  Fleshed out the doc section, and added something for an intro so it was not
-  blank.
-
-  Revision 1.15  2002/03/30 22:29:47  swa
-  wrong make flavour
-
-  Revision 1.14  2002/03/30 19:04:08  swa
-  people release differently. no good.
-  I want to make parts of the docs only.
-
-  Revision 1.13  2002/03/27 01:16:41  hal9
-  ditto
-
-  Revision 1.12  2002/03/27 01:02:51  hal9
-  Touch up on name change...
-
-  Revision 1.11  2002/03/26 22:29:55  swa
-  we have a new homepage!
-
-  Revision 1.10  2002/03/24 12:33:01  swa
-  more additions.
-
-  Revision 1.9  2002/03/24 11:01:05  swa
-  name change
-
-  Revision 1.8  2002/03/23 15:13:11  swa
-  renamed every reference to the old name with foobar.
-  fixed "application foobar application" tag, fixed
-  "the foobar" with "foobar". left junkbustser in cvs
-  comments and remarks to history untouched.
-
-  Revision 1.7  2002/03/11 13:13:27  swa
-  correct feedback channels
-
-  Revision 1.6  2002/02/24 14:25:06  jongfoster
-  Formatting changes.  Now changing the doctype to DocBook XML 4.1
-  will work - no other changes are needed.
-
-  Revision 1.5  2001/10/31 18:16:51  swa
-  documentation added: howto generate docs in text and html
-  format, howto move stuff to the webserver.
-
-  Revision 1.4  2001/09/23 10:13:48  swa
-  upload process established. run make webserver and
-  the documentation is moved to the webserver. documents
-  are now linked correctly.
-
-  Revision 1.3  2001/09/13 15:27:40  swa
-  cosmetics
-
-  Revision 1.2  2001/09/13 15:20:17  swa
-  merged standards into developer manual
-
-  Revision 1.1  2001/09/12 15:36:41  swa
-  source files for junkbuster documentation
-
-  Revision 1.3  2001/09/10 17:43:59  swa
-  first proposal of a structure.
-
-  Revision 1.2  2001/06/13 14:28:31  swa
-  docs should have an author.
-
-  Revision 1.1  2001/06/13 14:20:37  swa
-  first import of project's documentation for the webserver.
 
   -->
 

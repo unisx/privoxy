@@ -1,7 +1,68 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Version 3.0.20 Beta ***
+*** Version 3.0.21 stable ***
+
+- Bug fixes:
+  - On POSIX-like platforms, network sockets with file descriptor
+    values above FD_SETSIZE are properly rejected. Previously they
+    could cause memory corruption in configurations that allowed
+    the limit to be reached.
+  - Proxy authentication headers are removed unless the new directive
+    enable-proxy-authentication-forwarding is used. Forwarding the
+    headers potentionally allows malicious sites to trick the user
+    into providing them with login information.
+    Reported by Chris John Riley.
+  - Compiles on OS/2 again now that unistd.h is only included
+    on platforms that have it.
+
+- General improvements:
+  - The show-status page shows the FEATURE_STRPTIME_SANITY_CHECKS status.
+  - A couple of assert()s that could theoretically dereference
+    NULL pointers in debug builds have been relocated.
+  - Added an LSB info block to the generic start script.
+    Based on a patch from Natxo Asenjo.
+  - The max-client-connections default has been changed to 128
+    which should be more than enough for most setups.
+
+- Action file improvements:
+  - Block rover.ebay./ar.*\&adtype= instead of "/.*\&adtype=" which
+    caused too man false positives.
+    Reported by u302320 in #360284, additional feedback from Adam Piggott.
+  - Unblock '.advrider.com/' and '/.*ADVrider'.
+    Anonymously reported in #3603636.
+  - Stop blocking '/js/slider\.js'.
+    Reported by Adam Piggott in #3606635 and _lvm in #2791160.
+
+- Filter file improvements:
+  - Added an iframes filter.
+
+- Documentation improvements:
+  - The whole GPLv2 text is included in the user manual now,
+    so Privoxy can serve it itself and the user can read it
+    without having to wade through GPLv3 ads first.
+  - Properly numbered and underlined a couple of section titles
+    in the config that where previously overlooked due to a flaw
+    in the conversion script. Reported by Ralf Jungblut.
+  - Improved the support instruction to hopefully make it harder to
+    unintentionally provide insufficient information when requesting
+    support. Previously it wasn't obvious that the information we need
+    in bug reports is usually also required in support requests.
+  - Removed documentation about packages that haven't been provided
+    in years.
+
+- Privoxy-Regression-Test:
+  - Only log the test number when not running in verbose mode
+    The position of the test is rarely relevant and it previously
+    wasn't exactly obvious which one of the numbers was useful to
+    repeat the test with --test-number.
+
+- GNUmakefile improvements:
+  - Factor generate-config-file out of config-file to make testing
+    more convenient.
+  - The clean target now also takes care of patch leftovers.
+
+*** Version 3.0.20 beta ***
 
 - Bug fixes:
   - Client sockets are now properly shutdown and drained before being
@@ -887,7 +948,7 @@ ChangeLog for Privoxy
 - The scripts in the tools directory treat unknown parameters
   as fatal errors.
 
-*** Version 3.0.15 Beta ***
+*** Version 3.0.15 beta ***
 
 - In case of missing server data, no error message is send to the
   client if the request arrived on a reused connection. The client
@@ -933,7 +994,7 @@ ChangeLog for Privoxy
 - Privoxy-Regression-Test supports redirect tests.
 - Privoxy-Log-Parser can gather some connection statistics.
 
-*** Version 3.0.14 Beta ***
+*** Version 3.0.14 beta ***
 
 - The latency is taken into account when evaluating whether or not to
   reuse a connection. This should significantly reduce the number of
@@ -968,7 +1029,7 @@ ChangeLog for Privoxy
 - The configure script respects the $PATH variable when searching
   for groups and id.
 
-*** Version 3.0.13 Beta ***
+*** Version 3.0.13 beta ***
 
 - Added IPv6 support. Thanks to Petr Pisar who not only provided
   the initial patch but also helped a lot with the integration.
@@ -1112,7 +1173,7 @@ ChangeLog for Privoxy
   http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
   Documentation is available through perldoc(1).
 
-*** Version 3.0.9 Beta ***
+*** Version 3.0.9 beta ***
 
 - Added SOCKS5 support (with address resolution done by
   the SOCKS5 server). Patch provided by Eric M. Hopper.
@@ -1226,7 +1287,7 @@ ChangeLog for Privoxy
   config.txt referenced a nonexisting file
 - Minor documentation fixes.
 
-*** Version 3.0.7 Beta ***
+*** Version 3.0.7 beta ***
 
 - Added zlib support to filter content with gzip and deflate
   encoding. (Patch provided by Wil Mahan)
@@ -1382,7 +1443,7 @@ ChangeLog for Privoxy
 - Changed webinterface default values for hide-user-agent, hide-referrer
   and set-image-blocker.
 
-*** Version 3.0.5 Beta ***
+*** Version 3.0.5 beta ***
 
 - Windows version can be installed/started as a service.
 - Windows icon stays blue when Privoxy is idle, green when busy.
@@ -1512,7 +1573,7 @@ ChangeLog for Privoxy
   user.action. user.action is for personal/local configuration.
 - The usual many small and miscellaneous bug and security fixes.
 
-*** Version 2.9.14 Beta ***
+*** Version 2.9.14 beta ***
 
 - Fix Solaris compile problem (gateway.h and filters.h)
 - Makefile fixes for Solaris, FreeBSD (?)
@@ -1526,7 +1587,7 @@ ChangeLog for Privoxy
 - #include mechansim for common text in templates
 - Various other minor fixes.
 
-*** Version 2.9.13 Beta ***
+*** Version 2.9.13 beta ***
 
 - *NEWS*: The project has been renamed to Privoxy! The new name is
   reflected throughout (file locations, etc).
@@ -1538,7 +1599,7 @@ ChangeLog for Privoxy
 - RPM spec file make over.
 
 
-*** Version 2.9.12 Beta ***
+*** Version 2.9.12 beta ***
 
 - **READ**: The default listening PORT is NOW 8118!!! Changed from
   8000 due to conflict with NAS (Network Audio Server, whatever that
@@ -1575,7 +1636,7 @@ ChangeLog for Privoxy
 - Various other minor fixes.
 
 
-*** Version 2.9.11 Beta Changes ***
+*** Version 2.9.11 beta Changes ***
 
 - Add "session" cookie concept where cookies exist for the life
   of that browser session only (ie never goes to disk).
@@ -1698,7 +1759,7 @@ being a mix of "U.S. English", "U.K. English" and "Irish English".
 
 
 ----------------------------------------------------------------------
-Copyright   :  Written by and Copyright (C) 2001-2010 the
+Copyright   :  Written by and Copyright (C) 2001-2013 the
                Privoxy team. http://www.privoxy.org/
 
                Based on the Internet Junkbuster originally written

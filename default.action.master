@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.279 2012/12/19 11:45:03 fabiankeil Exp $
+#  $Id: default.action.master,v 1.287 2013/03/03 10:53:36 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -23,34 +23,11 @@
 #                 and enhancements are better placed in user.action,
 #                 the match-all section has been moved to match-all.action.
 #
-#  Copyright   :  Written by and Copyright (C) 2001-2012 the
+#  Copyright   :  Written by and Copyright (C) 2001-2013 the
 #                 Privoxy team. http://www.privoxy.org/
 #
-# We value your feedback. However, to provide you with the best support,
-# please note:
-#
-#  * Use the support forum to get help:
-#    http://sourceforge.net/tracker/?group_id=11118&atid=211118
-#  * Submit feedback for this actions file only through the
-#    SF actions file feedback tracker:
-#    http://sourceforge.net/tracker/?group_id=11118&atid=460288
-#  * Submit bugs only through our bug forum:
-#    http://sourceforge.net/tracker/?group_id=11118&atid=111118
-#    Make sure that the bug has not already been submitted. Please try
-#    to verify that it is a Privoxy bug, and not a browser or site
-#    bug first. If you are using your own custom configuration, please
-#    try the stock configs to see if the problem is a configuration
-#    related bug. And if possible please try the latest CVS sources.
-#  * Submit feature requests only through our feature request forum:
-#    http://sourceforge.net/tracker/?atid=361118&group_id=11118&func=browse
-#
-# For any other issues, feel free to use the mailing lists:
-# http://sourceforge.net/mail/?group_id=11118
-#
-# Anyone interested in actively participating in development and related
-# discussions can join the appropriate mailing list here:
-# http://sourceforge.net/mail/?group_id=11118. Archives are available
-# here too.
+# Feedback welcome, for details please have a look at:
+# http://www.privoxy.org/user-manual/contact.html
 #
 # The current development version of this file is located:
 # http://ijbswa.cvs.sourceforge.net/*checkout*/ijbswa/current/default.action.master
@@ -225,11 +202,13 @@
 #
 #     image-requests:    Tags detected image requests as "IMAGE-REQUEST".
 #     css-requests:      Tags detected CSS requests as "CSS-REQUEST".
+#     range-requests:    Tags range requests as "RANGE-REQUEST".
 #     client-ip-address: Tags the request with the client's IP address.
 #     http-method:       Tags the request with its HTTP method.
 #     allow-post:        Tags POST requests as "ALLOWED-POST".
 #     complete-url:      Tags the request with the whole request URL.
 #     user-agent:        Tags the request with the complete User-Agent header.
+#     referer:           Tags the request with the complete Referer header.
 #     privoxy-control:   Creates tags with the content of X-Privoxy-Control headers.
 #
 # +content-type-overwrite
@@ -298,10 +277,10 @@
 #    Filters predefined in the supplied default.filter include:
 #
 #     js-annoyances:       Get rid of particularly annoying JavaScript abuse.
-#     js-events:           Kill all JS event bindings and timers (Radically destructive! Only for extra nasty sites).
+#     js-events:           Kill JavaScript event bindings and timers (Radically destructive! Only for extra nasty sites).
 #     html-annoyances:     Get rid of particularly annoying HTML abuse.
 #     content-cookies:     Kill cookies that come in the HTML or JS content.
-#     refresh-tags:        Kill automatic refresh tags (for dial-on-demand setups).
+#     refresh-tags:        Kill automatic refresh tags if refresh time is larger than 9 seconds.
 #     unsolicited-popups:  Disable only unsolicited pop-up windows.
 #     all-popups:          Kill all popups in JavaScript and HTML.
 #     img-reorder:         Reorder attributes in <img> tags to make the banners-by-* filters more effective.
@@ -311,6 +290,7 @@
 #     tiny-textforms:      Extend those tiny textareas up to 40x80 and kill the hard wrap.
 #     jumping-windows:     Prevent windows from resizing and moving themselves.
 #     frameset-borders:    Give frames a border and make them resizable.
+#     iframes:             Removes all detected iframes. Should only be enabled for individual sites.
 #     demoronizer:         Fix MS's non-standard use of standard charsets.
 #     shockwave-flash:     Kill embedded Shockwave Flash objects.
 #     quicktime-kioskmode: Make Quicktime movies saveable.
@@ -731,6 +711,12 @@ support./(.*/)?track
 /.*\.git/objects/
 # URL = http://code.google.com/p/sm-ssc/wiki/Bugtracker?tm=3
 /.*Bugtracker
+# URL = http://tiggit.net/forum/jscripts/popup_menu.js?ver=1600
+# URL = http://www.av-comparatives.org/forum/wcf/js/PopupMenuList.class.js
+# URL = http://oystatic.ignimgs.com/src/ve3d/sites/ve3d.ign.com/js/production/popupmenu.js
+# URL = http://www.cutepdf.com/include/popmenu.js
+# URL = http://www.cutepdf.com/include/popmenuv.js
+/(.*/)?pop[a-z_-]*menu
 
 #############################################################################
 # Exceptions for academia and non-profits
@@ -858,8 +844,6 @@ js.adlink.net/
 #MASTER# BLOCK-REFERRER: http://www.chip.de/artikel/c_artikelunterseite_10423683.html
 # Blocked URL = http://pagead.googlesyndication.example.com/foo/bar/baz.js
 pagead*.googlesyndication./.*\.js
-#MASTER# BLOCK-REFERRER: http://www.pcmag.com/ 11/22/06 per SF Tracker # 1601148
-/js/slider\.js
 #MASTER# BLOCK-REFERRER: http://floodle.net 2007-01-21 SF tracker
 scripts.chitika.net/.*\.js
 #MASTER# BLOCK-REFERRER: via Yahoo groups
@@ -1348,7 +1332,8 @@ img.directtrack.com
 # Blocked URL = http://rtb.pclick.yahoo.com/images/nojs.gif?p=3
 .pclick.yahoo.com/images/
 # Blocked URL = http://rover.ebay.com/ar/1/2/3?mpt=123&adtype=1&size=728x90
-/.*\&adtype=
+# Blocked URL = http://rover.ebay.com/ar/1/711-53200-19255-0/1?mpt=CacheBuster&adtype=1&size=1x1&type=3&campid=5336328269&toolid=10001
+rover.ebay./ar.*\&adtype=
 # Blocked URL = http://resources.parfym.se/tradedoubler/250x360.swf
 /tradedoubler/.*\.swf
 # Blocked URL = http://hstse.tradedoubler.com/file/142609/440x220.swf
@@ -1879,7 +1864,12 @@ websupport.wdc.com/
 #MASTER# REMARKS: Actionsfile feedback item #3413827  2011-09-25 12:11
 #MASTER# REMARKS: This domain hosts JS, images and CSS upon which hotmail.com depends
 .wlxrs.com/
-
+# URL = http://advrider.com/forums/
+# URL = http://www.advrider.com/forums/
+.advrider.com/
+# URL = http://www.smugmug.com/community/ADVrider
+# URL = http://www.siteinfotool.com/advrider.com
+/.*ADVrider
 
 #############################################################################
 # Site-specific special rules:

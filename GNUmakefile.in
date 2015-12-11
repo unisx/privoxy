@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.216 2013/01/10 11:03:58 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.221 2013/02/05 14:04:11 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2013 members of the
 # Privoxy team. http://www.privoxy.org/
@@ -573,12 +573,9 @@ dok-release:
 
 # The main Privoxy config file, generated from sgml sources.
 # NOTE: This will require some hand editing.
-config-file: dok-release
-	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
-	$(W3M_DUMP) -cols 67 __tmp.html > ../../config && $(RM) __tmp.*
-	$(PERL) -i.bak utils/prepare-configfile.pl config
+config-file: dok-release generate-config-file
 
-	$(RM) *.bak
+	$(RM) config.bak config.html
 	@$(ECHO)  "****************************************************"
 	@$(ECHO)  "The config file has been optimistically updated"
 	@$(ECHO)  "Now -- you may need to hand edit the results!"
@@ -587,6 +584,11 @@ config-file: dok-release
 	@$(ECHO)  "various user-manual examples, which all"
 	@$(ECHO)  "might have gotten hammered."
 	@$(ECHO)  "****************************************************"
+
+generate-config-file:
+	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > ../../config.html
+	$(W3M_DUMP) -cols 67 config.html > config
+	$(PERL) -i.bak utils/prepare-configfile.pl config
 
 # config file, alternate version using lynx (perl stuff unfinished). Lynx
 # does not do so good a job.
@@ -741,7 +743,9 @@ $(PROGRAM): $(OBJS) $(W32_FILES)
 
 clean:
 	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action \
-		`find . -name TAGS -o -name tags | $(GREP) -v .git` config.base config.tmp
+		config.base config.tmp \
+		`find . \( -name TAGS -o -name tags \) -and -not -path "./.git/refs/tags"` \
+		`find . -name "*.orig" -a -not -name rc.privoxy.orig`
 
 clean-editor-files:
 	$(RM) `find . -name "*~"`

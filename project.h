@@ -1,7 +1,7 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.195 2012/12/07 12:45:20 fabiankeil Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.196 2013/03/07 14:08:50 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
@@ -1219,6 +1219,9 @@ struct access_control_list
 
 /** configuration_spec::feature_flags: Pipelined requests are served instead of being discarded. */
 #define RUNTIME_FEATURE_TOLERATE_PIPELINING       2048U
+
+/** configuration_spec::feature_flags: Proxy authentication headers are forwarded instead of removed. */
+#define RUNTIME_FEATURE_FORWARD_PROXY_AUTHENTICATION_HEADERS      4096U
 
 /**
  * Data loaded from the configuration file.

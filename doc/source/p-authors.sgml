@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: p-authors.sgml,v 2.49 2013/01/10 11:39:05 fabiankeil Exp $
+ $Id: p-authors.sgml,v 2.54 2013/02/27 16:53:58 fabiankeil Exp $
 
- Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -17,6 +17,7 @@
 
  This file is included into:
 
+  privoxy.1
   privoxy-man-page
   AUTHORS
   user-manual
@@ -30,10 +31,7 @@ Current Privoxy Team:
 
 <literallayout>
  Fabian Keil, lead developer
- David Schmidt, developer
-<![%p-authors-formal;[
-]]>
-
+ David Schmidt
  Hal Burgiss
  Lee Rian
  Roland Rosenfeld
@@ -80,6 +78,7 @@ Current Privoxy Team:
 </para>
 <literallayout>
  Ken Arromdee
+ Natxo Asenjo
  Devin Bayer
  Havard Berland
  David Bo
@@ -118,6 +117,7 @@ Current Privoxy Team:
  Derek Jennings
  Andrew Jones
  Julien Joubert
+ Ralf Jungblut
  Petr Kadlec
  Steven Kolins
  Zeno Kugy

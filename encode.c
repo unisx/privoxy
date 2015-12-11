@@ -1,4 +1,4 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.28 2012/12/27 15:48:53 fabiankeil Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.29 2013/02/19 11:14:05 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
@@ -158,9 +158,10 @@ char * html_encode(const char *s)
       }
 
       *p = '\0';
+
+      assert(strlen(buf) < buf_size);
    }
 
-   assert(strlen(buf) < buf_size);
    return(buf);
 }
 
@@ -253,9 +254,9 @@ char * url_encode(const char *s)
 
       *p = '\0';
 
+      assert(strlen(buf) < buf_size);
    }
 
-   assert(strlen(buf) < buf_size);
    return(buf);
 }
 
@@ -448,9 +449,9 @@ char *percent_encode_url(const char *s)
          }
       }
       *p = '\0';
-   }
 
-   assert(strlen(buf) < buf_size);
+      assert(strlen(buf) < buf_size);
+   }
 
    return(buf);
 

@@ -316,6 +316,11 @@
               <td>Enables the statistics function.</td>
             </tr>
             <tr>
+              <td><code>FEATURE_STRPTIME_SANITY_CHECKS</code></td>
+              <td>@if-FEATURE_STRPTIME_SANITY_CHECKS-then@ Yes @else-not-FEATURE_STRPTIME_SANITY_CHECKS@ No @endif-FEATURE_STRPTIME_SANITY_CHECKS@</td>
+              <td>Try to work around broken strptime() implementations.</td>
+            </tr>
+            <tr>
               <td><code>FEATURE_TOGGLE</code></td>
               <td>@if-FEATURE_TOGGLE-then@ Yes @else-not-FEATURE_TOGGLE@ No @endif-FEATURE_TOGGLE@</td>
               <td>Allow Privoxy to be <q>disabled</q> so it is just a normal non-blocking non-anonymizing proxy.</td>

@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.274 2013/01/04 12:20:31 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.275 2013/03/07 14:08:50 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -148,6 +148,7 @@ static jb_err server_connection_adder(struct client_state *csp);
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
 static jb_err server_proxy_connection_adder(struct client_state *csp);
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+static jb_err proxy_authentication(struct client_state *csp, char **header);
 
 static jb_err create_forged_referrer(char **header, const char *hostport);
 static jb_err create_fake_referrer(char **header, const char *fake_referrer);
@@ -198,6 +199,7 @@ static const struct parsers client_patterns[] = {
    { "Request-Range:",           14,   client_range },
    { "If-Range:",                 9,   client_range },
    { "X-Filter:",                 9,   client_x_filter },
+   { "Proxy-Authorization:",     20,   proxy_authentication },
 #if 0
    { "Transfer-Encoding:",       18,   client_transfer_encoding },
 #endif
@@ -223,6 +225,7 @@ static const struct parsers server_patterns[] = {
    { "Transfer-Encoding:",       18, server_transfer_coding },
    { "content-disposition:",     20, server_content_disposition },
    { "Last-Modified:",           14, server_last_modified },
+   { "Proxy-Authenticate:",      19, proxy_authentication },
    { "*",                         0, crunch_server_header },
    { "*",                         0, filter_header },
    { NULL,                        0, NULL }
@@ -1729,6 +1732,36 @@ static jb_err server_keep_alive(struct client_state *csp, char **header)
 static jb_err server_proxy_connection(struct client_state *csp, char **header)
 {
    csp->flags |= CSP_FLAG_SERVER_PROXY_CONNECTION_HEADER_SET;
+   return JB_ERR_OK;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  proxy_authentication
+ *
+ * Description :  Removes headers that are relevant for proxy
+ *                authentication unless forwarding them has
+ *                been explicitly requested.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  header = On input, pointer to header to modify.
+ *                On output, pointer to the modified header, or NULL
+ *                to remove the header.  This function frees the
+ *                original string if necessary.
+ *
+ * Returns     :  JB_ERR_OK.
+ *
+ *********************************************************************/
+static jb_err proxy_authentication(struct client_state *csp, char **header)
+{
+   if ((csp->config->feature_flags &
+      RUNTIME_FEATURE_FORWARD_PROXY_AUTHENTICATION_HEADERS) == 0) {
+      log_error(LOG_LEVEL_HEADER,
+         "Forwarding proxy authentication headers is disabled. Crunching: %s", *header);
+      freez(*header);
+   }
    return JB_ERR_OK;
 }
 

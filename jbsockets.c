@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.120 2013/01/01 22:11:08 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.123 2013/03/06 21:06:18 diem Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -131,7 +131,7 @@ static jb_socket no_rfc2553_connect_to(const char *host, int portnum, struct cli
  *
  * Parameters  :
  *          1  :  host = hostname to connect to
- *          2  :  portnum = port to connent on (XXX: should be unsigned)
+ *          2  :  portnum = port to connect to (XXX: should be unsigned)
  *          3  :  csp = Current client state (buffers, headers, etc...)
  *
  * Returns     :  JB_INVALID_SOCKET => failure, else it is the socket
@@ -277,6 +277,17 @@ static jb_socket rfc2553_connect_to(const char *host, int portnum, struct client
       {
          continue;
       }
+
+#ifndef _WIN32
+      if (fd >= FD_SETSIZE)
+      {
+         log_error(LOG_LEVEL_ERROR,
+            "Server socket number too high to use select(): %d >= %d",
+            fd, FD_SETSIZE);
+         close_socket(fd);
+         return JB_INVALID_SOCKET;
+      }
+#endif
 
 #ifdef TCP_NODELAY
       {  /* turn off TCP coalescence */
@@ -459,6 +470,17 @@ static jb_socket no_rfc2553_connect_to(const char *host, int portnum, struct cli
    {
       return(JB_INVALID_SOCKET);
    }
+
+#ifndef _WIN32
+   if (fd >= FD_SETSIZE)
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Server socket number too high to use select(): %d >= %d",
+         fd, FD_SETSIZE);
+      close_socket(fd);
+      return JB_INVALID_SOCKET;
+   }
+#endif
 
 #ifdef TCP_NODELAY
    {  /* turn off TCP coalescence */
@@ -1012,7 +1034,7 @@ void get_host_information(jb_socket afd, char **ip_address, char **port,
    struct sockaddr_in server;
    struct hostent *host = NULL;
 #endif /* HAVE_RFC2553 */
-#if defined(_WIN32) || defined(__OS2__) || defined(__APPLE_CC__) || defined(AMIGA)
+#if defined(_WIN32) || defined(__OS2__) || defined(AMIGA)
    /* according to accept_connection() this fixes a warning. */
    int s_length, s_length_provided;
 #else
@@ -1182,7 +1204,7 @@ int accept_connection(struct client_state * csp, jb_socket fds[])
    struct sockaddr_in client;
 #endif
    jb_socket afd;
-#if defined(_WIN32) || defined(__OS2__) || defined(__APPLE_CC__) || defined(AMIGA)
+#if defined(_WIN32) || defined(__OS2__) || defined(AMIGA)
    /* Wierdness - fix a warning. */
    int c_length;
 #else
@@ -1283,6 +1305,17 @@ int accept_connection(struct client_state * csp, jb_socket fds[])
       {
          log_error(LOG_LEVEL_ERROR, "Setting SO_LINGER on socket %d failed.", afd);
       }
+   }
+#endif
+
+#ifndef _WIN32
+   if (afd >= FD_SETSIZE)
+   {
+      log_error(LOG_LEVEL_ERROR,
+         "Client socket number too high to use select(): %d >= %d",
+         afd, FD_SETSIZE);
+      close_socket(afd);
+      return 0;
    }
 #endif
 

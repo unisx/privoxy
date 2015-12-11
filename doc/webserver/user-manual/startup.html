@@ -6,7 +6,7 @@
   <title>Starting Privoxy</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.21 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Quickstart to Using Privoxy" href=
   "quickstart.html">
   <link rel="NEXT" title="Privoxy Configuration" href="configuration.html">
@@ -21,7 +21,7 @@
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.21 User Manual</th>
       </tr>
 
       <tr>
@@ -55,7 +55,7 @@
     protocols.</p>
 
     <div class="FIGURE">
-      <a name="AEN858" id="AEN858"></a>
+      <a name="AEN909" id="AEN909"></a>
 
       <p><b>Figure 2. Proxy Configuration Showing Mozilla/Netscape HTTP and
       HTTPS (SSL) Settings</b></p>
@@ -112,7 +112,7 @@
     only HTTP and HTTPS (SSL)!</p>
 
     <div class="FIGURE">
-      <a name="AEN903" id="AEN903"></a>
+      <a name="AEN954" id="AEN954"></a>
 
       <p><b>Figure 3. Proxy Configuration Showing Internet Explorer HTTP and
       HTTPS (Secure) Settings</b></p>
@@ -137,38 +137,7 @@
     will try <tt class="FILENAME">config.txt</tt>.</p>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-REDHAT" id="START-REDHAT">5.1. Red Hat
-      and Fedora</a></h2>
-
-      <p>A default Red Hat installation may not start <span class=
-      "APPLICATION">Privoxy</span> upon boot. It will use the file <tt class=
-      "FILENAME">/etc/privoxy/config</tt> as its main configuration file.</p>
-
-      <table border="0" bgcolor="#E0E0E0" width="100%">
-        <tr>
-          <td>
-            <pre class="SCREEN">
- # /etc/rc.d/init.d/privoxy start
-</pre>
-          </td>
-        </tr>
-      </table>
-
-      <p>Or ...</p>
-
-      <table border="0" bgcolor="#E0E0E0" width="100%">
-        <tr>
-          <td>
-            <pre class="SCREEN">
- # service privoxy start
-</pre>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="SECT2">
-      <h2 class="SECT2"><a name="START-DEBIAN" id="START-DEBIAN">5.2.
+      <h2 class="SECT2"><a name="START-DEBIAN" id="START-DEBIAN">5.1.
       Debian</a></h2>
 
       <p>We use a script. Note that Debian typically starts <span class=
@@ -188,7 +157,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-WINDOWS" id="START-WINDOWS">5.3.
+      <h2 class="SECT2"><a name="START-WINDOWS" id="START-WINDOWS">5.2.
       Windows</a></h2>
 
       <p>Click on the <span class="APPLICATION">Privoxy</span> Icon to start
@@ -209,7 +178,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-UNICES" id="START-UNICES">5.4.
+      <h2 class="SECT2"><a name="START-UNICES" id="START-UNICES">5.3.
       Solaris, NetBSD, FreeBSD, HP-UX and others</a></h2>
 
       <p>Example Unix startup command:</p>
@@ -226,7 +195,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-OS2" id="START-OS2">5.5. OS/2</a></h2>
+      <h2 class="SECT2"><a name="START-OS2" id="START-OS2">5.4. OS/2</a></h2>
 
       <p>During installation, <span class="APPLICATION">Privoxy</span> is
       configured to start automatically when the system restarts. You can
@@ -236,7 +205,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-MACOSX" id="START-MACOSX">5.6. Mac OS
+      <h2 class="SECT2"><a name="START-MACOSX" id="START-MACOSX">5.5. Mac OS
       X</a></h2>
 
       <p>After downloading the privoxy software, unzip the downloaded file by
@@ -264,55 +233,7 @@
     </div>
 
     <div class="SECT2">
-      <h2 class="SECT2"><a name="START-AMIGAOS" id="START-AMIGAOS">5.7.
-      AmigaOS</a></h2>
-
-      <p>Start <span class="APPLICATION">Privoxy</span> (with RUN
-      &lt;&gt;NIL:) in your <tt class="FILENAME">startnet</tt> script
-      (AmiTCP), in <tt class="FILENAME">s:user-startup</tt> (RoadShow), as
-      startup program in your startup script (Genesis), or as startup action
-      (Miami and MiamiDx). <span class="APPLICATION">Privoxy</span> will
-      automatically quit when you quit your TCP/IP stack (just ignore the
-      harmless warning your TCP/IP stack may display that <span class=
-      "APPLICATION">Privoxy</span> is still running).</p>
-    </div>
-
-    <div class="SECT2">
-      <h2 class="SECT2"><a name="START-GENTOO" id="START-GENTOO">5.8.
-      Gentoo</a></h2>
-
-      <p>A script is again used. It will use the file <tt class=
-      "FILENAME">/etc/privoxy/config</tt> as its main configuration file.</p>
-
-      <table border="0" bgcolor="#E0E0E0" width="100%">
-        <tr>
-          <td>
-            <pre class="SCREEN">
- /etc/init.d/privoxy start
-
-</pre>
-          </td>
-        </tr>
-      </table>
-
-      <p>Note that <span class="APPLICATION">Privoxy</span> is not
-      automatically started at boot time by default. You can change this with
-      the <tt class="LITERAL">rc-update</tt> command.</p>
-
-      <table border="0" bgcolor="#E0E0E0" width="100%">
-        <tr>
-          <td>
-            <pre class="SCREEN">
- rc-update add privoxy default
-
-</pre>
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="SECT2">
-      <h2 class="SECT2"><a name="CMDOPTIONS" id="CMDOPTIONS">5.9. Command
+      <h2 class="SECT2"><a name="CMDOPTIONS" id="CMDOPTIONS">5.6. Command
       Line Options</a></h2>
 
       <p><span class="APPLICATION">Privoxy</span> may be invoked with the

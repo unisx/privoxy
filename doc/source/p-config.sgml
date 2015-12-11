@@ -3,7 +3,7 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.96 2013/01/10 11:04:45 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.100 2013/03/07 14:10:48 fabiankeil Exp $
 
  Copyright (C) 2001-2011 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -94,10 +94,10 @@
 <sect1 id="config">
 <title>
  @@TITLE<!-- between the @@ is stripped by Makefile -->@@
- Sample Configuration File for Privoxy v&p-version;
+ Sample Configuration File for Privoxy &p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.96 2013/01/10 11:04:45 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.100 2013/03/07 14:10:48 fabiankeil Exp $
 </para>
 <para>
 Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
@@ -117,7 +117,8 @@ Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
       3. DEBUGGING                                              #
       4. ACCESS CONTROL AND SECURITY                            #
       5. FORWARDING                                             #
-      6. WINDOWS GUI OPTIONS                                    #
+      6. MISCELLANEOUS                                          #
+      7. WINDOWS GUI OPTIONS                                    #
                                                                 #
 #################################################################
  </literallayout>
@@ -1870,6 +1871,67 @@ ACLs: permit-access and deny-access</title>
 <![%config-file;[<literallayout>@@buffer-limit 4096</literallayout>]]>
 </sect3>
 
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="enable-proxy-authentication-forwarding"><title>enable-proxy-authentication-forwarding</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Whether or not proxy authentication through &my-app; should work.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>0 or 1</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>0</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Proxy authentication headers are removed.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Privoxy itself does not support proxy authentication, but can
+    allow clients to authenticate against Privoxy's parent proxy.
+   </para>
+   <para>
+    By default Privoxy (3.0.21 and later) don't do that and remove
+    Proxy-Authorization headers in requests and Proxy-Authenticate
+    headers in responses to make it harder for malicious sites to
+    trick inexperienced users into providing login information.
+   </para>
+   <para>
+    If this option is enabled the headers are forwarded.
+   </para>
+   <para>
+    Enabling this option is <emphasis>not recommended</emphasis> if there is
+    no parent proxy that requires authentication or if the local network between
+    Privoxy and the parent proxy isn't trustworthy. If proxy authentication is
+    only required for some requests, it is recommended to use a client header filter
+    to remove the authentication headers for requests where they aren't needed.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@enable-proxy-authentication-forwarding 0</literallayout>]]>
+</sect3>
+
 </sect2>
 
 <!--  ~  End section  ~  -->
@@ -2931,7 +2993,7 @@ forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t</title>
  <varlistentry>
   <term>Default value:</term>
   <listitem>
-   <para>None</para>
+   <para>128</para>
   </listitem>
  </varlistentry>
  <varlistentry>
@@ -2975,6 +3037,13 @@ forward-socks4, forward-socks4a, forward-socks5 and forward-socks5t</title>
    <para>
     Obviously using this option only makes sense if you choose a limit
     below the one enforced by the operating system.
+   </para>
+   <para>
+    One most POSIX-compliant systems &my-app; can't properly deal with
+    more than FD_SETSIZE file descriptors at the same time and has to reject
+    connections if the limit is reached. This will likely change in a
+    future version, but currently this limit can't be increased without
+    recompiling &my-app; with a different FD_SETSIZE limit.
    </para>
   </listitem>
  </varlistentry>

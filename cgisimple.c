@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.118 2012/12/07 12:45:20 fabiankeil Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.120 2013/01/26 13:30:20 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
@@ -6,7 +6,7 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.118 2012/12/07 12:45:20 fabia
  * Purpose     :  Simple CGIs to get information about Privoxy's
  *                status.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2011 the
+ * Copyright   :  Written by and Copyright (C) 2001-2013 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -43,9 +43,9 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.118 2012/12/07 12:45:20 fabia
 #include <string.h>
 #include <assert.h>
 
-#ifdef HAVE_ACCESS
+#if defined (HAVE_ACCESS) && defined (HAVE_UNISTD_H)
 #include <unistd.h>
-#endif /* def HAVE_ACCESS */
+#endif /* def HAVE_ACCESS && HAVE_UNISTD_H */
 
 #include "project.h"
 #include "cgi.h"
@@ -1649,6 +1649,12 @@ static jb_err show_defines(struct map *exports)
 #else /* ifndef FEATURE_STATISTICS */
    if (!err) err = map_conditional(exports, "FEATURE_STATISTICS", 0);
 #endif /* ndef FEATURE_STATISTICS */
+
+#ifdef FEATURE_STRPTIME_SANITY_CHECKS
+   if (!err) err = map_conditional(exports, "FEATURE_STRPTIME_SANITY_CHECKS", 1);
+#else /* ifndef FEATURE_STRPTIME_SANITY_CHECKS */
+   if (!err) err = map_conditional(exports, "FEATURE_STRPTIME_SANITY_CHECKS", 0);
+#endif /* ndef FEATURE_STRPTIME_SANITY_CHECKS */
 
 #ifdef FEATURE_TOGGLE
    if (!err) err = map_conditional(exports, "FEATURE_TOGGLE", 1);

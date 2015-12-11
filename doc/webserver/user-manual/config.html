@@ -6,7 +6,7 @@
   <title>The Main Configuration File</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.21 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Privoxy Configuration" href=
   "configuration.html">
   <link rel="NEXT" title="Actions Files" href="actions-file.html">
@@ -21,7 +21,7 @@
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.21 User Manual</th>
       </tr>
 
       <tr>
@@ -1685,6 +1685,66 @@
           </dl>
         </div>
       </div>
+
+      <div class="SECT3">
+        <h4 class="SECT3"><a name="ENABLE-PROXY-AUTHENTICATION-FORWARDING"
+        id="ENABLE-PROXY-AUTHENTICATION-FORWARDING">7.4.9.
+        enable-proxy-authentication-forwarding</a></h4>
+
+        <div class="VARIABLELIST">
+          <dl>
+            <dt>Specifies:</dt>
+
+            <dd>
+              <p>Whether or not proxy authentication through <span class=
+              "APPLICATION">Privoxy</span> should work.</p>
+            </dd>
+
+            <dt>Type of value:</dt>
+
+            <dd>
+              <p>0 or 1</p>
+            </dd>
+
+            <dt>Default value:</dt>
+
+            <dd>
+              <p>0</p>
+            </dd>
+
+            <dt>Effect if unset:</dt>
+
+            <dd>
+              <p>Proxy authentication headers are removed.</p>
+            </dd>
+
+            <dt>Notes:</dt>
+
+            <dd>
+              <p>Privoxy itself does not support proxy authentication, but
+              can allow clients to authenticate against Privoxy's parent
+              proxy.</p>
+
+              <p>By default Privoxy (3.0.21 and later) don't do that and
+              remove Proxy-Authorization headers in requests and
+              Proxy-Authenticate headers in responses to make it harder for
+              malicious sites to trick inexperienced users into providing
+              login information.</p>
+
+              <p>If this option is enabled the headers are forwarded.</p>
+
+              <p>Enabling this option is <span class="emphasis"><i class=
+              "EMPHASIS">not recommended</i></span> if there is no parent
+              proxy that requires authentication or if the local network
+              between Privoxy and the parent proxy isn't trustworthy. If
+              proxy authentication is only required for some requests, it is
+              recommended to use a client header filter to remove the
+              authentication headers for requests where they aren't
+              needed.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
     </div>
 
     <div class="SECT2">
@@ -2738,7 +2798,7 @@
             <dt>Default value:</dt>
 
             <dd>
-              <p>None</p>
+              <p>128</p>
             </dd>
 
             <dt>Effect if unset:</dt>
@@ -2784,6 +2844,14 @@
 
               <p>Obviously using this option only makes sense if you choose a
               limit below the one enforced by the operating system.</p>
+
+              <p>One most POSIX-compliant systems <span class=
+              "APPLICATION">Privoxy</span> can't properly deal with more than
+              FD_SETSIZE file descriptors at the same time and has to reject
+              connections if the limit is reached. This will likely change in
+              a future version, but currently this limit can't be increased
+              without recompiling <span class="APPLICATION">Privoxy</span>
+              with a different FD_SETSIZE limit.</p>
             </dd>
 
             <dt>Examples:</dt>

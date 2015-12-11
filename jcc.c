@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.423 2013/01/03 15:25:08 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.424 2013/03/01 17:38:34 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -3681,6 +3681,15 @@ static jb_socket bind_port_helper(const char *haddr, int hport)
       /* shouldn't get here */
       return JB_INVALID_SOCKET;
    }
+
+#ifndef _WIN32
+   if (bfd >= FD_SETSIZE)
+   {
+      log_error(LOG_LEVEL_FATAL,
+         "Bind socket number too high to use select(): %d >= %d",
+         bfd, FD_SETSIZE);
+   }
+#endif
 
    if (haddr == NULL)
    {

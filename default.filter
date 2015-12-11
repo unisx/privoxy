@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.85 2012/04/22 12:17:08 fabiankeil Exp $
+#  $Id: default.filter,v 1.86 2013/02/19 11:14:47 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -352,6 +352,15 @@ s/(<frame\s+[^>]*)noresize/$1/igU
 s/(<frame\s+[^>]*)frameborder=(['"]?)(no|0)\2/$1/igU 
 s/(<frame\s+[^>]*)scrolling=(['"]?)(no|0)\2/$1/igU
 
+
+#################################################################################
+#
+# iframes: Remove all detected iframes. Should only be enabled for
+#          individual sites after testing that the iframes are optional.
+#
+#################################################################################
+FILTER: iframes Removes all detected iframes. Should only be enabled for individual sites.
+s@<iframe.*</iframe>@<!-- iframe removed by Privoxy's iframe filter -->@Uisg
 
 
 #################################################################################

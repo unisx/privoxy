@@ -31,7 +31,7 @@ sub main() {
 
         s/^1\. \@\@TITLE\@\@/     /i;
 
-        if (m/^(\d\.)(\d\.)(\d\.)?\s/) {
+        if (m/^(\d*\.){1,3}\s/) {
             # Remove the first digit as it's the
             # config file section in the User Manual.
             s/^(\d\.)//;
@@ -42,9 +42,6 @@ sub main() {
             # Remember to underline it.
             $hit_header = 1;
             $header_len = length($_);
-
-            # Separate it from the previous section.
-            print "#\n";
         }
 
         if ($unfold_mode) {

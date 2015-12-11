@@ -6,7 +6,7 @@
   <title>What's New in this Release</title>
   <meta name="GENERATOR" content=
   "Modular DocBook HTML Stylesheet Version 1.79">
-  <link rel="HOME" title="Privoxy 3.0.20 User Manual" href="index.html">
+  <link rel="HOME" title="Privoxy 3.0.21 User Manual" href="index.html">
   <link rel="PREVIOUS" title="Installation" href="installation.html">
   <link rel="NEXT" title="Quickstart to Using Privoxy" href=
   "quickstart.html">
@@ -21,7 +21,7 @@
     <table summary="Header navigation table" width="100%" border="0"
     cellpadding="0" cellspacing="0">
       <tr>
-        <th colspan="3" align="center">Privoxy 3.0.20 User Manual</th>
+        <th colspan="3" align="center">Privoxy 3.0.21 User Manual</th>
       </tr>
 
       <tr>
@@ -41,8 +41,158 @@
     <h1 class="SECT1"><a name="WHATSNEW" id="WHATSNEW">3. What's New in this
     Release</a></h1>
 
-    <p><span class="APPLICATION">Privoxy 3.0.20</span> is a beta release. The
-    changes since 3.0.19 stable are:</p>
+    <p><span class="APPLICATION">Privoxy 3.0.21</span> stable is a bug-fix
+    release for Privoxy 3.0.20 beta. It also addresses two security issues
+    that affect all previous Privoxy versions. The changes since 3.0.20 beta
+    are:</p>
+
+    <ul>
+      <li>
+        <p>Bug fixes:</p>
+
+        <ul>
+          <li>
+            <p>On POSIX-like platforms, network sockets with file descriptor
+            values above FD_SETSIZE are properly rejected. Previously they
+            could cause memory corruption in configurations that allowed the
+            limit to be reached.</p>
+          </li>
+
+          <li>
+            <p>Proxy authentication headers are removed unless the new
+            directive enable-proxy-authentication-forwarding is used.
+            Forwarding the headers potentionally allows malicious sites to
+            trick the user into providing them with login information. Reported
+            by Chris John Riley.</p>
+          </li>
+
+          <li>
+            <p>Compiles on OS/2 again now that unistd.h is only included on
+            platforms that have it.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>General improvements:</p>
+
+        <ul>
+          <li>
+            <p>The show-status page shows the FEATURE_STRPTIME_SANITY_CHECKS
+            status.</p>
+          </li>
+
+          <li>
+            <p>A couple of assert()s that could theoretically dereference
+            NULL pointers in debug builds have been relocated.</p>
+          </li>
+
+          <li>
+            <p>Added an LSB info block to the generic start script. Based on
+            a patch from Natxo Asenjo.</p>
+          </li>
+
+          <li>
+            <p>The max-client-connections default has been changed to 128
+            which should be more than enough for most setups.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Action file improvements:</p>
+
+        <ul>
+          <li>
+            <p>Block rover.ebay./ar.*\&amp;adtype= instead of
+            "/.*\&amp;adtype=" which caused too man false positives. Reported
+            by u302320 in #360284, additional feedback from Adam Piggott.</p>
+          </li>
+
+          <li>
+            <p>Unblock '.advrider.com/' and '/.*ADVrider'. Anonymously
+            reported in #3603636.</p>
+          </li>
+
+          <li>
+            <p>Stop blocking '/js/slider\.js'. Reported by Adam Piggott in
+            #3606635 and _lvm in #2791160.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Filter file improvements:</p>
+
+        <ul>
+          <li>
+            <p>Added an iframes filter.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Documentation improvements:</p>
+
+        <ul>
+          <li>
+            <p>The whole GPLv2 text is included in the user manual now, so
+            Privoxy can serve it itself and the user can read it without
+            having to wade through GPLv3 ads first.</p>
+          </li>
+
+          <li>
+            <p>Properly numbered and underlined a couple of section titles in
+            the config that where previously overlooked due to a flaw in the
+            conversion script. Reported by Ralf Jungblut.</p>
+          </li>
+
+          <li>
+            <p>Improved the support instruction to hopefully make it harder
+            to unintentionally provide insufficient information when
+            requesting support. Previously it wasn't obvious that the
+            information we need in bug reports is usually also required in
+            support requests.</p>
+          </li>
+
+          <li>
+            <p>Removed documentation about packages that haven't been
+            provided in years.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Privoxy-Regression-Test:</p>
+
+        <ul>
+          <li>
+            <p>Only log the test number when not running in verbose mode The
+            position of the test is rarely relevant and it previously wasn't
+            exactly obvious which one of the numbers was useful to repeat the
+            test with --test-number.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>GNUmakefile improvements:</p>
+
+        <ul>
+          <li>
+            <p>Factor generate-config-file out of config-file to make testing
+            more convenient.</p>
+          </li>
+
+          <li>
+            <p>The clean target now also takes care of patch leftovers.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <p><span class="APPLICATION">Privoxy 3.0.20</span> beta contained the
+    following changes compared to the previous stable release:</p>
 
     <ul>
       <li>
@@ -898,11 +1048,6 @@
           <p>On the other hand, other installers don't overwrite existing
           configuration files, thinking you will want to do that
           yourself.</p>
-        </li>
-
-        <li>
-          <p><tt class="FILENAME">standard.action</tt> has been merged into
-          the <tt class="FILENAME">default.action</tt> file.</p>
         </li>
 
         <li>

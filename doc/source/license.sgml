@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: license.sgml,v 2.7 2011/09/04 11:10:12 fabiankeil Exp $
+ $Id: license.sgml,v 2.9 2013/03/01 17:42:16 fabiankeil Exp $
 
-  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
+  Copyright (C) 2001-2013 the Privoxy Developers http://www.privoxy.org/
   See LICENSE.
 
  ======================================================================
@@ -33,18 +33,11 @@
 </para>
 
 <para>
- This program is distributed in the hope that it will be useful, but WITHOUT
- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- FITNESS FOR A PARTICULAR PURPOSE.  See the <ulink
- url="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">
- <citetitle>GNU General Public License</citetitle></ulink> for details.
-</para>
-
-<para>
- You should have received a copy of the <citetitle>GNU GPL</citetitle>
- along with this program; if not, write to the <address> Free Software
- Foundation, Inc. <street>51 Franklin Street, Fifth Floor</street>
- <city>Boston</city>, <state>MA</state> <postcode>02110-1301</postcode>
- <country>USA</country> </address>
+ <application>Privoxy</application> is distributed in the hope that
+ it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the <ulink
+ url="http://www.privoxy.org/user-manual/copyright.html#LICENSE">
+ <citetitle>license</citetitle></ulink> for details.
 </para>
 
