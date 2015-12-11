@@ -30,6 +30,9 @@
 #
 # Revisions   :
 #    $Log: cgi-style.css,v $
+#    Revision 1.12  2007/12/11 21:20:53  fabiankeil
+#    Make strong warnings red too.
+#
 #    Revision 1.11  2007/12/08 14:29:06  fabiankeil
 #    Use CSS to let the URL and pattern input fields scale with
 #    the browser width and try to prevent vertical scroll bars
@@ -52,7 +55,7 @@
 /*
  * CSS for Privoxy CGI and script output
  *
- * $Id: cgi-style.css,v 1.11 2007/12/08 14:29:06 fabiankeil Exp $
+ * $Id: cgi-style.css,v 1.12 2007/12/11 21:20:53 fabiankeil Exp $
  */
 
 /*
@@ -149,7 +152,7 @@ a.cmd:active, td.indentbuttons a:active, td.buttons a:active {
 /*
  * Special red emphasis:
  */
-em.warning { color: #ff0000 }
+em.warning, strong.warning { color: #ff0000 }
 
 /*
  * In show-status we use tables directly behind headlines

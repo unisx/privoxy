@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.7 User Manual"
+TITLE="Privoxy 3.0.8 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -17,7 +17,10 @@ TITLE="Actions Files"
 HREF="actions-file.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css">
+HREF="../p_doc.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html;
+charset=ISO-8859-1">
 <LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
 </head
 ><BODY
@@ -39,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.7 User Manual</TH
+>Privoxy 3.0.8 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -1088,10 +1091,7 @@ CLASS="EMPHASIS"
 >Effect if unset:</DT
 ><DD
 ><P
->    Logging is disabled unless <TT
-CLASS="LITERAL"
->--no-daemon</TT
-> mode is used.
+>    No logfile is written.
    </P
 ></DD
 ><DT
@@ -1112,18 +1112,17 @@ CLASS="APPLICATION"
     is doing.
    </P
 ><P
->    Many users will never look at it, however, and it's a privacy risk
-    if third parties can get access to it. It is therefore disabled by
-    default in <SPAN
+>    Depending on the debug options below, the logfile may be a privacy risk
+    if third parties can get access to it. As most users will never look
+    at it, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> 3.0.7 and later.
-  </P
+> 3.0.7 and later only log fatal
+    errors by default.
+   </P
 ><P
->    For troubleshooting purposes, you will have to explicitly enable it.
-    Please don't file any support requests without trying to reproduce
-    the problem with logging enabled first. Once you read the log messages,
-    you may even be able to solve the problem on your own.
+>    For most troubleshooting purposes, you will have to change that,
+    please refer to the debugging section for details.
    </P
 ><P
 >    Your logfile will grow indefinitely, and you will probably want to
@@ -1408,17 +1407,7 @@ CLASS="VARIABLELIST"
 >Specifies:</DT
 ><DD
 ><P
->    Key values that determine what information gets logged to the 
-    <A
-HREF="config.html#LOGFILE"
-><SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->logfile</I
-></SPAN
-></A
->.
+>    Key values that determine what information gets logged.
    </P
 ></DD
 ><DT
@@ -1431,13 +1420,13 @@ CLASS="EMPHASIS"
 >Default value:</DT
 ><DD
 ><P
->12289 (i.e.: URLs plus informational and warning messages)</P
+>0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)</P
 ></DD
 ><DT
 >Effect if unset:</DT
 ><DD
 ><P
->    Nothing gets logged.
+>    Default value is used (see above).
    </P
 ></DD
 ><DT
@@ -1455,7 +1444,10 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  debug         1 # show each GET/POST/CONNECT request
+>  debug         1 # log each request destination (and the crunch reason if <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> intercepted the request)
   debug         2 # show each connection status
   debug         4 # show I/O status
   debug         8 # show header parsing
@@ -1487,16 +1479,28 @@ CLASS="LITERAL"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->1, 4096 and 8192 are highly recommended</I
+>1, 4096 and 8192 are recommended</I
 ></SPAN
 >
-    so that you will notice when things go wrong. The other levels are probably
-    only of interest if you are hunting down a specific problem. They can produce
-    a hell of an output (especially 16).
+    so that you will notice when things go wrong. The other levels are
+    probably only of interest if you are hunting down a specific problem.
+    They can produce a hell of an output (especially 16).
     
    </P
 ><P
->    If you want to use CLF (Common Log Format), you should set <SPAN
+>    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> used to ship with the debug levels recommended above enabled by
+    default, but due to privacy concerns 3.0.7 and later are configured to
+    only log fatal errors.
+   </P
+><P
+>    If you are used to the more verbose settings, simply enable the debug lines
+    below again.
+   </P
+><P
+>    If you want to use pure CLF (Common Log Format), you should set <SPAN
 CLASS="QUOTE"
 >"debug
     512"</SPAN
@@ -1518,6 +1522,11 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"... [too long, truncated]"</SPAN
 >.
+   </P
+><P
+>    Please don't file any support requests without trying to reproduce
+    the problem with increased debug level first. Once you read the log
+    messages, you may even be able to solve the problem on your own.
    </P
 ></DD
 ></DL

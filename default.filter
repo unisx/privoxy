@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.52 2007/11/27 18:35:48 fabiankeil Exp $
+#  $Id: default.filter,v 1.55 2007/12/31 19:53:59 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -596,9 +596,9 @@ FILTER: yahoo CSS-based block for Yahoo text ads. Also removes a width limitatio
 s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
- \#yschanswr, .yschftad,\ .yschspn, .yschspns, \#ygrp-sponsored-links,\
- \#ks-ypn-ads {display: none !important;}\n\
- \#yschpri, \#yschweb {width: 100% !important; max-width: 100% !important;}\n\
+ \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
+ \#ks-ypn-ads, .ad, \#ygrp-vital {display: none !important;}\n\
+ \#yschpri, \#yschweb, \#pri, \#web {width: 100% !important; max-width: 100% !important;}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
 </style>\n$0@
 
@@ -612,25 +612,19 @@ FILTER: msn CSS-based block for MSN text ads. Also removes tracking URLs and a w
 
 s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's msn filter. */\n\
- .msn_ads {display: none !important;}\n\
- \#results, .flank, .results_area_flank, .results_area_stroke, .SearchSection .not\
- {width: 99% /*!important*/; min-width: 99% !important;\
+ .msn_ads, \#at, \#ar {display: none !important;}\n\
+ \#results, .flank, .results_area_flank, .results_area_stroke,\n\
+ \#results_area, .SearchSection, .not, .sc_rslth1\n\
+.content, \#sw_foot, \#bf, \#sw_content, \#sidebar, \#pag\n\
+ {width: 99% !important; min-width: 99% !important;\n\
  max-width: 100% !important; /* width:100% sometimes causes horizontal scrollbars */}\n\
- /* Make continue links harder to miss */\n\
- \#pagination_bottom a {padding: .3em .5em .3em .5em; border: 1px solid \#e6e6e6;}\n\
- \#pagination_bottom li, \#pagination_bottom li .selected, li .nextPage \
- {margin: 0 !important; cursor: auto; border: none; padding:.1em;}\n\
- \#pagination_bottom li .prevPage {padding-right: 1.5em !important;}\n\
- \#pagination_bottom li .selected {border: none;}\n\
- .selected a {background-color: \#d2eaf6; border: 1px solid \#b7d8ee;}\n\
  /* Remove "suggestions". They are next to worthless but partly overlap with the search results */\n\
- .suggestion, \#nys_right {clear: both; display:none;}\n\
+ .suggestion, \#nys_right, \#nys {clear: both; display:none;}\n\
+ \#content {padding-right: 0;}\n\
  </style>\n$0@
 s@(<div[^>]*) id=(["']?)ads_[^\2]*\2@$1 class="msn_ads"@Uig
 s@(<a[^>]*href=\")http://g.msn.com/.*\?(http://.*)(&amp;&amp;DI=.*)(\")@$1$2$4@Ug
 s@(<a[^>]*)gping=\".*\"@$1 title="URL cleaned up by Privoxy's msn filter"@Ug
-s@<div id=\"ar\">(<h2>Sponsored sites</h2>)@<div class="msn_ads">$1@
-s@(</script><div) id=\"at\"@$1 class="msn_ads"@
 
 #################################################################################
 #
@@ -640,6 +634,9 @@ s@(</script><div) id=\"at\"@$1 class="msn_ads"@
 #           sets the page width to 100%. As a result, some rounded "corners" would
 #           appear to early or not at all and as fixing this would require a browser
 #           that understands background-size (CSS3), they are removed instead.
+#
+#           When applied to feeds, it removes comment titles that
+#           only contain the beginning of the actual comment.
 #
 #################################################################################
 FILTER: blogspot Cleans up some Blogspot blogs. Read the fine print before using this.
@@ -659,6 +656,8 @@ s@<body.*(?:<div id="space-for-ie"></div>|(<div id="(?:content|wrap4|wrapper)))@
 s@(<div style=\"[^\"]*width:)30em@$1 100%@
 s@background:url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;@/*$0*/@Ug
 s@(background:\#[a-f\d]{3})( url\(\"http://www.blogblog.com/rounders[^\"]*\"\).*;)@$1 ;/*$2*/@Ug
+# Do the feed filtering magic as described above.
+s@<title\s+type=\'text\'>([^\s]*).*?\.\.\.</title>\s*(<content type=\'html\'>\1)@$2@ig
 
 #################################################################################
 #
@@ -831,6 +830,21 @@ s@^X-Privoxy-Control:.*@@i
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.55  2007/12/31 19:53:59  fabiankeil
+#     Let the msn filter remove the width limitation again.
+#
+#     Revision 1.54  2007/12/31 19:11:31  fabiankeil
+#     - Let the yahoo filter remove the width limitation again.
+#     - Teach the blogspot filter to remove useless feed comment
+#       titles that only contain the beginning of the actual comment.
+#
+#     Revision 1.53  2007/12/23 15:48:12  fabiankeil
+#     - Lo and behold, the CSS fix for the MSN buttons is no longer necessary.
+#     - Add some new selectors the msn filter should hide.
+#     - Add the two yahoo selectors Lee reported in #1856574.
+#     - Add comments that the width limitation fixes stopped
+#       working for the msn and yahoo filter.
+#
 #     Revision 1.52  2007/11/27 18:35:48  fabiankeil
 #     Update CSS for the yahoo filter.
 #

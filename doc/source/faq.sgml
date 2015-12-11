@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.7">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.8">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -26,9 +26,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 2.35 2007/11/19 17:57:59 fabiankeil Exp $
+ $Id: faq.sgml,v 2.38 2008/01/19 17:52:39 hal9 Exp $
 
- Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  Based partially on the Internet Junkbuster FAQ originally written by and
@@ -72,12 +72,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001-2007 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2008 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 2.35 2007/11/19 17:57:59 fabiankeil Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 2.38 2008/01/19 17:52:39 hal9 Exp $</pubdate>
 
 <!--
 
@@ -2808,6 +2808,16 @@ browsing has slowed to a crawl. What gives? </title>
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 $Log: faq.sgml,v $
+Revision 2.38  2008/01/19 17:52:39  hal9
+Re-commit to fix various minor issues for new release.
+
+Revision 2.37  2008/01/19 15:03:05  hal9
+Doc sources tagged for 3.0.8 release.
+
+Revision 2.36  2008/01/17 01:49:51  hal9
+Change copyright notice for docs s/2007/2008/. All these will be rebuilt soon
+enough.
+
 Revision 2.35  2007/11/19 17:57:59  fabiankeil
 A bunch of rewordings, minor updates and fixes.
 

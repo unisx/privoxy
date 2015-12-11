@@ -32,6 +32,9 @@
 #
 # Revisions   :
 #    $Log: edit-actions-for-url,v $
+#    Revision 1.48  2007/12/11 21:18:55  fabiankeil
+#    Make forward-override accessible through the CGI editor.
+#
 #    Revision 1.47  2007/12/06 18:21:55  fabiankeil
 #    Update hide-forwarded-for-headers description.
 #
@@ -783,6 +786,34 @@ function show_send_wafer_opts(tf)
       <td>
        Enable filtering on documents whose Content-Type wasn't recognized as text.
        Do think twice, nothing is alright.
+     </td>
+    </tr>
+    <tr class="bg1" align="left" valign="top">
+      <td class="en1" align="center" valign="middle"><input type="radio"
+        name="forward_override" id="forward_override_y" value="Y" @forward-override-y@
+        ></td>
+      <td class="dis1" align="center" valign="middle"><input type="radio"
+        name="forward_override" id="forward_override_n" value="N" @forward-override-n@
+        ></td>
+      <td class="noc1" align="center" valign="middle"><input type="radio"
+        name="forward_override" id="forward_override_x" value="X" @forward-override-x@
+        ></td>
+      <td class="action"><a href="@user-manual@@actions-help-prefix@FORWARD-OVERRIDE">forward-override</a></td>
+      <td>Override forward directives in the configuration file.
+          Note that the <a href="@user-manual@actions-file.html#FORWARD-OVERRIDE">parameter syntax</a>
+          isn't checked until the action is used. <strong class="warning">Syntax errors
+          will cause Privoxy to exit.</strong></td>
+    </tr>
+    <tr class="bg1" align="left" valign="top" id="forward_override_language_opts">
+      <td class="en1">&nbsp;</td>
+      <td class="dis1">&nbsp;</td>
+      <td class="noc1">&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+        Overriding forward directive:<br>
+        <input type="text" name="forward_override_param" 
+        id="forward_override_param" size="40"
+        value="@forward-override-param@"><br>
      </td>
     </tr>
    <tr class="bg1" align="left" valign="top">

@@ -11,11 +11,11 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.7">
-<!entity p-status "beta">
+<!entity p-version "3.0.8">
+<!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-readme "IGNORE">
@@ -33,9 +33,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.50 2007/12/08 12:44:36 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.55 2008/01/19 21:26:37 hal9 Exp $
 
- Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -54,12 +54,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2007 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2008 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.50 2007/12/08 12:44:36 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.55 2008/01/19 21:26:37 hal9 Exp $</pubdate>
 
 <!--
 
@@ -1195,7 +1195,7 @@ How to install the binary packages depends on your operating system:
 </para>
  
 <literallayout>
- <guibutton>Tools</guibutton> -> <guibutton>Options</guibutton> -> <guibutton>General</guibutton> -> <guibutton>Connection Settings</guibutton> -> <guibutton>Manual Proxy Configuration</guibutton>
+ <guibutton>Tools</guibutton> -> <guibutton>Options</guibutton> ->  <guibutton>Advanced</guibutton> -> <guibutton>Network</guibutton> -><guibutton>Connection</guibutton> -> <guibutton>Settings</guibutton>
 
 </literallayout>
 
@@ -1223,7 +1223,7 @@ How to install the binary packages depends on your operating system:
 </literallayout>
 
 <para>
- For <application>Internet Explorer v.5-6</application>: 
+ For <application>Internet Explorer v.5-7</application>: 
 </para>
 
 <literallayout>
@@ -1308,23 +1308,6 @@ How to install the binary packages depends on your operating system:
 </para>
 </sect2>
 
-<!--
- omitting 10/31/06 HB
-
-<sect2 id="start-suse">
-<title>SuSE</title>
-<para>
-We use a script. It will use the file <filename>/etc/privoxy/config</filename>
-as its main configuration file. Note that SuSE starts Privoxy upon booting
-your PC.
-</para>
-<para>
- <screen>
- # rcprivoxy start
-</screen>
-</para>
-</sect2>
--->
 <sect2 id="start-windows">
 <title>Windows</title>
 <para>
@@ -2327,8 +2310,11 @@ for details.
   <term><literal>.example.com</literal></term>
   <listitem>
    <para>
-    matches any domain that <emphasis>ENDS</emphasis> in
-    <literal>.example.com</literal>
+    matches any domain with first-level domain <literal>com</literal>
+    and second-level domain <literal>example</literal>.
+    For example <literal>www.example.com</literal>,
+    <literal>example.com</literal> and <literal>foo.bar.baz.example.com</literal>.
+    Note that it wouldn't match if the second-level domain was <literal>another-example</literal>.
    </para>
   </listitem>
  </varlistentry>
@@ -2337,7 +2323,8 @@ for details.
   <listitem>
    <para>
     matches any domain that <emphasis>STARTS</emphasis> with
-    <literal>www.</literal>
+    <literal>www.</literal> (It also matches the domain
+    <literal>www</literal> but most of the time that doesn't matter.)
    </para>
   </listitem>
  </varlistentry>
@@ -8933,6 +8920,22 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.55  2008/01/19 21:26:37  hal9
+ Add IE7 to configuration section per Gerry.
+
+ Revision 2.54  2008/01/19 17:52:39  hal9
+ Re-commit to fix various minor issues for new release.
+
+ Revision 2.53  2008/01/19 15:03:05  hal9
+ Doc sources tagged for 3.0.8 release.
+
+ Revision 2.52  2008/01/17 01:49:51  hal9
+ Change copyright notice for docs s/2007/2008/. All these will be rebuilt soon
+ enough.
+
+ Revision 2.51  2007/12/23 16:48:24  fabiankeil
+ Use more precise example descriptions for the mysterious domain patterns.
+
  Revision 2.50  2007/12/08 12:44:36  fabiankeil
  - Remove already commented out pre-3.0.7 changes.
  - Update the "new log defaults" paragraph.

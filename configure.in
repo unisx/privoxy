@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.107 2007/11/15 02:50:14 hal9 Exp $
+dnl $Id: configure.in,v 1.109 2008/01/20 14:07:09 fabiankeil Exp $
 dnl 
 dnl Written by and Copyright (C) 2001 - 2007 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,12 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.109  2008/01/20 14:07:09  fabiankeil
+dnl Set CODE_STATUS to stable.
+dnl
+dnl Revision 1.108  2007/12/10 02:30:00  hal9
+dnl Change versioning for > 3.0.7 && < 3.0.8
+dnl
 dnl Revision 1.107  2007/11/15 02:50:14  hal9
 dnl Setting to "beta" (for doc builds, etc).
 dnl
@@ -502,7 +508,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.107 $)
+AC_REVISION($Revision: 1.109 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -548,8 +554,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=7
-CODE_STATUS="beta"
+VERSION_POINT=8
+CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"

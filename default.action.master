@@ -9,7 +9,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.102 2007/12/08 12:56:32 fabiankeil Exp $
+#  $Id: default.action.master,v 1.107 2008/01/20 13:19:58 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.7 or later due to 
 #                 syntax changes.
@@ -313,6 +313,12 @@
 #    Declares a document as plain text, even if the "Content-Type:" isn't detected 
 #    as such. 
 #
+# +forward-override{forward .}
+# +forward-override{forward 127.0.0.1:8123}
+# +forward-override{forward-socks4a 127.0.0.1:9050 .}
+# +forward-override{forward-socks4a 127.0.0.1:9050 proxy.example.org:8000}
+#   This action overrules the forward directives in the configuration file. 
+#
 # +handle-as-empty-document
 #   This action alone doesn't do anything noticeable. It just marks URLs. If
 #   the block action also applies, the presence or absence of this mark
@@ -581,7 +587,12 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #MASTER# DONT-VERIFY (generic)
 ad*.
 .*ads.
-.ad.
+#MASTER# REMARKS: removed .ad. 2007-12-18 HB
+#MASTER# REMARKS: Modifications per Actionsfile feedback item #1807613
+.ad.?.
+.ad.[a-ik-z][a-oq-z].
+.ad.jp.*.
+.ad.???*.
 #MASTER# PROBLEM URL: http://alternativos.iw-advertising.com/
 .*advert*.
 *banner*.
@@ -1132,6 +1143,9 @@ insightxe./data/
 rss.slashdot.org/~a/Slashdot/slashdot\?
 #MASTER# PROBLEM URL: rss.slashdot.org/~r/Slashdot/slashdot/~4/102113044
 rss.slashdot.org/~r/Slashdot/slashdot/~4/
+#MASTER# BLOCK-REFERRER: http://www.isys.ucl.ac.be/bchi/research/Kwaresmi.htm
+#MASTER# REMAKRKS: Actionsfile feedback item #1849627 2007-12-12
+[a-z][0-9].nedstatbasic.net/
 
 #----------------------------------------------------------------------------
 # Specific counters (see above for generic patterns)
@@ -1143,9 +1157,6 @@ s*.sitemeter.com/(meter|js/counter.js)
 fastcounter.bcentral.com/
 #MASTER# BLOCK-REFERRER: http://osnews.com/ 10/19/06
 bilbo.counted.com/
-#MASTER# BLOCK-REFERRER: http://enciclopedia.us.es/
-#MASTER# REMAKRKS: Not found, but leaving 10/19/06
-#[a-z][0-9].nedstatbasic.net/
 
 #----------------------------------------------------------------------------
 # On-site ads and other single sources:
@@ -1303,7 +1314,7 @@ cels.org/.*track
 #MASTER# UNBLOCK-REFERRER: http://www.nic.ad.jp/ See http://jprs.co.jp/en/jpdomain.html 09/11/06
 #MASTER# REMARKS: 2007-10-04, increase scope per Actionsfile feedback item #1807613
 #.nic.ad.jp
-.ad.jp
+#MASTER# REMARKS removed .ad.jp per Actionsfile feedback item #1807613
 #MASTER# UNBLOCK-REFERRER: http://www.flickr.com/photo_zoom.gne?id=32594118&size=l 09/11/06
 #MASTER# REMARKS: creativecommons.org worthwhile organization 09/11/06
 /(.*/)?somerights20.gif
@@ -1374,6 +1385,10 @@ switch.atdmt.com/action/
 #MASTER# UNBLOCK-REFERRER: redirect from http://go.microsoft.com/fwlink?linkid=51093
 #MASTER# REMARKS: Actionsfile feedback item #1757121 2007-07-19
 .microsoft.com/.*/adschema/
+#MASTER# UNBLOCK-REFERRER: http://upload.wikimedia.org/wikipedia/en/a/ad/Picturecarnegie.jpg
+.wikimedia.org/
+#MASTER# UNBLOCK-REFERRER: http://en.wikipedia.org/wiki/Advertisement
+.wikipedia.org/
 
 #############################################################################
 # Site-specific special rules:
@@ -1529,6 +1544,8 @@ del.icio.us/
 access.adobe.com/access/getStatus.do\?jobid=&srcPdfUrl=
 #MASTER# PROBLEM-URL: http://view.samurajdata.se/ps.php?url=http%3A%2F%2Fcups.cs.cmu.edu%2Fsoups%2F2007%2Fproceedings%2Fp41_clark.pdf&submit=View%21
 view.samurajdata.se/ps\.php\?url=
+#MASTER# PROBLEM-URL: http://www.blogger.com/navbar.g?targetBlogID=8919860543765866292&blogName=Kickin%27+the+Darkness&publishMode=PUBLISH_MODE_HOSTED&navbarType=BLUE&layoutType=LAYOUTS&homepageUrl=http%3A%2F%2Fblog.kickin-the-darkness.com%2F&searchRoot=http%3A%2F%2Fblog.kickin-the-darkness.com%2Fsearch
+.blogger.com/navbar\.g
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode or other automatically parsed content

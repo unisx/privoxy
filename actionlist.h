@@ -39,6 +39,10 @@
  *
  * Revisions   :
  *    $Log: actionlist.h,v $
+ *    Revision 1.28  2007/12/11 21:08:29  fabiankeil
+ *    Let the CGI editor suggest a forward-override
+ *    parameter whose syntax is actually valid.
+ *
  *    Revision 1.27  2007/11/10 15:04:08  fabiankeil
  *    Tell the CGI editor about +hide-referrer{conditional-forge}.
  *
@@ -188,7 +192,7 @@ DEFINE_CGI_PARAM_RADIO   ("fast-redirects",             ACTION_FAST_REDIRECTS,  
 DEFINE_ACTION_MULTI      ("filter",                     ACTION_MULTI_FILTER)
 DEFINE_ACTION_BOOL       ("force-text-mode",            ACTION_FORCE_TEXT_MODE)
 DEFINE_ACTION_STRING     ("forward-override",           ACTION_FORWARD_OVERRIDE, ACTION_STRING_FORWARD_OVERRIDE)
-DEFINE_CGI_PARAM_CUSTOM  ("forward-override",           ACTION_FORWARD_OVERRIDE, ACTION_STRING_FORWARD_OVERRIDE, ".")
+DEFINE_CGI_PARAM_CUSTOM  ("forward-override",           ACTION_FORWARD_OVERRIDE, ACTION_STRING_FORWARD_OVERRIDE, "forward .")
 DEFINE_ACTION_BOOL       ("handle-as-empty-document",   ACTION_HANDLE_AS_EMPTY_DOCUMENT)
 DEFINE_ACTION_BOOL       ("handle-as-image",            ACTION_IMAGE)
 DEFINE_ACTION_STRING     ("hide-accept-language",       ACTION_HIDE_ACCEPT_LANGUAGE, ACTION_STRING_LANGUAGE)

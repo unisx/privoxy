@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.7 User Manual"
+TITLE="Privoxy 3.0.8 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -17,7 +17,10 @@ TITLE="Quickstart to Using Privoxy"
 HREF="quickstart.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css">
+HREF="../p_doc.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html;
+charset=ISO-8859-1">
 <LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
 </head
 ><BODY
@@ -39,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.7 User Manual</TH
+>Privoxy 3.0.8 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -362,16 +365,17 @@ CLASS="FILENAME"
 ></LI
 ><LI
 ><P
->   Logging is off by default now. If you need logging, it can be turned on
-   in the <A
-HREF="config.html#LOGFILE"
->config file</A
->. You may also want
-   to enable logging until you verified that the new <SPAN
+>   In the default configuration only fatal errors are logged now.
+   You can change that in the <A
+HREF="config.html#DEBUG"
+>debug section</A
+>
+   of the configuration file. You may also want to enable more verbose
+   logging until you verified that the new <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> version
-   is working as expected.
+> version is working
+   as expected.
   </P
 ></LI
 ><LI

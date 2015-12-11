@@ -17,6 +17,11 @@
 #
 # Revisions   :
 #    $Log: mod-support-and-service,v $
+#    Revision 1.11  2008/01/02 18:06:58  fabiankeil
+#    Instead of linking to the "Contacting the developers ..." section
+#    in the FAQ, use the one from the User Manual. The latter can be
+#    delivered by Privoxy and thus possibly loads faster.
+#
 #    Revision 1.10  2007/03/17 11:31:36  fabiankeil
 #    - Add revision log and copyright header.
 #    - Reword instructions and link to the FAQ
@@ -49,9 +54,8 @@
             Request Tracker</a>.
           </li>
           <li>
-            read the instructions in the
-            <a title="FAQ entry: Contacting the developers, Bug Reporting and Feature Requests"
-             href="http://www.privoxy.org/faq/contact.html">Privoxy FAQ</a>
+            read the <a title="Contacting the developers, Bug Reporting and Feature Requests"
+             href="@user-manual@contact.html">instructions in the User Manual</a>
             to make sure your request contains all the information we need.
           </li>
         </ul>

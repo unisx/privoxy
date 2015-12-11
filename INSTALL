@@ -4,7 +4,7 @@
  *
  * Purpose     :  INSTALL file to help with installing from source.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2008 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -33,15 +33,15 @@
  *********************************************************************/
    
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-------------------------------------------------------------------------------
 
 To build Privoxy from source, autoconf, GNU make (gmake), and, of course, a C
 compiler like gcc are required.
 
 When building from a source tarball, first unpack the source:
 
- tar xzvf privoxy-3.0.7-beta-src* [.tgz or .tar.gz]
- cd privoxy-3.0.7-beta
+ tar xzvf privoxy-3.0.8-src* [.tgz or .tar.gz]
+ cd privoxy-3.0.8
 
 
 For retrieving the current CVS sources, you'll need a CVS client installed.

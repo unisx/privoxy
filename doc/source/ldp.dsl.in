@@ -391,6 +391,10 @@
   ;; /REFENTRY
   #t)
 
+;; HB added 2008-01-19
+(define %html-header-tags% 
+  '(("META" ("HTTP-EQUIV" "Content-Type") ("CONTENT" "text/html;
+charset=ISO-8859-1"))))
 
 </style-specification-body>
 </style-specification>

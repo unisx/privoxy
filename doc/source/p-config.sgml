@@ -3,9 +3,9 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 2.24 2007/12/07 16:45:15 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.27 2008/01/17 01:49:51 hal9 Exp $
 
- Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ========================================================================
@@ -95,10 +95,10 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 2.24 2007/12/07 16:45:15 fabiankeil Exp $
+ $Id: p-config.sgml,v 2.27 2008/01/17 01:49:51 hal9 Exp $
 </para>
 <para>
-Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
 </para>
 
 <para>
@@ -828,7 +828,7 @@ actionsfile
   <term>Effect if unset:</term>
   <listitem>
    <para>
-    Logging is disabled unless <literal>--no-daemon</literal> mode is used.
+    No logfile is written.
    </para>
   </listitem>
  </varlistentry>
@@ -848,8 +848,8 @@ actionsfile
     if third parties can get access to it. As most users will never look
     at it, <application>Privoxy</application> 3.0.7 and later only log fatal
     errors by default.
-  </para>
-  <para>
+   </para>
+   <para>
     For most troubleshooting purposes, you will have to change that,
     please refer to the debugging section for details.
    </para>
@@ -1026,8 +1026,7 @@ actionsfile
   <term>Specifies:</term>
   <listitem>
    <para>
-    Key values that determine what information gets logged to the 
-    <link linkend="logfile"><emphasis>logfile</emphasis></link>.
+    Key values that determine what information gets logged.
    </para>
   </listitem>
  </varlistentry>
@@ -1040,14 +1039,14 @@ actionsfile
  <varlistentry>
   <term>Default value:</term>
   <listitem>
-   <para>12289 (i.e.: URLs plus informational and warning messages)</para>
+   <para>0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)</para>
   </listitem>
  </varlistentry>
  <varlistentry>
   <term>Effect if unset:</term>
   <listitem>
    <para>
-    Nothing gets logged.
+    Default value is used (see above).
    </para>
   </listitem>
  </varlistentry>
@@ -1059,7 +1058,7 @@ actionsfile
    </para>
    <para>
     <programlisting>
-  debug         1 # show each GET/POST/CONNECT request
+  debug         1 # log each request destination (and the crunch reason if &my-app; intercepted the request)
   debug         2 # show each connection status
   debug         4 # show I/O status
   debug         8 # show header parsing
@@ -1114,9 +1113,9 @@ actionsfile
  </varlistentry>
 </variablelist>
 
-<![%config-file;[<literallayout>@@#debug   1    # show each GET/POST/CONNECT request</literallayout>]]>
+<![%config-file;[<literallayout>@@#debug      1 # log each request destination (and the crunch reason if &my-app; intercepted the request)</literallayout>]]>
 <![%config-file;[<literallayout>@@#debug   4096 # Startup banner and warnings</literallayout>]]>
-<![%config-file;[<literallayout>@@#debug   8192 # Errors - *we highly recommended enabling this*</literallayout>]]>
+<![%config-file;[<literallayout>@@#debug   8192 # Non-fatal errors</literallayout>]]>
 </sect3>
 
 

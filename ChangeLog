@@ -1,7 +1,45 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Since 3.0.6 ***
+*** Since 3.0.7 ***
+
+- Fixed a small memory leak when listen-address only specifies the port.
+- The source tar balls now include Privoxy-Regression-Test which
+  (upon other things) can be used to automatically detect some
+  packaging problems. Packagers are welcome to give it a try.
+- Reverted a change in 3.0.7 that caused path patterns to be checked
+  even if the host pattern match already failed. While this doesn't
+  noticeable affect the performance, it makes it less likely to run
+  out of stack space with overly-complex path patterns the user might
+  have added.
+- Updated the msn, yahoo and google filters to work as advertised again.
+- The warning message shown by the show-status CGI page is easier to
+  understand. Previously it wasn't clear that the error message
+  is shown below the invalid directive. (Reported by Lee)
+- When regenerating Content-Disposition headers the more common
+  spelling is used for the name. Previously it was written without caps.
+- Less confusing log message if the content type isn't overwritten
+  because force-text-type wasn't used but the old type doesn't look
+  like content that would be filtered normally.
+- Better log messages if the user tries to execute filters that
+  don't exist.
+- Treat the non-standard Request-Range headers like standard range
+  headers and suppress them if content filtering is enabled.
+- Fix build on OS/2 and other platforms that are neither
+  Windows nor Unix based.
+- Prevent the log messages for CONNECT requests to unacceptable
+  ports from printing the limit-connect argument as [null] if
+  limit-connect hasn't been explicitly enabled.
+- Don't disable the mingw32 log window if the logfile directive
+  isn't used. While it was an intentional change in 3.0.7 at least
+  one user perceived it as a regression and the same effect can
+  be achieved by disabling all debug directives.
+- Fixed two minor problems related to the win32 build process: a css
+  file was not being in the installer and the trustfile comment in the
+  config.txt referenced a nonexisting file
+- Minor documentation fixes.
+
+*** Version 3.0.7 Beta ***
 
 - Added zlib support to filter content with gzip and deflate
   encoding. (Patch provided by Wil Mahan)
@@ -156,7 +194,7 @@ ChangeLog for Privoxy
 - Changed webinterface default values for hide-user-agent, hide-referrer
   and set-image-blocker.
 	
-*** Version 3.0.5 ***
+*** Version 3.0.5 Beta ***
 
 - Windows version can be installed/started as a service.
 - Windows icon stays blue when Privoxy is idle, green when busy.

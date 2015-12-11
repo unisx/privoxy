@@ -1,112 +1,112 @@
-              Authors of Privoxy v2.9.x and 3.x
-===========================================================================
+                 Authors of Privoxy v2.9.x and 3.x
+   ===========================================================================
 
-Current Privoxy Team:
+   Current Privoxy Team:
 
- Fabian Keil, lead developer
- David Schmidt, developer
- 
- Hal Burgiss
- Roland Rosenfeld
- Jörg Strohmayer
+    Fabian Keil, lead developer
+    David Schmidt, developer
 
-Former Privoxy Team Members:
+    Hal Burgiss
+    Gerry Murphy
+    Roland Rosenfeld
+    Jörg Strohmayer
 
- Johny Agotnes 
- Rodrigo Barbosa
- Moritz Barsnick
- Ian Cummings
- Brian Dessent
- Jon Foster
- Karsten Hopp
- Alexander Lazic
- Daniel Leite
- Gábor Lipták
- Adam Lock
- Guy Laroche
- Mark Martinec 
- Justin McMurtry
- Andreas Oesterhelt
- Haroon Rafique
- Georg Sauthoff
- Thomas Steudten
- Rodney Stromlund
- Sviatoslav Sviridov
- Sarantis Paskalis
- Stefan Waldherr
+   Former Privoxy Team Members:
 
-Thanks to the many people who have tested Privoxy, reported bugs, provided
-patches, made suggestions or contributed in some way. These include (in
-alphabetical order):
+    Johny Agotnes
+    Rodrigo Barbosa
+    Moritz Barsnick
+    Ian Cummings
+    Brian Dessent
+    Jon Foster
+    Karsten Hopp
+    Alexander Lazic
+    Daniel Leite
+    Gábor Lipták
+    Adam Lock
+    Guy Laroche
+    Mark Martinec
+    Justin McMurtry
+    Andreas Oesterhelt
+    Haroon Rafique
+    Georg Sauthoff
+    Thomas Steudten
+    Rodney Stromlund
+    Sviatoslav Sviridov
+    Sarantis Paskalis
+    Stefan Waldherr
 
- Ken Arromdee
- Devin Bayer
- Gergely Bor
- Reiner Buehl
- Andrew J. Caines
- Clifford Caoile
- Frédéric Crozat
- Michael T. Davis
- Mattes Dolak 
- Peter E.
- Florian Effenberger
- Markus Elfring
- Dean Gaudet
- Stephen Gildea
- Daniel Griscom
- Felix Gröbert
- Aaron Hamid
- Darel Henman
- Magnus Holmgren
- Ralf Horstmann
- Stefan Huehner 
- Peter Hyman
- Derek Jennings
- Petr Kadlec
- David Laight
- Bert van Leeuwen
- Don Libes  
- Paul Lieverse
- Toby Lyward
- Wil Mahan
- Jindrich Makovicka 
- David Mediavilla 
- Raphael Moll
- Amuro Namie
- Adam Piggott
- Dan Price
- Lee R.
- Roberto Ragusa
- Félix Rauch
- Maynard Riley
- Chung-chieh Shan
- Spinor S.
- Bart Schelstraete
- Oliver Stoeneberg
- Peter Thoenen
- Martin Thomas
- Song Weijia
- Jörg Weinmann 
- Darren Wiebe
- Bobby G. Vinyard
- Anduin Withers
- Oliver Yeoh
- Jamie Zawinski
+   Thanks to the many people who have tested Privoxy, reported bugs, provided
+   patches, made suggestions or contributed in some way. These include (in
+   alphabetical order):
 
-Privoxy is based in part on code originally developed by Junkbusters Corp. and
-Anonymous Coders.
+    Ken Arromdee
+    Devin Bayer
+    Gergely Bor
+    Reiner Buehl
+    Andrew J. Caines
+    Clifford Caoile
+    Frédéric Crozat
+    Michael T. Davis
+    Mattes Dolak
+    Peter E.
+    Florian Effenberger
+    Markus Elfring
+    Dean Gaudet
+    Stephen Gildea
+    Daniel Griscom
+    Felix Gröbert
+    Aaron Hamid
+    Darel Henman
+    Magnus Holmgren
+    Ralf Horstmann
+    Stefan Huehner
+    Peter Hyman
+    Derek Jennings
+    Petr Kadlec
+    David Laight
+    Bert van Leeuwen
+    Don Libes
+    Paul Lieverse
+    Toby Lyward
+    Wil Mahan
+    Jindrich Makovicka
+    David Mediavilla
+    Raphael Moll
+    Amuro Namie
+    Adam Piggott
+    Dan Price
+    Lee R.
+    Roberto Ragusa
+    Félix Rauch
+    Maynard Riley
+    Chung-chieh Shan
+    Spinor S.
+    Bart Schelstraete
+    Oliver Stoeneberg
+    Peter Thoenen
+    Martin Thomas
+    Song Weijia
+    Jörg Weinmann
+    Darren Wiebe
+    Bobby G. Vinyard
+    Anduin Withers
+    Oliver Yeoh
+    Jamie Zawinski
 
-Privoxy heavily relies on Philip Hazel's PCRE.
+   Privoxy is based in part on code originally developed by Junkbusters Corp.
+   and Anonymous Coders.
 
-The code to filter compressed content makes use of zlib which is written by
-Jean-loup Gailly and Mark Adler.
+   Privoxy heavily relies on Philip Hazel's PCRE.
 
-On systems that lack snprintf(), Privoxy is using a version written by Mark
-Martinec. On systems that lack strptime(), Privoxy is using the one from the
-GNU C Library written by Ulrich Drepper.
+   The code to filter compressed content makes use of zlib which is written
+   by Jean-loup Gailly and Mark Adler.
 
-If we've missed you off this list, please let us know!
+   On systems that lack snprintf(), Privoxy is using a version written by
+   Mark Martinec. On systems that lack strptime(), Privoxy is using the one
+   from the GNU C Library written by Ulrich Drepper.
 
- Privoxy team. http://www.privoxy.org/
- <ijbswa-developers@lists.sourceforge.net>
+   If we've missed you off this list, please let us know!
 
+    Privoxy team. http://www.privoxy.org/
+    <ijbswa-developers@lists.sourceforge.net>

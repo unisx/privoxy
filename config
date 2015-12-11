@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.7
+#        Sample Configuration File for Privoxy v3.0.8
 #
-#  $Id: config,v 1.62 2007/12/09 07:51:46 fabiankeil Exp $
+#  $Id: config,v 1.63 2008/01/17 01:43:22 hal9 Exp $
 #
-#  Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+#  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
 #
 ####################################################################
 #                                                                  #
@@ -426,7 +426,7 @@ filterfile default.filter
 #
 #  Effect if unset:
 #
-#      Logging is disabled unless --no-daemon mode is used.
+#      No logfile is written.
 #
 #  Notes:
 #
@@ -555,8 +555,7 @@ logfile logfile
 #
 #  Specifies:
 #
-#      Key values that determine what information gets logged to
-#      the logfile.
+#      Key values that determine what information gets logged.
 #
 #  Type of value:
 #
@@ -564,17 +563,17 @@ logfile logfile
 #
 #  Default value:
 #
-#      12289 (i.e.: URLs plus informational and warning messages)
+#       0 (i.e.: only fatal errors (that cause Privoxy to exit) are logged)
 #
 #  Effect if unset:
 #
-#      Nothing gets logged.
+#      Default value is used (see above).
 #
 #  Notes:
 #
 #      The available debug levels are:
 #
-#        debug         1 # show each GET/POST/CONNECT request 
+#        debug         1 # log each request destination (and the crunch reason if Privoxy intercepted the request)
 #        debug         2 # show each connection status 
 #        debug         4 # show I/O status 
 #        debug         8 # show header parsing 
@@ -617,9 +616,9 @@ logfile logfile
 #      the problem with increased debug level first. Once you read the log
 #      messages, you may even be able to solve the problem on your own.
 #
-#debug   1    # show each GET/POST/CONNECT request
+#debug   1    # log each request destination (and the crunch reason if Privoxy intercepted the request)
 #debug   4096 # Startup banner and warnings
-#debug   8192 # Errors - *we highly recommended enabling this*
+#debug   8192 # Non-fatal errors
 #
 #
 #  3.2. single-threaded

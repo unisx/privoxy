@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.156 2007/11/15 03:17:43 hal9 Exp $
+# $Id: GNUmakefile.in,v 1.158 2007/12/11 21:29:25 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2007 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -654,7 +654,7 @@ tarball-clean:
 #
 # Documentation
 #
-# converts doc/source/*.sgml into html, text and man pages
+# converts doc/source/*.sgml into html, text, pdf and man pages
 #
 #############################################################################
 
@@ -664,7 +664,7 @@ dok-devel:
 	$(RM) -r doc/source/developer-manual
 	mkdir -p doc/text doc/source/developer-manual
 	cd doc/source/developer-manual && $(DB) ../developer-manual.sgml && cd .. && cp developer-manual/*.html ../webserver/developer-manual/
-	cd doc/source && $(DB) -V nochunks developer-manual.sgml > tmp.html && $(WDUMP) tmp.html > ../text/developer-manual.txt && $(RM) -r tmp.html developer-manual
+	cd doc/source && $(DB) -V nochunks developer-manual.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/developer-manual.txt && $(RM) -r tmp.html developer-manual
 
 # user manual
 dok-user: 
@@ -676,7 +676,7 @@ dok-user:
 	@# for all doc set-ups, including the 'user manual' config option in local \
 	@#system where it MUST be in same directory as html.
 	$(PERL) -pi.bak -e 's/<\/head/\n<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"p_doc.css\">\n<\/head/i' doc/webserver/user-manual/*html
-	cd doc/source && $(DB) -iuser-man -V nochunks user-manual.sgml > tmp.html && $(WDUMP) tmp.html > ../text/user-manual.txt && $(RM) -r tmp.html user-manual
+	cd doc/source && $(DB) -iuser-man -V nochunks user-manual.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/user-manual.txt && $(RM) -r tmp.html user-manual
 
 # faq
 dok-faq: 
@@ -684,7 +684,7 @@ dok-faq:
 	$(RM) -r doc/source/faq
 	mkdir -p doc/text doc/source/faq
 	cd doc/source/faq && $(DB) ../faq.sgml && cd .. && cp faq/*.html ../webserver/faq/
-	cd doc/source && $(DB) -V nochunks faq.sgml > tmp.html && $(WDUMP) tmp.html > ../text/faq.txt && $(RM) -r tmp.html faq
+	cd doc/source && $(DB) -V nochunks faq.sgml > tmp.html && env -u LANG $(WDUMP) tmp.html > ../text/faq.txt && $(RM) -r tmp.html faq
 
 # man page, one variation. Try to use the next target, just 'make man'. 
 dok-man: 
@@ -731,9 +731,9 @@ groff2html:
 # readme page and INSTALL file
 dok-readme: dok-release
 	cd doc/source && $(DB)-notoc -V nochunks readme.sgml > tmp.html &&\
-	$(WDUMP) tmp.html > ../../README ;\
+	env -u LANG $(WDUMP) tmp.html > ../../README ;\
 	$(DB)-notoc -V nochunks install.sgml > tmp.html &&\
-	$(WDUMP) tmp.html > ../../INSTALL ;\
+	env -u LANG $(WDUMP) tmp.html > ../../INSTALL ;\
 	$(RM) tmp.*
 
 # index.sgml is used to create both the Home Page, and a local index
@@ -776,7 +776,7 @@ redhat-readme:
 
 ## Make AUTHORS file
 dok-authors: 
-	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && $(WDUMP) \
+	cd doc/source && $(DB) -V nochunks authors.sgml > tmp.html && env -u LANG $(WDUMP) \
 	  tmp.html > ../../AUTHORS && $(RM) tmp.html
 
 # Set doc entities for VERSION and CODE_STATUS in sgml docs. Toggle content
@@ -956,7 +956,7 @@ dok-get:
 
 actions.@OBJEXT@:   actions.c   actions.h   config.h $(PROJECT_H_DEPS) errlog.h jcc.h list.h loaders.h miscutil.h actionlist.h ssplit.h
 cgi.@OBJEXT@:       cgi.c       cgi.h       config.h $(PROJECT_H_DEPS) cgiedit.h cgisimple.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
-cgiedit.@OBJEXT@:   cgiedit.c   cgiedit.h   config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
+cgiedit.@OBJEXT@:   cgiedit.c   cgiedit.h   config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actionlist.h actions.h errlog.h miscutil.h
 cgisimple.@OBJEXT@: cgisimple.c cgisimple.h config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
 deanimate.@OBJEXT@: deanimate.c deanimate.h config.h $(PROJECT_H_DEPS)
 encode.@OBJEXT@:    encode.c    encode.h    config.h
@@ -1364,6 +1364,12 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.158  2007/12/11 21:29:25  fabiankeil
+# Fix dependency list for cgiedit.c.
+#
+# Revision 1.157  2007/12/10 02:28:02  hal9
+# Unset $LANG for text processing of docs so we get pure text.
+#
 # Revision 1.156  2007/11/15 03:17:43  hal9
 # Some workaround changes to the config file perl stuff and comments, which is
 # broken here all by itself on perl 5.8.8.

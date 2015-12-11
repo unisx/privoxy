@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.53 2006/11/28 11:34:35 hal9 Exp $
+# $Id: privoxy-rh.spec,v 1.54 2008/01/20 14:30:59 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2006 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -70,7 +70,7 @@ Privoxy is based on the Internet Junkbuster.
 # We check to see if versions match
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=6
+VERSION_POINT=8
 
 # find CVS files and remove it.
 find -name CVS | xargs rm -rf
@@ -760,6 +760,9 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.54  2008/01/20 14:30:59  fabiankeil
+# Set version to 3.0.8.
+#
 # Revision 1.53  2006/11/28 11:34:35  hal9
 # Fix the prep section per Support request so it actually builds.
 #

@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.162 2007/12/06 17:54:57 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.164 2007/12/16 18:32:46 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -33,6 +33,14 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.162 2007/12/06 17:54:57 fabiankeil Exp $"
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.164  2007/12/16 18:32:46  fabiankeil
+ *    Prevent the log messages for CONNECT requests to unacceptable
+ *    ports from printing the limit-connect argument as [null] if
+ *    limit-connect hasn't been explicitly enabled.
+ *
+ *    Revision 1.163  2007/12/13 01:47:11  david__schmidt
+ *    Make sure all console-mode apps get a usage() instance
+ *
  *    Revision 1.162  2007/12/06 17:54:57  fabiankeil
  *    Reword NO_SERVER_DATA_RESPONSE to make it harder
  *    to misunderstand what the message is all about.
@@ -1057,7 +1065,7 @@ static void build_request_line(struct client_state *csp, const struct forward_sp
 static jb_err change_request_destination(struct client_state *csp);
 static void chat(struct client_state *csp);
 static void serve(struct client_state *csp);
-#if defined(unix)
+#if !defined(_WIN32) || defined(_WIN_CONSOLE)
 static void usage(const char *myname);
 #endif
 static void initialize_mutexes(void);
@@ -2181,6 +2189,10 @@ static void chat(struct client_state *csp)
            || (csp->action->flags & ACTION_LIMIT_CONNECT
               && !match_portlist(csp->action->string[ACTION_STRING_LIMIT_CONNECT], csp->http->port)) )
       {
+         const char *acceptable_connect_ports =
+            csp->action->string[ACTION_STRING_LIMIT_CONNECT] ?
+            csp->action->string[ACTION_STRING_LIMIT_CONNECT] :
+            "443 (implied default)";
          if (csp->action->flags & ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
          {
             /*
@@ -2192,8 +2204,7 @@ static void chat(struct client_state *csp)
              */
             log_error(LOG_LEVEL_INFO, "Request from %s marked for blocking. "
                "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
-               csp->ip_addr_str, csp->action->string[ACTION_STRING_LIMIT_CONNECT],
-               csp->http->port);
+               csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
             csp->action->flags |= ACTION_BLOCK;
             http->ssl = 0;
          }
@@ -2202,8 +2213,7 @@ static void chat(struct client_state *csp)
             write_socket(csp->cfd, CFORBIDDEN, strlen(CFORBIDDEN));
             log_error(LOG_LEVEL_INFO, "Request from %s denied. "
                "limit-connect{%s} doesn't allow CONNECT requests to port %d.",
-               csp->ip_addr_str, csp->action->string[ACTION_STRING_LIMIT_CONNECT],
-               csp->http->port);
+               csp->ip_addr_str, acceptable_connect_ports, csp->http->port);
             assert(NULL != csp->http->ocmd);
             log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 403 0", csp->ip_addr_str, csp->http->ocmd);
 
@@ -2840,7 +2850,7 @@ static int32 server_thread(void *data)
 #endif
 
 
-#if defined(unix)
+#if !defined(_WIN32) || defined(_WIN_CONSOLE)
 /*********************************************************************
  *
  * Function    :  usage
@@ -2869,7 +2879,7 @@ static void usage(const char *myname)
    exit(2);
 
 }
-#endif /* defined(unix) */
+#endif /* #if !defined(_WIN32) || defined(_WIN_CONSOLE) */
 
 
 /*********************************************************************

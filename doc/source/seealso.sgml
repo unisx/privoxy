@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: seealso.sgml,v 2.7 2007/03/23 14:03:25 fabiankeil Exp $
+ $Id: seealso.sgml,v 2.8 2008/01/17 01:49:51 hal9 Exp $
 
- Copyright (C) 2001-2007 Privoxy Developers http://www.privoxy.org/
+ Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
 
  ======================================================================
@@ -89,16 +89,6 @@ dead link 08/26/06
    the original Internet Junkbuster.
   </member>
  </simplelist>
-<!-- 
- too ancient 08/26/06
- <simplelist>
-  <member>
-   <ulink url="http://www.waldherr.org/junkbuster/">http://www.waldherr.org/junkbuster/</ulink>,
-   Stefan Waldherr's version of Junkbuster, from which <application>Privoxy</application> was
-   derived.
-  </member>
- </simplelist>
---> 
  <simplelist>
   <member>
    <ulink url="http://privacy.net/">http://privacy.net/</ulink>, a useful site

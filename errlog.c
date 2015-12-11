@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.62 2007/11/30 15:33:46 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.63 2007/12/15 19:49:32 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -33,6 +33,11 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.62 2007/11/30 15:33:46 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.63  2007/12/15 19:49:32  fabiankeil
+ *    Stop overloading logfile to control the mingw32 log window as well.
+ *    It's no longer necessary now that we disable all debug lines by default
+ *    and at least one user perceived it as a regression (added in 1.55).
+ *
  *    Revision 1.62  2007/11/30 15:33:46  fabiankeil
  *    Unbreak LOG_LEVEL_FATAL. It wasn't fatal with logging disabled
  *    and on mingw32 fatal log messages didn't end up in the log file.
@@ -539,7 +544,8 @@ void disable_logging(void)
 {
    if (logfp != NULL)
    {
-      log_error(LOG_LEVEL_INFO, "No logfile configured. Logging disabled.");
+      log_error(LOG_LEVEL_INFO,
+         "No logfile configured. Please enable it before reporting any problems.");
       lock_logfile();
       fclose(logfp);
       logfp = NULL;
@@ -909,8 +915,11 @@ void log_error(int loglevel, const char *fmt, ...)
     * settings and that logging is enabled.
     * Bail out otherwise.
     */
-   if ((loglevel != LOG_LEVEL_FATAL) &&
-       ((0 == (loglevel & debug)) || (logfp == NULL)))
+   if ((0 == (loglevel & debug))
+#ifndef _WIN32
+      || (logfp == NULL)
+#endif
+      )
    {
       return;
    }
@@ -1146,15 +1155,21 @@ void log_error(int loglevel, const char *fmt, ...)
       loglevel = LOG_LEVEL_FATAL;
    }
 
-   assert(NULL != logfp || loglevel == LOG_LEVEL_FATAL);
+   assert(
+#ifndef _WIN32
+          (NULL != logfp) ||
+#endif
+          (loglevel & debug));
 
    if (loglevel == LOG_LEVEL_FATAL)
    {
       fatal_error(outbuf_save);
       /* Never get here */
    }
-   fputs(outbuf_save, logfp);
-
+   if (logfp != NULL)
+   {
+      fputs(outbuf_save, logfp);
+   }
    unlock_logfile();
 
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)

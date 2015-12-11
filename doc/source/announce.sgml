@@ -5,7 +5,7 @@
 <!entity contacting SYSTEM "../contacting.sgml">
 <!entity history SYSTEM "../history.sgml">
 <!entity newfeatures SYSTEM "../newfeatures.sgml">
-<!entity p-version "3.0.6">
+<!entity p-version "3.0.8">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -19,7 +19,7 @@
 
  Purpose     :  Announcement text
                 
- $Id: announce.sgml,v 2.5 2006/11/14 01:57:46 hal9 Exp $
+ $Id: announce.sgml,v 2.7 2008/01/19 15:03:05 hal9 Exp $
 
  Copyright (C) 2001-2006 Privoxy Developers http://www.privoxy.org
  See LICENSE.

@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.7 User Manual"
+TITLE="Privoxy 3.0.8 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
@@ -17,7 +17,10 @@ TITLE="Filter Files"
 HREF="filter-file.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css">
+HREF="../p_doc.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html;
+charset=ISO-8859-1">
 <LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
 </head
 ><BODY
@@ -39,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.7 User Manual</TH
+>Privoxy 3.0.8 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -259,7 +262,7 @@ CLASS="FILENAME"
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN2171"
+NAME="AEN2176"
 ></A
 ><P
 ><B
@@ -528,7 +531,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2270"
+NAME="AEN2275"
 >8.1. Finding the Right Mix</A
 ></H2
 ><P
@@ -563,7 +566,7 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN2277"
+NAME="AEN2282"
 >8.2. How to Edit</A
 ></H2
 ><P
@@ -893,7 +896,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2368"
+NAME="AEN2373"
 >8.4.1. The Domain Pattern</A
 ></H3
 ><P
@@ -912,17 +915,29 @@ CLASS="LITERAL"
 ></DT
 ><DD
 ><P
->    matches any domain that <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->ENDS</I
-></SPAN
-> in
+>    matches any domain with first-level domain <TT
+CLASS="LITERAL"
+>com</TT
+>
+    and second-level domain <TT
+CLASS="LITERAL"
+>example</TT
+>.
+    For example <TT
+CLASS="LITERAL"
+>www.example.com</TT
+>,
     <TT
 CLASS="LITERAL"
->.example.com</TT
->
+>example.com</TT
+> and <TT
+CLASS="LITERAL"
+>foo.bar.baz.example.com</TT
+>.
+    Note that it wouldn't match if the second-level domain was <TT
+CLASS="LITERAL"
+>another-example</TT
+>.
    </P
 ></DD
 ><DT
@@ -942,7 +957,11 @@ CLASS="EMPHASIS"
     <TT
 CLASS="LITERAL"
 >www.</TT
->
+> (It also matches the domain
+    <TT
+CLASS="LITERAL"
+>www</TT
+> but most of the time that doesn't matter.)
    </P
 ></DD
 ><DT
@@ -1117,7 +1136,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2439"
+NAME="AEN2449"
 >8.4.2. The Path Pattern</A
 ></H3
 ><P
@@ -7183,7 +7202,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4251"
+NAME="AEN4261"
 >8.5.39. Summary</A
 ></H3
 ><P
@@ -7488,7 +7507,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4316"
+NAME="AEN4326"
 >8.7.1. default.action</A
 ></H3
 ><P
@@ -8209,7 +8228,7 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN4452"
+NAME="AEN4462"
 >8.7.2. user.action</A
 ></H3
 ><P

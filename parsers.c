@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.117 2007/12/06 18:11:50 fabiankeil Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.121 2008/01/05 21:37:03 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/parsers.c,v $
@@ -44,6 +44,28 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.117 2007/12/06 18:11:50 fabiankei
  *
  * Revisions   :
  *    $Log: parsers.c,v $
+ *    Revision 1.121  2008/01/05 21:37:03  fabiankeil
+ *    Let client_range() also handle Request-Range headers
+ *    which apparently are still supported by many servers.
+ *
+ *    Revision 1.120  2008/01/04 17:43:45  fabiankeil
+ *    Improve the warning messages that get logged if the action files
+ *    "enable" filters but no filters of that type have been loaded.
+ *
+ *    Revision 1.119  2007/12/28 18:32:51  fabiankeil
+ *    In server_content_type():
+ *    - Don't require leading white space when detecting image content types.
+ *    - Change '... not replaced ...' message to sound less crazy if the text
+ *      type actually is 'text/plain'.
+ *    - Mark the 'text/plain == binary data' assumption for removal.
+ *    - Remove a bunch of trailing white space.
+ *
+ *    Revision 1.118  2007/12/28 16:56:35  fabiankeil
+ *    Minor server_content_disposition() changes:
+ *    - Don't regenerate the header name all lower-case.
+ *    - Some white space fixes.
+ *    - Remove useless log message in case of ENOMEM.
+ *
  *    Revision 1.117  2007/12/06 18:11:50  fabiankeil
  *    Garbage-collect the code to add a X-Forwarded-For
  *    header as it seems to be mostly used by accident.
@@ -858,6 +880,7 @@ const struct parsers client_patterns[] = {
    { "Accept-Language:",         16,   client_accept_language },
    { "if-none-match:",           14,   client_if_none_match },
    { "Range:",                    6,   client_range },
+   { "Request-Range:",           14,   client_range },
    { "If-Range:",                 9,   client_range },
    { "X-Filter:",                 9,   client_x_filter },
    { "*",                         0,   crunch_client_header },
@@ -1689,7 +1712,8 @@ static jb_err header_tagger(struct client_state *csp, char *header)
 
    if (0 == found_filters)
    {
-      log_error(LOG_LEVEL_ERROR, "Unable to get current state of regex tagging.");
+      log_error(LOG_LEVEL_ERROR, "Inconsistent configuration: "
+         "tagging enabled, but no taggers available.");
       return(JB_ERR_OK);
    }
 
@@ -1906,7 +1930,8 @@ static jb_err filter_header(struct client_state *csp, char **header)
 
    if (0 == found_filters)
    {
-      log_error(LOG_LEVEL_ERROR, "Unable to get current state of regexp filtering.");
+      log_error(LOG_LEVEL_ERROR, "Inconsistent configuration: "
+         "header filtering enabled, but no matching filters available.");
       return(JB_ERR_OK);
    }
 
@@ -2172,17 +2197,22 @@ static jb_err server_content_type(struct client_state *csp, char **header)
 
    if (!(csp->content_type & CT_TABOO))
    {
-      if ((strstr(*header, " text/") && !strstr(*header, "plain"))
+      /*
+       * XXX: The assumption that text/plain is a sign of
+       * binary data seems to be somewhat unreasonable nowadays
+       * and should be dropped after 3.0.8 is out.
+       */
+      if ((strstr(*header, "text/") && !strstr(*header, "plain"))
         || strstr(*header, "xml")
         || strstr(*header, "application/x-javascript"))
       {
          csp->content_type |= CT_TEXT;
       }
-      else if (strstr(*header, " image/gif"))
+      else if (strstr(*header, "image/gif"))
       {
          csp->content_type |= CT_GIF;
       }
-      else if (strstr(*header, " image/jpeg"))
+      else if (strstr(*header, "image/jpeg"))
       {
          csp->content_type |= CT_JPEG;
       }
@@ -2190,21 +2220,21 @@ static jb_err server_content_type(struct client_state *csp, char **header)
 
    /*
     * Are we messing with the content type?
-    */ 
+    */
    if (csp->action->flags & ACTION_CONTENT_TYPE_OVERWRITE)
-   { 
+   {
       /*
        * Make sure the user doesn't accidently
        * change the content type of binary documents. 
-       */ 
+       */
       if ((csp->content_type & CT_TEXT) || (csp->action->flags & ACTION_FORCE_TEXT_MODE))
-      { 
+      {
          freez(*header);
          *header = strdup("Content-Type: ");
          string_append(header, csp->action->string[ACTION_STRING_CONTENT_TYPE]);
 
          if (header == NULL)
-         { 
+         {
             log_error(LOG_LEVEL_HEADER, "Insufficient memory to replace Content-Type!");
             return JB_ERR_MEMORY;
          }
@@ -2212,10 +2242,11 @@ static jb_err server_content_type(struct client_state *csp, char **header)
       }
       else
       {
-         log_error(LOG_LEVEL_HEADER, "%s not replaced. It doesn't look like text. "
-            "Enable force-text-mode if you know what you're doing.", *header);   
+         log_error(LOG_LEVEL_HEADER, "%s not replaced. "
+            "It doesn't look like a content type that should be filtered. "
+            "Enable force-text-mode if you know what you're doing.", *header);
       }
-   }  
+   }
 
    return JB_ERR_OK;
 }
@@ -2447,7 +2478,7 @@ static jb_err server_content_md5(struct client_state *csp, char **header)
  *
  * Function    :  server_content_disposition
  *
- * Description :  If enabled, blocks or modifies the "content-disposition" header.
+ * Description :  If enabled, blocks or modifies the "Content-Disposition" header.
  *                Called from `sed'.
  *
  * Parameters  :
@@ -2466,17 +2497,17 @@ static jb_err server_content_disposition(struct client_state *csp, char **header
    const char *newval;
 
    /*
-    * Are we messing with the content-disposition header?
+    * Are we messing with the Content-Disposition header?
     */
    if ((csp->action->flags & ACTION_HIDE_CONTENT_DISPOSITION) == 0)
    {
-      /*Me tinks not*/
+      /* Me tinks not */
       return JB_ERR_OK;
    }
 
    newval = csp->action->string[ACTION_STRING_CONTENT_DISPOSITION];
 
-   if ((newval == NULL) || (0 == strcmpic(newval, "block")) )
+   if ((newval == NULL) || (0 == strcmpic(newval, "block")))
    {
       /*
        * Blocking content-disposition header
@@ -2488,19 +2519,16 @@ static jb_err server_content_disposition(struct client_state *csp, char **header
    else
    {  
       /*
-       * Replacing content-disposition header
+       * Replacing Content-Disposition header
        */
       freez(*header);
-      *header = strdup("content-disposition: ");
-      string_append(header, newval);   
+      *header = strdup("Content-Disposition: ");
+      string_append(header, newval);
 
-      if (*header == NULL)
+      if (*header != NULL)
       {
-         log_error(LOG_LEVEL_HEADER, "Insufficent memory. content-disposition header not fully replaced.");  
-      }
-      else
-      {
-         log_error(LOG_LEVEL_HEADER, "content-disposition header crunched and replaced with: %s", *header);
+         log_error(LOG_LEVEL_HEADER,
+            "Content-Disposition header crunched and replaced with: %s", *header);
       }
    }
    return (*header == NULL) ? JB_ERR_MEMORY : JB_ERR_OK;
@@ -3431,9 +3459,9 @@ jb_err client_x_filter(struct client_state *csp, char **header)
  *
  * Function    :  client_range
  *
- * Description :  Removes Range and If-Range headers if content
- *                filtering is enabled. If the client's version of
- *                the document has been altered by Privoxy, the server
+ * Description :  Removes Range, Request-Range and If-Range headers if
+ *                content filtering is enabled. If the client's version
+ *                of the document has been altered by Privoxy, the server
  *                could interpret the range differently than the client
  *                intended in which case the user could end up with
  *                corrupted content.
