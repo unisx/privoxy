@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.0">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.5">
+<!entity p-status "BETA">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -23,9 +23,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $
+ $Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
 
  ========================================================================
@@ -44,13 +44,13 @@
      <subscript>
     <!-- Completely the wrong markup, but very little is allowed  -->
     <!-- in this part of an article. FIXME -->
-      <link linkend="copyright">Copyright</link> &my-copy; 2001, 2002 by 
+      <link linkend="copyright">Copyright</link> &my-copy; 2001-2006 by 
       <ulink url="http://www.privoxy.org">Privoxy Developers</ulink>
      </subscript>
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $</pubdate>
 
 <!--
 
@@ -144,7 +144,7 @@ Hal.
    --> 
    <para>
     The first step is to join the <ulink
-      url="mailto:developers@privoxy.org">developer's mailing list</ulink>.
+      url="mailto:ijbswa-developers@lists.sourceforge.net">developer's mailing list</ulink>.
     You can submit your ideas, or even better patches. Patches are best 
     submitted to the Sourceforge tracker set up for this purpose, but 
     can be sent to the list for review too.
@@ -180,7 +180,7 @@ Hal.
         <ulink url="http://sourceforge.net/docman/?group_id=1">SF's site
         documentation</ulink> for the technical access details for your
         operating system. For historical reasons, the CVS server is
-        called <literal>cvs.ijbswa.sourceforge.net</literal>, the repository is
+        called <literal>ijbswa.cvs.sourceforge.net</literal>, the repository is
         called <literal>ijbswa</literal>, and the source tree module is called
         <literal>current</literal>.
       </para>
@@ -193,7 +193,7 @@ Hal.
        mentioned, the sources are in the <literal>current</literal>
        <quote>module</quote>. Other modules are present for platform specific
        issues. There is a webview of the CVS hierarchy at <ulink
-       url="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/</ulink>,
+       url="http://ijbswa.cvs.sourceforge.net/ijbswa/">http://ijbswa.cvs.sourceforge.net/ijbswa/</ulink>,
        which might help with visualizing how these pieces fit together.
      </para>
      <para>
@@ -211,6 +211,13 @@ Hal.
        versioning.)
      </para>
      <para>
+      At one time there were two distinct branches: stable and unstable. The
+      more drastic changes were to be in the unstable branch. These branches 
+      have now been merged to minimize time and effort of maintaining two 
+      branches.
+     </para>
+    <!-- 
+     <para>
        This will result in at least two active branches, which means there may
        be occasions that require the same (or similar) item to be 
        checked into to two different places (assuming its a bugfix and needs 
@@ -219,6 +226,7 @@ Hal.
        separately. Use the <literal>cvs -r</literal> flag to check out a 
        branch, e.g: <literal>cvs co -r v_3_0_branch current</literal>.
      </para>
+    --> 
     </sect2>
 
     <sect2 id="cvscommit"><title>CVS Commit Guidelines</title>
@@ -236,8 +244,8 @@ Hal.
       <para>
         <itemizedlist>
           <listitem><para>
-            Never (read: <emphasis>never, ever</emphasis>) be tempted to commit
-            that small change without testing it thoroughly first. When we're
+            Please don't commit even 
+            a small change without testing it thoroughly first. When we're
             close to a public release, ask a fellow developer to review your 
             changes.
           </para></listitem>
@@ -271,6 +279,7 @@ Hal.
         </itemizedlist>
       </para>
       
+<!--
       <para>
        Stable branches are handled with more care, especially after the 
        initial *.*.0 release, and we are just in bugfix mode. In addition to 
@@ -311,44 +320,9 @@ Hal.
      
        </itemizedlist>
       </para> 
+    -->
     </sect2>
 
-<!--
- This sounds vague, dated, and out of step with current development style.
- Removing 09/03/02, HB.
-
-    <sect2 id="cvswhenask"><title>Discussing Changes First</title>
-      <para>
-        We don't have a formal policy for the development branch, just use
-        common sense. Hints: If it is.. 
-       <orderedlist numeration="arabic">
-          <listitem><para>
-            ..a bug-fix / clean-up / cosmetic thing: shoot
-          </para></listitem>
-          <listitem><para>
-            ..a new feature that can be turned off: shoot
-          </para></listitem>
-          <listitem><para>
-            ..a clear improvement w/o side effects on other parts of the code: shoot
-          </para></listitem>
-          <listitem><para>
-            ..a matter of taste: <ulink url="mailto:developers@privoxy.org">ask the list</ulink>
-          </para></listitem>
-          <listitem><para>
-            ..a major redesign of some part of the code: <ulink url="mailto:developers@privoxy.org">ask
-            the list</ulink>
-          </para></listitem>
-        </orderedlist>
-      </para>
-      <para>
-        Note that near a major public release, we get a bit more cautious - if
-        unsure, it doesn't hurt to ask first. There is always the possibility
-        to submit a patch to the <ulink
-        url="http://sourceforge.net/tracker/?atid=311118&amp;group_id=11118&amp;func=browse">patches
-        tracker</ulink> instead.
-      </para>
-    </sect2>
-   --> 
   </sect1>
 	
   <!--   ~~~~~       New section      ~~~~~     -->
@@ -364,7 +338,8 @@ Hal.
     url="../user-manual/index.html"><citetitle>user-manual</citetitle></ulink>,
     <ulink url="../faq/index.html"><citetitle>FAQ</citetitle></ulink>, and, of
     course this, the <citetitle>developer-manual</citetitle> in this format.
-    The <citetitle>README</citetitle>, <citetitle>AUTHORS</citetitle>
+    The <citetitle>README</citetitle>, <citetitle>AUTHORS</citetitle>,
+    <citetitle>INSTALL</citetitle>,
     <citetitle>privoxy.1</citetitle> (man page), and
     <citetitle>config</citetitle> files are also now maintained as Docbook
     SGML. These files, when built, in the top-level source directory are
@@ -372,7 +347,7 @@ Hal.
     variation on this file, <filename>privoxy-index.html</filename>, 
     meant for inclusion with doc packages), are maintained as SGML as well.
     <emphasis>DO NOT edit these directly</emphasis>. Edit the SGML source, or
-    contact someone involved in the documentation (at present Hal).
+    contact someone involved in the documentation.
     </para> 
     <para>
      <filename>config</filename> requires some special handling. The reason it
@@ -387,15 +362,15 @@ Hal.
      <filename>config</filename>.
     </para>
     <para>
-     Other, less formal documents (e.g. <filename>LICENSE</filename>,
-     <filename>INSTALL</filename>) are maintained as plain text files in the
-     top-level source directory. At least for the time being.
+     Other, less formal documents (e.g. <filename>LICENSE</filename>) are
+     maintained as plain text files in the top-level source directory.
     </para>
     <para>
      Packagers are encouraged to include this documentation. For those without
      the ability to build the docs locally, text versions of each are kept in
-     CVS. HTML versions are also now being kept in CVS under 
-     <filename>doc/webserver/*</filename>.
+     CVS. HTML versions are also being kept in CVS under 
+     <filename>doc/webserver/*</filename>. And PDF version are kept in 
+     <filename>doc/pdf/*</filename>.
     </para>
     <para>
      Formal documents are built with the Makefile targets of
@@ -616,7 +591,7 @@ Hal.
   <listitem>
    <para>
     Our documents are available in differing formats. Right now, they 
-    are just plain text, TML, and PDF, but others are always a 
+    are just plain text, HTML, and PDF, but others are always a 
     future possibility. Be careful with URLs (&lt;ulink&gt;), and avoid 
     this mistake:
    </para>
@@ -1857,14 +1832,14 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -1886,8 +1861,9 @@ const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 1
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
  *                http://www.gnu.org/copyleft/gpl.html
- *                or write to the Free Software Foundation, Inc., 59
- *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *                or write to the Free Software Foundation, Inc., 
+ *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
+ *                USA
  *
  * Revisions   :
  *    $L<!-- Break CVS Substitution -->og$
@@ -1917,14 +1893,14 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.10 2006/09/22 01:27:55 hal9 Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
  *
  * Purpose     :  (Fill me in with a good description!)
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2006 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -1946,8 +1922,9 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
  *                The GNU General Public License should be included with
  *                this file.  If not, you can view it at
  *                http://www.gnu.org/copyleft/gpl.html
- *                or write to the Free Software Foundation, Inc., 59
- *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *                or write to the Free Software Foundation, Inc., 
+ *                51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 ,
+ *                USA
  *
  * Revisions   :
  *    $L<!-- Break CVS Substitution -->og$
@@ -2297,8 +2274,8 @@ at sourceforge. Three simple steps:
       <programlisting>
   mkdir dist # delete or choose different name if it already exists
   cd dist
-  cvs -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa login
-  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa export -r v_X_Y_Z current
+  cvs -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa login
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa export -r v_X_Y_Z current
 </programlisting>
     </para>
   
@@ -2309,6 +2286,17 @@ at sourceforge. Three simple steps:
      on exactly the same code.
     </para>
   
+    <warning>
+     <para>
+      Every significant release of Privoxy has included at least one 
+      package that either had incorrect versions of files, missing files, 
+      or incidental leftovers from a previous build process that gave 
+      unknown numbers of users headaches to try to figure out what was 
+      wrong. PLEASE, make sure you are using pristene sources, and are
+      following the prescribed process!
+     </para>
+    </warning>
+
     <para>
      Please find additional instructions for the source tarball and the
      individual platform dependent binary packages below. And details 
@@ -2393,15 +2381,22 @@ at sourceforge. Three simple steps:
       </listitem> 
       <listitem>
        <para>
-        <filename>user.action</filename> is designed for local preferences. 
-        Make sure this does not get overwritten!
+        <filename>user.action</filename> and <filename>user.filter</filename>
+        are designed for local preferences. Make sure these do not get overwritten!
+        <filename>config</filename> should not be overwritten either. This 
+        has especially important configuration data in it.
+        <filename>trust</filename> should be left in tact as well.
        </para>
       </listitem> 
       <listitem>
        <para>
-        Other configuration files should be installed as the new defaults, 
-        but all previously installed configuration files should be preserved
-        as backups. This is just good manners :-)
+        Other configuration files (<filename>default.action</filename>,
+        <filename>default.filter</filename> and
+        <filename>standard.action</filename>) should be installed as the new
+        defaults, but all previously installed configuration files should be
+        preserved as backups. This is just good manners :-) These files are
+        likely to change between releases and contain important new features
+        and bug fixes.
        </para>
      </listitem> 
      <listitem>
@@ -2526,7 +2521,7 @@ at sourceforge. Three simple steps:
 	</para>
 	<para>
 	<programlisting>
-  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co os2setup
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co os2setup
 </programlisting>
 	</para>
 	<para>
@@ -2626,7 +2621,7 @@ at sourceforge. Three simple steps:
       </para>
       <para>
       <programlisting>
-  cvs -z3  -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co winsetup
+  cvs -z3  -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co winsetup
 </programlisting>
       </para>
       <para>
@@ -2690,7 +2685,7 @@ at sourceforge. Three simple steps:
 	</para>
 	<para>
 	<programlisting>
-  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co osxsetup
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co osxsetup
 </programlisting>
 	</para>
 	<para>
@@ -2904,7 +2899,8 @@ at sourceforge. Three simple steps:
       <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">download
       location</ulink>, the release notes and the Changelog. Also, post an
       updated News item on the project page Sourceforge, and update the Home 
-      page and docs linked from the Home page (see below).
+      page and docs linked from the Home page (see below). Other news sites
+      and release oriented sites, such as Freshmeat, should also be notified.
      </para>
    </sect2>
 
@@ -3029,6 +3025,22 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.10  2006/09/22 01:27:55  hal9
+  Final commit of probably various minor changes here and there. Unless
+  something changes this should be ready for pending release.
+
+  Revision 2.9  2006/09/14 02:30:07  hal9
+  Fix ijbswa cvs links. Update notes on release process, and which config files
+  should be overwritten and which not.
+
+  Revision 2.8  2006/08/22 23:35:01  hal9
+  Fix email address, cvs URI, address branching changes and various other
+  small updates.
+
+  Revision 2.7  2006/07/18 14:48:50  david__schmidt
+  Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+  with what was really the latest development (the v_3_0_branch branch)
+
   Revision 1.46.2.11  2002/12/11 13:12:15  hal9
   Rewrite cvs write access give-away section.
 

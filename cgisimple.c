@@ -1,7 +1,7 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.35.2.3 2003/12/17 16:34:15 oes Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.40 2006/09/09 13:05:33 fabiankeil Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgisimple.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.c,v $
  *
  * Purpose     :  Simple CGIs to get information about Privoxy's
  *                status.
@@ -36,6 +36,43 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.35.2.3 2003/12/17 16:34:15 oe
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.40  2006/09/09 13:05:33  fabiankeil
+ *    Modified cgi_send_user_manual to serve binary
+ *    content without destroying it first. Should also be
+ *    faster now. Added ".jpg" check for Content-Type guessing.
+ *
+ *    Revision 1.39  2006/09/08 09:49:23  fabiankeil
+ *    Deliver documents in the user-manual directory
+ *    with "Content-Type text/css" if their filename
+ *    ends with ".css".
+ *
+ *    Revision 1.38  2006/09/06 18:45:03  fabiankeil
+ *    Incorporate modified version of Roland Rosenfeld's patch to
+ *    optionally access the user-manual via Privoxy. Closes patch 679075.
+ *
+ *    Formatting changed to Privoxy style, added call to
+ *    cgi_error_no_template if the requested file doesn't
+ *    exist and modified check whether or not Privoxy itself
+ *    should serve the manual. Should work cross-platform now.
+ *
+ *    Revision 1.37  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.35.2.7  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
+ *    Revision 1.35.2.6  2005/07/04 03:13:43  david__schmidt
+ *    Undo some damaging memory leak patches
+ *
+ *    Revision 1.35.2.5  2005/05/07 21:50:55  david__schmidt
+ *    A few memory leaks plugged (mostly on error paths)
+ *
+ *    Revision 1.35.2.4  2005/04/04 02:21:24  david__schmidt
+ *    Another instance of:
+ *    Don't show "Edit" buttons #ifndef FEATURE_CGI_EDIT_ACTIONS
+ *    Thanks to Magnus Holmgren for the patch
+ *
  *    Revision 1.35.2.3  2003/12/17 16:34:15  oes
  *     - Prevent line wrap beween "View/Edit" link buttons on status page
  *     - Some (mostly irrelevant) fixes for Out-of-mem-case handling
@@ -642,6 +679,116 @@ jb_err cgi_send_stylesheet(struct client_state *csp,
    return JB_ERR_OK;
 
 }
+/*********************************************************************
+ *
+ * Function    :  cgi_send_user_manual
+ *
+ * Description :  CGI function that sends a file in the user
+ *                manual directory.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *          3  :  parameters = map of cgi parameters
+ *
+ * CGI Parameters : file=name.html, the name of the HTML file
+ *                  (relative to user-manual from config)
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+jb_err cgi_send_user_manual(struct client_state *csp,
+                            struct http_response *rsp,
+                            const struct map *parameters)
+{
+   const char * filename;
+   char *full_path;
+   FILE *fp;
+   jb_err err = JB_ERR_OK;
+   size_t length;
+
+   assert(csp);
+   assert(rsp);
+   assert(parameters);
+
+   get_string_param(parameters, "file", &filename);
+   /* Check paramter for hack attempts */
+   if (filename && strchr(filename, '/'))
+   {
+      return JB_ERR_CGI_PARAMS;
+   }
+   if (filename && strstr(filename, ".."))
+   {
+      return JB_ERR_CGI_PARAMS;
+   }
+
+   full_path = make_path(csp->config->usermanual, filename ? filename : "index.html");
+   if (full_path == NULL)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   /* Open user-manual file */
+   if (NULL == (fp = fopen(full_path, "r")))
+   {
+      log_error(LOG_LEVEL_ERROR, "Cannot open user-manual file %s: %E", full_path);
+      err = cgi_error_no_template(csp, rsp, full_path);
+      free(full_path);
+      return err;
+   }
+
+   /* Get file length */
+   fseek(fp, 0, SEEK_END);
+   length = ftell(fp);
+   fseek(fp, 0, SEEK_SET);
+
+   /* Allocate memory and load the file directly into the body */
+   rsp->body = (char *)malloc(length+1);
+   if (!rsp->body)
+   {
+      fclose(fp);
+      free(full_path);
+      return JB_ERR_MEMORY;
+   }
+   if (!fread(rsp->body, length, 1, fp))
+   {
+      /*
+       * Why should this happen? If it does, we just log
+       * it and serve what we got, most likely padded with garbage.
+       */
+      log_error(LOG_LEVEL_ERROR, "Couldn't completely read user-manual file %s.", full_path);
+   }
+   fclose(fp);
+   free(full_path);
+
+   /* Privoxy only gets it right for non-binary content. */
+   rsp->content_length = (int)length;
+
+   /* Guess correct Content-Type based on the filename's ending */
+   if (filename)
+   {
+      length = strlen(filename);
+   }
+   else
+   {
+      length = 0;
+   } 
+   if((length>=4) && !strcmp(&filename[length-4], ".css"))
+   {
+      err = enlist(rsp->headers, "Content-Type: text/css");
+   }
+   else if((length>=4) && !strcmp(&filename[length-4], ".jpg"))
+   {
+      err = enlist(rsp->headers, "Content-Type: image/jpeg");
+   }
+   else
+   {
+      err = enlist(rsp->headers, "Content-Type: text/html");
+   }
+
+   return err;
+}
 
 
 /*********************************************************************
@@ -746,7 +893,7 @@ jb_err cgi_show_status(struct client_state *csp,
    switch (*(lookup(parameters, "file")))
    {
    case 'a':
-      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_ACTION_FILES && csp->actions_list[i])
+      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->actions_list[i])
       {
          filename = csp->actions_list[i]->filename;
          file_description = "Actions File";
@@ -754,9 +901,9 @@ jb_err cgi_show_status(struct client_state *csp,
       break;
 
    case 'f':
-      if (csp->rlist)
+      if (!get_number_param(csp, parameters, "index", &i) && i < MAX_AF_FILES && csp->rlist[i])
       {
-         filename = csp->rlist->filename;
+         filename = csp->rlist[i]->filename;
          file_description = "Filter File";
       }
       break;
@@ -871,7 +1018,7 @@ jb_err cgi_show_status(struct client_state *csp,
     * FIXME: Shouldn't include hardwired HTML here, use line template instead!
     */
    s = strdup("");
-   for (i = 0; i < MAX_ACTION_FILES; i++)
+   for (i = 0; i < MAX_AF_FILES; i++)
    {
       if (((fl = csp->actions_list[i]) != NULL) && ((b = fl->f) != NULL))
       {
@@ -900,13 +1047,29 @@ jb_err cgi_show_status(struct client_state *csp,
       if (!err) err = map(exports, "actions-filenames", 1, "<tr><td>None specified</td></tr>", 1);
    }
 
-   if (csp->rlist)
+   /* 
+    * List all re_filterfiles in use, together with view options.
+    * FIXME: Shouldn't include hardwired HTML here, use line template instead!
+    */
+   s = strdup("");
+   for (i = 0; i < MAX_AF_FILES; i++)
    {
-      if (!err) err = map(exports, "re-filter-filename", 1, html_encode(csp->rlist->filename), 0);
+      if (((fl = csp->rlist[i]) != NULL) && ((b = fl->f) != NULL))
+      {
+         if (!err) err = string_append(&s, "<tr><td>");
+         if (!err) err = string_join(&s, html_encode(csp->rlist[i]->filename));
+         snprintf(buf, 100, "</td><td class=\"buttons\"><a href=\"/show-status?file=filter&index=%d\">View</a>", i);
+         if (!err) err = string_append(&s, buf);
+         if (!err) err = string_append(&s, "</td></tr>\n");
+      }
+   }
+   if (*s != '\0')   
+   {
+      if (!err) err = map(exports, "re-filter-filename", 1, s, 0);
    }
    else
    {
-      if (!err) err = map(exports, "re-filter-filename", 1, "None specified", 1);
+      if (!err) err = map(exports, "re-filter-filename", 1, "<tr><td>None specified</td></tr>", 1);
       if (!err) err = map_block_killer(exports, "have-filterfile");
    }
 
@@ -1123,7 +1286,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
 
       matches = strdup("<table class=\"transparent\">");
 
-      for (i = 0; i < MAX_ACTION_FILES; i++)
+      for (i = 0; i < MAX_AF_FILES; i++)
       {
          if (NULL == csp->config->actions_file_short[i]
              || !strcmp(csp->config->actions_file_short[i], "standard")) continue;
@@ -1139,9 +1302,13 @@ jb_err cgi_show_url_info(struct client_state *csp,
                string_join  (&matches, html_encode(csp->config->actions_file_short[i]));
                snprintf(buf, 150, ".action <a class=\"cmd\" href=\"/show-status?file=actions&index=%d\">", i);
                string_append(&matches, buf);
-               string_append(&matches, "View</a> <a class=\"cmd\" href=\"/edit-actions-list?f=");
+               string_append(&matches, "View</a>");
+#ifdef FEATURE_CGI_EDIT_ACTIONS
+               string_append(&matches, " <a class=\"cmd\" href=\"/edit-actions-list?f=");
                string_join  (&matches, html_encode(csp->config->actions_file_short[i]));
-               string_append(&matches, "\">Edit</a></th></tr>\n");
+               string_append(&matches, "\">Edit</a>");
+#endif
+               string_append(&matches, "</th></tr>\n");
 
                hits = 0;
                b = b->next;

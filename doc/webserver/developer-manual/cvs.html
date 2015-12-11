@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >The CVS Repository</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -74,8 +74,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CVS"
->2. The CVS Repository</A
-></H1
+></A
+>2. The CVS Repository</H1
 ><P
 >      If you become part of the active development team, you will eventually
       need write access to our holy grail, the CVS repository. One of the 
@@ -88,8 +88,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSACCESS"
->2.1. Access to CVS</A
-></H2
+></A
+>2.1. Access to CVS</H2
 ><P
 >        The project's CVS repository is hosted on
         <A
@@ -105,17 +105,17 @@ TARGET="_top"
         documentation</A
 > for the technical access details for your
         operating system. For historical reasons, the CVS server is
-        called <VAR
+        called <TT
 CLASS="LITERAL"
->cvs.ijbswa.sourceforge.net</VAR
+>ijbswa.cvs.sourceforge.net</TT
 >, the repository is
-        called <VAR
+        called <TT
 CLASS="LITERAL"
->ijbswa</VAR
+>ijbswa</TT
 >, and the source tree module is called
-        <VAR
+        <TT
 CLASS="LITERAL"
->current</VAR
+>current</TT
 >.
       </P
 ></DIV
@@ -125,30 +125,30 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSBRANCHES"
->2.2. Branches</A
-></H2
+></A
+>2.2. Branches</H2
 ><P
 >       Within the CVS repository, there are modules and branches. As
-       mentioned, the sources are in the <VAR
+       mentioned, the sources are in the <TT
 CLASS="LITERAL"
->current</VAR
+>current</TT
 >
        <SPAN
 CLASS="QUOTE"
 >"module"</SPAN
 >. Other modules are present for platform specific
        issues. There is a webview of the CVS hierarchy at <A
-HREF="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/"
+HREF="http://ijbswa.cvs.sourceforge.net/ijbswa/"
 TARGET="_top"
->http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/</A
+>http://ijbswa.cvs.sourceforge.net/ijbswa/</A
 >,
        which might help with visualizing how these pieces fit together.
      </P
 ><P
 >       Branches are used to fork a sub-development path from the main trunk.
-       Within the <VAR
+       Within the <TT
 CLASS="LITERAL"
->current</VAR
+>current</TT
 > module where the sources are, there
        is always at least one <SPAN
 CLASS="QUOTE"
@@ -173,19 +173,10 @@ HREF="newrelease.html#VERSIONNUMBERS"
        versioning.)
      </P
 ><P
->       This will result in at least two active branches, which means there may
-       be occasions that require the same (or similar) item to be 
-       checked into to two different places (assuming its a bugfix and needs 
-       fixing in both the stable and unstable trees). This also means that in
-       order to have access to both trees, both will have to be checked out 
-       separately. Use the <VAR
-CLASS="LITERAL"
->cvs -r</VAR
-> flag to check out a 
-       branch, e.g: <VAR
-CLASS="LITERAL"
->cvs co -r v_3_0_branch current</VAR
->.
+>      At one time there were two distinct branches: stable and unstable. The
+      more drastic changes were to be in the unstable branch. These branches 
+      have now been merged to minimize time and effort of maintaining two 
+      branches.
      </P
 ></DIV
 ><DIV
@@ -194,8 +185,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSCOMMIT"
->2.3. CVS Commit Guidelines</A
-></H2
+></A
+>2.3. CVS Commit Guidelines</H2
 ><P
 >        The source tree is the heart of every software project. Every effort must
         be made to ensure that it is readable, compilable and consistent at all
@@ -212,14 +203,8 @@ NAME="CVSCOMMIT"
 ><UL
 ><LI
 ><P
->            Never (read: <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->never, ever</I
-></SPAN
->) be tempted to commit
-            that small change without testing it thoroughly first. When we're
+>            Please don't commit even 
+            a small change without testing it thoroughly first. When we're
             close to a public release, ask a fellow developer to review your 
             changes.
           </P
@@ -273,59 +258,6 @@ TARGET="_top"
             tracker</A
 > instead.
           </P
-></LI
-></UL
->
-      </P
-><P
->       Stable branches are handled with more care, especially after the 
-       initial *.*.0 release, and we are just in bugfix mode. In addition to 
-       the above, the below applies only to the stable branch (currently the 
-       <VAR
-CLASS="LITERAL"
->v_3_0_branch</VAR
-> branch):
-      </P
-><P
->       <P
-></P
-><UL
-><LI
-><P
->           Do not commit <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->anything</I
-></SPAN
-> unless your proposed
-           changes have been well tested first, preferably by other members of the
-           project, or have prior approval of the project leaders or consensus
-           of the devel list.
-         </P
-></LI
-><LI
-><P
->         Where possible, bugfixes and changes should be tested in the main 
-         development trunk first. There may be occasions where this is not 
-         feasible, though.
-        </P
-></LI
-><LI
-><P
->          Alternately, proposed changes can be submitted as patches to the patch tracker on 
-          Sourceforge first: <A
-HREF="http://sourceforge.net/tracker/?group_id=11118&atid=311118"
-TARGET="_top"
->http://sourceforge.net/tracker/?group_id=11118&#38;atid=311118</A
->.
-          Then ask for peer review. 
-        </P
-></LI
-><LI
-><P
->          Do not even think about anything except bugfixes. No new features!
-         </P
 ></LI
 ></UL
 >

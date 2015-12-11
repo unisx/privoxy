@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: privoxy.sgml,v 1.7.2.1 2004/01/30 13:13:40 oes Exp $
+ $Id: privoxy.sgml,v 2.5 2006/09/16 18:19:42 hal9 Exp $
 
- Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001 - 2006 Privoxy Developers http://privoxy.org
  See LICENSE.
 
  ======================================================================
@@ -27,16 +27,17 @@
 -->
 
 <para>
- <application>Privoxy</application> is a web proxy with advanced filtering
- capabilities for protecting privacy, modifying web page content, managing
- cookies, controlling access, and removing ads, banners, pop-ups and other
- obnoxious Internet junk. <application>Privoxy</application> has a very
- flexible configuration and can be customized to suit individual needs and
- tastes. <application>Privoxy</application> has application for both
- stand-alone systems and multi-user networks.
+ Privoxy is a 
+ <ulink url="http://en.wikipedia.org/wiki/Proxy_server">web proxy</ulink>
+ with advanced filtering capabilities for protecting
+ privacy, modifying web page data, managing 
+ <ulink url="http://en.wikipedia.org/wiki/Browser_cookie">cookies</ulink>, 
+ controlling access, and removing ads, banners, pop-ups and other obnoxious
+ Internet junk. Privoxy has a very flexible configuration and can be
+ customized to suit individual needs and tastes. Privoxy has application for
+ both stand-alone systems and multi-user networks.
 </para>
 
 <para>
- <application>Privoxy</application> is based on <application>Internet
- Junkbuster</application> (tm).
+ Privoxy is based on Internet Junkbuster (tm).
 </para>

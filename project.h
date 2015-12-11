@@ -1,10 +1,10 @@
 #ifndef PROJECT_H_INCLUDED
 #define PROJECT_H_INCLUDED
 /** Version string. */
-#define PROJECT_H_VERSION "$Id: project.h,v 1.72.2.5 2004/01/30 15:29:29 oes Exp $"
+#define PROJECT_H_VERSION "$Id: project.h,v 1.82 2006/09/20 15:50:31 fabiankeil Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/project.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/project.h,v $
  *
  * Purpose     :  Defines data structures which are widely used in the
  *                project.  Does not define any variables or functions
@@ -37,6 +37,64 @@
  *
  * Revisions   :
  *    $Log: project.h,v $
+ *    Revision 1.82  2006/09/20 15:50:31  fabiankeil
+ *    Doubled size of HOSTENT_BUFFER_SIZE to mask
+ *    problems with gethostbyname_r and some
+ *    /etc/hosts configurations. Only a workaround
+ *    until we get the real fix ready.
+ *    Thanks Félix Rauch for reporting.
+ *
+ *    Increased value of MAX_TRUSTED_REFERRERS from 64 to 512.
+ *
+ *    Revision 1.81  2006/09/06 13:03:04  fabiankeil
+ *    Respond with 400 and a short text message
+ *    if the client tries to use Privoxy as FTP proxy.
+ *
+ *    Revision 1.80  2006/09/06 10:43:32  fabiankeil
+ *    Added config option enable-remote-http-toggle
+ *    to specify if Privoxy should recognize special
+ *    headers (currently only X-Filter) to change its
+ *    behaviour. Disabled by default.
+ *
+ *    Revision 1.79  2006/09/06 09:23:37  fabiankeil
+ *    Make number of retries in case of forwarded-connect problems
+ *    a config file option (forwarded-connect-retries) and use 0 as
+ *    default.
+ *
+ *    Revision 1.78  2006/08/31 16:25:06  fabiankeil
+ *    Work around a buffer overflow that caused Privoxy to
+ *    segfault if too many trusted referrers were used. Good
+ *    enough for now, but should be replaced with a real
+ *    solution after the next release.
+ *
+ *    Revision 1.77  2006/08/21 12:50:51  david__schmidt
+ *    Formatting cleanup
+ *
+ *    Revision 1.76  2006/08/14 08:25:19  fabiankeil
+ *    Split filter-headers{} into filter-client-headers{}
+ *    and filter-server-headers{}.
+ *    Added parse_header_time() to share some code.
+ *    Replaced timegm() with mktime().
+ *
+ *    Revision 1.75  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work: *    http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.74  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.72.2.7  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
+ *    Revision 1.72.2.6  2004/10/03 12:53:46  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
  *    Revision 1.72.2.5  2004/01/30 15:29:29  oes
  *    Updated the copyright note
  *
@@ -78,7 +136,7 @@
  *    Revision 1.67  2002/04/24 02:12:43  oes
  *     - Jon's multiple AF patch:
  *       - Make csp->actions_list an array
- *       - #define MAX_ACTION_FILES
+ *       - #define MAX_AF_FILES
  *     - Moved CGI_PARAM_LEN_MAX (500) here
  *
  *    Revision 1.66  2002/04/15 19:06:43  jongfoster
@@ -608,7 +666,12 @@ typedef int jb_err;
  * load balancing. W3C's wwwlib uses 1K, so that should be
  * good enough for us, too.
  */
-#define HOSTENT_BUFFER_SIZE 1024
+/**
+ * XXX: Temporary doubled, for some configurations
+ * 1K is still too small and we didn't get the
+ * real fix ready for inclusion.
+ */
+#define HOSTENT_BUFFER_SIZE 2048
 
 /**
  * Do not use.  Originally this was so that you can
@@ -817,6 +880,8 @@ struct iob
                          Suitable for GIF filtering.  */
 #define CT_TABOO  4 /**< csp->content_type bitmask:
                          DO NOT filter, irrespective of other flags. */
+#define CT_JPEG   8 /**< csp->content_type bitmask:
+                         Suitable for JPEG filtering.  */
 
 /**
  * The mask which includes all actions.
@@ -826,57 +891,111 @@ struct iob
 /**
  * The most compatible set of actions - i.e. none.
  */
-#define ACTION_MOST_COMPATIBLE 0x00000000UL
+#define ACTION_MOST_COMPATIBLE                       0x00000000UL
 
 /** Action bitmap: Block the request. */
-#define ACTION_BLOCK           0x00000001UL
+#define ACTION_BLOCK                                 0x00000001UL
 /** Action bitmap: Deanimate if it's a GIF. */
-#define ACTION_DEANIMATE       0x00000002UL
+#define ACTION_DEANIMATE                             0x00000002UL
 /** Action bitmap: Downgrade HTTP/1.1 to 1.0. */
-#define ACTION_DOWNGRADE       0x00000004UL
+#define ACTION_DOWNGRADE                             0x00000004UL
 /** Action bitmap: Fast redirects. */
-#define ACTION_FAST_REDIRECTS  0x00000008UL
+#define ACTION_FAST_REDIRECTS                        0x00000008UL
 /** Action bitmap: Remove existing "Forwarded" header, and do not add another. */
-#define ACTION_HIDE_FORWARDED  0x00000010UL
+#define ACTION_HIDE_FORWARDED                        0x00000010UL
 /** Action bitmap: Hide "From" header. */
-#define ACTION_HIDE_FROM       0x00000020UL
+#define ACTION_HIDE_FROM                             0x00000020UL
 /** Action bitmap: Hide "Referer" header.  (sic - follow HTTP, not English). */
-#define ACTION_HIDE_REFERER    0x00000040UL
+#define ACTION_HIDE_REFERER                          0x00000040UL
 /** Action bitmap: Hide "User-Agent" and similar headers. */
-#define ACTION_HIDE_USER_AGENT 0x00000080UL
+#define ACTION_HIDE_USER_AGENT                       0x00000080UL
 /** Action bitmap: This is an image. */
-#define ACTION_IMAGE           0x00000100UL
+#define ACTION_IMAGE                                 0x00000100UL
 /** Action bitmap: Sets the image blocker. */
-#define ACTION_IMAGE_BLOCKER   0x00000200UL
+#define ACTION_IMAGE_BLOCKER                         0x00000200UL
 /** Action bitmap: Prevent compression. */
-#define ACTION_NO_COMPRESSION  0x00000400UL
+#define ACTION_NO_COMPRESSION                        0x00000400UL
 /** Action bitmap: Change cookies to session only cookies. */
-#define ACTION_NO_COOKIE_KEEP  0x00000800UL
+#define ACTION_NO_COOKIE_KEEP                        0x00000800UL
 /** Action bitmap: Block rending cookies. */
-#define ACTION_NO_COOKIE_READ  0x00001000UL
+#define ACTION_NO_COOKIE_READ                        0x00001000UL
 /** Action bitmap: Block setting cookies. */
-#define ACTION_NO_COOKIE_SET   0x00002000UL
+#define ACTION_NO_COOKIE_SET                         0x00002000UL
 /** Action bitmap: Filter out popups. */
-#define ACTION_NO_POPUPS       0x00004000UL
+#define ACTION_NO_POPUPS                             0x00004000UL
 /** Action bitmap: Send a vanilla wafer. */
-#define ACTION_VANILLA_WAFER   0x00008000UL
+#define ACTION_VANILLA_WAFER                         0x00008000UL
 /** Action bitmap: Limit CONNECT requests to safe ports. */
-#define ACTION_LIMIT_CONNECT   0x00010000UL
+#define ACTION_LIMIT_CONNECT                         0x00010000UL
+/** Action bitmap: Inspect if it's a JPEG. */
+#define ACTION_JPEG_INSPECT                          0x00020000UL
+/** Action bitmap: Crunch or modify "if-modified-since" header. */
+#define ACTION_HIDE_IF_MODIFIED_SINCE                0x00040000UL
+/** Action bitmap: Overwrite Content-Type header. */
+#define ACTION_CONTENT_TYPE_OVERWRITE                0x00080000UL
+/** Action bitmap: Crunch specified server header. */
+#define ACTION_CRUNCH_SERVER_HEADER                  0x00100000UL
+/** Action bitmap: Crunch specified client header */
+#define ACTION_CRUNCH_CLIENT_HEADER                  0x00200000UL
+/** Action bitmap: Enable text mode by force */
+#define ACTION_FORCE_TEXT_MODE                       0x00400000UL
+/** Action bitmap: Enable text mode by force */
+#define ACTION_CRUNCH_IF_NONE_MATCH                  0x00800000UL
+/** Action bitmap: Enable content-dispostion crunching */
+#define ACTION_HIDE_CONTENT_DISPOSITION              0x01000000UL
+/** Action bitmap: Replace or block Last-Modified header */
+#define ACTION_OVERWRITE_LAST_MODIFIED               0x02000000UL
+/** Action bitmap: Replace or block Accept-Language header */
+#define ACTION_HIDE_ACCEPT_LANGUAGE                  0x04000000UL
+/** Action bitmap: Block as empty document */
+#define  ACTION_HANDLE_AS_EMPTY_DOCUMENT             0x08000000UL
+/** Action bitmap: Redirect request. */
+#define  ACTION_REDIRECT                             0x10000000UL
+/** Action bitmap: Answer blocked Connects verbosely */
+#define ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS  0x20000000UL
+/** Action bitmap: Filter server headers with pcre */
+#define ACTION_FILTER_SERVER_HEADERS                 0x40000000UL
+/** Action bitmap: Filter client headers with pcre */
+#define ACTION_FILTER_CLIENT_HEADERS                 0x80000000UL
+
 
 /** Action string index: How to deanimate GIFs */
-#define ACTION_STRING_DEANIMATE     0
+#define ACTION_STRING_DEANIMATE             0
 /** Action string index: Replacement for "From:" header */
-#define ACTION_STRING_FROM          1
+#define ACTION_STRING_FROM                  1
 /** Action string index: How to block images */
-#define ACTION_STRING_IMAGE_BLOCKER 2
+#define ACTION_STRING_IMAGE_BLOCKER         2
 /** Action string index: Replacement for "Referer:" header */
-#define ACTION_STRING_REFERER       3
+#define ACTION_STRING_REFERER               3
 /** Action string index: Replacement for "User-Agent:" header */
-#define ACTION_STRING_USER_AGENT    4
+#define ACTION_STRING_USER_AGENT            4
 /** Action string index: Legal CONNECT ports. */
-#define ACTION_STRING_LIMIT_CONNECT 5
+#define ACTION_STRING_LIMIT_CONNECT         5
+/** Action string index: Server headers containing this pattern are crunched*/
+#define ACTION_STRING_SERVER_HEADER         6
+/** Action string index: Client headers containing this pattern are crunched*/
+#define ACTION_STRING_CLIENT_HEADER         7
+/** Action string index: Replacement for the "Accept-Language:" header*/
+#define ACTION_STRING_LANGUAGE              8
+/** Action string index: Replacement for the "Content-Type:" header*/
+#define ACTION_STRING_CONTENT_TYPE          9
+/** Action string index: Replacement for the "content-dispostion:" header*/
+#define ACTION_STRING_CONTENT_DISPOSITION  10
+/** Action string index: Replacement for the "If-Modified-Since:" header*/
+#define ACTION_STRING_IF_MODIFIED_SINCE    11
+/** Action string index: Replacement for the "Last-Modified:" header. */
+#define ACTION_STRING_LAST_MODIFIED        12
+/** Action string index: Redirect URL */
+#define ACTION_STRING_REDIRECT             13
+/** Action string index: Decode before redirect? */
+#define ACTION_STRING_FAST_REDIRECTS       14
 /** Number of string actions. */
-#define ACTION_STRING_COUNT         6
+#define ACTION_STRING_COUNT                15
+
+
+/*To make the ugly hack in sed easier to understand*/
+#define CHECK_EVERY_HEADER_REMAINING 0
+
 
 /** Index into current_action_spec::multi[] for headers to add. */
 #define ACTION_MULTI_ADD_HEADER     0
@@ -1010,10 +1129,10 @@ struct url_actions
 #define RC_FLAG_BLOCKED   0x20
 
 /**
- * Maximum number of actions files.  This limit is arbitrary - it's just used
+ * Maximum number of actions/filter files.  This limit is arbitrary - it's just used
  * to size an array.
  */
-#define MAX_ACTION_FILES 10
+#define MAX_AF_FILES 10
 
 /**
  * The state of a Privoxy processing thread.
@@ -1069,10 +1188,10 @@ struct client_state
    char   *x_forwarded;
 
    /** Actions files associated with this client */
-   struct file_list *actions_list[MAX_ACTION_FILES];
+   struct file_list *actions_list[MAX_AF_FILES];
 
-   /** pcrs job file. */
-   struct file_list *rlist;
+   /** pcrs job files. */
+   struct file_list *rlist[MAX_AF_FILES];
 
    /** Length after content modification. */
    size_t content_length;
@@ -1195,6 +1314,12 @@ struct block_spec
    struct block_spec *next;  /**< Next entry in linked list    */
 };
 
+/**
+ * Arbitrary limit for the number of trusted referrers
+ * Privoxy can print in its blocking message.
+ */
+#define MAX_TRUSTED_REFERRERS 512
+
 #endif /* def FEATURE_TRUST */
 
 
@@ -1295,6 +1420,8 @@ struct access_control_list
 /** configuration_spec::feature_flags: Web-based toggle. */
 #define RUNTIME_FEATURE_CGI_TOGGLE        2
 
+/** configuration_spec::feature_flags: HTTP-header-based toggle. */
+#define RUNTIME_FEATURE_HTTP_TOGGLE       4
 
 /**
  * Data loaded from the configuration file.
@@ -1315,6 +1442,7 @@ struct configuration_spec
     *
     * - RUNTIME_FEATURE_CGI_EDIT_ACTIONS
     * - RUNTIME_FEATURE_CGI_TOGGLE
+    * - RUNTIME_FEATURE_HTTP_TOGGLE
     */
    unsigned feature_flags;
 
@@ -1328,10 +1456,10 @@ struct configuration_spec
    const char *logdir;
 
    /** The full paths to the actions files. */
-   const char *actions_file[MAX_ACTION_FILES];
+   const char *actions_file[MAX_AF_FILES];
 
    /** The short names of the actions files. */
-   const char *actions_file_short[MAX_ACTION_FILES];
+   const char *actions_file_short[MAX_AF_FILES];
 
    /** The administrator's email address */
    char *admin_address;
@@ -1342,8 +1470,11 @@ struct configuration_spec
    /** URL to the user manual (on our website or local copy) */
    char *usermanual;
 
-   /** The file name of the pcre filter file */
-   const char *re_filterfile;
+   /** The file names of the pcre filter files. */
+   const char *re_filterfile[MAX_AF_FILES];
+
+   /** The short names of the pcre filter files. */
+   const char *re_filterfile_short[MAX_AF_FILES];
 
 #ifdef FEATURE_COOKIE_JAR
 
@@ -1373,7 +1504,7 @@ struct configuration_spec
    struct list trust_info[1];
 
    /** FIXME: DOCME: Document this. */
-   struct url_spec *trust_list[64];
+   struct url_spec *trust_list[MAX_TRUSTED_REFERRERS];
 
 #endif /* def FEATURE_TRUST */
 
@@ -1386,6 +1517,9 @@ struct configuration_spec
 
    /** Information about parent proxies (forwarding). */
    struct forward_spec *forward;
+
+   /** Number of retries in case a forwarded connection attempt fails */
+   int         forwarded_connect_retries;
 
    /** All options from the config file, HTML-formatted. */
    char *proxy_args;
@@ -1466,6 +1600,10 @@ static const char CHEADER[] =
 
 static const char CFORBIDDEN[] =
    "HTTP/1.0 403 Connection not allowable\r\nX-Hint: If you read this message interactively, then you know why this happens ,-)\r\n\r\n";
+
+static const char FTP_RESPONSE[] =
+   "HTTP/1.0 400 Invalid header received from browser\r\n\r\nPrivoxy doesn't support FTP. Please fix your setup.";
+
 
 #ifdef __cplusplus
 } /* extern "C" */

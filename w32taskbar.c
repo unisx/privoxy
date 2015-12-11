@@ -1,7 +1,7 @@
-const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.7.2.2 2003/03/19 21:27:42 gliptak Exp $";
+const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.10 2006/09/23 13:26:38 roro Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32taskbar.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/w32taskbar.c,v $
  *
  * Purpose     :  Functions for creating, setting and destroying the
  *                workspace tray icon
@@ -32,6 +32,13 @@ const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.7.2.2 2003/03/19 21:27:42 g
  *
  * Revisions   :
  *    $Log: w32taskbar.c,v $
+ *    Revision 1.10  2006/09/23 13:26:38  roro
+ *    Replace TABs by spaces in source code.
+ *
+ *    Revision 1.9  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.7.2.2  2003/03/19 21:27:42  gliptak
  *    Corrected compilation error/typo
  *
@@ -122,7 +129,7 @@ HWND CreateTrayWindow(HINSTANCE hInstance)
    RegisterClass(&wc);
 
    /* TaskbarCreated is sent to a window when it should re-add its tray icons */
-   g_traycreatedmsg = RegisterWindowMessage("TaskbarCreated");	
+   g_traycreatedmsg = RegisterWindowMessage("TaskbarCreated");
 
    g_hwndTrayX = CreateWindow(szWndName, szWndName,
       WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,

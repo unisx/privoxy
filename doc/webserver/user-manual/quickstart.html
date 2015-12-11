@@ -1,23 +1,25 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Quickstart to Using Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.3 User Manual"
+TITLE="Privoxy 3.0.5 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
-TITLE="Note to Upgraders"
-HREF="upgradersnote.html"><LINK
+TITLE="What's New in this Release"
+HREF="whatsnew.html"><LINK
 REL="NEXT"
 TITLE="Starting Privoxy"
 HREF="startup.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css"></HEAD
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
 ><BODY
 CLASS="SECT1"
 BGCOLOR="#EEEEEE"
@@ -37,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.3 User Manual</TH
+>Privoxy 3.0.5 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -45,7 +47,7 @@ WIDTH="10%"
 ALIGN="left"
 VALIGN="bottom"
 ><A
-HREF="upgradersnote.html"
+HREF="whatsnew.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -74,24 +76,12 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="QUICKSTART"
->4. Quickstart to Using <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
 ></A
-></H1
+>4. Quickstart to Using Privoxy</H1
 ><P
 > <P
 ></P
 ><UL
-><LI
-><P
->   If upgrading, from versions before 2.9.16, please back up any configuration
-   files. See the <A
-HREF="upgradersnote.html"
->Note to Upgraders</A
-> Section.
- </P
-></LI
 ><LI
 ><P
 >  Install <SPAN
@@ -142,29 +132,30 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > as HTTP and
-   HTTPS (SSL) proxy by setting the proxy configuration for address of
-   <VAR
+   HTTPS (SSL)  <A
+HREF="http://en.wikipedia.org/wiki/Proxy_server"
+TARGET="_top"
+>proxy</A
+>
+   by setting the proxy configuration for address of
+   <TT
 CLASS="LITERAL"
->127.0.0.1</VAR
-> and port <VAR
+>127.0.0.1</TT
+> and port <TT
 CLASS="LITERAL"
->8118</VAR
+>8118</TT
 >.
-   (<SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
-> and earlier versions of
    <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> used port 8000.) See the section <A
-HREF="startup.html"
->Starting <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-></A
-> below
-   for more details on this.
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>DO NOT</I
+></SPAN
+> activate proxying for <TT
+CLASS="LITERAL"
+>FTP</TT
+> or 
+   any protocols besides HTTP and HTTPS (SSL)! It won't work!
   </P
 ></LI
 ><LI
@@ -173,8 +164,13 @@ CLASS="APPLICATION"
     If using <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> to manage cookies, you should 
-    remove any currently stored cookies too.
+> to manage 
+    <A
+HREF="http://en.wikipedia.org/wiki/Browser_cookie"
+TARGET="_top"
+>cookies</A
+>,
+    you should remove any currently stored cookies too.
   </P
 ></LI
 ><LI
@@ -190,16 +186,24 @@ HREF="configuration.html"
 >Configuration section</A
 > for more
    configuration options, and how to customize your installation.
- </P
+   You might also want to look at the <A
+HREF="quickstart.html#QUICKSTART-AD-BLOCKING"
+>next section</A
+> for a quick
+   introduction to how <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> blocks ads and
+   banners.</P
 ></LI
 ><LI
 ><P
->    If you experience ads that slipped through, innocent images that are
+>    If you experience ads that slip through, innocent images that are
     blocked, or otherwise feel the need to fine-tune
     <SPAN
 CLASS="APPLICATION"
 >Privoxy's</SPAN
-> behaviour, take a look at the <A
+> behavior, take a look at the <A
 HREF="actions-file.html"
 >actions files</A
 >. As a quick start, you might
@@ -216,10 +220,10 @@ TARGET="_top"
 CLASS="QUOTE"
 >"<A
 HREF="appendix.html#ACTIONSANAT"
->Anatomy of an
+>Troubleshooting: Anatomy of an
     Action</A
 >"</SPAN
-> has hints how to debug actions that
+> has hints how to understand and debug actions that
     <SPAN
 CLASS="QUOTE"
 >"misbehave"</SPAN
@@ -228,7 +232,10 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   For easy access to Privoxy's most important controls, drag the provided
+>   For easy access to <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s most important controls, drag the provided
    <A
 HREF="appendix.html#BOOKMARKLETS"
 >Bookmarklets</A
@@ -242,13 +249,13 @@ HREF="appendix.html#BOOKMARKLETS"
 HREF="contact.html"
 >Contacting the
    Developers</A
-> on how to report bugs or problems with websites or to get
+> on how to report bugs, problems with websites or to get
    help. 
   </P
 ></LI
 ><LI
 ><P
->   Now enjoy surfing with enhanced comfort and privacy!
+>   Now enjoy surfing with enhanced control, comfort and privacy!
   </P
 ></LI
 ></UL
@@ -259,8 +266,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="QUICKSTART-AD-BLOCKING"
->4.1. Quickstart to Ad Blocking</A
-></H2
+></A
+>4.1. Quickstart to Ad Blocking</H2
 ><P
 > Ad blocking is but one of <SPAN
 CLASS="APPLICATION"
@@ -369,25 +376,25 @@ CLASS="APPLICATION"
  or a server somewhere else on the Internet. Complex web pages will have many
  such embedded URLs.</P
 ><P
-> The actions we need to know about for ad blocking are:  <VAR
+> The actions we need to know about for ad blocking are:  <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
->, <VAR
+></TT
+>, <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 >, and
- <VAR
+ <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
 >:</P
 ><P
 > <P
@@ -395,12 +402,12 @@ HREF="actions-file.html#SET-IMAGE-BLOCKER"
 ><UL
 ><LI
 ><P
->   <VAR
+>   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > - this action stops
    any contact between your browser and any URL patterns that match this
    action's configuration. It can be used for blocking ads, but also anything
@@ -414,12 +421,12 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->   <VAR
+>   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 > - 
    tells <SPAN
 CLASS="APPLICATION"
@@ -447,24 +454,24 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   <VAR
+>   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
 > - tells
    <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > what to display in place of an ad image that
    has hit a block rule. For this to come into play, the URL must match a
-   <VAR
+   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > action somewhere in the
    configuration, <SPAN
 CLASS="emphasis"
@@ -473,12 +480,12 @@ CLASS="EMPHASIS"
 >and</I
 ></SPAN
 >, it must also match an
-   <VAR
+   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 > action.
   </P
 ><P
@@ -641,7 +648,7 @@ CLASS="GUIBUTTON"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN389"
+NAME="AEN565"
 ></A
 ><P
 ><B
@@ -651,7 +658,7 @@ NAME="AEN389"
 CLASS="MEDIAOBJECT"
 ><P
 ><IMG
-SRC="../images/files-in-use.jpg"></P
+SRC="files-in-use.jpg"></P
 ></DIV
 ></DIV
 >
@@ -660,12 +667,12 @@ SRC="../images/files-in-use.jpg"></P
 ><LI
 ><P
 >   You should have a section with only
-   <VAR
+   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > listed under 
    <SPAN
 CLASS="QUOTE"
@@ -687,12 +694,12 @@ CLASS="QUOTE"
 >"Actions:"</SPAN
 >.
    This will bring up a list of all actions. Find
-   <VAR
+   <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > near the top, and click
    in the <SPAN
 CLASS="QUOTE"
@@ -709,12 +716,12 @@ CLASS="GUIBUTTON"
 ></LI
 ><LI
 ><P
->   Now, in the <VAR
+>   Now, in the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > actions section,
    click the <SPAN
 CLASS="QUOTE"
@@ -730,9 +737,9 @@ CLASS="GUIMENUITEM"
 >Copy Link Location</SPAN
 >"</SPAN
 >.
-   Remove the <VAR
+   Remove the <TT
 CLASS="LITERAL"
->http://</VAR
+>http://</TT
 > at the beginning of the URL. Then, click
    <SPAN
 CLASS="QUOTE"
@@ -798,7 +805,7 @@ WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
 ><A
-HREF="upgradersnote.html"
+HREF="whatsnew.html"
 ACCESSKEY="P"
 >Prev</A
 ></TD
@@ -826,7 +833,7 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Note to Upgraders</TD
+>What's New in this Release</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"
@@ -836,10 +843,7 @@ VALIGN="top"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Starting <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-></TD
+>Starting Privoxy</TD
 ></TR
 ></TABLE
 ></DIV

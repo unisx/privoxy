@@ -1,7 +1,7 @@
-const char encode_rcs[] = "$Id: encode.c,v 1.8 2002/03/26 22:29:54 swa Exp $";
+const char encode_rcs[] = "$Id: encode.c,v 1.10 2006/07/18 14:48:45 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/encode.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/encode.c,v $
  *
  * Purpose     :  Functions to encode and decode URLs, and also to
  *                encode cookies and HTML text.
@@ -33,6 +33,10 @@ const char encode_rcs[] = "$Id: encode.c,v 1.8 2002/03/26 22:29:54 swa Exp $";
  *
  * Revisions   :
  *    $Log: encode.c,v $
+ *    Revision 1.10  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.8  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

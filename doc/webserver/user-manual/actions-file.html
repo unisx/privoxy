@@ -1,23 +1,25 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Actions Files</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.3 User Manual"
+TITLE="Privoxy 3.0.5 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Main Configuration File"
 HREF="config.html"><LINK
 REL="NEXT"
-TITLE="The Filter File"
+TITLE="Filter Files"
 HREF="filter-file.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css"></HEAD
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
 ><BODY
 CLASS="SECT1"
 BGCOLOR="#EEEEEE"
@@ -37,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.3 User Manual</TH
+>Privoxy 3.0.5 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,21 +76,34 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="ACTIONS-FILE"
->8. Actions Files</A
-></H1
+></A
+>8. Actions Files</H1
 ><P
-> The actions files are used to define what actions
+> The actions files are used to define what <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>actions</I
+></SPAN
+>
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> takes for which URLs, and thus determine
+> takes for which URLs, and thus determines
  how ad images, cookies and various other aspects of HTTP content and
- transactions are handled, and on which sites (or even parts thereof). There 
- are three such files included with <SPAN
+ transactions are handled, and on which sites (or even parts thereof). 
+ There are a number of such actions, with a wide range of functionality.
+ Each action does something a little different.
+ These actions give us a veritable arsenal of tools with which to exert 
+ our control, preferences and independence. Actions can be combined so that 
+ their effects are aggregated when applied against a given set of URLs.</P
+><P
+> There 
+ are three action files included with <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->
- with differing purposes:
+> with
+ differing purposes:
  </P
 ><P
 >  <P
@@ -106,11 +121,27 @@ CLASS="FILENAME"
 CLASS="APPLICATION"
 >Privoxy's</SPAN
 > array of features. So it is 
-     a set of broad rules that should work reasonably well for users everywhere.
+     a set of broad rules that should work reasonably well as-is for most users.
      This is the file that the developers are keeping updated, and <A
 HREF="installation.html#INSTALLATION-KEEPUPDATED"
 >making available to users</A
 >.
+     The user's preferences as set in <TT
+CLASS="FILENAME"
+>standard.action</TT
+>,
+     e.g. either <TT
+CLASS="LITERAL"
+>Cautious</TT
+> (the default),
+     <TT
+CLASS="LITERAL"
+>Medium</TT
+>, or <TT
+CLASS="LITERAL"
+>Advanced</TT
+> (see
+     below).
     </P
 ></LI
 ><LI
@@ -129,21 +160,90 @@ CLASS="FILENAME"
 >     <TT
 CLASS="FILENAME"
 >standard.action</TT
-> - is used by the web based editor, 
+> - is used by the web based editor
+     at <A
+HREF="http://config.privoxy.org/edit-actions-list?f=default"
+TARGET="_top"
+>     http://config.privoxy.org/edit-actions-list?f=default</A
+>, 
      to set various pre-defined sets of rules for the default actions section
      in <TT
 CLASS="FILENAME"
 >default.action</TT
->. These have increasing levels of
-     aggressiveness <SPAN
+>. 
+     </P
+><P
+>     <SPAN
+CLASS="GUIBUTTON"
+>Edit</SPAN
+>  <SPAN
+CLASS="GUIBUTTON"
+>Set to Cautious</SPAN
+> <SPAN
+CLASS="GUIBUTTON"
+>Set to Medium</SPAN
+>  <SPAN
+CLASS="GUIBUTTON"
+>Set to Advanced</SPAN
+>
+     </P
+><P
+>     These have increasing levels of aggressiveness <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->and have no influence on your browsing unless
-     you select them explicitly in the editor</I
+>and have no
+     influence on your browsing unless you select them explicitly in the
+     editor</I
 ></SPAN
->. It is not recommend
-     to edit this file.
+>. A default installation should be pre-set to 
+     <TT
+CLASS="LITERAL"
+>Cautious</TT
+> (versions prior to 3.0.5 were set to
+     <TT
+CLASS="LITERAL"
+>Medium</TT
+>). New users should try this for a while before
+     adjusting the settings to more aggressive levels.
+     </P
+><P
+>      The <SPAN
+CLASS="GUIBUTTON"
+>Edit</SPAN
+> button allows you to turn each 
+      action on/off individually for fine-tuning. The <SPAN
+CLASS="GUIBUTTON"
+>Cautious</SPAN
+>
+      button changes the actions list to low/safe settings which will activate 
+      a minimal set of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s features, and subsequently there will be
+      less of a chance for accidental problems. The <SPAN
+CLASS="GUIBUTTON"
+>Medium</SPAN
+>
+      button sets the list to a medium level of ad blocking and a low level set of
+      privacy features. The <SPAN
+CLASS="GUIBUTTON"
+>Advanced</SPAN
+> button 
+      sets the list to a high level of ad blocking and medium level of
+      privacy. See the chart below. The latter three buttons over-ride 
+      any changes via with the <SPAN
+CLASS="GUIBUTTON"
+>Edit</SPAN
+> button. More 
+      fine-tuning can be done in the lower sections of this internal page.
+     </P
+><P
+>     It is not recommend to edit the <TT
+CLASS="FILENAME"
+>standard.action</TT
+> file
+     itself.
     </P
 ><P
 >     The default profiles, and their associated actions, as pre-defined in
@@ -156,7 +256,7 @@ CLASS="FILENAME"
 >    <DIV
 CLASS="TABLE"
 ><A
-NAME="AEN1654"
+NAME="AEN1967"
 ></A
 ><P
 ><B
@@ -164,168 +264,316 @@ NAME="AEN1654"
 ></P
 ><TABLE
 BORDER="1"
-FRAME="border"
-RULES="all"
 CLASS="CALSTABLE"
-><COL
-WIDTH="1*"
-TITLE="C1"><COL
-WIDTH="1*"
-TITLE="C2"><COL
-WIDTH="1*"
-TITLE="C3"><COL
-WIDTH="1*"
-TITLE="C4"><THEAD
+><THEAD
 ><TR
 ><TH
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Feature</TH
 ><TH
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Cautious</TH
 ><TH
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Medium</TH
 ><TH
->Adventuresome</TH
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Advanced</TH
 ></TR
 ></THEAD
 ><TBODY
 ><TR
 ><TD
->Ad-blocking by URL</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Ad-blocking Aggressiveness</TD
 ><TD
->yes</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>medium</TD
 ><TD
->yes</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>high</TD
 ><TD
->yes</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>high</TD
 ></TR
 ><TR
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Ad-filtering by size</TD
 ><TD
->yes</TD
-><TD
->yes</TD
-><TD
->yes</TD
-></TR
-><TR
-><TD
->GIF de-animation</TD
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
->Referer forging</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Ad-filtering by link</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
->yes</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
->Cookie handling</TD
-><TD
->none</TD
-><TD
->session-only</TD
-><TD
->kill</TD
-></TR
-><TR
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Pop-up killing</TD
 ><TD
->unsolicited</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>blocks only</TD
 ><TD
->unsolicited</TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>blocks only</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >all</TD
 ></TR
 ><TR
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Privacy Features</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>low</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>medium</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>medium/high</TD
+></TR
+><TR
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Cookie handling</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>session-only</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>kill</TD
+></TR
+><TR
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>Referer forging</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>GIF de-animation</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Fast redirects</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >HTML taming</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ><TD
->yes</TD
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >JavaScript taming</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ><TD
->yes</TD
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Web-bug killing</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ><TD
->yes</TD
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ><TR
 ><TD
->Fun text replacements</TD
-><TD
->no</TD
-><TD
->no</TD
-><TD
->yes</TD
-></TR
-><TR
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >Image tag reordering</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >no</TD
 ><TD
->yes</TD
-></TR
-><TR
-><TD
->Ad-filtering by link</TD
-><TD
->no</TD
-><TD
->no</TD
-><TD
->yes</TD
-></TR
-><TR
-><TD
->Demoronizer</TD
-><TD
->no</TD
-><TD
->no</TD
-><TD
+WIDTH="25%"
+ALIGN="LEFT"
+VALIGN="TOP"
 >yes</TD
 ></TR
 ></TBODY
@@ -352,7 +600,33 @@ CLASS="FILENAME"
 HREF="http://config.privoxy.org/show-status"
 TARGET="_top"
 >http://config.privoxy.org/show-status</A
->.</P
+>.
+ The over-riding principle when applying actions, is that the last action that
+ matches a given URL, wins. The broadest, most general rules go first
+ (defined in <TT
+CLASS="FILENAME"
+>default.action</TT
+>),
+ followed by any exceptions (typically also in
+ <TT
+CLASS="FILENAME"
+>default.action</TT
+>), which are then followed lastly by any
+ local preferences (typically in <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>user</I
+></SPAN
+><TT
+CLASS="FILENAME"
+>.action</TT
+>). 
+ Generally, <TT
+CLASS="FILENAME"
+>user.action</TT
+> has the last word.
+ </P
 ><P
 > An actions file typically has multiple sections. If you want to use
  <SPAN
@@ -409,9 +683,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN1753"
->8.1. Finding the Right Mix</A
-></H2
+NAME="AEN2066"
+></A
+>8.1. Finding the Right Mix</H2
 ><P
 > Note that some <A
 HREF="actions-file.html#ACTIONS"
@@ -419,7 +693,8 @@ HREF="actions-file.html#ACTIONS"
 >, like cookie suppression
  or script disabling, may render some sites unusable that rely on these
  techniques to work properly. Finding the right mix of actions is not always easy and
- certainly a matter of personal taste. In general, it can be said that the more
+ certainly a matter of personal taste. And, things can always change, requiring 
+ refinements in the configuration. In general, it can be said that the more
  <SPAN
 CLASS="QUOTE"
 >"aggressive"</SPAN
@@ -430,7 +705,7 @@ CLASS="QUOTE"
 > sites you
  will have to make later. If, for example, you want to crunch all cookies per
  default, you'll have to make exceptions from that rule for sites that you
- regularly use and that require cookies for actually useful puposes, like maybe
+ regularly use and that require cookies for actually useful purposes, like maybe
  your bank, favorite shop, or newspaper. </P
 ><P
 > We have tried to provide you with reasonable rules to start from in the
@@ -443,9 +718,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN1760"
->8.2. How to Edit</A
-></H2
+NAME="AEN2073"
+></A
+>8.2. How to Edit</H2
 ><P
 > The easiest way to edit the actions files is with a browser by
  using our browser-based editor, which can be reached from <A
@@ -463,21 +738,21 @@ CLASS="QUOTE"
 >"Medium"</SPAN
 > or <SPAN
 CLASS="QUOTE"
->"Adventuresome"</SPAN
+>"Advanced"</SPAN
 >.
  Warning: the <SPAN
 CLASS="QUOTE"
->"Adventuresome"</SPAN
-> setting is not only more aggressive, 
- but includes settings that are fun and subversive, and which some may find of 
- dubious merit!</P
+>"Advanced"</SPAN
+> setting is more aggressive, and 
+ will be more likely to cause problems for some sites. Experienced users only!</P
 ><P
 > If you prefer plain text editing to GUIs, you can of course also directly edit the
- the actions files. Look at <TT
+ the actions files with your favorite text editor. Look at
+ <TT
 CLASS="FILENAME"
 >default.action</TT
-> which is richly
- commented.</P
+> which is richly commented with many 
+ good examples.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -485,8 +760,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACTIONS-APPLY"
->8.3. How Actions are Applied to URLs</A
-></H2
+></A
+>8.3. How Actions are Applied to URLs</H2
 ><P
 > Actions files are divided into sections. There are special sections,
  like the <SPAN
@@ -502,26 +777,29 @@ HREF="actions-file.html#ALIASES"
  Below that, there is a list of URL patterns, each on a separate line.</P
 ><P
 > To determine which actions apply to a request, the URL of the request is
- compared to all patterns in each action file file. Every time it matches, the list of
+ compared to all patterns in each <SPAN
+CLASS="QUOTE"
+>"action file"</SPAN
+> file. Every time it matches, the list of
  applicable actions for the URL is incrementally updated, using the heading
  of the section in which the pattern is located. If multiple matches for
  the same URL set the same action differently, the last match wins. If not, 
  the effects are aggregated. E.g. a URL might match a regular section with 
- a heading line of <VAR
+ a heading line of <TT
 CLASS="LITERAL"
 >{ 
  +<A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-> }</VAR
+> }</TT
 >,
- then later another one with just <VAR
+ then later another one with just <TT
 CLASS="LITERAL"
 >{
  +<A
 HREF="actions-file.html#BLOCK"
 >block</A
-> }</VAR
+> }</TT
 >, resulting
  in <SPAN
 CLASS="emphasis"
@@ -529,7 +807,34 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >both</I
 ></SPAN
-> actions to apply.</P
+> actions to apply. And there may well be 
+ cases where you will want to combine actions together. Such a section then 
+ might look like:</P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  { +<TT
+CLASS="LITERAL"
+>handle-as-image</TT
+>  +<TT
+CLASS="LITERAL"
+>block</TT
+> }
+  # Block these as if they were images. Send no block page.
+   banners.example.com
+   media.example.com/.*banners
+   .example.com/images/ads/</PRE
+></TD
+></TR
+></TABLE
+>
+ </P
 ><P
 > You can trace this process for any given URL by visiting <A
 HREF="http://config.privoxy.org/show-url-info"
@@ -537,10 +842,10 @@ TARGET="_top"
 >http://config.privoxy.org/show-url-info</A
 >.</P
 ><P
-> More detail on this is provided in the Appendix, <A
+> Examples and more detail on this is provided in the Appendix, <A
 HREF="appendix.html#ACTIONSANAT"
-> Anatomy of an Action</A
->.</P
+> Troubleshooting: Anatomy of an Action</A
+> section.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -548,8 +853,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="AF-PATTERNS"
->8.4. Patterns</A
-></H2
+></A
+>8.4. Patterns</H2
 ><P
 > 
  As mentioned, <SPAN
@@ -559,18 +864,24 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"patterns"</SPAN
 >
- to determine what actions might apply to which sites and pages your browser 
- attempts to access. These <SPAN
+ to determine what <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>actions</I
+></SPAN
+> might apply to which sites and
+ pages your browser attempts to access. These <SPAN
 CLASS="QUOTE"
 >"patterns"</SPAN
-> use wild card type 
- <SPAN
+> use wild
+ card type <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >pattern</I
 ></SPAN
-> matching to achieve a high degree of 
+> matching to achieve a high degree of
  flexibility. This allows one expression to be expanded and potentially match
  against many similar patterns.</P
 ><P
@@ -578,25 +889,25 @@ CLASS="EMPHASIS"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > pattern has the form
- <VAR
+ <TT
 CLASS="LITERAL"
->&#60;domain&#62;/&#60;path&#62;</VAR
+>&#60;domain&#62;/&#60;path&#62;</TT
 >, where both the
- <VAR
+ <TT
 CLASS="LITERAL"
->&#60;domain&#62;</VAR
-> and <VAR
+>&#60;domain&#62;</TT
+> and <TT
 CLASS="LITERAL"
->&#60;path&#62;</VAR
+>&#60;path&#62;</TT
 > are
- optional. (This is why the special <VAR
+ optional. (This is why the special <TT
 CLASS="LITERAL"
->/</VAR
+>/</TT
 > pattern matches all
  URLs). Note that the protocol portion of the URL pattern (e.g.
- <VAR
+ <TT
 CLASS="LITERAL"
->http://</VAR
+>http://</TT
 >) should <SPAN
 CLASS="emphasis"
 ><I
@@ -606,65 +917,83 @@ CLASS="EMPHASIS"
 > be included in
  the pattern. This is assumed already!</P
 ><P
+> The pattern matching syntax is different for the domain and path parts of
+ the URL. The domain part uses a simple globbing type matching technique, 
+ while the path part uses a more flexible 
+ <A
+HREF="http://en.wikipedia.org/wiki/Regular_expressions"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"Regular
+  Expressions (PCRE)"</SPAN
+></A
+> based syntax.</P
+><P
 ></P
 ><DIV
 CLASS="VARIABLELIST"
 ><DL
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->www.example.com/</VAR
+>www.example.com/</TT
 ></DT
 ><DD
 ><P
->    is a domain-only pattern and will match any request to <VAR
+>    is a domain-only pattern and will match any request to <TT
 CLASS="LITERAL"
->www.example.com</VAR
+>www.example.com</TT
 >,
-    regardless of which document on that server is requested.
+    regardless of which document on that server is requested. So ALL pages in
+    this domain would be covered by the scope of this action. Note that a 
+    simple <TT
+CLASS="LITERAL"
+>example.com</TT
+> is different and would NOT match.
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->www.example.com</VAR
+>www.example.com</TT
 ></DT
 ><DD
 ><P
->    means exactly the same. For domain-only patterns, the trailing <VAR
+>    means exactly the same. For domain-only patterns, the trailing <TT
 CLASS="LITERAL"
->/</VAR
+>/</TT
 > may
     be omitted.
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->www.example.com/index.html</VAR
+>www.example.com/index.html</TT
 ></DT
 ><DD
 ><P
->    matches only the single document <VAR
+>    matches only the single document <TT
 CLASS="LITERAL"
->/index.html</VAR
+>/index.html</TT
 >
-    on <VAR
+    on <TT
 CLASS="LITERAL"
->www.example.com</VAR
+>www.example.com</TT
 >.
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->/index.html</VAR
+>/index.html</TT
 ></DT
 ><DD
 ><P
->    matches the document <VAR
+>    matches the document <TT
 CLASS="LITERAL"
->/index.html</VAR
+>/index.html</TT
 >, regardless of the domain,
     i.e. on <SPAN
 CLASS="emphasis"
@@ -672,21 +1001,22 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >any</I
 ></SPAN
-> web server.
+> web server anywhere.
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->index.html</VAR
+>index.html</TT
 ></DT
 ><DD
 ><P
 >    matches nothing, since it would be  interpreted as a domain name and
-    there is no top-level domain called <VAR
+    there is no top-level domain called <TT
 CLASS="LITERAL"
->.html</VAR
->.
+>.html</TT
+>. So its 
+    a mistake.
    </P
 ></DD
 ></DL
@@ -696,9 +1026,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN1833"
->8.4.1. The Domain Pattern</A
-></H3
+NAME="AEN2156"
+></A
+>8.4.1. The Domain Pattern</H3
 ><P
 > The matching of the domain part offers some flexible options: if the
  domain starts or ends with a dot, it becomes unanchored at that end. 
@@ -709,9 +1039,9 @@ NAME="AEN1833"
 CLASS="VARIABLELIST"
 ><DL
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->.example.com</VAR
+>.example.com</TT
 ></DT
 ><DD
 ><P
@@ -722,16 +1052,16 @@ CLASS="EMPHASIS"
 >ENDS</I
 ></SPAN
 > in
-    <VAR
+    <TT
 CLASS="LITERAL"
->.example.com</VAR
+>.example.com</TT
 >
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->www.</VAR
+>www.</TT
 ></DT
 ><DD
 ><P
@@ -742,16 +1072,16 @@ CLASS="EMPHASIS"
 >STARTS</I
 ></SPAN
 > with
-    <VAR
+    <TT
 CLASS="LITERAL"
->www.</VAR
+>www.</TT
 >
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->.example.</VAR
+>.example.</TT
 ></DT
 ><DD
 ><P
@@ -761,39 +1091,75 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >CONTAINS</I
 ></SPAN
-> <VAR
+> <TT
 CLASS="LITERAL"
->.example.</VAR
->
-    (Correctly speaking: It matches any FQDN that contains <VAR
+>.example.</TT
+>.
+    And, by the way, also included would be any files or documents that exist
+    within that domain since no path limitations are specified. (Correctly
+    speaking: It matches any FQDN that contains <TT
 CLASS="LITERAL"
->example</VAR
-> as a domain.)
+>example</TT
+> as
+    a domain.) This might be <TT
+CLASS="LITERAL"
+>www.example.com</TT
+>,
+    <TT
+CLASS="LITERAL"
+>news.example.de</TT
+>, or
+    <TT
+CLASS="LITERAL"
+>www.example.net/cgi/testing.pl</TT
+> for instance. All these
+    cases are matched. 
    </P
 ></DD
 ></DL
 ></DIV
 ><P
 > Additionally, there are wild-cards that you can use in the domain names
- themselves. They work pretty similar to shell wild-cards: <SPAN
+ themselves. These work similarly to shell globbing type wild-cards:
+ <SPAN
 CLASS="QUOTE"
 >"*"</SPAN
->
- stands for zero or more arbitrary characters, <SPAN
+> represents zero or more arbitrary characters (this is
+ equivalent to the 
+ <A
+HREF="http://en.wikipedia.org/wiki/Regular_expressions"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"Regular
+ Expression"</SPAN
+></A
+> based syntax of <SPAN
+CLASS="QUOTE"
+>".*"</SPAN
+>),
+ <SPAN
 CLASS="QUOTE"
 >"?"</SPAN
-> stands for
- any single character, you can define character classes in square
- brackets and all of that can be freely mixed:</P
+>  represents any single character (this is equivalent to the
+ regular expression syntax of a simple <SPAN
+CLASS="QUOTE"
+>"."</SPAN
+>), and you can define
+ <SPAN
+CLASS="QUOTE"
+>"character classes"</SPAN
+> in square brackets which is similar to 
+ the same regular expression technique. All of this can be freely mixed:</P
 ><P
 ></P
 ><DIV
 CLASS="VARIABLELIST"
 ><DL
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->ad*.example.com</VAR
+>ad*.example.com</TT
 ></DT
 ><DD
 ><P
@@ -811,9 +1177,9 @@ CLASS="QUOTE"
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->*ad*.example.com</VAR
+>*ad*.example.com</TT
 ></DT
 ><DD
 ><P
@@ -821,46 +1187,46 @@ CLASS="LITERAL"
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->.?pix.com</VAR
+>.?pix.com</TT
 ></DT
 ><DD
 ><P
->    matches <VAR
+>    matches <TT
 CLASS="LITERAL"
->www.ipix.com</VAR
+>www.ipix.com</TT
 >,
-    <VAR
+    <TT
 CLASS="LITERAL"
->pictures.epix.com</VAR
->, <VAR
+>pictures.epix.com</TT
+>, <TT
 CLASS="LITERAL"
->a.b.c.d.e.upix.com</VAR
+>a.b.c.d.e.upix.com</TT
 > etc. 
    </P
 ></DD
 ><DT
-><VAR
+><TT
 CLASS="LITERAL"
->www[1-9a-ez].example.c*</VAR
+>www[1-9a-ez].example.c*</TT
 ></DT
 ><DD
 ><P
->     matches <VAR
+>     matches <TT
 CLASS="LITERAL"
->www1.example.com</VAR
+>www1.example.com</TT
 >, 
-     <VAR
+     <TT
 CLASS="LITERAL"
->www4.example.cc</VAR
->, <VAR
+>www4.example.cc</TT
+>, <TT
 CLASS="LITERAL"
->wwwd.example.cy</VAR
+>wwwd.example.cy</TT
 >, 
-     <VAR
+     <TT
 CLASS="LITERAL"
->wwwz.example.com</VAR
+>wwwz.example.com</TT
 > etc., but <SPAN
 CLASS="emphasis"
 ><I
@@ -868,34 +1234,45 @@ CLASS="EMPHASIS"
 >not</I
 ></SPAN
 > 
-     <VAR
+     <TT
 CLASS="LITERAL"
->wwww.example.com</VAR
+>wwww.example.com</TT
 >.
    </P
 ></DD
 ></DL
 ></DIV
+><P
+> While flexibile, this is not the sophistication of full regular expression based syntax.</P
 ></DIV
 ><DIV
 CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN1895"
->8.4.2. The Path Pattern</A
-></H3
+NAME="AEN2227"
+></A
+>8.4.2. The Path Pattern</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> uses Perl compatible regular expressions
+> uses Perl compatible (PCRE)
+  <A
+HREF="http://en.wikipedia.org/wiki/Regular_expressions"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"Regular
+  Expression"</SPAN
+></A
+> based syntax 
  (through the <A
 HREF="http://www.pcre.org/"
 TARGET="_top"
 >PCRE</A
 > library) for
- matching the path.</P
+ matching the path portion (after the slash), and is thus more flexible.</P
 ><P
 > There is an <A
 HREF="appendix.html#REGEX"
@@ -907,14 +1284,14 @@ HREF="http://www.pcre.org/man.txt"
 TARGET="_top"
 >http://www.pcre.org/man.txt</A
 >.
- You might also find the Perl man page on regular expressions (<VAR
+ You might also find the Perl man page on regular expressions (<TT
 CLASS="LITERAL"
->man perlre</VAR
+>man perlre</TT
 >)
  useful, which is available on-line at <A
-HREF="http://www.perldoc.com/perl5.6/pod/perlre.html"
+HREF="http://perldoc.perl.org/perlre.html"
 TARGET="_top"
->http://www.perldoc.com/perl5.6/pod/perlre.html</A
+>http://perldoc.perl.org/perlre.html</A
 >.</P
 ><P
 > Note that the path pattern is automatically left-anchored at the <SPAN
@@ -938,13 +1315,13 @@ CLASS="EMPHASIS"
  <SPAN
 CLASS="QUOTE"
 >"(?-i)"</SPAN
-> switch: <VAR
+> switch: <TT
 CLASS="LITERAL"
->www.example.com/(?-i)PaTtErN.*</VAR
+>www.example.com/(?-i)PaTtErN.*</TT
 > will match
- only documents whose path starts with <VAR
+ only documents whose path starts with <TT
 CLASS="LITERAL"
->PaTtErN</VAR
+>PaTtErN</TT
 > in
  <SPAN
 CLASS="emphasis"
@@ -953,6 +1330,155 @@ CLASS="EMPHASIS"
 >exactly</I
 ></SPAN
 > this capitalization.</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>.example.com/.*</TT
+></DT
+><DD
+><P
+>     Is equivalent to just <SPAN
+CLASS="QUOTE"
+>".example.com"</SPAN
+>, since any documents 
+     within that domain are matched with or without the <SPAN
+CLASS="QUOTE"
+>".*"</SPAN
+>
+     regular expression. This is redundant
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>.example.com/.*/index.html</TT
+></DT
+><DD
+><P
+>    Will match any page in the domain of <SPAN
+CLASS="QUOTE"
+>"example.com"</SPAN
+> that is
+    named <SPAN
+CLASS="QUOTE"
+>"index.html"</SPAN
+>, and that is part of some path. For
+    example, it matches <SPAN
+CLASS="QUOTE"
+>"www.example.com/testing/index.html"</SPAN
+> but
+    NOT <SPAN
+CLASS="QUOTE"
+>"www.example.com/index.html"</SPAN
+> because the regular
+    expression called for at least two <SPAN
+CLASS="QUOTE"
+>"/'s"</SPAN
+>, thus the path 
+    requirement. It also would match 
+    <SPAN
+CLASS="QUOTE"
+>"www.example.com/testing/index_html"</SPAN
+>, because of the 
+    special meta-character <SPAN
+CLASS="QUOTE"
+>"."</SPAN
+>.
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>.example.com/(.*/)?index\.html</TT
+></DT
+><DD
+><P
+>    This regular expression is conditional so it will match any page 
+    named <SPAN
+CLASS="QUOTE"
+>"index.html"</SPAN
+> regardless of path which in this case can 
+    have one or more <SPAN
+CLASS="QUOTE"
+>"/'s"</SPAN
+>. And this one must contain exactly 
+    <SPAN
+CLASS="QUOTE"
+>".html"</SPAN
+> (but does not have to end with that!).
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>.example.com/(.*/)(ads|banners?|junk)</TT
+></DT
+><DD
+><P
+>    This regular expression will match any path of <SPAN
+CLASS="QUOTE"
+>"example.com"</SPAN
+>
+    that contains any of the words <SPAN
+CLASS="QUOTE"
+>"ads"</SPAN
+>, <SPAN
+CLASS="QUOTE"
+>"banner"</SPAN
+>, 
+    <SPAN
+CLASS="QUOTE"
+>"banners"</SPAN
+> (because of the <SPAN
+CLASS="QUOTE"
+>"?"</SPAN
+>) or <SPAN
+CLASS="QUOTE"
+>"junk"</SPAN
+>.
+    The path does not have to end in these words, just contain them.
+   </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>.example.com/(.*/)(ads|banners?|junk)/.*\.(jpe?g|gif|png)$</TT
+></DT
+><DD
+><P
+>    This is very much the same as above, except now it must end in either 
+    <SPAN
+CLASS="QUOTE"
+>".jpg"</SPAN
+>, <SPAN
+CLASS="QUOTE"
+>".jpeg"</SPAN
+>, <SPAN
+CLASS="QUOTE"
+>".gif"</SPAN
+> or <SPAN
+CLASS="QUOTE"
+>".png"</SPAN
+>. So this 
+    one is limited to common image formats.
+   </P
+></DD
+></DL
+></DIV
+><P
+> There are many, many good examples to be found in <TT
+CLASS="FILENAME"
+>default.action</TT
+>, 
+ and more tutorials below in <A
+HREF="appendix.html#REGEX"
+>Appendix on regular expressions</A
+>.</P
 ></DIV
 ></DIV
 ><DIV
@@ -961,8 +1487,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACTIONS"
->8.5. Actions</A
-></H2
+></A
+>8.5. Actions</H2
 ><P
 > All actions are disabled by default, until they are explicitly enabled
  somewhere in an actions file. Actions are turned on if preceded with a
@@ -973,29 +1499,29 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"-"</SPAN
 >. So a
- <VAR
+ <TT
 CLASS="LITERAL"
->+action</VAR
+>+action</TT
 > means <SPAN
 CLASS="QUOTE"
 >"do that action"</SPAN
 >, e.g.
- <VAR
+ <TT
 CLASS="LITERAL"
->+block</VAR
+>+block</TT
 > means <SPAN
 CLASS="QUOTE"
 >"please block URLs that match the
  following patterns"</SPAN
->, and <VAR
+>, and <TT
 CLASS="LITERAL"
->-block</VAR
+>-block</TT
 > means <SPAN
 CLASS="QUOTE"
 >"don't
- block URLs that match the following patterns, even if <VAR
+ block URLs that match the following patterns, even if <TT
 CLASS="LITERAL"
->+block</VAR
+>+block</TT
 >
  previously applied."</SPAN
 >&#13;</P
@@ -1003,16 +1529,16 @@ CLASS="LITERAL"
 > 
  Again, actions are invoked by placing them on a line, enclosed in curly braces and
  separated by whitespace, like in 
- <VAR
+ <TT
 CLASS="LITERAL"
->{+some-action -some-other-action{some-parameter}}</VAR
+>{+some-action -some-other-action{some-parameter}}</TT
 >,
  followed by a list of URL patterns, one per line, to which they apply.
  Together, the actions line and the following pattern lines make up a section
  of the actions file. </P
 ><P
 > 
- There are three classes of actions:</P
+ Actions fall into three categories:</P
 ><P
 > <P
 ></P
@@ -1038,19 +1564,27 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  +<VAR
+>  +<TT
 CLASS="REPLACEABLE"
->name</VAR
->        # enable action <VAR
+><I
+>name</I
+></TT
+>        # enable action <TT
 CLASS="REPLACEABLE"
->name</VAR
+><I
+>name</I
+></TT
 >
-  -<VAR
+  -<TT
 CLASS="REPLACEABLE"
->name</VAR
->        # disable action <VAR
+><I
+>name</I
+></TT
+>        # disable action <TT
 CLASS="REPLACEABLE"
->name</VAR
+><I
+>name</I
+></TT
 ></PRE
 ></TD
 ></TR
@@ -1059,9 +1593,9 @@ CLASS="REPLACEABLE"
   </P
 ><P
 >  
-   Example: <VAR
+   Example: <TT
 CLASS="LITERAL"
->+block</VAR
+>+block</TT
 >
   </P
 ></LI
@@ -1080,20 +1614,28 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  +<VAR
+>  +<TT
 CLASS="REPLACEABLE"
->name</VAR
->{<VAR
+><I
+>name</I
+></TT
+>{<TT
 CLASS="REPLACEABLE"
->param</VAR
->}  # enable action and set parameter to <VAR
+><I
+>param</I
+></TT
+>}  # enable action and set parameter to <TT
 CLASS="REPLACEABLE"
->param</VAR
+><I
+>param</I
+></TT
 >,
                # overwriting parameter from previous match if necessary
-  -<VAR
+  -<TT
 CLASS="REPLACEABLE"
->name</VAR
+><I
+>name</I
+></TT
 >         # disable action. The parameter can be omitted</PRE
 ></TD
 ></TR
@@ -1106,9 +1648,9 @@ CLASS="REPLACEABLE"
   </P
 ><P
 >  
-   Example: <VAR
+   Example: <TT
 CLASS="LITERAL"
->+hide-user-agent{ Mozilla 1.0 }</VAR
+>+hide-user-agent{ Mozilla 1.0 }</TT
 >
   </P
 ></LI
@@ -1143,30 +1685,44 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  +<VAR
+>  +<TT
 CLASS="REPLACEABLE"
->name</VAR
->{<VAR
+><I
+>name</I
+></TT
+>{<TT
 CLASS="REPLACEABLE"
->param</VAR
->}   # enable action and add <VAR
+><I
+>param</I
+></TT
+>}   # enable action and add <TT
 CLASS="REPLACEABLE"
->param</VAR
+><I
+>param</I
+></TT
 > to the list of parameters
-  -<VAR
+  -<TT
 CLASS="REPLACEABLE"
->name</VAR
->{<VAR
+><I
+>name</I
+></TT
+>{<TT
 CLASS="REPLACEABLE"
->param</VAR
->}   # remove the parameter <VAR
+><I
+>param</I
+></TT
+>}   # remove the parameter <TT
 CLASS="REPLACEABLE"
->param</VAR
+><I
+>param</I
+></TT
 > from the list of parameters
                 # If it was the last one left, disable the action.
-  <VAR
+  <TT
 CLASS="REPLACEABLE"
->-name</VAR
+><I
+>-name</I
+></TT
 >          # disable this action completely and remove all parameters from the list</PRE
 ></TD
 ></TR
@@ -1175,13 +1731,13 @@ CLASS="REPLACEABLE"
   </P
 ><P
 >  
-   Examples: <VAR
+   Examples: <TT
 CLASS="LITERAL"
->+add-header{X-Fun-Header: Some text}</VAR
+>+add-header{X-Fun-Header: Some text}</TT
 > and
-   <VAR
+   <TT
 CLASS="LITERAL"
->+filter{html-annoyances}</VAR
+>+filter{html-annoyances}</TT
 >
   </P
 ></LI
@@ -1202,15 +1758,19 @@ CLASS="APPLICATION"
 ><P
 > Later defined actions always over-ride earlier ones.  So exceptions 
  to any rules you make, should come in the latter part of the file (or 
- in a file that is processed later when using multiple actions files). For
- multi-valued actions, the actions are applied in the order they are specified.
- Actions files are processed in the order they are defined in
- <TT
+ in a file that is processed later when using multiple actions files such 
+ as <TT
+CLASS="FILENAME"
+>user.action</TT
+>). For multi-valued actions, the actions
+ are applied in the order they are specified. Actions files are processed in
+ the order they are defined in <TT
 CLASS="FILENAME"
 >config</TT
-> (the default installation has three actions
- files). It also quite possible for any given URL pattern to match more than
- one pattern and thus more than one set of actions!</P
+> (the default
+ installation has three actions files). It also quite possible for any given
+ URL pattern to match more than one pattern and thus more than one set of
+ actions! Last match wins.</P
 ><P
 > The list of valid <SPAN
 CLASS="APPLICATION"
@@ -1222,8 +1782,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ADD-HEADER"
->8.5.1. add-header</A
-></H4
+></A
+>8.5.1. add-header</H4
 ><P
 ></P
 ><DIV
@@ -1255,9 +1815,9 @@ CLASS="VARIABLELIST"
 >    Any string value is possible. Validity of the defined HTTP headers is not checked.
     It is recommended that you use the <SPAN
 CLASS="QUOTE"
->"<VAR
+>"<TT
 CLASS="LITERAL"
->X-</VAR
+>X-</TT
 >"</SPAN
 > prefix
     for custom headers.
@@ -1304,8 +1864,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="BLOCK"
->8.5.2. block</A
-></H4
+></A
+>8.5.2. block</H4
 ><P
 ></P
 ><DIV
@@ -1315,28 +1875,40 @@ CLASS="VARIABLELIST"
 >Typical use:</DT
 ><DD
 ><P
->Block ads or other obnoxious content</P
+>Block ads or other unwanted content</P
 ></DD
 ><DT
 >Effect:</DT
 ><DD
 ><P
->    Requests for URLs to which this action applies are blocked, i.e. the requests are not
-    forwarded to the remote server, but answered locally with a substitute page or image,
-    as determined by the <VAR
+>    Requests for URLs to which this action applies are blocked, i.e. the
+    requests are trapped by <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and the requested URL is never retrieved,
+    but is answered locally with a substitute page or image, as determined by
+    the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
->
-    and <VAR
+></TT
+>,
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
+>, and 
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+>handle-as-empty-document</A
+></TT
 > actions.
+    
    </P
 ></DD
 ><DT
@@ -1393,23 +1965,23 @@ CLASS="EMPHASIS"
 >both</I
 ></SPAN
 > 
-    <VAR
+    <TT
 CLASS="LITERAL"
->block</VAR
-> and <VAR
+>block</TT
+> and <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 >,
     apply to the same request: it will then be replaced by an image. If 
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
 >
     (see below) also applies, the type of image will be determined by its parameter,
     if not, the standard checkerboard pattern is sent.
@@ -1420,15 +1992,16 @@ HREF="actions-file.html#SET-IMAGE-BLOCKER"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > deals with 
-    ads and other unwanted content.
+    ads and other unwanted content. Blocking is a core feature, and one 
+    upon which various other features depend.
    </P
 ><P
->    The <VAR
+>    The <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
+></TT
 >
     action can perform a very similar task, by <SPAN
 CLASS="QUOTE"
@@ -1451,12 +2024,18 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->{+block}      # Block and replace with "blocked" page
-.nasty-stuff.example.com
+>{+block}      
+# Block and replace with "blocked" page
+ .nasty-stuff.example.com
 
-{+block +handle-as-image} # Block and replace with image
-.ad.doubleclick.net
-.ads.r.us</PRE
+{+block +handle-as-image} 
+# Block and replace with image
+ .ad.doubleclick.net
+ .ads.r.us/banners/
+
+{+block +handle-as-empty-document} 
+# Block and then ignore
+ adserver.exampleclick.net/.*\.js$</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1471,9 +2050,424 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="CONTENT-TYPE-OVERWRITE"
+></A
+>8.5.3. content-type-overwrite</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Stop useless download menus from popping up, or change the browser's rendering mode</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Replaces the <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> HTTP server header.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Any string. 
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    The <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> HTTP server header is used by the
+    browser to decide what to do with the document. The value of this
+    header can cause the browser to open a download menu instead of
+    displaying the document by itself, even if the document's format is
+    supported by the browser. 
+   </P
+><P
+>    The declared content type can also affect which rendering mode
+    the browser chooses. If XHTML is delivered as <SPAN
+CLASS="QUOTE"
+>"text/html"</SPAN
+>,
+    many browsers treat it as yet another broken HTML document.
+    If it is send as <SPAN
+CLASS="QUOTE"
+>"application/xml"</SPAN
+>, browsers with
+    XHTML support will only display it, if the syntax is correct.
+   </P
+><P
+>    If you see a web site that proudly uses XHTML buttons, but sets
+    <SPAN
+CLASS="QUOTE"
+>"Content-Type: text/html"</SPAN
+>, you can use <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    to overwrite it with <SPAN
+CLASS="QUOTE"
+>"application/xml"</SPAN
+> and validate
+    the web master's claim inside your XHTML-supporting browser.
+    If the syntax is incorrect, the browser will complain loudly. 
+   </P
+><P
+>    You can also go the opposite direction: if your browser prints
+    error messages instead of rendering a document falsely declared
+    as XHTML, you can overwrite the content type with
+    <SPAN
+CLASS="QUOTE"
+>"text/html"</SPAN
+> and have it rendered as broken HTML document. 
+   </P
+><P
+>    By default <TT
+CLASS="LITERAL"
+>content-type-overwrite</TT
+> only replaces
+    <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> headers that look like some kind of text.
+    If you want to overwrite it unconditionally, you have to combine it with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FORCE-TEXT-MODE"
+>force-text-mode</A
+></TT
+>.
+    This limitation exists for a reason, think twice before circumventing it.
+   </P
+><P
+>    Most of the time it's easier to enable
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-SERVER-HEADERS"
+>filter-server-headers</A
+></TT
+>
+    and replace this action with a custom regular expression. It allows you
+    to activate it for every document of a certain site and it will still
+    only replace the content types you aimed at.
+   </P
+><P
+>    Of course you can apply <TT
+CLASS="LITERAL"
+>content-type-overwrite</TT
+>
+    to a whole site and then make URL based exceptions, but it's a lot
+    more work to get the same precision. 
+   </P
+></DD
+><DT
+>Example usage (sections):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Check if www.example.net/ really uses valid XHTML
+{+content-type-overwrite {application/xml}}
+www.example.net/
+
+# but leave the content type unmodified if the URL looks like a style sheet
+{-content-type-overwrite}
+www.example.net/*.\.css$
+www.example.net/*.style</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="CRUNCH-CLIENT-HEADER"
+></A
+>8.5.4. crunch-client-header</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Remove a client header <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has no dedicated action for.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes every header sent by the client that contains the string the user supplied as parameter.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Any string.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This action allows you to block client headers for which no dedicated
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> action exists.
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> will remove every client header that
+    contains the string you supplied as parameter.
+   </P
+><P
+>    Regular expressions are <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not supported</I
+></SPAN
+> and you can't
+    use this action to block different headers in the same request, unless
+    they contain the same string.
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>crunch-client-header</TT
+> is only meant for quick tests.
+    If you have to block several different headers, or only want to modify
+    parts of them, you should enable
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-CLIENT-HEADERS"
+>filter-client-headers</A
+></TT
+>
+    and create your own filter.
+   </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>      Don't block any header without understanding the consequences.
+     </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Block the non-existent "Privacy-Violation:" client header 
+{+crunch-client-header {Privacy-Violation:}}
+/
+    </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="CRUNCH-IF-NONE-MATCH"
+></A
+>8.5.5. crunch-if-none-match</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Prevent yet another way to track the user's steps between sessions.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes the <SPAN
+CLASS="QUOTE"
+>"If-None-Match:"</SPAN
+> HTTP client header.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Removing the <SPAN
+CLASS="QUOTE"
+>"If-None-Match:"</SPAN
+> HTTP client header
+    is useful for filter testing, where you want to force a real
+    reload instead of getting status code <SPAN
+CLASS="QUOTE"
+>"304"</SPAN
+> which
+    would cause the browser to use a cached copy of the page.
+   </P
+><P
+>    It is also useful to make sure the header isn't used as a cookie
+    replacement.
+   </P
+><P
+>    Blocking the <SPAN
+CLASS="QUOTE"
+>"If-None-Match:"</SPAN
+> header shouldn't cause any
+    caching problems, as long as the <SPAN
+CLASS="QUOTE"
+>"If-Modified-Since:"</SPAN
+> header
+    isn't blocked as well.
+   </P
+><P
+>    It is recommended to use this action together with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
+>hide-if-modified-since</A
+></TT
+>
+    and
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#OVERWRITE-LAST-MODIFIED"
+>overwrite-last-modified</A
+></TT
+>.
+   </P
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Let the browser revalidate cached documents without being tracked across sessions
+{+hide-if-modified-since {-60} \
++overwrite-last-modified {randomize} \
++crunch-if-none-match}
+/   </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="CRUNCH-INCOMING-COOKIES"
->8.5.3. crunch-incoming-cookies</A
-></H4
+></A
+>8.5.6. crunch-incoming-cookies</H4
 ><P
 ></P
 ><DIV
@@ -1527,12 +2521,12 @@ CLASS="EMPHASIS"
 >outgoing</I
 ></SPAN
 > cookies, use
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
-></VAR
+></TT
 >.
     Use <SPAN
 CLASS="emphasis"
@@ -1550,20 +2544,20 @@ CLASS="EMPHASIS"
 >no sense at all</I
 ></SPAN
 > to use this action in conjunction
-    with the <VAR
+    with the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
-></VAR
+></TT
 > action,
     since it would prevent the session cookies from being set. See also 
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER-CONTENT-COOKIES"
 >filter-content-cookies</A
-></VAR
+></TT
 >.
    </P
 ></DD
@@ -1594,9 +2588,142 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="CRUNCH-SERVER-HEADER"
+></A
+>8.5.7. crunch-server-header</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Remove a server header <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> has no dedicated action for.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes every header sent by the server that contains the string the user supplied as parameter.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Any string.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This action allows you to block server headers for which no dedicated
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> action exists. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    will remove every server header that contains the string you supplied as parameter.
+   </P
+><P
+>    Regular expressions are <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not supported</I
+></SPAN
+> and you can't
+    use this action to block different headers in the same request, unless
+    they contain the same string.
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>crunch-server-header</TT
+> is only meant for quick tests.
+    If you have to block several different headers, or only want to modify
+    parts of them, you should enable
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-SERVER-HEADERS"
+>filter-server-headers</A
+></TT
+>
+    and create your own filter.
+   </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     Don't block any header without understanding the consequences.
+     </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Crunch server headers that try to prevent caching
+{+crunch-server-header {no-cache}}
+/   </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="CRUNCH-OUTGOING-COOKIES"
->8.5.4. crunch-outgoing-cookies</A
-></H4
+></A
+>8.5.8. crunch-outgoing-cookies</H4
 ><P
 ></P
 ><DIV
@@ -1650,12 +2777,12 @@ CLASS="EMPHASIS"
 >incoming</I
 ></SPAN
 > cookies, use
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
-></VAR
+></TT
 >.
     Use <SPAN
 CLASS="emphasis"
@@ -1673,12 +2800,12 @@ CLASS="EMPHASIS"
 >no sense at all</I
 ></SPAN
 > to use this action in conjunction
-    with the <VAR
+    with the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
-></VAR
+></TT
 > action,
     since it would prevent the session cookies from being read.
    </P
@@ -1711,8 +2838,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="DEANIMATE-GIFS"
->8.5.5. deanimate-gifs</A
-></H4
+></A
+>8.5.9. deanimate-gifs</H4
 ><P
 ></P
 ><DIV
@@ -1801,8 +2928,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="DOWNGRADE-HTTP-VERSION"
->8.5.6. downgrade-http-version</A
-></H4
+></A
+>8.5.10. downgrade-http-version</H4
 ><P
 ></P
 ><DIV
@@ -1877,8 +3004,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FAST-REDIRECTS"
->8.5.7. fast-redirects</A
-></H4
+></A
+>8.5.11. fast-redirects</H4
 ><P
 ></P
 ><DIV
@@ -1888,27 +3015,50 @@ CLASS="VARIABLELIST"
 >Typical use:</DT
 ><DD
 ><P
->Fool some click-tracking scripts and speed up indirect links</P
+>Fool some click-tracking scripts and speed up indirect links.</P
 ></DD
 ><DT
 >Effect:</DT
 ><DD
 ><P
->    Cut off all but the last valid URL from requests.
+>    Detects redirection URLs and redirects the browser without contacting
+    the redirection server first.
    </P
 ></DD
 ><DT
 >Type:</DT
 ><DD
 ><P
->Boolean.</P
+>Parameterized.</P
 ></DD
 ><DT
 >Parameter:</DT
 ><DD
 ><P
->    N/A
-   </P
+></P
+><UL
+><LI
+><P
+>      <SPAN
+CLASS="QUOTE"
+>"simple-check"</SPAN
+> to just search for the string <SPAN
+CLASS="QUOTE"
+>"http://"</SPAN
+>
+      to detect redirection URLs.
+     </P
+></LI
+><LI
+><P
+>      <SPAN
+CLASS="QUOTE"
+>"check-decoded-url"</SPAN
+> to decode URLs (if necessary) before searching
+      for redirection URLs.
+     </P
+></LI
+></UL
 ></DD
 ><DT
 >Notes:</DT
@@ -1920,11 +3070,8 @@ CLASS="VARIABLELIST"
     parameter, which will then redirect you to the final target. URLs
     resulting from this scheme typically look like:
     <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->http://some.place/click-tracker.cgi?target=http://some.where.else</I
-></SPAN
+CLASS="QUOTE"
+>"http://www.example.org/click-tracker.cgi?target=http%3a//www.example.net/"</SPAN
 >.
   </P
 ><P
@@ -1932,18 +3079,79 @@ CLASS="EMPHASIS"
     URL. These redirections via scripts make your web browsing more traceable,
     since the server from which you follow such a link can see where you go
     to. Apart from that, valuable bandwidth and time is wasted, while your
-    browser ask the server for one redirect after the other. Plus, it feeds
+    browser asks the server for one redirect after the other. Plus, it feeds
     the advertisers.
    </P
 ><P
 >    This feature is currently not very smart and is scheduled for improvement.
-    It is likely to break some sites. You should expect to need possibly 
-    many exceptions to this action, if it is enabled by default in
+    If it is enabled by default, you will have to create some exceptions to
+    this action. It can lead to failures in several ways: 
+   </P
+><P
+>    Not every URLs with other URLs as parameters is evil.
+    Some sites offer a real service that requires this information to work.
+    For example a validation service needs to know, which document to validate.
     <TT
-CLASS="FILENAME"
->default.action</TT
->. Some sites just don't work without 
-    it.
+CLASS="LITERAL"
+>fast-redirects</TT
+> assumes that every URL parameter that
+    looks like another URL is a redirection target, and will always redirect to
+    the last one. Most of the time the assumption is correct, but if it isn't,
+    the user gets redirected anyway.
+   </P
+><P
+>    Another failure occurs if the URL contains other parameters after the URL parameter.
+    The URL:
+    <SPAN
+CLASS="QUOTE"
+>"http://www.example.org/?redirect=http%3a//www.example.net/&#38;foo=bar"</SPAN
+>.
+    contains the redirection URL <SPAN
+CLASS="QUOTE"
+>"http://www.example.net/"</SPAN
+>,
+    followed by another parameter. <TT
+CLASS="LITERAL"
+>fast-redirects</TT
+> doesn't know that
+    and will cause a redirect to <SPAN
+CLASS="QUOTE"
+>"http://www.example.net/&#38;foo=bar"</SPAN
+>.
+    Depending on the target server configuration, the parameter will be silently ignored
+    or lead to a <SPAN
+CLASS="QUOTE"
+>"page not found"</SPAN
+> error. It is possible to fix these redirected
+    requests with <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-CLIENT-HEADERS"
+>filter-client-headers</A
+></TT
+>
+    but it requires a little effort.
+   </P
+><P
+>    To detect a redirection URL, <TT
+CLASS="LITERAL"
+>fast-redirects</TT
+> only
+    looks for the string <SPAN
+CLASS="QUOTE"
+>"http://"</SPAN
+>, either in plain text
+    (invalid but often used) or encoded as <SPAN
+CLASS="QUOTE"
+>"http%3a//"</SPAN
+>.
+    Some sites use their own URL encoding scheme, encrypt the address
+    of the target server or replace it with a database id. In theses cases
+    <TT
+CLASS="LITERAL"
+>fast-redirects</TT
+> is fooled and the request reaches the
+    redirection server where it probably gets logged.
    </P
 ></DD
 ><DT
@@ -1958,7 +3166,11 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->{+fast-redirects}</PRE
+> { +fast-redirects{simple-check} }
+   .example.com 
+
+ { +fast-redirects{check-decoded-url} }
+   another.example.com/testing</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1974,8 +3186,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FILTER"
->8.5.8. filter</A
-></H4
+></A
+>8.5.12. filter</H4
 ><P
 ></P
 ><DIV
@@ -1995,11 +3207,16 @@ CLASS="VARIABLELIST"
     action applies, are filtered on-the-fly through the specified regular expression
     based substitutions. (Note: as of version 3.0.3 plain text documents 
     are exempted from filtering, because web servers often use the
-    <VAR
+    <TT
 CLASS="LITERAL"
->text/plain</VAR
+>text/plain</TT
 > MIME type for all files whose type they
-    don't know.)
+    don't know.) By default, filtering works only on the raw document content 
+    itself (that which can be seen with <TT
+CLASS="LITERAL"
+>View Source</TT
+>), 
+    not the headers.
    </P
 ></DD
 ><DT
@@ -2015,24 +3232,39 @@ CLASS="LITERAL"
 >    The name of a filter, as defined in the <A
 HREF="filter-file.html"
 >filter file</A
->
-    (typically <TT
-CLASS="FILENAME"
->default.filter</TT
->, set by the
-    <VAR
+>.
+    Filters can be defined in one or more  files as defined by the 
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="config.html#FILTERFILE"
 >filterfile</A
-></VAR
+></TT
 >
     option in the <A
 HREF="config.html"
 >config file</A
->). When used in its negative form,
-    and without parameters, filtering is completely disabled.
+>. 
+    <TT
+CLASS="FILENAME"
+>default.filter</TT
+> is the collection of filters 
+    supplied by the developers. Locally defined filters should go 
+    in their own file, such as <TT
+CLASS="FILENAME"
+>user.filter</TT
+>.
    </P
+><P
+>     When used in its negative form,
+     and without parameters, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all</I
+></SPAN
+> filtering is completely disabled.
+  </P
 ></DD
 ><DT
 >Notes:</DT
@@ -2050,20 +3282,39 @@ HREF="config.html"
     noticeable on slower connections.
    </P
 ><P
->    This is very powerful feature, but <SPAN
+>   <SPAN
 CLASS="QUOTE"
->"rolling your own"</SPAN
+>"Rolling your own"</SPAN
 >
-    filters requires a knowledge of regular expressions and HTML.
+    filters requires a knowledge of 
+     <A
+HREF="http://en.wikipedia.org/wiki/Regular_expressions"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"Regular
+     Expressions"</SPAN
+></A
+> and 
+      <A
+HREF="http://en.wikipedia.org/wiki/Html"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"HTML"</SPAN
+></A
+>.
+    This is very powerful feature, and potentially very intrusive. Use 
+    with caution.    
    </P
 ><P
 >    The amount of data that can be filtered is limited to the 
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="config.html#BUFFER-LIMIT"
 >buffer-limit</A
-></VAR
+></TT
 >
     option in the main <A
 HREF="config.html"
@@ -2073,43 +3324,43 @@ HREF="config.html"
     data, and all pending data, is passed through unfiltered. 
    </P
 ><P
->    Inadequate MIME types, such as zipped files, are not filtered at all.
+>    Inappropriate MIME types, such as zipped files, are not filtered at all.
     (Again, only text-based types except plain text). Encrypted SSL data
     (from HTTPS servers) cannot be filtered either, since this would violate
     the integrity of the secure transaction. In some situations it might
     be necessary to protect certain text, like source code, from filtering
-    by defining appropriate <VAR
+    by defining appropriate <TT
 CLASS="LITERAL"
->-filter</VAR
-> sections.
+>-filter</TT
+> exceptions.
    </P
 ><P
 >    At this time, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> cannot (yet!) uncompress compressed
+> cannot uncompress compressed
     documents. If you want filtering to work on all documents, even those that
     would normally be sent compressed, use the
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#PREVENT-COMPRESSION"
 >prevent-compression</A
-></VAR
+></TT
 >
-    action in conjunction with <VAR
+    action in conjunction with <TT
 CLASS="LITERAL"
->filter</VAR
+>filter</TT
 >.
    </P
 ><P
 >    Filtering can achieve some of the same effects as the 
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >
     action, i.e. it can be used to block ads and banners. But the mechanism 
     works quite differently. One effective use, is to block ad banners 
@@ -2406,7 +3657,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{frameset-borders}    # Give frames a border and make them resizable</PRE
+>+filter{frameset-borders}    # Give frames a border and make them resizeable</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2463,7 +3714,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->+filter{quicktime-kioskmode} # Make Quicktime movies saveable</PRE
+>+filter{quicktime-kioskmode} # Make Quicktime movies savable</PRE
 ></TD
 ></TR
 ></TABLE
@@ -2535,9 +3786,511 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="FILTER-CLIENT-HEADERS"
+></A
+>8.5.13. filter-client-headers</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>   To apply filtering to the client's (browser's) headers
+   </P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    By default, <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> filters only apply 
+    to the document content itself. This will extend those filters to 
+    include the client's headers as well.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Regular expressions can be used to filter headers as well. Check your
+    filters closely before activating this action, as it can easily lead to broken
+    requests.
+   </P
+><P
+> 
+    These filters are applied to each header on its own, not to them
+    all at once. This makes it easier to diagnose problems, but on the downside
+    you can't write filters that only change header x if header y's value is
+    z.
+   </P
+><P
+>    The filters are used after the other header actions have finished and can
+    use their output as input.
+   </P
+><P
+>    Whenever possible one should specify <TT
+CLASS="LITERAL"
+>^</TT
+>,
+    <TT
+CLASS="LITERAL"
+>$</TT
+>, the whole header name and the colon, to make sure
+    the filter doesn't cause havoc to other headers or the
+    page itself. For example if you want to transform
+    <SPAN
+CLASS="APPLICATION"
+>Galeon</SPAN
+> User-Agents to 
+    <SPAN
+CLASS="APPLICATION"
+>Firefox</SPAN
+> User-Agents you
+    shouldn't use:</P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>s@Galeon/\d\.\d\.\d @@</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+>    but:</P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>s@^(User-Agent:.*) Galeon/\d\.\d\.\d (Firefox/\d\.\d\.\d\.\d)$@$1 $2@</PRE
+></TD
+></TR
+></TABLE
+></P
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>{+filter-client-headers +filter{test_filter}}
+problem-host.example.com
+    </PRE
+></TD
+></TR
+></TABLE
+>
+    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="FILTER-SERVER-HEADERS"
+></A
+>8.5.14. filter-server-headers</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>   To apply filtering to the server's headers
+   </P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    By default, <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> filters only apply 
+    to the document content itself. This will extend those filters to 
+    include the server's headers as well.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Similar to <TT
+CLASS="LITERAL"
+>filter-client-headers</TT
+>, but works on 
+    the server instead. To filter both server and client, use both.
+   </P
+><P
+>    As with <TT
+CLASS="LITERAL"
+>filter-client-headers</TT
+>, check your
+    filters before activating this action, as it can easily lead to broken
+    requests.
+   </P
+><P
+> 
+    These filters are applied to each header on its own, not to them
+    all at once. This makes it easier to diagnose problems, but on the downside
+    you can't write filters that only change header x if header y's value is
+    z.
+   </P
+><P
+>    The filters are used after the other header actions have finished and can
+    use their output as input.
+   </P
+><P
+>    Remember too, whenever possible one should specify <TT
+CLASS="LITERAL"
+>^</TT
+>,
+    <TT
+CLASS="LITERAL"
+>$</TT
+>, the whole header name and the colon, to make sure
+    the filter doesn't cause havoc to other headers or the
+    page itself. See above for example.
+   </P
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>{+filter-server-headers +filter{test_filter}}
+problem-host.example.com
+    </PRE
+></TD
+></TR
+></TABLE
+>
+    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="FORCE-TEXT-MODE"
+></A
+>8.5.15. force-text-mode</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Force <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to treat a document as if it was in some kind of <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>text</I
+></SPAN
+> format.   </P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Declares a document as text, even if the <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> isn't detected as such.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    As explained <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER"
+>above</A
+></TT
+>,
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> tries to only filter files that are
+    in some kind of text format. The same restrictions apply to
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
+>content-type-overwrite</A
+></TT
+>.
+    <TT
+CLASS="LITERAL"
+>force-text-mode</TT
+> declares a document as text,
+    without looking at the <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> first.
+   </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     Think twice before activating this action. Filtering binary data
+     with regular expressions can cause file damage.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+force-text-mode
+     </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="HANDLE-AS-EMPTY-DOCUMENT"
+></A
+>8.5.16. handle-as-empty-document</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Mark URLs that should be replaced by empty documents <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>if they get blocked</I
+></SPAN
+></P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    This action alone doesn't do anything noticeable. It just marks URLs.
+    If the <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#BLOCK"
+>block</A
+></TT
+> action <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>also applies</I
+></SPAN
+>,
+    the presence or absence of this mark decides whether an HTML <SPAN
+CLASS="QUOTE"
+>"blocked"</SPAN
+>
+    page, or an empty document will be sent to the client as a substitute for the blocked content.
+    The <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>empty</I
+></SPAN
+> document isn't literally empty, but actually contains a single space.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Some browsers complain about syntax errors if JavaScript documents
+    are blocked with <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+>
+    default HTML page; this option can be used to silence them.
+   </P
+><P
+>    The content type for the empty document can be specified with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
+>content-type-overwrite{}</A
+></TT
+>,
+    but usually this isn't necessary.
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Block all documents on example.org that end with ".js",
+# but send an empty document instead of the usual HTML message. 
+{+block +handle-as-empty-document}
+example.org/.*\.js$
+     </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="HANDLE-AS-IMAGE"
->8.5.9. handle-as-image</A
-></H4
+></A
+>8.5.17. handle-as-image</H4
 ><P
 ></P
 ><DIV
@@ -2551,21 +4304,21 @@ CLASS="VARIABLELIST"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->if they get blocked</I
+>if they do get blocked</I
 ></SPAN
->)</P
+>, rather than HTML pages)</P
 ></DD
 ><DT
 >Effect:</DT
 ><DD
 ><P
 >    This action alone doesn't do anything noticeable. It just marks URLs as images.
-    If the <VAR
+    If the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > action <SPAN
 CLASS="emphasis"
 ><I
@@ -2577,12 +4330,12 @@ CLASS="EMPHASIS"
 CLASS="QUOTE"
 >"blocked"</SPAN
 >
-    page, or a replacement image (as determined by the <VAR
+    page, or a replacement image (as determined by the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
 > action) will be sent to the
     client as a substitute for the blocked content.
    </P
@@ -2613,21 +4366,21 @@ CLASS="FILENAME"
    </P
 ><P
 >    Users will probably only want to use the handle-as-image action in conjunction with
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >, to block sources of banners, whose URLs don't
     reflect the file type, like in the second example section.
    </P
 ><P
 >    Note that you cannot treat HTML pages as images in most cases. For instance, (in-line) ad
     frames require an HTML page to be sent, or they won't display properly.
-    Forcing <VAR
+    Forcing <TT
 CLASS="LITERAL"
->handle-as-image</VAR
+>handle-as-image</TT
 > in this situation will not replace the
     ad frame with an image, but lead to error messages.
    </P
@@ -2671,9 +4424,368 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="HIDE-ACCEPT-LANGUAGE"
+></A
+>8.5.18. hide-accept-language</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Pretend to use different language settings.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes or replaces the <SPAN
+CLASS="QUOTE"
+>"Accept-Language:"</SPAN
+> HTTP header in client requests.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Keyword: <SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+>, or any user defined value.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Faking the browser's language settings can be useful to make a
+    foreign User-Agent set with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-USER-AGENT"
+>hide-user-agent</A
+></TT
+>
+    more believable.
+   </P
+><P
+>    However some sites with content in different languages check the
+    <SPAN
+CLASS="QUOTE"
+>"Accept-Language:"</SPAN
+> to decide which one to take by default.
+    Sometimes it isn't possible to later switch to another language without
+    changing the <SPAN
+CLASS="QUOTE"
+>"Accept-Language:"</SPAN
+> header first.
+   </P
+><P
+>    Therefore it's a good idea to either only change the
+    <SPAN
+CLASS="QUOTE"
+>"Accept-Language:"</SPAN
+> header to languages you understand,
+    or to languages that aren't wide spread.
+   </P
+><P
+>    Before setting the <SPAN
+CLASS="QUOTE"
+>"Accept-Language:"</SPAN
+> header
+    to a rare language, you should consider that it helps to
+    make your requests unique and thus easier to trace.
+    If you don't plan to change this header frequently,
+    you should stick to a common language. 
+   </P
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Pretend to use Canadian language settings.
+{+hide-accept-language{en-ca} \
++hide-user-agent{Mozilla/5.0 (X11; U; OpenBSD i386; en-CA; rv:1.8.0.4) Gecko/20060628 Firefox/1.5.0.4} \
+}
+/   </PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="HIDE-CONTENT-DISPOSITION"
+></A
+>8.5.19. hide-content-disposition</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Prevent download menus for content you prefer to view inside the browser.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes or replaces the <SPAN
+CLASS="QUOTE"
+>"Content-Disposition:"</SPAN
+> HTTP header set by some servers.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Keyword: <SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+>, or any user defined value.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Some servers set the <SPAN
+CLASS="QUOTE"
+>"Content-Disposition:"</SPAN
+> HTTP header for
+    documents they assume you want to save locally before viewing them.
+    The <SPAN
+CLASS="QUOTE"
+>"Content-Disposition:"</SPAN
+> header contains the file name
+    the browser is supposed to use by default.
+   </P
+><P
+>    In most browsers that understand this header, it makes it impossible to
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>just view</I
+></SPAN
+> the document, without downloading it first,
+    even if it's just a simple text file or an image.
+   </P
+><P
+>    Removing the <SPAN
+CLASS="QUOTE"
+>"Content-Disposition:"</SPAN
+> header helps
+    to prevent this annoyance, but some browsers additionally check the
+    <SPAN
+CLASS="QUOTE"
+>"Content-Type:"</SPAN
+> header, before they decide if they can
+    display a document without saving it first. In these cases, you have
+    to change this header as well, before the browser stops displaying
+    download menus.
+   </P
+><P
+>    It is also possible to change the server's file name suggestion
+    to another one, but in most cases it isn't worth the time to set
+    it up.
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Disarm the download link in Sourceforge's patch tracker
+{-filter\
++content-type-overwrite {text/plain}\
++hide-content-disposition {block} }
+.sourceforge.net/tracker/download.php</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="HIDE-IF-MODIFIED-SINCE"
+></A
+>8.5.20. hide-if-modified-since</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Prevent yet another way to track the user's steps between sessions.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes the <SPAN
+CLASS="QUOTE"
+>"If-Modified-Since:"</SPAN
+> HTTP client header or modifies its value. 
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Keyword: <SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+>, or a user defined value that specifies a range of hours.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Removing this header is useful for filter testing, where you want to force a real
+    reload instead of getting status code <SPAN
+CLASS="QUOTE"
+>"304"</SPAN
+>, which would cause the
+    browser to use a cached copy of the page.
+   </P
+><P
+>    Instead of removing the header, <TT
+CLASS="LITERAL"
+>hide-if-modified-since</TT
+> can
+    also add or subtract a random amount of time to/from the header's value.
+    You specify a range of minutes where the random factor should be chosen from and
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> does the rest. A negative value means
+    subtracting, a positive value adding.
+   </P
+><P
+>    Randomizing the value of the <SPAN
+CLASS="QUOTE"
+>"If-Modified-Since:"</SPAN
+> makes
+    sure it isn't used as a cookie replacement, but you will run into
+    caching problems if the random range is too high.  
+   </P
+><P
+>    It is a good idea to only use a small negative value and let
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#OVERWRITE-LAST-MODIFIED"
+>overwrite-last-modified</A
+></TT
+>
+    handle the greater changes.
+   </P
+><P
+>    It is also recommended to use this action together with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
+>crunch-if-none-match</A
+></TT
+>.
+   </P
+></DD
+><DT
+>Example usage (section):</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Let the browser revalidate without being tracked across sessions
+{+hide-if-modified-since {-60}\
++overwrite-last-modified {randomize}\
++crunch-if-none-match}
+/</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="HIDE-FORWARDED-FOR-HEADERS"
->8.5.10. hide-forwarded-for-headers</A
-></H4
+></A
+>8.5.21. hide-forwarded-for-headers</H4
 ><P
 ></P
 ><DIV
@@ -2753,8 +4865,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-FROM-HEADER"
->8.5.11. hide-from-header</A
-></H4
+></A
+>8.5.22. hide-from-header</H4
 ><P
 ></P
 ><DIV
@@ -2801,12 +4913,12 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"block"</SPAN
 > will completely remove the header 
-    (not to be confused with the <VAR
+    (not to be confused with the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >
     action).
    </P
@@ -2864,8 +4976,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-REFERRER"
->8.5.12. hide-referrer</A
-></H4
+></A
+>8.5.23. hide-referrer</H4
 ><A
 NAME="HIDE-REFERER"
 ></A
@@ -2907,8 +5019,15 @@ CLASS="QUOTE"
 ><P
 ><SPAN
 CLASS="QUOTE"
+>"conditional-block"</SPAN
+> to delete the header completely if the host has changed.</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="QUOTE"
 >"block"</SPAN
-> to delete the header completely.</P
+> to delete the header unconditionally.</P
 ></LI
 ><LI
 ><P
@@ -2927,40 +5046,62 @@ CLASS="QUOTE"
 >Notes:</DT
 ><DD
 ><P
->    <SPAN
+>    <TT
+CLASS="LITERAL"
+>conditional-block</TT
+> is the only parameter,
+    that isn't easily detected in the server's log file. If it blocks the
+    referrer, the request will look like the visitor used a bookmark or
+    typed in the address directly.
+   </P
+><P
+>    Leaving the referrer unmodified for requests on the same host
+    allows the server owner to see the visitor's <SPAN
 CLASS="QUOTE"
->"forge"</SPAN
-> is the preferred option here, since some servers will
-    not send images back otherwise, in an attempt to prevent their valuable
-    content from being embedded elsewhere (and hence, without being surrounded
-    by <SPAN
-CLASS="emphasis"
-><I
-CLASS="EMPHASIS"
->their</I
-></SPAN
-> banners).
+>"click path"</SPAN
+>,
+    but in most cases she could also get that information by comparing
+    other parts of the log file: for example the User-Agent if it isn't
+    a very common one, or the user's IP address if it doesn't change between
+    different requests.
+   </P
+><P
+>    Always blocking the referrer, or using a custom one, can lead to
+    failures on servers that check the referrer before they answer any
+    requests, in an attempt to prevent their valuable content from being
+    embedded or linked to elsewhere.
+   </P
+><P
+>    Both <TT
+CLASS="LITERAL"
+>conditional-block</TT
+> and <TT
+CLASS="LITERAL"
+>forge</TT
+>
+    will work with referrer checks, as long as content and valid referring page
+    are on the same host. Most of the time that's the case.
    </P
 ><P
 >  
-   <VAR
+    <TT
 CLASS="LITERAL"
->hide-referer</VAR
+>hide-referer</TT
 > is an alternate spelling of
-   <VAR
+    <TT
 CLASS="LITERAL"
->hide-referrer</VAR
+>hide-referrer</TT
 > and the two can be can be freely
-   substituted with each other. (<SPAN
+    substituted with each other. (<SPAN
 CLASS="QUOTE"
 >"referrer"</SPAN
 > is the
-   correct English spelling, however the HTTP specification has a bug - it
-   requires it to be spelled as <SPAN
+    correct English spelling, however the HTTP specification has a bug - it
+    requires it to be spelled as <SPAN
 CLASS="QUOTE"
 >"referer"</SPAN
 >.) 
-  </P
+   </P
 ></DD
 ><DT
 >Example usage:</DT
@@ -3003,8 +5144,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="HIDE-USER-AGENT"
->8.5.13. hide-user-agent</A
-></H4
+></A
+>8.5.24. hide-user-agent</H4
 ><P
 ></P
 ><DIV
@@ -3062,20 +5203,17 @@ ALIGN="CENTER"
 ><TD
 ALIGN="LEFT"
 ><P
->     This breaks many web sites that depend on looking at this header in order
-     to customize their content for different browsers (which, by the
+>     This can lead to problems on web sites that depend on looking at this header in
+     order to customize their content for different browsers (which, by the
      way, is <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >NOT</I
 ></SPAN
-> a <A
-HREF="http://www.javascriptkit.com/javaindex.shtml"
-TARGET="_top"
->smart way to do
-     that</A
->!).
+> the right thing to do: good web sites
+     work browser-independently). 
+     
     </P
 ></TD
 ></TR
@@ -3140,10 +5278,82 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
-NAME="KILL-POPUPS"
->8.5.14. kill-popups<A
-NAME="KILL-POPUP"
+NAME="INSPECT-JPEGS"
 ></A
+>8.5.25. inspect-jpegs</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>To protect against the MS buffer over-run in JPEG processing</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Protect against a known exploit
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    N/A
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    See Microsoft Security Bulletin MS04-028. JPEG images are one of the most 
+    common image types found across the Internet. The exploit as described can 
+    allow execution of code on the target system, giving an attacker access 
+    to the system in question by merely planting an altered JPEG image, which 
+    would have no obvious indications of what lurks inside. This action
+    prevents unwanted intrusion.
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+inspect-jpegs</PRE
+></TD
+></TR
+></TABLE
+></P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="KILL-POPUPS"
+></A
+>8.5.26. kill-popups<A
+NAME="KILL-POPUP"
 ></A
 ></H4
 ><P
@@ -3183,72 +5393,78 @@ CLASS="VARIABLELIST"
 ><DD
 ><P
 >    This action is basically a built-in, hardwired special-purpose filter
-    action, but there are important differences: For <VAR
+    action, but there are important differences: For <TT
 CLASS="LITERAL"
->kill-popups</VAR
+>kill-popups</TT
 >,
     the document need not be buffered, so it can be incrementally rendered while
-    downloading. But <VAR
+    downloading. But <TT
 CLASS="LITERAL"
->kill-popups</VAR
+>kill-popups</TT
 > doesn't catch as many pop-ups as
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER-ALL-POPUPS"
->filter{<VAR
+>filter{<TT
 CLASS="REPLACEABLE"
->all-popups</VAR
+><I
+>all-popups</I
+></TT
 >}</A
-></VAR
+></TT
 >
-    does and is not as smart as <VAR
+    does and is not as smart as <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER-UNSOLICITED-POPUPS"
->filter{<VAR
+>filter{<TT
 CLASS="REPLACEABLE"
->unsolicited-popups</VAR
+><I
+>unsolicited-popups</I
+></TT
 >}</A
 >
-    </VAR
+    </TT
 >is.
    </P
 ><P
 >    Think of it as a fast and efficient replacement for a filter that you
     can use if you don't want any filtering at all. Note that it doesn't make
-    sense to combine it with any <VAR
+    sense to combine it with any <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
+></TT
 > action,
-    since as soon as one <VAR
+    since as soon as one <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
+></TT
 > applies,
     the whole document needs to be buffered anyway, which destroys the advantage of
-    the <VAR
+    the <TT
 CLASS="LITERAL"
->kill-popups</VAR
+>kill-popups</TT
 > action over its filter equivalent.
    </P
 ><P
 >    Killing all pop-ups unconditionally is problematic. Many shops and banks rely on
-    pop-ups to display forms, shopping carts etc, and the <VAR
+    pop-ups to display forms, shopping carts etc, and the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER-UNSOLICITED-POPUPS"
->filter{<VAR
+>filter{<TT
 CLASS="REPLACEABLE"
->unsolicited-popups</VAR
+><I
+>unsolicited-popups</I
+></TT
 >}</A
 >
-    </VAR
+    </TT
 > does a fairly good job of catching only the unwanted ones.
    </P
 ><P
@@ -3261,15 +5477,17 @@ CLASS="EMPHASIS"
 ></SPAN
 > windows that appear when you close an other
     one), you might want to use
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
->{<VAR
+>{<TT
 CLASS="REPLACEABLE"
->js-annoyances</VAR
->}</VAR
+><I
+>js-annoyances</I
+></TT
+>}</TT
 >
     instead. 
    </P
@@ -3301,8 +5519,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="LIMIT-CONNECT"
->8.5.15. limit-connect</A
-></H4
+></A
+>8.5.27. limit-connect</H4
 ><P
 ></P
 ><DIV
@@ -3315,7 +5533,7 @@ CLASS="VARIABLELIST"
 >Prevent abuse of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> as a TCP proxy relay</P
+> as a TCP proxy relay or disable SSL for untrusted sites</P
 ></DD
 ><DT
 >Effect:</DT
@@ -3342,18 +5560,18 @@ CLASS="APPLICATION"
 >Notes:</DT
 ><DD
 ><P
->    By default, i.e. if no <VAR
+>    By default, i.e. if no <TT
 CLASS="LITERAL"
->limit-connect</VAR
+>limit-connect</TT
 > action applies,
     <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > only allows HTTP CONNECT
     requests to port 443 (the standard, secure HTTPS port). Use 
-    <VAR
+    <TT
 CLASS="LITERAL"
->limit-connect</VAR
+>limit-connect</TT
 > if more fine-grained control is desired
     for some or all destinations.
    </P
@@ -3369,8 +5587,24 @@ CLASS="QUOTE"
     abused as TCP relays very easily.
   </P
 ><P
->   If you don't know what any of this means, there probably is no reason to 
-   change this one, since the default is already very restrictive.
+>   <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> relays HTTPS traffic without seeing
+   the decoded content. Websites can leverage this limitation to circumvent <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s
+   filters. By specifying an invalid port range you can disable HTTPS entirely.
+   If you plan to disable SSL by default, consider enabling 
+   <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
+>treat-forbidden-connects-like-blocks</A
+></TT
+>
+   as well, to be able to quickly create exceptions.
   </P
 ></DD
 ><DT
@@ -3388,7 +5622,8 @@ CLASS="SCREEN"
 >+limit-connect{443}                   # This is the default and need not be specified.
 +limit-connect{80,443}                # Ports 80 and 443 are OK.
 +limit-connect{-3, 7, 20-100, 500-}   # Ports less than 3, 7, 20 to 100 and above 500 are OK.
-+limit-connect{-}                     # All ports are OK (gaping security hole!)</PRE
++limit-connect{-}                     # All ports are OK
++limit-connect{,}                     # No HTTPS/SSL traffic is allowed</PRE
 ></TD
 ></TR
 ></TABLE
@@ -3404,8 +5639,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="PREVENT-COMPRESSION"
->8.5.16. prevent-compression</A
-></H4
+></A
+>8.5.28. prevent-compression</H4
 ><P
 ></P
 ><DIV
@@ -3416,20 +5651,20 @@ CLASS="VARIABLELIST"
 ><DD
 ><P
 >    Ensure that servers send the content uncompressed, so it can be
-    passed through <VAR
+    passed through <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
->s
+></TT
+>s.
    </P
 ></DD
 ><DT
 >Effect:</DT
 ><DD
 ><P
->    Adds a header to the request that asks for uncompressed transfer.
+>    Removes the Accept-Encoding header which can be used to ask for compressed transfer.
    </P
 ></DD
 ><DT
@@ -3450,25 +5685,25 @@ HREF="actions-file.html#FILTER"
 ><DD
 ><P
 >    More and more websites send their content compressed by default, which
-    is generally a good idea and saves bandwidth. But for the <VAR
+    is generally a good idea and saves bandwidth. But for the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
->, <VAR
+></TT
+>, <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#DEANIMATE-GIFS"
 >deanimate-gifs</A
-></VAR
+></TT
 >
-    and <VAR
+    and <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#KILL-POPUPS"
 >kill-popups</A
-></VAR
+></TT
 > actions to work,
     <SPAN
 CLASS="APPLICATION"
@@ -3483,17 +5718,17 @@ CLASS="APPLICATION"
    </P
 ><P
 >    This will slow down transfers from those websites, though. If you use any of the above-mentioned
-    actions, you will typically want to use <VAR
+    actions, you will typically want to use <TT
 CLASS="LITERAL"
->prevent-compression</VAR
+>prevent-compression</TT
 > in conjunction
     with them.
    </P
 ><P
 >    Note that some (rare) ill-configured sites don't handle requests for uncompressed
-    documents correctly (they send an empty document body). If you use <VAR
+    documents correctly (they send an empty document body). If you use <TT
 CLASS="LITERAL"
->prevent-compression</VAR
+>prevent-compression</TT
 >
     per default, you'll have to add exceptions for those sites. See the example for how to do that.
    </P
@@ -3534,9 +5769,287 @@ CLASS="SECT3"
 ><H4
 CLASS="SECT3"
 ><A
+NAME="OVERWRITE-LAST-MODIFIED"
+></A
+>8.5.29. overwrite-last-modified</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Prevent yet another way to track the user's steps between sessions.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Deletes the <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+> HTTP server header or modifies its value. 
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized.</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    One of the keywords: <SPAN
+CLASS="QUOTE"
+>"block"</SPAN
+>, <SPAN
+CLASS="QUOTE"
+>"reset-to-request-time"</SPAN
+>
+    and <SPAN
+CLASS="QUOTE"
+>"randomize"</SPAN
+>
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    Removing the <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+> header is useful for filter
+    testing, where you want to force a real reload instead of getting status
+    code <SPAN
+CLASS="QUOTE"
+>"304"</SPAN
+>, which would cause the browser to reuse the old
+    version of the page.
+   </P
+><P
+>    The <SPAN
+CLASS="QUOTE"
+>"randomize"</SPAN
+> option overwrites the value of the
+    <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+> header with a randomly chosen time
+    between the original value and the current time. In theory the server
+    could send each document with a different <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+>
+    header to track visits without using cookies. <SPAN
+CLASS="QUOTE"
+>"Randomize"</SPAN
+>
+    makes it impossible and the browser can still revalidate cached documents. 
+   </P
+><P
+>    <SPAN
+CLASS="QUOTE"
+>"reset-to-request-time"</SPAN
+> overwrites the value of the
+    <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+> header with the current time. You could use
+    this option together with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
+>hided-if-modified-since</A
+></TT
+>
+    to further customize your random range.
+   </P
+><P
+>    The preferred parameter here is <SPAN
+CLASS="QUOTE"
+>"randomize"</SPAN
+>. It is safe
+    to use, as long as the time settings are more or less correct.
+    If the server sets the <SPAN
+CLASS="QUOTE"
+>"Last-Modified:"</SPAN
+> header to the time
+    of the request, the random range becomes zero and the value stays the same.
+    Therefore you should later randomize it a second time with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
+>hided-if-modified-since</A
+></TT
+>,
+    just to be sure. 
+   </P
+><P
+>    It is also recommended to use this action together with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
+>crunch-if-none-match</A
+></TT
+>.
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>     <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Let the browser revalidate without being tracked across sessions
+{+hide-if-modified-since {-60}\
++overwrite-last-modified {randomize}\
++crunch-if-none-match}
+/</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="REDIRECT"
+></A
+>8.5.30. redirect</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>    Redirect requests to other sites.
+   </P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    Convinces the browser that the requested document has been moved
+    to another location and the browser should get it from there.
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Parameterized</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>    Any URL.
+   </P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    This action is useful to replace whole documents with ones of your 
+    choosing. This can be used to enforce safe surfing, or just as a simple 
+    convenience.
+   </P
+><P
+>    You can do the same by combining the actions
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#BLOCK"
+>block</A
+></TT
+>,
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-IMAGE"
+>handle-as-image</A
+></TT
+> and
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#SET-IMAGE-BLOCKER"
+>set-image-blocker{URL}</A
+></TT
+>.
+    It doesn't sound right for non-image documents, and that's why this action
+    was created.
+   </P
+><P
+>    This action will be ignored if you use it together with
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#BLOCK"
+>block</A
+></TT
+>.
+   </P
+></DD
+><DT
+>Example usages:</DT
+><DD
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># Replace example.com's style sheet with another one
+{ +redirect{http://localhost/css-replacements/example.com.css} }
+ example.com/stylesheet.css
+
+# Create a short, easy to remember nickname for a favorite site
+{ +redirect{http://www.privoxy.org/user-manual/actions-file.html} }
+ a</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
 NAME="SEND-VANILLA-WAFER"
->8.5.17. send-vanilla-wafer</A
-></H4
+></A
+>8.5.31. send-vanilla-wafer</H4
 ><P
 ></P
 ><DIV
@@ -3608,8 +6121,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SEND-WAFER"
->8.5.18. send-wafer</A
-></H4
+></A
+>8.5.32. send-wafer</H4
 ><P
 ></P
 ><DIV
@@ -3641,12 +6154,16 @@ CLASS="VARIABLELIST"
 ><P
 >    A string of the form <SPAN
 CLASS="QUOTE"
->"<VAR
+>"<TT
 CLASS="REPLACEABLE"
->name</VAR
->=<VAR
+><I
+>name</I
+></TT
+>=<TT
 CLASS="REPLACEABLE"
->value</VAR
+><I
+>value</I
+></TT
 >"</SPAN
 >.
    </P
@@ -3691,8 +6208,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SESSION-COOKIES-ONLY"
->8.5.19. session-cookies-only</A
-></H4
+></A
+>8.5.33. session-cookies-only</H4
 ><P
 ></P
 ><DIV
@@ -3747,27 +6264,27 @@ CLASS="QUOTE"
 >Notes:</DT
 ><DD
 ><P
->    This is less strict than <VAR
+>    This is less strict than <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
-></VAR
+></TT
 > / 
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
-></VAR
+></TT
 > and allows you to browse
     websites that insist or rely on setting cookies, without compromising your privacy too badly.
    </P
 ><P
 >    Most browsers will not permanently store cookies that have been processed by
-    <VAR
+    <TT
 CLASS="LITERAL"
->session-cookies-only</VAR
+>session-cookies-only</TT
 > and will forget about them between sessions.
     This makes profiling cookies useless, but won't break sites which require cookies so
     that you can log in for transactions. This is generally turned on for all 
@@ -3780,23 +6297,23 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >no sense at all</I
 ></SPAN
-> to use <VAR
+> to use <TT
 CLASS="LITERAL"
->session-cookies-only</VAR
+>session-cookies-only</TT
 >
-    together with <VAR
+    together with <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
-></VAR
+></TT
 > or
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
-></VAR
+></TT
 >. If you do, cookies
     will be plainly killed.
    </P
@@ -3825,9 +6342,9 @@ HREF="actions-file.html#FILTER-CONTENT-COOKIES"
 >content-cookies filter</A
 > 
      to block some types of cookies. Content cookies are not effected by 
-     <VAR
+     <TT
 CLASS="LITERAL"
->session-cookies-only</VAR
+>session-cookies-only</TT
 >.
    </P
 ></DD
@@ -3859,8 +6376,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SET-IMAGE-BLOCKER"
->8.5.20. set-image-blocker</A
-></H4
+></A
+>8.5.34. set-image-blocker</H4
 ><P
 ></P
 ><DIV
@@ -3883,24 +6400,24 @@ CLASS="EMPHASIS"
 >both</I
 ></SPAN
 >
-     <VAR
+     <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >and</I
 ></SPAN
-> <VAR
+> <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 > <SPAN
 CLASS="emphasis"
 ><I
@@ -3961,28 +6478,35 @@ CLASS="APPLICATION"
 ><P
 >      <SPAN
 CLASS="QUOTE"
->"<VAR
+>"<TT
 CLASS="REPLACEABLE"
->target-url</VAR
+><I
+>target-url</I
+></TT
 >"</SPAN
 > to
-      send a redirect to <VAR
+      send a redirect to <TT
 CLASS="REPLACEABLE"
->target-url</VAR
+><I
+>target-url</I
+></TT
 >. You can redirect
-      to any image anywhere, even in your local filesystem (via <SPAN
+      to any image anywhere, even in your local filesystem via <SPAN
 CLASS="QUOTE"
 >"file:///"</SPAN
-> URL).
+> URL. 
+      (But note that not all browsers support redirecting to a local file system).
      </P
 ><P
 >      A good application of redirects is to use special <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >-built-in
-      URLs, which send the built-in images, as <VAR
+      URLs, which send the built-in images, as <TT
 CLASS="REPLACEABLE"
->target-url</VAR
+><I
+>target-url</I
+></TT
 >.
       This has the same visual effect as specifying <SPAN
 CLASS="QUOTE"
@@ -4003,13 +6527,17 @@ CLASS="QUOTE"
 ><P
 >    The URLs for the built-in images are <SPAN
 CLASS="QUOTE"
->"http://config.privoxy.org/send-banner?type=<VAR
+>"http://config.privoxy.org/send-banner?type=<TT
 CLASS="REPLACEABLE"
->type</VAR
+><I
+>type</I
+></TT
 >"</SPAN
->, where <VAR
+>, where <TT
 CLASS="REPLACEABLE"
->type</VAR
+><I
+>type</I
+></TT
 > is
     either <SPAN
 CLASS="QUOTE"
@@ -4030,9 +6558,9 @@ CLASS="EMPHASIS"
 >NOT</I
 ></SPAN
 > to be
-    used in <VAR
+    used in <TT
 CLASS="LITERAL"
->set-image-blocker</VAR
+>set-image-blocker</TT
 >, but meant for use from <A
 HREF="filter-file.html"
 >filters</A
@@ -4103,12 +6631,133 @@ CLASS="SCREEN"
 ></DIV
 ><DIV
 CLASS="SECT3"
+><H4
+CLASS="SECT3"
+><A
+NAME="TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
+></A
+>8.5.35. treat-forbidden-connects-like-blocks</H4
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Typical use:</DT
+><DD
+><P
+>Block forbidden connects with an easy to find error message.</P
+></DD
+><DT
+>Effect:</DT
+><DD
+><P
+>    If this action is enabled, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> no longer
+    makes a difference between forbidden connects and ordinary blocks. 
+   </P
+></DD
+><DT
+>Type:</DT
+><DD
+><P
+>Boolean</P
+></DD
+><DT
+>Parameter:</DT
+><DD
+><P
+>N/A</P
+></DD
+><DT
+>Notes:</DT
+><DD
+><P
+>    By default <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> answers
+    <A
+HREF="actions-file.html#LIMIT-CONNECT"
+>forbidden <SPAN
+CLASS="QUOTE"
+>"Connect"</SPAN
+> requests</A
+>
+    with a short error message inside the headers. If the browser doesn't display
+    headers (most don't), you just see an empty page.
+   </P
+><P
+>    With this action enabled, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> displays
+    the message that is used for ordinary blocks instead. If you decide
+    to make an exception for the page in question, you can do so by
+    following the <SPAN
+CLASS="QUOTE"
+>"See why"</SPAN
+> link.
+   </P
+><P
+>    For <SPAN
+CLASS="QUOTE"
+>"Connect"</SPAN
+> requests the clients tell
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> which host they are interested
+    in, but not which document they plan to get later. As a result, the
+    <SPAN
+CLASS="QUOTE"
+>"Go there anyway"</SPAN
+> link becomes rather useless:
+    it lets the client request the home page of the forbidden host
+    through unencrypted HTTP, still using the port of the last request.
+   </P
+><P
+>    If you previously configured <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> to do the
+    request through a SSL tunnel, everything will work. Most likely you haven't
+    and the server will respond with an error message because it is expecting
+    HTTPS (SSL).
+   </P
+></DD
+><DT
+>Example usage:</DT
+><DD
+><P
+>    <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>+treat-forbidden-connects-like-blocks</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2855"
->8.5.21. Summary</A
-></H3
+NAME="AEN3885"
+></A
+>8.5.36. Summary</H3
 ><P
 > Note that many of these actions have the potential to cause a page to
  misbehave, possibly even not to display at all. There are many ways 
@@ -4127,8 +6776,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ALIASES"
->8.6. Aliases</A
-></H2
+></A
+>8.6. Aliases</H2
 ><P
 > Custom <SPAN
 CLASS="QUOTE"
@@ -4270,7 +6919,7 @@ HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 >
- block-as-image      = +block +handle-as-image
+ +block-as-image      = +block +handle-as-image
  mercy-for-cookies   = -crunch-all-cookies -<A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
@@ -4375,8 +7024,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACT-EXAMPLES"
->8.7. Actions Files Tutorial</A
-></H2
+></A
+>8.7. Actions Files Tutorial</H2
 ><P
 > The above chapters have shown <A
 HREF="actions-file.html"
@@ -4410,9 +7059,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN2920"
->8.7.1. default.action</A
-></H3
+NAME="AEN3950"
+></A
+>8.7.1. default.action</H3
 ><P
 >Every config file should start with a short comment stating its purpose:</P
 ><P
@@ -4424,7 +7073,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
-># Sample default.action file &#60;developers@privoxy.org&#62;</PRE
+># Sample default.action file &#60;ijbswa-developers@lists.sourceforge.net&#62;</PRE
 ></TD
 ></TR
 ></TABLE
@@ -4493,7 +7142,7 @@ HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
 >
- block-as-image      = +block +handle-as-image
+ +block-as-image      = +block +handle-as-image
  mercy-for-cookies   = -crunch-all-cookies -<A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 >session-cookies-only</A
@@ -4547,9 +7196,9 @@ CLASS="EMPHASIS"
 > The first regular section is probably the most important. It has only
  one pattern, <SPAN
 CLASS="QUOTE"
->"<VAR
+>"<TT
 CLASS="LITERAL"
->/</VAR
+>/</TT
 >"</SPAN
 >, but this pattern
  <A
@@ -4605,8 +7254,24 @@ HREF="actions-file.html#BLOCK"
 >block</A
 > \
  -<A
+HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
+>content-type-overwrite</A
+> \
+ -<A
+HREF="actions-file.html#CRUNCH-CLIENT-HEADER"
+>crunch-client-header</A
+> \
+ -<A
+HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
+>crunch-if-none-match</A
+> \
+ -<A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
+> \
+ -<A
+HREF="actions-file.html#CRUNCH-SERVER-HEADER"
+>crunch-server-header</A
 > \
  -<A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
@@ -4622,7 +7287,7 @@ HREF="actions-file.html#DOWNGRADE-HTTP-VERSION"
 > \
  +<A
 HREF="actions-file.html#FAST-REDIRECTS"
->fast-redirects</A
+>fast-redirects{check-decoded-url}</A
 > \
  +<A
 HREF="actions-file.html#FILTER-JS-ANNOYANCES"
@@ -4705,8 +7370,36 @@ HREF="actions-file.html#FILTER-IE-EXPLOITS"
 >filter{ie-exploits}</A
 > \     
  -<A
+HREF="actions-file.html#FILTER-CLIENT-HEADERS"
+>filter-client-headers</A
+> \
+ -<A
+HREF="actions-file.html#FILTER-SERVER-HEADERS"
+>filter-server-headers</A
+> \
+ -<A
+HREF="actions-file.html#FORCE-TEXT-MODE"
+>force-text-mode</A
+> \
+ -<A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+>handle-as-empty-document</A
+> \
+ -<A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
+> \
+ -<A
+HREF="actions-file.html#HIDE-ACCEPT-LANGUAGE"
+>hide-accept-language</A
+> \
+ -<A
+HREF="actions-file.html#HIDE-CONTENT-DISPOSITION"
+>hide-content-disposition</A
+> \
+ -<A
+HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
+>hide-if-modified-since</A
 > \
  +<A
 HREF="actions-file.html#HIDE-FORWARDED-FOR-HEADERS"
@@ -4725,6 +7418,10 @@ HREF="actions-file.html#HIDE-USER-AGENT"
 >hide-user-agent</A
 > \
  -<A
+HREF="actions-file.html#INSPECT-JPEGS"
+>inspect-jpegs</A
+> \
+ -<A
 HREF="actions-file.html#KILL-POPUPS"
 >kill-popups</A
 > \
@@ -4735,6 +7432,14 @@ HREF="actions-file.html#LIMIT-CONNECT"
  +<A
 HREF="actions-file.html#PREVENT-COMPRESSION"
 >prevent-compression</A
+> \
+ -<A
+HREF="actions-file.html#OVERWRITE-LAST-MODIFIED"
+>overwrite-last-modified</A
+> \
+ -<A
+HREF="actions-file.html#REDIRECT"
+>redirect</A
 > \
  -<A
 HREF="actions-file.html#SEND-VANILLA-WAFER"
@@ -4751,6 +7456,10 @@ HREF="actions-file.html#SESSION-COOKIES-ONLY"
  +<A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker{pattern}</A
+> \
+ -<A
+HREF="actions-file.html#TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
+>treat-forbidden-connects-like-blocks</A
 > \
  }
  / # forward slash will match *all* potential URL patterns.</PRE
@@ -4782,9 +7491,9 @@ CLASS="QUOTE"
  sites, i.e. sites that require minimum interference, because they are either
  very complex or very keen on tracking you (and have mechanisms in place that
  make them unusable for people who avoid being tracked). We will simply use
- our pre-defined <VAR
+ our pre-defined <TT
 CLASS="LITERAL"
->fragile</VAR
+>fragile</TT
 > alias instead of stating the list
  of actions explicitly:</P
 ><P
@@ -4834,12 +7543,12 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> The <VAR
+> The <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FAST-REDIRECTS"
 >fast-redirects</A
-></VAR
+></TT
 >
  action, which we enabled per default above,  breaks some sites. So disable
  it for popular sites where we know it misbehaves:</P
@@ -4888,12 +7597,12 @@ CLASS="EMPHASIS"
 >and</I
 ></SPAN
 >
- information). We can mark any URL as an image with the <VAR
+ information). We can mark any URL as an image with the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 > action,
  and marking all URLs that end in a known image file extension is a
  good start:</P
@@ -4933,11 +7642,11 @@ CLASS="EMPHASIS"
 ></SPAN
 >
  mark them as images in one go, with the help of our
- <VAR
+ <TT
 CLASS="LITERAL"
->block-as-image</VAR
+>+block-as-image</TT
 > alias defined above. (We could of
- course just as well use <VAR
+ course just as well use <TT
 CLASS="LITERAL"
 >+<A
 HREF="actions-file.html#BLOCK"
@@ -4946,23 +7655,23 @@ HREF="actions-file.html#BLOCK"
  +<A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></VAR
+></TT
 > here.)
  Remember that the type of the replacement image is chosen by the
- <VAR
+ <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></VAR
+></TT
 >
  action. Since all URLs have matched the default section with its
- <VAR
+ <TT
 CLASS="LITERAL"
 >+<A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
->{pattern}</VAR
+>{pattern}</TT
 >
  action before, it still applies and needn't be repeated:</P
 ><P
@@ -4976,7 +7685,7 @@ WIDTH="100%"
 CLASS="SCREEN"
 ># Known ad generators:
 #
-{ block-as-image }
+{ +block-as-image }
 ar.atwola.com 
 .ad.doubleclick.net
 .ad.*.doubleclick.net
@@ -4994,28 +7703,28 @@ bs*.einets.com
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
- is to block banners. A huge bunch of them are already <SPAN
+ is to block banners. A huge bunch of them can be <SPAN
 CLASS="QUOTE"
 >"blocked"</SPAN
 >
- by the <VAR
+ by the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
->{banners-by-size}</VAR
+>{banners-by-size}</TT
 >
  action, which we enabled above, and which deletes the references to banner
  images from the pages while they are loaded, so the browser doesn't request
  them anymore, and hence they don't need to be blocked here. But this naturally
  doesn't catch all banners, and some people choose not to use filters, so we
  need a comprehensive list of patterns for banner URLs here, and apply the
- <VAR
+ <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > action to them.</P
 ><P
 > First comes a bunch of generic patterns, which do most of the work, by
@@ -5057,9 +7766,11 @@ count*.
 ></P
 ><P
 > You wouldn't believe how many advertisers actually call their banner
- servers ads.<VAR
+ servers ads.<TT
 CLASS="REPLACEABLE"
->company</VAR
+><I
+>company</I
+></TT
 >.com, or call the directory
  in which the banners are stored simply <SPAN
 CLASS="QUOTE"
@@ -5068,9 +7779,9 @@ CLASS="QUOTE"
  generic patterns are surprisingly effective.</P
 ><P
 > But being very generic, they necessarily also catch URLs that we don't want
- to block. The pattern <VAR
+ to block. The pattern <TT
 CLASS="LITERAL"
->.*ads.</VAR
+>.*ads.</TT
 > e.g. catches 
  <SPAN
 CLASS="QUOTE"
@@ -5102,12 +7813,12 @@ CLASS="EMPHASIS"
 ></SPAN
 >l.some-provider.net."</SPAN
 > So here come some
- well-known exceptions to the <VAR
+ well-known exceptions to the <TT
 CLASS="LITERAL"
 >+<A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >
  section above.</P
 ><P
@@ -5117,34 +7828,34 @@ CLASS="QUOTE"
 >"downloads.sourcefroge.net"</SPAN
 >: Initially, all actions are deactivated,
  so it wouldn't get blocked. Then comes the defaults section, which matches the
- URL, but just deactivates the <VAR
+ URL, but just deactivates the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >
- action once again. Then it matches <VAR
+ action once again. Then it matches <TT
 CLASS="LITERAL"
->.*ads.</VAR
+>.*ads.</TT
 >, an exception to the
  general non-blocking policy, and suddenly
- <VAR
+ <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >+block</A
-></VAR
+></TT
 > applies. And now, it'll match
- <VAR
+ <TT
 CLASS="LITERAL"
->.*loads.</VAR
->, where <VAR
+>.*loads.</TT
+>, where <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >-block</A
-></VAR
+></TT
 >
  applies, so (unless it matches <SPAN
 CLASS="emphasis"
@@ -5153,12 +7864,12 @@ CLASS="EMPHASIS"
 >again</I
 ></SPAN
 > further down) it ends up
- with no <VAR
+ with no <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 > action applying.</P
 ><P
 > <TABLE
@@ -5204,12 +7915,12 @@ www.ugu.com/sui/ugu/adv</PRE
 CLASS="QUOTE"
 >"cvs"</SPAN
 > in them. Note that
- <VAR
+ <TT
 CLASS="LITERAL"
 >-<A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
+></TT
 >
  disables <SPAN
 CLASS="emphasis"
@@ -5243,7 +7954,7 @@ HREF="actions-file.html#FILTER"
 > The actual <TT
 CLASS="FILENAME"
 >default.action</TT
-> is of course more
+> is of course much more
  comprehensive, but we hope this example made clear how it works.</P
 ></DIV
 ><DIV
@@ -5251,9 +7962,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="AEN3086"
->8.7.2. user.action</A
-></H3
+NAME="AEN4131"
+></A
+>8.7.2. user.action</H3
 ><P
 > So far we are painting with a broad brush by setting general policies,
  which would be a reasonable starting point for many people. Now, 
@@ -5347,20 +8058,34 @@ shop        = -crunch-all-cookies allow-popups
 
 # Allow ads for selected useful free sites:
 #
-allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}</PRE
+allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
+
+# Alias for specific file types that are text, but might have conflicting
+# MIME types. We want the browser to force these to be text documents.
+handle-as-text = -<A
+HREF="actions-file.html#FILTER"
+>filter</A
+> +-<A
+HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
+>content-type-overwrite{text/plain}</A
+> +-<A
+HREF="actions-file.html#FORCE-TEXT-MODE"
+>force-text-mode</A
+> -<A
+HREF="actions-file.html#HIDE-CONTENT-DISPOSITION"
+>hide-content-disposition</A
+></PRE
 ></TD
 ></TR
 ></TABLE
->
-
- </P
+>&#13;</P
 ><P
 > Say you have accounts on some sites that you visit regularly, and
  you don't want to have to log in manually each time. So you'd like
  to allow persistent cookies for these sites. The
- <VAR
+ <TT
 CLASS="LITERAL"
->allow-all-cookies</VAR
+>allow-all-cookies</TT
 > alias defined above does exactly
  that, i.e. it disables crunching of cookies in any direction, and the 
  processing of cookies to make them only temporary.</P
@@ -5374,12 +8099,10 @@ WIDTH="100%"
 ><PRE
 CLASS="SCREEN"
 >{ allow-all-cookies }
-sourceforge.net
-sunsolve.sun.com
-.slashdot.org
-.yahoo.com
-.msdn.microsoft.com
-.redhat.com</PRE
+ sourceforge.net
+ .yahoo.com
+ .msdn.microsoft.com
+ .redhat.com</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5399,7 +8122,7 @@ CLASS="SCREEN"
 HREF="actions-file.html#FILTER"
 >filter</A
 > }
-.your-home-banking-site.com</PRE
+ .your-home-banking-site.com</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5440,17 +8163,17 @@ CLASS="QUOTE"
 >"copy image location"</SPAN
 >
  and pasted the URL below while removing the leading http://, into a 
- <VAR
+ <TT
 CLASS="LITERAL"
->{ +block }</VAR
-> section. Note that <VAR
+>{ +block }</TT
+> section. Note that <TT
 CLASS="LITERAL"
 >{ +handle-as-image
- }</VAR
+ }</TT
 > need not be specified, since all URLs ending in
- <VAR
+ <TT
 CLASS="LITERAL"
->.gif</VAR
+>.gif</TT
 > will be tagged as images by the general rules as set
  in default.action anyway:</P
 ><P
@@ -5466,8 +8189,8 @@ CLASS="SCREEN"
 HREF="actions-file.html#BLOCK"
 >block</A
 > }
-www.example.com/nasty-ads/sponsor.gif
-another.popular.site.net/more/junk/here/</PRE
+ www.example.com/nasty-ads/sponsor.gif
+ another.popular.site.net/more/junk/here/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5480,9 +8203,9 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > to guess
  the file type just by looking at the URL. 
- You can use the <VAR
+ You can use the <TT
 CLASS="LITERAL"
->+block-as-image</VAR
+>+block-as-image</TT
 > alias defined above for
  these cases.
  Note that objects which match this rule but then turn out NOT to be an
@@ -5501,9 +8224,10 @@ WIDTH="100%"
 ><PRE
 CLASS="SCREEN"
 >{ +block-as-image }
-.doubleclick.net
-/Realmedia/ads/
-ar.atwola.com/</PRE
+ .doubleclick.net
+ .fastclick.net
+ /Realmedia/ads/
+ ar.atwola.com/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5515,9 +8239,9 @@ ar.atwola.com/</PRE
 HREF="contact.html"
 >feedback</A
 >, so
- you just used the <VAR
+ you just used the <TT
 CLASS="LITERAL"
->fragile</VAR
+>fragile</TT
 > alias on the site, and
  -- <SPAN
 CLASS="emphasis"
@@ -5525,16 +8249,17 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >whoa!</I
 ></SPAN
-> -- it worked. The <VAR
+> -- it worked. The <TT
 CLASS="LITERAL"
->fragile</VAR
+>fragile</TT
 >
  aliases disables those actions that are most likely to break a site. Also,
  good for testing purposes to see if it is <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
- that is causing the problem or not.</P
+ that is causing the problem or not. We later find other regular sites 
+ that misbehave, and add those to our personalized list of troublemakers:</P
 ><P
 ><TABLE
 BORDER="0"
@@ -5545,7 +8270,9 @@ WIDTH="100%"
 ><PRE
 CLASS="SCREEN"
 >{ fragile }
-.forbes.com</PRE
+ .forbes.com
+ mail.example.com
+ .mybank.com</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5574,7 +8301,7 @@ CLASS="SCREEN"
 HREF="actions-file.html#FILTER-FUN"
 >filter{fun}</A
 > }
-/ # For ALL sites!</PRE
+ / # For ALL sites!</PRE
 ></TD
 ></TR
 ></TABLE
@@ -5609,39 +8336,61 @@ WIDTH="100%"
 ><PRE
 CLASS="SCREEN"
 >{ allow-ads }
-.sourceforge.net
-.slashdot.org
-.osdn.net</PRE
+ .sourceforge.net
+ .slashdot.org
+ .osdn.net</PRE
 ></TD
 ></TR
 ></TABLE
 >   </P
 ><P
-> Note that <VAR
+> Note that <TT
 CLASS="LITERAL"
->allow-ads</VAR
+>allow-ads</TT
 > has been aliased to 
- <VAR
+ <TT
 CLASS="LITERAL"
 >-<A
 HREF="actions-file.html#BLOCK"
 >block</A
-></VAR
+></TT
 >, 
- <VAR
+ <TT
 CLASS="LITERAL"
 >-<A
 HREF="actions-file.html#FILTER-BANNERS-BY-SIZE"
 >filter{banners-by-size}</A
-></VAR
+></TT
 >, and 
- <VAR
+ <TT
 CLASS="LITERAL"
 >-<A
 HREF="actions-file.html#FILTER-BANNERS-BY-LINK"
 >filter{banners-by-link}</A
-></VAR
+></TT
 > above.</P
+><P
+> Invoke another alias here to force an over-ride of the MIME type <TT
+CLASS="LITERAL"
+> application/x-sh</TT
+> which typically would open a download type 
+ dialog. In my case, I want to look at the shell script, and then I can save
+ it should I choose to.</P
+><P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>{ handle-as-text }
+ /.*\.sh$</PRE
+></TD
+></TR
+></TABLE
+>   </P
 ><P
 > <TT
 CLASS="FILENAME"
@@ -5743,7 +8492,7 @@ VALIGN="top"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->The Filter File</TD
+>Filter Files</TD
 ></TR
 ></TABLE
 ></DIV

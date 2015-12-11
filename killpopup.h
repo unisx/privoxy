@@ -1,9 +1,9 @@
 #ifndef KILLPOPUP_H_INCLUDED
 #define KILLPOPUP_H_INCLUDED
-#define KILLPOPUP_H_VERSION "$Id: killpopup.h,v 1.8 2002/03/26 22:29:55 swa Exp $"
+#define KILLPOPUP_H_VERSION "$Id: killpopup.h,v 1.10 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/killpopup.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/killpopup.h,v $
  *
  * Purpose     :  Handles the filtering of popups.
  *
@@ -34,6 +34,10 @@
  *
  * Revisions   :
  *    $Log: killpopup.h,v $
+ *    Revision 1.10  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.8  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *

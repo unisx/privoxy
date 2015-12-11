@@ -1,9 +1,9 @@
 #ifndef WIN32_H_INCLUDED
 #define WIN32_H_INCLUDED
-#define WIN32_H_VERSION "$Id: win32.h,v 1.5 2002/03/26 22:57:10 jongfoster Exp $"
+#define WIN32_H_VERSION "$Id: win32.h,v 1.7 2006/07/18 14:48:48 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/win32.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/win32.h,v $
  *
  * Purpose     :  Win32 User Interface initialization and message loop
  *
@@ -33,6 +33,10 @@
  *
  * Revisions   :
  *    $Log: win32.h,v $
+ *    Revision 1.7  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.5  2002/03/26 22:57:10  jongfoster
  *    Web server name should begin www.
  *

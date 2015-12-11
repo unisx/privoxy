@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.104.2.27 2004/02/07 16:11:10 oes Exp $
+# $Id: GNUmakefile.in,v 1.147 2006/09/13 01:25:16 hal9 Exp $
 #
 # Written by and Copyright (C) 2001 - 2004 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -154,7 +154,7 @@ DOC_STATUS = @DOC_STATUS@
 #DOSFILTER  = gawk -v ORS='\r\n' '{print $0;}'
 DOSFILTER  = $(PERL) -p -e 's/\n/\r\n/'
 CVSROOT    = :pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa
-TMPDIR     := $(shell mktemp -d /tmp/$(PROGRAM).XXXXXX)
+#TMPDIR     := $(shell mktemp -d /tmp/$(PROGRAM).XXXXXX)
 
 #############################################################################
 # Setup for make distribution rh and suse for now 
@@ -166,7 +166,7 @@ RPM_BASE = @RPM_BASE@
 #############################################################################
 # We include these files in our distributions
 #############################################################################
-CONFIGS = config trust default.action standard.action user.action default.filter
+CONFIGS = config trust default.action standard.action user.action default.filter user.filter
 # take care that no CVS .cvsignore or other crappy files
 # are included here
 # and escape every '#' in the find. doh.
@@ -192,10 +192,10 @@ C_SRC  = actions.c cgi.c cgiedit.c cgisimple.c deanimate.c encode.c \
 C_OBJS = $(C_SRC:.c=.@OBJEXT@)
 C_HDRS = $(C_SRC:.c=.h) project.h actionlist.h
 
-W32_SRC   = @WIN_ONLY@w32log.c w32taskbar.c win32.c
+W32_SRC   = @WIN_ONLY@w32log.c w32taskbar.c win32.c w32svrapi.c
 W32_FILES = @WIN_ONLY@w32.res
 W32_OBJS  = @WIN_ONLY@$(W32_SRC:.c=.@OBJEXT@) $(W32_FILES)
-W32_HDRS  = @WIN_ONLY@w32log.h w32taskbar.h win32.h w32res.h
+W32_HDRS  = @WIN_ONLY@w32log.h w32taskbar.h win32.h w32res.h w32svrapi.h
 W32_LIB   = @WIN_ONLY@-lwsock32 -lcomctl32
 W32_INIS  = @WIN_ONLY@config.txt trust.txt
 
@@ -333,6 +333,7 @@ dist-check:
 # This creates a tar.gz and spec-file for a Red Hat 6.x version.
 #############################################################################
 create-snapshot:
+	TMPDIR=$(shell mktemp -d /tmp/$(PROGRAM).XXXXXX)
 	@tag=`cvs -d $(CVSROOT) status Makefile | awk ' /Sticky Tag/ { print $$3 } '` 2> /dev/null; \
 	[ x"$$tag" = x"(none)" ] && tag=HEAD; \
 	echo "*** Creating package from $$tag!"; \
@@ -677,6 +678,10 @@ dok-user:
 	$(RM) -r doc/source/user-manual/
 	mkdir -p doc/text doc/source/user-manual
 	cd doc/source/user-manual && $(DB) -iuser-man ../user-manual.sgml && cd .. && cp user-manual/*.html ../webserver/user-manual/
+	@#FIXME: temp fix so same stylesheet gets in more than one place so it works \
+	@# for all doc set-ups, including the 'user manual' config option in local \
+	@#system where it MUST be in same directory as html.
+	$(PERL) -pi.bak -e 's/<\/head/\n<LINK REL=\"STYLESHEET\" TYPE=\"text\/css\" HREF=\"p_doc.css\">\n<\/head/i' doc/webserver/user-manual/*html
 	cd doc/source && $(DB) -iuser-man -V nochunks user-manual.sgml > tmp.html && $(WDUMP) tmp.html > ../text/user-manual.txt && $(RM) -r tmp.html user-manual
 
 # faq
@@ -822,7 +827,7 @@ dok-pdf: dok-shtml
 	if htmldoc --version ; then : ; \
 	   else $(ECHO) "WARNING: could not get htmldoc version" ; fi
 	cd utils/ldp_print && $(RM) *html *bak *jpg *tmp *pdf *zip
-	cp -f doc/source/temp/*html doc/webserver/images/*jpg utils/ldp_print
+	cp -f doc/source/temp/*html doc/webserver/user-manual/*jpg utils/ldp_print
 	cd utils/ldp_print ;\
 	$(PERL) -pi.bak -e 's/\.\.\/images\///; s/(<\/?)SUB/$$1small/i;\
 	                    s/\.\.\/user-manual\/index\.html/privoxy-user-manual.pdf/;\
@@ -960,7 +965,7 @@ errlog.@OBJEXT@:    errlog.c    errlog.h    config.h $(PROJECT_H_DEPS) @WIN_ONLY
 filters.@OBJEXT@:   filters.c   filters.h   config.h $(PROJECT_H_DEPS) errlog.h encode.h gateway.h jbsockets.h jcc.h loadcfg.h parsers.h ssplit.h cgi.h deanimate.h @WIN_ONLY@win32.h 
 gateway.@OBJEXT@:   gateway.c   gateway.h   config.h $(PROJECT_H_DEPS) errlog.h jbsockets.h jcc.h loadcfg.h
 jbsockets.@OBJEXT@: jbsockets.c jbsockets.h config.h $(PROJECT_H_DEPS) filters.h
-jcc.@OBJEXT@:       jcc.c       jcc.h       config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h killpopup.h loadcfg.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h cgi.h
+jcc.@OBJEXT@:       jcc.c       jcc.h       config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h killpopup.h loadcfg.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h w32svrapi.h cgi.h
 killpopup.@OBJEXT@: killpopup.c killpopup.h config.h $(PROJECT_H_DEPS) jcc.h loadcfg.h
 list.@OBJEXT@:      list.c      list.h      config.h $(PROJECT_H_DEPS) list.h miscutil.h
 loadcfg.@OBJEXT@:   loadcfg.c   loadcfg.h   config.h $(PROJECT_H_DEPS) errlog.h filters.h gateway.h jbsockets.h jcc.h killpopup.h loaders.h miscutil.h parsers.h @WIN_ONLY@w32log.h win32.h
@@ -994,7 +999,7 @@ pcre/dftables@EXEEXT@:       pcre/dftables.c pcre/maketables.c pcre/pcre.h pcre/
 # Win32
 w32log.@OBJEXT@: w32log.c errlog.h config.h jcc.h loadcfg.h miscutil.h pcre/pcre.h pcre/pcreposix.h pcrs.h project.h w32log.h w32taskbar.h win32.h
 w32taskbar.@OBJEXT@: w32taskbar.c config.h w32log.h w32taskbar.h
-win32.@OBJEXT@: win32.c config.h jcc.h loadcfg.h pcre/pcre.h pcre/pcreposix.h pcrs.h project.h w32log.h win32.h
+win32.@OBJEXT@: win32.c config.h jcc.h loadcfg.h pcre/pcre.h pcre/pcreposix.h pcrs.h project.h w32log.h win32.h w32svrapi.h
 
 w32.res: w32.rc w32res.h icons/ico00001.ico icons/ico00002.ico icons/ico00003.ico icons/ico00004.ico icons/ico00005.ico icons/ico00006.ico icons/ico00007.ico icons/ico00008.ico icons/idle.ico icons/privoxy.ico config.h
 	windres -D__MINGW32__=0.2 -O coff -i $< -o $@
@@ -1011,7 +1016,7 @@ $(PROGRAM): $(OBJS) $(W32_FILES)
 	$(LD) $(LDFLAGS) -o $(PROGRAM) $(OBJS) $(LIBS)
 
 clean:
-	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action `find . -name TAGS -o -name tags` 
+	$(RM) a.out $(OBJS) $(W32_FILES) $(W32_INIS) $(PROGRAM) default.action `find . -name TAGS -o -name tags` config.base config.tmp
 
 tidy:
 	$(RM) `find . -name "*~"`
@@ -1020,7 +1025,7 @@ tidy:
 
 clobber: tidy
 	$(RM) GNUmakefile configure config.h.in config.h config.cache config.status config.log logfile \
-              privoxy.log core *.tar.gz *.tar privoxy-cl.spec doc/source/ldp.dsl
+              privoxy.log core *.tar.gz *.tar privoxy-cl.spec doc/source/ldp.dsl config.new
 	$(RM) -r autom4te.cache
 
 #
@@ -1073,7 +1078,7 @@ install-strip:
 # FIXME: id handling needs help, probably via configure, since 'id -u' is not 
 # universally reliable (eg Solaris). Group handling could be better. 
 # Perhaps the whole user/group validation should be done here, and simplified.
-PROGRAM_V = Privoxy $(VERSION)
+PROGRAM_V = Privoxy $(VERSION) $(CODE_STATUS)
 install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	@# Quick test for valid USER.
 	@if [ -n "$(USER)" ]; then \
@@ -1096,6 +1101,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	$(INSTALL) $(INSTALL_P) $(STRIP) $(PROGRAM) $(SBIN_DEST)
      
 	@# Install the DOCS and man page. install-sh only does one file at a time.
+	@# FIXME: only handles jpegs.
 	-@if [ $(check_doc) = 0 ]; then \
 		DOC=$(DOC_DEST) ;\
 	else \
@@ -1110,8 +1116,8 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
                     $(INSTALL) $(INSTALL_T) $$ii $$DOC/$$i;\
                done ;\
           done ;\
-          for i in $(DOK_WEB)/images/*jpg; do \
-               $(INSTALL) $(INSTALL_T) $$i $$DOC/images;\
+		for i in $(DOK_WEB)/user-manual/*jpg; do \
+               $(INSTALL) $(INSTALL_T) $$i $$DOC/user-manual;\
           done ;\
 		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/man-page/*html $$DOC/man-page;\
 		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/privoxy-index.html $$DOC/index.html;\
@@ -1120,6 +1126,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 		$(INSTALL) $(INSTALL_T) README $$DOC;\
 		$(INSTALL) $(INSTALL_T) ChangeLog $$DOC;\
 		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $$DOC;\
+		$(INSTALL) $(INSTALL_T) $(DOK_WEB)/p_doc.css $$DOC/user-manual;\
 	fi
 	@# Not all platforms support gzipped man pages.
 	@$(ECHO) Installing man page to $(MAN_DEST)/privoxy.1
@@ -1132,7 +1139,12 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 		$(MV) config.base config ;\
 	fi
 	$(SED) 's+confdir .+confdir $(CONF_DEST)+' config | \
-	$(SED) 's+logdir .+logdir $(LOG_DEST)+' >config.updated
+	$(SED) 's+logdir .+logdir $(LOG_DEST)+' >config.tmp
+	-@if [ $(check_doc) = 0 ]; then \
+      $(SED) 's+^#\?user-manual .*+user-manual $(DOC_DEST)/user-manual/+' config.tmp >config.updated ;\
+	else \
+      $(SED) 's+^#\?user-manual .*+user-manual $(prefix)/doc/privoxy/user-manual/+' config.tmp >config.updated ;\
+	fi;\
 	$(MV) config config.base
 	$(MV) config.updated config 
 
@@ -1181,7 +1193,11 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	fi ;\
 	$(ECHO) Installing configuration files to $(CONF_DEST);\
 	for i in $(CONFIGS); do \
-		if [ -s "$(CONF_DEST)/$$i" ] ; then \
+		if [ "$$i" == "default.action" ] || [ "$$i" == "default.filter" ] || [ "$$i" == "standard.action" ]; then \
+			$(RM) $(CONF_DEST)/$$i ;\
+			$(ECHO) Installing fresh $$i;\
+			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST) || exit 1;\
+		elif [ -s "$(CONF_DEST)/$$i" ]; then \
 			$(ECHO) Installing $$i as $$i.new ;\
 			$(INSTALL) $$INSTALL_CONF $$i $(CONF_DEST)/$$i.new || exit 1;\
 			NEW=1;\
@@ -1232,6 +1248,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 	else \
 		$(ECHO) "No init script installed, install it manually if needed" ;\
 	fi
+	$(RM) config.base config.tmp
 	@# mmmmm, good.
 	@$(ECHO) "$(PROGRAM_V) installation succeeded!"
 	@$(ECHO) "The Privoxy configuration files have been installed in $(CONF_DEST)"
@@ -1344,6 +1361,43 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.147  2006/09/13 01:25:16  hal9
+# Make sure install forces in new default.action, default.filter, and
+# standard.filter. These are privoxy files, not user files.
+#
+# Revision 1.146  2006/09/08 23:57:19  hal9
+# User manual images are now user-manual doc directory, and fix make install
+# target accordingly.
+#
+# Revision 1.145  2006/09/08 02:32:00  hal9
+# Various changes to implement building and installing docs to be compatible
+# with the new "user-manual" settings in config from Roland. Docbook does not
+# seem to like dealing with more than one css file, so workaround that here.
+# Change 'make install' so it provides p_doc.css in the user-manual doc
+# directory so that functions well, and lastly modify 'make install' so that the
+# PATH is automatically set, and the 'user-manual' directive should done during
+# the install.
+#
+# Revision 1.144  2006/09/07 22:53:20  hal9
+# Make sure config sgml build related artifacts are cleaned out.
+#
+# Revision 1.143  2006/09/02 15:59:40  hal9
+# Add to code status to make install output.
+#
+# Revision 1.142  2006/08/29 01:46:24  hal9
+# Add user.filter to $CONFIGS.
+#
+# Revision 1.141  2006/08/12 03:54:37  david__schmidt
+# Windows service integration
+#
+# Revision 1.140  2006/07/18 14:48:45  david__schmidt
+# Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+# with what was really the latest development (the v_3_0_branch branch)
+#
+# Revision 1.104.2.28  2004/06/10 17:06:05  hal9
+# Fix bug #959617, by moving TMPDIR var to create-snapshot target, which is the
+# only place it is used.
+#
 # Revision 1.104.2.27  2004/02/07 16:11:10  oes
 # Make clobber remove the autom4te.cache dir.
 # Closes BR #889300

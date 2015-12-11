@@ -1,7 +1,7 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.14 2003/12/12 12:52:53 oes Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.104 2006/09/23 13:26:38 roro Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/jcc.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
  *
  * Purpose     :  Main file.  Contains main() method, main loop, and
  *                the main connection-handling function.
@@ -33,6 +33,77 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.14 2003/12/12 12:52:53 oes Exp $";
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.104  2006/09/23 13:26:38  roro
+ *    Replace TABs by spaces in source code.
+ *
+ *    Revision 1.103  2006/09/21 12:54:43  fabiankeil
+ *    Fix +redirect{}. Didn't work with -fast-redirects.
+ *
+ *    Revision 1.102  2006/09/06 13:03:04  fabiankeil
+ *    Respond with 400 and a short text message
+ *    if the client tries to use Privoxy as FTP proxy.
+ *
+ *    Revision 1.101  2006/09/06 09:23:37  fabiankeil
+ *    Make number of retries in case of forwarded-connect problems
+ *    a config file option (forwarded-connect-retries) and use 0 as
+ *    default.
+ *
+ *    Revision 1.100  2006/09/03 19:42:59  fabiankeil
+ *    Set random(3) seed.
+ *
+ *    Revision 1.99  2006/09/02 15:36:42  fabiankeil
+ *    Follow the OpenBSD port's lead and protect the resolve
+ *    functions on OpenBSD as well.
+ *
+ *    Revision 1.98  2006/08/24 11:01:34  fabiankeil
+ *    --user fix. Only use the user as group if no group is specified.
+ *    Solves BR 1492612. Thanks to Spinor S. and David Laight.
+ *
+ *    Revision 1.97  2006/08/18 15:23:17  david__schmidt
+ *    Windows service (re-)integration
+ *
+ *    The new args are:
+ *
+ *    --install[:service_name]
+ *    --uninstall[:service_name]
+ *    --service
+ *
+ *    They work as follows:
+ *    --install will create a service for you and then terminate.
+ *    By default the service name will be "privoxy" (without the quotes).
+ *    However you can run multiple services if you wish, just by adding
+ *    a colon and then a name (no spaces).
+ *
+ *    --uninstall follows the exact same rules a --install.
+ *
+ *    --service is used when the program is executed by the service
+ *    control manager, and in normal circumstances would never be
+ *    used as a command line argument.
+ *
+ *    Revision 1.96  2006/08/15 20:12:36  david__schmidt
+ *    Windows service integration
+ *
+ *    Revision 1.95  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.94  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.92.2.16  2005/04/03 20:10:50  david__schmidt
+ *    Thanks to Jindrich Makovicka for a race condition fix for the log
+ *    file.  The race condition remains for non-pthread implementations.
+ *    Reference patch #1175720.
+ *
+ *    Revision 1.92.2.15  2004/10/03 12:53:32  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
  *    Revision 1.92.2.14  2003/12/12 12:52:53  oes
  *    - Fixed usage info for non-unix platforms
  *    - Fixed small cmdline parsing bug
@@ -74,7 +145,9 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.14 2003/12/12 12:52:53 oes Exp $";
  *    watch for that code and toggle themselves if found.
  *
  *    Revision 1.92.2.4  2003/03/07 03:41:04  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *    Wrapping all *_r functions (the non-_r versions of them) with 
+ *    mutex semaphores for OSX.  Hopefully this will take care of all 
+ *    of those pesky crash reports.
  *
  *    Revision 1.92.2.3  2003/02/28 12:53:06  oes
  *    Fixed two mostly harmless mem leaks
@@ -619,6 +692,7 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.14 2003/12/12 12:52:53 oes Exp $";
 # ifndef _WIN_CONSOLE
 #  include "w32log.h"
 # endif /* ndef _WIN_CONSOLE */
+# include "w32svrapi.h"
 
 #else /* ifndef _WIN32 */
 
@@ -713,15 +787,25 @@ static int32 server_thread(void *data);
 #define sleep(N)  DosSleep(((N) * 100))
 #endif
 
+#if defined(OSX_DARWIN) || defined(__OpenBSD__)
 #ifdef OSX_DARWIN
 /*
  * Hit OSX over the head with a hammer.  Protect all *_r functions.
  */
 pthread_mutex_t gmtime_mutex;
 pthread_mutex_t localtime_mutex;
+#endif /* def OSX_DARWIN */
+/*
+ * Protect only the resolve functions for OpenBSD.
+ */ 
 pthread_mutex_t gethostbyaddr_mutex;
 pthread_mutex_t gethostbyname_mutex;
-#endif /* def OSX_DARWIN */
+#endif /* defined(OSX_DARWIN) || defined(__OpenBSD__) */
+
+#ifdef FEATURE_PTHREAD
+pthread_mutex_t log_mutex;
+pthread_mutex_t log_init_mutex;
+#endif /* FEATURE_PTHREAD */
 
 #if defined(unix) || defined(__EMX__)
 const char *basedir = NULL;
@@ -839,6 +923,8 @@ static void chat(struct client_state *csp)
    int server_body;
    int ms_iis5_hack = 0;
    int byte_count = 0;
+   unsigned int forwarded_connect_retries = 0;
+   unsigned int max_forwarded_connect_retries = csp->config->forwarded_connect_retries;
    const struct forward_spec * fwd;
    struct http_request *http;
    int len; /* for buffer sizes */
@@ -849,6 +935,7 @@ static void chat(struct client_state *csp)
 
    int pcrs_filter;        /* bool, 1==will filter through pcrs */
    int gif_deanimate;      /* bool, 1==will deanimate gifs */
+   int jpeg_inspect;       /* bool, 1==will inspect jpegs */
 
    /* Function that does the content filtering for the current request */
    char *(*content_filter)() = NULL;
@@ -915,6 +1002,18 @@ static void chat(struct client_state *csp)
       write_socket(csp->cfd, buf, strlen(buf));
 
       log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 400 0", csp->ip_addr_str);
+
+      free_http_request(http);
+      return;
+   }
+
+   if (!strncmpic(http->cmd, "GET ftp://", 10))
+   {
+      strcpy(buf, FTP_RESPONSE);
+      write_socket(csp->cfd, buf, strlen(buf));
+
+      log_error(LOG_LEVEL_ERROR, "%s tried to use Privoxy as FTP proxy: %s",
+         csp->ip_addr_str, http->cmd);
 
       free_http_request(http);
       return;
@@ -991,13 +1090,22 @@ static void chat(struct client_state *csp)
            || (csp->action->flags & ACTION_LIMIT_CONNECT
               && !match_portlist(csp->action->string[ACTION_STRING_LIMIT_CONNECT], csp->http->port)) )
       {
-         strcpy(buf, CFORBIDDEN);
-         write_socket(csp->cfd, buf, strlen(buf));
-
-         log_error(LOG_LEVEL_CONNECT, "Denying suspicious CONNECT request from %s", csp->ip_addr_str);
-         log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 403 0", csp->ip_addr_str);
-
-         return;
+         if (csp->action->flags & ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
+         {
+            /* The response will violate the specs, but makes unblocking easier. */
+            log_error(LOG_LEVEL_ERROR, "Marking suspicious CONNECT request from %s for blocking.",
+               csp->ip_addr_str);
+            csp->action->flags |= ACTION_BLOCK;
+            http->ssl = 0;
+         }
+         else
+         {
+            strcpy(buf, CFORBIDDEN);
+            write_socket(csp->cfd, buf, strlen(buf));
+            log_error(LOG_LEVEL_CONNECT, "Denying suspicious CONNECT request from %s", csp->ip_addr_str);
+            log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 403 0", csp->ip_addr_str);
+            return;
+         }
       }
    }
 
@@ -1080,6 +1188,8 @@ static void chat(struct client_state *csp)
 
    gif_deanimate              = ((csp->action->flags & ACTION_DEANIMATE) != 0);
 
+   jpeg_inspect               = ((csp->action->flags & ACTION_JPEG_INSPECT) != 0);
+
    /* grab the rest of the client's headers */
 
    for (;;)
@@ -1135,8 +1245,7 @@ static void chat(struct client_state *csp)
 
           /* ..or a fast redirect kicked in */
 #ifdef FEATURE_FAST_REDIRECTS
-          || (((csp->action->flags & ACTION_FAST_REDIRECTS) != 0) &&
-                (NULL != (rsp = redirect_url(csp))))
+          || ( NULL != (rsp = redirect_url(csp)))
 #endif /* def FEATURE_FAST_REDIRECTS */
           ))
       )
@@ -1153,7 +1262,7 @@ static void chat(struct client_state *csp)
       csp->flags |= CSP_FLAG_REJECTED;
 #endif /* def FEATURE_STATISTICS */
 
-      /* Log (FIXME: All intercept reasons apprear as "crunch" with Status 200) */
+      /* Log (FIXME: All intercept reasons appear as "crunch" with Status 200) */
       log_error(LOG_LEVEL_GPC, "%s%s crunch!", http->hostport, http->path);
       log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 3", csp->ip_addr_str, http->ocmd);
 
@@ -1185,7 +1294,12 @@ static void chat(struct client_state *csp)
 
    /* here we connect to the server, gateway, or the forwarder */
 
-   csp->sfd = forwarded_connect(fwd, http, csp);
+   while ( (csp->sfd = forwarded_connect(fwd, http, csp))
+         && (errno == EINVAL) && (forwarded_connect_retries++ < max_forwarded_connect_retries))
+   {
+      log_error(LOG_LEVEL_ERROR, "failed request #%u to connect to %s. Trying again.",
+                forwarded_connect_retries, http->hostport);
+   }
 
    if (csp->sfd == JB_INVALID_SOCKET)
    {
@@ -1415,7 +1529,8 @@ static void chat(struct client_state *csp)
                      csp->content_length = csp->iob->eod - csp->iob->cur;
                   }
 
-                  hdr = sed(server_patterns, add_server_headers, csp);
+                  hdr = sed(server_patterns_light, NULL, csp);
+
                   if (hdr == NULL)
                   {
                      /* FIXME Should handle error properly */
@@ -1628,11 +1743,20 @@ static void chat(struct client_state *csp)
 
             /* Buffer and gif_deanimate this if appropriate. */
 
-            if ((csp->content_type & CT_GIF)  &&  /* It's a image/gif MIME-Type */
+            if ((csp->content_type & CT_GIF)  &&  /* It's an image/gif MIME-Type */
                 !http->ssl    &&                  /* We talk plaintext */
                 gif_deanimate)                    /* Policy allows */
             {
                content_filter = gif_deanimate_response;
+            }
+
+            /* Buffer and jpg_inspect this if appropriate. */
+
+            if ((csp->content_type & CT_JPEG)  &&  /* It's an image/jpeg MIME-Type */
+                !http->ssl    &&                   /* We talk plaintext */
+                jpeg_inspect)                      /* Policy allows */
+            {
+               content_filter = jpeg_inspect_response;
             }
 
             /*
@@ -1797,6 +1921,9 @@ int main(int argc, const char *argv[])
 #endif
 {
    int argc_pos = 0;
+#ifdef HAVE_RANDOM
+   unsigned int random_seed;
+#endif /* ifdef HAVE_RANDOM */
 #ifdef unix
    struct passwd *pw = NULL;
    struct group *grp = NULL;
@@ -1820,6 +1947,34 @@ int main(int argc, const char *argv[])
     */
    while (++argc_pos < argc)
    {
+#ifdef _WIN32
+      /* Check to see if the service must be installed or uninstalled */
+      if (strncmp(argv[argc_pos], "--install", 9) == 0)
+      {
+         const char *pName = argv[argc_pos] + 9;
+         if (*pName == ':')
+            pName++;
+         exit( (install_service(pName)) ? 0 : 1 );
+      }
+      else if (strncmp(argv[argc_pos], "--uninstall", + 11) == 0)
+      {
+         const char *pName = argv[argc_pos] + 11;
+         if (*pName == ':')
+            pName++;
+         exit((uninstall_service(pName)) ? 0 : 1);
+      }
+      else if (strcmp(argv[argc_pos], "--service" ) == 0)
+      {
+         bRunAsService = TRUE;
+         w32_set_service_cwd();
+         atexit(w32_service_exit_notify);
+      }
+      else
+#endif /* defined(_WIN32) */
+
+
+#if !defined(_WIN32) || defined(_WIN_CONSOLE)
+
       if (strcmp(argv[argc_pos], "--help") == 0)
       {
          usage(argv[0]);
@@ -1871,8 +2026,7 @@ int main(int argc, const char *argv[])
       }
 
 #endif /* defined(unix) */
-
-      else
+#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
       {
          configfile = argv[argc_pos];
       }
@@ -1914,15 +2068,27 @@ int main(int argc, const char *argv[])
    InitWin32();
 #endif
 
-#ifdef OSX_DARWIN
+#if defined(OSX_DARWIN) || defined(__OpenBSD__)
    /*
     * Prepare global mutex semaphores
     */
+#ifdef OSX_DARWIN
    pthread_mutex_init(&gmtime_mutex,0);
    pthread_mutex_init(&localtime_mutex,0);
+#endif /* def OSX_DARWIN */
    pthread_mutex_init(&gethostbyaddr_mutex,0);
    pthread_mutex_init(&gethostbyname_mutex,0);
-#endif /* def OSX_DARWIN */
+#endif /* defined(OSX_DARWIN) || defined(__OpenBSD__) */
+
+#ifdef FEATURE_PTHREAD
+   pthread_mutex_init(&log_mutex,0);
+   pthread_mutex_init(&log_init_mutex,0);
+#endif /* FEATURE_PTHREAD */
+
+#ifdef HAVE_RANDOM
+   random_seed = (unsigned int)time(NULL);
+   srandom(random_seed);
+#endif /* ifdef HAVE_RANDOM */
 
    /*
     * Unix signal handling
@@ -2043,7 +2209,7 @@ int main(int argc, const char *argv[])
    
    if (NULL != pw)
    {
-      if (((NULL != grp) && setgid(grp->gr_gid)) || (setgid(pw->pw_gid)))
+      if (setgid((NULL != grp) ? grp->gr_gid : pw->pw_gid))
       {
          log_error(LOG_LEVEL_FATAL, "Cannot setgid(): Insufficient permissions.");
       }
@@ -2089,6 +2255,37 @@ int main(int argc, const char *argv[])
    }
 }
 #endif /* defined unix */
+
+#ifdef _WIN32
+   /* This will be FALSE unless the command line specified --service
+    */
+   if (bRunAsService)
+   {
+      /* Yup, so now we must attempt to establish a connection 
+       * with the service dispatcher. This will only work if this
+       * process was launched by the service control manager to
+       * actually run as a service. If this isn't the case, i've
+       * known it take around 30 seconds or so for the call to return.
+       */
+
+      /* The StartServiceCtrlDispatcher won't return until the service is stopping */
+      if (w32_start_service_ctrl_dispatcher(w32ServiceDispatchTable))
+      {
+         /* Service has run, and at this point is now being stopped, so just return */
+         return 0;
+      }
+
+#ifdef _WIN_CONSOLE
+      printf("Warning: Failed to connect to Service Control Dispatcher\nwhen starting as a service!\n");
+#endif
+      /* An error occurred. Usually it's because --service was wrongly specified
+       * and we were unable to connect to the Service Control Dispatcher because
+       * it wasn't expecting us and is therefore not listening.
+       *
+       * For now, just continue below to call the listen_loop function.
+       */
+   }
+#endif /* def _WIN32 */
 
    listen_loop();
 
@@ -2168,6 +2365,17 @@ static jb_socket bind_port_helper(struct configuration_spec * config)
 
    return bfd;
 }
+
+
+#ifdef _WIN32
+/* Without this simple workaround we get this compiler warning from _beginthread
+ *     warning C4028: formal parameter 1 different from declaration
+ */
+void w32_service_listen_loop(void *p)
+{
+   listen_loop();
+}
+#endif /* def _WIN32 */
 
 
 /*********************************************************************

@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Documentation Guidelines</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -74,13 +74,13 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="DOCUMENTATION"
->3. Documentation Guidelines</A
-></H1
+></A
+>3. Documentation Guidelines</H1
 ><P
 >    All formal documents are maintained in Docbook SGML and located in the
-    <SAMP
+    <TT
 CLASS="COMPUTEROUTPUT"
->doc/source/*</SAMP
+>doc/source/*</TT
 > directory. You will need
     <A
 HREF="http://www.docbook.org"
@@ -122,7 +122,11 @@ CLASS="CITETITLE"
 >, <I
 CLASS="CITETITLE"
 >AUTHORS</I
->
+>,
+    <I
+CLASS="CITETITLE"
+>INSTALL</I
+>,
     <I
 CLASS="CITETITLE"
 >privoxy.1</I
@@ -151,7 +155,7 @@ CLASS="EMPHASIS"
 >DO NOT edit these directly</I
 ></SPAN
 >. Edit the SGML source, or
-    contact someone involved in the documentation (at present Hal).
+    contact someone involved in the documentation.
     </P
 ><P
 >     <TT
@@ -181,44 +185,44 @@ CLASS="FILENAME"
 >     Other, less formal documents (e.g. <TT
 CLASS="FILENAME"
 >LICENSE</TT
->,
-     <TT
-CLASS="FILENAME"
->INSTALL</TT
->) are maintained as plain text files in the
-     top-level source directory. At least for the time being.
+>) are
+     maintained as plain text files in the top-level source directory.
     </P
 ><P
 >     Packagers are encouraged to include this documentation. For those without
      the ability to build the docs locally, text versions of each are kept in
-     CVS. HTML versions are also now being kept in CVS under 
+     CVS. HTML versions are also being kept in CVS under 
      <TT
 CLASS="FILENAME"
 >doc/webserver/*</TT
+>. And PDF version are kept in 
+     <TT
+CLASS="FILENAME"
+>doc/pdf/*</TT
 >.
     </P
 ><P
 >     Formal documents are built with the Makefile targets of
-     <SAMP
+     <TT
 CLASS="COMPUTEROUTPUT"
->make dok</SAMP
+>make dok</TT
 >, or alternately
-     <SAMP
+     <TT
 CLASS="COMPUTEROUTPUT"
->make redhat-dok</SAMP
+>make redhat-dok</TT
 >. If you have problems,
      try both. The build process uses the document SGML sources in
-     <SAMP
+     <TT
 CLASS="COMPUTEROUTPUT"
->doc/source/*/*</SAMP
+>doc/source/*/*</TT
 > to update all text files in
-     <SAMP
+     <TT
 CLASS="COMPUTEROUTPUT"
->doc/text/</SAMP
+>doc/text/</TT
 > and to update all HTML
-     documents in <SAMP
+     documents in <TT
 CLASS="COMPUTEROUTPUT"
->doc/webserver/</SAMP
+>doc/webserver/</TT
 >.
     </P
 ><P
@@ -234,30 +238,30 @@ CLASS="COMPUTEROUTPUT"
 TYPE="1"
 ><LI
 ><P
->        First, build the docs by running <SAMP
+>        First, build the docs by running <TT
 CLASS="COMPUTEROUTPUT"
 >make
-        dok</SAMP
-> (or alternately <SAMP
+        dok</TT
+> (or alternately <TT
 CLASS="COMPUTEROUTPUT"
 >make
-        redhat-dok</SAMP
->). For PDF docs, do <SAMP
+        redhat-dok</TT
+>). For PDF docs, do <TT
 CLASS="COMPUTEROUTPUT"
 >make
-        dok-pdf</SAMP
+        dok-pdf</TT
 >.
       </P
 ></LI
 ><LI
 ><P
->        Run <SAMP
+>        Run <TT
 CLASS="COMPUTEROUTPUT"
->make webserver</SAMP
+>make webserver</TT
 > which copies all
-        files from <SAMP
+        files from <TT
 CLASS="COMPUTEROUTPUT"
->doc/webserver</SAMP
+>doc/webserver</TT
 > to the
         sourceforge webserver via scp.
       </P
@@ -279,9 +283,9 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >after</I
 ></SPAN
-> the <VAR
+> the <TT
 CLASS="LITERAL"
->$VERSION</VAR
+>$VERSION</TT
 > and
    other release specific data in <TT
 CLASS="FILENAME"
@@ -295,8 +299,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="SGML"
->3.1. Quickstart to Docbook and SGML</A
-></H2
+></A
+>3.1. Quickstart to Docbook and SGML</H2
 ><P
 > If you are not familiar with SGML, it is a markup language similar to HTML. 
  Actually, not a mark up language per se, but a language used to define 
@@ -333,10 +337,10 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"closed"</SPAN
 >. If not, you
- will likely generate errors. Example: <VAR
+ will likely generate errors. Example: <TT
 CLASS="LITERAL"
 >&#60;title&#62;My
- Title&#60;/title&#62;</VAR
+ Title&#60;/title&#62;</TT
 >. They are also case-insensitive, but we
  strongly suggest using all lower case. This keeps compatibility with
  [Docbook] <SPAN
@@ -348,40 +352,40 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"sections"</SPAN
 > for the most part. Sections
- will be processed into HTML headers (e.g. <VAR
+ will be processed into HTML headers (e.g. <TT
 CLASS="LITERAL"
->h1</VAR
+>h1</TT
 > for 
- <VAR
+ <TT
 CLASS="LITERAL"
->sect1</VAR
+>sect1</TT
 >). The <SPAN
 CLASS="APPLICATION"
 >Docbook</SPAN
 > stylesheets
  will use these to also generate the Table of Contents for each doc. Our 
- TOC's are set to a depth of three. Meaning <VAR
+ TOC's are set to a depth of three. Meaning <TT
 CLASS="LITERAL"
->sect1</VAR
+>sect1</TT
 >, 
- <VAR
+ <TT
 CLASS="LITERAL"
->sect2</VAR
->, and <VAR
+>sect2</TT
+>, and <TT
 CLASS="LITERAL"
->sect3</VAR
+>sect3</TT
 > will have TOC 
- entries, but <VAR
+ entries, but <TT
 CLASS="LITERAL"
->sect4</VAR
+>sect4</TT
 > will not. Each section requires 
- a <VAR
+ a <TT
 CLASS="LITERAL"
->&#60;title&#62;</VAR
+>&#60;title&#62;</TT
 > element, and at least one 
- <VAR
+ <TT
 CLASS="LITERAL"
->&#60;para&#62;</VAR
+>&#60;para&#62;</TT
 >. There is a limit of five section 
  levels in Docbook, but generally three should be sufficient for our 
  purposes.</P
@@ -448,9 +452,9 @@ CLASS="EMPHASIS"
 >&#60;literallayout&#62;&#60;/literallayout&#62;</I
 ></SPAN
 >, like 
-      <VAR
+      <TT
 CLASS="LITERAL"
->&#60;pre&#62;</VAR
+>&#60;pre&#62;</TT
 >, more or less.
     </TD
 ></TR
@@ -485,9 +489,9 @@ CLASS="EMPHASIS"
 >&#60;screen&#62;&#60;/screen&#62;</I
 ></SPAN
 >, screen output, implies 
-      <VAR
+      <TT
 CLASS="LITERAL"
->&#60;literallayout&#62;</VAR
+>&#60;literallayout&#62;</TT
 >.
     </TD
 ></TR
@@ -500,9 +504,9 @@ CLASS="EMPHASIS"
 >&#60;ulink url="example.com"&#62;&#60;/ulink&#62;</I
 ></SPAN
 >, like 
-      HTML <VAR
+      HTML <TT
 CLASS="LITERAL"
->&#60;a&#62;</VAR
+>&#60;a&#62;</TT
 > tag.
     </TD
 ></TR
@@ -541,11 +545,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DOCSTYLE"
+></A
 >3.2. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> Documentation Style</A
-></H2
+> Documentation Style</H2
 ><P
 >    It will be easier if everyone follows a similar writing style. This 
     just makes it easier to read what someone else has written if it 
@@ -640,7 +644,7 @@ CLASS="LITERALLAYOUT"
 ><LI
 ><P
 >    Our documents are available in differing formats. Right now, they 
-    are just plain text, TML, and PDF, but others are always a 
+    are just plain text, HTML, and PDF, but others are always a 
     future possibility. Be careful with URLs (&#60;ulink&#62;), and avoid 
     this mistake:
    </P
@@ -665,9 +669,9 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >aspell</SPAN
 > can check SGML with the
-    <VAR
+    <TT
 CLASS="LITERAL"
->-H</VAR
+>-H</TT
 > option. (<SPAN
 CLASS="APPLICATION"
 >ispell</SPAN
@@ -684,9 +688,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN233"
->3.3. Privoxy Custom Entities</A
-></H2
+NAME="AEN217"
+></A
+>3.3. Privoxy Custom Entities</H2
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -725,9 +729,9 @@ CLASS="QUOTE"
 >"internal entities"</SPAN
 >. These are like variables in 
   programming. Well, sort of. For instance, we have the
-  <VAR
+  <TT
 CLASS="LITERAL"
->p-version</VAR
+>p-version</TT
 > entity that contains the current 
   <SPAN
 CLASS="APPLICATION"
@@ -749,9 +753,9 @@ CLASS="QUOTE"
 > text entities are defined like:
    </P
 ><P
->    <VAR
+>    <TT
 CLASS="LITERAL"
->&#60;!entity supported SYSTEM "supported.sgml"&#62;</VAR
+>&#60;!entity supported SYSTEM "supported.sgml"&#62;</TT
 >
    </P
 ><P
@@ -761,9 +765,9 @@ CLASS="FILENAME"
 >supported.sgml</TT
 > is available for inclusion anywhere 
      in the doc. To make this happen, just reference the now defined 
-     entity: <VAR
+     entity: <TT
 CLASS="LITERAL"
->&#38;supported;</VAR
+>&#38;supported;</TT
 > (starts with an ampersand 
      and ends with a semi-colon), and the contents will be dumped into 
      the finished doc at that point.
@@ -795,7 +799,7 @@ CLASS="APPLICATION"
 > 
     version string, e.g. <SPAN
 CLASS="QUOTE"
->"3.0.3"</SPAN
+>"3.0.5"</SPAN
 >.
    </TD
 ></TR

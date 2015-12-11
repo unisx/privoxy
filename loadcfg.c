@@ -1,7 +1,7 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.5 2003/05/08 15:17:25 oes Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.53 2006/09/06 18:45:03 fabiankeil Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/loadcfg.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
  *
  * Purpose     :  Loads settings from the configuration file into
  *                global variables.  This file contains both the
@@ -35,6 +35,36 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.5 2003/05/08 15:17:25 oes Ex
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.53  2006/09/06 18:45:03  fabiankeil
+ *    Incorporate modified version of Roland Rosenfeld's patch to
+ *    optionally access the user-manual via Privoxy. Closes patch 679075.
+ *
+ *    Formatting changed to Privoxy style, added call to
+ *    cgi_error_no_template if the requested file doesn't
+ *    exist and modified check whether or not Privoxy itself
+ *    should serve the manual. Should work cross-platform now.
+ *
+ *    Revision 1.52  2006/09/06 10:43:32  fabiankeil
+ *    Added config option enable-remote-http-toggle
+ *    to specify if Privoxy should recognize special
+ *    headers (currently only X-Filter) to change its
+ *    behaviour. Disabled by default.
+ *
+ *    Revision 1.51  2006/09/06 09:23:37  fabiankeil
+ *    Make number of retries in case of forwarded-connect problems
+ *    a config file option (forwarded-connect-retries) and use 0 as
+ *    default.
+ *
+ *    Revision 1.50  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.48.2.7  2006/02/02 17:29:16  david__schmidt
+ *    Don't forget to malloc space for the null terminator...
+ *
+ *    Revision 1.48.2.6  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
  *    Revision 1.48.2.5  2003/05/08 15:17:25  oes
  *    Closed two memory leaks; hopefully the last remaining ones
  *    (in the main execution paths, anyway).
@@ -65,7 +95,7 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.5 2003/05/08 15:17:25 oes Ex
  *     - savearg now embeds option names in help links
  *
  *    Revision 1.45  2002/04/24 02:11:54  oes
- *    Jon's multiple AF patch: Allow up to MAX_ACTION_FILES actionsfile options
+ *    Jon's multiple AF patch: Allow up to MAX_AF_FILES actionsfile options
  *
  *    Revision 1.44  2002/04/08 20:37:13  swa
  *    fixed JB spelling
@@ -424,10 +454,12 @@ static struct file_list *current_configfile = NULL;
 #define hash_deny_access               1227333715ul /* "deny-access" */
 #define hash_enable_edit_actions       2517097536ul /* "enable-edit-actions" */
 #define hash_enable_remote_toggle      2979744683ul /* "enable-remote-toggle" */
+#define hash_enable_remote_http_toggle 110543988ul  /* "enable-remote-http-toggle" */
 #define hash_filterfile                 250887266ul /* "filterfile" */
 #define hash_forward                      2029845ul /* "forward" */
 #define hash_forward_socks4            3963965521ul /* "forward-socks4" */
 #define hash_forward_socks4a           2639958518ul /* "forward-socks4a" */
+#define hash_forwarded_connect_retries  101465292ul /* "forwarded-connect-retries" */
 #define hash_jarfile                      2046641ul /* "jarfile" */
 #define hash_listen_address            1255650842ul /* "listen-address" */
 #define hash_logdir                        422889ul /* "logdir" */
@@ -510,7 +542,7 @@ void unload_configfile (void * data)
    freez(config->haddr);
    freez(config->logfile);
 
-   for (i = 0; i < MAX_ACTION_FILES; i++)
+   for (i = 0; i < MAX_AF_FILES; i++)
    {
       freez(config->actions_file_short[i]);
       freez(config->actions_file[i]);
@@ -530,7 +562,11 @@ void unload_configfile (void * data)
    list_remove_all(config->trust_info);
 #endif /* def FEATURE_TRUST */
 
-   freez(config->re_filterfile);
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      freez(config->re_filterfile[i]);
+   }
+
    freez(config);
 }
 
@@ -622,11 +658,13 @@ struct configuration_spec * load_config(void)
    /*
     * Set to defaults
     */
-   config->multi_threaded    = 1;
-   config->hport             = HADDR_PORT;
-   config->buffer_limit      = 4096 * 1024;
-   config->usermanual        = strdup(USER_MANUAL_URL);
-   config->proxy_args        = strdup("");
+   config->multi_threaded            = 1;
+   config->hport                     = HADDR_PORT;
+   config->buffer_limit              = 4096 * 1024;
+   config->usermanual                = strdup(USER_MANUAL_URL);
+   config->proxy_args                = strdup("");
+   config->forwarded_connect_retries = 0;
+   config->feature_flags            &= ~RUNTIME_FEATURE_CGI_TOGGLE;
 
    if ((configfp = fopen(configfile, "r")) == NULL)
    {
@@ -694,16 +732,16 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_actions_file :
             i = 0;
-            while ((i < MAX_ACTION_FILES) && (NULL != config->actions_file[i]))
+            while ((i < MAX_AF_FILES) && (NULL != config->actions_file[i]))
             {
                i++;
             }
 
-            if (i >= MAX_ACTION_FILES)
+            if (i >= MAX_AF_FILES)
             {
                log_error(LOG_LEVEL_FATAL, "Too many 'actionsfile' directives in config file - limit is %d.\n"
-                  "(You can increase this limit by changing MAX_ACTION_FILES in project.h and recompiling).",
-                  MAX_ACTION_FILES);
+                  "(You can increase this limit by changing MAX_AF_FILES in project.h and recompiling).",
+                  MAX_AF_FILES);
             }
             config->actions_file_short[i] = strdup(arg);
             p = malloc(strlen(arg) + sizeof(".action"));
@@ -856,19 +894,45 @@ struct configuration_spec * load_config(void)
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
 
 /* *************************************************************************
+ * enable-remote-http-toggle 0|1
+ * *************************************************************************/
+         case hash_enable_remote_http_toggle:
+            if ((*arg != '\0') && (0 != atoi(arg)))
+            {
+               config->feature_flags |= RUNTIME_FEATURE_HTTP_TOGGLE;
+            }
+            else
+            {
+               config->feature_flags &= ~RUNTIME_FEATURE_HTTP_TOGGLE;
+            }
+            continue;
+
+/* *************************************************************************
  * filterfile file-name
  * In confdir by default.
  * *************************************************************************/
          case hash_filterfile :
-            if(config->re_filterfile)
+            i = 0;
+            while ((i < MAX_AF_FILES) && (NULL != config->re_filterfile[i]))
             {
-               log_error(LOG_LEVEL_ERROR, "Ignoring extraneous directive 'filterfile %s' "
-                  "in line %lu in configuration file (%s).", arg, linenum, configfile);
-               string_append(&config->proxy_args, 
-                  " <b><font color=\"red\">WARNING: extraneous directive, ignored</font></b>");
-               continue;
+               i++;
             }
-            config->re_filterfile = make_path(config->confdir, arg);
+
+            if (i >= MAX_AF_FILES)
+            {
+               log_error(LOG_LEVEL_FATAL, "Too many 'filterfile' directives in config file - limit is %d.\n"
+                  "(You can increase this limit by changing MAX_AF_FILES in project.h and recompiling).",
+                  MAX_AF_FILES);
+            }
+            config->re_filterfile_short[i] = strdup(arg);
+            p = malloc(strlen(arg) + 1);
+            if (p == NULL)
+            {
+               log_error(LOG_LEVEL_FATAL, "Out of memory");
+            }
+            strcpy(p, arg);
+            config->re_filterfile[i] = make_path(config->confdir, p);
+            free(p);
             continue;
 
 /* *************************************************************************
@@ -1091,6 +1155,13 @@ struct configuration_spec * load_config(void)
             cur_fwd->next = config->forward;
             config->forward = cur_fwd;
 
+            continue;
+
+/* *************************************************************************
+ * forwarded-connect-retries n
+ * *************************************************************************/
+         case hash_forwarded_connect_retries :
+            config->forwarded_connect_retries = atoi(arg);
             continue;
 
 /* *************************************************************************
@@ -1579,7 +1650,17 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
     * link to it's section in the user-manual
     */
    buf = strdup("\n<br><a href=\"");
-   string_append(&buf, config->usermanual);
+   if (!strncmpic(config->usermanual, "file://", 7) ||
+       !strncmpic(config->usermanual, "http", 4))
+   {
+      string_append(&buf, config->usermanual);
+   }
+   else
+   {
+      string_append(&buf, "http://");
+      string_append(&buf, CGI_SITE_2_HOST);
+      string_append(&buf, "/user-manual/");
+   }
    string_append(&buf, CONFIG_HELP_PREFIX);
    string_join  (&buf, string_toupper(command));
    string_append(&buf, "\">");

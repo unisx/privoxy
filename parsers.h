@@ -1,9 +1,9 @@
 #ifndef PARSERS_H_INCLUDED
 #define PARSERS_H_INCLUDED
-#define PARSERS_H_VERSION "$Id: parsers.h,v 1.26.2.1 2002/09/25 14:52:46 oes Exp $"
+#define PARSERS_H_VERSION "$Id: parsers.h,v 1.31 2006/08/17 17:15:10 fabiankeil Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/parsers.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/parsers.h,v $
  *
  * Purpose     :  Declares functions to parse/crunch headers and pages.
  *                Functions declared include:
@@ -43,6 +43,35 @@
  *
  * Revisions   :
  *    $Log: parsers.h,v $
+ *    Revision 1.31  2006/08/17 17:15:10  fabiankeil
+ *    - Back to timegm() using GnuPG's replacement if necessary.
+ *      Using mktime() and localtime() could add a on hour offset if
+ *      the randomize factor was big enough to lead to a summer/wintertime
+ *      switch.
+ *
+ *    - Removed now-useless Privoxy 3.0.3 compatibility glue.
+ *
+ *    - Moved randomization code into pick_from_range().
+ *
+ *    - Changed parse_header_time definition.
+ *      time_t isn't guaranteed to be signed and
+ *      if it isn't, -1 isn't available as error code.
+ *      Changed some variable types in client_if_modified_since()
+ *      because of the same reason.
+ *
+ *    Revision 1.30  2006/08/14 08:25:19  fabiankeil
+ *    Split filter-headers{} into filter-client-headers{}
+ *    and filter-server-headers{}.
+ *    Added parse_header_time() to share some code.
+ *    Replaced timegm() with mktime().
+ *
+ *    Revision 1.29  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.28  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.26.2.1  2002/09/25 14:52:46  oes
  *    Added basic support for OPTIONS and TRACE HTTP methods:
  *     - New parser function client_max_forwards which decrements
@@ -188,6 +217,7 @@ extern "C" {
 
 extern const struct parsers client_patterns[];
 extern const struct parsers server_patterns[];
+extern const struct parsers server_patterns_light[];
 
 extern const add_header_func_ptr add_client_headers[];
 extern const add_header_func_ptr add_server_headers[];
@@ -197,6 +227,8 @@ extern jb_err add_to_iob(struct client_state *csp, char *buf, int n);
 extern char *get_header(struct client_state *csp);
 extern char *get_header_value(const struct list *header_list, const char *header_name);
 extern char *sed(const struct parsers pats[], const add_header_func_ptr more_headers[], struct client_state *csp);
+extern void get_http_time(int time_offset, char *buf);
+struct tm *parse_header_time(char *header, time_t *tm);
 
 extern jb_err crumble                (struct client_state *csp, char **header);
 extern jb_err client_referrer        (struct client_state *csp, char **header);
@@ -209,6 +241,14 @@ extern jb_err client_accept_encoding (struct client_state *csp, char **header);
 extern jb_err client_te              (struct client_state *csp, char **header);
 extern jb_err client_max_forwards    (struct client_state *csp, char **header);
 extern jb_err client_host(struct client_state *csp, char **header);
+extern jb_err client_if_modified_since(struct client_state *csp, char **header);
+extern jb_err client_accept_language  (struct client_state *csp, char **header);
+extern jb_err client_if_none_match    (struct client_state *csp, char **header);
+extern jb_err crunch_client_header    (struct client_state *csp, char **header);
+extern jb_err filter_header           (struct client_state *csp, char **header);
+extern jb_err filter_client_header    (struct client_state *csp, char **header);
+extern jb_err filter_server_header    (struct client_state *csp, char **header);
+extern jb_err client_x_filter         (struct client_state *csp, char **header);
 
 
 extern jb_err client_host_adder           (struct client_state *csp);
@@ -226,6 +266,9 @@ extern jb_err server_content_md5     (struct client_state *csp, char **header);
 extern jb_err server_content_encoding(struct client_state *csp, char **header);
 extern jb_err server_transfer_coding (struct client_state *csp, char **header);
 extern jb_err server_http            (struct client_state *csp, char **header);
+extern jb_err crunch_server_header   (struct client_state *csp, char **header);
+extern jb_err server_last_modified   (struct client_state *csp, char **header);
+extern jb_err server_content_disposition(struct client_state *csp, char **header);
 
 #ifdef FEATURE_FORCE_LOAD
 extern int strclean(const char *string, const char *substring);
@@ -234,6 +277,8 @@ extern int strclean(const char *string, const char *substring);
 /* Revision control strings from this header and associated .c file */
 extern const char parsers_rcs[];
 extern const char parsers_h_rcs[];
+
+extern int debug;
 
 #ifdef __cplusplus
 } /* extern "C" */

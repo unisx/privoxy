@@ -35,6 +35,10 @@
 # 
 #  Revisions   :
 #     $Log: privoxy.logrotate,v $
+#     Revision 1.6  2006/07/18 14:48:47  david__schmidt
+#     Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+#     with what was really the latest development (the v_3_0_branch branch)
+#
 #     Revision 1.4.2.1  2002/06/25 17:33:07  kick_
 #     Avoid error messages if privoxy hasn't run at all and there is no logfile yet by adding missingok to the logrotate script
 #

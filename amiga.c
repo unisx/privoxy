@@ -1,7 +1,7 @@
-const char amiga_rcs[] = "$Id: amiga.c,v 1.9 2002/03/26 22:29:54 swa Exp $";
+const char amiga_rcs[] = "$Id: amiga.c,v 1.11 2006/07/18 14:48:45 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/amiga.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/amiga.c,v $
  *
  * Purpose     :  Amiga-specific declarations.
  *
@@ -28,6 +28,10 @@ const char amiga_rcs[] = "$Id: amiga.c,v 1.9 2002/03/26 22:29:54 swa Exp $";
  *
  * Revisions   :
  *    $Log: amiga.c,v $
+ *    Revision 1.11  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.9  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

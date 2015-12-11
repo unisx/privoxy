@@ -44,6 +44,10 @@
 # 
 #  Revisions   :
 #     $Log: privoxy.init,v $
+#     Revision 1.11  2006/07/18 14:48:47  david__schmidt
+#     Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+#     with what was really the latest development (the v_3_0_branch branch)
+#
 #     Revision 1.8.2.3  2002/12/10 20:52:16  kick_
 #     better service description. This text will be shown when the user configures the services
 #

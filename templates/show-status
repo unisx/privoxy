@@ -149,16 +149,11 @@
             </tr>
               @actions-filenames@
            <tr>
-              <th colspan="2"><a href="@user-manual@filter-file.html">Filter File:</a></th>
+              <th colspan="2"><a href="@user-manual@filter-file.html">Filter Files:</a></th>
            </tr>
            <tr>
              <td>
                @re-filter-filename@
-             </td>
-             <td class="buttons">
-               <!-- @if-have-filterfile-start -->
-               <a href="show-status?file=filter">View</a>
-               <!-- if-have-filterfile-end@ -->
              </td>
            </tr>
 <!-- @if-trust-support-start -->

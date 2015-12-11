@@ -1,10 +1,10 @@
 #ifdef AMIGA
 #ifndef AMIGA_H_INCLUDED
 #define AMIGA_H_INCLUDED
-#define AMIGA_H_VERSION "$Id: amiga.h,v 1.9 2002/03/26 22:29:54 swa Exp $"
+#define AMIGA_H_VERSION "$Id: amiga.h,v 1.11 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/amiga.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/amiga.h,v $
  *
  * Purpose     :  Amiga-specific declarations.
  *
@@ -31,6 +31,10 @@
  *
  * Revisions   :
  *    $Log: amiga.h,v $
+ *    Revision 1.11  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.9  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

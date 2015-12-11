@@ -1,9 +1,9 @@
 #ifndef MISCUTIL_H_INCLUDED
 #define MISCUTIL_H_INCLUDED
-#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.21 2002/04/26 12:55:38 oes Exp $"
+#define MISCUTIL_H_VERSION "$Id: miscutil.h,v 1.24 2006/08/17 17:15:10 fabiankeil Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/miscutil.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/miscutil.h,v $
  *
  * Purpose     :  zalloc, hash_string, safe_strerror, strcmpic,
  *                strncmpic, and MinGW32 strdup functions.  These are
@@ -37,6 +37,26 @@
  *
  * Revisions   :
  *    $Log: miscutil.h,v $
+ *    Revision 1.24  2006/08/17 17:15:10  fabiankeil
+ *    - Back to timegm() using GnuPG's replacement if necessary.
+ *      Using mktime() and localtime() could add a on hour offset if
+ *      the randomize factor was big enough to lead to a summer/wintertime
+ *      switch.
+ *
+ *    - Removed now-useless Privoxy 3.0.3 compatibility glue.
+ *
+ *    - Moved randomization code into pick_from_range().
+ *
+ *    - Changed parse_header_time definition.
+ *      time_t isn't guaranteed to be signed and
+ *      if it isn't, -1 isn't available as error code.
+ *      Changed some variable types in client_if_modified_since()
+ *      because of the same reason.
+ *
+ *    Revision 1.23  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.21  2002/04/26 12:55:38  oes
  *    New function string_toupper
  *
@@ -172,6 +192,8 @@ extern char *bindup(const char *string, size_t len);
 
 extern char *make_path(const char * dir, const char * file);
 
+long int pick_from_range(long int range);
+
 #ifdef __MINGW32__
 extern char *strdup(const char *s);
 #endif /* def __MINGW32__ */
@@ -179,6 +201,10 @@ extern char *strdup(const char *s);
 #ifdef __OS2__
 extern int snprintf(char *, size_t, const char *, /*args*/ ...);
 #endif /* def __OS2__ */
+
+#ifndef HAVE_TIMEGM
+time_t timegm(struct tm *tm);
+#endif /* ndef HAVE_TIMEGM */
 
 /* Revision control strings from this header and associated .c file */
 extern const char miscutil_rcs[];

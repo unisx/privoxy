@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: history.sgml,v 1.7.2.4 2003/03/20 14:58:41 oes Exp $
+ $Id: history.sgml,v 2.5 2006/09/22 01:27:55 hal9 Exp $
 
-  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
   See LICENSE.
 
  ======================================================================
@@ -25,17 +25,17 @@
 -->
 
 <para>
- In the beginning, there was the
+ Along time ago, there was the
  <ulink url="http://www.junkbusters.com/ijb.html"><application>Internet Junkbuster</application></ulink>, 
  by Anonymous Coders and <ulink url="http://www.junkbusters.com/">Junkbusters
- Corporation</ulink>. It saved many users a lot of pain in the early days of
+ Corporation</ulink>. This saved many users a lot of pain in the early days of
  web advertising and user tracking.
 </para>
 
 <para>
  But the web, its protocols and standards, and with it, the techniques for
- forcing  users to consume ads, give up autonomy over their browsing, and
- for spying on them, kept evolving. Unfortunately, the <application>Internet
+ forcing  ads on users, give up autonomy over their browsing, and
+ for tracking them, keeps evolving. Unfortunately, the <application>Internet
  Junkbuster</application> did not. Version 2.0.2, published in 1998, was 
  (and is) the last official
  <ulink url="http://www.junkbusters.com/ijbdist.html#release">release</ulink>

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: license.sgml,v 1.2 2002/05/10 01:48:20 hal9 Exp $
+ $Id: license.sgml,v 2.5 2006/09/22 01:27:55 hal9 Exp $
 
-  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+  Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
   See LICENSE.
  
  ======================================================================
@@ -55,8 +55,8 @@
 <figure pgwide="0"><title>The Pythagorean Theorum Illustrated</title>
 </figure>
 --> 
- more details, which is available from the Free Software Foundation, Inc, 59
- Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ more details, which is available from the Free Software Foundation, Inc, 
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 </para>
 
 <para>
@@ -64,8 +64,8 @@
  url="http://www.gnu.org/copyleft/gpl.html">
  <citetitle>GNU General Public License</citetitle></ulink>
  along with this program; if not, write to the <address> Free Software
- Foundation, Inc. <street>59 Temple Place</street> - Suite 330
- <city>Boston</city>, <state>MA</state> <postcode>02111-1307</postcode>
+ Foundation, Inc. <street>51 Franklin Street, Fifth Floor</street>
+ <city>Boston</city>, <state>MA</state> <postcode>02110-1301</postcode>
  <country>USA</country> </address>
 </para>
 

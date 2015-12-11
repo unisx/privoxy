@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.11.2.22 2004/01/30 15:29:29 oes Exp $
+#  $Id: default.filter,v 1.19 2006/07/18 14:48:45 david__schmidt Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -179,7 +179,7 @@ FILTER: unsolicited-popups Disable only unsolicited pop-up windows
 
 s+([^'"]\s*<head.*>)(?=\s*[^'"])+$1<script>function PrivoxyWindowOpen(){return(null);}</script>+isU
 s+([^\w\s.]\s*)((window|this|parent)\.)?open\s*\(+$1PrivoxyWindowOpen(+ig
-s+([^'"]\s*)(?=</html>(\s*[^'"]|$))+$1<script>function PrivoxyWindowOpen(a, b, c){return(window.open(a, b, c));}</script>+iU     
+s+([^'"]\s*</html>)(?!\s*(\\n|'|"))+$1<script>function PrivoxyWindowOpen(a, b, c){return(window.open(a, b, c));}</script>+iU     
 
 
 ##################################################################################
@@ -388,6 +388,8 @@ s/(<embed\s+[^>]*)kioskmode\s*=\s*(["']?)true\2/$1/ig
 #################################################################################
 FILTER: fun Text replacements for subversive browsing fun!
 
+# SCNR
+#
 s/microsoft(?!.com)/MicroSuck/ig
 
 # Buzzword Bingo (example for extended regex syntax)
@@ -405,6 +407,9 @@ s* (?:industry|world)[ -]leading \
 *$0<sup><font color="red"><b>Bingo!</b></font></sup> \
 *igx
 
+# For Germans only
+#
+s/(M|m)edien(?![^<]*>)/$1&auml;dchen/Ug
 
 #################################################################################
 #
@@ -485,11 +490,29 @@ s|<IMG SRC="http://media.monster.com/mm/usen/my/no_thanks_211x40.gif".+?>|<meta 
 #
 s|(<img [^>]*)onload|$1never|sig
 
+# Pre-check all the "Discard" buttons in GNU Mailman's web interface.
+# (This saves a lot of mouse aiming practice when flushing spamtraps)
+#
+s|(<INPUT name="\d{2,4}" type="RADIO" value="0") CHECKED |$1|g
+s|<INPUT name="\d{2,4}" type="RADIO" value="3" |$0 checked|g
+
+
 
 ############################################################################## 
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.19  2006/07/18 14:48:45  david__schmidt
+#     Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+#     with what was really the latest development (the v_3_0_branch branch)
+#
+#     Revision 1.11.2.23  2004/02/17 13:34:01  oes
+#     - Beefed up the protection of the unsolicited-popups
+#       filter against matching in JavaScript string constants.
+#     - Extended the fun filter with a German joke
+#     - Extended the site-specifics filter with a convenience
+#       reeplacement for managing mailing lists at SourceForge
+#
 #     Revision 1.11.2.22  2004/01/30 15:29:29  oes
 #     Updated the copyright note
 #

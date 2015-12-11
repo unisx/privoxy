@@ -1,7 +1,7 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.7 2004/02/17 13:30:23 oes Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.43 2006/07/18 14:48:45 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.c,v $
  *
  * Purpose     :  CGI-based actionsfile editor.
  *
@@ -42,6 +42,25 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.7 2004/02/17 13:30:23 oes Ex
  *
  * Revisions   :
  *    $Log: cgiedit.c,v $
+ *    Revision 1.43  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.41.2.12  2006/01/30 15:16:25  david__schmidt
+ *    Remove a little residual debugging info
+ *
+ *    Revision 1.41.2.11  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
+ *    Revision 1.41.2.10  2005/07/04 03:13:43  david__schmidt
+ *    Undo some damaging memory leak patches
+ *
+ *    Revision 1.41.2.9  2005/07/04 00:31:04  david__schmidt
+ *    Removing a double free
+ *
+ *    Revision 1.41.2.8  2005/05/07 21:50:54  david__schmidt
+ *    A few memory leaks plugged (mostly on error paths)
+ *
  *    Revision 1.41.2.7  2004/02/17 13:30:23  oes
  *    Moved cgi_error_disabled() from cgiedit.c to
  *    cgi.c to re-enable build with --disable-editor.
@@ -2560,7 +2579,7 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
       }
 
       buttons = strdup("");
-      for (i = 0; i < MAX_ACTION_FILES; i++)
+      for (i = 0; i < MAX_AF_FILES; i++)
       {
          if (((fl = csp->actions_list[i]) != NULL) && ((b = fl->f) != NULL))
          {
@@ -2958,8 +2977,8 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
    struct file_line * cur_line;
    unsigned line_number;
    jb_err err;
-   struct file_list *filter_file;
    struct re_filterfile_spec *filter_group;
+   int i, have_filters = 0;
 
    if (0 == (csp->config->feature_flags & RUNTIME_FEATURE_CGI_EDIT_ACTIONS))
    {
@@ -3008,10 +3027,15 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
 
    if (!err) err = actions_to_radio(exports, cur_line->data.action);
 
-   filter_file = csp->rlist;
-   filter_group = ((filter_file != NULL) ? filter_file->f : NULL);
-
-   if (!err) err = map_conditional(exports, "any-filters-defined", (filter_group != NULL));
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if ((csp->rlist[i] != NULL) && (csp->rlist[i]->f != NULL))
+      {
+         if (!err) err = map_conditional(exports, "any-filters-defined", 1);
+         have_filters = 1;
+         break;
+      }
+   }
 
    if (err)
    {
@@ -3020,10 +3044,8 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
       return err;
    }
 
-   if (filter_group == NULL)
-   {
+   if (0 == have_filters)
       err = map(exports, "filter-params", 1, "", 1);
-   }
    else
    {
       /* We have some entries in the filter list */
@@ -3047,69 +3069,75 @@ jb_err cgi_edit_actions_for_url(struct client_state *csp,
 
       result = strdup("");
 
-      for (;(!err) && (filter_group != NULL); filter_group = filter_group->next)
+      for (i = 0; i < MAX_AF_FILES; i++)
       {
-         char current_mode = 'x';
-         struct list_entry *filter_name;
-         char * this_line;
-         struct map *line_exports;
-         char number[20];
-
-         filter_name = cur_line->data.action->multi_add[ACTION_MULTI_FILTER]->first;
-         while ((filter_name != NULL)
-             && (0 != strcmp(filter_group->name, filter_name->str)))
+         if ((csp->rlist[i] != NULL) && (csp->rlist[i]->f != NULL))
          {
-              filter_name = filter_name->next;
-         }
-
-         if (filter_name != NULL)
-         {
-            current_mode = 'y';
-         }
-         else
-         {
-            filter_name = cur_line->data.action->multi_remove[ACTION_MULTI_FILTER]->first;
-            while ((filter_name != NULL)
-                && (0 != strcmp(filter_group->name, filter_name->str)))
+            filter_group = csp->rlist[i]->f;
+            for (;(!err) && (filter_group != NULL); filter_group = filter_group->next)
             {
-                 filter_name = filter_name->next;
+               char current_mode = 'x';
+               struct list_entry *filter_name;
+               char * this_line;
+               struct map *line_exports;
+               char number[20];
+
+               filter_name = cur_line->data.action->multi_add[ACTION_MULTI_FILTER]->first;
+               while ((filter_name != NULL)
+                   && (0 != strcmp(filter_group->name, filter_name->str)))
+               {
+                    filter_name = filter_name->next;
+               }
+
+               if (filter_name != NULL)
+               {
+                  current_mode = 'y';
+               }
+               else
+               {
+                  filter_name = cur_line->data.action->multi_remove[ACTION_MULTI_FILTER]->first;
+                  while ((filter_name != NULL)
+                      && (0 != strcmp(filter_group->name, filter_name->str)))
+                  {
+                       filter_name = filter_name->next;
+                  }
+                  if (filter_name != NULL)
+                  {
+                     current_mode = 'n';
+                  }
+               }
+
+               /* Generate a unique serial number */
+               snprintf(number, sizeof(number), "%x", index++);
+               number[sizeof(number) - 1] = '\0';
+
+               line_exports = new_map();
+               if (line_exports == NULL)
+               {
+                  err = JB_ERR_MEMORY;
+                  freez(result);
+               }
+               else
+               {
+                  if (!err) err = map(line_exports, "index", 1, number, 1);
+                  if (!err) err = map(line_exports, "name",  1, filter_group->name, 1);
+                  if (!err) err = map(line_exports, "description",  1, filter_group->description, 1);
+                  if (!err) err = map_radio(line_exports, "this-filter", "ynx", current_mode);
+
+                  this_line = NULL;
+                  if (!err)
+                  {
+                     this_line = strdup(filter_template);
+                     if (this_line == NULL) err = JB_ERR_MEMORY;
+                  }
+                  if (!err) err = template_fill(&this_line, line_exports);
+                  string_join(&result, this_line);
+
+                  free_map(line_exports);
+               }
             }
-            if (filter_name != NULL)
-            {
-               current_mode = 'n';
-            }
-         }
-
-         /* Generate a unique serial number */
-         snprintf(number, sizeof(number), "%x", index++);
-         number[sizeof(number) - 1] = '\0';
-
-         line_exports = new_map();
-         if (line_exports == NULL)
-         {
-            err = JB_ERR_MEMORY;
-            freez(result);
-         }
-         else
-         {
-            if (!err) err = map(line_exports, "index", 1, number, 1);
-            if (!err) err = map(line_exports, "name",  1, filter_group->name, 1);
-            if (!err) err = map(line_exports, "description",  1, filter_group->description, 1);
-            if (!err) err = map_radio(line_exports, "this-filter", "ynx", current_mode);
-
-            this_line = NULL;
-            if (!err)
-            {
-               this_line = strdup(filter_template);
-               if (this_line == NULL) err = JB_ERR_MEMORY;
-            }
-            if (!err) err = template_fill(&this_line, line_exports);
-            string_join(&result, this_line);
-
-            free_map(line_exports);
          }
       }
-
       freez(filter_template);
 
       if (!err)
@@ -3213,7 +3241,7 @@ jb_err cgi_edit_actions_submit(struct client_state *csp,
    get_string_param(parameters, "p", &action_set_name);
    if (action_set_name != NULL)
    {
-      for (index = 0; index < MAX_ACTION_FILES; index++)
+      for (index = 0; index < MAX_AF_FILES; index++)
       {
          if (((fl = csp->actions_list[index]) != NULL) && ((b = fl->f) != NULL))
          {

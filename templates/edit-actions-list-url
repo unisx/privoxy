@@ -31,6 +31,10 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list-url,v $
+#    Revision 1.11  2006/07/18 14:49:14  david__schmidt
+#    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+#    with what was really the latest development (the v_3_0_branch branch)
+#
 #    Revision 1.10.2.1  2003/12/17 16:35:17  oes
 #    Work around new & silly MSIE behaviour where the request resulting from
 #    changing window.location.href doesn't reveal the referrer anymore

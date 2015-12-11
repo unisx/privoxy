@@ -1,9 +1,9 @@
 #ifndef CYGWIN_H_INCLUDED
 #define CYGWIN_H_INCLUDED
-#define CYGWIN_H_VERSION "$Id: cygwin.h,v 1.4 2002/03/26 22:29:54 swa Exp $"
+#define CYGWIN_H_VERSION "$Id: cygwin.h,v 1.6 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cygwin.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cygwin.h,v $
  *
  * Purpose     :  The windows.h file seems to be a *tad* different, so I
  *                will bridge the gaps here.  Perhaps I should convert the
@@ -36,6 +36,10 @@
  *
  * Revisions   :
  *    $Log: cygwin.h,v $
+ *    Revision 1.6  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.4  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

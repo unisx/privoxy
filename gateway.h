@@ -1,9 +1,9 @@
 #ifndef GATEWAY_H_INCLUDED
 #define GATEWAY_H_INCLUDED
-#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.7 2002/03/26 22:29:54 swa Exp $"
+#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.9 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/gateway.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/gateway.h,v $
  *
  * Purpose     :  Contains functions to connect to a server, possibly
  *                using a "gateway" (i.e. HTTP proxy and/or SOCKS4
@@ -36,6 +36,10 @@
  *
  * Revisions   :
  *    $Log: gateway.h,v $
+ *    Revision 1.9  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.7  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

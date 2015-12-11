@@ -1,9 +1,9 @@
 #ifndef FILTERS_H_INCLUDED
 #define FILTERS_H_INCLUDED
-#define FILTERS_H_VERSION "$Id: filters.h,v 1.20.2.1 2002/09/25 14:51:51 oes Exp $"
+#define FILTERS_H_VERSION "$Id: filters.h,v 1.22 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/filters.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/filters.h,v $
  *
  * Purpose     :  Declares functions to parse/crunch headers and pages.
  *                Functions declared include:
@@ -12,7 +12,7 @@
  *                   `ij_untrusted_url', `intercept_url', `re_process_buffer',
  *                   `show_proxy_args', and `trust_url'
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001, 2004 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -39,6 +39,19 @@
  *
  * Revisions   :
  *    $Log: filters.h,v $
+ *    Revision 1.22  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.20.2.2  2004/10/03 12:53:32  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
  *    Revision 1.20.2.1  2002/09/25 14:51:51  oes
  *    Added basic support for OPTIONS and TRACE HTTP methods:
  *    New function direct_response which handles OPTIONS and
@@ -262,6 +275,7 @@ extern const struct forward_spec *forward_url(struct http_request *http, struct 
  */
 extern char *pcrs_filter_response(struct client_state *csp);
 extern char *gif_deanimate_response(struct client_state *csp);
+extern char *jpeg_inspect_response(struct client_state *csp);
 extern int remove_chunked_transfer_coding(char *buffer, const size_t size);
 
 /*

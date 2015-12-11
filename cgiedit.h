@@ -1,9 +1,9 @@
 #ifndef CGIEDIT_H_INCLUDED
 #define CGIEDIT_H_INCLUDED
-#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.7.2.2 2004/02/17 13:30:23 oes Exp $"
+#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.9 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgiedit.h,v $
  *
  * Purpose     :  CGI-based actionsfile editor.
  *                
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: cgiedit.h,v $
+ *    Revision 1.9  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.7.2.2  2004/02/17 13:30:23  oes
  *    Moved cgi_error_disabled() from cgiedit.c to
  *    cgi.c to re-enable build with --disable-editor.

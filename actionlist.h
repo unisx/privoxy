@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/actionlist.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/actionlist.h,v $
  *
  * Purpose     :  Master list of supported actions.
  *                Not really a header, since it generates code.
@@ -39,6 +39,32 @@
  *
  * Revisions   :
  *    $Log: actionlist.h,v $
+ *    Revision 1.22  2006/09/01 17:14:18  hal9
+ *    Re-ordered the actions list so that they display in the actions editor in
+ *    alphabetical order. Some of the new actions were "out of order".
+ *
+ *    Revision 1.21  2006/08/14 08:25:19  fabiankeil
+ *    Split filter-headers{} into filter-client-headers{}
+ *    and filter-server-headers{}.
+ *    Added parse_header_time() to share some code.
+ *    Replaced timegm() with mktime().
+ *
+ *    Revision 1.20  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.19  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.17.2.3  2004/10/03 12:53:32  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
  *    Revision 1.17.2.2  2002/09/25 15:25:25  oes
  *    Added more aliases for prehistoric action names
  *
@@ -111,29 +137,59 @@
 
 DEFINE_ACTION_MULTI      ("add-header",                 ACTION_MULTI_ADD_HEADER)
 DEFINE_ACTION_BOOL       ("block",                      ACTION_BLOCK)
+DEFINE_ACTION_STRING     ("content-type-overwrite",     ACTION_CONTENT_TYPE_OVERWRITE, ACTION_STRING_CONTENT_TYPE)
+DEFINE_CGI_PARAM_NO_RADIO("content-type-overwrite",     ACTION_CONTENT_TYPE_OVERWRITE, ACTION_STRING_CONTENT_TYPE,    "text/html")
+DEFINE_ACTION_STRING     ("crunch-client-header",       ACTION_CRUNCH_CLIENT_HEADER, ACTION_STRING_CLIENT_HEADER)
+DEFINE_CGI_PARAM_NO_RADIO("crunch-client-header",       ACTION_CRUNCH_CLIENT_HEADER, ACTION_STRING_CLIENT_HEADER,          "X-Whatever:")
+DEFINE_ACTION_BOOL       ("crunch-if-none-match",       ACTION_CRUNCH_IF_NONE_MATCH)
 DEFINE_ACTION_BOOL       ("crunch-incoming-cookies",    ACTION_NO_COOKIE_SET)
 DEFINE_ACTION_BOOL       ("crunch-outgoing-cookies",    ACTION_NO_COOKIE_READ)
+DEFINE_ACTION_STRING     ("crunch-server-header",       ACTION_CRUNCH_SERVER_HEADER, ACTION_STRING_SERVER_HEADER)
+DEFINE_CGI_PARAM_NO_RADIO("crunch-server-header",       ACTION_CRUNCH_SERVER_HEADER, ACTION_STRING_SERVER_HEADER,          "X-Whatever:")
 DEFINE_ACTION_STRING     ("deanimate-gifs",             ACTION_DEANIMATE,       ACTION_STRING_DEANIMATE)
 DEFINE_CGI_PARAM_RADIO   ("deanimate-gifs",             ACTION_DEANIMATE,       ACTION_STRING_DEANIMATE,     "first", 0)
 DEFINE_CGI_PARAM_RADIO   ("deanimate-gifs",             ACTION_DEANIMATE,       ACTION_STRING_DEANIMATE,     "last",  1)
 DEFINE_ACTION_BOOL       ("downgrade-http-version",     ACTION_DOWNGRADE)
-DEFINE_ACTION_BOOL       ("fast-redirects",             ACTION_FAST_REDIRECTS)
+DEFINE_ACTION_STRING     ("fast-redirects",             ACTION_FAST_REDIRECTS,  ACTION_STRING_FAST_REDIRECTS)
+DEFINE_CGI_PARAM_RADIO   ("fast-redirects",             ACTION_FAST_REDIRECTS,  ACTION_STRING_FAST_REDIRECTS, "simple-check",  0)
+DEFINE_CGI_PARAM_RADIO   ("fast-redirects",             ACTION_FAST_REDIRECTS,  ACTION_STRING_FAST_REDIRECTS, "check-decoded-url",  1)
 DEFINE_ACTION_MULTI      ("filter",                     ACTION_MULTI_FILTER)
+DEFINE_ACTION_BOOL       ("filter-client-headers",      ACTION_FILTER_CLIENT_HEADERS)
+DEFINE_ACTION_BOOL       ("filter-server-headers",      ACTION_FILTER_SERVER_HEADERS)
+DEFINE_ACTION_BOOL       ("force-text-mode",            ACTION_FORCE_TEXT_MODE)
+DEFINE_ACTION_BOOL       ("handle-as-empty-document",   ACTION_HANDLE_AS_EMPTY_DOCUMENT)
 DEFINE_ACTION_BOOL       ("handle-as-image",            ACTION_IMAGE)
+DEFINE_ACTION_STRING     ("hide-accept-language",       ACTION_HIDE_ACCEPT_LANGUAGE, ACTION_STRING_LANGUAGE)
+DEFINE_CGI_PARAM_RADIO   ("hide-accept-language",       ACTION_HIDE_ACCEPT_LANGUAGE, ACTION_STRING_LANGUAGE, "block", 0)
+DEFINE_CGI_PARAM_CUSTOM  ("hide-accept-language",       ACTION_HIDE_ACCEPT_LANGUAGE, ACTION_STRING_LANGUAGE, "de-de")
+DEFINE_ACTION_STRING     ("hide-content-disposition",   ACTION_HIDE_CONTENT_DISPOSITION, ACTION_STRING_CONTENT_DISPOSITION)
+DEFINE_CGI_PARAM_RADIO   ("hide-content-disposition",   ACTION_HIDE_CONTENT_DISPOSITION, ACTION_STRING_CONTENT_DISPOSITION,    "block", 0)
+DEFINE_CGI_PARAM_CUSTOM  ("hide-content-disposition",   ACTION_HIDE_CONTENT_DISPOSITION, ACTION_STRING_CONTENT_DISPOSITION,    "attachment; filename=WHATEVER.txt")
 DEFINE_ACTION_BOOL       ("hide-forwarded-for-headers", ACTION_HIDE_FORWARDED)
 DEFINE_ACTION_STRING     ("hide-from-header",           ACTION_HIDE_FROM,       ACTION_STRING_FROM)
 DEFINE_CGI_PARAM_RADIO   ("hide-from-header",           ACTION_HIDE_FROM,       ACTION_STRING_FROM,          "block", 1)
 DEFINE_CGI_PARAM_CUSTOM  ("hide-from-header",           ACTION_HIDE_FROM,       ACTION_STRING_FROM,          "spam_me_senseless@sittingduck.xyz")
+DEFINE_ACTION_STRING     ("hide-if-modified-since",     ACTION_HIDE_IF_MODIFIED_SINCE, ACTION_STRING_IF_MODIFIED_SINCE)
+DEFINE_CGI_PARAM_RADIO   ("hide-if-modified-since",     ACTION_HIDE_IF_MODIFIED_SINCE, ACTION_STRING_IF_MODIFIED_SINCE, "block", 0)
+DEFINE_CGI_PARAM_CUSTOM  ("hide-if-modified-since",     ACTION_HIDE_IF_MODIFIED_SINCE, ACTION_STRING_IF_MODIFIED_SINCE, "-1")
 DEFINE_ACTION_STRING     ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER)
+DEFINE_CGI_PARAM_RADIO   ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER,       "conditional-block", 2)
 DEFINE_CGI_PARAM_RADIO   ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER,       "forge", 1)
 DEFINE_CGI_PARAM_RADIO   ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER,       "block", 0)
 DEFINE_CGI_PARAM_CUSTOM  ("hide-referrer",              ACTION_HIDE_REFERER,    ACTION_STRING_REFERER,       "http://www.google.com/")
 DEFINE_ACTION_STRING     ("hide-user-agent",            ACTION_HIDE_USER_AGENT, ACTION_STRING_USER_AGENT)
 DEFINE_CGI_PARAM_NO_RADIO("hide-user-agent",            ACTION_HIDE_USER_AGENT, ACTION_STRING_USER_AGENT,    "Privoxy/3.0 (Anonymous)")
+DEFINE_ACTION_BOOL       ("inspect-jpegs",              ACTION_JPEG_INSPECT)
 DEFINE_ACTION_BOOL       ("kill-popups",                ACTION_NO_POPUPS)
 DEFINE_ACTION_STRING     ("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT)
 DEFINE_CGI_PARAM_NO_RADIO("limit-connect",              ACTION_LIMIT_CONNECT,   ACTION_STRING_LIMIT_CONNECT,  "443")
+DEFINE_ACTION_STRING     ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED)
+DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED, "block", 0)
+DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED, "reset-to-request-time", 1)
+DEFINE_CGI_PARAM_RADIO   ("overwrite-last-modified",    ACTION_OVERWRITE_LAST_MODIFIED, ACTION_STRING_LAST_MODIFIED, "randomize", 2)
 DEFINE_ACTION_BOOL       ("prevent-compression",        ACTION_NO_COMPRESSION)
+DEFINE_ACTION_STRING     ("redirect",                   ACTION_REDIRECT,        ACTION_STRING_REDIRECT)
+DEFINE_CGI_PARAM_NO_RADIO("redirect",                   ACTION_REDIRECT,        ACTION_STRING_REDIRECT,  "http://localhost/")
 DEFINE_ACTION_BOOL       ("send-vanilla-wafer",         ACTION_VANILLA_WAFER)
 DEFINE_ACTION_MULTI      ("send-wafer",                 ACTION_MULTI_WAFER)
 DEFINE_ACTION_BOOL       ("session-cookies-only",       ACTION_NO_COOKIE_KEEP)
@@ -141,6 +197,7 @@ DEFINE_ACTION_STRING     ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "pattern", 1)
 DEFINE_CGI_PARAM_RADIO   ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER, "blank", 0)
 DEFINE_CGI_PARAM_CUSTOM  ("set-image-blocker",          ACTION_IMAGE_BLOCKER,   ACTION_STRING_IMAGE_BLOCKER,  CGI_PREFIX "show-banner?type=pattern")
+DEFINE_ACTION_BOOL       ("treat-forbidden-connects-like-blocks",   ACTION_TREAT_FORBIDDEN_CONNECTS_LIKE_BLOCKS)
 
 
 #if DEFINE_ACTION_ALIAS

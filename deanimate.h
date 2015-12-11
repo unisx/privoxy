@@ -1,17 +1,21 @@
 #ifndef DEANIMATE_H_INCLUDED
 #define DEANIMATE_H_INCLUDED
-#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.8 2002/03/26 22:29:54 swa Exp $"
+#define DEANIMATE_H_VERSION "$Id: deanimate.h,v 1.10 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/deanimate.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/deanimate.h,v $
  *
- * Purpose     :  Declares functions to deanimate GIF images on the fly.
+ * Purpose     :  Declares functions to manipulate binary images on the
+ *                fly.  High-level functions include:
+ *                  - Deanimation of GIF images
+ *                  - Fixup of malformed comment block in JPEG headers
  *                
- *                Functions declared include: gif_deanimate, buf_free
+ *                Functions declared include: gif_deanimate, buf_free,
+ *                jpeg_inspect
  *                
  *
- * Copyright   :  Written by and Copyright (C) 2001 Andreas S. Oesterhelt
- *                for the Privoxy team. http://www.privoxy.org/
+ * Copyright   :  Written by and Copyright (C) 2001 - 2004 by the the
+ *                SourceForge Privoxy team. http://www.privoxy.org/
  *
  *                Based on ideas from the Image::DeAnim Perl module by
  *                Ken MacFarlane, <ksm+cpan@universal.dca.net>
@@ -40,6 +44,19 @@
  *
  * Revisions   :
  *    $Log: deanimate.h,v $
+ *    Revision 1.10  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.8.2.1  2004/10/03 12:53:32  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
  *    Revision 1.8  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *
@@ -84,6 +101,7 @@ struct binbuffer
  * Function prototypes
  */
 extern int gif_deanimate(struct binbuffer *src, struct binbuffer *dst, int get_first_image);
+extern int jpeg_inspect(struct binbuffer *src, struct binbuffer *dst);
 extern void buf_free(struct binbuffer *buf);
 
 /* 

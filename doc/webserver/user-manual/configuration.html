@@ -1,13 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Privoxy Configuration</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.3 User Manual"
+TITLE="Privoxy 3.0.5 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Starting Privoxy"
@@ -17,7 +17,9 @@ TITLE="The Main Configuration File"
 HREF="config.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css"></HEAD
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
 ><BODY
 CLASS="SECT1"
 BGCOLOR="#EEEEEE"
@@ -37,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.3 User Manual</TH
+>Privoxy 3.0.5 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,11 +76,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CONFIGURATION"
->6. <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> Configuration</A
-></H1
+></A
+>6. Privoxy Configuration</H1
 ><P
 >  All <SPAN
 CLASS="APPLICATION"
@@ -96,12 +95,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN585"
->6.1. Controlling <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> with Your Web Browser</A
-></H2
+NAME="AEN803"
+></A
+>6.1. Controlling Privoxy with Your Web Browser</H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -130,7 +126,7 @@ CLASS="SCREEN"
 > <H2
 CLASS="BRIDGEHEAD"
 ><A
-NAME="AEN594"
+NAME="AEN811"
 ></A
 >    Privoxy Menu</H2
 ><P
@@ -186,7 +182,7 @@ TARGET="_top"
 ><TR
 ><TD
 >          &#9642;  <A
-HREF="http://www.privoxy.org/3.0.3/user-manual/"
+HREF="http://www.privoxy.org/   3.0.5/user-manual/"
 TARGET="_top"
 >Documentation</A
 >
@@ -251,8 +247,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONFOVERVIEW"
->6.2. Configuration Files Overview</A
-></H2
+></A
+>6.2. Configuration Files Overview</H2
 ><P
 > For Unix, *BSD and Linux, all configuration files are located in
  <TT
@@ -263,7 +259,9 @@ CLASS="FILENAME"
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> executable. </P
+> executable.  The name
+ and number of configuration files has changed from previous versions, and is
+ subject to change as development progresses.</P
 ><P
 > The installed defaults provide a reasonable starting point, though 
  some settings may be aggressive by some standards. For the time being, the
@@ -352,9 +350,9 @@ TARGET="_top"
 ></LI
 ><LI
 ><P
->    <TT
-CLASS="FILENAME"
->default.filter</TT
+>    <SPAN
+CLASS="QUOTE"
+>"Filter files"</SPAN
 > (the <A
 HREF="filter-file.html"
 >filter
@@ -362,40 +360,61 @@ HREF="filter-file.html"
 >) can be used to re-write the raw page content, including
     viewable text as well as embedded HTML and JavaScript, and whatever else
     lurks on any given web page. The filtering jobs are only pre-defined here;
-    whether to apply them or not is up to the actions files. Only one filter 
-    file may be defined.
+    whether to apply them or not is up to the actions files. 
+    <TT
+CLASS="FILENAME"
+>default.filter</TT
+> includes various filters made 
+    available for use by the developers. Some are much more intrusive than 
+    others, and all should be used with caution. You may define additional 
+    filter files in <TT
+CLASS="FILENAME"
+>config</TT
+> as you can with 
+    actions files. We suggest <TT
+CLASS="FILENAME"
+>user.filter</TT
+> for any 
+    locally defined filters or customizations.
    </P
 ></LI
 ></UL
 ></P
 ><P
+> The syntax of all configuration files has remained the same throughout the
+ 3.x series. There have been enhancements, but no changes that would preclude
+ the use of any configuration file from one version to the next. (There is 
+ one exception: <A
+HREF="actions-file.html#FAST-REDIRECTS"
+>+fast-redirects</A
+> which 
+ has enhanced syntax and will require updating any local configs from earlier 
+ versions.)</P
+><P
 > All files use the <SPAN
 CLASS="QUOTE"
->"<VAR
+>"<TT
 CLASS="LITERAL"
->#</VAR
+>#</TT
 >"</SPAN
 > character to denote a
  comment (the rest of the line will be ignored) and understand line continuation
- through placing a backslash ("<VAR
+ through placing a backslash ("<TT
 CLASS="LITERAL"
->\</VAR
+>\</TT
 >") as the very last character
- in a line. If the <VAR
+ in a line. If the <TT
 CLASS="LITERAL"
->#</VAR
+>#</TT
 > is preceded by a backslash, it looses
- its special function. Placing a <VAR
+ its special function. Placing a <TT
 CLASS="LITERAL"
->#</VAR
+>#</TT
 > in front of an otherwise
  valid configuration line to prevent it from being interpreted is called "commenting
- out" that line.</P
+ out" that line. Blank lines are ignored.</P
 ><P
-> The actions files and <TT
-CLASS="FILENAME"
->default.filter</TT
-> 
+> The actions files and filter files  
  can use Perl style <A
 HREF="appendix.html#REGEX"
 >regular expressions</A
@@ -427,6 +446,14 @@ CLASS="EMPHASIS"
 >old</I
 ></SPAN
 > listening address.</P
+><P
+> While under development, the configuration content is subject to change. 
+ The below documentation may not be accurate by the time you read this. 
+ Also, what constitutes a <SPAN
+CLASS="QUOTE"
+>"default"</SPAN
+> setting, may change, so 
+ please check all your configuration files on important issues.</P
 ></DIV
 ></DIV
 ><DIV
@@ -473,10 +500,7 @@ ACCESSKEY="N"
 WIDTH="33%"
 ALIGN="left"
 VALIGN="top"
->Starting <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-></TD
+>Starting Privoxy</TD
 ><TD
 WIDTH="34%"
 ALIGN="center"

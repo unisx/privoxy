@@ -1,7 +1,7 @@
-const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.7 2003/05/17 15:57:24 oes Exp $";
+const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.12 2006/07/18 14:48:47 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/urlmatch.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.c,v $
  *
  * Purpose     :  Declares functions to match URLs against URL
  *                patterns.
@@ -33,6 +33,10 @@ const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.7 2003/05/17 15:57:24 oes 
  *
  * Revisions   :
  *    $Log: urlmatch.c,v $
+ *    Revision 1.12  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.10.2.7  2003/05/17 15:57:24  oes
  *     - parse_http_url now checks memory allocation failure for
  *       duplication of "*" URL and rejects "*something" URLs

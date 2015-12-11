@@ -126,7 +126,7 @@
         <h2>Request for untrusted URL</h2>
         <p>Your request for <b>@protocol@@hostport@@path@</b> was blocked,
           because neither the request URL itself, nor its referrer
-          (<a href="@referrer@">@referrer@</a>) were trusted.
+          (<b>@referrer@</b>) were trusted.
         </p>
 <!-- @if-force-support-start -->
         <p>(You can <a href="@protocol@@hostport@@force-prefix@@path@">go there anyway</a>.)</p>

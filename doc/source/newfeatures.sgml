@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: newfeatures.sgml,v 1.10 2002/05/15 03:54:29 hal9 Exp $
+ $Id: newfeatures.sgml,v 2.4 2006/09/22 01:27:55 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
 
  ======================================================================

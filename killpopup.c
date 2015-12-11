@@ -1,7 +1,7 @@
-const char killpopup_rcs[] = "$Id: killpopup.c,v 1.16 2002/03/26 22:29:55 swa Exp $";
+const char killpopup_rcs[] = "$Id: killpopup.c,v 1.18 2006/07/18 14:48:46 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/killpopup.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/killpopup.c,v $
  *
  * Purpose     :  Handles the filtering of popups.
  *
@@ -32,6 +32,10 @@ const char killpopup_rcs[] = "$Id: killpopup.c,v 1.16 2002/03/26 22:29:55 swa Ex
  *
  * Revisions   :
  *    $Log: killpopup.c,v $
+ *    Revision 1.18  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.16  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *

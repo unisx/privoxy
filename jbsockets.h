@@ -1,9 +1,9 @@
 #ifndef JBSOCKETS_H_INCLUDED
 #define JBSOCKETS_H_INCLUDED
-#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.9.2.1 2002/05/26 23:41:27 joergs Exp $"
+#define JBSOCKETS_H_VERSION "$Id: jbsockets.h,v 1.12 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/jbsockets.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.h,v $
  *
  * Purpose     :  Contains wrappers for system-specific sockets code,
  *                so that the rest of Junkbuster can be more
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: jbsockets.h,v $
+ *    Revision 1.12  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.9.2.1  2002/05/26 23:41:27  joergs
  *    AmigaOS: Fixed wrong type of len in write_socket()
  *

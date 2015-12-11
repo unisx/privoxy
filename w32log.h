@@ -1,9 +1,9 @@
 #ifndef W32LOG_H_INCLUDED
 #define W32LOG_H_INCLUDED
-#define W32LOG_H_VERSION "$Id: w32log.h,v 1.10.2.2 2002/11/20 14:39:05 oes Exp $"
+#define W32LOG_H_VERSION "$Id: w32log.h,v 1.12 2006/07/18 14:48:48 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32log.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/w32log.h,v $
  *
  * Purpose     :  Functions for creating and destroying the log window,
  *                ouputting strings, processing messages and so on.
@@ -34,6 +34,10 @@
  *
  * Revisions   :
  *    $Log: w32log.h,v $
+ *    Revision 1.12  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.10.2.2  2002/11/20 14:39:05  oes
  *    Fixed compiler warning
  *

@@ -1,7 +1,7 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.50.2.6 2003/10/24 10:17:54 oes Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.56 2006/09/07 10:40:30 fabiankeil Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/loaders.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
  *
  * Purpose     :  Functions to load and unload the various
  *                configuration files.  Also contains code to manage
@@ -35,6 +35,36 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.50.2.6 2003/10/24 10:17:54 oes Ex
  *
  * Revisions   :
  *    $Log: loaders.c,v $
+ *    Revision 1.56  2006/09/07 10:40:30  fabiankeil
+ *    Turns out trusted referrers above our arbitrary
+ *    limit are downgraded too ordinary trusted URLs.
+ *    Adjusted error message.
+ *
+ *    Revision 1.55  2006/09/07 10:25:39  fabiankeil
+ *    Fix typo.
+ *
+ *    Revision 1.54  2006/09/07 10:22:20  fabiankeil
+ *    If too many trusted referrers are used,
+ *    print only one error message instead of logging
+ *    every single trusted referrer above the arbitrary
+ *    limit.
+ *
+ *    Revision 1.53  2006/08/31 16:25:06  fabiankeil
+ *    Work around a buffer overflow that caused Privoxy to
+ *    segfault if too many trusted referrers were used. Good
+ *    enough for now, but should be replaced with a real
+ *    solution after the next release.
+ *
+ *    Revision 1.52  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.50.2.8  2006/01/30 15:16:25  david__schmidt
+ *    Remove a little residual debugging info
+ *
+ *    Revision 1.50.2.7  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
  *    Revision 1.50.2.6  2003/10/24 10:17:54  oes
  *    Nit: Allowed tabs as separators in filter headings
  *
@@ -329,7 +359,12 @@ const char loaders_h_rcs[] = LOADERS_H_VERSION;
 static struct file_list *current_trustfile      = NULL;
 #endif /* def FEATURE_TRUST */
 
-static struct file_list *current_re_filterfile  = NULL;
+static int load_one_re_filterfile(struct client_state *csp, int fileid);
+
+static struct file_list *current_re_filterfile[MAX_AF_FILES]  = {
+   NULL, NULL, NULL, NULL, NULL,
+   NULL, NULL, NULL, NULL, NULL
+};
 
 
 
@@ -388,7 +423,7 @@ void sweep(void)
          /* 
           * Actions files
           */
-         for (i = 0; i < MAX_ACTION_FILES; i++)
+         for (i = 0; i < MAX_AF_FILES; i++)
          {
             if (csp->actions_list[i])     
             {
@@ -397,11 +432,14 @@ void sweep(void)
          }
 
          /*
-          * Filter file
+          * Filter files
           */
-         if (csp->rlist)
+         for (i = 0; i < MAX_AF_FILES; i++)
          {
-            csp->rlist->active = 1;
+            if (csp->rlist[i])     
+            {
+               csp->rlist[i]->active = 1;
+            }
          }
 
          /*
@@ -1082,6 +1120,7 @@ int load_trustfile(struct client_state *csp)
    int reject, trusted;
    struct file_list *fs;
    unsigned long linenum = 0;
+   int trusted_referrers = 0;
 
    if (!check_file_changed(current_trustfile, csp->config->trustfile, &fs))
    {
@@ -1163,9 +1202,22 @@ int load_trustfile(struct client_state *csp)
        */
       if (trusted)
       {
-         *tl++ = b->url;
-         /* FIXME BUFFER OVERFLOW if >=64 entries */
+         if(++trusted_referrers < MAX_TRUSTED_REFERRERS)
+         {
+            *tl++ = b->url;
+         }
       }
+   }
+
+   if(trusted_referrers >= MAX_TRUSTED_REFERRERS) 
+   {
+      /*
+       * FIXME: ... after Privoxy 3.0.4 is out.
+       */
+       log_error(LOG_LEVEL_ERROR, "Too many trusted referrers. Current limit is %d, you are using %d.\n"
+          "  Additional trusted referrers are treated like ordinary trusted URLs.\n"
+          "  (You can increase this limit by changing MAX_TRUSTED_REFERRERS in project.h and recompiling).",
+          MAX_TRUSTED_REFERRERS, trusted_referrers);
    }
 
    *tl = NULL;
@@ -1247,10 +1299,15 @@ static void unload_re_filterfile(void *f)
  *********************************************************************/
 void unload_current_re_filterfile(void)
 {
-   if (current_re_filterfile)
+   int i;
+
+   for (i = 0; i < MAX_AF_FILES; i++)
    {
-      current_re_filterfile->unloader = unload_re_filterfile;
-      current_re_filterfile = NULL;
+      if (current_re_filterfile[i])
+      {
+         current_re_filterfile[i]->unloader = unload_re_filterfile;
+         current_re_filterfile[i] = NULL;
+      }
    }
 }
 #endif
@@ -1273,6 +1330,46 @@ void unload_current_re_filterfile(void)
  *********************************************************************/
 int load_re_filterfile(struct client_state *csp)
 {
+   int i;
+   int result;
+
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      if (csp->config->re_filterfile[i])
+      {
+         result = load_one_re_filterfile(csp, i);
+         if (result)
+         {
+            return result;
+         }
+      }
+      else if (current_re_filterfile[i])
+      {
+         current_re_filterfile[i]->unloader = unload_re_filterfile;
+         current_re_filterfile[i] = NULL;
+      }
+   }
+
+   return 0;
+}
+
+/*********************************************************************
+ *
+ * Function    :  load_one_re_filterfile
+ *
+ * Description :  Load a re_filterfile. 
+ *                Generate a chained list of re_filterfile_spec's from
+ *                the "FILTER: " blocks, compiling all their substitutions
+ *                into chained lists of pcrs_job structs.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  0 => Ok, everything else is an error.
+ *
+ *********************************************************************/
+int load_one_re_filterfile(struct client_state *csp, int fileid)
+{
    FILE *fp;
 
    struct re_filterfile_spec *new_bl, *bl = NULL;
@@ -1286,11 +1383,11 @@ int load_re_filterfile(struct client_state *csp)
    /*
     * No need to reload if unchanged
     */
-   if (!check_file_changed(current_re_filterfile, csp->config->re_filterfile, &fs))
+   if (!check_file_changed(current_re_filterfile[fileid], csp->config->re_filterfile[fileid], &fs))
    {
       if (csp)
       {
-         csp->rlist = current_re_filterfile;
+         csp->rlist[fileid] = current_re_filterfile[fileid];
       }
       return(0);
    }
@@ -1302,7 +1399,7 @@ int load_re_filterfile(struct client_state *csp)
    /* 
     * Open the file or fail
     */
-   if ((fp = fopen(csp->config->re_filterfile, "r")) == NULL)
+   if ((fp = fopen(csp->config->re_filterfile[fileid], "r")) == NULL)
    {
       goto load_re_filterfile_error;
    }
@@ -1397,9 +1494,9 @@ int load_re_filterfile(struct client_state *csp)
    /* 
     * Schedule the now-obsolete old data for unloading
     */
-   if ( NULL != current_re_filterfile )
+   if ( NULL != current_re_filterfile[fileid] )
    {
-      current_re_filterfile->unloader = unload_re_filterfile;
+      current_re_filterfile[fileid]->unloader = unload_re_filterfile;
    }
 
    /*
@@ -1407,18 +1504,18 @@ int load_re_filterfile(struct client_state *csp)
     */
    fs->next    = files->next;
    files->next = fs;
-   current_re_filterfile = fs;
+   current_re_filterfile[fileid] = fs;
 
    if (csp)
    {
-      csp->rlist = fs;
+      csp->rlist[fileid] = fs;
    }
 
    return( 0 );
 
 load_re_filterfile_error:
    log_error(LOG_LEVEL_FATAL, "can't load re_filterfile '%s': %E",
-             csp->config->re_filterfile);
+             csp->config->re_filterfile[fileid]);
    return(-1);
 
 }

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5.2.2 2002/10/25 02:44:23 hal9 Exp $
+# $Id: Makefile,v 1.11 2006/07/18 14:48:45 david__schmidt Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -26,6 +26,10 @@
 # Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 # $Log: Makefile,v $
+# Revision 1.11  2006/07/18 14:48:45  david__schmidt
+# Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+# with what was really the latest development (the v_3_0_branch branch)
+#
 # Revision 1.5.2.2  2002/10/25 02:44:23  hal9
 # Port of make install, etc from main trunk. Needs testing! Add Slackware
 # support, and other related changes. Update related docs.

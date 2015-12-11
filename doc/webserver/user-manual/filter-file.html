@@ -1,23 +1,25 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
->The Filter File</TITLE
+>Filter Files</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.3 User Manual"
+TITLE="Privoxy 3.0.5 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Actions Files"
 HREF="actions-file.html"><LINK
 REL="NEXT"
-TITLE="Templates"
+TITLE="Privoxy's Template Files"
 HREF="templates.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css"></HEAD
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
 ><BODY
 CLASS="SECT1"
 BGCOLOR="#EEEEEE"
@@ -37,7 +39,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.3 User Manual</TH
+>Privoxy 3.0.5 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,32 +76,45 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="FILTER-FILE"
->9. The Filter File</A
-></H1
+></A
+>9. Filter Files</H1
 ><P
-> All text substitutions that can be invoked through the
- <VAR
+> On-the-fly text substitutions that can be invoked through the
+ <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></VAR
-> action
- must first be defined in the filter file, which is typically
- called <TT
-CLASS="FILENAME"
->default.filter</TT
-> and which can be
- selected through the <VAR
+></TT
+> action need
+ to be defined in a <SPAN
+CLASS="QUOTE"
+>"filter file"</SPAN
+>. Once defined, they 
+ can then be invoked as an <SPAN
+CLASS="QUOTE"
+>"action"</SPAN
+>. Multiple filter files can be
+ defined through the <TT
 CLASS="LITERAL"
 > <A
 HREF="config.html#FILTERFILE"
 >filterfile</A
-></VAR
-> config
- option.</P
+></TT
+> config directive. The filters
+ as supplied by the developers will be found in
+ <TT
+CLASS="FILENAME"
+>default.filter</TT
+>. It is recommended that any locally
+ defined or modified filters go in a separately defined file such as
+ <TT
+CLASS="FILENAME"
+>user.filter</TT
+>.
+ </P
 ><P
-> Typical reasons for doing such substitutions are to eliminate
+> Typical reasons for doing these kinds of substitutions are to eliminate
  common annoyances in HTML and JavaScript, such as pop-up windows,
  exit consoles, crippled windows without navigation tools, the
  infamous &#60;BLINK&#62; tag etc, to suppress images with certain
@@ -107,9 +122,9 @@ HREF="config.html#FILTERFILE"
  or just to have fun. The possibilities are endless.</P
 ><P
 > Filtering works on any text-based document type, including 
- HTML, JavaScript, CSS etc. (all <VAR
+ HTML, JavaScript, CSS etc. (all <TT
 CLASS="LITERAL"
->text/*</VAR
+>text/*</TT
 >
  MIME types, <SPAN
 CLASS="emphasis"
@@ -117,15 +132,26 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >except</I
 ></SPAN
-> <VAR
+> <TT
 CLASS="LITERAL"
->text/plain</VAR
+>text/plain</TT
 >).
  Substitutions are made at the source level, so if you want to <SPAN
 CLASS="QUOTE"
 >"roll
  your own"</SPAN
-> filters, you should be familiar with HTML syntax.</P
+> filters, you should first be familiar with HTML syntax, 
+ and, of course, regular expressions. By default, filters are only applied 
+ to the raw document content, but can be extended to the HTTP headers with 
+ the supplemental actions: 
+ <A
+HREF="actions-file.html#FILTER-CLIENT-HEADERS"
+>filter-client-headers</A
+>  and 
+ <A
+HREF="actions-file.html#FILTER-SERVER-HEADERS"
+>filter-server-headers</A
+>.</P
 ><P
 > Just like the <A
 HREF="actions-file.html"
@@ -145,9 +171,9 @@ CLASS="emphasis"
 CLASS="EMPHASIS"
 >keyword</I
 ></SPAN
-> <VAR
+> <TT
 CLASS="LITERAL"
->FILTER:</VAR
+>FILTER:</TT
 >, followed by
  the filter's <SPAN
 CLASS="emphasis"
@@ -185,20 +211,24 @@ TARGET="_top"
  user interface</A
 >.</P
 ><P
-> Once a filter called <VAR
+> Once a filter called <TT
 CLASS="REPLACEABLE"
->name</VAR
+><I
+>name</I
+></TT
 > has been defined
  in the filter file, it can be invoked by using an action of the form
- +<VAR
+ +<TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
->{<VAR
+>{<TT
 CLASS="REPLACEABLE"
->name</VAR
->}</VAR
+><I
+>name</I
+></TT
+>}</TT
 >
  in any <A
 HREF="actions-file.html"
@@ -232,44 +262,48 @@ HREF="http://www.perl.org/"
 TARGET="_top"
 >Perl</A
 >'s
- <VAR
+ <TT
 CLASS="LITERAL"
->s///</VAR
+>s///</TT
 > operator. If you are familiar with Perl, you
  will find this to be quite intuitive, and may want to look at the
- <A
-HREF="http://www.oesterhelt.org/pcrs/pcrs.3.html"
-TARGET="_top"
->PCRS man page</A
->
- for the subtle differences to Perl behaviour. Most notably, the non-standard
- option letter <VAR
+ PCRS documentation for the subtle differences to Perl behaviour. Most
+ notably, the non-standard option letter <TT
 CLASS="LITERAL"
->U</VAR
-> is supported, which turns the default
- to ungreedy matching.</P
+>U</TT
+> is supported,
+ which turns the default to ungreedy matching.</P
 ><P
-> If you are new to regular expressions, you might want to take a look at
+> If you are new to 
+  <A
+HREF="http://en.wikipedia.org/wiki/Regular_expressions"
+TARGET="_top"
+><SPAN
+CLASS="QUOTE"
+>"Regular
+  Expressions"</SPAN
+></A
+>, you might want to take a look at
  the <A
 HREF="appendix.html#REGEX"
 >Appendix on regular expressions</A
 >, and
  see the <A
-HREF="http://perldoc.com/perl5.6.1/pod/perl.html"
+HREF="http://perldoc.perl.org/perlre.html"
 TARGET="_top"
 >Perl
  manual</A
 > for
  <A
-HREF="http://perldoc.com/perl5.6.1/pod/perlop.html#s-PATTERN-REPLACEMENT-egimosx"
+HREF="http://perldoc.perl.org/perlop.html"
 TARGET="_top"
 >the 
- <VAR
+ <TT
 CLASS="LITERAL"
->s///</VAR
+>s///</TT
 > operator's syntax</A
 > and <A
-HREF="http://perldoc.com/perl5.6.1/pod/perlre.html"
+HREF="http://perldoc.perl.org/perlre.html"
 TARGET="_top"
 >Perl-style regular
  expressions</A
@@ -280,9 +314,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN3212"
->9.1. Filter File Tutorial</A
-></H2
+NAME="AEN4271"
+></A
+>9.1. Filter File Tutorial</H2
 ><P
 > Now, let's complete our <SPAN
 CLASS="QUOTE"
@@ -327,9 +361,9 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"foo"</SPAN
 > on each page. For global substitution,
- we'll need to add the <VAR
+ we'll need to add the <TT
 CLASS="LITERAL"
->g</VAR
+>g</TT
 > option:</P
 ><P
 > <TABLE
@@ -386,26 +420,26 @@ s|(&#60;script.*)document\.referrer(.*&#60;/script&#62;)|$1"Not Your Business!"$
 ></P
 ><P
 > Following the header line and a comment, you see the job. Note that it uses
- <VAR
+ <TT
 CLASS="LITERAL"
->|</VAR
-> as the delimiter instead of <VAR
+>|</TT
+> as the delimiter instead of <TT
 CLASS="LITERAL"
->/</VAR
+>/</TT
 >, because
  the pattern contains a forward slash, which would otherwise have to be escaped
- by a backslash (<VAR
+ by a backslash (<TT
 CLASS="LITERAL"
->\</VAR
+>\</TT
 >).</P
 ><P
-> Now, let's examine the pattern: it starts with the text <VAR
+> Now, let's examine the pattern: it starts with the text <TT
 CLASS="LITERAL"
->&#60;script.*</VAR
+>&#60;script.*</TT
 >
- enclosed in parentheses. Since the dot matches any character, and <VAR
+ enclosed in parentheses. Since the dot matches any character, and <TT
 CLASS="LITERAL"
->*</VAR
+>*</TT
 >
  means: <SPAN
 CLASS="QUOTE"
@@ -423,9 +457,9 @@ CLASS="EMPHASIS"
 > text, i.e.
  it matches the whole page, from the start of the first &#60;script&#62; tag.</P
 ><P
-> That's more than we want, but the pattern continues: <VAR
+> That's more than we want, but the pattern continues: <TT
 CLASS="LITERAL"
->document\.referrer</VAR
+>document\.referrer</TT
 >
  matches only the exact string <SPAN
 CLASS="QUOTE"
@@ -453,12 +487,12 @@ CLASS="EMPHASIS"
  in the page (and appear in that order).</P
 ><P
 > But there's still more pattern to go. The next element, again enclosed in parentheses,
- is <VAR
+ is <TT
 CLASS="LITERAL"
->.*&#60;/script&#62;</VAR
->. You already know what <VAR
+>.*&#60;/script&#62;</TT
+>. You already know what <TT
 CLASS="LITERAL"
->.*</VAR
+>.*</TT
 >
  means, so the whole pattern translates to: Match from the start of the first  &#60;script&#62;
  tag in a page to the end of the last &#60;script&#62; tag, provided that the text
@@ -469,17 +503,17 @@ CLASS="QUOTE"
 ><P
 > This is still not the whole story, since we have ignored the options and the parentheses:
  The portions of the page matched by sub-patterns that are enclosed in parentheses, will be
- remembered and be available through the variables <VAR
+ remembered and be available through the variables <TT
 CLASS="LITERAL"
->$1, $2, ...</VAR
+>$1, $2, ...</TT
 > in
- the substitute. The <VAR
+ the substitute. The <TT
 CLASS="LITERAL"
->U</VAR
+>U</TT
 > option switches to ungreedy matching, which means
- that the first <VAR
+ that the first <TT
 CLASS="LITERAL"
->.*</VAR
+>.*</TT
 > in the pattern will only <SPAN
 CLASS="QUOTE"
 >"eat up"</SPAN
@@ -497,9 +531,9 @@ CLASS="EMPHASIS"
  of <SPAN
 CLASS="QUOTE"
 >"document.referrer"</SPAN
->, and that the second <VAR
+>, and that the second <TT
 CLASS="LITERAL"
->.*</VAR
+>.*</TT
 > will
  only span the text up to the <SPAN
 CLASS="emphasis"
@@ -511,13 +545,13 @@ CLASS="EMPHASIS"
 CLASS="QUOTE"
 >"&#60;/script&#62;"</SPAN
 >
- tag. Furthermore, the <VAR
+ tag. Furthermore, the <TT
 CLASS="LITERAL"
->s</VAR
+>s</TT
 > option says that the match may span
- multiple lines in the page, and the <VAR
+ multiple lines in the page, and the <TT
 CLASS="LITERAL"
->g</VAR
+>g</TT
 > option again means that the
  substitution is global.</P
 ><P
@@ -530,27 +564,27 @@ CLASS="QUOTE"
  <SPAN
 CLASS="QUOTE"
 >"document.referrer"</SPAN
-> as <VAR
+> as <TT
 CLASS="LITERAL"
->$1</VAR
+>$1</TT
 >, and the part following
- that string, up to and including the closing tag, as <VAR
+ that string, up to and including the closing tag, as <TT
 CLASS="LITERAL"
->$2</VAR
+>$2</TT
 >.</P
 ><P
 > Now the pattern is deciphered, but wasn't this about substituting things? So
- lets look at the substitute: <VAR
+ lets look at the substitute: <TT
 CLASS="LITERAL"
->$1"Not Your Business!"$2</VAR
+>$1"Not Your Business!"$2</TT
 > is
- easy to read: The text remembered as <VAR
+ easy to read: The text remembered as <TT
 CLASS="LITERAL"
->$1</VAR
+>$1</TT
 >, followed by 
- <VAR
+ <TT
 CLASS="LITERAL"
->"Not Your Business!"</VAR
+>"Not Your Business!"</TT
 > (<SPAN
 CLASS="emphasis"
 ><I
@@ -558,27 +592,27 @@ CLASS="EMPHASIS"
 >including</I
 ></SPAN
 >
- the quotation marks!), followed by the text remembered as <VAR
+ the quotation marks!), followed by the text remembered as <TT
 CLASS="LITERAL"
->$2</VAR
+>$2</TT
 >.
  This produces an exact copy of the original string, with the middle part
  (the <SPAN
 CLASS="QUOTE"
 >"document.referrer"</SPAN
->) replaced by <VAR
+>) replaced by <TT
 CLASS="LITERAL"
 >"Not Your
- Business!"</VAR
+ Business!"</TT
 >.</P
 ><P
 > The whole job now reads: Replace <SPAN
 CLASS="QUOTE"
 >"document.referrer"</SPAN
 > by
- <VAR
+ <TT
 CLASS="LITERAL"
->"Not Your Business!"</VAR
+>"Not Your Business!"</TT
 > wherever it appears inside a
  &#60;script&#62; tag. Note that this job won't break JavaScript syntax,
  since both the original and the replacement are syntactically valid
@@ -604,31 +638,31 @@ s/window\.status\s*=\s*(['"]).*?\1/dUmMy=1/ig</PRE
 ></TABLE
 ></P
 ><P
-> <VAR
+> <TT
 CLASS="LITERAL"
->\s</VAR
+>\s</TT
 > stands for whitespace characters (space, tab, newline,
- carriage return, form feed), so that <VAR
+ carriage return, form feed), so that <TT
 CLASS="LITERAL"
->\s*</VAR
+>\s*</TT
 > means: <SPAN
 CLASS="QUOTE"
 >"zero
  or more whitespace"</SPAN
->. The <VAR
+>. The <TT
 CLASS="LITERAL"
->?</VAR
-> in <VAR
+>?</TT
+> in <TT
 CLASS="LITERAL"
->.*?</VAR
+>.*?</TT
 >
- makes this matching of arbitrary text ungreedy. (Note that the <VAR
+ makes this matching of arbitrary text ungreedy. (Note that the <TT
 CLASS="LITERAL"
->U</VAR
+>U</TT
 >
- option is not set). The <VAR
+ option is not set). The <TT
 CLASS="LITERAL"
->['"]</VAR
+>['"]</TT
 > construct means: <SPAN
 CLASS="QUOTE"
 >"a single
@@ -639,13 +673,13 @@ CLASS="EMPHASIS"
 >or</I
 ></SPAN
 > a double quote"</SPAN
->. Finally, <VAR
+>. Finally, <TT
 CLASS="LITERAL"
->\1</VAR
+>\1</TT
 > is
- a backreference to the first parenthesis just like <VAR
+ a back-reference to the first parenthesis just like <TT
 CLASS="LITERAL"
->$1</VAR
+>$1</TT
 > above,
  with the difference that in the <SPAN
 CLASS="emphasis"
@@ -654,7 +688,7 @@ CLASS="EMPHASIS"
 >pattern</I
 ></SPAN
 >, a backslash indicates
- a backreference, whereas in the <SPAN
+ a back-reference, whereas in the <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
@@ -709,22 +743,22 @@ CLASS="QUOTE"
  <SPAN
 CLASS="QUOTE"
 >"&#60;body&#62;"</SPAN
-> tags with the dummy word <VAR
+> tags with the dummy word <TT
 CLASS="LITERAL"
->never</VAR
+>never</TT
 >.
- Note that the <VAR
+ Note that the <TT
 CLASS="LITERAL"
->i</VAR
+>i</TT
 > option makes the pattern matching
  case-insensitive. Also note that ungreedy matching alone doesn't always guarantee
- a minimal match: In the first parenthesis, we had to use <VAR
+ a minimal match: In the first parenthesis, we had to use <TT
 CLASS="LITERAL"
->[^&#62;]*</VAR
+>[^&#62;]*</TT
 >
- instead of <VAR
+ instead of <TT
 CLASS="LITERAL"
->.*</VAR
+>.*</TT
 > to prevent the match from exceeding the 
  &#60;body&#62; tag if it doesn't contain <SPAN
 CLASS="QUOTE"
@@ -752,9 +786,9 @@ s/microsoft(?!\.com)/MicroSuck/ig</PRE
 ></TABLE
 ></P
 ><P
-> Note the <VAR
+> Note the <TT
 CLASS="LITERAL"
->(?!\.com)</VAR
+>(?!\.com)</TT
 > part (a so-called negative lookahead)
  in the job's pattern, which means: Don't match, if the string 
  <SPAN
@@ -794,9 +828,9 @@ s* industry[ -]leading \
 ></TABLE
 ></P
 ><P
-> The <VAR
+> The <TT
 CLASS="LITERAL"
->x</VAR
+>x</TT
 > option in this job turns on extended syntax, and allows for
  e.g. the liberal use of (non-interpreted!) whitespace for nicer formatting. </P
 ><P
@@ -808,8 +842,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="PREDEFINED-FILTERS"
->9.2. The Pre-defined Filters</A
-></H2
+></A
+>9.2. The Pre-defined Filters</H2
 ><P
 >The distribution <TT
 CLASS="FILENAME"
@@ -839,12 +873,12 @@ CLASS="EMPHASIS"
 ><LI
 ><P
 >      replaces JavaScript references to the browser's referrer information
-      with the string "Not Your Business!". This compliments the <VAR
+      with the string "Not Your Business!". This compliments the <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HIDE-REFERRER"
 >hide-referrer</A
-></VAR
+></TT
 > action on the content level.
      </P
 ></LI
@@ -866,7 +900,7 @@ CLASS="QUOTE"
 ><LI
 ><P
 >      removes code that causes new windows to be opened with undesired properties, such as being
-      full-screen, non-resizable, without location, status or menu bar etc.
+      full-screen, non-resizeable, without location, status or menu bar etc.
      </P
 ></LI
 ></UL
@@ -912,15 +946,15 @@ CLASS="EMPHASIS"
 >    This filter will undo many common instances of HTML based abuse.
    </P
 ><P
->    The <VAR
+>    The <TT
 CLASS="LITERAL"
->BLINK</VAR
-> and <VAR
+>BLINK</TT
+> and <TT
 CLASS="LITERAL"
->MARQUEE</VAR
+>MARQUEE</TT
 > tags 
     are neutralized (yeah baby!), and browser windows will be created as
-    resizable (as of course they should be!), and will have location,
+    resizeable (as of course they should be!), and will have location,
     scroll and menu bars -- even if specified otherwise.
    </P
 ></DD
@@ -934,21 +968,21 @@ CLASS="EMPHASIS"
 ></DT
 ><DD
 ><P
->    Most cookies are set in the HTTP dialogue, where they can be intercepted
+>    Most cookies are set in the HTTP dialog, where they can be intercepted
     by the
-    <VAR
+    <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
 >crunch-incoming-cookies</A
-></VAR
+></TT
 >
-    and <VAR
+    and <TT
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
 >crunch-outgoing-cookies</A
-></VAR
+></TT
 >
     actions. But web sites increasingly make use of HTML meta tags and JavaScript
     to sneak cookies to the browser on the content level.
@@ -995,7 +1029,7 @@ CLASS="QUOTE"
 ><P
 >    Technical note: The filter works by redefining the window.open JavaScript
     function to a dummy function during the loading and rendering phase of each
-    HTML page access, and restoring the function afterwards.
+    HTML page access, and restoring the function afterward.
    </P
 ></DD
 ><DT
@@ -1031,12 +1065,12 @@ CLASS="EMPHASIS"
 ><DD
 ><P
 >    This is a helper filter that has no value if used alone. It makes the
-    <VAR
+    <TT
 CLASS="LITERAL"
->banners-by-size</VAR
-> and <VAR
+>banners-by-size</TT
+> and <TT
 CLASS="LITERAL"
->banners-by-link</VAR
+>banners-by-link</TT
 >
     (see below) filters more effective and should be enabled together with them.
    </P
@@ -1166,15 +1200,17 @@ CLASS="EMPHASIS"
 ><DD
 ><P
 >    Many Microsoft products that generate HTML use non-standard extensions (read:
-    violations) of the ISO 8859-1 aka Latin-1 character set. This causes those
+    violations) of the ISO 8859-1 aka Latin-1 character set. This can cause those
     HTML documents to display with errors on standard-compliant platforms. 
    </P
 ><P
 >    This filter translates the MS-only characters into Latin-1 equivalents. 
     It is not necessary when using MS products, and will cause corruption of  
     all documents that use 8-bit character sets other than Latin-1. It's mostly
-    worthwhile for Europeans on non-MS platforms, if wierd garbage characters
-    sometimes appear on some pages.
+    worthwhile for Europeans on non-MS platforms, if weird garbage characters
+    sometimes appear on some pages, or user agents that don't correct for this on 
+    the fly.
+ 
    </P
 ></DD
 ><DT
@@ -1337,7 +1373,7 @@ VALIGN="top"
 WIDTH="33%"
 ALIGN="right"
 VALIGN="top"
->Templates</TD
+>Privoxy's Template Files</TD
 ></TR
 ></TABLE
 ></DIV

@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/user.action,v $
 # 
-#  $Id: user.action,v 1.1.2.3 2004/01/30 16:48:26 oes Exp $
+#  $Id: user.action,v 1.6 2006/09/10 13:59:29 hal9 Exp $
 #
 #  Purpose     :  User-maintained actions file, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -39,7 +39,7 @@
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only -filter{content-cookies}
- allow-popups       = -filter{popups} -kill-popups
+ allow-popups       = -filter{all-popups} -kill-popups
 +block-as-image     = +block +handle-as-image
 -block-as-image     = -block
 
@@ -51,12 +51,13 @@ shop        = -crunch-all-cookies allow-popups
 
 # Your favourite blend of filters:
 #
-myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{popups}\
+myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{all-popups}\
               +filter{webbugs} +filter{banners-by-size} +filter{fun}
 
 # Allow ads for selected useful free sites:
 #
 allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
+#... etc.  Customize to your heart's content.
 
 ## end aliases ########################################################
 #######################################################################

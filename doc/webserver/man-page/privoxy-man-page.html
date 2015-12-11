@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Manpage of PRIVOXY</TITLE>
 <LINK REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></HEAD><BODY>
 <H1>PRIVOXY</H1>
-Section:  (1)<BR>Updated: 25 March 2003<BR><A HREF="#index">Index</A>
+Section:  (1)<BR>Updated: 21 September 2006<BR><A HREF="#index">Index</A>
 <HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -13,10 +13,7 @@ privoxy - Privacy Enhancing Proxy
 <H2>SYNOPSIS</H2>
 
 <P>
-<B>privoxy</B> [<B>--help</B> ] [<B>--version</B> ] [<B>--no-daemon</B> ] [<B>--pidfile </B><I>pidfile</I><B></B> ] [<B>--user </B><I>user[.group]</I><B></B> ] [<B>--chroot</B> ] [<B></B><I>configfile</I><B></B> ]<B> (UNIX)</B>
-<P>
-<P>
-<B>privoxy.exe</B> [<B></B><I>configfile</I><B></B> ]<B> (Windows)</B>
+<B>privoxy</B> [<B>--help</B> ] [<B>--version</B> ] [<B>--no-daemon</B> ] [<B>--pidfile </B><I>pidfile</I><B></B> ] [<B>--user </B><I>user[.group]</I><B></B> ] [<B>--chroot</B> ] [<B></B><I>configfile</I><B></B> ]
 <P>
 <A NAME="lbAD">&nbsp;</A>
 <H2>OPTIONS</H2>
@@ -57,8 +54,7 @@ that hierarchy.
 
 If the <I>configfile</I> is not specified on  the  command  line,
 <B>Privoxy</B>  will  look for a file named
-<I>config</I> in the current directory (except on Win32 where
-it will try <I>config.txt</I>). If no
+<I>config</I> in the current directory . If no
 <I>configfile</I> is found, <B>Privoxy</B> will 
 fail to start.
 <A NAME="lbAE">&nbsp;</A>
@@ -66,17 +62,18 @@ fail to start.
 
 <P>
 
-<B>Privoxy</B> is a web proxy with advanced filtering
-capabilities for protecting privacy, filtering web page content, managing
-cookies, controlling access, and removing ads, banners, pop-ups and other
-obnoxious Internet junk. <B>Privoxy</B> has a very
-flexible configuration and can be customized to suit individual needs and
-tastes. <B>Privoxy</B> has application for both
-stand-alone systems and multi-user networks.
+Privoxy is a 
+web proxy
+with advanced filtering capabilities for protecting
+privacy, modifying web page data, managing 
+cookies, 
+controlling access, and removing ads, banners, pop-ups and other obnoxious
+Internet junk. Privoxy has a very flexible configuration and can be
+customized to suit individual needs and tastes. Privoxy has application for
+both stand-alone systems and multi-user networks.
 <P>
 
-<B>Privoxy</B> is based on <B>Internet
-Junkbuster</B> (tm).
+Privoxy is based on Internet Junkbuster (tm).
 <A NAME="lbAF">&nbsp;</A>
 <H2>INSTALLATION AND USAGE</H2>
 
@@ -91,6 +88,12 @@ and Mozilla, go through:  <B>Edit</B>;
 <B>View</B>. 
 <P>
 
+For Firefox, go through: <B>Tools</B>; 
+<B>Options</B>; <B>General</B>;
+<B>Connection Settings</B>;
+<B>Manual Proxy Configuration</B>. 
+<P>
+
 For Internet Explorer, go through: <B>Tools</B>; 
 <B>Internet Properties</B>; <B>Connections</B>;
 <B>LAN Settings</B>. 
@@ -99,6 +102,8 @@ For Internet Explorer, go through: <B>Tools</B>;
 The Secure (SSL) Proxy should also be set to the same values, otherwise
 https: URLs will not be proxied. Note: <B>Privoxy</B> can only
 proxy HTTP and HTTPS traffic. Do not try it with FTP or other protocols.
+HTTPS presents some limitations, and not all features will work with HTTPS 
+connections.
 <P>
 
 For other browsers, check the documentation.
@@ -112,19 +117,19 @@ files. The default configuration files are: <I>config</I>,
 <I>default.filter</I>, and
 <I>default.action</I>. <I>user.action</I> should 
 be used for locally defined exceptions to the default rules of
-<I>default.action</I> These are all well commented.  On Unix
+<I>default.action</I>, and <I>user.filter</I> for 
+locally defined filters. These are well commented.  On Unix
 and Unix-like systems, these are located in
-<I>/etc/privoxy/</I> by default. On Windows, OS/2 and AmigaOS,
-these files are in the same directory as the <B>Privoxy</B>
-executable.
+<I>/etc/privoxy/</I> by default. 
 <P>
 
-The name and number of configuration files has changed from previous
-versions. In fact, the configuration itself is changed  and  much more
-sophisticated. See the user-manual for a complete
-explanation of all configuration options and general usage, and notes for 
-upgrading from <B>Junkbuster</B> and earlier <B>Privoxy</B>
-versions.
+<B>Privoxy</B> uses the concept of <B>actions</B> 
+in order to manipulate the data stream between the browser and remote sites.
+There are various actions available with specific functions for such things 
+as blocking web sites, managing cookies, etc. These actions can be invoked
+individually or combined, and used against individual URLs, or groups of URLs 
+that can be defined using wildcards and regular expressions. The result is
+that the user has greatly enhanced control and freedom.
 <P>
 
 The actions list (ad blocks, etc) can also be configured with your
@@ -132,6 +137,11 @@ web browser at <A HREF="http://config.privoxy.org/">http://config.privoxy.org/.<
 <B>Privoxy's</B> configuration parameters  can also  be viewed at
 the same page. In addition, <B>Privoxy</B> can be toggled on/off.
 This is an internal page, and does not require Internet access.
+<P>
+
+See the <I>User Manual</I> for a detailed
+explanation of installation, general usage, all configuration options, new
+features and notes on upgrading.
 <A NAME="lbAH">&nbsp;</A>
 <H2>SAMPLE CONFIGURATION</H2>
 
@@ -144,59 +154,98 @@ configuration might look like:
  # Define a few useful custom aliases for later use
  {{alias}}
 
- # Useful aliases
+ # Useful aliases that combine more than one action
  +crunch-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
  -crunch-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
- +imageblock      = +block +handle-as-image
+ +block-as-image = +block +handle-as-image
 
  # Fragile sites should have the minimum changes
  fragile     = -block -deanimate-gifs -fast-redirects -filter \
                -hide-referer -prevent-cookies -kill-popups
 
  ## Turn some actions on ################################
- { \
- -add-header \
- -block \
- +deanimate-gifs{last} \
- -downgrade-http-version \
- -fast-redirects \
- +filter{html-annoyances} \
- +filter{js-annoyances} \
- +filter{content-cookies} \
- +filter{webbugs} \
- +filter{banners-by-size} \
- +hide-forwarded-for-headers \
- +hide-from-header{block} \
- +hide-referrer{forge} \
- -hide-user-agent \
- -handle-as-image \
- +set-image-blocker{pattern} \
- -limit-connect \
- +prevent-compression \
- +session-cookies-only \
- -crunch-cookies \
- -kill-popups \
- }
- /   # '/' Matches *all* URL patterns
+ ## NOTE: Actions are off by default, unless explictily turned on 
+ ## otherwise with the '+' operator.
+
+{ \
+-add-header \
+-block \
+-content-type-overwrite \
+-crunch-client-header \
+-crunch-if-none-match \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
+-crunch-server-header \
++deanimate-gifs{last} \
+-downgrade-http-version \
+-fast-redirects \
+-filter{js-annoyances} \
+-filter{js-events} \
+-filter{html-annoyances} \
+-filter{content-cookies} \
++filter{refresh-tags} \
+-filter{unsolicited-popups} \
+-filter{all-popups} \
++filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
++filter{webbugs} \
+-filter{tiny-textforms} \
++filter{jumping-windows} \
+-filter{frameset-borders} \
+-filter{demoronizer} \
+-filter{shockwave-flash} \
+-filter{quicktime-kioskmode} \
+-filter{fun} \
+-filter{crude-parental} \
++filter{ie-exploits} \
+-filter{site-specifics} \
+-filter-client-headers \
+-filter-server-headers \
+-force-text-mode \
+-handle-as-empty-document
+-handle-as-image \
+-hide-accept-language \
+-hide-content-disposition \
+-hide-if-modified-since \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-inspect-jpegs \
+-kill-popups \
+-limit-connect \
+-overwrite-last-modified \
+-redirect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
++session-cookies-only \
++set-image-blocker{pattern} \
+-treat-forbidden-connects-like-blocks \
+}
+/ # '/' Match *all* URL patterns
+
  
  # Block, and treat these URL patterns as if they were 'images'.
  # We would expect these to be ads.
- {+imageblock}
+ { +block-as-image }
   .ad.doubleclick.net
   .a[0-9].yimg.com/(?:(?!/i/).)*$
   ad.*.doubleclick.net
 
- # Block any URLs that match these patterns
- {+block}
+ # Block all URLs that match these patterns
+ { +block }
   ad*.
   .*ads.
   banner?.
   /.*count(er)?\.(pl|cgi|exe|dll|asp|php[34]?)
   .hitbox.com 
+  media./.*(ads|banner)
 
  # Make exceptions for these harmless ones that would be 
  # caught by our +block patterns just above.
- {-block}
+ { -block }
   adsl.
   advice.
   .*downloads.
@@ -216,22 +265,27 @@ narrowly defined exceptions:
  
  # Set personal exceptions to the policies in default.action #######
 
- # Sites where we want persistant cookies, so allow *all* cookies
- {-crunch-cookies -session-cookies-only}
+ # Sites where we want persistent cookies, so allow *all* cookies
+ { -crunch-cookies -session-cookies-only }
   .redhat.com
   .sun.com
   .msdn.microsoft.com
  
- # This site breaks easily.
- {-block -fast-redirects}
+ # These sites breaks easily. Use our &quot;fragile&quot; alias here.
+ { fragile }
   .forbes.com
+  mybank.example.com
+
+ # Replace example.com's style sheet with one of my choosing
+ { +redirect{<A HREF="http://localhost/css-replacements/example.com.css}">http://localhost/css-replacements/example.com.css}</A> }
+  example.com/stylesheet.css
 </PRE>
 
 <P>
 
 See the comments in the configuration files themselves, or the 
-<I>user-manual</I>
-for explanations of the above syntax, and other <B>Privoxy</B>
+<I>User Manual</I>
+for full explanations of the above syntax, and other <B>Privoxy</B>
 configuration options.
 <A NAME="lbAI">&nbsp;</A>
 <H2>FILES</H2>
@@ -245,6 +299,7 @@ configuration options.
  <I>/etc/privoxy/standard.action</I>
  <I>/etc/privoxy/user.action</I>
  <I>/etc/privoxy/default.filter</I>
+ <I>/etc/privoxy/user.filter</I>
  <I>/etc/privoxy/trust</I>
  <I>/etc/privoxy/templates/*</I>
  <I>/var/log/privoxy/logfile</I>
@@ -253,7 +308,7 @@ configuration options.
 <P>
 
 Various other files should be included, but may vary depending on platform
-and build configuration. More documentation should be included in the local
+and build configuration. Additional documentation should be included in the local
 documentation directory.
 <A NAME="lbAJ">&nbsp;</A>
 <H2>SIGNALS</H2>
@@ -272,8 +327,12 @@ automatically.
 
 <P>
 
+This is a BETA version of <B>Privoxy</B>. Not 
+all features are well tested.
+<P>
+
 Please see the <I>User Manual</I> on how to contact the
-developers for feature requests, reporting problems, and other questions.
+developers, for feature requests, reporting problems, and other questions.
 <A NAME="lbAL">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
@@ -298,10 +357,8 @@ SourceForge.
 the web-based user interface. <B>Privoxy</B> must be
 running for this to work. Shortcut: <A HREF="http://p.p/">http://p.p/</A>
 <P>
-<A HREF="http://www.privoxy.org/actions/">http://www.privoxy.org/actions/,</A> to submit ``misses'' to the developers. 
-<P>
-<A HREF="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/,</A> cool
-and fun ideas from <B>Privoxy</B> users.
+<A HREF="http://sourceforge.net/tracker/?group_id=11118">http://sourceforge.net/tracker/?group_id=11118</A>&amp;atid=460288, to submit ``misses'' and other
+configuration related suggestions to the developers. 
 <P>
 <A HREF="http://www.junkbusters.com/ht/en/cookies.html">http://www.junkbusters.com/ht/en/cookies.html,</A>
 an explanation how cookies are used to track web users.
@@ -309,15 +366,15 @@ an explanation how cookies are used to track web users.
 <A HREF="http://www.junkbusters.com/ijb.html">http://www.junkbusters.com/ijb.html,</A>
 the original Internet Junkbuster.
 <P>
-<A HREF="http://www.waldherr.org/junkbuster/">http://www.waldherr.org/junkbuster/,</A>
-Stefan Waldherr's version of Junkbuster, from which <B>Privoxy</B> was
-derived.
-<P>
-<A HREF="http://privacy.net/analyze/">http://privacy.net/analyze/,</A> a useful site
+<A HREF="http://privacy.net/">http://privacy.net/,</A> a useful site
 to check what information about you is leaked while you browse the web.
 <P>
 <A HREF="http://www.squid-cache.org/">http://www.squid-cache.org/,</A> a very popular
 caching proxy, which is often used together with <B>Privoxy</B>.
+<P>
+<A HREF="http://tor.eff.org/">http://tor.eff.org/,</A> 
+<B>Tor</B> can help anonymize web browsing, 
+web publishing, instant messaging, IRC, SSH, and other applications.
 <P>
 <A HREF="http://www.privoxy.org/developer-manual/">http://www.privoxy.org/developer-manual/,</A> 
 the <B>Privoxy</B> developer manual. 
@@ -326,30 +383,13 @@ the <B>Privoxy</B> developer manual.
 
 <P>
 <PRE>
- Hal Burgiss (docs)
- Jon Foster
- Andreas Oesterhelt
- David Schmidt (OS/2, Mac OSX ports)
-
- Johny Agotnes 
- Rodrigo Barbosa (RPM specfiles)
- Moritz Barsnick
- Mattes Dolak 
- Karsten Hopp (Red Hat)
- Alexander Lazic
- Daniel Leite
- G&#225;bor Lipt&#225;k
- Adam Lock (Win32)
- Guy Laroche
- Haroon Rafique
- Roland Rosenfeld (Debian)
- Georg Sauthoff (Gentoo)
- Thomas Steudten
- Joerg Strohmayer (Amiga)
- Rodney Stromlund
- Sviatoslav Sviridov
- Sarantis Paskalis
- Stefan Waldherr
+ Fabian Keil, developer
+ David Schmidt, developer
+ 
+ Hal Burgiss
+ Ian Cummings
+ F&#233;lix Rauch
+ Roland Rosenfeld
 </PRE>
 
 <A NAME="lbAN">&nbsp;</A>
@@ -360,7 +400,7 @@ the <B>Privoxy</B> developer manual.
 
 <P>
 
-Copyright (C) 2001 - 2003 by Privoxy Developers &lt;<A HREF="mailto:developers@privoxy.org">developers@privoxy.org</A>&gt;
+Copyright (C) 2001 - 2006 by Privoxy Developers &lt;<A HREF="mailto:ijbswa-developers@lists.sourceforge.net">ijbswa-developers@lists.sourceforge.net</A>&gt;
 <P>
 
 Some source code is based on code Copyright (C) 1997 by Anonymous Coders
@@ -381,14 +421,14 @@ This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the 
 <I>GNU General Public License</I> for
-more details, which is available from the Free Software Foundation, Inc, 59
-Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+more details, which is available from the Free Software Foundation, Inc, 
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 <P>
 
 You should have received a copy of the  <I>GNU General Public License</I>
 along with this program; if not, write to the  Free Software
-Foundation, Inc. 59 Temple Place - Suite 330
-Boston, MA 02111-1307
+Foundation, Inc. 51 Franklin Street, Fifth Floor
+Boston, MA 02110-1301
 USA 
 <P>
 
@@ -417,6 +457,6 @@ USA
 This document was created by
 man2html,
 using the manual pages.<BR>
-Time: 02:05:48 GMT, March 26, 2003
+Time: 01:21:32 GMT, September 22, 2006
 </BODY>
 </HTML>

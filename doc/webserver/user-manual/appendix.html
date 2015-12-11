@@ -1,20 +1,22 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Appendix</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.3 User Manual"
+TITLE="Privoxy 3.0.5 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="See Also"
 HREF="seealso.html"><LINK
 REL="STYLESHEET"
 TYPE="text/css"
-HREF="../p_doc.css"></HEAD
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
 ><BODY
 CLASS="SECT1"
 BGCOLOR="#EEEEEE"
@@ -34,7 +36,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.3 User Manual</TH
+>Privoxy 3.0.5 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -67,16 +69,16 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="APPENDIX"
->14. Appendix</A
-></H1
+></A
+>14. Appendix</H1
 ><DIV
 CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
 NAME="REGEX"
->14.1. Regular Expressions</A
-></H2
+></A
+>14.1. Regular Expressions</H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -98,10 +100,9 @@ HREF="http://www.pcre.org/"
 TARGET="_top"
 >PCRE</A
 > and
- <A
-HREF="http://www.oesterhelt.org/pcrs/"
-TARGET="_top"
->PCRS</A
+ <SPAN
+CLASS="APPLICATION"
+>PCRS</SPAN
 > libraries.</P
 ><P
 > If you are reading this, you probably don't understand what <SPAN
@@ -135,17 +136,17 @@ CLASS="QUOTE"
 CLASS="COMMAND"
 >dir</B
 > command in DOS. 
- <VAR
+ <TT
 CLASS="LITERAL"
->*.*</VAR
+>*.*</TT
 > matches all filenames. The <SPAN
 CLASS="QUOTE"
 >"special"</SPAN
 >
  character here is the asterisk which matches any and all characters. We can be
- more specific and use <VAR
+ more specific and use <TT
 CLASS="LITERAL"
->?</VAR
+>?</TT
 > to match just individual
  characters. So <SPAN
 CLASS="QUOTE"
@@ -325,7 +326,7 @@ BORDER="0"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->[]</I
+>[ ]</I
 ></SPAN
 > - Characters enclosed in brackets will be matched if
   any of the enclosed characters are encountered. For instance, <SPAN
@@ -359,7 +360,7 @@ BORDER="0"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->()</I
+>( )</I
 ></SPAN
 > - parentheses are used to group a sub-expression,
   or multiple sub-expressions.
@@ -428,9 +429,9 @@ CLASS="APPLICATION"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
-><VAR
+><TT
 CLASS="LITERAL"
->/.*/banners/.*</VAR
+>/.*/banners/.*</TT
 ></I
 ></SPAN
 > - A  simple example
@@ -479,15 +480,15 @@ CLASS="QUOTE"
 > in the path
  somewhere.</P
 ><P
-> A now something a little more complex:</P
+> And now something a little more complex:</P
 ><P
 > <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
-><VAR
+><TT
 CLASS="LITERAL"
->/.*/adv((er)?ts?|ertis(ing|ements?))?/</VAR
+>/.*/adv((er)?ts?|ertis(ing|ements?))?/</TT
 ></I
 ></SPAN
 > - 
@@ -609,16 +610,16 @@ CLASS="QUOTE"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
-><VAR
+><TT
 CLASS="LITERAL"
->/.*/advert[0-9]+\.(gif|jpe?g)</VAR
+>/.*/advert[0-9]+\.(gif|jpe?g)</TT
 ></I
 ></SPAN
 > - Again 
  another path statement with forward slashes. Anything in the square brackets 
  <SPAN
 CLASS="QUOTE"
->"[]"</SPAN
+>"[ ]"</SPAN
 > can be matched. This is using <SPAN
 CLASS="QUOTE"
 >"0-9"</SPAN
@@ -727,9 +728,9 @@ CLASS="APPLICATION"
 ><P
 > More reading on Perl Compatible Regular expressions: 
  <A
-HREF="http://www.perldoc.com/perl5.6/pod/perlre.html"
+HREF="http://perldoc.perl.org/perlre.html"
 TARGET="_top"
->http://www.perldoc.com/perl5.6/pod/perlre.html</A
+>http://perldoc.perl.org/perlre.html</A
 ></P
 ><P
 > For information on regular expression based substitutions and their applications
@@ -744,12 +745,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN3815"
->14.2. <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->'s Internal Pages</A
-></H2
+NAME="AEN4920"
+></A
+>14.2. Privoxy's Internal Pages</H2
 ><P
 > Since <SPAN
 CLASS="APPLICATION"
@@ -793,7 +791,7 @@ CLASS="APPLICATION"
    Privoxy main page: 
   </P
 ><A
-NAME="AEN3830"
+NAME="AEN4934"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -826,7 +824,7 @@ CLASS="APPLICATION"
     editing of actions files:
   </P
 ><A
-NAME="AEN3838"
+NAME="AEN4942"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -846,7 +844,7 @@ TARGET="_top"
     Show the source code version numbers:
   </P
 ><A
-NAME="AEN3843"
+NAME="AEN4947"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -866,7 +864,7 @@ TARGET="_top"
    Show the browser's request headers:
   </P
 ><A
-NAME="AEN3848"
+NAME="AEN4952"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -886,7 +884,7 @@ TARGET="_top"
    Show which actions apply to a URL and why:
   </P
 ><A
-NAME="AEN3853"
+NAME="AEN4957"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -910,7 +908,7 @@ CLASS="QUOTE"
    to run, but only as a pass-through proxy, with no actions taking place:
   </P
 ><A
-NAME="AEN3859"
+NAME="AEN4963"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -927,7 +925,7 @@ TARGET="_top"
 >   Short cuts. Turn off, then on: 
   </P
 ><A
-NAME="AEN3863"
+NAME="AEN4967"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -941,7 +939,7 @@ TARGET="_top"
    </P
 ></BLOCKQUOTE
 ><A
-NAME="AEN3866"
+NAME="AEN4970"
 ></A
 ><BLOCKQUOTE
 CLASS="BLOCKQUOTE"
@@ -965,8 +963,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="BOOKMARKLETS"
->14.2.1. Bookmarklets</A
-></H3
+></A
+>14.2.1. Bookmarklets</H3
 ><P
 > Below are some <SPAN
 CLASS="QUOTE"
@@ -1048,15 +1046,6 @@ TARGET="_top"
 ><LI
 ><P
 >    <A
-HREF="javascript:w=Math.floor(screen.width/2);h=Math.floor(screen.height*0.9);void(window.open('http://www.privoxy.org/actions/index.php?url='+escape(location.href),'Feedback','screenx='+w+',width='+w+',height='+h+',scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());"
-TARGET="_top"
->Privoxy - Submit Actions File Feedback</A
->
-   </P
-></LI
-><LI
-><P
->    <A
 HREF="javascript:void(window.open('http://config.privoxy.org/show-url-info?url='+escape(location.href),'Why').focus());"
 TARGET="_top"
 >Privoxy - Why?</A
@@ -1081,8 +1070,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CHAIN"
->14.3. Chain of Events</A
-></H2
+></A
+>14.3. Chain of Events</H2
 ><P
 > Let's take a quick look at the basic sequence of events when a web page is 
  requested by your browser and <SPAN
@@ -1110,7 +1099,11 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > traps any request for its own internal CGI 
-   pages (e.g http://p.p/) and sends the CGI page back to the browser.
+   pages (e.g <A
+HREF="http://p.p/"
+TARGET="_top"
+>http://p.p/</A
+>) and sends the CGI page back to the browser.
   </P
 ></LI
 ><LI
@@ -1253,13 +1246,10 @@ CLASS="QUOTE"
    <TT
 CLASS="FILENAME"
 >default.filter</TT
->) are processed against the buffered
-   content. Filters are applied in the order they are specified in the
-   <TT
-CLASS="FILENAME"
->default.filter</TT
-> file. Animated GIFs, if present, are
-   reduced to either the first or last frame, depending on the action
+> and any other filter files) are
+   processed against the buffered content. Filters are applied in the order
+   they are specified in one of the filter files. Animated GIFs, if present,
+   are reduced to either the first or last frame, depending on the action
    setting.The entire page, which is now filtered, is then sent by
    <SPAN
 CLASS="APPLICATION"
@@ -1290,7 +1280,7 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->   As the browser receives the now (probably filtered) page content, it 
+>   As the browser receives the now (possibly filtered) page content, it 
    reads and then requests any URLs that may be embedded within the page
    source, e.g. ad images, stylesheets, JavaScript, other HTML documents (e.g.
    frames), sounds, etc. For each of these objects, the browser issues a new
@@ -1307,8 +1297,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACTIONSANAT"
->14.4. Anatomy of an Action</A
-></H2
+></A
+>14.4. Troubleshooting: Anatomy of an Action</H2
 ><P
 > The way <SPAN
 CLASS="APPLICATION"
@@ -1357,6 +1347,12 @@ HREF="appendix.html#BOOKMARKLETS"
  and easy way to do this (be sure to flush caches afterward!). Looking at the 
  logs is a good idea too.</P
 ><P
+> Another easy troubleshooting step to try is if you have done any
+ customization of your installation, revert back to the installed
+ defaults and see if that helps. There are times the developers get complaints
+ about one thing or another, and the problem is more related to a customized
+ configuration issue.</P
+><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -1385,10 +1381,7 @@ CLASS="QUOTE"
 >"+filter"</SPAN
 ></A
 > action) from
- the <TT
-CLASS="FILENAME"
->default.filter</TT
-> file since this is handled very
+ one of the filter files since this is handled very
  differently and not so easy to trap! It also will not tell you about any other
  URLs that may be embedded within the URL you are testing. For instance, images
  such as ads are expressed as URLs within the raw page source of HTML pages. So
@@ -1406,7 +1399,8 @@ HREF="http://google.com"
 TARGET="_top"
 >google.com</A
 >, 
- and look at it one section at a time:</P
+ and look at it one section at a time in a sample configuration (your real 
+ configuration may vary):</P
 ><P
 > <TABLE
 BORDER="0"
@@ -1426,38 +1420,63 @@ CLASS="GUIBUTTON"
 >[ Edit ]</SPAN
 >
 
-{-add-header 
- -block 
- -crunch-outgoing-cookies 
- -crunch-incoming-cookies 
- +deanimate-gifs{last} 
- -downgrade-http-version 
- +fast-redirects 
- -filter{popups} 
- -filter{fun} 
- -filter{shockwave-flash} 
- -filter{crude-parental} 
- +filter{html-annoyances} 
- +filter{js-annoyances} 
- +filter{content-cookies} 
- +filter{webbugs} 
- +filter{refresh-tags} 
- +filter{nimda} 
- +filter{banners-by-size} 
- +hide-forwarded-for-headers 
- +hide-from-header{block} 
- +hide-referer{forge} 
- -hide-user-agent 
- -handle-as-image 
- -kill-popups 
- -limit-connect 
- +prevent-compression 
- -send-vanilla-wafer 
- -send-wafer 
- +session-cookies-only 
- +set-image-blocker{pattern} }
+ {-add-header
+ -block
+ -content-type-overwrite
+ -crunch-client-header
+ -crunch-if-none-match
+ -crunch-incoming-cookies
+ -crunch-outgoing-cookies
+ -crunch-server-header
+ +deanimate-gifs {last}
+ -downgrade-http-version
+ +fast-redirects {check-decoded-url}
+ -filter {js-events}
+ -filter {content-cookies}
+ -filter {all-popups}
+ -filter {banners-by-link}
+ -filter {tiny-textforms}
+ -filter {frameset-borders}
+ -filter {demoronizer}
+ -filter {shockwave-flash}
+ -filter {quicktime-kioskmode}
+ -filter {fun}
+ -filter {crude-parental}
+ -filter {site-specifics}
+ +filter {js-annoyances}
+ +filter {html-annoyances}
+ +filter {refresh-tags}
+ +filter {unsolicited-popups}
+ +filter {img-reorder}
+ +filter {banners-by-size}
+ +filter {webbugs}
+ +filter {jumping-windows}
+ +filter {ie-exploits}
+ -filter-client-headers
+ -filter-server-headers
+ -force-text-mode
+ -handle-as-empty-document
+ -handle-as-image
+ -hide-accept-language
+ -hide-content-disposition
+ +hide-forwarded-for-headers
+ +hide-from-header {block}
+ -hide-if-modified-since
+ +hide-referrer {forge}
+ -hide-user-agent
+ -inspect-jpegs
+ -kill-popups
+ -limit-connect
+ -overwrite-last-modified
+ +prevent-compression
+ -redirect
+ -send-vanilla-wafer
+ -send-wafer
+ +session-cookies-only
+ +set-image-blocker {pattern}
+ -treat-forbidden-connects-like-blocks }
 /
-
+ 
  { -session-cookies-only }
  .google.com
 
@@ -1477,7 +1496,7 @@ CLASS="GUIBUTTON"
 ></TABLE
 ></P
 ><P
-> This tells us how we have defined our 
+> This is telling us how we have defined our 
  <A
 HREF="actions-file.html#ACTIONS"
 ><SPAN
@@ -1485,63 +1504,77 @@ CLASS="QUOTE"
 >"actions"</SPAN
 ></A
 >, and
- which ones match for our example, <SPAN
+ which ones match for our test case, <SPAN
 CLASS="QUOTE"
 >"google.com"</SPAN
->. The first listing
- is any matches for the <TT
-CLASS="FILENAME"
->standard.action</TT
-> file. No hits at
- all here on <SPAN
+>. 
+ Displayed is all the actions that are available to us. Remember,
+ the <TT
+CLASS="LITERAL"
+>+</TT
+> sign denotes <SPAN
 CLASS="QUOTE"
->"standard"</SPAN
->. Then next is <SPAN
+>"on"</SPAN
+>. <TT
+CLASS="LITERAL"
+>-</TT
+>
+ denotes <SPAN
 CLASS="QUOTE"
->"default"</SPAN
->, or
- our <TT
+>"off"</SPAN
+>. So some are <SPAN
+CLASS="QUOTE"
+>"on"</SPAN
+> here, but many 
+ are <SPAN
+CLASS="QUOTE"
+>"off"</SPAN
+>. Each example we try may provide a slightly different
+ end result, depending on our configuration directives.</P
+><P
+> The first listing
+  is for our <TT
 CLASS="FILENAME"
 >default.action</TT
-> file. The large, multi-line listing,
- is how the actions are set to match for all URLs, i.e. our default settings.
- If you look at your <SPAN
+> file. The large, multi-line
+  listing, is how the actions are set to match for all URLs, i.e. our default
+  settings. If you look at your <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
-> file, this would be the section
- just below the <SPAN
+> file, this would be the
+  section just below the <SPAN
 CLASS="QUOTE"
 >"aliases"</SPAN
-> section near the top. This will apply to
- all URLs as signified by the single forward slash at the end of the listing
- -- <SPAN
+> section near the top. This
+  will apply to all URLs as signified by the single forward slash at the end
+  of the listing -- <SPAN
 CLASS="QUOTE"
->"/"</SPAN
+>" / "</SPAN
 >.</P
 ><P
-> But we can define additional actions that would be exceptions to these general
- rules, and then list specific URLs (or patterns) that these exceptions would
- apply to. Last match wins. Just below this then are two explicit matches for
- <SPAN
+> But we have defined additional actions that would be exceptions to these general
+ rules, and then we list specific URLs (or patterns) that these exceptions
+ would apply to. Last match wins. Just below this then are two explicit
+ matches for <SPAN
 CLASS="QUOTE"
 >".google.com"</SPAN
->. The first is negating our previous cookie setting, 
- which was for <A
+>. The first is negating our previous
+ cookie setting, which was for <A
 HREF="actions-file.html#SESSION-COOKIES-ONLY"
 ><SPAN
 CLASS="QUOTE"
 >"+session-cookies-only"</SPAN
 ></A
 >
- (i.e. not persistent). So we will allow persistent cookies for google. The
- second turns <SPAN
+ (i.e. not persistent). So we will allow persistent cookies for google, at
+ least that is how it is in this example. The second turns
+ <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >off</I
 ></SPAN
-> any 
- <A
+> any <A
 HREF="actions-file.html#FAST-REDIRECTS"
 ><SPAN
 CLASS="QUOTE"
@@ -1557,21 +1590,39 @@ CLASS="QUOTE"
  <SPAN
 CLASS="QUOTE"
 >"www.google.com"</SPAN
->. So, apparently, we have these two actions
- defined somewhere in the lower part of our <TT
+> or <SPAN
+CLASS="QUOTE"
+>"mail.google.com"</SPAN
+>. But it would not 
+ match <SPAN
+CLASS="QUOTE"
+>"www.google.de"</SPAN
+>! So, apparently, we have these two actions
+ defined as exceptions to the general rules at the top somewhere in the lower
+ part of our <TT
 CLASS="FILENAME"
 >default.action</TT
->
- file, and <SPAN
+> file, and
+ <SPAN
 CLASS="QUOTE"
 >"google.com"</SPAN
-> is referenced somewhere in these latter
- sections.</P
+> is referenced somewhere in these latter sections.</P
 ><P
 > Then, for our <TT
 CLASS="FILENAME"
 >user.action</TT
-> file, we again have no hits.</P
+> file, we again have no hits.
+ So there is nothing google-specific that we might have added to our own, local
+ configuration. If there was, those actions would over-rule any actions from 
+ previously processed files, such as <TT
+CLASS="FILENAME"
+>default.action</TT
+>.
+ <TT
+CLASS="FILENAME"
+>user.action</TT
+> typically has the last word. This is the
+ best place to put hard and fast exceptions,</P
 ><P
 > And finally we pull it all together in the bottom section and summarize how
  <SPAN
@@ -1596,36 +1647,49 @@ WIDTH="100%"
 CLASS="SCREEN"
 >&#13; Final results:
  
- -add-header 
- -block 
- -crunch-outgoing-cookies 
- -crunch-incoming-cookies 
- +deanimate-gifs{last} 
- -downgrade-http-version 
- -fast-redirects 
- -filter{popups} 
- -filter{fun} 
- -filter{shockwave-flash} 
- -filter{crude-parental} 
- +filter{html-annoyances} 
- +filter{js-annoyances} 
- +filter{content-cookies} 
- +filter{webbugs} 
- +filter{refresh-tags} 
- +filter{nimda} 
- +filter{banners-by-size} 
- +hide-forwarded-for-headers 
- +hide-from-header{block} 
- +hide-referer{forge} 
- -hide-user-agent 
- -handle-as-image 
- -kill-popups 
- -limit-connect 
- +prevent-compression 
- -send-vanilla-wafer 
+ -add-header
+ -block
+ -content-type-overwrite
+ -crunch-client-header
+ -crunch-if-none-match
+ -crunch-incoming-cookies
+ -crunch-outgoing-cookies
+ -crunch-server-header
+ +deanimate-gifs {last}
+ -downgrade-http-version
+ -fast-redirects
+ +filter {js-annoyances}
+ +filter {html-annoyances}
+ +filter {refresh-tags}
+ +filter {unsolicited-popups}
+ +filter {img-reorder}
+ +filter {banners-by-size}
+ +filter {webbugs}
+ +filter {jumping-windows}
+ +filter {ie-exploits}
+ -filter-client-headers
+ -filter-server-headers
+ -force-text-mode
+ -handle-as-empty-document
+ -handle-as-image
+ -hide-accept-language
+ -hide-content-disposition
+ +hide-forwarded-for-headers
+ +hide-from-header {block}
+ -hide-if-modified-since
+ +hide-referrer {forge}
+ -hide-user-agent
+ -inspect-jpegs
+ -kill-popups
+ -limit-connect
+ -overwrite-last-modified
+ +prevent-compression
+ -redirect
+ -send-vanilla-wafer
  -send-wafer
- -session-cookies-only 
- +set-image-blocker{pattern} </PRE
+ -session-cookies-only
+ +set-image-blocker {pattern}
+ -treat-forbidden-connects-like-blocks </PRE
 ></TD
 ></TR
 ></TABLE
@@ -1638,6 +1702,11 @@ CLASS="QUOTE"
 > and <SPAN
 CLASS="QUOTE"
 >"session-cookies-only"</SPAN
+>,
+ which are activated specifically for this site in our configuration, 
+ and thus show in the <SPAN
+CLASS="QUOTE"
+>"Final Results"</SPAN
 >.</P
 ><P
 > Now another example, <SPAN
@@ -1653,28 +1722,32 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; { +block +handle-as-image }
-  .ad.doubleclick.net
-
- { +block +handle-as-image }
+>&#13; { +block }
   ad*.
 
+ { +block }
+  .ad.
+
  { +block +handle-as-image }
-  .doubleclick.net</PRE
+  .[a-vx-z]*.doubleclick.net</PRE
 ></TD
 ></TR
 ></TABLE
 ></P
 ><P
-> We'll just show the interesting part here, the explicit matches. It is 
- matched three different times. Each as an <SPAN
+> We'll just show the interesting part here - the explicit matches. It is 
+ matched three different times. Two <SPAN
+CLASS="QUOTE"
+>"+block"</SPAN
+> sections, 
+ and a <SPAN
 CLASS="QUOTE"
 >"+block +handle-as-image"</SPAN
 >,
  which is the expanded form of one of our aliases that had been defined as: 
  <SPAN
 CLASS="QUOTE"
->"+imageblock"</SPAN
+>"+block-as-image"</SPAN
 >. (<A
 HREF="actions-file.html#ALIASES"
 ><SPAN
@@ -1716,13 +1789,16 @@ CLASS="QUOTE"
 >.
  The custom alias <SPAN
 CLASS="QUOTE"
->"+imageblock"</SPAN
-> just simplifies the process and make 
- it more readable.</P
+>"<TT
+CLASS="LITERAL"
+>+block-as-image</TT
+>"</SPAN
+> just
+ simplifies the process and make it more readable.</P
 ><P
 > One last example. Let's try <SPAN
 CLASS="QUOTE"
->"http://www.rhapsodyk.net/adsl/HOWTO/"</SPAN
+>"http://www.example.net/adsl/HOWTO/"</SPAN
 >.
  This one is giving us problems. We are getting a blank page. Hmmm ...</P
 ><P
@@ -1734,7 +1810,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; Matches for http://www.rhapsodyk.net/adsl/HOWTO/:
+>&#13; Matches for http://www.example.net/adsl/HOWTO/:
 
  In file: default.action <SPAN
 CLASS="GUIBUTTON"
@@ -1745,12 +1821,16 @@ CLASS="GUIBUTTON"
 >
 
  {-add-header 
-  -block 
-  -crunch-incoming-cookies 
-  -crunch-outgoing-cookies 
+  -block
+  -content-type-overwrite
+  -crunch-client-header
+  -crunch-if-none-match
+  -crunch-incoming-cookies
+  -crunch-outgoing-cookies
+  -crunch-server-header
   +deanimate-gifs 
   -downgrade-http-version 
-  +fast-redirects 
+  +fast-redirects{check-decoded-url}
   +filter{html-annoyances} 
   +filter{js-annoyances} 
   +filter{kill-popups} 
@@ -1759,17 +1839,27 @@ CLASS="GUIBUTTON"
   +filter{banners-by-size} 
   +filter{hal} 
   +filter{fun} 
+  -filter-client-headers
+  -filter-server-headers
+  -force-text-mode
+  -handle-as-empty-document
+  -handle-as-image 
+  -hide-accept-language
+  -hide-content-disposition  
   +hide-forwarded-for-headers 
   +hide-from-header{block} 
   +hide-referer{forge} 
   -hide-user-agent 
-  -handle-as-image 
+  -inspect-jpegs
   +kill-popups 
+  -overwrite-last-modified
   +prevent-compression 
+  -redirect
   -send-vanilla-wafer 
   -send-wafer 
   +session-cookies-only 
-  +set-image-blocker{blank} }
+  +set-image-blocker{blank} 
+  -treat-forbidden-connects-like-blocks }
    /
 
  { +block +handle-as-image }
@@ -1785,23 +1875,38 @@ CLASS="QUOTE"
 > is matching <SPAN
 CLASS="QUOTE"
 >"/ads"</SPAN
->! But 
- we did not want this at all! Now we see why we get the blank page. We could
- now add a new action below this that explicitly does <SPAN
+> in our 
+ configuration! But we did not want this at all! Now we see why we get the
+ blank page. It is actually triggering two different actions here, and 
+ the effects are aggregated so that the URL is blocked, and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is told 
+ to treat the block as if it were an image. But this is, of course, all wrong.
+  We could now add a new action below this (or better in our own
+  <TT
+CLASS="FILENAME"
+>user.action</TT
+> file) that explicitly
+  <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->not</I
+>un</I
 ></SPAN
->
- block (<SPAN
+> blocks (
+  <A
+HREF="actions-file.html#BLOCK"
+><SPAN
 CLASS="QUOTE"
 >"{-block}"</SPAN
->) paths with <SPAN
+></A
+>) paths with
+  <SPAN
 CLASS="QUOTE"
 >"adsl"</SPAN
->. There are
- various ways to handle such exceptions. Example:</P
+> in them (remember, last match in the configuration
+  wins). There are various ways to handle such exceptions. Example:</P
 ><P
 > <TABLE
 BORDER="0"
@@ -1818,10 +1923,12 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> Now the page displays ;-) Be sure to flush your browser's caches when 
- making such changes. Or, try using <VAR
+> Now the page displays ;-) 
+ Remember to flush your browser's caches when making these kinds of changes to
+ your configuration to insure that you get a freshly delivered page! Or, try
+ using <TT
 CLASS="LITERAL"
->Shift+Reload</VAR
+>Shift+Reload</TT
 >.</P
 ><P
 > But now what about a situation where we get no explicit matches like 
@@ -1842,18 +1949,29 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> That actually was very telling and pointed us quickly to where the problem
+> That actually was very helpful and pointed us quickly to where the problem
  was. If you don't get this kind of match, then it means one of the default 
- rules in the first section is causing the problem. This would require some 
- guesswork, and maybe a little trial and error to isolate the offending rule.
- One likely cause would be one of the <SPAN
-CLASS="QUOTE"
->"{+filter}"</SPAN
-> actions. These 
- tend to be harder to troubleshoot. Try adding the URL for the site to one of
- aliases that turn off <SPAN
+ rules in the first section of <TT
+CLASS="FILENAME"
+>default.action</TT
+> is causing
+ the problem. This would require some guesswork, and maybe a little trial and
+ error to isolate the offending rule. One likely cause would be one of the
+ <A
+HREF="actions-file.html#FILTER"
+><SPAN
 CLASS="QUOTE"
 >"+filter"</SPAN
+></A
+> actions.
+ These tend to be harder to troubleshoot.
+ Try adding the URL for the site to one of aliases that turn off
+ <A
+HREF="actions-file.html#FILTER"
+><SPAN
+CLASS="QUOTE"
+>"+filter"</SPAN
+></A
 >:</P
 ><P
 > <TABLE
@@ -1864,7 +1982,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; {shop}
+>&#13; { shop }
  .quietpc.com
  .worldpay.com   # for quietpc.com
  .jungle.com
@@ -1877,14 +1995,20 @@ CLASS="SCREEN"
 ><P
 > <SPAN
 CLASS="QUOTE"
->"{shop}"</SPAN
+>"<TT
+CLASS="LITERAL"
+>{ shop }</TT
+>"</SPAN
 > is an <SPAN
 CLASS="QUOTE"
 >"alias"</SPAN
 > that expands to 
  <SPAN
 CLASS="QUOTE"
->"{ -filter -session-cookies-only }"</SPAN
+>"<TT
+CLASS="LITERAL"
+>{ -filter -session-cookies-only }</TT
+>"</SPAN
 >.
  Or you could do your own exception to negate filtering:&#13;</P
 ><P
@@ -1896,35 +2020,97 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->&#13; {-filter}
- .forbes.com</PRE
+>&#13; { -filter }
+ # Disable ALL filter actions for sites in this section
+ .forbes.com
+ developer.ibm.com
+ localhost</PRE
 ></TD
 ></TR
 ></TABLE
 ></P
 ><P
-> This would turn off all filtering for that site. This would probably be most
- appropriately put in <TT
+> This would turn off all filtering for these sites. This is best
+ put in <TT
 CLASS="FILENAME"
 >user.action</TT
 >, for local site
- exceptions.</P
+ exceptions. Note that when a simple domain pattern is used by itself (without
+ the subsequent path portion), all sub-pages within that domain are included 
+ automatcially in the scope of the action.</P
 ><P
 > Images that are inexplicably being blocked, may well be hitting the 
- <SPAN
+<A
+HREF="actions-file.html#FILTER-BANNERS-BY-SIZE"
+><SPAN
 CLASS="QUOTE"
 >"+filter{banners-by-size}"</SPAN
-> rule, which assumes 
- that images of certain sizes are ad banners (works well most of the time 
- since these tend to be standardized).</P
+></A
+>
+ rule, which assumes 
+ that images of certain sizes are ad banners (works well 
+ <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>most of the time</I
+></SPAN
+>  since these tend to be standardized).</P
 ><P
 > <SPAN
 CLASS="QUOTE"
->"{fragile}"</SPAN
-> is an alias that disables most actions. This can be 
- used as a last resort for problem sites. Remember to flush caches! If this 
- still does not work, you will have to go through the remaining actions one by
- one to find which one(s) is causing the problem.</P
+>"<TT
+CLASS="LITERAL"
+>{ fragile }</TT
+>"</SPAN
+> is an alias that disables most
+ actions that are the most likely to cause trouble. This can be used as a
+ last resort for problem sites. </P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>&#13; { fragile }
+ # Handle with care: easy to break
+ mail.google.
+ mybank.example.com</PRE
+></TD
+></TR
+></TABLE
+></P
+><P
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Remember to flush caches!</I
+></SPAN
+> Note that the 
+ <TT
+CLASS="LITERAL"
+>mail.google</TT
+> reference lacks the TLD portion (e.g. 
+ <SPAN
+CLASS="QUOTE"
+>".com"</SPAN
+>. This will effectively match any TLD with 
+ <TT
+CLASS="LITERAL"
+>google</TT
+> in it, such as <TT
+CLASS="LITERAL"
+>mail.google.de</TT
+>, 
+ just as an example.</P
+><P
+> 
+ If this still does not work, you will have to go through the remaining
+ actions one by one to find which one(s) is causing the problem.</P
 ></DIV
 ></DIV
 ><DIV

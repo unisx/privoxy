@@ -1,7 +1,7 @@
-const char win32_rcs[] = "$Id: win32.c,v 1.9.2.2 2002/08/27 18:03:40 oes Exp $";
+const char win32_rcs[] = "$Id: win32.c,v 1.12 2006/08/12 03:54:37 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/win32.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/win32.c,v $
  *
  * Purpose     :  Win32 User Interface initialization and message loop
  *
@@ -31,6 +31,13 @@ const char win32_rcs[] = "$Id: win32.c,v 1.9.2.2 2002/08/27 18:03:40 oes Exp $";
  *
  * Revisions   :
  *    $Log: win32.c,v $
+ *    Revision 1.12  2006/08/12 03:54:37  david__schmidt
+ *    Windows service integration
+ *
+ *    Revision 1.11  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.9.2.2  2002/08/27 18:03:40  oes
  *    Fixed stupid typo
  *
@@ -99,6 +106,10 @@ const char win32_rcs[] = "$Id: win32.c,v 1.9.2.2 2002/08/27 18:03:40 oes Exp $";
 
 const char win32_h_rcs[] = WIN32_H_VERSION;
 
+/**
+ * A short introductory text about Privoxy.  Used for the "About" box
+ * or the console startup message.
+ */
 const char win32_blurb[] =
 "Privoxy version " VERSION " for Windows\n"
 "Copyright (C) 2000-2002 the Privoxy Team (" HOME_PAGE_URL ")\n"
@@ -109,17 +120,32 @@ const char win32_blurb[] =
 
 #ifdef _WIN_CONSOLE
 
+/**
+ * Hide the console.  If set, the program will disconnect from the 
+ * console and run in the background.  This allows the command-prompt
+ * window to close.
+ */
 int hideConsole     = 0;
 
-#else
 
+#else /* ndef _WIN_CONSOLE */
+
+
+/**
+ * The application instance handle.
+ */
 HINSTANCE g_hInstance;
+
+
+/**
+ * The command to show the window that was specified at startup.
+ */
 int g_nCmdShow;
 
 static void  __cdecl UserInterfaceThread(void *);
 
-#endif
 
+#endif /* ndef _WIN_CONSOLE */
 
 /*********************************************************************
  *
@@ -141,11 +167,14 @@ static void  __cdecl UserInterfaceThread(void *);
  *********************************************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+#if 0   /* See comment about __argc & __argv below */
    int i;
-   int res;
    int argc = 1;
    const char *argv[3];
    char szModule[MAX_PATH+1];
+#endif
+
+   int res;
 #ifndef _WIN_CONSOLE
    HANDLE hInitCompleteEvent = NULL;
 #endif
@@ -169,6 +198,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 #endif /* defined(_WIN32) && defined(_MSC_VER) && defined(_DEBUG) */
 
+
+/************
+ * I couldn't figure out why the command line was being sorta parsed here
+ * instead of using the __argc & __argv globals usually defined in stdlib.h
+ *
+ * From what I can tell by looking at the MinWG source, it supports these
+ * globals, so i'd hope that the other compilers do so as well.
+ * Obviously, if i'm wrong i'll find out soon enough!  :)
+ ************/
+#if 0
    /*
     * Cheat in parsing the command line.  We only ever have at most one
     * paramater, which may optionally be specified inside double quotes.
@@ -199,6 +238,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
    argv[1] = lpCmdLine;
    argv[2] = NULL;
    argc = ((lpCmdLine != NULL) ? 2 : 1);
+#endif /* -END- 0 */
+
 
 #ifndef _WIN_CONSOLE
    /* Create a user-interface thread and wait for it to initialise */
@@ -211,9 +252,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 #ifdef __MINGW32__
-   res = real_main( argc, argv );
+   res = real_main( __argc, __argv );
 #else
-   res = main( argc, argv );
+   res = main( __argc, __argv );
 #endif
 
    return res;
@@ -306,7 +347,7 @@ static void __cdecl UserInterfaceThread(void *pData)
 }
 
 
-#endif
+#endif /* ndef _WIN_CONSOLE */
 
 
 /*

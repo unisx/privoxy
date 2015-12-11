@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Installation</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,27 +74,36 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="INSTALLATION"
->2. Installation</A
-></H1
+></A
+>2. Installation</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
 NAME="WHICHBROWSERS"
->2.1. Which browsers are supported by <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->?</A
-></H3
+></A
+>2.1. Which browsers are supported by Privoxy?</H3
 ><P
 > Any browser that can be configured to use a proxy, which 
- should be virtually all browsers. Direct browser support is not necessary
- since <SPAN
+ should be virtually all browsers, including
+ <SPAN
+CLASS="APPLICATION"
+>Firefox</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>Internet
+ Explorer</SPAN
+>, and <SPAN
+CLASS="APPLICATION"
+>Opera</SPAN
+> among others.
+ Direct browser support is not an absolute requirement since
+ <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> runs as a separate application and
- talks to the browser in the standardized HTTP protocol, just like a web server
+> runs as a separate application and talks
+ to the browser in the standardized HTTP protocol, just like a web server
  does.</P
 ></DIV
 ><DIV
@@ -103,16 +112,16 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WHICHOS"
->2.2. Which operating systems are supported?</A
-></H3
+></A
+>2.2. Which operating systems are supported?</H3
 ><P
 > At present, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is known to run on
- Windows(95, 98, ME, 2000, XP), Linux (RedHat, SuSE, Debian, Conectiva, Gentoo, 
- Slackware), Mac OSX, OS/2, AmigaOS, BeOS, FreeBSD, NetBSD, OpenBSD, Solaris,
- and many more flavors of Unix.</P
+ Windows(95, 98, ME, 2000, XP), Linux (RedHat, SuSE, Debian, Fedora, Gentoo, 
+ Slackware and others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD,
+ Solaris, and various other flavors of Unix.</P
 ><P
 > But any operating system that runs TCP/IP, can conceivably take advantage of
  <SPAN
@@ -138,11 +147,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="EMAIL-CLIENT"
->2.3. Can I use <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> with my email client?</A
-></H3
+></A
+>2.3. Can I use Privoxy with my email client?</H3
 ><P
 > As long as there is some way to set a HTTP proxy for the client, then yes,
  any application can be used, whether it is strictly speaking a
@@ -174,15 +180,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NEWINSTALL"
+></A
 >2.4. Can I install  
- <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> over <SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
->?</A
-></H3
+ Privoxy over Junkbuster?</H3
 ><P
 >   We recommend you un-install <SPAN
 CLASS="APPLICATION"
@@ -204,7 +204,7 @@ TARGET="_top"
 > in the <A
 HREF="../user-manual/index.html"
 TARGET="_top"
->user manual</A
+>User Manual</A
 >
    for details.
  </P
@@ -221,13 +221,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN226"
->2.5. I just installed <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->. Is there anything 
-special I have to do now?</A
-></H3
+NAME="AEN263"
+></A
+>2.5. I just installed Privoxy. Is there anything 
+special I have to do now?</H3
 ><P
 > All browsers must be told to use <SPAN
 CLASS="APPLICATION"
@@ -236,7 +233,12 @@ CLASS="APPLICATION"
  as a proxy by specifying the correct proxy address and port number 
  in the appropriate configuration area for the browser. See below.
  You should also flush your browser's memory and disk cache to get rid of any
- cached junk items, and remove any stored cookies.&#13;</P
+ cached junk items, and remove any stored 
+ <A
+HREF="http://en.wikipedia.org/wiki/Browser_cookie"
+TARGET="_top"
+>cookies</A
+>.&#13;</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -244,20 +246,17 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOCALHOST"
->2.6. What is the proxy address of <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->?</A
-></H3
+></A
+>2.6. What is the proxy address of Privoxy?</H3
 ><P
 >  If you set up the <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to run on
   the computer you browse from (rather than your ISP's server or some
-  networked computer on a LAN), the proxy will be on <VAR
+  networked computer on a LAN), the proxy will be on <TT
 CLASS="LITERAL"
->127.0.0.1</VAR
+>127.0.0.1</TT
 > 
   (sometimes referred to as <SPAN
 CLASS="QUOTE"
@@ -325,7 +324,8 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > does not currently handle
-  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. 
+  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. Be sure that
+  proxying any of these other protocols is not activated.
  </P
 ></DIV
 ><DIV
@@ -334,12 +334,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOTHING"
->2.7. I just installed <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->, and nothing is happening.
-All the ads are there. What's wrong?</A
-></H3
+></A
+>2.7. I just installed Privoxy, and nothing is happening.
+All the ads are there. What's wrong?</H3
 ><P
 > Did you configure your browser to use <SPAN
 CLASS="APPLICATION"
@@ -401,7 +398,7 @@ CLASS="APPLICATION"
  <A
 HREF="http://www.privoxy.org/user-manual/"
 TARGET="_top"
->user manual</A
+>User Manual</A
 >.</P
 ></DIV
 ><DIV
@@ -410,15 +407,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOTUSED"
+></A
 >2.8. I get a <SPAN
 CLASS="QUOTE"
 >"Privoxy is not being used"</SPAN
 > dummy page although
-<SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> is running and being used.</A
-></H3
+Privoxy is running and being used.</H3
 ><P
 > First, make sure that Privoxy is <SPAN
 CLASS="emphasis"
@@ -448,7 +442,7 @@ CLASS="APPLICATION"
  <A
 HREF="http://www.privoxy.org/user-manual/"
 TARGET="_top"
->user manual</A
+>User Manual</A
 >.</P
 ><P
 > Now if <A
@@ -468,10 +462,10 @@ CLASS="APPLICATION"
  browser's cache. Note that shift-reloading the dummy page won't help, since
  that'll only refresh the dummy page, not the redirection that lead you there.</P
 ><P
-> The procedure for clearing the cache varies from browser to browser. As an
+> The procedure for clearing the cache varies from browser to browser. For
  example, <SPAN
 CLASS="APPLICATION"
->Mozilla</SPAN
+>Mozilla/Netscape</SPAN
 > users would click 
  <SPAN
 CLASS="GUIBUTTON"
@@ -500,7 +494,32 @@ CLASS="QUOTE"
 CLASS="GUIBUTTON"
 >Clear Disk Cache</SPAN
 >"</SPAN
->.</P
+>.
+ And, <SPAN
+CLASS="APPLICATION"
+>Firefox</SPAN
+> users would click 
+ <SPAN
+CLASS="GUIBUTTON"
+>Tools</SPAN
+> --&#62; <SPAN
+CLASS="GUIBUTTON"
+>Options</SPAN
+> --&#62;
+ <SPAN
+CLASS="GUIBUTTON"
+>Privacy</SPAN
+> --&#62; <SPAN
+CLASS="GUIBUTTON"
+>Cache</SPAN
+> and
+ then click <SPAN
+CLASS="QUOTE"
+>"<SPAN
+CLASS="GUIBUTTON"
+>Clear Cache Now</SPAN
+>"</SPAN
+>.&#13;</P
 ></DIV
 ></DIV
 ><DIV

@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32.rc,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/w32.rc,v $
  *
  * Purpose     :  Windows GUI resource script.
  *
@@ -31,6 +31,14 @@
  *
  * Revisions   :
  *    $Log: w32.rc,v $
+ *    Revision 1.20  2006/08/18 02:06:25  david__schmidt
+ *    Making icon go back to blue when idle.
+ *    See: bug #967648.
+ *
+ *    Revision 1.19  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.17.2.1  2002/08/21 17:58:40  oes
  *     - Reorder of Win32 menu
  *     - "Show Privoxy Window" now a toggle
@@ -169,7 +177,7 @@ IDI_ANIMATED5           ICON    DISCARDABLE     "icons/ico00005.ico"
 IDI_ANIMATED6           ICON    DISCARDABLE     "icons/ico00006.ico"
 IDI_ANIMATED7           ICON    DISCARDABLE     "icons/ico00007.ico"
 IDI_ANIMATED8           ICON    DISCARDABLE     "icons/ico00008.ico"
-IDI_IDLE                ICON    DISCARDABLE     "icons/idle.ico"
+IDI_IDLE                ICON    DISCARDABLE     "icons/privoxy.ico"
 
 #endif /* Neutral resources */
 

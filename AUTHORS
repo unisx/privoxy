@@ -1,45 +1,42 @@
               Authors of Privoxy v2.9.x and 3.x
 ===========================================================================
 
-Current Developement Team:
+Current Privoxy Team:
 
- Hal Burgiss (docs)
- Andreas Oesterhelt
- David Schmidt (OS/2, Mac OSX ports)
+ Fabian Keil, developer
+ David Schmidt, developer
  
+ Hal Burgiss
+ Ian Cummings
+ Félix Rauch
+ Roland Rosenfeld
 
-
-Current and Former Project Contributors:
+Former Privoxy Team Members:
 
  Johny Agotnes 
- Rodrigo Barbosa (RPM specfiles)
+ Rodrigo Barbosa
  Moritz Barsnick
  Brian Dessent
- Mattes Dolak 
  Jon Foster
- Karsten Hopp (Red Hat)
+ Karsten Hopp
  Alexander Lazic
  Daniel Leite
  Gábor Lipták
- Adam Lock (Win32)
+ Adam Lock
  Guy Laroche
+ Mark Martinec 
+ Andreas Oesterhelt
  Haroon Rafique
- Roland Rosenfeld (Debian)
- Georg Sauthoff (Gentoo)
+ Georg Sauthoff
  Thomas Steudten
- Joerg Strohmayer (Amiga)
+ Joerg Strohmayer
  Rodney Stromlund
  Sviatoslav Sviridov
  Sarantis Paskalis
  Stefan Waldherr
 
-Based in part on code originally developed by:
-
- Junkbusters Corp.
- Anonymous Coders
-
-Thanks to the many people who have tested Privoxy, reported bugs, or made
-suggestions. These include (in alphabetical order):
+Thanks to the many people who have tested Privoxy, reported bugs, made
+suggestions or contributed in some way. These include (in alphabetical order):
 
  Ken Arromdee
  Devin Bayer
@@ -47,19 +44,32 @@ suggestions. These include (in alphabetical order):
  Andrew J. Caines
  Clifford Caoile
  Michael T. Davis
- Brian Dessent
+ Mattes Dolak 
  Peter E
  Aaron Hamid
  Magnus Holmgren
+ David Laight
  Don Libes  
  Paul Lieverse
+ Jindrich Makovicka 
  David Mediavilla 
  Oliver Stoeneberg
  Roberto Ragusa
  Maynard Riley
+ Spinor S
  Bart Schelstraete
+ Bobby G. Vinyard
  Darren Wiebe
+ Jörg Weinmann 
+ Oliver Yeoh
  Jamie Zawinski
+
+Privoxy is based in part on code originally developed by:
+
+ Junkbusters Corp.
+ Anonymous Coders
+ Ulrich Drepper
+ Philip Hazel
 
 If we've missed you off this list, please let us know!
 

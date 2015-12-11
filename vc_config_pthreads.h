@@ -2,7 +2,7 @@
 #define CONFIG_H_INCLUDED
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/vc_config_pthreads.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/vc_config_pthreads.h,v $
  *
  * Purpose     :  This file should be the first thing included in every
  *                .c file.  (Before even system headers).  It contains 
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: vc_config_pthreads.h,v $
+ *    Revision 1.5  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.3  2002/05/03 22:54:24  jongfoster
  *    Version number bump to 2.9.15
  *

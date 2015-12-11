@@ -3,7 +3,7 @@
 
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/pcrs.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/pcrs.h,v $
  *
  * Purpose     :  Header file for pcrs.c
  *
@@ -11,6 +11,10 @@
  *
  * Revisions   :
  *    $Log: pcrs.h,v $
+ *    Revision 1.13  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.11  2002/03/08 14:18:23  oes
  *    Fixing -Wconversion warnings
  *
@@ -62,7 +66,7 @@
  *
  *********************************************************************/
 
-#define PCRS_H_VERSION "$Id: pcrs.h,v 1.11 2002/03/08 14:18:23 oes Exp $"
+#define PCRS_H_VERSION "$Id: pcrs.h,v 1.13 2006/07/18 14:48:47 david__schmidt Exp $"
 
 
 #ifndef _PCRE_H

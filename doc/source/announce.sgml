@@ -5,10 +5,11 @@
 <!entity contacting SYSTEM "../contacting.sgml">
 <!entity history SYSTEM "../history.sgml">
 <!entity newfeatures SYSTEM "../newfeatures.sgml">
-<!entity p-version "3.0.0">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity newstuff SYSTEM "../newthisrelease.sgml">
+<!entity p-version "3.0.5">
+<!entity p-status "BETA">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-supp-userman "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
@@ -19,16 +20,14 @@
 
  Purpose     :  Announcement text
                 
- $Id: announce.sgml,v 1.1.2.2 2002/08/30 02:52:11 hal9 Exp $
+ $Id: announce.sgml,v 2.4 2006/09/22 01:27:55 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2006 Privoxy Developers http://www.privoxy.org
  See LICENSE.
 
  ========================================================================
  NOTE: Please read developer-manual/documentation.html before touching 
- anything in this, or other Privoxy documentation. You have been warned!
- Failure to abide by this rule will result in the revocation of your license 
- to live a peaceful existence!
+ anything in this, or other Privoxy documentation.
  ========================================================================
 
  ===================================================================
@@ -58,19 +57,19 @@
 
 <para>
  Announcing <application>Privoxy</application> 
- v.&p-version;<![%p-not-stable;[-&p-status;, and release candidate for 
- v3.0 stable]]>.
-</para>
-<para>
- <![%p-stable;[
- This is the first stable release of Privoxy.
- ]]>
+ v.&p-version;
 </para>
 
 
 <!-- Include privoxy.sgml boilerplate: -->
  &p-intro;
 <!-- end boilerplate -->
+
+<!-- Include new features in this release: -->
+<para>New in this release</para>
+ &newstuff;
+<!-- end boilerplate -->
+
 
 <!-- Include supported.sgml boilerplate: -->
  &supported;
@@ -108,6 +107,6 @@
 </para>
 
 
-<epigraph><attribution>Privoxy Developers <email>developers@privoxy.org</email></attribution><para></para></epigraph>
+<epigraph><attribution>Privoxy Developers <email>ijbswa-developers@lists.sourceforge.net</email></attribution><para></para></epigraph>
 
 </article>

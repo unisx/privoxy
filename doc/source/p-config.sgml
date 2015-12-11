@@ -3,9 +3,9 @@
 
  Purpose     :  Used with other docs and files only.
 
- $Id: p-config.sgml,v 1.1.2.10 2003/02/20 13:50:37 hal9 Exp $
+ $Id: p-config.sgml,v 2.12 2006/09/22 01:27:55 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
 
  ========================================================================
@@ -95,10 +95,10 @@
  Sample Configuration File for Privoxy v&p-version;
 </title>
 <para>
- $Id: p-config.sgml,v 1.1.2.10 2003/02/20 13:50:37 hal9 Exp $
+ $Id: p-config.sgml,v 2.12 2006/09/22 01:27:55 hal9 Exp $
 </para>
 <para>
-Copyright (C) 2001, 2002 Privoxy Developers http://privoxy.org
+Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
 </para>
 
 <para>
@@ -110,8 +110,8 @@ Copyright (C) 2001, 2002 Privoxy Developers http://privoxy.org
       I. INTRODUCTION                                           #
      II. FORMAT OF THE CONFIGURATION FILE                       #
                                                                 #
-      1. CONFIGURATION AND LOG FILE LOCATIONS                   #
-      2. LOCAL SET-UP DOCUMENTATION                             #
+      1. LOCAL SET-UP DOCUMENTATION                             #
+      2. CONFIGURATION AND LOG FILE LOCATIONS                   #
       3. DEBUGGING                                              #
       4. ACCESS CONTROL AND SECURITY                            #
       5. FORWARDING                                             #
@@ -126,7 +126,7 @@ Copyright (C) 2001, 2002 Privoxy Developers http://privoxy.org
 
 <para>
  This file holds the Privoxy configuration.  If you modify this
- file, you will need to send a couple of requests to the proxy
+ file, you will need to send a couple of requests (of any kind) to the proxy
  before any changes take effect.
 </para>
 <para>
@@ -179,459 +179,6 @@ II. FORMAT OF THE CONFIGURATION FILE
 <!-- The following is common to both outputs (mostly) -->
 <!-- ************************************************ -->
 
-<!--   ~~~~~       New section      ~~~~~     -->
-
-<sect2 id="conf-log-loc">
-<title>Configuration and Log File Locations</title>
-
-<para>
- <application>Privoxy</application> can (and normally does) use a number of
- other files for additional configuration, help and logging.
- This section of the configuration file tells <application>Privoxy</application>
- where to find those other files. 
-</para>
-
-<para>
- The user running <application>Privoxy</application>, must have read
- permission for all configuration files, and write permission to any files
- that would be modified, such as log files and actions files.
-</para>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="confdir"><title>confdir</title>
-
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>The directory where the other configuration files are located</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>Path name</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para>/etc/privoxy (Unix) <emphasis>or</emphasis> <application>Privoxy</application> installation dir (Windows) </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para><emphasis>Mandatory</emphasis></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    No trailing <quote><literal>/</literal></quote>, please
-   </para>
-   <para>
-    When development goes modular and multi-user, the blocker, filter, and
-    per-user config will be stored in subdirectories of <quote>confdir</quote>.
-    For now, the configuration directory structure is flat, except for 
-    <filename>confdir/templates</filename>, where the HTML templates for CGI 
-    output reside (e.g. <application>Privoxy's</application> 404 error page). 
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@confdir .</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="logdir"><title>logdir</title>
-
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The directory where all logging takes place (i.e. where <filename>logfile</filename> and 
-    <filename>jarfile</filename> are located) 
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>Path name</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para>/var/log/privoxy (Unix) <emphasis>or</emphasis> <application>Privoxy</application> installation dir (Windows) </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para><emphasis>Mandatory</emphasis></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    No trailing <quote><literal>/</literal></quote>, please
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@logdir .</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="actionsfile"><title>
-actionsfile
-</title>
-<anchor id="default.action">
-<anchor id="standard.action">
-<anchor id="user.action">
-<!-- Note: slightly modified this section 04/28/02, hal. See NOTE. -->
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The <link linkend="actions-file">actions file(s)</link> to use
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>confdir</literal>, without the <literal>.action</literal> suffix</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default values:</term>
-  <listitem>
-   <simplelist>
-    <member>
-     <msgtext><literallayout>  standard     # Internal purposes, no editing recommended</literallayout></msgtext>
-    </member>
-    <member>
-     <msgtext><literallayout>  default      # Main actions file</literallayout></msgtext>
-    </member>
-    <member>
-     <msgtext><literallayout>  user         # User customizations</literallayout></msgtext>
-    </member>
-   </simplelist>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    No actions are taken at all. Simple neutral proxying. 
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    Multiple <literal>actionsfile</literal> lines are permitted, and are in fact recommended!
-   </para>
-   <para> 
-    The default values include standard.action, which is used for internal
-    purposes and should be loaded, default.action, which is the
-    <quote>main</quote> actions file maintained by the developers, and
-    <filename>user.action</filename>, where you can make your personal additions.
-   </para>
-   <para> 
-    Actions files are where all the per site and per URL configuration is done for 
-    ad blocking, cookie management, privacy considerations, etc.
-    There is no point in using <application>Privoxy</application> without at 
-    least one actions file.
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<!-- NOTE: alternate markup to make a simpler list doesn't work due to -->
-<!-- html -> text conversion, blah -->
-<![%config-file;[<literallayout>@@actionsfile standard  # Internal purpose, recommended</literallayout>]]>
-<![%config-file;[<literallayout>@@actionsfile default   # Main actions file</literallayout>]]>
-<![%config-file;[<literallayout>@@actionsfile user      # User customizations</literallayout>]]>
-</sect3>
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="filterfile"><title>filterfile</title>
-<anchor id="default.filter">
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The <link linkend="filter-file">filter file</link> to use
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>confdir</literal></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para>default.filter (Unix) <emphasis>or</emphasis> default.filter.txt (Windows)</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    No textual content filtering takes place, i.e. all
-    <literal>+<link linkend="filter">filter</link>{<replaceable class="parameter">name</replaceable>}</literal>
-    actions in the actions files are turned neutral.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    The <link linkend="filter-file">filter file</link> contains content modification
-    rules that use <link linkend="regex">regular expressions</link>. These rules permit
-    powerful changes on the content of Web pages, e.g., you could disable your favorite
-    JavaScript annoyances, re-write the actual displayed text, or just have some
-    fun replacing <quote>Microsoft</quote> with <quote>MicroSuck</quote> wherever
-    it appears on a Web page.
-   </para>
-   <para>
-    The
-    <literal>+<link linkend="filter">filter</link>{<replaceable class="parameter">name</replaceable>}</literal>
-    actions rely on the relevant filter (<replaceable class="parameter">name</replaceable>)
-    to be defined in the filter file!
-   </para>
-   <para>
-    A pre-defined filter file called <filename>default.filter</filename> that contains
-    a bunch of handy filters for common problems is included in the distribution.
-    See the section on the <literal><link linkend="filter">filter</link></literal>
-    action for a list.
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@filterfile default.filter</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="logfile"><title>logfile</title>
-
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The log file to use
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>logdir</literal></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para>logfile (Unix) <emphasis>or</emphasis> privoxy.log (Windows)</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    No log file is used, all log messages go to the console (<literal>STDERR</literal>).
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
- <!--
-  removed per bug report 688728 02/20/03 HB
-  
-   <para>
-    The windows version will additionally log to the console.
-   </para>
-  --> 
-   <para>
-    The logfile is where all logging and error messages are written. The level
-    of detail and number of messages are set with the <literal>debug</literal>
-    option (see below). The logfile can be useful for tracking down a problem with
-    <application>Privoxy</application> (e.g., it's not blocking an ad you
-    think it should block) but in most cases you probably will never look at it.
-   </para>
-   <para>
-    Your logfile will grow indefinitely, and you will probably want to
-    periodically remove it.  On Unix systems, you can do this with a cron job
-    (see <quote>man cron</quote>). For Red Hat, a <command>logrotate</command> 
-    script has been included.
-   </para> 
-   <para>
-    On SuSE Linux systems, you can place a line like <quote>/var/log/privoxy.*
-    +1024k 644 nobody.nogroup</quote> in <filename>/etc/logfiles</filename>, with
-    the effect that cron.daily will automatically archive, gzip, and empty the
-    log, when it exceeds 1M size.
-   </para>
-   <para>
-    Any log files must be writable by whatever user <application>Privoxy</application>
-    is being run as (default on UNIX, user id is <quote>privoxy</quote>).
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@logfile logfile</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="jarfile"><title>jarfile</title>
-
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The file to store intercepted cookies in
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>logdir</literal></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para>jarfile (Unix) <emphasis>or</emphasis> privoxy.jar (Windows)</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    Intercepted cookies are not stored at all.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    The jarfile may grow to ridiculous sizes over time.
-   </para>
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@jarfile jarfile</literallayout>]]>
-</sect3>
-
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect3 renderas="sect4" id="trustfile"><title>trustfile</title>
-<variablelist>
- <varlistentry>
-  <term>Specifies:</term>
-  <listitem>
-   <para>
-    The trust file to use
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Type of value:</term>
-  <listitem>
-   <para>File name, relative to <literal>confdir</literal></para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Default value:</term>
-  <listitem>
-   <para><emphasis>Unset (commented out)</emphasis>. When activated: trust (Unix) <emphasis>or</emphasis> trust.txt (Windows)</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Effect if unset:</term>
-  <listitem>
-   <para>
-    The entire trust mechanism is turned off.
-   </para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>Notes:</term>
-  <listitem>
-   <para>
-    The trust mechanism is an experimental feature for building white-lists and should
-    be used with care. It is <emphasis>NOT</emphasis> recommended for the casual user.
-   </para>
-   <para>
-    If you specify a trust file, <application>Privoxy</application> will only allow
-    access to sites that are specified in the trustfile. Sites can be listed 
-    in one of two ways:
-   </para>
-   <para>
-    Prepending a <literal>~</literal> character limits access to this site 
-    only (and any sub-paths within this site), e.g. 
-    <literal>~www.example.com</literal>. 
-   </para>
-   <para>
-    Or, you can designate sites as <emphasis>trusted referrers</emphasis>, by
-    prepending the name with a <literal>+</literal> character. The effect is that
-    access to untrusted sites will be granted -- but only if a link from this
-    trusted referrer was used. The link target will then be added to the
-    <quote>trustfile</quote> so that future, direct accesses will be granted.
-    Sites added via this mechanism do not become trusted referrers themselves
-    (i.e. they are added with a <literal>~</literal> designation).
-   </para>
-   <para>
-    If you use the <literal>+</literal> operator in the trust file, it may grow 
-    considerably over time.
-   </para>
-   <para>
-    It is recommended that <application>Privoxy</application> be compiled with
-    the <literal>--disable-force</literal>, <literal>--disable-toggle</literal> and
-    <literal> --disable-editor</literal> options, if this feature is to be
-    used.
-   </para>
-   <para>
-    Possible applications include limiting Internet access for children.
-   </para>
-   
-  </listitem>
- </varlistentry>
-</variablelist>
-
-<![%config-file;[<literallayout>@@#trustfile trust</literallayout>]]>
-</sect3>
-</sect2>
-
-<!--  ~  End section  ~  -->
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -681,16 +228,18 @@ actionsfile
   <term>Notes:</term>
   <listitem>
     <para>
-    The User Manual URI is used for help links from some of the internal CGI pages. 
-    The manual itself is normally packaged with the binary distributions, so you probably want
-    to set this to a locally installed copy. For multi-user setups, you could provide a copy on
-    a local webserver for all your users and use the corresponding URL here.
+    The User Manual URI is the single best source of information on 
+    <application>Privoxy</application>, and is used for help links from some
+    of the internal CGI pages. The manual itself is normally packaged with the
+    binary distributions, so you probably want to set this to a locally
+    installed copy. 
    </para>
    <para>
     Examples:
    </para>
+  <!--
   <para>
-   Unix, in local filesystem:
+   Unix, in local filesystem (may not work with all browsers):
   </para>
   <para>
    <screen>&nbsp;&nbsp;user-manual&nbsp;&nbsp;file:///usr/share/doc/privoxy-&p-version;/user-manual/</screen>
@@ -707,18 +256,34 @@ actionsfile
   <para>
    <screen>&nbsp;&nbsp;user-manual&nbsp;&nbsp;file://///some-server/some-path/privoxy-&p-version;/user-manual/</screen>
   </para>
+ --> 
   <para>
-   Any platform, on local webserver (called <quote>local-webserver</quote>):
+   The best all purpose solution is simply to put the full local
+   <literal>PATH</literal> to where the <citetitle>User Manual</citetitle> is
+   located:
+  </para>
+<para>
+   <screen>&nbsp;&nbsp;user-manual&nbsp;&nbsp;/usr/share/doc/privoxy/user-manual</screen>
   </para>
   <para>
-   <screen>&nbsp;&nbsp;user-manual&nbsp;&nbsp;http://local-webserver/privoxy-user-manual/</screen>
+   The User Manual is then available to anyone with access to the proxy, by 
+   following the built-in URL: <literal>http://config.privoxy.org/user-manual/</literal>
+   (or the shortcut: <literal>http://p.p/user-manual/</literal>).
+  </para>
+  <para>
+   If the documentation is not on the local system, it can be accessed 
+   from a remote server, as:
+  </para>
+  <para>
+   <screen>&nbsp;&nbsp;user-manual&nbsp;&nbsp;http://example.com/privoxy/user-manual/</screen>
   </para>
   <![%user-man;[
    <!-- this gets hammered in conversion to config. Text repeated below. -->
   <warning>
    <para>
      If set, this option should be <emphasis>the first option in the config
-     file</emphasis>, because it is used while the config file is being read.
+     file</emphasis>, because it is used while the config file is being read
+     on start-up.
    </para>
   </warning>     
   ]]>
@@ -901,6 +466,480 @@ actionsfile
 </sect3>
 
 </sect2>
+<!--  ~  End section  ~  -->
+
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect2 id="conf-log-loc">
+<title>Configuration and Log File Locations</title>
+
+<para>
+ <application>Privoxy</application> can (and normally does) use a number of
+ other files for additional configuration, help and logging.
+ This section of the configuration file tells <application>Privoxy</application>
+ where to find those other files. 
+</para>
+
+<para>
+ The user running <application>Privoxy</application>, must have read
+ permission for all configuration files, and write permission to any files
+ that would be modified, such as log files and actions files.
+</para>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="confdir"><title>confdir</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>The directory where the other configuration files are located</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>Path name</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>/etc/privoxy (Unix) <emphasis>or</emphasis> <application>Privoxy</application> installation dir (Windows) </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para><emphasis>Mandatory</emphasis></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    No trailing <quote><literal>/</literal></quote>, please
+   </para>
+  <!-- 
+   This is really outdated and not likely to happen. HB 09/20/06
+   <para>
+    When development goes modular and multi-user, the blocker, filter, and
+    per-user config will be stored in subdirectories of <quote>confdir</quote>.
+    For now, the configuration directory structure is flat, except for 
+    <filename>confdir/templates</filename>, where the HTML templates for CGI 
+    output reside (e.g. <application>Privoxy's</application> 404 error page). 
+   </para>
+  --> 
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@confdir .</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="logdir"><title>logdir</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The directory where all logging takes place (i.e. where <filename>logfile</filename> and 
+    <filename>jarfile</filename> are located) 
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>Path name</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>/var/log/privoxy (Unix) <emphasis>or</emphasis> <application>Privoxy</application> installation dir (Windows) </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para><emphasis>Mandatory</emphasis></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    No trailing <quote><literal>/</literal></quote>, please
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@logdir .</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="actionsfile"><title>
+actionsfile
+</title>
+<anchor id="default.action">
+<anchor id="standard.action">
+<anchor id="user.action">
+<!-- Note: slightly modified this section 04/28/02, hal. See NOTE. -->
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The <link linkend="actions-file">actions file(s)</link> to use
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>File name, relative to <literal>confdir</literal>, without the <literal>.action</literal> suffix</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default values:</term>
+  <listitem>
+   <simplelist>
+    <member>
+     <msgtext><literallayout>  standard     # Internal purposes, no editing recommended</literallayout></msgtext>
+    </member>
+    <member>
+     <msgtext><literallayout>  default      # Main actions file</literallayout></msgtext>
+    </member>
+    <member>
+     <msgtext><literallayout>  user         # User customizations</literallayout></msgtext>
+    </member>
+   </simplelist>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    No actions are taken at all. Simple neutral proxying. 
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Multiple <literal>actionsfile</literal> lines are permitted, and are in fact recommended!
+   </para>
+   <para> 
+    The default values include standard.action, which is used for internal
+    purposes and should be loaded, default.action, which is the
+    <quote>main</quote> actions file maintained by the developers, and
+    <filename>user.action</filename>, where you can make your personal additions.
+   </para>
+   <para> 
+    Actions files are where all the per site and per URL configuration is done for 
+    ad blocking, cookie management, privacy considerations, etc.
+    There is no point in using <application>Privoxy</application> without at 
+    least one actions file.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<!-- NOTE: alternate markup to make a simpler list doesn't work due to -->
+<!-- html -> text conversion, blah -->
+<![%config-file;[<literallayout>@@actionsfile standard  # Internal purpose, recommended</literallayout>]]>
+<![%config-file;[<literallayout>@@actionsfile default   # Main actions file</literallayout>]]>
+<![%config-file;[<literallayout>@@actionsfile user      # User customizations</literallayout>]]>
+</sect3>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="filterfile"><title>filterfile</title>
+<anchor id="default.filter">
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The <link linkend="filter-file">filter file(s)</link> to use
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>File name, relative to <literal>confdir</literal></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>default.filter (Unix) <emphasis>or</emphasis> default.filter.txt (Windows)</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    No textual content filtering takes place, i.e. all
+    <literal>+<link linkend="filter">filter</link>{<replaceable class="parameter">name</replaceable>}</literal>
+    actions in the actions files are turned neutral.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    Multiple <literal>filterfile</literal> lines are permitted.
+   </para>
+   <para>
+    The <link linkend="filter-file">filter files</link> contain content modification
+    rules that use <link linkend="regex">regular expressions</link>. These rules permit
+    powerful changes on the content of Web pages, and optionally the headers
+    as well, e.g., you could disable your favorite JavaScript annoyances,
+    re-write the actual displayed text, or just have some fun 
+    playing buzzword bingo with web pages.
+   </para>
+   <para>
+    The
+    <literal>+<link linkend="filter">filter</link>{<replaceable class="parameter">name</replaceable>}</literal>
+    actions rely on the relevant filter (<replaceable class="parameter">name</replaceable>)
+    to be defined in a filter file!
+   </para>
+   <para>
+    A pre-defined filter file called <filename>default.filter</filename> that contains
+    a number of useful filters for common problems is included in the distribution.
+    See the section on the <literal><link linkend="filter">filter</link></literal>
+    action for a list.
+   </para>
+   <para>
+    It is recommended to place any locally adapted filters into a separate
+    file, such as <filename>user.filter</filename>.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@filterfile default.filter</literallayout>]]>
+<![%config-file;[<literallayout>@@#filterfile user.filter      # User customizations</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="logfile"><title>logfile</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The log file to use
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>File name, relative to <literal>logdir</literal></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>logfile (Unix) <emphasis>or</emphasis> privoxy.log (Windows)</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    No log file is used, all log messages go to the console (<literal>STDERR</literal>).
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+ <!--
+  removed per bug report 688728 02/20/03 HB
+  
+   <para>
+    The windows version will additionally log to the console.
+   </para>
+  --> 
+   <para>
+    The logfile is where all logging and error messages are written. The level
+    of detail and number of messages are set with the <literal>debug</literal>
+    option (see below). The logfile can be useful for tracking down a problem with
+    <application>Privoxy</application> (e.g., it's not blocking an ad you
+    think it should block) but in most cases you probably will never look at it.
+   </para>
+   <para>
+    Your logfile will grow indefinitely, and you will probably want to
+    periodically remove it.  On Unix systems, you can do this with a cron job
+    (see <quote>man cron</quote>). For Red Hat, a <command>logrotate</command> 
+    script has been included.
+   </para> 
+   <para>
+    On SuSE Linux systems, you can place a line like <quote>/var/log/privoxy.*
+    +1024k 644 nobody.nogroup</quote> in <filename>/etc/logfiles</filename>, with
+    the effect that cron.daily will automatically archive, gzip, and empty the
+    log, when it exceeds 1M size.
+   </para>
+   <para>
+    Any log files must be writable by whatever user <application>Privoxy</application>
+    is being run as (default on UNIX, user id is <quote>privoxy</quote>).
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@logfile logfile</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="jarfile"><title>jarfile</title>
+
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The file to store intercepted cookies in
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>File name, relative to <literal>logdir</literal></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>Unset (commented out). When activated: jarfile (Unix) <emphasis>or</emphasis> privoxy.jar (Windows)</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Intercepted cookies are not stored in a dedicated log file.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    The jarfile may grow to ridiculous sizes over time.
+   </para>
+   <para>
+    If debug 8 (show header parsing) is enabled, cookies are
+    written to the logfile with the rest of the headers.
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@#jarfile jarfile</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="trustfile"><title>trustfile</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    The name of the trust file to use
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>File name, relative to <literal>confdir</literal></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para><emphasis>Unset (commented out)</emphasis>. When activated: trust (Unix) <emphasis>or</emphasis> trust.txt (Windows)</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    The entire trust mechanism is disabled.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    The trust mechanism is an experimental feature for building white-lists and should
+    be used with care. It is <emphasis>NOT</emphasis> recommended for the casual user.
+   </para>
+   <para>
+    If you specify a trust file, <application>Privoxy</application> will only allow
+    access to sites that are specified in the trustfile. Sites can be listed 
+    in one of two ways:
+   </para>
+   <para>
+    Prepending a <literal>~</literal> character limits access to this site 
+    only (and any sub-paths within this site), e.g. 
+    <literal>~www.example.com</literal> allows access to
+    <literal>~www.example.com/features/news.html</literal>, etc. 
+   </para>
+   <para>
+    Or, you can designate sites as <emphasis>trusted referrers</emphasis>, by
+    prepending the name with a <literal>+</literal> character. The effect is that
+    access to untrusted sites will be granted -- but only if a link from this
+    trusted referrer was used to get there. The link target will then be added
+    to the <quote>trustfile</quote> so that future, direct accesses will be
+    granted. Sites added via this mechanism do not become trusted referrers
+    themselves (i.e. they are added with a <literal>~</literal> designation).
+    There is a limit of 512 such entries, after which new entries will not be
+    made.
+   </para>
+   <para>
+    If you use the <literal>+</literal> operator in the trust file, it may grow 
+    considerably over time.
+   </para>
+   <para>
+    It is recommended that <application>Privoxy</application> be compiled with
+    the <literal>--disable-force</literal>, <literal>--disable-toggle</literal> and
+    <literal> --disable-editor</literal> options, if this feature is to be
+    used.
+   </para>
+   <para>
+    Possible applications include limiting Internet access for children.
+   </para>
+   
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@#trustfile trust</literallayout>]]>
+</sect3>
+</sect2>
+
 <!--  ~  End section  ~  -->
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -1264,6 +1303,60 @@ actionsfile
 
 
 <!--   ~~~~~       New section      ~~~~~     -->
+<sect3 renderas="sect4" id="enable-remote-http-toggle"><title>enable-remote-http-toggle</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    Whether or not Privoxy recognizes special HTTP headers to change its behaviour.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>0 or 1</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para>1</para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Privoxy ignores special HTTP headers.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    When toggled on, the client can change <application>Privoxy's</application>
+    behaviour by setting special HTTP headers. Currently the only supported
+    special header is <quote>X-Filter: No</quote>, to disable filtering for
+    the ongoing request, even if it is enabled in one of the action files.
+   </para>
+   <para>
+    If you are using <application>Privoxy</application> in a
+    multi-user environment or with untrustworthy clients and want to
+    enforce filtering, you will have to disable this option,
+    otherwise you can ignore it. 
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+
+<![%config-file;[<literallayout>@@enable-remote-http-toggle  1</literallayout>]]>
+</sect3>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
 <sect3 renderas="sect4" id="enable-edit-actions"><title>enable-edit-actions</title>
 <variablelist>
  <varlistentry>
@@ -1519,9 +1612,7 @@ ACLs: permit-access and deny-access</title>
  multiple proxies.
  It can be used to better protect privacy and confidentiality when
  accessing specific domains by routing requests to those domains
- through an anonymous public proxy (see e.g. <ulink
- url="http://www.multiproxy.org/anon_list.htm">http://www.multiproxy.org/anon_list.htm</ulink>)
- Or to use a caching proxy to speed up browsing. Or chaining to a parent
+ through an anonymous public proxy. Or to use a caching proxy to speed up browsing. Or chaining to a parent
  proxy may be necessary because the machine that <application>Privoxy</application>
  runs on has no direct Internet access.
 </para>
@@ -1702,6 +1793,44 @@ forward-socks4 and forward-socks4a</title>
   forward-socks4   /               socks-gw.example.com:1080  .
 </screen>
    </para>
+  
+    <para>
+    To chain Privoxy and Tor, both running on the same system, you should use 
+    the rule:
+   </para>
+   <para>
+    <screen>
+  forward-socks4   /               127.0.0.1:9050 .
+</screen>
+   </para>
+
+    <para>
+    The public <application>Tor</application> network can't be used to reach your local network,
+    therefore it's a good idea to make some exceptions:
+   </para>
+   <para>
+    <screen>
+  forward         192.168.*.*/     .
+  forward            10.*.*.*/     .
+  forward           127.*.*.*/     .
+</screen>
+   </para>
+   <para>
+    Unencrypted connections to systems in these address ranges will
+    be as (un)secure as the local network is, but the alternative is that you
+    can't reach the network at all.
+   </para>
+   <para>
+    If you also want to be able to reach servers in your local network by
+    using their names, you will need additional exceptions that look like
+    this:
+   </para>
+   <para>
+    <screen>
+ forward           localhost/     .
+</screen>
+   </para>
+
   </listitem>
  </varlistentry>
 </variablelist>
@@ -1796,6 +1925,67 @@ forward-socks4 and forward-socks4a</title>
 
 </sect3>
 ]]>
+
+<sect3 renderas="sect4" id="forwarded-connect-retries"><title>forwarded-connect-retries</title>
+<variablelist>
+ <varlistentry>
+  <term>Specifies:</term>
+  <listitem>
+   <para>
+    How often Privoxy retries if a forwarded connection request fails. 
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Type of value:</term>
+  <listitem>
+   <para>
+    <replaceable class="parameter">Number of retries.</replaceable>
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Default value:</term>
+  <listitem>
+   <para><emphasis>0</emphasis></para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Effect if unset:</term>
+  <listitem>
+   <para>
+    Forwarded connections are treated like direct connections and no retry attempts are made.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Notes:</term>
+  <listitem>
+   <para>
+    <replaceable class="parameter">forwarded-connect-retries</replaceable> is mainly interesting
+    for socks4a connections, where Privoxy can't detect why the connections failed.
+    The connection might have failed because of a DNS timeout in which case a retry makes sense,
+    but it might also have failed because the server doesn't exist or isn't reachable. In this
+    case the retry will just delay the appearance of Privoxy's error message.
+   </para>
+   <para>
+    Only use this option, if you are getting many forwarding related error messages,
+    that go away when you try again manually. Start with a small value and check Privoxy's
+    logfile from time to time, to see how many retries are usually needed.
+   </para>
+  </listitem>
+ </varlistentry>
+ <varlistentry>
+  <term>Examples:</term>
+  <listitem>
+   <para>
+    forwarded-connect-retries 1
+   </para>
+  </listitem>
+ </varlistentry>
+</variablelist>
+<![%config-file;[<literallayout>@@forwarded-connect-retries  0</literallayout>]]>
+</sect3>
 
 </sect2>
 

@@ -1,7 +1,53 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
-*** Since 3.0.2 (to become Version 3.0.3 soon) ***
+*** Since 3.0.3 ***
+- Windows version can be installed/started as a service.
+- Windows icon stays blue when Privoxy is idle, green when busy.
+- Integrated Fabian Keil's extensive patch.  See:
+  http://www.fabiankeil.de/sourcecode/privoxy/. Includes the 
+  following new or significantly improved actions (among many 
+  other improvements):
+
+     content-type-overwrite{}
+     crunch-client-header{string}
+     crunch-if-none-match
+     crunch-server-header{string}
+     fast-redirects{check-decoded-url}
+     filter-client-headers
+     filter-server-headers
+     force-text-mode
+     handle-as-empty-document
+     hide-accept-language{}
+     hide-content-disposition{}
+     hide-if-modified-since
+     hide-referrer{conditional-block}
+     overwrite-last-modified{}
+     redirect{URL}
+     treat-forbidden-connects-like-blocks
+
+- Standard-compliant clients are prevented from displaying cached
+  copies of Privoxy's error messages after the cause of the problem
+  has gone.
+- Improved DNS error handling.
+- Multiple filter files can now be specified in config.
+- Added jpeg filtering to defend against MS jpeg vulnerability MS04-028
+  with the new inspect-jpegs action.
+- Removed the "arbitrary" 1000 filter limit - addresses tracker #911950
+- Thanks to Jindrich Makovicka for a race condition fix for the log 
+  file.  The race condition remains for non-pthread implementations.
+  Reference patch #1175720. Various other logging enhancements.
+- A pile of assorted bug fixes, memory leaks, enhancements, etc.
+- Moved Actions file reporting mechanism to SF tracker.
+- Two new options for config: enable-remote-http-toggle and 
+  forwarded-connect-retries.
+- Trap unsupported FTP requests.
+- Let text/xml be filtered.
+- Numerous updates to default.action
+- Increase the compiled in limit of trusted referrers from 64 to 512 
+  (for trustfile users).
+
+*** Version 3.0.3 ***
 
 - Fixed yet another two memory leaks. Process growth seems stopped now.
 - Further tightened security against malicious toggle-off links.

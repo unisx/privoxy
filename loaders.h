@@ -1,9 +1,9 @@
 #ifndef LOADERS_H_INCLUDED
 #define LOADERS_H_INCLUDED
-#define LOADERS_H_VERSION "$Id: loaders.h,v 1.19 2002/03/26 22:29:55 swa Exp $"
+#define LOADERS_H_VERSION "$Id: loaders.h,v 1.21 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/loaders.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/loaders.h,v $
  *
  * Purpose     :  Functions to load and unload the various
  *                configuration files.  Also contains code to manage
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: loaders.h,v $
+ *    Revision 1.21  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.19  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *

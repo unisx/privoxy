@@ -1,7 +1,7 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.40.2.3 2003/03/07 03:41:04 david__schmidt Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.45 2006/08/21 11:15:54 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/errlog.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
  *
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
@@ -33,8 +33,29 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.40.2.3 2003/03/07 03:41:04 david__s
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.45  2006/08/21 11:15:54  david__schmidt
+ *    MS Visual C++ build updates
+ *
+ *    Revision 1.44  2006/08/18 16:03:16  david__schmidt
+ *    Tweak for OS/2 build happiness.
+ *
+ *    Revision 1.43  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:
+ *    http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.42  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.40.2.4  2005/04/03 20:10:50  david__schmidt
+ *    Thanks to Jindrich Makovicka for a race condition fix for the log
+ *    file.  The race condition remains for non-pthread implementations.
+ *    Reference patch #1175720.
+ *
  *    Revision 1.40.2.3  2003/03/07 03:41:04  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex 
+ *    semaphores for OSX.  Hopefully this will take care of all of those pesky
+ *    crash reports.
  *
  *    Revision 1.40.2.2  2002/09/28 00:30:57  david__schmidt
  *    Update error logging to give sane values for thread IDs on Mach kernels.
@@ -256,6 +277,9 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.40.2.3 2003/03/07 03:41:04 david__s
 #include "w32log.h"
 #endif /* ndef _WIN_CONSOLE */
 #endif /* def _WIN32 */
+#ifdef _MSC_VER
+#define inline __inline
+#endif /* def _MSC_VER */
 
 #ifdef __OS2__
 #include <sys/socket.h> /* For sock_errno */
@@ -281,7 +305,7 @@ const char errlog_h_rcs[] = ERRLOG_H_VERSION;
 static FILE *logfp = NULL;
 
 /* logging detail level.  */
-static int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);  
+int debug = (LOG_LEVEL_FATAL | LOG_LEVEL_ERROR | LOG_LEVEL_INFO);  
 
 /* static functions */
 static void fatal_error(const char * error_message);
@@ -290,6 +314,35 @@ static char *w32_socket_strerr(int errcode, char *tmp_buf);
 #endif
 #ifdef __OS2__
 static char *os2_socket_strerr(int errcode, char *tmp_buf);
+#endif
+
+#ifdef FEATURE_PTHREAD
+static inline void lock_logfile()
+{
+   pthread_mutex_lock(&log_mutex);
+}
+static inline void unlock_logfile()
+{
+   pthread_mutex_unlock(&log_mutex);
+}
+static inline void lock_loginit()
+{
+   pthread_mutex_lock(&log_init_mutex);
+}
+static inline void unlock_loginit()
+{
+   pthread_mutex_unlock(&log_init_mutex);
+}
+#else /* ! FEATURE_PTHREAD */
+/*
+ * FIXME we need a cross-platform locking mechanism.
+ * The locking/unlocking functions below should be 
+ * fleshed out for non-pthread implementations.
+ */ 
+static inline void lock_logfile() {}
+static inline void unlock_logfile() {}
+static inline void lock_loginit() {}
+static inline void unlock_loginit() {}
 #endif
 
 /*********************************************************************
@@ -346,7 +399,7 @@ void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
 {
    FILE *fp;
 
-   /* FIXME RACE HAZARD: should start critical section error_log_use here */
+   lock_loginit();
 
    /* set the logging detail level */
    debug = debuglevel | LOG_LEVEL_MINIMUM;
@@ -354,9 +407,13 @@ void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
    if ((logfp != NULL) && (logfp != stderr))
    {
       log_error(LOG_LEVEL_INFO, "(Re-)Open logfile %s", logfname ? logfname : "none");
+      lock_logfile();
       fclose(logfp);
+   } else {
+      lock_logfile();
    }
    logfp = stderr;
+   unlock_logfile();
 
    /* set the designated log file */
    if( logfname )
@@ -369,7 +426,9 @@ void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
       /* set logging to be completely unbuffered */
       setbuf(fp, NULL);
 
+      lock_logfile();
       logfp = fp;
+      unlock_logfile();
    }
 
    log_error(LOG_LEVEL_INFO, "Privoxy version " VERSION);
@@ -378,7 +437,7 @@ void init_error_log(const char *prog_name, const char *logfname, int debuglevel)
       log_error(LOG_LEVEL_INFO, "Program name: %s", prog_name);
    }
 
-   /* FIXME RACE HAZARD: should end critical section error_log_use here */
+   unlock_loginit();
 
 } /* init_error_log */
 
@@ -427,6 +486,9 @@ void log_error(int loglevel, char *fmt, ...)
    {
       return;
    }
+
+   /* protect the whole function because of the static buffer (outbuf) */
+   lock_logfile();
 
    /* FIXME get current thread id */
 #ifdef FEATURE_PTHREAD
@@ -480,41 +542,41 @@ void log_error(int loglevel, char *fmt, ...)
    switch (loglevel)
    {
       case LOG_LEVEL_ERROR:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Error: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Error: ", this_thread);
          break;
       case LOG_LEVEL_FATAL:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Fatal error: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Fatal error: ", this_thread);
          break;
       case LOG_LEVEL_GPC:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Request: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Request: ", this_thread);
          break;
       case LOG_LEVEL_CONNECT:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Connect: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Connect: ", this_thread);
          break;
       case LOG_LEVEL_LOG:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Writing: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Writing: ", this_thread);
          break;
       case LOG_LEVEL_HEADER:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Header: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Header: ", this_thread);
          break;
       case LOG_LEVEL_INFO:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Info: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Info: ", this_thread);
          break;
       case LOG_LEVEL_RE_FILTER:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Re-Filter: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Re-Filter: ", this_thread);
          break;
 #ifdef FEATURE_FORCE_LOAD
       case LOG_LEVEL_FORCE:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Force: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Force: ", this_thread);
          break;
 #endif /* def FEATURE_FORCE_LOAD */
 #ifdef FEATURE_FAST_REDIRECTS
       case LOG_LEVEL_REDIRECTS:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Redirect: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Redirect: ", this_thread);
          break;
 #endif /* def FEATURE_FAST_REDIRECTS */
       case LOG_LEVEL_DEANIMATE:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Gif-Deanimate: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Gif-Deanimate: ", this_thread);
          break;
       case LOG_LEVEL_CLF:
          outbuf = outbuf_save;
@@ -523,14 +585,14 @@ void log_error(int loglevel, char *fmt, ...)
          break;
 #ifdef FEATURE_KILL_POPUPS
       case LOG_LEVEL_POPUPS:
-         outc = sprintf(outbuf, "Privoxy(%05ld) Kill-Popups: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) Kill-Popups: ", this_thread);
          break;
 #endif /* def FEATURE_KILL_POPUPS */
       case LOG_LEVEL_CGI:
-         outc = sprintf(outbuf, "Privoxy(%05ld) CGI: ", this_thread);
+         outc = sprintf(outbuf, "Privoxy(%08lx) CGI: ", this_thread);
          break;
       default:
-         outc = sprintf(outbuf, "Privoxy(%05ld) UNKNOWN LOG TYPE(%d): ", this_thread, loglevel);
+         outc = sprintf(outbuf, "Privoxy(%08lx) UNKNOWN LOG TYPE(%d): ", this_thread, loglevel);
          break;
    }
    
@@ -605,16 +667,14 @@ void log_error(int loglevel, char *fmt, ...)
             else
             {
                /* Error */
-               sprintf(outbuf, "Privoxy(%ld) Error: log_error(): Bad format string:\n"
+               sprintf(outbuf, "Privoxy(%08lx) Error: log_error(): Bad format string:\n"
                                "Format = \"%s\"\n"
                                "Exiting.", this_thread, fmt);
-               /* FIXME RACE HAZARD: should start critical section error_log_use here */
                if( !logfp )
                {
                   logfp = stderr;
                }
                fputs(outbuf, logfp);
-               /* FIXME RACE HAZARD: should end critical section error_log_use here */
                fatal_error(outbuf);
                /* Never get here */
                break;
@@ -768,16 +828,15 @@ void log_error(int loglevel, char *fmt, ...)
             }
             break;
          default:
-            sprintf(outbuf, "Privoxy(%ld) Error: log_error(): Bad format string:\n"
+            sprintf(outbuf, "Privoxy(%08lx) Error: log_error(): Bad format string:\n"
                             "Format = \"%s\"\n"
                             "Exiting.", this_thread, fmt);
-            /* FIXME RACE HAZARD: should start critical section error_log_use here */
             if( !logfp )
             {
                logfp = stderr;
             }
             fputs(outbuf_save, logfp);
-            /* FIXME RACE HAZARD: should end critical section error_log_use here */
+            unlock_logfile();
             fatal_error(outbuf_save);
             /* Never get here */
             break;
@@ -814,8 +873,6 @@ void log_error(int loglevel, char *fmt, ...)
       outbuf[outc] = '\0';
    }
 
-   /* FIXME RACE HAZARD: should start critical section error_log_use here */
-
    /* deal with glibc stupidity - it won't let you initialize logfp */
    if( !logfp )
    {
@@ -830,7 +887,7 @@ void log_error(int loglevel, char *fmt, ...)
       /* Never get here */
    }
 
-   /* FIXME RACE HAZARD: should end critical section error_log_use here */
+   unlock_logfile();
 
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)
    /* Write to display */

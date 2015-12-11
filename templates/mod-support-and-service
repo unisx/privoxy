@@ -8,8 +8,10 @@
             use the <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=211118">support forum</a> to get help.
           </li>
           <li>
-            submit banners and all problems with the actions file only through the
-            <a href="javascript:w=Math.floor(screen.width/2);h=Math.floor(screen.height*0.9);void(window.open('http://www.privoxy.org/actions','Feedback','screenx='+w+',width='+w+',height='+h+',scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">actions file feedback system.</a>
+            submit ads and configuration related problems with the actions file  through the
+            <a
+            href="http://sourceforge.net/tracker/?group_id=11118&atid=460288">
+            Actionsfile Feedback Tracker.</a>
           </li>
           <li>
             submit bugs only through our <a href="http://sourceforge.net/tracker/?group_id=11118&amp;atid=111118">bug tracker</a>.

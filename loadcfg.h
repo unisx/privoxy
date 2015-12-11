@@ -1,9 +1,9 @@
 #ifndef LOADCFG_H_INCLUDED
 #define LOADCFG_H_INCLUDED
-#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.11.2.1 2003/03/11 11:53:59 oes Exp $"
+#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.13 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/loadcfg.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.h,v $
  *
  * Purpose     :  Loads settings from the configuration file into
  *                global variables.  This file contains both the 
@@ -37,6 +37,10 @@
  *
  * Revisions   :
  *    $Log: loadcfg.h,v $
+ *    Revision 1.13  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.11.2.1  2003/03/11 11:53:59  oes
  *    Cosmetic: Renamed cryptic variable
  *

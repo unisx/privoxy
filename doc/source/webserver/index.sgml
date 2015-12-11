@@ -5,10 +5,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.3">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "3.0.4">
+<!entity p-status "BETA">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
 <!entity % p-homepage "IGNORE">    <!-- toggle for webserver index.html   -->
 <!entity % p-index "IGNORE">       <!-- toggle for local doc index        -->
@@ -20,9 +20,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 1.16.2.12 2004/01/30 14:33:41 oes Exp $
+ $Id: index.sgml,v 2.4 2006/08/28 01:08:57 hal9 Exp $
 
- Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001 - 2006 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  ========================================================================
@@ -93,11 +93,14 @@
     <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">Download recent releases</ulink>
    </para>
   </listitem>
+ <!-- 
+ deprecated
   <listitem>
    <para>
     <ulink url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.bz2">Download the latest CVS snapshot (source tarball)</ulink>
    </para>
   </listitem>
+ --> 
   <listitem>
    <para>
     <ulink url="user-manual/quickstart.html">Quickstart after installation</ulink>
@@ -226,7 +229,7 @@
 <!-- GNUMakefile is inserting this now -->
 <para>
  <subscript>
-  Copyright __copy 2001 - 2004 by Privoxy Developers
+  Copyright __copy 2001 - 2006 by Privoxy Developers
  </subscript>
 </para>
 
@@ -253,6 +256,13 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 2.4  2006/08/28 01:08:57  hal9
+ Remove reference to defunct nightly cvs tarballs.
+
+ Revision 2.3  2006/07/18 14:48:51  david__schmidt
+ Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ with what was really the latest development (the v_3_0_branch branch)
+
  Revision 1.16.2.12  2004/01/30 14:33:41  oes
  Vi(m) syntax voodoo now hidden; copyright updated
 

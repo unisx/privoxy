@@ -1,9 +1,9 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.12.2.1 2003/03/07 03:41:05 david__schmidt Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.16 2006/09/02 15:36:42 fabiankeil Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/jcc.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
  *
  * Purpose     :  Main file.  Contains main() method, main loop, and 
  *                the main connection-handling function.
@@ -35,8 +35,34 @@
  *
  * Revisions   :
  *    $Log: jcc.h,v $
+ *    Revision 1.16  2006/09/02 15:36:42  fabiankeil
+ *    Follow the OpenBSD port's lead and protect the resolve
+ *    functions on OpenBSD as well.
+ *
+ *    Revision 1.15  2006/09/02 10:24:30  fabiankeil
+ *    Include pthread.h for OpenBSD to make Privoxy build again.
+ *
+ *    Tested shortly on OpenBSD 3.9 without problems, but the OpenBSD
+ *    port has additional patches to use the mutexes OSX_DARWIN needs,
+ *    and it should be investigated if they are still required for
+ *    reliable operation.
+ *
+ *    Revision 1.14  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.12.2.3  2006/01/21 16:16:08  david__schmidt
+ *    Thanks to  Edward Carrel for his patch to modernize OSX'spthreads support.  See bug #1409623.
+ *
+ *    Revision 1.12.2.2  2005/04/03 20:10:50  david__schmidt
+ *    Thanks to Jindrich Makovicka for a race condition fix for the log
+ *    file.  The race condition remains for non-pthread implementations.
+ *    Reference patch #1175720.
+ *
  *    Revision 1.12.2.1  2003/03/07 03:41:05  david__schmidt
- *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex 
+ *    semaphores for OSX.  Hopefully this will take care of all of those pesky
+ *    crash reports.
  *
  *    Revision 1.12  2002/03/26 22:29:55  swa
  *    we have a new homepage!
@@ -109,8 +135,8 @@ extern int urls_read;
 extern int urls_rejected;
 #endif /*def FEATURE_STATISTICS*/
 
-extern struct client_state clients[];
-extern struct file_list    files[];
+extern struct client_state clients[1];
+extern struct file_list    files[1];
 
 #ifdef unix
 extern const char *pidfile;
@@ -121,12 +147,20 @@ extern int no_daemon;
 extern int g_terminate;
 #endif
 
+#if defined(OSX_DARWIN) || defined(__OpenBSD__)
+#include <pthread.h>
 #ifdef OSX_DARWIN
 extern pthread_mutex_t gmtime_mutex;
 extern pthread_mutex_t localtime_mutex;
+#endif /* def OSX_DARWIN */
 extern pthread_mutex_t gethostbyaddr_mutex;
 extern pthread_mutex_t gethostbyname_mutex;
-#endif /* def OSX_DARWIN */
+#endif /* defined(OSX_DARWIN) || defined(__OpenBSD__) */
+
+#ifdef FEATURE_PTHREAD
+extern pthread_mutex_t log_mutex;
+extern pthread_mutex_t log_init_mutex;
+#endif /* FEATURE_PTHREAD */
 
 /* Functions */
 

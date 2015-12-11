@@ -1,7 +1,7 @@
 /*
  * CSS for Privoxy documentation
  *
- * $Id: p_doc.css,v 1.2.2.1 2002/05/28 02:31:38 hal9 Exp $
+ * $Id: p_doc.css,v 1.5 2006/09/09 19:13:42 hal9 Exp $
  */
 
 /*
@@ -62,3 +62,5 @@ span.guibutton {
  * Misc:
  */
 ul { list-style-type: square; }
+/* Privoxy, of course */
+.application {font-weight: bold; font-size:105%; color: #99001d;}

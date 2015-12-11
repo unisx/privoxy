@@ -302,6 +302,14 @@ SOURCE=.\win32.c
 
 SOURCE=.\win32.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\w32svrapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\w32svrapi.h
+# End Source File
 # End Group
 # Begin Group "Resources"
 

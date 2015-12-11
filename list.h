@@ -1,9 +1,9 @@
 #ifndef LIST_H_INCLUDED
 #define LIST_H_INCLUDED
-#define LIST_H_VERSION "$Id: list.h,v 1.12.2.1 2002/11/28 18:14:54 oes Exp $"
+#define LIST_H_VERSION "$Id: list.h,v 1.14 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/list.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/list.h,v $
  *
  * Purpose     :  Declares functions to handle lists.
  *                Functions declared include:
@@ -36,6 +36,10 @@
  *
  * Revisions   :
  *    $Log: list.h,v $
+ *    Revision 1.14  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.12.2.1  2002/11/28 18:14:54  oes
  *    Added unmap function that removes all items with a given
  *    name from a map.

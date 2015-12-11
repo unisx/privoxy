@@ -1,7 +1,7 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.6 2003/12/17 16:34:40 oes Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.40 2006/09/02 15:36:42 fabiankeil Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/jbsockets.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
  *
  * Purpose     :  Contains wrappers for system-specific sockets code,
  *                so that the rest of Junkbuster can be more
@@ -35,6 +35,23 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.6 2003/12/17 16:34:40 oe
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.40  2006/09/02 15:36:42  fabiankeil
+ *    Follow the OpenBSD port's lead and protect the resolve
+ *    functions on OpenBSD as well.
+ *
+ *    Revision 1.39  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.38  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.35.2.8  2006/01/21 16:16:08  david__schmidt
+ *    Thanks to  Edward Carrel for his patch to modernize OSX'spthreads support.  See bug #1409623.
+ *
+ *    Revision 1.35.2.7  2005/05/07 21:50:55  david__schmidt
+ *    A few memory leaks plugged (mostly on error paths)
+ *
  *    Revision 1.35.2.6  2003/12/17 16:34:40  oes
  *    Cosmetics
  *
@@ -248,13 +265,13 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.6 2003/12/17 16:34:40 oe
 
 #endif
 
-#ifdef OSX_DARWIN
-#include <pthread.h>
+#include "project.h"
+
+#if defined(OSX_DARWIN) || defined(__OpenBSD__)
 #include "jcc.h"
 /* jcc.h is for mutex semaphores only */
-#endif /* def OSX_DARWIN */
+#endif /* defined(OSX_DARWIN) || defined(__OpenBSD__) */
 
-#include "project.h"
 #include "jbsockets.h"
 #include "filters.h"
 #include "errlog.h"
@@ -434,7 +451,7 @@ int write_socket(jb_socket fd, const char *buf, size_t len)
       return 0;
    }
 
-   if (len < 0)
+   if (len < 0) /* constant condition - size_t isn't ever negative */ 
    {
       return 1;
    }
@@ -735,7 +752,7 @@ int accept_connection(struct client_state * csp, jb_socket fd)
       {
          host = NULL;
       }
-#elif defined(OSX_DARWIN)
+#elif defined(OSX_DARWIN) || defined(__OpenBSD__)
       pthread_mutex_lock(&gethostbyaddr_mutex);
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -780,6 +797,7 @@ unsigned long resolve_hostname_to_ip(const char *host)
 {
    struct sockaddr_in inaddr;
    struct hostent *hostp;
+   unsigned int dns_retries = 0;
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS) || defined(HAVE_GETHOSTBYNAME_R_5_ARGS) || defined(HAVE_GETHOSTBYNAME_R_3_ARGS)
    struct hostent result;
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS) || defined(HAVE_GETHOSTBYNAME_R_5_ARGS)
@@ -800,8 +818,13 @@ unsigned long resolve_hostname_to_ip(const char *host)
    if ((inaddr.sin_addr.s_addr = inet_addr(host)) == -1)
    {
 #if defined(HAVE_GETHOSTBYNAME_R_6_ARGS)
-      gethostbyname_r(host, &result, hbuf,
-                      HOSTENT_BUFFER_SIZE, &hostp, &thd_err);
+       while ( gethostbyname_r(host, &result, hbuf,
+                      HOSTENT_BUFFER_SIZE, &hostp, &thd_err)
+               && (thd_err == TRY_AGAIN) && (dns_retries++ < 10) )
+      {   
+         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
+                                                dns_retries, host);
+      }
 #elif defined(HAVE_GETHOSTBYNAME_R_5_ARGS)
       hostp = gethostbyname_r(host, &result, hbuf,
                       HOSTENT_BUFFER_SIZE, &thd_err);
@@ -814,12 +837,22 @@ unsigned long resolve_hostname_to_ip(const char *host)
       {
          hostp = NULL;
       }
-#elif OSX_DARWIN
+#elif defined(OSX_DARWIN) || defined(__OpenBSD__)
       pthread_mutex_lock(&gethostbyname_mutex);
-      hostp = gethostbyname(host);
+      while ( NULL == (hostp = gethostbyname(host))
+            && (h_errno == TRY_AGAIN) && (dns_retries++ < 10) )
+      {   
+         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
+                                                dns_retries, host);
+      }
       pthread_mutex_unlock(&gethostbyname_mutex);
 #else
-      hostp = gethostbyname(host);
+      while ( NULL == (hostp = gethostbyname(host))
+            && (h_errno == TRY_AGAIN) && (dns_retries++ < 10) )
+      {
+         log_error(LOG_LEVEL_ERROR, "Timeout #%u while trying to resolve %s. Trying again.",
+                                                dns_retries, host);
+      }
 #endif /* def HAVE_GETHOSTBYNAME_R_(6|5|3)_ARGS */
       /*
        * On Mac OSX, if a domain exists but doesn't have a type A

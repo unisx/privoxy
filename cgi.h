@@ -1,9 +1,9 @@
 #ifndef CGI_H_INCLUDED
 #define CGI_H_INCLUDED
-#define CGI_H_VERSION "$Id: cgi.h,v 1.29.2.2 2004/02/17 13:30:23 oes Exp $"
+#define CGI_H_VERSION "$Id: cgi.h,v 1.31 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgi.h,v $
  *
  * Purpose     :  Declares functions to intercept request, generate
  *                html or gif answers, and to compose HTTP resonses.
@@ -38,6 +38,10 @@
  *
  * Revisions   :
  *    $Log: cgi.h,v $
+ *    Revision 1.31  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.29.2.2  2004/02/17 13:30:23  oes
  *    Moved cgi_error_disabled() from cgiedit.c to
  *    cgi.c to re-enable build with --disable-editor.

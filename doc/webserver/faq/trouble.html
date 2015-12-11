@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Troubleshooting</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,20 +74,20 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="TROUBLE"
->5. Troubleshooting</A
-></H1
+></A
+>5. Troubleshooting</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN801"
->5.1. I just upgraded and am getting <SPAN
+NAME="AEN967"
+></A
+>5.1. I am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
 >
-with every web page?</A
-></H3
+with every web page?</H3
 ><P
 > Either <SPAN
 CLASS="APPLICATION"
@@ -97,25 +97,21 @@ CLASS="APPLICATION"
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is using.</P
+> is using, or, if using a forwarding 
+ rule, you have a configuration problem or a problem with a host in the 
+ forwarding chain.
+ </P
 ><P
-> The old <SPAN
+> You should verify that <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> (and also
- <SPAN
-CLASS="APPLICATION"
->Junkbuster</SPAN
->) used port 8000 by 
- default. This has been changed to port 8118 now, due to a conflict 
- with NAS (Network Audio Service), which uses port 8000. If you haven't, 
- you need to change your browser to the new port number, or alternately 
- change the <A
+> is indeed running and that the correct port is set,
+ and matches what your browser is set to. See <A
 HREF="../user-manual/config.html#LISTEN-ADDRESS"
 TARGET="_top"
-><VAR
+><TT
 CLASS="LITERAL"
->listen-address</VAR
+>listen-address</TT
 >
  option</A
 > in <SPAN
@@ -125,17 +121,19 @@ CLASS="APPLICATION"
 HREF="../user-manual/config.html"
 TARGET="_top"
 >main configuration file</A
->.</P
+>. If using 
+ any forwarding rules, disable those to make sure the problem is not with 
+ a forwarder.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN814"
+NAME="AEN979"
+></A
 >5.2. I just added a new rule, but the steenkin ad is 
-still getting through. How?</A
-></H3
+still getting through. How?</H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
  held in the browser's cache for some time, so it will be displayed without
@@ -152,7 +150,8 @@ HREF="http://config.privoxy.org/show-url-info"
 TARGET="_top"
 >http://config.privoxy.org/show-url-info</A
 >
- and see if it really matches your new rule.</P
+ and see if it really matches your new rule. Blocking ads is like blocking
+ spam: a lot of tinkering is required to stay ahead of the game.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -160,12 +159,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BADSITE"
->5.3. One of my favorite sites does not work with <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->.
-What can I do?</A
-></H3
+></A
+>5.3. One of my favorite sites does not work with Privoxy.
+What can I do?</H3
 ><P
 > First verify that it is indeed a <SPAN
 CLASS="APPLICATION"
@@ -208,9 +204,9 @@ TARGET="_top"
 > Alternately, if you are comfortable with a text editor, you can accomplish 
  the same thing by editing the appropriate actions file. Probably the easiest 
  way to deal with such problems when editing by hand is to add your
- site to a <VAR
+ site to a <TT
 CLASS="LITERAL"
->{ fragile }</VAR
+>{ fragile }</TT
 > section in <TT
 CLASS="FILENAME"
 >user.action</TT
@@ -225,13 +221,15 @@ CLASS="QUOTE"
 > Troubleshooting actions is discussed in more detail in the <A
 HREF="../user-manual/appendix.html#ACTIONSANAT"
 TARGET="_top"
->user-manual appendix</A
+>User Manual appendix,
+ Troubleshooting: the Anatomy of an Action</A
 >.
  There is also an <A
 HREF="../user-manual/actions-file.html#ACT-EXAMPLES"
 TARGET="_top"
 >actions tutorial</A
->.</P
+>
+ with general configuration information and examples.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -239,12 +237,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DUN"
->5.4. After installing <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->, I have to log in
-every time I start IE. What gives?</A
-></H3
+></A
+>5.4. After installing Privoxy, I have to log in
+every time I start IE. What gives?</H3
 ><P
 > This is a quirk that effects the installation of
  <SPAN
@@ -297,12 +292,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="FTP"
->5.5. I cannot connect to any FTP sites. <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->
- seems to be blocking me.</A
-></H3
+></A
+>5.5. I cannot connect to any FTP sites. Privoxy
+ is blocking me.</H3
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -317,15 +309,15 @@ CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >any protocol other than HTTP
-  or HTTPS</I
+  or HTTPS (SSL)</I
 ></SPAN
 >. 
  </P
 ><P
 >  Most browsers understand FTP as well as HTTP. If you connect to a site, with
-  a URL like <VAR
+  a URL like <TT
 CLASS="LITERAL"
->ftp://ftp.example.com</VAR
+>ftp://ftp.example.com</TT
 >, your browser is making
   an FTP connection, and not a HTTP connection. So while your browser may 
   speak FTP, <SPAN
@@ -339,19 +331,22 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"proxy"</SPAN
 >
-  setting, which will silently enable <SPAN
+  setting, which will silently enable various protocols, including
+  <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
 >both</I
 ></SPAN
-> HTTP and FTP
-  proxying! So it is possible to accidentally enable FTP proxying in these
-  cases. And of course, if this happens, <SPAN
+> HTTP and FTP proxying! So it is possible to
+  accidentally enable FTP proxying in these cases. And of course, if this
+  happens, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->
-  will indeed cause problems since it does not know FTP.
+> will indeed cause problems since
+  it does not know FTP. Newer version will give a sane error
+  message if a FTP connection is attempted. Just disable the FTP setting 
+  and all will be well again.
  </P
 ><P
 >  Will <SPAN
@@ -368,24 +363,21 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXIE"
+></A
 >5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
- <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> as the HTTP proxy.</A
-></H3
+ Privoxy as the HTTP proxy.</H3
 ><P
 >  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
   network settings.  In order to change the HTTP proxy, open System
   Preferences, and click on the Network icon.  In the settings pane that
   comes up, click on the Proxies tab.  Ensure the "Web Proxy (HTTP)" checkbox 
-  is checked and enter <VAR
+  is checked and enter <TT
 CLASS="LITERAL"
->127.0.0.1</VAR
+>127.0.0.1</TT
 > in the entry field.  
-  Enter <VAR
+  Enter <TT
 CLASS="LITERAL"
->8118</VAR
+>8118</TT
 > in the Port field.  The next time you start
   IE, it should reflect these values.
  </P
@@ -396,10 +388,10 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXUNINSTALL"
+></A
 >5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
- empty the trash.</A
-></H3
+ empty the trash.</H3
 ><P
 >  Just dragging the <SPAN
 CLASS="APPLICATION"
@@ -431,22 +423,22 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXIMAGES"
+></A
 >5.8. In Mac OSX Panther (10.3), images often fail to load and/or I
  experience random delays in page loading. I'm using
- <VAR
+ <TT
 CLASS="LITERAL"
->localhost</VAR
-> as my browser's proxy setting.</A
-></H3
+>localhost</TT
+> as my browser's proxy setting.</H3
 ><P
 >  We believe this is due to an IPv6-related bug in OSX, but don't fully
   understand the issue yet. In any case, changing the proxy setting to 
-  <VAR
+  <TT
 CLASS="LITERAL"
->127.0.0.1</VAR
-> instead of <VAR
+>127.0.0.1</TT
+> instead of <TT
 CLASS="LITERAL"
->localhost</VAR
+>localhost</TT
 >
   works around the problem.
  </P
@@ -457,6 +449,7 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BLANKPAGE"
+></A
 >5.9. I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
 >"View Source"</SPAN
@@ -465,11 +458,7 @@ CLASS="QUOTE"
 CLASS="MARKUP"
 >&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
 >. Without
- <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> the page loads fine.</A
-></H3
+ Privoxy the page loads fine.</H3
 ><P
 >  Chances are that the site suffers from a bug in
   <A
@@ -489,9 +478,9 @@ CLASS="APPLICATION"
  </P
 ><P
 >  To find out if this is in fact the source of the problem, try adding
-  the site to a <VAR
+  the site to a <TT
 CLASS="LITERAL"
->-prevent-compression</VAR
+>-prevent-compression</TT
 > section in
   <TT
 CLASS="FILENAME"
@@ -526,14 +515,14 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ERROR503"
->5.10. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
-></H3
+></A
+>5.10. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
 ><P
->  More than likely this is a problem with the network stack. ZoneAlarm has
+>  More than likely this is a problem with your TCP/IP networking. ZoneAlarm has
   been reported to cause this symptom -- even if not running. The solution is
   to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
-  something better behaved in its place. Other firewall type products may
-  cause similar type problems if not configured correctly.
+  something better behaved in its place. Other personal firewall type products
+  may cause similar type problems if not configured correctly.
  </P
 ></DIV
 ><DIV
@@ -542,12 +531,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOHOSTNAME"
+></A
 >5.11. My logs show many <SPAN
 CLASS="QUOTE"
 >"Unable to get my own hostname"</SPAN
 > lines.
-Why?</A
-></H3
+Why?</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -570,16 +559,23 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > logs this condition. </P
 ><P
-> Typically, this would be considered a system configuration error. It is not a
- fatal error to <SPAN
+> Typically, this would be considered a minor system configuration error. It is
+ not a fatal error to <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> however, but may result in 
- a much slower response from <SPAN
+> however, but may
+ result in a much slower response from <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> due to DNS
- timeouts.</P
+> on
+ some platforms due to DNS timeouts.</P
+><P
+> This can be caused by a problem with the local <TT
+CLASS="FILENAME"
+>HOSTS</TT
+>
+ file. If this file has been changed from the original, try reverting it to
+ see if that helps.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -587,16 +583,13 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="INUSE"
->5.12. When I try to launch <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->, I get an 
+></A
+>5.12. When I try to launch Privoxy, I get an 
 error message <SPAN
 CLASS="QUOTE"
 >"port 8118 is already in use"</SPAN
 > (or similar wording).
-Why?</A
-></H3
+Why?</H3
 ><P
 > Port 8118 is <SPAN
 CLASS="APPLICATION"
@@ -614,7 +607,8 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > 
- on the same port, which will not work. How and why this might happen varies
+ on the same port, which will not work. (You can have multiple instances but
+ they must be assigned different ports.) How and why this might happen varies
  from platform to platform, but you need to check your installation and
  start-up procedures.</P
 ></DIV
@@ -624,23 +618,21 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER"
->5.13. Pages with UTF-8 fonts are garbled.</A
-></H3
+></A
+>5.13. Pages with UTF-8 fonts are garbled.</H3
 ><P
 > This is caused by the <SPAN
 CLASS="QUOTE"
 >"demoronizer"</SPAN
-> filter, which was introduced 
- in version 3.0.2, and was inappropriately turned on by default. You should 
- either upgrade <SPAN
+> filter. You should either
+ upgrade <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->, or at least upgrade to the most 
+>, or at least upgrade to the most
  recent <TT
 CLASS="FILENAME"
 >default.action</TT
-> file available from 
- <A
+> file available from <A
 HREF="http://sourceforge.net/project/showfiles.php?group_id=11118"
 TARGET="_top"
 >SourceForge</A
@@ -653,12 +645,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER2"
->5.14. Why are binary files (such as images) corrupted when <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->
- is used?</A
-></H3
+></A
+>5.14. Why are binary files (such as images) corrupted when Privoxy
+ is used?</H3
 ><P
 > This may also be caused by the <SPAN
 CLASS="QUOTE"
@@ -669,7 +658,7 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy's</SPAN
 > filtering
- (unless the web server by mistake says the file is a plain text file). Either
+ (unless the web server by mistake says the file is something else). Either
  upgrade <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -689,11 +678,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEMORONIZER3"
+></A
 >5.15. What is the <SPAN
 CLASS="QUOTE"
 >"demoronizer"</SPAN
-> and why is it there?</A
-></H3
+> and why is it there?</H3
 ><P
 > The original demoronizer was a Perl script that cleaned up HTML pages which 
  were created with certain Microsoft products. MS has used proprietary extensions 
@@ -722,13 +711,6 @@ CLASS="EMPHASIS"
 ><P
 > On the other hand, if you use non-Microsoft products, and you occasionally 
  notice wierd characters on pages, you might want to try it.</P
-><P
-> This filter was introduced with version 3.0.2 of <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
->,
- and was on by default in that version. It is off in all subsequent versions 
- (unless turned on by the user).</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -736,19 +718,24 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WINDOWOPEN"
+></A
 >5.16. Why do I keep seeing <SPAN
 CLASS="QUOTE"
 >"PrivoxyWindowOpen()"</SPAN
-> in raw source code?</A
-></H3
+> in raw source code?</H3
 ><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is attempting to disable malicious 
- Javascript in this case, with the <VAR
+  <A
+HREF="http://en.wikipedia.org/wiki/Javascript"
+TARGET="_top"
+>Javascript</A
+> 
+  in this case, with the <TT
 CLASS="LITERAL"
->unsolicited-popups</VAR
+>unsolicited-popups</TT
 >
  filter. <SPAN
 CLASS="APPLICATION"
@@ -767,6 +754,109 @@ CLASS="QUOTE"
  where it is causing a problem, such as a downloaded program source code file, 
  then you should set an exception for this site or page such that the
  integrity of the page stays in tact by disabling all filtering.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DNSERRORS"
+></A
+>5.17. I am getting too many DNS errors like <SPAN
+CLASS="QUOTE"
+>"404 No Such Domain"</SPAN
+>. Why
+ can't Privoxy do this better?</H3
+><P
+> There are potentially several factors here. First of all, the DNS resolution
+ is done by the underlying operating system -- not
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> itself. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ merely initiates the process and hands it off, and then later reports
+ whatever the outcome was. And tries to give a coherent message if there seems
+ to be a problem. In some cases, this might otherwise be mitigated by the
+ browser itself which might try some work-arounds and alternate approaches (e.g
+ adding <SPAN
+CLASS="QUOTE"
+>"www."</SPAN
+> to the URL). In other cases, if
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is being chained with another proxy, this
+ could complicate the issue, and cause undue
+ delays and timeouts. In the case of a <SPAN
+CLASS="QUOTE"
+>"socks4a"</SPAN
+> proxy, the socks
+ server handles all the DNS.  <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> would just be
+ the <SPAN
+CLASS="QUOTE"
+>"messenger"</SPAN
+> which is reporting whatever problem occurred
+ downstream, and not the root cause of the error.</P
+><P
+> In any case, v. 3.0.5 includes various improvements to help
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> better handle these cases.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="ALLCPU"
+></A
+>5.18. At one site Privoxy just hangs, and starts taking 
+ all CPU. Why is this?</H3
+><P
+> This is probably a manifestation of the <SPAN
+CLASS="QUOTE"
+>"100% cpu"</SPAN
+> problem that
+ occurs on pages containing many (thousands upon thousands) of blank lines. The blank lines 
+ are in the raw HTML source of the page, and the browser just ignores them. But the 
+ pattern matching in <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> page filtering
+ mechanism is trying to match against absurdly long strings and this becomes
+ very CPU-intensive, taking a long, long time to complete. Until a better
+ solution comes along, disable filtering on these pages, particularly the
+ <TT
+CLASS="LITERAL"
+>js-annoyances</TT
+> and <TT
+CLASS="LITERAL"
+>unsolicited-popups</TT
+>
+ filters.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="SLOWCRAWL"
+></A
+>5.19. I just installed Privoxy, and all my
+browsing has slowed to a crawl. What gives?</H3
+><P
+> This should not happen, and for the overwhelming number of users world-wide,
+ it does not happen. I would suspect some inadvertent interaction of software
+ components such as anti-virus software, spyware protectors, personal
+ firewalls or similar components. Try disabling (or uninstalling) these one
+ at a time and see if that helps.</P
 ></DIV
 ></DIV
 ><DIV

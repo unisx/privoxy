@@ -1,7 +1,7 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.58.2.5 2003/11/11 13:10:31 oes Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.66 2006/09/23 13:26:38 roro Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/filters.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/filters.c,v $
  *
  * Purpose     :  Declares functions to parse/crunch headers and pages.
  *                Functions declared include:
@@ -9,9 +9,10 @@ const char filters_rcs[] = "$Id: filters.c,v 1.58.2.5 2003/11/11 13:10:31 oes Ex
  *                   `block_url', `url_actions', `domain_split',
  *                   `filter_popups', `forward_url', 'redirect_url',
  *                   `ij_untrusted_url', `intercept_url', `pcrs_filter_respose',
- *                   'ijb_send_banner', and `trust_url'
+ *                   `ijb_send_banner', `trust_url', `gif_deanimate_response',
+ *                   `jpeg_inspect_response'
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001, 2004 the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -38,6 +39,49 @@ const char filters_rcs[] = "$Id: filters.c,v 1.58.2.5 2003/11/11 13:10:31 oes Ex
  *
  * Revisions   :
  *    $Log: filters.c,v $
+ *    Revision 1.66  2006/09/23 13:26:38  roro
+ *    Replace TABs by spaces in source code.
+ *
+ *    Revision 1.65  2006/09/21 12:54:43  fabiankeil
+ *    Fix +redirect{}. Didn't work with -fast-redirects.
+ *
+ *    Revision 1.64  2006/08/31 10:55:49  fabiankeil
+ *    Block requests for untrusted URLs with status
+ *    code 403 instead of 200.
+ *
+ *    Revision 1.63  2006/08/31 10:11:28  fabiankeil
+ *    Don't free p which is still in use and will be later
+ *    freed by free_map(). Don't claim the referrer is unknown
+ *    when the client didn't set one.
+ *
+ *    Revision 1.62  2006/08/14 00:27:47  david__schmidt
+ *    Feature request 595948: Re-Filter logging in single line
+ *
+ *    Revision 1.61  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.60  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.58.2.9  2006/01/29 23:10:56  david__schmidt
+ *    Multiple filter file support
+ *
+ *    Revision 1.58.2.8  2005/05/07 21:50:55  david__schmidt
+ *    A few memory leaks plugged (mostly on error paths)
+ *
+ *    Revision 1.58.2.7  2004/10/03 12:53:32  david__schmidt
+ *    Add the ability to check jpeg images for invalid
+ *    lengths of comment blocks.  Defensive strategy
+ *    against the exploit:
+ *       Microsoft Security Bulletin MS04-028
+ *       Buffer Overrun in JPEG Processing (GDI+) Could
+ *       Allow Code Execution (833987)
+ *    Enabled with +inspect-jpegs in actions files.
+ *
+ *    Revision 1.58.2.6  2003/12/06 22:18:27  gliptak
+ *    Correcting compile problem with FEATURE_IMAGE_BLOCKING
+ *
  *    Revision 1.58.2.5  2003/11/11 13:10:31  oes
  *    Fixed bug #839859: "See why" link URL now gets url-encoded.
  *
@@ -701,10 +745,8 @@ int match_portlist(const char *portlist, int port)
  *********************************************************************/
 struct http_response *block_url(struct client_state *csp)
 {
-#ifdef FEATURE_IMAGE_BLOCKING
-   char *p;
-#endif /* def FEATURE_IMAGE_BLOCKING */
    struct http_response *rsp;
+   const char *new_content_type = NULL;
 
    /*
     * If it's not blocked, don't block it ;-)
@@ -713,7 +755,10 @@ struct http_response *block_url(struct client_state *csp)
    {
       return NULL;
    }
-
+   if (csp->action->flags & ACTION_REDIRECT)
+   {
+      log_error(LOG_LEVEL_ERROR, "redirect{} overruled by block.");     
+   }
    /*
     * Else, prepare a response
     */
@@ -730,14 +775,25 @@ struct http_response *block_url(struct client_state *csp)
    if (((csp->action->flags & ACTION_IMAGE_BLOCKER) != 0)
         && is_imageurl(csp))
    {
+      char *p;
       /* determine HOW images should be blocked */
       p = csp->action->string[ACTION_STRING_IMAGE_BLOCKER];
 
+      if(csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
+      {
+         log_error(LOG_LEVEL_ERROR, "handle-as-empty-document overruled by handle-as-image.");
+      }
 #if 1 /* Two alternative strategies, use this one for now: */
 
       /* and handle accordingly: */
       if ((p == NULL) || (0 == strcmpic(p, "pattern")))
       {
+         rsp->status = strdup("403 Request blocked by Privoxy");
+         if (rsp->status == NULL)
+         {
+            free_http_response(rsp);
+            return cgi_error_memory();
+         }
          rsp->body = bindup(image_pattern_data, image_pattern_length);
          if (rsp->body == NULL)
          {
@@ -755,6 +811,12 @@ struct http_response *block_url(struct client_state *csp)
 
       else if (0 == strcmpic(p, "blank"))
       {
+         rsp->status = strdup("403 Request blocked by Privoxy");
+         if (rsp->status == NULL)
+         {
+            free_http_response(rsp);
+            return cgi_error_memory();
+         }
          rsp->body = bindup(image_blank_data, image_blank_length);
          if (rsp->body == NULL)
          {
@@ -811,6 +873,34 @@ struct http_response *block_url(struct client_state *csp)
       }
 #endif /* Preceeding code is disabled for now */
    }
+   else if(csp->action->flags & ACTION_HANDLE_AS_EMPTY_DOCUMENT)
+   {
+     /*
+      *  Send empty document.               
+      */
+      new_content_type = csp->action->string[ACTION_STRING_CONTENT_TYPE];
+
+      freez(rsp->body);
+      rsp->body = strdup(" ");
+      rsp->content_length = 1;
+
+      rsp->status = strdup("403 Request blocked by Privoxy");
+      if (rsp->status == NULL)
+      {
+         free_http_response(rsp);
+         return cgi_error_memory();
+      }
+      if (new_content_type != 0)
+      {
+         log_error(LOG_LEVEL_HEADER, "Overwriting Content-Type with %s", new_content_type);
+         if (enlist_unique_header(rsp->headers, "Content-Type", new_content_type))
+         {
+            free_http_response(rsp);
+            return cgi_error_memory();
+         }
+      }
+
+   }
    else
 #endif /* def FEATURE_IMAGE_BLOCKING */
 
@@ -820,6 +910,7 @@ struct http_response *block_url(struct client_state *csp)
    {
       jb_err err;
       struct map * exports;
+      char *p;
 
       /*
        * Workaround for stupid Netscape bug which prevents
@@ -892,7 +983,7 @@ struct http_response *block_url(struct client_state *csp)
  * Function    :  trust_url FIXME: I should be called distrust_url
  *
  * Description :  Calls is_untrusted_url to determine if the URL is trusted
- *                and if not, returns a HTTP 304 response with a reject message.
+ *                and if not, returns a HTTP 403 response with a reject message.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -926,8 +1017,9 @@ struct http_response *trust_url(struct client_state *csp)
       return cgi_error_memory();
    }
 
+   rsp->status = strdup("403 Request blocked by Privoxy");
    exports = default_exports(csp, NULL);
-   if (exports == NULL)
+   if (exports == NULL || rsp->status == NULL)
    {
       free_http_response(rsp);
       return cgi_error_memory();
@@ -946,7 +1038,7 @@ struct http_response *trust_url(struct client_state *csp)
    }
    else
    {
-      if (!err) err = map(exports, "referrer", 1, "unknown", 1);
+      if (!err) err = map(exports, "referrer", 1, "none set", 1);
    }
 
    if (err)
@@ -1050,18 +1142,60 @@ struct http_response *redirect_url(struct client_state *csp)
 {
    char *p, *q;
    struct http_response *rsp;
+   char *redirect_mode = NULL;
+   int x, y;
 
-   p = q = csp->http->path;
-   log_error(LOG_LEVEL_REDIRECTS, "checking path for redirects: %s", p);
-
-   /*
-    * find the last URL encoded in the request
-    */
-   while ((p = strstr(p, "http://")) != NULL)
+   if ((csp->action->flags & ACTION_REDIRECT))
    {
-      q = p++;
+      q = csp->action->string[ACTION_STRING_REDIRECT];
    }
+   else if ((csp->action->flags & ACTION_FAST_REDIRECTS))
+   {
+      redirect_mode = csp->action->string[ACTION_STRING_FAST_REDIRECTS];
+      if (0 == strcmpic(redirect_mode, "check-decoded-url"))
+      {  
+         p = q = csp->http->path; 
+         log_error(LOG_LEVEL_REDIRECTS, "Decoding path: %s if necessary.", p);
+         while (*p)
+         {
+            if (*p == '%') /* Escape sequence? */
+            {
+               /* Yes, translate from hexadecimal to decimal */
+               p++;
+               /* First byte */
+               x=((int)*p++)-48;
+               if (x>9) x-=7;
+               x<<=4;
+               /* Second byte */
+               y=((int)*p++)-48;
+               if (y>9)y-=7;
+               /* Merge */
+               *q++=(char)(x|y);
+            }
+            else
+            {
+               /* No, forward character. */
+               *q++=*p++;
+            }
+         }
+         *q='\0';
+      }
+      p = q = csp->http->path;
+      log_error(LOG_LEVEL_REDIRECTS, "Checking path for redirects: %s", p);
 
+      /*
+       * find the last URL encoded in the request
+       */
+      while ((p = strstr(p, "http://")) != NULL)
+      {
+         q = p++;
+      }
+   }
+   else
+   {
+      /* All redirection actions are disabled */
+      return NULL;
+   }
    /*
     * if there was any, generate and return a HTTP redirect
     */
@@ -1281,7 +1415,7 @@ int is_untrusted_url(struct client_state *csp)
 char *pcrs_filter_response(struct client_state *csp)
 {
    int hits=0;
-   size_t size;
+   size_t size, prev_size;
 
    char *old = csp->iob->cur, *new = NULL;
    pcrs_job *job;
@@ -1289,6 +1423,8 @@ char *pcrs_filter_response(struct client_state *csp)
    struct file_list *fl;
    struct re_filterfile_spec *b;
    struct list_entry *filtername;
+
+   int i, found_filters = 0;
 
    /* 
     * Sanity first
@@ -1299,10 +1435,26 @@ char *pcrs_filter_response(struct client_state *csp)
    }
    size = csp->iob->eod - csp->iob->cur;
 
-   if ( ( NULL == (fl = csp->rlist) ) || ( NULL == fl->f) )
+   /*
+    * Need to check the set of re_filterfiles...
+    */
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+      fl = csp->rlist[i];
+      if (NULL != fl)
+      {
+         if (NULL != fl->f)
+         {
+           found_filters = 1;
+           break;
+         }
+      }
+   }
+
+   if (0 == found_filters)
    {
       log_error(LOG_LEVEL_ERROR, "Unable to get current state of regexp filtering.");
-      return(NULL);
+         return(NULL);
    }
 
    /*
@@ -1320,6 +1472,11 @@ char *pcrs_filter_response(struct client_state *csp)
       csp->flags |= CSP_FLAG_MODIFIED;
    }
 
+   for (i = 0; i < MAX_AF_FILES; i++)
+   {
+     fl = csp->rlist[i];
+     if ((NULL == fl) || (NULL == fl->f))
+       break;
    /*
     * For all applying +filter actions, look if a filter by that
     * name exists and if yes, execute it's pcrs_joblist on the
@@ -1340,9 +1497,7 @@ char *pcrs_filter_response(struct client_state *csp)
                continue;
             }
 
-            log_error(LOG_LEVEL_RE_FILTER, "re_filtering %s%s (size %d) with filter %s...",
-                      csp->http->hostport, csp->http->path, size, b->name);
-
+            prev_size = size;
             /* Apply all jobs from the joblist */
             for (job = b->joblist; NULL != job; job = job->next)
             {
@@ -1351,10 +1506,13 @@ char *pcrs_filter_response(struct client_state *csp)
                old=new;
             }
 
-            log_error(LOG_LEVEL_RE_FILTER, " ...produced %d hits (new size %d).", current_hits, size);
+            log_error(LOG_LEVEL_RE_FILTER, "re_filtering %s%s (size %d) with filter %s produced %d hits (new size %d).",
+                      csp->http->hostport, csp->http->path, prev_size, b->name, current_hits, size);
+
             hits += current_hits;
          }
       }
+   }
    }
 
    /*
@@ -1452,6 +1610,80 @@ char *gif_deanimate_response(struct client_state *csp)
 
 /*********************************************************************
  *
+ * Function    :  jpeg_inspect_response
+ *
+ * Description :  
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  a pointer to the (newly allocated) modified buffer
+ *                or NULL in case something went wrong.
+ *
+ *********************************************************************/
+char *jpeg_inspect_response(struct client_state *csp)
+{
+   struct binbuffer *in = NULL, *out = NULL;
+   char *p = NULL;
+   size_t size = csp->iob->eod - csp->iob->cur;
+
+   /*
+    * If the body has a "chunked" transfer-encoding,
+    * get rid of it first, adjusting size and iob->eod
+    */
+   if (csp->flags & CSP_FLAG_CHUNKED)
+   {
+      log_error(LOG_LEVEL_DEANIMATE, "Need to de-chunk first");
+      if (0 == (size = remove_chunked_transfer_coding(csp->iob->cur, size)))
+      {
+         return(NULL);
+      }
+      csp->iob->eod = csp->iob->cur + size;
+      csp->flags |= CSP_FLAG_MODIFIED;
+   }
+
+   if (NULL == (in =  (struct binbuffer *)zalloc(sizeof *in )))
+   {
+      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg no mem 1)");
+      return NULL;
+   }
+
+   if (NULL == (out = (struct binbuffer *)zalloc(sizeof *out)))
+   {
+      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg no mem 2)");
+      return NULL;
+   }
+
+   in->buffer = csp->iob->cur;
+   in->size = size;
+
+   /*
+    * Calling jpeg_inspect has the side-effect of creating and 
+    * modifying the image buffer of "out" directly.
+    */
+   if (jpeg_inspect(in, out))
+   {
+      log_error(LOG_LEVEL_DEANIMATE, "failed! (jpeg parsing)");
+      free(in);
+      buf_free(out);
+      return(NULL);
+
+   }
+   else
+   {
+      csp->content_length = out->offset;
+      csp->flags |= CSP_FLAG_MODIFIED;
+      p = out->buffer;
+      free(in);
+      free(out);
+      return(p);
+   }
+
+}
+
+
+/*********************************************************************
+ *
  * Function    :  remove_chunked_transfer_coding
  *
  * Description :  In-situ remove the "chunked" transfer coding as defined
@@ -1536,7 +1768,7 @@ void url_actions(struct http_request *http,
 
    init_current_action(csp->action);
 
-   for (i = 0; i < MAX_ACTION_FILES; i++)
+   for (i = 0; i < MAX_AF_FILES; i++)
    {
       if (((fl = csp->actions_list[i]) == NULL) || ((b = fl->f) == NULL))
       {

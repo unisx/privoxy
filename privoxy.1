@@ -3,15 +3,12 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "PRIVOXY" "1" "31 Januar 2004" "Privoxy 3.0.3" ""
+.TH "PRIVOXY" "1" "21 September 2006" "Privoxy 3.0.5 BETA" ""
 .SH NAME
 privoxy \- Privacy Enhancing Proxy
 .SH SYNOPSIS
 
-\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB--chroot\fR ] [\fB\fIconfigfile\fB\fR ]\fB (UNIX)\fR
-
-
-\fBprivoxy.exe\fR [\fB\fIconfigfile\fB\fR ]\fB (Windows)\fR
+\fBprivoxy\fR [\fB--help\fR ] [\fB--version\fR ] [\fB--no-daemon\fR ] [\fB--pidfile \fIpidfile\fB\fR ] [\fB--user \fIuser[.group]\fB\fR ] [\fB--chroot\fR ] [\fB\fIconfigfile\fB\fR ]
 
 .SH "OPTIONS"
 .PP
@@ -52,22 +49,22 @@ that hierarchy.
 .PP
 If the \fIconfigfile\fR is not specified on  the  command  line,
 \fBPrivoxy\fR  will  look for a file named
-\fIconfig\fR in the current directory (except on Win32 where
-it will try \fIconfig.txt\fR). If no
+\fIconfig\fR in the current directory . If no
 \fIconfigfile\fR is found, \fBPrivoxy\fR will 
 fail to start.
 .SH "DESCRIPTION"
 .PP
-\fBPrivoxy\fR is a web proxy with advanced filtering
-capabilities for protecting privacy, modifying web page content, managing
-cookies, controlling access, and removing ads, banners, pop-ups and other
-obnoxious Internet junk. \fBPrivoxy\fR has a very
-flexible configuration and can be customized to suit individual needs and
-tastes. \fBPrivoxy\fR has application for both
-stand-alone systems and multi-user networks.
+Privoxy is a 
+web proxy
+with advanced filtering capabilities for protecting
+privacy, modifying web page data, managing 
+cookies, 
+controlling access, and removing ads, banners, pop-ups and other obnoxious
+Internet junk. Privoxy has a very flexible configuration and can be
+customized to suit individual needs and tastes. Privoxy has application for
+both stand-alone systems and multi-user networks.
 .PP
-\fBPrivoxy\fR is based on \fBInternet
-Junkbuster\fR (tm).
+Privoxy is based on Internet Junkbuster (tm).
 .SH "INSTALLATION AND USAGE"
 .PP
 Browsers must be individually configured to use \fBPrivoxy\fR as
@@ -78,6 +75,11 @@ and Mozilla, go through:  \fBEdit\fR;
 \fBProxies\fR;  \fBManual Proxy Configuration\fR;
 \fBView\fR. 
 .PP
+For Firefox, go through: \fBTools\fR; 
+\fBOptions\fR; \fBGeneral\fR;
+\fBConnection Settings\fR;
+\fBManual Proxy Configuration\fR. 
+.PP
 For Internet Explorer, go through: \fBTools\fR; 
 \fBInternet Properties\fR; \fBConnections\fR;
 \fBLAN Settings\fR. 
@@ -85,6 +87,8 @@ For Internet Explorer, go through: \fBTools\fR;
 The Secure (SSL) Proxy should also be set to the same values, otherwise
 https: URLs will not be proxied. Note: \fBPrivoxy\fR can only
 proxy HTTP and HTTPS traffic. Do not try it with FTP or other protocols.
+HTTPS presents some limitations, and not all features will work with HTTPS 
+connections.
 .PP
 For other browsers, check the documentation.
 .SH "CONFIGURATION"
@@ -94,24 +98,28 @@ files. The default configuration files are: \fIconfig\fR,
 \fIdefault.filter\fR, and
 \fIdefault.action\fR. \fIuser.action\fR should 
 be used for locally defined exceptions to the default rules of
-\fIdefault.action\fR These are all well commented.  On Unix
+\fIdefault.action\fR, and \fIuser.filter\fR for 
+locally defined filters. These are well commented.  On Unix
 and Unix-like systems, these are located in
-\fI/etc/privoxy/\fR by default. On Windows, OS/2 and AmigaOS,
-these files are in the same directory as the \fBPrivoxy\fR
-executable.
+\fI/etc/privoxy/\fR by default. 
 .PP
-The name and number of configuration files has changed from previous
-versions. In fact, the configuration itself is changed  and  much more
-sophisticated. See the user-manual for a complete
-explanation of all configuration options and general usage, and notes for 
-upgrading from \fBJunkbuster\fR and earlier \fBPrivoxy\fR
-versions.
+\fBPrivoxy\fR uses the concept of \fBactions\fR 
+in order to manipulate the data stream between the browser and remote sites.
+There are various actions available with specific functions for such things 
+as blocking web sites, managing cookies, etc. These actions can be invoked
+individually or combined, and used against individual URLs, or groups of URLs 
+that can be defined using wildcards and regular expressions. The result is
+that the user has greatly enhanced control and freedom.
 .PP
 The actions list (ad blocks, etc) can also be configured with your
 web browser at http://config.privoxy.org/.
 \fBPrivoxy's\fR configuration parameters  can also  be viewed at
 the same page. In addition, \fBPrivoxy\fR can be toggled on/off.
 This is an internal page, and does not require Internet access.
+.PP
+See the \fIUser Manual\fR for a detailed
+explanation of installation, general usage, all configuration options, new
+features and notes on upgrading.
 .SH "SAMPLE CONFIGURATION"
 .PP
 A brief example of what a simple \fIdefault.action\fR
@@ -121,59 +129,98 @@ configuration might look like:
  # Define a few useful custom aliases for later use
  {{alias}}
 
- # Useful aliases
+ # Useful aliases that combine more than one action
  +crunch-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
  -crunch-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
- +imageblock      = +block +handle-as-image
+ +block-as-image = +block +handle-as-image
 
  # Fragile sites should have the minimum changes
  fragile     = -block -deanimate-gifs -fast-redirects -filter \\
                -hide-referer -prevent-cookies -kill-popups
 
  ## Turn some actions on ################################
- { \\
- -add-header \\
- -block \\
- +deanimate-gifs{last} \\
- -downgrade-http-version \\
- -fast-redirects \\
- +filter{html-annoyances} \\
- +filter{js-annoyances} \\
- +filter{content-cookies} \\
- +filter{webbugs} \\
- +filter{banners-by-size} \\
- +hide-forwarded-for-headers \\
- +hide-from-header{block} \\
- +hide-referrer{forge} \\
- -hide-user-agent \\
- -handle-as-image \\
- +set-image-blocker{pattern} \\
- -limit-connect \\
- +prevent-compression \\
- +session-cookies-only \\
- -crunch-cookies \\
- -kill-popups \\
- }
- /   # '/' Matches *all* URL patterns
+ ## NOTE: Actions are off by default, unless explictily turned on 
+ ## otherwise with the '+' operator.
+
+{ \\
+-add-header \\
+-block \\
+-content-type-overwrite \\
+-crunch-client-header \\
+-crunch-if-none-match \\
+-crunch-outgoing-cookies \\
+-crunch-incoming-cookies \\
+-crunch-server-header \\
++deanimate-gifs{last} \\
+-downgrade-http-version \\
+-fast-redirects \\
+-filter{js-annoyances} \\
+-filter{js-events} \\
+-filter{html-annoyances} \\
+-filter{content-cookies} \\
++filter{refresh-tags} \\
+-filter{unsolicited-popups} \\
+-filter{all-popups} \\
++filter{img-reorder} \\
++filter{banners-by-size} \\
+-filter{banners-by-link} \\
++filter{webbugs} \\
+-filter{tiny-textforms} \\
++filter{jumping-windows} \\
+-filter{frameset-borders} \\
+-filter{demoronizer} \\
+-filter{shockwave-flash} \\
+-filter{quicktime-kioskmode} \\
+-filter{fun} \\
+-filter{crude-parental} \\
++filter{ie-exploits} \\
+-filter{site-specifics} \\
+-filter-client-headers \\
+-filter-server-headers \\
+-force-text-mode \\
+-handle-as-empty-document
+-handle-as-image \\
+-hide-accept-language \\
+-hide-content-disposition \\
+-hide-if-modified-since \\
++hide-forwarded-for-headers \\
++hide-from-header{block} \\
++hide-referrer{forge} \\
+-hide-user-agent \\
+-inspect-jpegs \\
+-kill-popups \\
+-limit-connect \\
+-overwrite-last-modified \\
+-redirect \\
++prevent-compression \\
+-send-vanilla-wafer \\
+-send-wafer \\
++session-cookies-only \\
++set-image-blocker{pattern} \\
+-treat-forbidden-connects-like-blocks \\
+}
+/ # '/' Match *all* URL patterns
+
  
  # Block, and treat these URL patterns as if they were 'images'.
  # We would expect these to be ads.
- {+imageblock}
+ { +block-as-image }
   .ad.doubleclick.net
   .a[0-9].yimg.com/(?:(?!/i/).)*$
   ad.*.doubleclick.net
 
- # Block any URLs that match these patterns
- {+block}
+ # Block all URLs that match these patterns
+ { +block }
   ad*.
   .*ads.
   banner?.
   /.*count(er)?\\.(pl|cgi|exe|dll|asp|php[34]?)
   .hitbox.com 
+  media./.*(ads|banner)
 
  # Make exceptions for these harmless ones that would be 
  # caught by our +block patterns just above.
- {-block}
+ { -block }
   adsl.
   advice.
   .*downloads.
@@ -191,20 +238,25 @@ narrowly defined exceptions:
  
  # Set personal exceptions to the policies in default.action #######
 
- # Sites where we want persistant cookies, so allow *all* cookies
- {-crunch-cookies -session-cookies-only}
+ # Sites where we want persistent cookies, so allow *all* cookies
+ { -crunch-cookies -session-cookies-only }
   .redhat.com
   .sun.com
   .msdn.microsoft.com
  
- # This site breaks easily.
- {-block -fast-redirects}
+ # These sites breaks easily. Use our "fragile" alias here.
+ { fragile }
   .forbes.com
+  mybank.example.com
+
+ # Replace example.com's style sheet with one of my choosing
+ { +redirect{http://localhost/css-replacements/example.com.css} }
+  example.com/stylesheet.css
 .fi
 .PP
 See the comments in the configuration files themselves, or the 
-\fIuser-manual\fR
-for explanations of the above syntax, and other \fBPrivoxy\fR
+\fIUser Manual\fR
+for full explanations of the above syntax, and other \fBPrivoxy\fR
 configuration options.
 .SH "FILES"
 
@@ -216,13 +268,14 @@ configuration options.
  \fI/etc/privoxy/standard.action\fR
  \fI/etc/privoxy/user.action\fR
  \fI/etc/privoxy/default.filter\fR
+ \fI/etc/privoxy/user.filter\fR
  \fI/etc/privoxy/trust\fR
  \fI/etc/privoxy/templates/*\fR
  \fI/var/log/privoxy/logfile\fR
 .fi
 .PP
 Various other files should be included, but may vary depending on platform
-and build configuration. More documentation should be included in the local
+and build configuration. Additional documentation should be included in the local
 documentation directory.
 .SH "SIGNALS"
 .PP
@@ -235,8 +288,11 @@ config file changes by \fBSIGHUP\fR -- it will detect them
 automatically. 
 .SH "NOTES"
 .PP
+This is a BETA version of \fBPrivoxy\fR. Not 
+all features are well tested.
+.PP
 Please see the \fIUser Manual\fR on how to contact the
-developers for feature requests, reporting problems, and other questions.
+developers, for feature requests, reporting problems, and other questions.
 .SH "SEE ALSO"
 .PP
 Other references and sites of interest to \fBPrivoxy\fR
@@ -257,10 +313,8 @@ http://config.privoxy.org/,
 the web-based user interface. \fBPrivoxy\fR must be
 running for this to work. Shortcut: http://p.p/
 
-http://www.privoxy.org/actions/, to submit ``misses'' to the developers. 
-
-http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/contrib/, cool
-and fun ideas from \fBPrivoxy\fR users.
+http://sourceforge.net/tracker/?group_id=11118&atid=460288, to submit ``misses'' and other
+configuration related suggestions to the developers. 
 
 http://www.junkbusters.com/ht/en/cookies.html,
 an explanation how cookies are used to track web users.
@@ -268,51 +322,33 @@ an explanation how cookies are used to track web users.
 http://www.junkbusters.com/ijb.html,
 the original Internet Junkbuster.
 
-http://www.waldherr.org/junkbuster/,
-Stefan Waldherr's version of Junkbuster, from which \fBPrivoxy\fR was
-derived.
-
-http://privacy.net/analyze/, a useful site
+http://privacy.net/, a useful site
 to check what information about you is leaked while you browse the web.
 
 http://www.squid-cache.org/, a very popular
 caching proxy, which is often used together with \fBPrivoxy\fR.
+
+http://tor.eff.org/, 
+\fBTor\fR can help anonymize web browsing, 
+web publishing, instant messaging, IRC, SSH, and other applications.
 
 http://www.privoxy.org/developer-manual/, 
 the \fBPrivoxy\fR developer manual. 
 .SH "DEVELOPMENT TEAM"
 
 .nf
- Hal Burgiss (docs)
- Andreas Oesterhelt
- David Schmidt (OS/2, Mac OSX ports)
-
- Johny Agotnes 
- Rodrigo Barbosa (RPM specfiles)
- Moritz Barsnick
- Brian Dessent
- Mattes Dolak 
- Jon Foster
- Karsten Hopp (Red Hat)
- Alexander Lazic
- Daniel Leite
- Gábor Lipták
- Adam Lock (Win32)
- Guy Laroche
- Haroon Rafique
- Roland Rosenfeld (Debian)
- Georg Sauthoff (Gentoo)
- Thomas Steudten
- Joerg Strohmayer (Amiga)
- Rodney Stromlund
- Sviatoslav Sviridov
- Sarantis Paskalis
- Stefan Waldherr
+ Fabian Keil, developer
+ David Schmidt, developer
+ 
+ Hal Burgiss
+ Ian Cummings
+ Félix Rauch
+ Roland Rosenfeld
 .fi
 .SH "COPYRIGHT AND LICENSE"
 .SS "COPYRIGHT"
 .PP
-Copyright (C) 2001 - 2004 by Privoxy Developers <developers@privoxy.org>
+Copyright (C) 2001 - 2006 by Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
 .PP
 Some source code is based on code Copyright (C) 1997 by Anonymous Coders
 and Junkbusters, Inc. and licensed under the \fIGNU General Public
@@ -328,11 +364,11 @@ This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE.  See the 
 \fIGNU General Public License\fR for
-more details, which is available from the Free Software Foundation, Inc, 59
-Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+more details, which is available from the Free Software Foundation, Inc, 
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 .PP
 You should have received a copy of the  \fIGNU General Public License\fR
 along with this program; if not, write to the  Free Software
-Foundation, Inc. 59 Temple Place - Suite 330
-Boston, MA 02111-1307
+Foundation, Inc. 51 Franklin Street, Fifth Floor
+Boston, MA 02110-1301
 USA 

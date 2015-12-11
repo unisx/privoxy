@@ -1,9 +1,9 @@
 #ifndef ENCODE_H_INCLUDED
 #define ENCODE_H_INCLUDED
-#define ENCODE_H_VERSION "$Id: encode.h,v 1.5 2002/03/26 22:29:54 swa Exp $"
+#define ENCODE_H_VERSION "$Id: encode.h,v 1.7 2006/07/18 14:48:45 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/encode.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/encode.h,v $
  *
  * Purpose     :  Functions to encode and decode URLs, and also to
  *                encode cookies and HTML text.
@@ -35,6 +35,10 @@
  *
  * Revisions   :
  *    $Log: encode.h,v $
+ *    Revision 1.7  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.5  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *

@@ -1,7 +1,7 @@
-const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.5 2003/04/04 12:48:51 oes Exp $";
+const char w32log_rcs[] = "$Id: w32log.c,v 1.27 2006/07/18 14:48:48 david__schmidt Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32log.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/w32log.c,v $
  *
  * Purpose     :  Functions for creating and destroying the log window,
  *                ouputting strings, processing messages and so on.
@@ -32,6 +32,10 @@ const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.5 2003/04/04 12:48:51 oes Exp 
  *
  * Revisions   :
  *    $Log: w32log.c,v $
+ *    Revision 1.27  2006/07/18 14:48:48  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.25.2.5  2003/04/04 12:48:51  oes
  *    Fixed bug #711865:
  *     - Made tray menu correctly reflect initial window visibility state

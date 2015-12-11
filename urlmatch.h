@@ -1,9 +1,9 @@
 #ifndef URLMATCH_H_INCLUDED
 #define URLMATCH_H_INCLUDED
-#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.3 2002/03/26 22:29:55 swa Exp $"
+#define URLMATCH_H_VERSION "$Id: urlmatch.h,v 1.5 2006/07/18 14:48:47 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/urlmatch.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/urlmatch.h,v $
  *
  * Purpose     :  Declares functions to match URLs against URL
  *                patterns.
@@ -35,6 +35,10 @@
  *
  * Revisions   :
  *    $Log: urlmatch.h,v $
+ *    Revision 1.5  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.3  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *

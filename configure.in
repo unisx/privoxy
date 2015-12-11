@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.68.2.19 2004/01/30 09:26:03 oes Exp $
+dnl $Id: configure.in,v 1.93 2006/09/22 01:26:20 hal9 Exp $
 dnl 
 dnl Written by and Copyright (C) 2001 - 2004 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,22 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.93  2006/09/22 01:26:20  hal9
+dnl Set version to 3.0.5 BETA for hopefully release this weekend.
+dnl
+dnl Revision 1.92  2006/08/17 17:09:49  fabiankeil
+dnl Added check for timegm().
+dnl
+dnl Revision 1.91  2006/08/13 22:01:51  fabiankeil
+dnl Added checks for strptime() and random()
+dnl
+dnl Revision 1.90  2006/07/18 14:48:45  david__schmidt
+dnl Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+dnl with what was really the latest development (the v_3_0_branch branch)
+dnl
+dnl Revision 1.68.2.20  2004/01/31 16:31:46  oes
+dnl Resetting version info to 0.0.0 UNRELEASED
+dnl
 dnl Revision 1.68.2.19  2004/01/30 09:26:03  oes
 dnl Added docbook paths for debian sarge; set status for release
 dnl
@@ -431,7 +447,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.68.2.19 $)
+AC_REVISION($Revision: 1.93 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -477,8 +493,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=3
-CODE_STATUS="stable"
+VERSION_POINT=5
+CODE_STATUS="BETA"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
@@ -1096,7 +1112,7 @@ AC_FUNC_SETPGRP
 AC_TYPE_SIGNAL
 dnl uncommenting does not work for swa. suse linux
 dnl AC_FUNC_STAT
-AC_CHECK_FUNCS([atexit getcwd gethostbyaddr gethostbyname inet_ntoa localtime_r memchr memmove memset regcomp select setlocale socket strchr strdup strerror strftime strstr strtoul])
+AC_CHECK_FUNCS([atexit getcwd gethostbyaddr gethostbyname inet_ntoa localtime_r memchr memmove memset random regcomp select setlocale socket strchr strdup strerror strftime strptime strstr strtoul timegm])
 
 
 dnl =================================================================

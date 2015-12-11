@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 1.8.2.14 2003/12/03 13:02:51 hal9 Exp $
+ $Id: p-authors.sgml,v 2.16 2006/09/20 01:47:00 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
  See LICENSE.
 
  ======================================================================
@@ -24,64 +24,56 @@
 -->
 <![%p-authors-formal;[
 <para>
- Current Developement Team:
+Current Privoxy Team:
 </para>
 ]]>
 
 <literallayout>
- Hal Burgiss (docs)
- Andreas Oesterhelt
- David Schmidt (OS/2, Mac OSX ports)
+ Fabian Keil, developer
+ David Schmidt, developer
 <![%p-authors-formal;[
- ]]>
-
+]]>
+ 
+ Hal Burgiss
+ Ian Cummings
+ Félix Rauch
+ Roland Rosenfeld
 <![%p-authors-formal;[
 </literallayout>
 
 <para>
- Current and Former Project Contributors:
+ Former Privoxy Team Members:
 </para>
 
 <literallayout>
-]]>
  Johny Agotnes 
- Rodrigo Barbosa (RPM specfiles)
+ Rodrigo Barbosa
  Moritz Barsnick
  Brian Dessent
- Mattes Dolak 
  Jon Foster
- Karsten Hopp (Red Hat)
+ Karsten Hopp
  Alexander Lazic
  Daniel Leite
  Gábor Lipták
- Adam Lock (Win32)
+ Adam Lock
  Guy Laroche
+ Mark Martinec 
+ Andreas Oesterhelt
  Haroon Rafique
- Roland Rosenfeld (Debian)
- Georg Sauthoff (Gentoo)
+ Georg Sauthoff
  Thomas Steudten
- Joerg Strohmayer (Amiga)
+ Joerg Strohmayer
  Rodney Stromlund
  Sviatoslav Sviridov
  Sarantis Paskalis
  Stefan Waldherr
+]]>
 </literallayout>
-
 <![%p-authors-formal;[
 <para>
- Based in part on code originally developed by:
+ Thanks to the many people who have tested Privoxy, reported bugs, made
+ suggestions or contributed in some way. These include (in alphabetical order):
 </para>
-
-<literallayout>
- Junkbusters Corp.
- Anonymous Coders
-</literallayout>
-
-<para>
- Thanks to the many people who have tested Privoxy, reported bugs, or made
- suggestions. These include (in alphabetical order):
-</para>
-
 <literallayout>
  Ken Arromdee
  Devin Bayer
@@ -89,18 +81,32 @@
  Andrew J. Caines
  Clifford Caoile
  Michael T. Davis
- Brian Dessent
+ Mattes Dolak 
+ Ulrich Drepper
  Peter E
  Aaron Hamid
  Magnus Holmgren
  Don Libes  
  Paul Lieverse
+ Jindrich Makovicka 
  David Mediavilla 
  Oliver Stoeneberg
  Roberto Ragusa
  Maynard Riley
  Bart Schelstraete
+ Bobby G. Vinyard
  Darren Wiebe
+ Jörg Weinmann 
+ Oliver Yeoh
  Jamie Zawinski
+</literallayout>
+
+<para>
+ Privoxy is based in part on code originally developed by:
+</para>
+
+<literallayout>
+ Junkbusters Corp.
+ Anonymous Coders
 </literallayout>
 ]]>

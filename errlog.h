@@ -1,9 +1,9 @@
 #ifndef ERRLOG_H_INCLUDED
 #define ERRLOG_H_INCLUDED
-#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.13.2.1 2002/08/05 17:57:06 oes Exp $"
+#define ERRLOG_H_VERSION "$Id: errlog.h,v 1.15 2006/07/18 14:48:46 david__schmidt Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/errlog.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/errlog.h,v $
  *
  * Purpose     :  Log errors to a designated destination in an elegant,
  *                printf-like fashion.
@@ -35,6 +35,10 @@
  *
  * Revisions   :
  *    $Log: errlog.h,v $
+ *    Revision 1.15  2006/07/18 14:48:46  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.13.2.1  2002/08/05 17:57:06  oes
  *    Cosmetic change
  *

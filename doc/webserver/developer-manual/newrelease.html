@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Releasing a New Version</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -74,8 +74,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="NEWRELEASE"
->6. Releasing a New Version</A
-></H1
+></A
+>6. Releasing a New Version</H1
 ><P
 >        When we release versions of <SPAN
 CLASS="APPLICATION"
@@ -111,8 +111,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="VERSIONNUMBERS"
->6.1. Version numbers</A
-></H2
+></A
+>6.1. Version numbers</H2
 ><P
 >      First you need to determine which version number the release will have. 
       <SPAN
@@ -174,9 +174,9 @@ CLASS="APPLICATION"
               little to no development happening in such branches. Remember,
               only bugfixes, which presumably should have had some testing
               before being committed. Stable branches will then have their 
-              version reported as <VAR
+              version reported as <TT
 CLASS="LITERAL"
->0.0.0</VAR
+>0.0.0</TT
 >, during that period 
               between releases when changes are being added. This is to denote 
               that this code is <SPAN
@@ -187,9 +187,9 @@ CLASS="EMPHASIS"
 ></SPAN
 >. Then 
               as the release nears, the version is bumped according: e.g. 
-              <VAR
+              <TT
 CLASS="LITERAL"
->3.0.1 -&#62; 0.0.0 -&#62; 3.0.2</VAR
+>3.0.1 -&#62; 0.0.0 -&#62; 3.0.2</TT
 >.
             </P
 ></LI
@@ -201,9 +201,9 @@ CLASS="LITERAL"
      features are being worked on for the next stable series. This should
      almost always be where the most activity takes place. There is always at
      least one stable branch from the trunk, e.g now it is
-     <VAR
+     <TT
 CLASS="LITERAL"
->3.0</VAR
+>3.0</TT
 >, which is only used to release stable versions.
      Once the initial *.0 release of the stable branch has been done, then as a
      rule, only bugfixes that have had prior testing should be committed to
@@ -232,9 +232,9 @@ CLASS="EMPHASIS"
 >and</I
 ></SPAN
 > the stable release branch,
-     which is <VAR
+     which is <TT
 CLASS="LITERAL"
->v_3_0_branch</VAR
+>v_3_0_branch</TT
 > at the moment).
     </P
 ></DIV
@@ -244,8 +244,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BEFORERELEASE"
->6.2. Before the Release: Freeze</A
-></H2
+></A
+>6.2. Before the Release: Freeze</H2
 ><P
 >       The following <SPAN
 CLASS="emphasis"
@@ -343,9 +343,9 @@ CLASS="CITETITLE"
 >
          link from the main page since we need to keep manuals for various 
          versions available). The CGI pages will link to something like 
-         <VAR
+         <TT
 CLASS="LITERAL"
->http://privoxy.org/$(VERSION)/user-manual/</VAR
+>http://privoxy.org/$(VERSION)/user-manual/</TT
 >. This
          will need to be updated for each new release. There is no Makefile
          target for this at this time!!! It needs to be done manually.
@@ -429,8 +429,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="THERELEASE"
->6.3. Building and Releasing the Packages</A
-></H2
+></A
+>6.3. Building and Releasing the Packages</H2
 ><P
 >      Now the individual packages can be built and released. Note that for
       GPL reasons the first package to be released is always the source tarball.
@@ -464,8 +464,8 @@ WIDTH="100%"
 CLASS="PROGRAMLISTING"
 >  mkdir dist # delete or choose different name if it already exists
   cd dist
-  cvs -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa login
-  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa export -r v_X_Y_Z current</PRE
+  cvs -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa login
+  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa export -r v_X_Y_Z current</PRE
 ></TD
 ></TR
 ></TABLE
@@ -483,6 +483,36 @@ CLASS="EMPHASIS"
      all release packages, and with them, all future bug reports, are based
      on exactly the same code.
     </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>      Every significant release of Privoxy has included at least one 
+      package that either had incorrect versions of files, missing files, 
+      or incidental leftovers from a previous build process that gave 
+      unknown numbers of users headaches to try to figure out what was 
+      wrong. PLEASE, make sure you are using pristene sources, and are
+      following the prescribed process!
+     </P
+></TD
+></TR
+></TABLE
+></DIV
 ><P
 >     Please find additional instructions for the source tarball and the
      individual platform dependent binary packages below. And details 
@@ -494,8 +524,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="PACK-GUIDELINES"
->6.3.1. Note on Privoxy Packaging</A
-></H3
+></A
+>6.3.1. Note on Privoxy Packaging</H3
 ><P
 >      Please keep these general guidelines in mind when putting together 
       your package. These apply to <SPAN
@@ -697,15 +727,40 @@ CLASS="FILENAME"
 >        <TT
 CLASS="FILENAME"
 >user.action</TT
-> is designed for local preferences. 
-        Make sure this does not get overwritten!
+> and <TT
+CLASS="FILENAME"
+>user.filter</TT
+>
+        are designed for local preferences. Make sure these do not get overwritten!
+        <TT
+CLASS="FILENAME"
+>config</TT
+> should not be overwritten either. This 
+        has especially important configuration data in it.
+        <TT
+CLASS="FILENAME"
+>trust</TT
+> should be left in tact as well.
        </P
 ></LI
 ><LI
 ><P
->        Other configuration files should be installed as the new defaults, 
-        but all previously installed configuration files should be preserved
-        as backups. This is just good manners :-)
+>        Other configuration files (<TT
+CLASS="FILENAME"
+>default.action</TT
+>,
+        <TT
+CLASS="FILENAME"
+>default.filter</TT
+> and
+        <TT
+CLASS="FILENAME"
+>standard.action</TT
+>) should be installed as the new
+        defaults, but all previously installed configuration files should be
+        preserved as backups. This is just good manners :-) These files are
+        likely to change between releases and contain important new features
+        and bug fixes.
        </P
 ></LI
 ><LI
@@ -742,8 +797,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-TARBALL"
->6.3.2. Source Tarball</A
-></H3
+></A
+>6.3.2. Source Tarball</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -822,12 +877,14 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-RPM"
->6.3.3. SuSE, Conectiva or Red Hat RPM</A
-></H3
+></A
+>6.3.3. SuSE, Conectiva or Red Hat RPM</H3
 ><P
->        In following text, replace <VAR
+>        In following text, replace <TT
 CLASS="REPLACEABLE"
->dist</VAR
+><I
+>dist</I
+></TT
 >
         with either <SPAN
 CLASS="QUOTE"
@@ -853,9 +910,11 @@ CLASS="EMPHASIS"
         now examine the file <TT
 CLASS="FILENAME"
 >privoxy-</TT
-><VAR
+><TT
 CLASS="REPLACEABLE"
->dist</VAR
+><I
+>dist</I
+></TT
 ><TT
 CLASS="FILENAME"
 >.spec</TT
@@ -863,9 +922,11 @@ CLASS="FILENAME"
         and make sure that the version information and the RPM release number are
         correct. The RPM release numbers for each version start at one. Hence it must
         be reset to one if this is the first RPM for
-        <VAR
+        <TT
 CLASS="REPLACEABLE"
->dist</VAR
+><I
+>dist</I
+></TT
 > which is built from version
         X.Y.Z. Check the
         <A
@@ -907,9 +968,11 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  make <VAR
+>  make <TT
 CLASS="REPLACEABLE"
->dist</VAR
+><I
+>dist</I
+></TT
 >-dist</PRE
 ></TD
 ></TR
@@ -928,12 +991,16 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  make <VAR
+>  make <TT
 CLASS="REPLACEABLE"
->dist</VAR
->-upload <VAR
+><I
+>dist</I
+></TT
+>-upload <TT
 CLASS="REPLACEABLE"
->rpm_packagerev</VAR
+><I
+>rpm_packagerev</I
+></TT
 ></PRE
 ></TD
 ></TR
@@ -941,9 +1008,11 @@ CLASS="REPLACEABLE"
 >
 	</P
 ><P
->        where <VAR
+>        where <TT
 CLASS="REPLACEABLE"
->rpm_packagerev</VAR
+><I
+>rpm_packagerev</I
+></TT
 > is the
         RPM release number as determined above.
 	Go to the displayed URL and release the file publicly on Sourceforge.
@@ -956,8 +1025,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-OS2"
->6.3.4. OS/2</A
-></H3
+></A
+>6.3.4. OS/2</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -978,7 +1047,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co os2setup</PRE
+>  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co os2setup</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1093,8 +1162,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-SOLARIS"
->6.3.5. Solaris</A
-></H3
+></A
+>6.3.5. Solaris</H3
 ><P
 >	Login to Sourceforge's compilefarm via ssh:
 	</P
@@ -1176,8 +1245,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-WINDOWS"
->6.3.6. Windows</A
-></H3
+></A
+>6.3.6. Windows</H3
 ><P
 >        You should ensure you have the latest version of Cygwin (from
         <A
@@ -1207,7 +1276,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  cvs -z3  -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co winsetup</PRE
+>  cvs -z3  -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co winsetup</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1256,8 +1325,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-DEBIAN"
->6.3.7. Debian</A
-></H3
+></A
+>6.3.7. Debian</H3
 ><P
 >        First, <SPAN
 CLASS="emphasis"
@@ -1283,7 +1352,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  debchange -v 3.0.3-stable-1 "New upstream version"</PRE
+>  debchange -v 3.0.5-BETA-1 "New upstream version"</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1311,7 +1380,7 @@ CLASS="PROGRAMLISTING"
 >        This will create
         <TT
 CLASS="FILENAME"
->../privoxy_3.0.3-stable-1_i386.deb</TT
+>../privoxy_3.0.5-BETA-1_i386.deb</TT
 >
         which can be uploaded.  To upload the package to Sourceforge, simply
 	issue
@@ -1338,8 +1407,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-MACOSX"
->6.3.8. Mac OSX</A
-></H3
+></A
+>6.3.8. Mac OSX</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1360,7 +1429,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co osxsetup</PRE
+>  cvs -z3 -d:pserver:anonymous@ijbswa.cvs.sourceforge.net:/cvsroot/ijbswa co osxsetup</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1446,8 +1515,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-FREEBSD"
->6.3.9. FreeBSD</A
-></H3
+></A
+>6.3.9. FreeBSD</H3
 ><P
 >	Login to Sourceforge's compile-farm via ssh:
 	</P
@@ -1529,8 +1598,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-HPUX"
->6.3.10. HP-UX 11</A
-></H3
+></A
+>6.3.10. HP-UX 11</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1568,8 +1637,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-AMIGA"
->6.3.11. Amiga OS</A
-></H3
+></A
+>6.3.11. Amiga OS</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1607,8 +1676,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="NEWRELEASE-AIX"
->6.3.12. AIX</A
-></H3
+></A
+>6.3.12. AIX</H3
 ><P
 >	Login to Sourceforge's compilefarm via ssh:
 	</P
@@ -1691,8 +1760,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="RELEASING"
->6.4. Uploading and Releasing Your Package</A
-></H2
+></A
+>6.4. Uploading and Releasing Your Package</H2
 ><P
 >      After the package is ready, it is time to upload it 
       to SourceForge, and go through the release steps. The upload
@@ -1713,17 +1782,17 @@ TARGET="_top"
 ></LI
 ><LI
 ><P
->         user: <VAR
+>         user: <TT
 CLASS="LITERAL"
->anonymous</VAR
+>anonymous</TT
 >
        </P
 ></LI
 ><LI
 ><P
->         password: <VAR
+>         password: <TT
 CLASS="LITERAL"
->ijbswa-developers@lists.sourceforge.net</VAR
+>ijbswa-developers@lists.sourceforge.net</TT
 >
        </P
 ></LI
@@ -1743,19 +1812,19 @@ TARGET="_top"
 >http://sourceforge.net/project/admin/editpackages.php?group_id=11118</A
 >, 
      making sure you are logged in. Find your target platform in the 
-     second column, and click <VAR
+     second column, and click <TT
 CLASS="LITERAL"
->Add Release</VAR
+>Add Release</TT
 >. You will 
      then need to create a new release for your package, using the format 
-     of <VAR
+     of <TT
 CLASS="LITERAL"
->$VERSION ($CODE_STATUS)</VAR
+>$VERSION ($CODE_STATUS)</TT
 >, e.g. <SPAN
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->3.0.3
+>3.0.5
      (beta)</I
 ></SPAN
 >.
@@ -1786,13 +1855,13 @@ CLASS="QUOTE"
     </P
 ><P
 >     If you have made errors, or need to make changes, you can go through 
-     essentially the same steps, but select <VAR
+     essentially the same steps, but select <TT
 CLASS="LITERAL"
->Edit Release</VAR
+>Edit Release</TT
 >, 
-     instead of <VAR
+     instead of <TT
 CLASS="LITERAL"
->Add Release</VAR
+>Add Release</TT
 >.
     </P
 ></DIV
@@ -1802,8 +1871,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="AFTERRELEASE"
->6.5. After the Release</A
-></H2
+></A
+>6.5. After the Release</H2
 ><P
 >      When all (or: most of the) packages have been uploaded and made available,
       send an email to the <A
@@ -1820,7 +1889,8 @@ TARGET="_top"
       location</A
 >, the release notes and the Changelog. Also, post an
       updated News item on the project page Sourceforge, and update the Home 
-      page and docs linked from the Home page (see below).
+      page and docs linked from the Home page (see below). Other news sites
+      and release oriented sites, such as Freshmeat, should also be notified.
      </P
 ></DIV
 ></DIV

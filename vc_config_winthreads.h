@@ -2,7 +2,7 @@
 #define CONFIG_H_INCLUDED
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/vc_config_winthreads.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/vc_config_winthreads.h,v $
  *
  * Purpose     :  This file should be the first thing included in every
  *                .c file.  (Before even system headers).  It contains 
@@ -37,6 +37,13 @@
  *
  * Revisions   :
  *    $Log: vc_config_winthreads.h,v $
+ *    Revision 1.5  2006/07/18 14:48:47  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
+ *    Revision 1.3.2.1  2006/04/08 21:57:26  david__schmidt
+ *    Synchronize with a more modern copy of config.h.
+ *
  *    Revision 1.3  2002/05/03 22:54:24  jongfoster
  *    Version number bump to 2.9.15
  *
@@ -195,27 +202,27 @@
 /*
  * Version number - Major (X._._)
  */
-#define VERSION_MAJOR 2
+#define VERSION_MAJOR 0
 
 /*
  * Version number - Minor (_.X._)
  */
-#define VERSION_MINOR 9
+#define VERSION_MINOR 0
 
 /*
  * Version number - Point (_._.X)
  */
-#define VERSION_POINT 15
+#define VERSION_POINT 0
 
 /*
  * Version number, as a string
  */
-#define VERSION "2.9.15"
+#define VERSION "0.0.0"
 
 /*
  * Status of the code: alpha, beta or stable
  */
-#define CODE_STATUS "beta"
+#define CODE_STATUS "UNRELEASED"
 
 /*
  * Regular expression matching for URLs.  (Highly recommended).
@@ -313,6 +320,11 @@
 #define FEATURE_KILL_POPUPS 1
 
 /*
+ * Use PNG instead of GIF for built-in images
+ */
+/* #undef FEATURE_NO_GIFS */
+
+/*
  * Use POSIX threads instead of native threads.
  */
 /* #define FEATURE_PTHREAD 1 */
@@ -360,12 +372,88 @@
  */
 #define __MT__ 1
 
+/* If the (nonstandard and thread-safe) function gethostbyname_r
+ * is available, select which signature to use
+ */
+/* #undef HAVE_GETHOSTBYNAME_R_6_ARGS */
+/* #undef HAVE_GETHOSTBYNAME_R_5_ARGS */
+/* #undef HAVE_GETHOSTBYNAME_R_3_ARGS */
+
+/* If the (nonstandard and thread-safe) function gethostbyaddr_r
+ * is available, select which signature to use
+ */
+/* #undef HAVE_GETHOSTBYADDR_R_8_ARGS */
+/* #undef HAVE_GETHOSTBYADDR_R_7_ARGS */
+/* #undef HAVE_GETHOSTBYADDR_R_5_ARGS */
+
+/* Defined if you have gmtime_r and localtime_r with a signature
+ * of (struct time *, struct tm *)
+ */
+#undef HAVE_GMTIME_R
+
+/* #define HAVE_LOCALTIME_R 1 */
+
+/* Define to 'int' if <sys/socket.h> doesn't have it.
+ */
+#define socklen_t int
+
+/* Define if pcre.h must be included as <pcre/pcre.h>
+ */
+/* #undef PCRE_H_IN_SUBDIR */
+
+/* Define if pcreposix.h must be included as <pcre/pcreposix.h>
+ */
+/* #undef PCREPOSIX_H_IN_SUBDIR */
+
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#define HAVE_ARPA_INET_H 1
+
+/* Define to 1 if you have the `atexit' function. */
+#define HAVE_ATEXIT 1
 
 /* Define if you have the `bcopy' function. */
 /* #define HAVE_BCOPY 1 */
 
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
+#define HAVE_DIRENT_H 1
+
+/* Define to 1 if you have the <errno.h> header file. */
+#define HAVE_ERRNO_H 1
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#define HAVE_FCNTL_H 1
+
+/* Define to 1 if you have the `getcwd' function. */
+#define HAVE_GETCWD 1
+
+/* Define to 1 if you have the `gethostbyaddr' function. */
+#define HAVE_GETHOSTBYADDR 1
+
+/* Define to 1 if you have the `gethostbyname' function. */
+#define HAVE_GETHOSTBYNAME 1
+
+/* Define to 1 if you have the `inet_ntoa' function. */
+#define HAVE_INET_NTOA 1
+
 /* Define if you have the <inttypes.h> header file. */
 /* #define HAVE_INTTYPES_H 1 */
+
+/* Define to 1 if you have the `nsl' library (-lnsl). */
+/* #undef HAVE_LIBNSL */
+
+/* Define to 1 if you have the <limits.h> header file. */
+#define HAVE_LIMITS_H 1
+
+/* Define to 1 if you have the <locale.h> header file. */
+#define HAVE_LOCALE_H 1
+
+/* Define to 1 if you have the `localtime_r' function. */
+#undef HAVE_LOCALTIME_R
+
+/* Define to 1 if you have the `memchr' function. */
+#define HAVE_MEMCHR 1
 
 /* Define if you have the `memmove' function. */
 #define HAVE_MEMMOVE 1
@@ -373,14 +461,53 @@
 /* Define if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
+/* Define to 1 if you have the `memset' function. */
+#define HAVE_MEMSET 1
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+/* #undef HAVE_NDIR_H */
+
+/* Define to 1 if you have the <netdb.h> header file. */
+#define HAVE_NETDB_H 1
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#define HAVE_NETINET_IN_H 1
+
+/* Define to 1 if you have the <OS.h> header file. */
+/* #undef HAVE_OS_H */
+
+/* Define to 1 if you have the `regcomp' function. */
+#define HAVE_REGCOMP 1
+
+/* Define to 1 if you have the `select' function. */
+#define HAVE_SELECT 1
+
+/* Define to 1 if you have the `setlocale' function. */
+#define HAVE_SETLOCALE 1
+
+/* Define to 1 if you have the `socket' function. */
+#define HAVE_SOCKET 1
+
+/* Define to 1 if you have the <stddef.h> header file. */
+#define HAVE_STDDEF_H 1
+
 /* Define if you have the <stdint.h> header file. */
 /* #define HAVE_STDINT_H 1 */
 
 /* Define if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
 
+/* Define to 1 if you have the `strchr' function. */
+#define HAVE_STRCHR 1
+
+/* Define to 1 if you have the `strdup' function. */
+#define HAVE_STRDUP 1
+
 /* Define if you have the `strerror' function. */
 #define HAVE_STRERROR 1
+
+/* Define to 1 if you have the `strftime' function. */
+#define HAVE_STRFTIME 1
 
 /* Define if you have the <strings.h> header file. */
 /* #define HAVE_STRINGS_H 1 */
@@ -388,14 +515,64 @@
 /* Define if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
+/* Define to 1 if you have the `strstr' function. */
+#define HAVE_STRSTR 1
+
+/* Define to 1 if you have the `strtoul' function. */
+#define HAVE_STRTOUL 1
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+/* #undef HAVE_SYS_DIR_H */
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#define HAVE_SYS_IOCTL_H 1
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+/* #undef HAVE_SYS_NDIR_H */
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#define HAVE_SYS_SOCKET_H 1
+
 /* Define if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
 
-/* Define if you have the <sys/types.h> header file. */
+/* Define to 1 if you have the <sys/timeb.h> header file. */
+#define HAVE_SYS_TIMEB_H 1
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#define HAVE_SYS_TIME_H 1
+
+/* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
+
+/* Define to 1 if you have the <sys/wait.h> header file. */
+#define HAVE_SYS_WAIT_H 1
 
 /* Define if you have the <unistd.h> header file. */
 /* #define HAVE_UNISTD_H 1 */
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT ""
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME ""
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING ""
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION ""
+
+/* Define as the return type of signal handlers (`int' or `void'). */
+#define RETSIGTYPE void
+
+/* Define to 1 if the `setpgrp' function takes no argument. */
+#define SETPGRP_VOID 1
 
 /* The size of a `char *', as computed by sizeof. */
 #define SIZEOF_CHAR_P 4
@@ -415,11 +592,23 @@
 /* Define if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#define TIME_WITH_SYS_TIME 1
+
+/* Define to 1 if your <sys/time.h> declares `struct tm'. */
+/* #undef TM_IN_SYS_TIME */
+
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #define const */
 
+/* Define to `int' if <sys/types.h> does not define. */
+/* #undef pid_t */
+
 /* Define to `unsigned' if <sys/types.h> does not define. */
 /* #define size_t unsigned */
+
+/* Define to 'int' if <sys/socket.h> doesn't have it. */
+#define socklen_t int
 
 /*
  * Defined always.
@@ -439,6 +628,13 @@
 #if defined(FEATURE_PTHREAD) && defined(_WIN32)
 #define __CLEANUP_C
 #endif /* defined(FEATURE_PTHREAD) && defined(_WIN32) */
+
+/*
+ * Need to keep errlog.c from trying to inline the non-existent
+ * locking stubs.  Could be removed once a real platform-specific
+ * solution is generated.
+ */
+#define inline ""
 
 /*
  * BEOS does not currently support POSIX threads.

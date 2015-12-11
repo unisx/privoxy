@@ -1,9 +1,9 @@
 #ifndef CGISIMPLE_H_INCLUDED
 #define CGISIMPLE_H_INCLUDED
-#define CGISIMPLE_H_VERSION "$Id: cgisimple.h,v 1.11 2002/04/05 15:50:53 oes Exp $"
+#define CGISIMPLE_H_VERSION "$Id: cgisimple.h,v 1.14 2006/09/06 18:45:03 fabiankeil Exp $"
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgisimple.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgisimple.h,v $
  *
  * Purpose     :  Declares functions to intercept request, generate
  *                html or gif answers, and to compose HTTP resonses.
@@ -38,6 +38,19 @@
  *
  * Revisions   :
  *    $Log: cgisimple.h,v $
+ *    Revision 1.14  2006/09/06 18:45:03  fabiankeil
+ *    Incorporate modified version of Roland Rosenfeld's patch to
+ *    optionally access the user-manual via Privoxy. Closes patch 679075.
+ *
+ *    Formatting changed to Privoxy style, added call to
+ *    cgi_error_no_template if the requested file doesn't
+ *    exist and modified check whether or not Privoxy itself
+ *    should serve the manual. Should work cross-platform now.
+ *
+ *    Revision 1.13  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.11  2002/04/05 15:50:53  oes
  *    added send-stylesheet CGI
  *
@@ -128,6 +141,10 @@ extern jb_err cgi_transparent_image (struct client_state *csp,
 extern jb_err cgi_send_stylesheet(struct client_state *csp,
                                   struct http_response *rsp,
                                   const struct map *parameters);
+extern jb_err cgi_send_user_manual(struct client_state *csp,
+                                   struct http_response *rsp,
+                                   const struct map *parameters);
+
 
 #ifdef FEATURE_GRACEFUL_TERMINATION
 extern jb_err cgi_die (struct client_state *csp,

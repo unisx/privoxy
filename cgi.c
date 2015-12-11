@@ -1,7 +1,7 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.13 2004/02/17 13:30:23 oes Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.78 2006/09/21 19:22:07 fabiankeil Exp $";
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.c,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
  *
  * Purpose     :  Declares functions to intercept request, generate
  *                html or gif answers, and to compose HTTP resonses.
@@ -38,6 +38,42 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.13 2004/02/17 13:30:23 oes Exp $";
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.78  2006/09/21 19:22:07  fabiankeil
+ *    Use CGI_PREFIX to check the referrer.
+ *    The check for "http://config.privoxy.org/" fails
+ *    if the user modified CGI_SITE_2_HOST.
+ *
+ *    Revision 1.77  2006/09/21 15:17:23  fabiankeil
+ *    Adjusted headers for Privoxy's cgi responses:
+ *    Don't set Last-Modified, Expires and Cache-Control
+ *    headers for redirects; always set "Connection: close".
+ *
+ *    Revision 1.76  2006/09/07 14:06:38  fabiankeil
+ *    Only predate the Last-Modified header for cgi responses
+ *    that are delivered with status code 404 or 503.
+ *
+ *    Revision 1.75  2006/09/07 11:56:39  fabiankeil
+ *    Mark cgi_send_user_manual as harmless,
+ *    to fix the access denied problem Hal spotted.
+ *    The manual has no secret content, therefore we
+ *    don't have to care about "secure" referrers.
+ *
+ *    Revision 1.74  2006/09/06 18:45:03  fabiankeil
+ *    Incorporate modified version of Roland Rosenfeld's patch to
+ *    optionally access the user-manual via Privoxy. Closes patch 679075.
+ *
+ *    Formatting changed to Privoxy style, added call to
+ *    cgi_error_no_template if the requested file doesn't
+ *    exist and modified check whether or not Privoxy itself
+ *    should serve the manual. Should work cross-platform now.
+ *
+ *    Revision 1.73  2006/08/03 02:46:41  david__schmidt
+ *    Incorporate Fabian Keil's patch work:http://www.fabiankeil.de/sourcecode/privoxy/
+ *
+ *    Revision 1.72  2006/07/18 14:48:45  david__schmidt
+ *    Reorganizing the repository: swapping out what was HEAD (the old 3.1 branch)
+ *    with what was really the latest development (the v_3_0_branch branch)
+ *
  *    Revision 1.70.2.13  2004/02/17 13:30:23  oes
  *    Moved cgi_error_disabled() from cgiedit.c to
  *    cgi.c to re-enable build with --disable-editor.
@@ -609,6 +645,9 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
    { "t",
          cgi_transparent_image, 
          NULL, TRUE /* Send a transparent image (short name) */ },
+   { "user-manual",
+          cgi_send_user_manual,
+          NULL, TRUE /* Send user-manual */ },
    { NULL, /* NULL Indicates end of list and default page */
          cgi_error_404,
          NULL, TRUE /* Unknown CGI page */ }
@@ -821,21 +860,30 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
    {
       return cgi_error_memory();
    }
-
    query_args_start = path_copy;
-   while (*query_args_start && *query_args_start != '?')
+   while (*query_args_start && *query_args_start != '?' && *query_args_start != '/')
    {
       query_args_start++;
    }
-   if (*query_args_start == '?')
+   if (*query_args_start == '/') 
    {
       *query_args_start++ = '\0';
+      if ((param_list = new_map()))
+      {
+         map(param_list, "file", 1, url_decode(query_args_start), 0);
+      }
    }
-
-   if (NULL == (param_list = parse_cgi_parameters(query_args_start)))
+   else
    {
-      free(path_copy);
-      return cgi_error_memory();
+      if (*query_args_start == '?')
+      {
+         *query_args_start++ = '\0';
+      }
+      if (NULL == (param_list = parse_cgi_parameters(query_args_start)))
+      {
+         free(path_copy);
+         return cgi_error_memory();
+      }
    }
 
    /*
@@ -870,7 +918,7 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
           */
          if (d->harmless
              || ((NULL != (referrer = grep_cgi_referrer(csp)))
-                 && (0 == strncmp(referrer, "http://config.privoxy.org/", 26)))
+                 && (0 == strncmp(referrer, CGI_PREFIX, sizeof(CGI_PREFIX)-1)))
              )
          {
             err = (d->handler)(csp, rsp, param_list);
@@ -1597,7 +1645,17 @@ char *add_help_link(const char *item,
    if (!item) return NULL;
 
    result = strdup("<a href=\"");
-   string_append(&result, config->usermanual);
+   if (!strncmpic(config->usermanual, "file://", 7) ||
+       !strncmpic(config->usermanual, "http", 4))
+   {
+      string_append(&result, config->usermanual);
+   }
+   else
+   {
+      string_append(&result, "http://");
+      string_append(&result, CGI_SITE_2_HOST);
+      string_append(&result, "/user-manual/");
+   }
    string_append(&result, ACTIONS_HELP_PREFIX);
    string_join  (&result, string_toupper(item));
    string_append(&result, "\">");
@@ -1725,10 +1783,19 @@ struct http_response *finish_http_response(struct http_response *rsp)
       err = enlist(rsp->headers, buf);
    }
 
-   /* 
-    * Fill in the default headers:
+   if (strncmpic(rsp->status, "302", 3))
+   {
+     /*
+      * If it's not a redirect without any content,
+      * set the Content-Type to text/html if it's
+      * not already specified.
+      */
+     if (!err) err = enlist_unique(rsp->headers, "Content-Type: text/html", 13);
+   }
+
+   /*
+    * Fill in the rest of the default headers:
     *
-    * Content-Type: default to text/html if not already specified.
     * Date: set to current date/time.
     * Last-Modified: set to date/time the page was last changed.
     * Expires: set to date/time page next needs reloading.
@@ -1736,8 +1803,6 @@ struct http_response *finish_http_response(struct http_response *rsp)
     * 
     * See http://www.w3.org/Protocols/rfc2068/rfc2068
     */
-   if (!err) err = enlist_unique(rsp->headers, "Content-Type: text/html", 13);
-
    if (rsp->is_static)
    {
       /*
@@ -1760,21 +1825,55 @@ struct http_response *finish_http_response(struct http_response *rsp)
          err = enlist_unique_header(rsp->headers, "Expires", buf);
       }
    }
+   else if (!strncmpic(rsp->status, "302", 3))
+   {
+      get_http_time(0, buf);
+      if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
+   }
    else
    {
       /*
-       * Compliant browsers should not cache this due to the "Cache-Control"
-       * setting.  However, to be certain, we also set both "Last-Modified"
-       * and "Expires" to the current time.
+       * Setting "Cache-Control" to "no-cache" and  "Expires" to
+       * the current time doesn't exactly forbid caching, it just
+       * requires the client to revalidate the cached copy.
+       *
+       * If a temporary problem occurs and the user tries again after
+       * getting Privoxy's error message, a compliant browser may set the
+       * If-Modified-Since header with the content of the error page's
+       * Last-Modified header. More often than not, the document on the server
+       * is older than Privoxy's error message, the server would send status code
+       * 304 and the browser would display the outdated error message again and again.
+       *
+       * For documents delivered with status code 404 or 503 we set "Last-Modified"
+       * to Tim Berners-Lee's birthday, which predates the age of any page on the web
+       * and can be safely used to "revalidate" without getting a status code 304.
+       *
+       * There is no need to let the useless If-Modified-Since header reach the
+       * server, it is therefore stripped by client_if_modified_since in parsers.c.
        */
       if (!err) err = enlist_unique_header(rsp->headers, "Cache-Control", "no-cache");
 
       get_http_time(0, buf);
       if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
-      if (!err) err = enlist_unique_header(rsp->headers, "Last-Modified", buf);
+      if (!strncmpic(rsp->status, "404", 3) || !strncmpic(rsp->status, "503", 3))
+      {
+         if (!err) err = enlist_unique_header(rsp->headers, "Last-Modified", "Wed, 08 Jun 1955 12:00:00 GMT");
+      }
+      else
+      {
+         if (!err) err = enlist_unique_header(rsp->headers, "Last-Modified", buf);
+      }
       if (!err) err = enlist_unique_header(rsp->headers, "Expires", "Sat, 17 Jun 2000 12:00:00 GMT");
+      if (!err) err = enlist_unique_header(rsp->headers, "Pragma", "no-cache");
    }
 
+   /*
+    * Quoting RFC 2616:
+    *
+    * HTTP/1.1 applications that do not support persistent connections MUST
+    * include the "close" connection option in every message.
+    */
+   if (!err) err = enlist_unique_header(rsp->headers, "Connection", "close");
 
    /* 
     * Write the head
@@ -2171,7 +2270,15 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map(exports, "default-cgi",   1, html_encode(CGI_PREFIX), 0);
    if (!err) err = map(exports, "menu",          1, make_menu(caller), 0);
    if (!err) err = map(exports, "code-status",   1, CODE_STATUS, 1);
-   if (!err) err = map(exports, "user-manual",   1, csp->config->usermanual ,1);
+   if (!strncmpic(csp->config->usermanual, "file://", 7) ||
+       !strncmpic(csp->config->usermanual, "http", 4))
+   {
+      if (!err) err = map(exports, "user-manual", 1, csp->config->usermanual ,1);
+   }
+   else
+   {
+      if (!err) err = map(exports, "user-manual", 1, "http://"CGI_SITE_2_HOST"/user-manual/" ,1);
+   }
    if (!err) err = map(exports, "actions-help-prefix", 1, ACTIONS_HELP_PREFIX ,1);
 #ifdef FEATURE_TOGGLE
    if (!err) err = map_conditional(exports, "enabled-display", global_toggle_state);
