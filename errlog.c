@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.71 2008/06/28 17:17:15 fabiankeil Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.74 2008/08/06 18:33:36 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/errlog.c,v $
@@ -33,6 +33,19 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.71 2008/06/28 17:17:15 fabiankeil E
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.74  2008/08/06 18:33:36  fabiankeil
+ *    If the "close fd first" workaround doesn't work,
+ *    the fatal error message will be lost, so we better
+ *    explain the consequences while we still can.
+ *
+ *    Revision 1.73  2008/08/04 19:06:55  fabiankeil
+ *    Add a lame workaround for the "can't open an already open
+ *    logfile on OS/2" problem reported by Maynard in #2028842
+ *    and describe what a real solution would look like.
+ *
+ *    Revision 1.72  2008/07/27 12:04:28  fabiankeil
+ *    Fix a comment typo.
+ *
  *    Revision 1.71  2008/06/28 17:17:15  fabiankeil
  *    Remove another stray semicolon.
  *
@@ -546,7 +559,7 @@ void init_log_module(const char *prog_name)
  *                plus LOG_LEVEL_MINIMUM.
  *
  *                XXX: we should only use the LOG_LEVEL_MINIMUM
- *                until the frist time the configuration file has
+ *                until the first time the configuration file has
  *                been parsed.
  *                
  * Parameters  :  1: debug_level = The debug level to set.
@@ -616,6 +629,37 @@ void init_error_log(const char *prog_name, const char *logfname)
 
    /* set the designated log file */
    fp = fopen(logfname, "a");
+   if ((NULL == fp) && (logfp != NULL))
+   {
+      /*
+       * Some platforms (like OS/2) don't allow us to open
+       * the same file twice, therefore we give it another
+       * shot after closing the old file descriptor first.
+       *
+       * We don't do it right away because it prevents us
+       * from logging the "can't open logfile" message to
+       * the old logfile.
+       *
+       * XXX: this is a lame workaround and once the next
+       * release is out we should stop bothering reopening
+       * the logfile unless we have to.
+       *
+       * Currently we reopen it every time the config file
+       * has been reloaded, but actually we only have to
+       * reopen it if the file name changed or if the
+       * configuration reloas was caused by a SIGHUP.
+       */
+      log_error(LOG_LEVEL_INFO, "Failed to reopen logfile: \'%s\'. "
+         "Retrying after closing the old file descriptor first. If that "
+         "doesn't work, Privoxy will exit without being able to log a message.",
+         logfname);
+      lock_logfile();
+      fclose(logfp);
+      logfp = NULL;
+      unlock_logfile();
+      fp = fopen(logfname, "a");
+   }
+
    if (NULL == fp)
    {
       log_error(LOG_LEVEL_FATAL, "init_error_log(): can't open logfile: \'%s\'", logfname);

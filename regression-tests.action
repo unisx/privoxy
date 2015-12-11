@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.13 2008/07/03 11:10:43 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.15 2008/08/14 18:33:37 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -31,7 +31,7 @@ for-privoxy-version=3.0.9
 
 # Some dependencies Privoxy-Regression-Test should know about:
 #
-# Level 9 needs  = config line user-manual\s+/
+# Level 9 needs  = config line user-manual\s+(/|[A-Za-z]:)
 # Level 12 needs = config line enable-edit-actions\s+1
 
 #######################################################
@@ -697,6 +697,13 @@ www.blocked-request.example/blocked-request
 # Expect Status Code = 403
 {+block}
 www.blocked-request.example/blocked-request-with-no-reason-specified
+
+# Some domain pattern tests
+#
+{+block{domain pattern test}}
+# Blocked URL = http://domain-pattern-test.example/
+# Blocked URL = http://domain-pattern-test.example.org/
+domain-pattern-test.example.
 
 # Just in case there is no white-space fuzzer in the house ...
 #

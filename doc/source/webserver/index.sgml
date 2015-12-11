@@ -5,10 +5,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.9">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.10">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
 <!entity % p-homepage "IGNORE">    <!-- toggle for webserver index.html   -->
 <!entity % p-index "IGNORE">       <!-- toggle for local doc index        -->
@@ -20,7 +20,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 2.5 2008/06/18 17:42:13 fabiankeil Exp $
+ $Id: index.sgml,v 2.6 2008/08/16 08:51:28 fabiankeil Exp $
 
  Copyright (C) 2001 - 2008 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -249,6 +249,9 @@
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: index.sgml,v $
+ Revision 2.6  2008/08/16 08:51:28  fabiankeil
+ Update version-related entities.
+
  Revision 2.5  2008/06/18 17:42:13  fabiankeil
  - Remove link to soon-to-be-removed PDFs.
  - Use https for the download URL.

@@ -4,10 +4,10 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.9">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.10">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
 <!entity % p-readme "INCLUDE">     <!-- all your README belong to us     -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.19 2008/06/21 13:43:06 fabiankeil Exp $
+ $Id: readme.sgml,v 2.20 2008/08/14 16:57:40 hal9 Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -127,22 +127,16 @@
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
-<!--
 <para>
- Privoxy is in development mode for the time being. Some of the current cvs
- sources may not be well tested, and/or well documented. Current cvs is
- suggested only for developers and adventuresome users. If you find any
- problems, please report them on the appropriate SourceForge tracker, or the
- developer's mailing list: ijbswa-developers@lists.sourceforge.net. Your help
- will be appreciated!
+ August 2008, Privoxy 3.0.10 is released! There are not any major new
+ features, but many improvements and refinements. As usual there are changes
+ that effect the configuration. See the "ChangeLog", and the "What's New"
+ section and the "Upgrader's Notes" in <citetitle>the User Manual</citetitle>
+ for details and specifics. 
 </para>
--->
 <para>
  June 2008, Privoxy 3.0.9 beta is released. There are no major new
- features, but many improvements and refinements. As usual there are changes
- that affect the configuration. See the "ChangeLog", and the "What's New"
- section and the "Upgrader's Notes" in the User Manual for details and
- specifics.
+ features, but many improvements and refinements. 
 </para>
 <para>
  NEWS! January 2008, Privoxy 3.0.8 stable is released. This is a significant
@@ -156,16 +150,6 @@
 <para>
   December 2007, Privoxy 3.0.7 is released. This is a beta release in
   preparation for the forthcoming 3.0.8 release.
-</para>
-<para>
- NEWS! November 2006, Privoxy 3.0.6 stable is released. This is a significant
- upgrade with many new and enhanced features, and many bugs fixed. 
-</para>
-<para>
- There was and will not be an official 3.0.4 release. This release cycle 
- was used to gather our thoughts, play with some new ideas and refine 
- some old ones. It will remain a development cycle with no actual release.
- 3.0.5 is the fruit of these efforts.
 </para>
 </sect1>
 
@@ -198,7 +182,7 @@
  Or for Red Hat and Fedora based distributions: /etc/rc.d/init.d/privoxy start
 </para>
 <para>
- Or Debian: /etc/init.d/privoxy start
+ Or Debian and Ubuntu: /etc/init.d/privoxy start
 </para>
 </sect1>
 
@@ -272,7 +256,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.19 2008/06/21 13:43:06 fabiankeil Exp $ -->
+<!--  $Id: readme.sgml,v 2.20 2008/08/14 16:57:40 hal9 Exp $ -->
 <!-- </para> -->
 
 </article>

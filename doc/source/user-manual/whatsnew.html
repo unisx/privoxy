@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.9 User Manual"
+TITLE="Privoxy 3.0.10 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -40,7 +40,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.9 User Manual</TH
+>Privoxy 3.0.10 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -250,6 +250,32 @@ CLASS="APPLICATION"
 ><LI
 ><P
 >    Building with zlib (if available) is done by default.
+   </P
+></LI
+><LI
+><P
+>    Ordinary configuration file changes no longer cause program
+    termination on OS/2 if the name of the logfile hasn't been
+    changed as well. This regression probably crept in with the
+    logging improvements in 3.0.7. Reported by Maynard.
+   </P
+></LI
+><LI
+><P
+>    The img-reorder filter is less likely to mess up JavaScript code in
+    img tags. Problem and solution reported by Glenn Washburn in #2014552.
+   </P
+></LI
+><LI
+><P
+>    The source tar ball now includes Privoxy-Log-Parser,
+    a syntax-highlighter for Privoxy logs. Documentation is available
+    through perldoc(1), for fancy screenshots see:
+    <A
+HREF="http://www.fabiankeil.de/sourcecode/privoxy-log-parser/"
+TARGET="_top"
+>http://www.fabiankeil.de/sourcecode/privoxy-log-parser/</A
+>.
    </P
 ></LI
 ></UL

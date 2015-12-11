@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.118 2008/06/27 12:50:44 fabiankeil Exp $
+dnl $Id: configure.in,v 1.119 2008/08/13 16:53:50 fabiankeil Exp $
 dnl 
 dnl Written by and Copyright (C) 2001-2008 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,9 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.119  2008/08/13 16:53:50  fabiankeil
+dnl Change version to 3.0.10 stable.
+dnl
 dnl Revision 1.118  2008/06/27 12:50:44  fabiankeil
 dnl Here's looking at you, Gentoo Linux: Show a warning if
 dnl --disable-pthread is used even though pthreads are available.
@@ -541,7 +544,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.118 $)
+AC_REVISION($Revision: 1.119 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -587,8 +590,8 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=9
-CODE_STATUS="beta"
+VERSION_POINT=10
+CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
 dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"

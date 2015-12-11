@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.63 2008/06/27 12:53:41 fabiankeil Exp $
+#  $Id: default.filter,v 1.67 2008/08/06 17:38:06 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -219,14 +219,17 @@ s/\starget\s*=\s*(['"]?)_?(blank|new)\1?/ /ig        # (X)HTML
 FILTER: img-reorder Reorder attributes in <img> tags to make the banners-by-* filters more effective.
 
 # In the first step src is moved to the start, then width is moved to the second
-# place to guarantee an order of src, width, height.
+# place to guarantee an order of src, width, height. Also does some white-space
+# normalization.
+#
 # This makes banners-by-size more effective and allows both banners-by-size
 # and banners-by-link to preserve the original image URL in the title attribute.
 
-s|<img\s+?([^>]*) src\s*=\s*(['"])([^>\\\2]+)\2|<img src=$2$3$2 $1|siUg
-s|<img\s+?([^>]*) src\s*=\s*([^'">\\\s]+)|<img src=$2 $1|sig
+s|<img\s+?([^>]*)\ssrc\s*=\s*(['"])([^>\\\2]+)\2|<img src=$2$3$2 $1|siUg
+s|<img\s+?([^>]*)\ssrc\s*=\s*([^'">\\\s]+)|<img src=$2 $1|sig
+s|(<img[^>]+height)\s*=\s*|$1=|sig
 
-s|<img (src=(?:(['"])[^>\\\\2]*\2\|[^'">\\\s]+?))([^>]*)\s+width\s*=\s*(["']?)(\d+?)\4|<img $1 width=$4$5$4$3|siUg
+s|<img (src=(?:(['"])[^>\\\\2]*\2\|[^'">\\\s]+?))([^>]*)\s+width\s*=\s*((["']?)\d+?\5)(?=[\s>])|<img $1 width=$4$3|siUg
 
 
 #################################################################################
@@ -622,7 +625,9 @@ s@</head>@<style type="text/css">\n\
  .suggestion, \#nys_right, \#nys {clear: both; display:none;}\n\
  \#content {padding-right: 0;}\n\
  </style>\n$0@
+# Are these ids still in use?
 s@(<div[^>]*) id=(["']?)ads_[^\2]*\2@$1 class="msn_ads"@Uig
+s@(<div[^>]*) class=(["']?)sb_ads[^\2]*\2@$1 class="msn_ads"@Uig
 s@(<a[^>]*href=\")http://g.msn.com/.*\?(http://.*)(&amp;&amp;DI=.*)(\")@$1$2$4@Ug
 s@(<a[^>]*)gping=\".*\"@$1 title="URL cleaned up by Privoxy's msn filter"@Ug
 
@@ -830,6 +835,26 @@ s@^X-Privoxy-Control:.*@@i
 #
 #  Revisions   :
 #     $Log: default.filter,v $
+#     Revision 1.67  2008/08/06 17:38:06  fabiankeil
+#     In banners-by-size, make sure white-space around the height
+#     attribute is removed as well and replace two spaces with
+#     "\s" so we don't get fooled by tabs. Fixes #2036125.
+#
+#     Revision 1.66  2008/08/03 17:27:47  fabiankeil
+#     Teach msn filter to catch a few new ad classes.
+#
+#     Revision 1.65  2008/07/21 13:43:44  fabiankeil
+#     Fix img-reorder regression introduced with my last commit.
+#     Some tags were terminated too soon, letting the browser render
+#     some of their arguments as text. Oops.
+#
+#     Revision 1.64  2008/07/12 15:49:09  fabiankeil
+#     - Don't let img-reorder touch width attributes
+#       that aren't followed by either whitespace or '>',
+#       as those usually indicate onclick nonsense.
+#       Problem and solution reported by Glenn Washburn in #2014552.
+#     - While at it, don't use more groups than necessary.
+#
 #     Revision 1.63  2008/06/27 12:53:41  fabiankeil
 #     Make sure the taggers css-requests and image-requests
 #     only match at the beginning of the header.

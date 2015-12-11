@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.77 2008/05/26 16:13:22 fabiankeil Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.78 2008/08/02 08:23:22 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.c,v $
@@ -35,6 +35,12 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.77 2008/05/26 16:13:22 fabiankeil
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.78  2008/08/02 08:23:22  fabiankeil
+ *    If the enforce-blocks directive is used with FEATURE_FORCE_LOAD
+ *    disabled, log a message that blocks will always be enforced
+ *    instead of complaining about an unrecognized directive.
+ *    Reported by Pietro Leone.
+ *
  *    Revision 1.77  2008/05/26 16:13:22  fabiankeil
  *    Reuse directive_hash and don't hash the same directive twice.
  *
@@ -1042,10 +1048,10 @@ struct configuration_spec * load_config(void)
             continue;
 
 /* *************************************************************************
- * hash_enforce_blocks 0|1
+ * enforce-blocks 0|1
  * *************************************************************************/
-#ifdef FEATURE_FORCE_LOAD
          case hash_enforce_blocks:
+#ifdef FEATURE_FORCE_LOAD
             if ((*arg != '\0') && (0 != atoi(arg)))
             {
                config->feature_flags |= RUNTIME_FEATURE_ENFORCE_BLOCKS;
@@ -1054,8 +1060,11 @@ struct configuration_spec * load_config(void)
             {
                config->feature_flags &= ~RUNTIME_FEATURE_ENFORCE_BLOCKS;
             }
-            continue;
+#else
+            log_error(LOG_LEVEL_ERROR, "Ignoring directive 'enforce-blocks'. "
+               "FEATURE_FORCE_LOAD is disabled, blocks will always be enforced.");
 #endif /* def FEATURE_FORCE_LOAD */
+            continue;
 
 /* *************************************************************************
  * filterfile file-name

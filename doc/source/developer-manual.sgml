@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.9">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.10">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -23,7 +23,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $
+ $Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -50,7 +50,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -1833,7 +1833,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -1894,7 +1894,7 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.20 2008/06/14 13:21:24 fabiankeil Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 2.21 2008/08/16 08:51:28 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -3028,6 +3028,9 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 2.21  2008/08/16 08:51:28  fabiankeil
+  Update version-related entities.
+
   Revision 2.20  2008/06/14 13:21:24  fabiankeil
   Prepare for the upcoming 3.0.9 beta release.
 

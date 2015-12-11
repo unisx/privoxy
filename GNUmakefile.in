@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.173 2008/06/18 18:28:42 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.174 2008/07/18 17:50:47 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001 - 2008 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -119,12 +119,12 @@ CP         = cp -f
 RMDIR      = rmdir
 MKDIR      = ./mkinstalldirs
 STRIP_PROG = strip
-SED	      = sed
+SED        = sed
 GREP       = grep
 CAT        = cat
 RPM        = rpm
 RPMBUILD   = rpmbuild
-MV	      = mv
+MV         = mv
 TAR        = tar
 LN         = ln
 TOUCH      = touch
@@ -142,7 +142,7 @@ MAN2HTML   = @MAN2HTML@
 G2H_CMD    = groff -mandoc -Thtml
 TARGET_OS  = @host@
 PERL       = perl
-DOC_DIR	 = doc/source
+DOC_DIR    = doc/source
 DOC_TMP    = $(DOC_DIR)/tmp
 DOC_STATUS = @DOC_STATUS@
 
@@ -1309,6 +1309,9 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.174  2008/07/18 17:50:47  fabiankeil
+# Fix whitespace.
+#
 # Revision 1.173  2008/06/18 18:28:42  fabiankeil
 # Remove PDF-related stuff.
 #

@@ -1,15 +1,29 @@
-                 Announcing Privoxy v.3.0.9 Beta
+                 Announcing Privoxy v.3.0.10
 -----------------------------------------------------------------
 
-3.0.9 is a beta release which includes many enhancements but no major 
+3.0.9 is a stable release which includes many enhancements but no major 
 new features. The most prominent improvements are SOCKS5 support and 
 zlib support for the default Privoxy builds.
 
-See http://www.privoxy.org/3.0.9/user-manual/whatsnew.html for details.
+See http://www.privoxy.org/3.0.10/user-manual/whatsnew.html for details.
 
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+
+*** Version 3.0.10 ***
+
+- Ordinary configuration file changes no longer cause program
+  termination on OS/2 if the name of the logfile hasn't been
+  changed as well. This regression probably crept in with the
+  logging improvements in 3.0.7. Reported by Maynard.
+- The img-reorder filter is less likely to mess up JavaScript code in
+  img tags. Problem and solution reported by Glenn Washburn in #2014552.
+- The source tar ball now includes Privoxy-Log-Parser,
+  a syntax-highlighter for Privoxy logs. For fancy screenshots see:
+  http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
+  Documentation is available through perldoc(1).
+
 *** Version 3.0.9 Beta ***
 
 - Added SOCKS5 support (with address resolution done by
@@ -73,6 +87,8 @@ ChangeLog for Privoxy
   might prevent filtering.
 - The show-url-info page provides an OpenSearch Description that
   allows to access the page through browser search plugins.
+- Custom client-header filters that rewrite the request line
+  incorrectly no longer cause Privoxy to crash. Reported by din_a4.
 - The obsolete kill-popups action has been removed as the
   PCRS-based popup filters can do the same and are slightly
   less unreliable.

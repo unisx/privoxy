@@ -32,9 +32,8 @@
  *
  *********************************************************************/
 
-This README is included with the development version of Privoxy 3.0.9. See
-http://www.privoxy.org/ for more information. The current code maturity level
-is "beta", but seems stable to us :).
+This README is included with Privoxy 3.0.10. See http://www.privoxy.org/ for
+more information. The current code maturity level is "stable".
 
 -------------------------------------------------------------------------------
 
@@ -51,10 +50,13 @@ Privoxy is based on Internet Junkbuster (tm).
 
 1. IMPORTANT CHANGES
 
-June 2008, Privoxy 3.0.9 beta is released. There are no major new features, but
-many improvements and refinements. As usual there are changes that affect the
-configuration. See the "ChangeLog", and the "What's New" section and the
+August 2008, Privoxy 3.0.10 is released! There are not any major new features,
+but many improvements and refinements. As usual there are changes that effect
+the configuration. See the "ChangeLog", and the "What's New" section and the
 "Upgrader's Notes" in the User Manual for details and specifics.
+
+June 2008, Privoxy 3.0.9 beta is released. There are no major new features, but
+many improvements and refinements.
 
 NEWS! January 2008, Privoxy 3.0.8 stable is released. This is a significant
 upgrade with many new and enhanced features, and many bugs fixed. All Privoxy
@@ -65,14 +67,6 @@ keeping their old configuration should read ahead first.
 
 December 2007, Privoxy 3.0.7 is released. This is a beta release in preparation
 for the forthcoming 3.0.8 release.
-
-NEWS! November 2006, Privoxy 3.0.6 stable is released. This is a significant
-upgrade with many new and enhanced features, and many bugs fixed.
-
-There was and will not be an official 3.0.4 release. This release cycle was
-used to gather our thoughts, play with some new ideas and refine some old ones.
-It will remain a development cycle with no actual release. 3.0.5 is the fruit
-of these efforts.
 
 -------------------------------------------------------------------------------
 
@@ -97,7 +91,7 @@ file named 'config' in the current directory (except Win32 which will look for
 
 Or for Red Hat and Fedora based distributions: /etc/rc.d/init.d/privoxy start
 
-Or Debian: /etc/init.d/privoxy start
+Or Debian and Ubuntu: /etc/init.d/privoxy start
 
 -------------------------------------------------------------------------------
 
@@ -121,22 +115,16 @@ try it with FTP or other protocols for the simple reason it does not work.
 The actions list can be configured via the web interface accessed via http://
 p.p/, as well other options.
 
-All configuration files are subject to unannounced changes during the
-development process.
-
 -------------------------------------------------------------------------------
 
 5. DOCUMENTATION
 
-There should be documentation in the 'doc' subdirectory, but it may not be
-completed at this point. In particular, see the User Manual there, the FAQ, and
-those interested in Privoxy development, should look at developer-manual.
+There should be documentation in the 'doc' subdirectory. In particular, see the
+User Manual there, the FAQ, and those interested in Privoxy development, should
+look at developer-manual.
 
-The most up to date source of information on the current development version,
-may still be either comments in the source code, or the included configuration
-files. The source and configuration files are all well commented. The main
-configuration files are: 'config', 'default.action', and 'default.filter' in
-the top-level source directory.
+The source and configuration files are all well commented. The main
+configuration files are: 'config', 'default.action', and 'default.filter'.
 
 Included documentation may vary according to platform and packager. All
 documentation is posted on http://www.privoxy.org, in case you don't have it,

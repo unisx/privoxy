@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.108 2008/05/26 17:30:53 fabiankeil Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.109 2008/07/26 09:40:27 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/cgi.c,v $
@@ -38,6 +38,12 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.108 2008/05/26 17:30:53 fabiankeil Exp $"
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.109  2008/07/26 09:40:27  fabiankeil
+ *    Remove the unconditional block in get_http_time().
+ *    It's pointless now that it's no longer used to limit
+ *    dummy's scope. While at it, remove obvious comments
+ *    and a trailing space.
+ *
  *    Revision 1.108  2008/05/26 17:30:53  fabiankeil
  *    Provide an OpenSearch Description to access the
  *    show-url-info page through "search engine plugins".
@@ -1972,34 +1978,26 @@ void get_http_time(int time_offset, char *buf, size_t buffer_size)
    struct tm *t;
    time_t current_time;
 #if defined(HAVE_GMTIME_R)
-   /*
-    * Declare dummy up here (instead of inside get/set gmt block) so it
-    * doesn't go out of scope before it's potentially used in snprintf later.
-    * Wrapping declaration inside HAVE_GMTIME_R keeps the compiler quiet when
-    * !defined HAVE_GMTIME_R.
-    */
-   struct tm dummy; 
+   struct tm dummy;
 #endif
 
    assert(buf);
    assert(buffer_size > 29);
 
-   time(&current_time); /* get current time */
+   time(&current_time);
 
    current_time += time_offset;
 
    /* get and save the gmt */
-   {
 #if HAVE_GMTIME_R
-      t = gmtime_r(&current_time, &dummy);
+   t = gmtime_r(&current_time, &dummy);
 #elif FEATURE_PTHREAD
-      pthread_mutex_lock(&gmtime_mutex);
-      t = gmtime(&current_time);
-      pthread_mutex_unlock(&gmtime_mutex);
+   pthread_mutex_lock(&gmtime_mutex);
+   t = gmtime(&current_time);
+   pthread_mutex_unlock(&gmtime_mutex);
 #else
-      t = gmtime(&current_time);
+   t = gmtime(&current_time);
 #endif
-   }
 
    /* Format: "Sun, 06 Nov 1994 08:49:37 GMT" */
    snprintf(buf, buffer_size,

@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 2.28 2008/06/30 14:52:40 fabiankeil Exp $
+ $Id: p-authors.sgml,v 2.32 2008/07/23 18:07:07 fabiankeil Exp $
 
  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -37,6 +37,7 @@ Current Privoxy Team:
  Hal Burgiss
  Mark Miller
  Gerry Murphy
+ Lee Rian
  Roland Rosenfeld
  Jörg Strohmayer
 <![%p-authors-formal;[
@@ -115,7 +116,6 @@ Current Privoxy Team:
  Amuro Namie
  Adam Piggott
  Dan Price
- Lee R.
  Roberto Ragusa
  Félix Rauch
  Maynard Riley
@@ -125,11 +125,12 @@ Current Privoxy Team:
  Oliver Stoeneberg
  Peter Thoenen
  Martin Thomas
+ Bobby G. Vinyard
  Jochen Voss
+ Glenn Washburn
  Song Weijia
  Jörg Weinmann 
  Darren Wiebe
- Bobby G. Vinyard
  Anduin Withers
  Oliver Yeoh
  Jamie Zawinski

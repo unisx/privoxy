@@ -1,6 +1,6 @@
-#        Sample Configuration File for Privoxy v3.0.9
+#        Sample Configuration File for Privoxy v3.0.10
 #
-#  $Id: config,v 1.65 2008/06/13 15:41:42 fabiankeil Exp $
+#  $Id: config,v 1.66 2008/08/14 10:35:28 hal9 Exp $
 #
 #  Copyright (C) 2001-2008 Privoxy Developers http://www.privoxy.org/
 #

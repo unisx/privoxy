@@ -9,7 +9,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.130 2008/07/02 01:17:13 hal9 Exp $
+#  $Id: default.action.master,v 1.144 2008/08/15 16:46:51 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.9 or later due to 
 #                 syntax changes.
@@ -312,7 +312,7 @@
 #     shockwave-flash:     Kill embedded Shockwave Flash objects.
 #     quicktime-kioskmode: Make Quicktime movies saveable.
 #     fun:                 Text replacements for subversive browsing fun!
-#     crude-parental:      Crude parental filtering. Note that this filter doesn't work reliable.
+#     crude-parental:      Crude parental filtering. Note that this filter doesn't work reliably.
 #     ie-exploits:         Disable some known Internet Explorer bug exploits.
 #     site-specifics:      Cure for site-specific problems. Don't apply generally!
 #     no-ping:             Removes non-standard ping attributes in <a> and <area> tags.
@@ -338,6 +338,11 @@
 #   the block action also applies, the presence or absence of this mark
 #   decides whether an HTML "blocked"  page, or an empty document will be sent
 #   to the client as a substitute for the blocked content.
+#
+# +handle-as-image
+#    Treat this URL as an image.  This only matters if it's also "+block"ed,
+#    in which case a "blocked" image can be sent rather than a HTML page.
+#    See +set-image-blocker{} for the control over what is actually sent.
 #
 # +hide-accept-language{lang}
 # +hide-accept-language{block}
@@ -387,11 +392,6 @@
 #      +hide-user-agent{Privoxy/1.0}
 #    (Don't change the version number from 1.0 - after all, why tell them?)
 #
-# +handle-as-image
-#    Treat this URL as an image.  This only matters if it's also "+block"ed,
-#    in which case a "blocked" image can be sent rather than a HTML page.
-#    See +set-image-blocker{} for the control over what is actually sent.
-#
 # +limit-connect{portlist}
 #   The CONNECT methods exists in HTTP to allow access to secure websites
 #   (https:// URLs) through proxies. It works very simply: The proxy
@@ -430,7 +430,7 @@
 #  
 # +prevent-compression
 #    Prevent the website from compressing the data. Some websites do
-#    that, which is a problem for Privoxy when build without zlib support,
+#    that, which is a problem for Privoxy when built without zlib support,
 #    since +filter and +gif-deanimate will not work on compressed data.
 #    Will slow down connections to those websites, though.
 #
@@ -576,7 +576,6 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 # Generic block patterns by host:
 #############################################################################
 {+block{Host matches generic block pattern.}}
-#MASTER# DONT-VERIFY (generic)
 ad*.
 .*ads.
 #MASTER# REMARKS: removed .ad. 2007-12-18 HB
@@ -600,7 +599,6 @@ metrics.
 # Generic unblockers by host:
 #############################################################################
 {-block}
-#MASTER# DONT-VERIFY (generic)
 adsl.
 ad[udmw]*.
 adbl*.
@@ -610,7 +608,6 @@ adob*.
 adrenaline.
 adtp*.
 adv[oia]*.
-#MASTER# REMARKS: Added 2008-02-08 HB
 adventure*.
 .*road*.
 .olympiad*.
@@ -623,16 +620,14 @@ countr*.
 # Generic block patterns by path:
 #############################################################################
 {+block{Path matches generic block pattern.}}
-#MASTER# DONT-VERIFY (generic)
 /(.*/)?ad(\?|/|s|v|_?(image|se?rv|box)|cycle|rotate|mentor|click|f[ra]m|script|stream|fetch|log|space)
 # Blocked URL = http://www.example.org/adimage
 # Blocked URL = http://www.example.org/adspace
 /phpads(new)?/
 /(.*/)?(ad|all|nn|db|promo(tion)?)?[-_]?banner
-/(.*/)?(publicite|werbung|reklaa?m|annonse|maino(kset|nta|s)?/)
+/(.*/)?(publicite|werbung|rekla(me|am)|annonse|maino(kset|nta|s)?/)
 /.*(count|track|compteur|(?<!relo)adframe|adse?rve?|banner)(er|run)?(\?|\.(pl|cgi|exe|dll|asp|php|cpt))
 /(.*/)?clicktrack
-#MASTER# REMARKS: Added 12/28/06 per Adam Piggott
 /(.*/)?(full)?pop[-_]?(up|over|under|open(er)?)?s?(/|\.)
 /(.*/)?((flash)?pop|live(cnt|count(er)?)).*\.(js|php|cgi)
 
@@ -641,7 +636,6 @@ countr*.
 #############################################################################
 {-block}
 # Sticky Actions = -block
-#MASTER# DONT-VERIFY (generic)
 /.*ad(sl|v(i[cs]|o|an|ertencia|ent|.*search|erse)) # advice/advisories/advan*/advertencia (spanish) adverse
 /.*(lo|thre|he|d|gr|l|ro|re|squ|class(ified)?)ads
 /.*account
@@ -655,7 +649,6 @@ support./(.*/)?track
 .uni-*.de
 .tu-*.de
 .gov
-#MASTER# REMARKS: 09/18/06 Tracker request
 .hs-*.de 
 .fh-*.de
 #MASTER# REMARKS: Try to avoid harmless names in non-commercial organizations. Added 10/24/06
@@ -817,6 +810,12 @@ static.lycos-europe.net
 #MASTER# BLOCK-REFERRER: http://hitta.se
 # Blocked URL = http://82.99.18.195/media.1/112/9460/146016/150x175_Hitta_FV_Feb08.gif
 82.99.18.195
+#MASTER# REMARKS: Actionsfile feedback item #1888197  2008-02-06
+#MASTER# REMARKS: Have a "go there anyway" link for clk.atdmt.com
+#MASTER# BLOCK-REFERRER: http://www.networkworld.com/resourcelibrary/?tid=4&type=special%20report
+# Blocked URL = http://clk.atdmt.com/
+.atdmt.com/
+
 
 #----------------------------------------------------------------------------
 # Misc Web-bugs, JS and just plain Junk. Images here aren't normal images.
@@ -997,17 +996,18 @@ bwp.
 #.yimg.com/a/.*/flash/
 #MASTER# REMARKS: The above replaced with below. Actions file tracker #1645616 2007-01-27
 .yimg.com/.*\.yimg\.com/a/
-#MASTER# DONT-VERIFY
 bs*.gsanet.com
 bs*.einets.com
-#MASTER# DONT-VERIFY 
 .qkimg.net
 #MASTER# BLOCK-REFERRER: http://salon.com/ 10/19/06
 #MASTER# BLOCK-REFERRER: http://maps.yahoo.com/
 #MASTER# REMARKS: Banner farms; just exclude their corp. info
-[a-vx-z]*.atdmt.com/
+#MASTER# REMARKS: and have a "go there anyway" link for clk.atdmt.com
+#MASTER# REMARKS:   (Actionsfile feedback item #1888197)
+[abd-vx-z]*.atdmt.com/
 #MASTER# BLOCK-REFERRER: http://www.exactaudiocopy.de/ 09/11/06
 #MASTER# BLOCK-REFERRER: http://stanford.facebook.com/home.php 
+# URL = http://www.fastclick.net/
 .fastclick.net
 #MASTER# BLOCK-REFERRER: http://www.math.com/school/subject2/lessons/S2U3L6DP.html 09/11/06
 .casalemedia.com
@@ -1034,7 +1034,6 @@ a.tribalfusion.com/
 www.smartadserver.com/
 #MASTER# BLOCK-REFERRER: http://www.chez.tiscali.fr/ 10/07/06
 admedia.
-#MASTER# DONT-VERIFY
 #MASTER# REMARKS: Bannerfarm used by Morpheus file sharing software
 jmcms.cydoor.com/
 #MASTER# BLOCK-REFERRER: http://www.tech-report.com/etc/2003q2/3dmurk03/index.x?pg=7
@@ -1105,6 +1104,9 @@ scripts.chitika.net/.*\.(gif|png|jpg)
 #MASTER# REMARKS: Ad generator per Actionsfile feedback item #1749870 2007-07-08
 # URL = http://img.directtrack.com
 img.directtrack.com
+#MASTER# BLOCK-REFERRER: http://www.thinkbroadband.com/news/3621-complaint-about-orange-broadband-advertising-upheld.html
+# URL = http://eas.apm.emediate.eu/media.5/1/1228/19193/ACT1215_120x600_v3.gif
+.emediate.eu/
 
 #----------------------------------------------------------------------------
 # Cross-site user tracking
@@ -1192,6 +1194,9 @@ feeds.feedburner.com/~r/.*/~4/
 # Blocked URL = http://feeds.feedburner.com/~a/DilbertDailyStrip?a=Ebzxel
 #MASTER# REMAKRKS: This looks like a pattern as well, maybe we should block feeds.feedburner.com/~a/ here.
 feeds.feedburner.com/~a/DilbertDailyStrip\?
+#MASTER# BLOCK-REFERER: http://www.buch.de/
+# URL = http://track.webtrekk.de/471497967328727/wt.pl?p=177,de.buch.show.home,1,1024x768,24,1,1218816426275,0,884x653,0&enc1=%FC&enc2=iso-8859-1&st=view&la=en-US&np=Default%20Plugi
+track.webtrekk.de/
 
 #----------------------------------------------------------------------------
 # Specific counters (see above for generic patterns)
@@ -1212,7 +1217,6 @@ bilbo.counted.com/
 #MASTER# BLOCK-REFERRER: http://www.travelocity.com/Vacations/0,,TRAVELOCITY||Y,00.html?HPTRACK=mpc_vac
 #MASTER# BLOCK-REFERRER: http://dest.travelocity.com/DestGuides/geo_frontdoor/0,,TRAVELOCITY,00.html?HPTRACK=icon_dest 10/07/06
 .travelocity./Sponsor_gifs/
-#MASTER# DONT-VERIFY
 #MASTER# REMARKS: Referenced from HTML-Emails (not checked 10/08/06)
 # URL = http://foo.weather.com/creatives/
 # URL = http://bar.weather.com/web/services/email/
@@ -1300,7 +1304,6 @@ adela.karlin.mff.cuni.cz
 # URL = http://www.privoxy.org/actions/index.php
 .privoxy.org
 #MASTER# UNBLOCK-REFERRER: http://sourceforge.net/help/tracker.php
-# URL = http://www.brawnylads.com/
 sourceforge.net/.*tracker
 #MASTER# UNBLOCK-REFERRER: http://www.brawnylads.com/
 # URL = http://www.brawnylads.com/
@@ -1465,8 +1468,28 @@ www.google.com/adsense/
 .encyclopediadramatica.com/
 #MASTER# UNBLOCK-REFERRER: http://lifehacker.com 2008-04-18 HB
 # URL = tags.gawker.com/assets/minify.php?files=/assets/base.v6/css/global.css,/assets/base.v6/css/header.css,/assets/base.v6/css/sidebar.css,/assets/base.v6/css/content.css,/assets/base.v6/css/images.css,/assets/base.v6/css/ads.css,/assets/base.v6/css/community.css,/assets/base.v6/css/comments.css,/assets/base.v6/css/messages.css,/assets/base.v6/css/ui.css
-crunch
-tags.gawker.com/.*css
+tags.gawker.com/.*css$
+# URL = http://cgi.tnt.co.uk/TrackNTrace/quicktrack.asp
+.tnt.co.uk/TrackNTrace/
+#MASTER# UNBLOCK-REFERRER: http://www.supermediastore.com/trackorder.html
+# URL = http://secure.howtoburndvd.net/ups/track.php
+/ups/track\.php
+#MASTER# REMARKS: Actionsfile feedback item #1886140  2008-02-04
+#MASTER# UNBLOCK-REFERRER: http://idonthateyouall.imeem.com/video/8zH0_f9i/kiley_rilo_pull_me_in_tighter_art_video/
+# URL = http://ad.doubleclick.net/crossdomain.xml
+ad.doubleclick.net/crossdomain\.xml
+#MASTER# REMARKS: Actionsfile feedback item #2021509  2008-07-18
+#MASTER# REMARKS: Allow realplayer site help popup windows
+#MASTER# UNBLOCK-REFERRER: http://real.custhelp.com/cgi-bin/real.cfg/php/enduser/std_adp.php?p_faqid=4512
+# URL = http://real.custhelp.com/cgi-bin/real.cfg/php/enduser/popup_adp.php
+real.custhelp.com/cgi-bin/real\.cfg/php/enduser/popup_adp\.php
+# URL = http://fritz.fonwlan.box/cgi-bin/webcm?getpage=../html/de/help/popup.html&var:lang=de&var:pagename=hilfe_syslog&var:anker=24
+fritz.fonwlan.box/
+# URL = http://fritz.box/cgi-bin/webcm?getpage=../html/de/help/popup.html&var:lang=de&var:pagename=hilfe_syslog&var:anker=24
+fritz.box/
+#MASTER# REMARKS: Actionsfile feedback item #2043327 2008-08-08
+# URL = http://kb.adobe.com/selfservice/viewContent.do?externalId=kb402747&sliceId=1
+.adobe.com
 
 #############################################################################
 # Site-specific special rules:
@@ -1657,7 +1680,6 @@ liveupdate.symantecliveupdate.com
 .bookmarklets.com
 # URL = http://www.squarefree.com/bookmarklets/
 .squarefree.com/bookmarklets/
-#MASTER# DONT-VERIFY
 #MASTER# REMARKS: Used by Mac OSX's automatic software update feature
 swquery.apple.com
 swscan.apple.com
@@ -1770,6 +1792,8 @@ javabog.dk/ijk/
 .encyclopediadramatica.com/
 # URL = http://www.ikea.com/us/en/catalog/products/00103102
 .ikea.com/
+# URL = http://www.froscon.de/en/projects.html
+.froscon.de/
 
 {-filter{banners-by-link}}
 # Sticky Actions = -filter{banners-by-link}
@@ -1818,6 +1842,8 @@ schneegans.de/sv/\?url=referer
 .teamquest.com/gifs/gunther/
 #MASTER# REMARKS: 09/12/06 Art site, and ad-free
 .rubberslug.com
+#MASTER# REMARKS: Actionsfile feedback item #2040467, allow animated gifs from wikipedia.org
+.wikipedia.org/
 
 #----------------------------------------------------------------------------
 # The "site-specifics" filter has special cures for problems found here:
@@ -1865,8 +1891,8 @@ schneegans.de/sv/\?url=referer
 
 #{+filter{img-reorder} +filter{banners-by-link}}
 #MASTER# REMARKS: Temporarily decommissioning 10/15/06. Violates Cautious no filter policy. HB
-##MASTER# PROBLEM-URL: http://www.dn.se/
-##MASTER# REMARKS: Can't catch by size or location
+#MASTER# PROBLEM-URL: http://www.dn.se/
+#MASTER# REMARKS: Can't catch by size or location
 #www.dn.se
 
 {-filter{img-reorder}}
@@ -1894,7 +1920,6 @@ blogs.msdn.com
 
 {-filter{unsolicited-popups}}
 # Sticky Actions = -filter{unsolicited-popups}
-#MASTER# DONT-VERIFY
 #MASTER# REMARKS: Breaks Movable Type's admin interface (http://www.movabletype.org/)
 /.*mt.cgi$
 #MASTER# REMARKS: Exclude per Debian bug report #377843 09/17/06
@@ -1918,6 +1943,8 @@ dw.com.com/
 # URL = http://wzus.bloglines.com/r?t=a&d=us&s=bl&c=blen&ti=1&ai=51060&l=dir&o=0&sv=z6f537f5b&ip=971AC44B&u=http%3A%2F%2Fwww.skweezer.net%2Fbloglines%2Fskweeze.aspx%3F%26i%3Dd%26l%3Den%26r%3Dhttp%253A%252F%252Fwww.bloglines.com%252Fmyblogs_display%253Fsub%253D29302699%2526site%253D5382440%26url%3Dhttp%253A%252F%252Fpermalink.gmane.org%252Fgmane.linux.debian.devel.changes.unstable%252F97340
 .bloglines.com/r\?
 www.skweezer.net/bloglines
+# URL = http://media.fastclick.net/w/get.media?sid=4681&m=5&tp=6&url=http%3A//www.sciam.com/article.cfm%3FchanID%3Dsa003%26articleID%3DC7C87ECC-E7F2-99DF-39AEFF3D7D1A8CFB%26ref%3Drss
+.fastclick.net/w/get\.media\?
 
 {+block{Looks like an anti-leech trigger URL.}}
 #MASTER# COMMENTS: This section not checked 10/17/06 HB. Still out there?
