@@ -1,0 +1,935 @@
+######################################################################
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/Attic/default.action.master,v $
+# 
+#  $Id: default.action.master,v 1.1.2.9 2002/08/27 16:33:04 oes Exp $
+#
+#  Purpose     :  Default actions file, see
+#                 http://www.privoxy.org/faq/questions.html#CONFIGFILES
+#
+#  Copyright   :  Written by and Copyright
+#                 Privoxy team. http://www.privoxy.org/
+#
+#                 Based on the Internet Junkbuster originally written
+#                 by and Copyright (C) 1997 Anonymous Coders and
+#                 Junkbusters Corporation.  http://www.junkbusters.com
+# 
+# Note: Updated versions of this file will be made available from time
+#       to time. Check http://sourceforge.net/project/showfiles.php?group_id=11118
+#       for updates and/or subscribe to the announce mailing list
+#       (http://lists.sourceforge.net/lists/listinfo/ijbswa-announce) if you
+#       wish to receive an email notice whenever updates are released.
+#
+# We value your feedback. However, to provide you with the best support,
+# please note:
+#  
+#  * Use the support forum to get help:
+#    http://sourceforge.net/tracker/?group_id=11118&atid=211118
+#  * Submit feedback for this actions file only through our
+#    actions file feedback script: http://www.privoxy.org/actions
+#  * Submit bugs only through our bug forum:
+#    http://sourceforge.net/tracker/?group_id=11118&atid=111118 
+#    Make sure that the bug has not already been submitted. Please try
+#    to verify that it is a Privoxy bug, and not a browser or site
+#    bug first. If you are using your own custom configuration, please
+#    try the stock configs to see if the problem is a configuration
+#    related bug. And if not using the latest development snapshot,
+#    please try the latest one. Or even better, CVS sources.
+#  * Submit feature requests only through our feature request forum:
+#    http://sourceforge.net/tracker/?atid=361118&group_id=11118&func=browse
+#      
+# For any other issues, feel free to use the mailing lists:
+# http://sourceforge.net/mail/?group_id=11118
+#    
+# Anyone interested in actively participating in development and related
+# discussions can join the appropriate mailing list here:
+# http://sourceforge.net/mail/?group_id=11118. Archives are available
+# here too.
+# 
+#############################################################################
+# Syntax
+#############################################################################
+# 
+# To determine which actions apply to a request, the URL of the request is
+# compared to all patterns in this file. Every time it matches, the list of
+# applicable actions for this URL is incrementally updated. You can trace
+# this process by visiting http://i.j.b/show-url-info
+#
+# There are 4 types of lines in this file: comments (like this line),
+# actions, aliases and patterns, all of which are explained below.
+#
+#############################################################################
+# Pattern Syntax
+#############################################################################
+# 
+# 1. On Domains and Paths
+# -----------------------
+#
+# Generally, a pattern has the form <domain>/<path>, where both the <domain>
+# and <path> part are optional. If you only specify a domain part, the "/"
+# can be left out:
+# 
+# www.example.com 
+#   is a domain-only pattern and will match any request to www.yahoo.com
+# 
+# www.example.com/
+#   means exactly the same (but is slightly less efficient)
+# 
+# www.example.com/index.html
+#   matches only the document /index.html on www.example.com
+# 
+# /index.html
+#   matches the document /index.html, regardless of the domain
+# 
+# index.html
+#   matches nothing, since it would be interpreted as a domain name and
+#   there is no top-level domain called ".html".
+# 
+# 2. Domain Syntax
+# ----------------
+# 
+# The matching of the domain part offers some flexible options: If the
+# domain starts or ends with a dot, it becomes unanchored at that end:
+# 
+# www.example.com
+#   matches only www.example.com
+# 
+# .example.com
+#   matches any domain that ENDS in .example.com
+# 
+# www.
+#   matches any domain that STARTS with www.
+#
+# .example.
+#   matches any domain that CONTAINS example
+#
+# 
+# Additionally, there are wildcards that you can use in the domain names
+# themselves. They work pretty similar to shell wildcards: "*" stands for
+# zero or more arbitrary characters, "?" stands for one, and you can define
+# charachter classes in square brackets and they can be freely mixed:
+# 
+# ad*.example.com
+#   matches adserver.example.com, ads.example.com, etc but not sfads.example.com
+# 
+# *ad*.example.com
+#   matches all of the above
+# 
+# .?pix.com
+#   matches www.ipix.com, pictures.epix.com, a.b.c.d.e.upix.com etc
+# 
+# www[1-9a-ez].example.com
+#   matches www1.example.com, www4.example.com, wwwd.example.com, 
+#   wwwz.example.com etc, but not wwww.example.com
+# 
+# You get the idea?
+# 
+# 2. Path Syntax
+# --------------
+# 
+# Paths are specified as regular expressions. A comprehensive discussion of
+# regular expressions wouldn't fit here, but (FIXME) someone should paste
+# a concise intro to the regex language here.
+# 
+# Perl compatible regular expressions are used. See the pcre/docs/ direcory or
+# man perlre (also available on http://www.perldoc.com/perl5.6/pod/perlre.html)
+# for details. The appendix to the user manual also has some detail.
+# 
+# Please note that matching in the path is CASE INSENSITIVE by default, but
+# you can switch to case sensitive by starting the pattern with the "(?-i)"
+# switch:
+# 
+# www.example.com/(?-i)PaTtErN.*
+#   will match only documents whose path starts with PaTtErN in exactly this
+#   capitalization.
+#
+# Partially case-sensetive and partially case-insensitive patterns are
+# possible, but the rules about splitting them up are extremely complex
+# - see the PCRE documentation for more information.
+# 
+#############################################################################
+# Action Syntax
+#############################################################################
+#
+# There are 3 kinds of action:
+#
+# Boolean (e.g. "block"):
+#   +name  # enable
+#   -name  # disable
+#
+# Parameterized (e.g. "hide-user-agent"):
+#   +name{param}  # enable and set parameter to "param"
+#   -name         # disable
+#
+# Multi-value (e.g. "add-header", "send-wafer"):
+#   +name{param}  # enable and add parameter "param"
+#   -name{param}  # remove the parameter "param"
+#   -name         # disable totally
+#
+# The default (if you don't specify anything in this file) is not to take
+# any actions - i.e completely disabled, so Privoxy will just be a
+# normal, non-blocking, non-anonymizing proxy.  You must specifically
+# enable the privacy and blocking features you need (although the 
+# provided default actions file will do that for you).
+#
+# Later actions always override earlier ones.  For multi-valued actions,
+# the actions are applied in the order they are specified.
+#
+#############################################################################
+# Valid actions are:
+#############################################################################
+#
+# +add-header{Name: value}
+#    Adds the specified HTTP header, which is not checked for validity.
+#    You may specify this many times to specify many headers.
+#
+# +block
+#    Block this URL
+#
+# +deanimate-gifs{last}
+# +deanimate-gifs{first}
+#    Deanimate all animated GIF images, i.e. reduce them to their last
+#    frame. This will also shrink the images considerably. (In bytes,
+#    not pixels!) 
+#    If the option "first" is given, the first frame of the animation
+#    is used as the replacement. If "last" is given, the last frame of
+#    the animation is used instead, which propably makes more sense for
+#    most banner animations, but also has the risk of not showing the
+#    entire last frame (if it is only a delta to an earlier frame).
+#
+# +downgrade-http-version
+#    Downgrade HTTP/1.1 client requests to HTTP/1.0 and downgrade the
+#    responses as well. Use this action for servers that use HTTP/1.1
+#    protocol features that Privoxy currently can't handle yet.
+#
+# +fast-redirects
+#    Many sites, like yahoo.com, don't just link to other sites.
+#    Instead, they will link to some script on their own server,
+#    giving the destination as a parameter, which will then redirect
+#    you to the final target. 
+#
+#    URLs resulting from this scheme typically look like:
+#    http://some.place/some_script?http://some.where-else
+#
+#    Sometimes, there are even multiple consecutive redirects encoded
+#    in the URL. These redirections via scripts make your web browing
+#    more traceable, since the server from which you follow such a link
+#    can see where you go to. Apart from that, valuable bandwidth and
+#    time is wasted, while your browser aks the server for one redirect
+#    after the other. Plus, it feeds the advertisers.
+#
+#    The +fast-redirects option enables interception of these requests
+#    by Privoxy, who will cut off all but the last valid URL in the
+#    request and send a local redirect back to your browser without
+#    contacting the intermediate sites.
+#
+# +filter{name}
+#    Filter the website through one or more regular expression filters.
+#    Repeat for multiple filters.
+#   
+#    Filters predefined in the supplied default.action include:
+#
+#     html-annoyances:  Get rid of particularly annoying HTML abuse
+#     js-annoyances:    Get rid of particularly annoying JavaScript abuse
+#     content-cookies:  Kill cookies that come in the HTML or JS content
+#     popups:           Kill all popups in JS and HTML
+#     frameset-borders: Give frames a border
+#     webbugs:          Squish WebBugs (1x1 invisible GIFs used for user tracking)
+#     refresh-tags:     Kill automatic refresh tags (for dial-on-demand setups)
+#     fun:              Text replacements  for subversive browsing fun!
+#     nimda:            Remove Nimda (virus) code.
+#     img-reorder:      Reorder attributes in <img> tags to make the banners-by-* filters more effective
+#     banners-by-size:  Kill banners by size (very efficient!)
+#     banners-by-link:  Kill banners by their links to known clicktrackers 
+#     shockwave-flash:  Kill embedded Shockwave Flash objects
+#     crude-parental:   Kill all web pages that contain the words "sex" or "warez"
+#     js-events:        Kill all JS event bindings (Radically destructive! Use only on real suckers)
+#
+# +hide-forwarded-for-headers
+#    Block any existing X-Forwarded-for header, and do not add a new one.
+#
+# +hide-from-header{block}
+# +hide-from-header{spam@sittingduck.xqq}
+#    If the browser sends a "From:" header containing your e-mail address, 
+#    either completely removes the header ("block"), or change it to the
+#    specified e-mail address.
+#
+# +hide-referer{block}
+# +hide-referer{forge}
+# +hide-referer{http://nowhere.com}
+#    Don't send the "Referer:" (sic) header to the web site.  You can
+#    block it, forge a URL to the same server as the request (which is
+#    preferred because some sites will not send images otherwise) or
+#    set it to a constant string.
+#
+# +hide-referrer{...}
+#    Alternative spelling of +hide-referer.  Has the same parameters,
+#    and can be freely mixed with, "+hide-referer".  ("referrer" is the 
+#    correct English spelling, however the HTTP specification has a 
+#    bug - it requires it to be spelt "referer").
+#
+# +hide-user-agent{browser-type}
+#    Change the "User-Agent:" header so web servers can't tell your
+#    browser type.  (Breaks many web sites).  Specify the user-agent
+#    value you want - e.g., to pretend to be using Netscape on Linux:
+#      +hide-user-agent{Mozilla (X11; I; Linux 2.0.32 i586)}
+#    Or to identify yourself explicitly as a Privoxy user:
+#      +hide-user-agent{Privoxy/1.0}
+#    (Don't change the version number from 1.0 - after all, why tell them?)
+#
+# +handle-as-image
+#    Treat this URL as an image.  This only matters if it's also "+block"ed,
+#    in which case a "blocked" image can be sent rather than a HTML page.
+#    See +set-image-blocker{} for the control over what is actually sent.
+#
+# +set-image-blocker{blank}
+# +set-image-blocker{pattern}
+# +set-image-blocker{<URL>} with <url> being any valid image URL
+#    Decides what to do with URLs that end up tagged with {+block +handle-as-image}.
+#    There are 4 options:
+#      * "-set-image-blocker" will send a HTML "blocked" page, usually
+#         resulting in a "broken image" icon.
+#      * "+set-image-blocker{blank}" will send a 1x1 transparent image
+#      * "+set-image-blocker{pattern}" will send a 4x4 grey/white pattern
+#        which is less intrusive than the logo but easier to recognize
+#        than the transparent one.
+#      * "+set-image-blocker{<URL>}" will send a HTTP temporary redirect
+#        to the specified image URL.
+#
+#
+# +limit-connect{portlist}
+#   The CONNECT methods exists in HTTP to allow access to secure websites
+#   (https:// URLs) through proxies. It works very simply: The proxy
+#   connects to the server on the specified port, and then short-circuits
+#   its connections to the cliant and to the remote proxy.
+#   This can be a big security hole, since CONNECT-enabled proxies can
+#   be abused as TCP relays very easily.
+#   By default, i.e. in the absence of a +limit-connect action, Privoxy
+#   will only allow CONNECT requests to port 443, which is the standard port
+#   for https.
+#   If you want to allow CONNECT for more ports than that, or want to forbid
+#   CONNECT altogether, you can specify a comma separated list of ports and port
+#   ranges (the latter using dashes, with the minimum defaulting to 0 and max to 65K):
+#
+#   +limit-connect{443} # This is the default and need no be specified.
+#   +limit-connect{80,443} # Ports 80 and 443 are OK.
+#   +limit-connect{-3, 7, 20-100, 500-} # Port less than 3, 7, 20 to 100, and above 500 are OK.
+#
+# +prevent-compression
+#    Prevent the website from compressing the data. Some websites do
+#    that, which is a problem for Privoxy, since +filter, +kill-popups
+#    and +gif-deanimate will not work on compressed data. Will slow down
+#    connections to those websites, though.
+#
+# +prevent-keeping-cookies
+# +session-cookies-only
+#    If the website sets cookies, make sure they are erased when you exit
+#    and restart your web browser.  This makes profiling cookies useless,
+#    but won't break sites which require cookies so that you can log in
+#    or for transactions.
+#
+# +crunch-outgoing-cookies
+#    Prevent the website from reading cookies
+#
+# +crunch-incoming-cookies
+#    Prevent the website from setting cookies
+#
+# +kill-popups
+#    Filter the website through a built-in filter to disable
+#    window.open() etc.  The two alternative spellings are
+#    equivalent.
+#
+# +send-vanilla-wafer
+#    This action only applies if you are using a jarfile.  It sends a
+#    cookie to every site stating that you do not accept any copyright
+#    on cookies sent to you, and asking them not to track you.  Of
+#    course, this is a (relatively) unique header they could use to 
+#    track you.
+#
+# +send-wafer{name=value}
+#    This allows you to add an arbitrary cookie.  Specify it multiple
+#    times in order to add several cookies.
+#
+#############################################################################
+
+#############################################################################
+# Settings -- Don't change.
+#############################################################################
+{{settings}}
+#############################################################################
+for-privoxy-version=3.0
+
+#############################################################################
+# Aliases
+#############################################################################
+{{alias}}
+#############################################################################
+#
+# You can define a short form for a list of permissions - e.g., instead
+# of "-crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects",
+# you can just write "shop". This is called an alias.
+#
+# Currently, an alias can contain any character except space, tab, '=', '{'
+# or '}'.
+# But please use only 'a'-'z', '0'-'9', '+', and '-'.
+#
+# Alias names are not case sensitive.
+#
+# Aliases beginning with '+' or '-' may be used for system action names 
+# in future releases - so try to avoid alias names like this.  (e.g. 
+# "+crunch-all-cookies" below is not a good name)
+#
+# Aliases must be defined before they are used.
+# 
+
+# These aliases just save typing later:
+#
++crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
+-crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
+ allow-all-cookies  = -crunch-all-cookies -session-cookies-only
+ allow-popups       = -filter{popups} -kill-popups
++block-as-image     = +block +handle-as-image
+-block-as-image     = -block
+
+# These aliases define combinations of actions
+# that are useful for certain types of sites:
+#
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups
+shop        = -crunch-all-cookies allow-popups
+
+# Your favourite blend of filters:
+#
+myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{popups}\
+              +filter{webbugs} +filter{nimda} +filter{banners-by-size} #+filter{fun}
+
+# Allow ads for selected useful free sites:
+#
+allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
+#... etc.  Customize to your heart's content.
+
+
+#############################################################################
+# Defaults
+#############################################################################
+{ \
+-add-header \
+-block \
+-crunch-outgoing-cookies \
+-crunch-incoming-cookies \
++deanimate-gifs{last} \
+-downgrade-http-version \
+-fast-redirects \
++filter{js-annoyances} \
++filter{html-annoyances} \
++filter{webbugs} \
++filter{popups} \
+-filter{frameset-borders} \
+-filter{refresh-tags} \
+-filter{img-reorder} \
++filter{banners-by-size} \
+-filter{banners-by-link} \
+-filter{fun} \
++filter{nimda} \
+-filter{shockwave-flash} \
+-filter{js-events} \
+-filter{crude-parental} \
+-handle-as-image \
++hide-forwarded-for-headers \
++hide-from-header{block} \
++hide-referrer{forge} \
+-hide-user-agent \
+-kill-popups \
+-limit-connect \
++prevent-compression \
+-send-vanilla-wafer \
+-send-wafer \
++session-cookies-only \
++set-image-blocker{pattern} \
+}
+/ # Match all URLs
+
+#############################################################################
+# Needed for automatic feedback evaluation; Please don't change or delete!
+#############################################################################
+{+add-header{X-Actions-File-Version: 1.5} -filter -kill-popups}
+.privoxy.org
+.oesterhelt.org/actions
+
+#############################################################################
+# These extensions belong to images:
+#############################################################################
+{+handle-as-image}
+#############################################################################
+/.*\.(gif|jpe?g|png|bmp|ico)($|\?)
+
+#############################################################################
+# Generic block patterns (the most effective!):
+#############################################################################
+{+block}
+#MASTER# DONT-VERIFY (generic)
+
+# By hostname:
+#
+ad*.
+.*ads.
+*banner*.
+count*.
+
+# By path:
+#
+/(.*/)?(ads(erver?|tream)?|.*?ads/|ad/|adv(iew|ert(s|enties|is(ing|e?ments)?)?)?|(ad|all|nn)?[-_]?banner(s|ads?|farm)?)
+/(.*/)?(publicite|werbung|rekla(ma|me|am)|annonse|maino(kset|nta|s)?/)
+/.*(count|track)(er|run)?\.(pl|cgi|exe|dll|asp|php[34]?)
+/.*promo.gif
+
+#############################################################################
+# Site-specific block patterns;
+#############################################################################
+
+#MASTER# BLOCK-REFERRER: http://www.brooksbrothers.com/
+#MASTER# BLOCK-REFERRER: http://www.autodesk.com/
+.hitbox.com 
+#MASTER# BLOCK-REFERRER: http://www.the-gadgeteer.com/palmos.html
+www.the-gadgeteer.com/cgi-bin/getimage.cgi/
+#MASTER# BLOCK-REFERRER: http://www.stern.de/
+www.stern.de/bilder/poweredby
+#MASTER# BLOCK-REFERRER: http://www.gmx.net/de/cgi/logoutpage?CN=sJywqKCElHw%3D%3D
+images.gmx.net/images/bs/
+#MASTER# BLOCK-REFERRER: http://www.max.de/
+.akamaitech.net/.*/img/e-commerce
+www.max.de/_teaser/partner/
+#MASTER# BLOCK-REFERRER: http://search.atomz.com/search/?sp-k=&sp-p=any&sp-a=sp1001395b&sp-q=linux
+search.atomz.com/search/i/tagw1c.gif
+www.intelligentx.com/newsletters/.*\.gif
+#MASTER# BLOCK-REFERRER: http://www.whowhere.lycos.com/ThreeD/explain.html
+www.whowhere.lycos.com/images/ebay_bst.gif
+www.whowhere.lycos.com/images/find_books.gif
+www.whowhere.lycos.com/images/1800/advppl1.gif
+#MASTER# BLOCK-REFERRER: http://realguide.real.com/games/
+i.real.com/g/pics/games/gamepass_120x600_2.gif
+#MASTER# BLOCK-REFERRER: http://www1.chathouse.com/roomplan.html
+www*.chathouse.com/chatimages/whopersonal.gif
+#MASTER# BLOCK-REFERRER: http://www.beseen.com/
+www.beseen.com/images/website3.gif
+#MASTER# BLOCK-REFERRER: http://www.planetspiele.de/
+.planetspiele.de/gfx/partner
+#MASTER# BLOCK-REFERRER: http://www.hot.ee/toptools/
+#MASTER# REMARKS: Yes, block *all* their graphics.
+www.hot.ee/.*\.(gif|jpe?g)
+top.ultraseek.net/top_sit.*\.gif
+#MASTER# BLOCK-REFERRER: http://kickme.to/FOSI
+fosi.ural.net/.*\.jpg
+#MASTER# BLOCK-REFERRER: http://www.tucows.com/
+.tucows.com/images/dodi.gif
+.tucows.com/images/elibrary_searchTop.gif
+#MASTER# BLOCK-REFERRER: http://www.ix.de/
+#MASTER# BLOCK-REFERRER: http://www.heise.de/
+/icons/emedia_b.gif
+#MASTER# BLOCK-REFERRER: http://dest.travelocity.com/DestGuides/geo_frontdoor/0,,TRAVELOCITY,00.html?HPTRACK=icon_dest
+dest.travelocity.com/website/destinations/images/partner_frommers.gif
+dest.travelocity.com/website/destinations/images/travelex_logo.gif
+#MASTER# BLOCK-REFERRER: http://cobolreport.com/
+cobolreport.com/images/canam1.gif
+cobolreport.com/images/Acucorp1.gif
+cobolreport.com/images/netcobol.jpg
+cobolreport.com/images/NetCOBOL-banner.gif
+objectz.com/images/Landmark%20120x240.gif
+#MASTER# BLOCK-REFERRER: http://www.theregister.co.uk/
+www.theregister.co.uk/media
+#MASTER# BLOCK-REFERRER: http://www.dpreview.com/reviews/canons40/
+tribalfusion.speedera.net
+.tribalfusion.com/media/
+#MASTER# BLOCK-REFERRER: http://www.portalofevil.com/
+b*.portalofevil.com/shlv
+#MASTER# BLOCK-REFERRER: http://us.imdb.com/Quotes?0110912
+i.imdb.com/Vpics/
+#MASTER# BLOCK-REFERRER: http://us.imdb.com/Title?0110912
+i.imdb.com/Photos/CMSIcons
+rcm.amazon.com
+#MASTER# BLOCK-REFERRER: http://us.imdb.com/Trivia?0110116
+i.imdb.com/Icons/apix/
+#MASTER# BLOCK-REFERRER: http://www.nytimes.com/
+.nytimes.com/adx/
+#MASTER# BLOCK-REFERRER: http://www.salon.com/
+www.salon.com/Creatives
+images.salon.com/plus/gear/src/
+#MASTER# BLOCK-REFERRER: http://www.sourceforge.net/
+images.sourceforge.net/images/DB2powered.gif
+
+#############################################################################
+# Generic block-as-image patterns:
+#############################################################################
+{+block-as-image}
+#MASTER# BLOCK-REFERRER: http://experts-exchange.com/os2gen/
+/.*adimage\.(php|cgi)
+
+#############################################################################
+# Site-specific block-as-image patterns:
+#############################################################################
+#MASTER# BLOCK-REFERRER: http://www.cnn.com/
+#MASTER# BLOCK-REFERRER: http://www.aol.com/
+ar.atwola.com 
+#MASTER# BLOCK-REFERRER: http://www.altavista.com/
+#MASTER# BLOCK-REFERRER: http://www.tecchannel.de/
+#MASTER# BLOCK-REFERRER: http://www.whowhere.lycos.com/
+.[a-vx-z]*.doubleclick.net
+#MASTER# BLOCK-REFERRER: http://www.theinquirer.net/
+netcomm.spinbox.net
+#MASTER# BLOCK-REFERRER: http://www.joecartoon.com/
+servedby.advertising.com
+#MASTER# BLOCK-REFERRER: http://hwww.yahoo.com/
+.a.yimg.com/(?:(?!/i/).)*$
+.a[0-9].yimg.com/(?:(?!/i/).)*$
+.yimg.com/.*/a/
+.yimg.com/.*/flash/promotions
+#MASTER# BLOCK-REFERRER: http://www.kostenlos.de/
+werbung.guj.de
+#MASTER# DONT-VERIFY
+bs*.gsanet.com
+bs*.einets.com
+#MASTER# DONT-VERIFY (Opera browser built-in ads)
+.qkimg.net
+/scripts/cms/xcms.asp
+#MASTER# BLOCK-REFERRER: http://www.sevac.com/
+.sexcounter.
+#MASTER# BLOCK-REFERRER: http://www.asahi.com/
+www.asahi.com/(.*/)?ad/
+#MASTER# BLOCK-REFERRER: http://www.travelocity.com/Vacations/0,,TRAVELOCITY||Y,00.html?HPTRACK=mpc_vac
+#MASTER# BLOCK-REFERRER: http://dest.travelocity.com/DestGuides/geo_frontdoor/0,,TRAVELOCITY,00.html?HPTRACK=icon_dest
+.travelocity./Sponsor_gifs/
+#MASTER# DONT-VERIFY
+#MASTER# REMARKS: Bannerfarms used by grokster and others:
+james.adbutler.de
+gkas.de/affilinet
+#MASTER# BLOCK-REFERRER: http://www.macaddict.com/
+130.94.70.82
+#MASTER# BLOCK-REFERRER: http://asitreff.6x.to/
+cashformel.com/web-sponsor
+www.cash4banner.com/web-sponsor
+213.221.106.162
+#MASTER# BLOCK-REFERRER: http://www.ebay.com
+pics.ebay.com/aw/pics/homepage/big8
+#MASTER# BLOCK-REFERRER: http://www.falk-online.de/index.jsp
+#MASTER# REMARKS: ad*.adsolution.de
+62.26.220.2
+62.27.38.2
+62.27.57.2
+#MASTER# BLOCK-REFERRER: unknown
+#MASTER# REMARKS: both exist and are banner farms
+www.bannermania.nom.pl
+magic.koti.com.pl/cgi-magic/banner_img.cgi
+#MASTER# BLOCK-REFERRER: http://www.linuxdot.org/cgi-bin/columns.cgi?id=26
+naturalismedicina.com/cgibin/linswap
+#MASTER# BLOCK-REFERRER: http://www.dhtmlplanet.com/
+statse.webtrendslive.com
+#MASTER# BLOCK-REFERRER: http://www.versiontracker.com/
+#MASTER# REMARKS: 1) Used on many sites 2) URLs don't _end_ in .gif, hence +imageblock
+spinbox.versiontracker.com/.*\.gif
+#MASTER# BLOCK-REFERRER: http://educ8search.tripod.com/hacksoft.html
+#MASTER# REMARKS: Counter
+.netscape.com/c\.cgi\?
+#MASTER# BLOCK-REFERRER: http://privacy.net/analyze/
+a.consumer.net
+#MASTER# BLOCK-REFERRER: http://mycroft.mozdev.org/
+#MASTER# REMARKS: Counter
+m[0-9].nedstatbasic.net
+#MASTER# BLOCK-REFERRER: http://salon.com/
+#MASTER# REMARKS: Banner farms; just exclude their corp. info
+[a-v,x-z]*.atdmt.com/
+#MASTER# BLOCK-REFERRER: http://www.deviantart.com/
+images.deviantart.com/affiliates/
+images.deviantart.com/shared/(winzip|trillian)\.gif
+#MASTER# DONT-VERIFY
+#MASTER# REMARKS: Referenced from HTML-Emails
+.weather.com/creatives/
+.weather.com/web/services/email/
+
+#############################################################################
+# Generic unblockers to narrow the side effects of the generic blockers:
+#############################################################################
+{-block}
+#MASTER# DONT-VERIFY (generic)
+
+# By host:
+#
+adsl.
+ad[ud]*.
+advice.
+.edu
+.ac.uk
+.uni-*.de
+.*load*.
+
+# By path:
+#
+/.*ad(sl|v(i[cs]|an|ertencia|entu)) # advice/advisories/advan*/advertencia (spanish)
+/.*((up|down)lo|p?thre|he|d|gr|l|ro)ads
+/.*account
+
+#############################################################################
+# Site-specific unblockers:
+#############################################################################
+#MASTER# UNBLOCK-REFERRER: http://bannerblind.mozdev.org/
+bannerblind.mozdev.org
+#MASTER# UNBLOCK-REFERRER: http://advogato.org/
+advogato.org
+#MASTER# UNBLOCK-REFERRER: http://www.handelsblatt.com/
+ad*.vhb.de
+#MASTER# UNBLOCK-REFERRER: http://www.ugu.com/
+www.ugu.com/sui/ugu/adv
+#MASTER# UNBLOCK-REFERRER: http://www.globalintersec.com/adv/sendtemp-2001021302.txt
+www.globalintersec.com/adv
+#MASTER# UNBLOCK-REFERRER: http://www.wunderground.com/geo/BannerPromo/US/NY/New_York.html
+banners.wunderground.com/banner/
+#MASTER# UNBLOCK-REFERRER: http://www.sueddeutsche.de/
+www.sueddeutsche.de/.*banner
+#MASTER# UNBLOCK-REFERRER: http://www.openoffice.org/
+www.openoffice.org/banners/
+#MASTER# UNBLOCK-REFERRER: http://capwiz.com/ieeeusa/home/
+capwiz.com/ieee/images/banner.gif
+#MASTER# UNBLOCK-REFERRER: http://security.greymagic.com/
+sec*.greymagic.com/adv/
+#MASTER# UNBLOCK-REFERRER: http://www.foxnews.com
+.foxnews.com/images/banners/(sec|logo)
+#MASTER# UNBLOCK-REFERRER: http://www.comdirect.de/
+#MASTER# REMARKS: Used as link tracker on (needed) internal links
+www.comdirect.de/stat/count.php
+#MASTER# UNBLOCK-REFERRER: http://www.amazon.com/exec/obidos/tg/browse/-/130/ref=gw_br_dvd/102-9730978-3540926
+#MASTER# REMARKS: Part of site decoration
+.amazon.com/.*/banners/
+#MASTER# UNBLOCK-REFERRER: http://www.washingtonpost.com/wp-dyn/articles/A43890-2002Aug4.html
+#MASTER# REMARKS: Javascripts whose absence messes the page
+.washingtonpost.com/wp-srv/
+#MASTER# UNBLOCK-REFERRER: http://www.gnome.org/images/banner-gnomeis
+www.gnome.org
+#MASTER# UNBLOCK-REFERRER: http://www.nycsubway.org/
+.nycsubway.org/img/banner
+#MASTER# UNBLOCK-REFERRER: http://www.hellug.gr
+ads.hellug.gr
+
+#############################################################################
+# Site-specific special rules:
+#############################################################################
+
+#----------------------------------------------------------------------------
+# These sites are very complex (read: keen on your identity) and require
+# minimal interference.
+#----------------------------------------------------------------------------
+{fragile}
+.office.microsoft.com
+.windowsupdate.microsoft.com
+
+#----------------------------------------------------------------------------
+# Shopping and banking sites - allow cookies and pop-ups
+#----------------------------------------------------------------------------
+{shop}
+.quietpc.com
+.worldpay.com   # for quietpc.com
+.jungle.com
+.scan.co.uk
+.dabs.com
+.overclockers.co.uk
+.deutsche-bank-24.de
+.db24.de
+.ebay.
+.mobile.de
+
+#----------------------------------------------------------------------------
+# These sites require pop-ups
+#----------------------------------------------------------------------------
+{allow-popups}
+#MASTER# PROBLEM-URL: http://www.aprilbarrows.com/discography.html
+www.aprilbarrows.com/discography\.html$
+#MASTER# PROBLEM-URL: http://kevxml2a.infospace.com/info.metac/venshopping/index.htm
+.infospace.com/.*/venshopping/
+#MASTER# PROBLEM-URL: http://www.nvidia.com/view.asp?PAGE=windows2000
+www.nvidia.com
+#MASTER# PROBLEM-URL: http://www15.chathouse.com/games/
+www*.chathouse.com/games/
+#MASTER# PROBLEM-URL: http://www.tagesschau.de/
+#MASTER# REMARKS: Search results come in a popup
+www.tagesschau.de
+#MASTER# PROBLEM-URL: http://www.reuters.com/
+#MASTER# REMARKS: Printer friendly versions pop up
+www.reuters.com/news_article.jhtml
+#MASTER# PROBLEM-URL: http://www.xmms.org/skins.html?num=15&sort=daily_download&order=desc
+www.xmms.org
+#MASTER# PROBLEM-URL: http://www.bild.de/
+.bild.t-online.de
+#MASTER# PROBLEM-URL: http://klubwakacyjny.interia.pl/pytanie.html
+klubwakacyjny.interia.pl/pytanie.html
+#MASTER# PROBLEM-URL: http://www.m-w.com/cgi-bin/dictionary?book=Dictionary&va=cupel
+www.m-w.com
+#MASTER# PROBLEM-URL: http://www.pcbox.es/boxshop/catalogo/entrada.asp?centro=53
+www.pcbox.es
+#MASTER# PROBLEM-URL: http://www.hola.com/club/trajelegante/
+www.hola.com/club/
+#MASTER# PROBLEM-URL: http://www.infoempleo.com/
+www.infoempleo.com
+#MASTER# PROBLEM-URL: http://www.netflix.com/
+www.netflix.com
+
+##----------------------------------------------------------------------------
+# Sometimes (i.e. often!) fast-redirects catches things by mistake
+#----------------------------------------------------------------------------
+{-fast-redirects}
+www.ukc.ac.uk/cgi-bin/wac\.cgi\?
+#MASTER# PROBLEM-URL: http://www.google.com/search?q=foo
+.google.com
+#MASTER# PROBLEM-URL: http://de.altavista.com/q?pg=q&q=foo&kl=XX&search.x=28&search.y=8&what=web
+.altavista.com/(.*(like|url|link):|trans.*urltext=)http
+#MASTER# PROBLEM-URL: http://www.speedfind.de/cgi-bin/search?q=foo&t=STANDARD
+.speedfind.de
+#MASTER# PROBLEM-URL: http://www.nytimes.com/
+.nytimes.com
+#MASTER# PROBLEM-URL: http://groups.yahoo.com/
+.yahoo.com/.*done=
+#MASTER# PROBLEM-URL: http://validator.w3.org/check
+.w3.org
+#MASTER# PROBLEM-URL: http://www.ask.com/
+.directhit.com
+#MASTER# PROBLEM-URL: http://www.zagats.com/
+.zagats.com
+#MASTER# PROBLEM-URL: http://www.passport.com/Consumer/default.asp?lc=1033
+#MASTER# PROBLEM-URL: http://www.msn.com/
+my.msn.com/passport/pp(consent|set)\.ashx\?msnru=
+www.passport.com/Consumer/default\.asp\?lc=[0-9]+&msppchlg=[01]&mspplogin=
+login.passport.com/logout\.(asp|srf)\?
+#MASTER# PROBLEM-URL: http://www.fileplanet.com
+download.com.com/redir\?
+www.fileplanet.com/redir\.asp\?
+
+#----------------------------------------------------------------------------
+# No filtering for sourcecode
+#----------------------------------------------------------------------------
+{-filter}
+#MASTER# PROBLEM-URL: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/current/
+cvs.
+#MASTER# PROBLEM-URL: http://liveupdate.symantec.com/ennlu.x86
+liveupdate.symantec.com
+
+#----------------------------------------------------------------------------
+# These sites suffer from a bug in PHP < 4.2.3 (ob_gzhandler broken;
+# workaround is to use zlib.output_compression):
+#----------------------------------------------------------------------------
+{-prevent-compression}
+#MASTER# PROBLEM-URL: http://www.powie.de/
+www.powie.de
+#MASTER# PROBLEM-URL: http://www.phpcenter.de/
+www.phpcenter.de
+#MASTER# PROBLEM-URL: http://www.debianhelp.org/
+www.debianhelp.org
+#MASTER# PROBLEM-URL: http://www.timeanddate.com
+www.timeanddate.com
+#MASTER# PROBLEM-URL: http://www.pclinuxonline.com/
+#MASTER# PROBLEM-URL: http://pclinuxonline.com/
+.pclinuxonline.com
+#MASTER# PROBLEM-URL: http://www.dhd24.com/
+www.dhd24.com
+#MASTER# PROBLEM-URL: http://www.linuxandmain.com/
+.linuxandmain.com
+#MASTER# PROBLEM-URL: http://www.ofb.biz/
+.ofb.biz
+#MASTER# PROBLEM-URL: http://www.dungeoncrawl.org/
+.dungeoncrawl.org
+#MASTER# PROBLEM-URL: http://www.deviantart.com/
+.deviantart.com
+#MASTER# PROBLEM-URL: http://www.planetspiele.de/wbboard/
+www.planetspiele.de/wbboard/
+#MASTER# PROBLEM-URL: http://www.digitalspy.co.uk/
+www.digitalspy.co.uk
+#MASTER# PROBLEM-URL: http://www.dealnews.com/
+.dealnews.com   
+
+#----------------------------------------------------------------------------
+# The first frame of the gif animation is more useful here:
+#----------------------------------------------------------------------------
+{+deanimate-gifs{first}}
+#MASTER# PROBLEM-URL: http://www.pricecontrast.com/
+#MASTER# REMARKS: Animation shows phone number
+.pricecontrast.com
+
+#----------------------------------------------------------------------------
+# Innocent images in standard banner sizes found here:
+#----------------------------------------------------------------------------
+{-filter{banners-by-size}}
+#MASTER# PROBLEM-URL: http://www.max.de/ratgeber/
+.max.de
+#MASTER# PROBLEM-URL: http://www.unmuseum.org/pirate.htm
+www.unmuseum.org
+
+#----------------------------------------------------------------------------
+# These don't work without the referrer information:
+#----------------------------------------------------------------------------
+{-hide-referrer}
+#MASTER# PROBLEM-URL: http://kickme.to/FOSI
+/cgi-bin/fosi.cgi
+#MASTER# PROBLEM-URL: http://www.abcnews.com/
+printerfriendly.abcnews.com
+#MASTER# PROBLEM-URL: http://www.ask.com/
+.ask.com
+#MASTER# PROBLEM-URL: http://www.amazon.de/exec/obidos/ASIN/B000067CPX/028-5048678-2899722
+www.amazon.de/exec/obidos/clipserve/
+#MASTER# PROBLEM-URL: http://www.lufthansa.de/  http://www.lufthansa.com/  http://cms.lufthansa.com/ 
+.lufthansa.
+
+#----------------------------------------------------------------------------
+# These animated gifs are either useful or nice:
+#----------------------------------------------------------------------------
+{-deanimate-gifs}
+#MASTER# PROBLEM-URL: http://www.care2.com/
+#MASTER# REMARKS: Wanted animations on ecards
+.care2.com
+.care-mail.com
+#MASTER# PROBLEM-URL: http://www.ameritrade.com
+#MASTER# REMARKS: Animated link texts
+www.ameritrade.com
+
+#----------------------------------------------------------------------------
+# These sites are so abusive that we need to kill all JS event bindings (and
+# probably a break a lot along the way)
+#----------------------------------------------------------------------------
+{+filter{js-radical}}
+#MASTER# PROBLEM-URL: http://www..planetspiele.de/
+.planetspiele.de
+216.12.219.40
+
+#----------------------------------------------------------------------------
+# Misc special rules:
+#----------------------------------------------------------------------------
+{-filter{content-cookies} -filter{webbugs}}
+#MASTER# PROBLEM-URL: http://www.friendscout24.de/
+#MASTER# REMARKS: Needs content-cookies for cookie test on index page; needs webbugs for storing profile(!)
+www.friendscout24.de
+
+{-deanimate-gifs -filter{popups} -kill-popups}
+#MASTER# PROBLEM-URL: http://www.valueclick.com/html/
+#MASTER# REMARKS: Know your enemy ;-)
+www.valueclick.com
+{-block}
+www.valueclick.com/html/img/advertiser_top.gif
+
+{-filter{banners-by-size} -deanimate-gifs}
+#MASTER# PROBLEM-URL: http://realguide.real.com/games/
+#MASTER# REMARKS: They use banner-sized animated images
+realguide.real.com/games
+
+{-handle-as-image}
+#MASTER# PROBLEM-URL: http://www.linuxtoday.com/
+#MASTER# REMARKS: /adi has HTML snipplets for use in IFRAMEs
+.doubleclick.net/adi
+
+{+block}
+#MASTER# BLOCK-REFERRER: http://www.geocities.com/the_sockman1/index.html
+#MASTER# REMARKS: ..and any other page on geocities. Source of the obnoxious Geocities drop-in menu.
+www.geocities.com/js_source
+
+{-filter{fun}}
+#MASTER# PROBLEM-URL: http://www.privoxy.org/user-manual/filter-file.html
+#MASTER# REMARKS: Don't change the filter code with itself ;-)
+/(.*/)?user-manual/filter-file.html
+
+{+filter{img-reorder} +filter{banners-by-link}}
+#MASTER# PROBLEM-URL: http://www.dn.se/
+#MASTER# REMARKS: Can't catch by size or location
+www.dn.se

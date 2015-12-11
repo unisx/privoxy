@@ -1,0 +1,138 @@
+#!/bin/sh
+#
+# This is file /etc/rc.d/init.d/privoxy and was put here 
+# by the privoxy rpm
+#
+# chkconfig: 2345 84 09
+#
+# description: Web proxy with advanced filtering capabilities \
+#              such as filtering web page content, managing \
+#              cookies and removing ads
+#
+
+#  ********************************************************************
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/privoxy.init,v $
+# 
+#  Purpose     :  This shell script takes care of starting and stopping
+#                 privoxy.
+# 
+#  Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+#                 Privoxy team. http://www.privoxy.org/
+# 
+#                 Based on the Internet Junkbuster originally written
+#                 by and Copyright (C) 1997 Anonymous Coders and
+#                 Junkbusters Corporation.  http://www.junkbusters.com
+# 
+#                 This program is free software; you can redistribute it
+#                 and/or modify it under the terms of the GNU General
+#                 Public License as published by the Free Software
+#                 Foundation; either version 2 of the License, or (at
+#                 your option) any later version.
+# 
+#                 This program is distributed in the hope that it will
+#                 be useful, but WITHOUT ANY WARRANTY; without even the
+#                 implied warranty of MERCHANTABILITY or FITNESS FOR A
+#                 PARTICULAR PURPOSE.  See the GNU General Public
+#                 License for more details.
+# 
+#                 The GNU General Public License should be included with
+#                 this file.  If not, you can view it at
+#                 http://www.gnu.org/copyleft/gpl.html
+#                 or write to the Free Software Foundation, Inc., 59
+#                 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# 
+# ********************************************************************/
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+. /etc/sysconfig/network
+
+#  Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+PRIVOXY_PRG="privoxy"
+PRIVOXY_BIN="/usr/sbin/$PRIVOXY_PRG"
+PRIVOXY_CONF="/etc/$PRIVOXY_PRG/config"
+PRIVOXY_USER="privoxy"
+PRIVOXY_PID=/var/run/$PRIVOXY_PRG.pid
+PRIVOXY_LOCK=/var/lock/subsys/$PRIVOXY_PRG
+PRIVOXY="$PRIVOXY_BIN --user $PRIVOXY_USER.$PRIVOXY_USER --pidfile $PRIVOXY_PID $PRIVOXY_CONF"
+
+# some checks for us
+! [ -x $PRIVOXY_BIN  ] && echo $"Can't find $PRIVOXY_BIN, exit." && exit 0
+! [ -f $PRIVOXY_CONF ] && echo $"Can't find $PRIVOXY_CONF, exit." && exit 0
+
+# See how we were called.
+
+start () {
+	# start daemon
+	echo -n $"Starting $PRIVOXY_PRG: "
+     if [ -f $PRIVOXY_PID ]; then 
+        killproc $PRIVOXY_PRG && rm -f $PRIVOXY_LOCK $PRIVOXY_PID
+        RETVAL=$?
+        [ $RETVAL != 0 ] && return $RETVAL
+     fi
+	daemon $PRIVOXY
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && touch $PRIVOXY_LOCK
+	return $RETVAL
+}
+
+stop () {
+	# stop daemon
+	echo -n $"Stopping $PRIVOXY_PRG: "
+	killproc $PRIVOXY_PRG && rm -f $PRIVOXY_LOCK $PRIVOXY_PID
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+  start)
+	start	
+	;;
+  stop)
+	stop
+	;;
+  reload)
+	if [ -f $PRIVOXY_PID ] ; then
+        kill -HUP `cat $PRIVOXY_PID`
+        RETVAL=$?
+     fi
+	;;
+  restart)
+	stop
+	start
+	RETVAL=$?
+	;;
+  condrestart)
+	# restart only if already running
+	if [ -f $PRIVOXY_PID ] ; then
+        stop
+        start
+        RETVAL=$?
+	fi 
+	;;
+  status)
+	status $PRIVOXY_PRG 
+	RETVAL=$?
+	;;
+  top)
+     if [ -f $PRIVOXY_PID ]; then
+                a=""
+                for i in `pidof $PRIVOXY_PRG` ; do
+                        a="$a -p $i"
+                done
+                top $a
+     fi
+	;;
+  *)
+	echo $"Usage: $PRIVOXY_PRG {start|stop|reload|restart|condrestart|status|top}"
+	exit 1
+esac
+
+exit $RETVAL

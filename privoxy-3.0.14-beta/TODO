@@ -1,0 +1,173 @@
+$Id: TODO,v 1.5 2009/06/21 12:02:30 fabiankeil Exp $
+
+Some Privoxy related task, not ordered in any way.
+
+1)  Add some regression tests. Filters should be tested automatically
+    (variables too). Could probably reuse large parts of Privoxy-Filter-Test.
+
+3)  Fix some more XXX: comments.
+
+4)  Fix some more compiler warnings. (Especially on amd64)
+    Partly done.
+
+6)  Remove actions that aren't needed anymore:
+
+    content-type-overwrite should probably stay as it's also
+    used by some of the CGI pages (XXX: name them).
+
+    crunch-client-header and crunch-server-header should probably
+    go, their only advantage is that their search strings can be
+    controlled through the CGI pages, other than that they only
+    have disadvantages.
+
+    crunch-if-none-match can be replaced with a header filter.
+
+    prevent-compression has a misleading name and could
+    be replaced with a header filter.
+
+7)  force-text-mode has a stupid name and should probably
+    be renamed to force-filter-mode.
+
+8)  handle-as-empty-document and handle-as-image should
+    be merged to something like handle-as{something} to
+    prevent them from being activated at the same time.
+
+10) There's a bug in the CGI editor that turns the
+    first section's "Insert new section below" into
+    a "Insert new section above" button.
+
+11) CGI templates should use semantically-correct HTML
+    and scale properly.
+
+12) Add pipelining support.
+
+13) Use zlib to compress content before sending it to
+    the client. Measure if it makes a difference.
+
+14) Log and filter POST parameters.
+
+15) If trusted CGI pages are requested without trusted referrer,
+    set the status code to 403 instead of 200.
+
+16) Filter SSL encrypted content as well.
+
+    At the beginning we could use a unencrypted connection between
+    client and Privoxy, and use an encrypted connection between
+    Privoxy and the server.
+
+    This should be good enough for most of the content the
+    user would want to filter.
+
+19) enable-forward-fallback. Syntax? Suggested by K.R.
+
+21) User Manual delivery doesn't accept multiple slashes. Should it?
+
+22) Verify action files properly (Including arguments) and
+    act accordingly (should probably intercept all requests
+    with a "Invalid option foo detected" CGI page).
+
+23) Do the same in case of syntax errors in the configuration file,
+    instead of just exiting or ignoring the problem.
+
+25) Handle multiple filters with the same name better. Reject them?
+
+26) Let show-url-info detect clearly invalid URLs.
+
+27) Make errno logging less thread-unsafe.
+    Verify that it's really an improvement.
+
+28) Don't take default ports in case of invalid forwarding ports.
+
+31) If a string action foo is disabled csp->action->string[ACTION_STRING_FOO]
+    doesn't necessarily contain NULL, but may contain the string of an
+    enabled foo action in an overruled section. Is it a bug? Does it matter?
+
+32) In case of forwarding failures with socks port == 9050,
+    show extra info about Tor (the whole FAQ entry?).
+
+35) Do less work in the accept_connection() thread.
+    Partly done. Good enough?
+
+36) Unload unused action files directly, even if they are
+    disabled without replacement.
+
+38) In the final results, explicitly list disabled multi actions
+    with their parameters. Not as trivial as it sounds.
+
+39) Verify loadcfg.c jarfile reloading and friends.
+    /* XXX: Does disabling this actually work? */
+
+40) Fix core dumping in daemon mode.
+
+41) Change documentation framework to one that works cross-platform.
+    Evaluate WML.
+
+42) Add DTrace hooks.
+
+43) Write a tool to check URL patterns against URLs in the log file.
+    This could be included in Privoxy-Regression-Test.
+
+44) Privoxy-Log-Parser: Consider highlighting "Connection" in:
+    23:13:03.506 283b6100 Header: Replaced: 'Connection: Keep-Alive' with 'Connection: close'
+
+49) Add FAQ for NTLM proxies. Still necessary?
+
+50) Investigate possible PCRS template speedup when searching
+    macros with strstr() before compiling pcrs commands.
+    Investigated, needs some restructuring but is probably worth it.
+
+51) Make user-manual directive more general to allow serving
+    the FAQ and other stuff, too. Consider changing the port
+    for "same origin policy" issues.
+
+53) Find a more reliable hoster.
+
+54) Move away from CVS to a more modern revision control system.
+
+55) Apply for Coverity scans: http://scan.coverity.com/
+
+56) Apply for the "free online access for qualified open-source
+    software projects" for the Co-Advisor HTTP compliance tests:
+    http://coad.measurement-factory.com/details.html#pricing
+
+57) Allow piping into external filter programs.
+
+58) Move more template strings from the code into the actual templates.
+
+59) Import the German template translation.
+
+60) Ask the Russian translators for input on how to make their
+    life easier.
+
+61) Consider (optionally?) skipping the hostname comparison when
+    checking if a connections that goes to a HTTP proxy can be reused.
+    Do all HTTP proxy support that? Is it worth it?
+
+63) Reject clearly too large requests earlier?
+
+64) Use proper copyright attribution. "Privoxy Developers"
+    is no legal entity.
+
+65) Polish Website.
+
+66) Increase maximum number of action and filter files.
+
+67) Clean up directory layout. Depends on 54 so we don't
+    lose the revision history.
+
+68) Use standard make syntax so we don't depend on GNU make.
+
+69) Update autoconf setup (or move away from it).
+
+70) If the server connection is reset but the headers are
+    received, consider passing the mess to the client instead
+    of showing the connect-failed template. Relates to #2698674.
+
+71) Allow to listen on multiple addresses without having to
+    bind to all.
+
+72) Use less ugly Privoxy (fav)icons.
+
+73) Factor FEATURE_CONNECTION_SHARING out of
+    FEATURE_CONNECTION_KEEP_ALIVE so the later can be enabled
+    on platforms without mutex support as well.

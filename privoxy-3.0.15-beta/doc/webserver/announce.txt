@@ -1,0 +1,211 @@
+              Announcing Privoxy v.3.0.15 beta
+-----------------------------------------------------------------
+
+Privoxy 3.0.15 beta is a bugfix-release for the previous betas
+which introduced IPv6 support, improved keep-alive support and
+a bunch of minor improvements.
+
+See http://www.privoxy.org/3.0.14/user-manual/whatsnew.html for details.
+
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+*** Version 3.0.15 beta ***
+
+- In case of missing server data, no error message is send to the
+  client if the request arrived on a reused connection. The client
+  is then supposed to silently retry the request without bothering
+  the user. This should significantly reduce the frequency of the
+  "No server or forwarder data received" error message many users
+  reported.
+- More reliable detection of prematurely closed client sockets
+  with keep-alive enabled.
+- FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+  FEATURE_CONNECTION_SHARING and now available on
+  all platforms.
+- Improved handling of POST requests on reused connections.
+  Should fix problems with stalled connections after submitting
+  form data with some browser configurations.
+- Fixed various latency calculation issues.
+- Allows the client to pass NTLM authentication requests to a
+  forwarding proxy. This was already assumed and hinted to work
+  in 3.0.13 beta but actually didn't. Now it's confirmed to work
+  with IE, Firefox and Chrome.
+  Thanks to Francois Botha and Wan-Teh Chang
+- Fixed a calculation problem if receiving the server headers
+  takes more than two reads, that could cause Privoxy to terminate
+  the connection prematurely. Reported by Oliver.
+- Compiles again on platforms such as OpenBSD and systems
+  using earlier glibc version that don't support AI_ADDRCONFIG.
+  Anonymously submitted in #2872591.
+- A bunch of MS VC project files and Suse and Redhat RPM spec
+  files have been removed as they were no longer maintained for
+  quite some time.
+- Overly long action lines are properly rejected with a proper
+  error message. Previously they would be either rejected as
+  invalid or cause a core dump through abort().
+- Already timed-out connections are no longer temporarily remembered.
+  They weren't reused anyway, but wasted a socket slot.
+- len refers to the number of bytes actually read which might
+  differ from the ones received. Adjust log messages accordingly.
+- The optional JavaScript on the CGI page uses encodeURIComponent()
+  instead of escape() which doesn't encode all characters that matter.
+  Anonymously reported in #2832722.
+- Fix gcc45 warnings in decompress_iob().
+- Various log message improvements.
+- Privoxy-Regression-Test supports redirect tests.
+- Privoxy-Log-Parser can gather some connection statistics.
+
+*** Version 3.0.14 beta ***
+
+- The latency is taken into account when evaluating whether or not to
+  reuse a connection. This should significantly reduce the number of
+  connections problems several users reported.
+- If the server doesn't specify how long the connection stays alive,
+  Privoxy errs on the safe side of caution and assumes it's only a second.
+- The error pages for connection timeouts or missing server data use a
+  Last-Modified date in the past. Retry attempts are detected and Privoxy
+  removes the If-Modified-Since header to prevent the server from responding
+  with status code 304 in which case the client would reuse the error message.
+- Setting keep-alive-timeout to 0 disables keep-alive support. Previously
+  Privoxy would claim to allow persistence but not reuse the connection.
+- Pipelined requests are less likely to be mistaken for the request
+  body of the previous request. Note that Privoxy still has no real
+  pipeline support and will either serialize pipelined requests or
+  drop them in which case the client has to resent them.
+- Fixed a crash on some Windows versions when header randomization
+  is enabled and the date couldn't be parsed.
+- Privoxy's keep-alive timeout for the current connection is reduced
+  to the one specified in the client's Keep-Alive header.
+- For HTTP/1.1 requests, Privoxy implies keep-alive support by not
+  setting any Connection header instead of using 'Connection: keep-alive'.
+- If the socket isn't reusable, Privoxy doesn't temporarily waste
+  a socket slot to remember the connection.
+- If keep-alive support is disabled but compiled in, the client's
+  Keep-Alive header is removed.
+- Fixed a bug on mingw32 where downloading large files failed if
+  keep-alive support was enabled.
+- Fixed a bug that (at least theoretically) could cause log
+  timestamps to be occasionally off by about a second.
+- No Proxy-Connection header if added if there already is one.
+- The configure script respects the $PATH variable when searching
+  for groups and id.
+
+*** Version 3.0.13 beta  ***
+
+- Added IPv6 support. Thanks to Petr Pisar who not only provided
+  the initial patch but also helped a lot with the integration.
+- Added client-side keep-alive support.
+- The connection sharing code is only used if the connection-sharing
+  option is enabled.
+- The max-client-connections option has been added to restrict
+  the number of client connections below a value enforced by
+  the operating system.
+- Fixed a regression reintroduced in 3.0.12 that could cause
+  crashes on mingw32 if header date randomization was enabled.
+- Compressed content with extra fields couldn't be decompressed
+  and would get passed to the client unfiltered. This problem
+  has only be detected through statical analysis with clang as
+  nobody seems to be using extra fields anyway.
+- If the server resets the Connection after sending only the headers
+  Privoxy forwards what it got to the client. Previously Privoxy
+  would deliver an error message instead.
+- Error messages in case of connection timeouts use the right
+  HTTP status code.
+- If spawning a child to handle a request fails, the client
+  gets an error message and Privoxy continues to listen for
+  new requests right away.
+- The error messages in case of server-connection timeouts or
+  prematurely closed server connections are now template-based.
+- If zlib support isn't compiled in, Privoxy no longer tries to
+  filter compressed content unless explicitly asked to do so.
+- In case of connections that are denied based on ACL directives,
+  the memory used for the client IP is no longer leaked.
+- Fixed another small memory leak if the client request times out
+  while waiting for client headers other than the request line.
+- The client socket is kept open until the server socket has
+  been marked as unused. This should increase the chances that
+  the still-open connection will be reused for the client's next
+  request to the same destination. Note that this only matters
+  if connection-sharing is enabled.
+- A TODO list has been added to the source tarballs to give potential
+  volunteers a better idea of what the current goals are.
+
+-----------------------------------------------------------------
+About Privoxy:
+-----------------------------------------------------------------
+
+Privoxy is a non-caching web proxy with advanced filtering capabilities for
+enhancing privacy, modifying web page data and HTTP headers, controlling
+access, and removing ads and other obnoxious Internet junk. Privoxy has a
+flexible configuration and can be customized to suit individual needs and
+tastes. It has application for both stand-alone systems and multi-user
+networks.
+
+Privoxy is Free Software and licensed under the GPL2.
+
+Privoxy is an associated project of Software in the Public Interest (SPI).
+Donations are welcome: http://www.privoxy.org/faq/general.html#DONATE
+
+At present, Privoxy is known to run on Windows(95, 98, ME, 2000,
+XP, Vista), Linux (Ubuntu, RedHat, SuSE, Debian, Fedora, Gentoo and
+others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD, Solaris, and
+various other flavors of Unix.
+
+In addition to the core features of ad blocking and cookie management,
+Privoxy provides many supplemental features, that give the end-user
+more control, more privacy and more freedom:
+
+
+    *  Supports "Connection: keep-alive". Outgoing connections can be kept
+       alive independently from the client. Currently not available on all
+       platforms.
+
+    *  Supports IPv6, provided the operating system does so too,
+       and the configure script detects it.
+
+    *  Supports tagging which allows to change the behaviour based on client
+       and server headers.
+
+    *  Can be run as an "intercepting" proxy, which obviates the need to
+       configure browsers individually.
+
+    *  Sophisticated actions and filters for manipulating both server and
+       client headers.
+
+    *  Can be chained with other proxies.
+
+    *  Integrated browser based configuration and control utility at
+       http://config.privoxy.org/ (shortcut: http://p.p/). Browser-based
+       tracing of rule and filter effects. Remote toggling.
+
+    *  Web page filtering (text replacements, removes banners based on size,
+       invisible <quote>web-bugs</quote> and HTML annoyances, etc.)
+
+    *  Modularized configuration that allows for standard settings and user
+       settings to reside in separate files, so that installing updated actions
+       files won't overwrite individual user settings.
+
+    *  Support for Perl Compatible Regular Expressions in the configuration
+       files, and a more sophisticated and flexible configuration syntax.
+
+    *  GIF de-animation.
+
+    *  Bypass many click-tracking scripts (avoids script redirection).
+
+    *  User-customizable HTML templates for most proxy-generated pages (e.g.
+       "blocked" page).
+
+    *  Auto-detection and re-reading of config file changes.
+    
+    *  Most features are controllable on a per-site or per-location basis.
+    
+
+Download location: 
+   http://sourceforge.net/project/showfiles.php?group_id=11118
+ 
+Home Page: 
+   http://www.privoxy.org/
+
+
+  - Privoxy Developers <ijbswa-developers@lists.sourceforge.net>

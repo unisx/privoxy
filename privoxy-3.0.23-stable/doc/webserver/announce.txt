@@ -1,0 +1,132 @@
+               Announcing Privoxy 3.0.23 stable
+--------------------------------------------------------------------
+
+Privoxy 3.0.23 stable is a bug-fix release, some of the fixed bugs
+are security issues (CVE requests pending):
+
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+*** Version 3.0.23 stable ***
+
+- Bug fixes:
+  - Fixed a DoS issue in case of client requests with incorrect
+    chunk-encoded body. When compiled with assertions enabled
+    (the default) they could previously cause Privoxy to abort().
+    Reported by Matthew Daley.
+  - Fixed multiple segmentation faults and memory leaks in the
+    pcrs code. This fix also increases the chances that an invalid
+    pcrs command is rejected as such. Previously some invalid commands
+    would be loaded without error. Note that Privoxy's pcrs sources
+    (action and filter files) are considered trustworthy input and
+    should not be writable by untrusted third-parties.
+  - Fixed an 'invalid read' bug which could at least theoretically
+    cause Privoxy to crash. So far, no crashes have been observed.
+  - Compiles with --disable-force again. Reported by Kay Raven.
+  - Client requests with body that can't be delivered no longer
+    cause pipelined requests behind them to be rejected as invalid.
+    Reported by Basil Hussain.
+
+- General improvements:
+  - If a pcrs command is rejected as invalid, Privoxy now logs
+    the cause of the problem as text. Previously the pcrs error
+    code was logged.
+  - The tests are less likely to cause false positives.
+
+- Action file improvements:
+  - '.sify.com/' is no longer blocked. Apparently it is not actually
+    a pure tracking site (anymore?). Reported by Andrew on ijbswa-users@.
+  - Unblock banners on .amnesty.de/ which aren't ads.
+
+- Documentation improvements:
+  - The 'Would you like to donate?' section now also contains
+    a "Paypal" address.
+  - The list of supported operating systems has been updated.
+  - The existence of the SF support and feature trackers has been
+    deemphasized because they have been broken for months.
+    Most of the time the mailing lists still work.
+  - The claim that default.action updates are sometimes released
+    on their own has been removed. It hasn't happened in years.
+  - Explicitly mention that Tor's port may deviate from the default
+    when using a bundle. Requested by Andrew on ijbswa-users@.
+
+-----------------------------------------------------------------
+About Privoxy:
+-----------------------------------------------------------------
+
+Privoxy is a non-caching web proxy with advanced filtering capabilities for
+enhancing privacy, modifying web page data and HTTP headers, controlling
+access, and removing ads and other obnoxious Internet junk. Privoxy has a
+flexible configuration and can be customized to suit individual needs and
+tastes. It has application for both stand-alone systems and multi-user
+networks.
+
+Privoxy is Free Software and licensed under the GNU GPLv2.
+
+Our TODO list is rather long. Helping hands and donations are welcome:
+
+  * http://www.privoxy.org/faq/general.html#PARTICIPATE
+
+  * http://www.privoxy.org/faq/general.html#DONATE
+
+At present, Privoxy is known to run on Windows 95 and later versions
+(98, ME, 2000, XP, Vista, Windows 7 etc.), GNU/Linux (RedHat, SuSE,
+Debian, Fedora, Gentoo, Slackware and others), Mac OS X (10.4 and
+upwards on PPC and Intel processors), OS/2, Haiku, DragonFly,
+FreeBSD, NetBSD, OpenBSD, Solaris, and various other flavors of Unix.
+
+In addition to the core features of ad blocking and cookie management,
+Privoxy provides many supplemental features, that give the end-user
+more control, more privacy and more freedom:
+
+  *  Supports "Connection: keep-alive". Outgoing connections can be kept
+     alive independently from the client. Currently not available on all
+     platforms.
+
+  *  Supports IPv6, provided the operating system does so too,
+     and the configure script detects it.
+
+  *  Supports tagging which allows to change the behaviour based on client
+     and server headers.
+
+  *  Can be run as an "intercepting" proxy, which obviates the need to
+     configure browsers individually.
+
+  *  Sophisticated actions and filters for manipulating both server and
+     client headers.
+
+  *  Can be chained with other proxies.
+
+  *  Integrated browser based configuration and control utility at
+     http://config.privoxy.org/ (shortcut: http://p.p/). Browser-based
+     tracing of rule and filter effects. Remote toggling.
+
+  *  Web page filtering (text replacements, removes banners based on size,
+     invisible <quote>web-bugs</quote> and HTML annoyances, etc.)
+
+  *  Modularized configuration that allows for standard settings and user
+     settings to reside in separate files, so that installing updated actions
+     files won't overwrite individual user settings.
+
+  *  Support for Perl Compatible Regular Expressions in the configuration
+     files, and a more sophisticated and flexible configuration syntax.
+
+  *  GIF de-animation.
+
+  *  Bypass many click-tracking scripts (avoids script redirection).
+
+  *  User-customizable HTML templates for most proxy-generated pages (e.g.
+     "blocked" page).
+
+  *  Auto-detection and re-reading of config file changes.
+    
+  *  Most features are controllable on a per-site or per-location basis.
+
+
+Download location: 
+   http://sourceforge.net/project/showfiles.php?group_id=11118
+ 
+Home Page: 
+   http://www.privoxy.org/
+
+  - Privoxy Developers <ijbswa-developers@lists.sourceforge.net>

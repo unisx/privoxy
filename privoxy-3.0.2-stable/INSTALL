@@ -1,0 +1,150 @@
+/*********************************************************************
+ *
+ * File        :  $Source: /cvsroot/ijbswa/current/INSTALL,v $
+ *
+ * Purpose     :  INSTALL file to help with installing from source.
+ *
+ * Copyright   :  Written by and Copyright (C) 2001,2002 the SourceForge
+ *                Privoxy team. http://www.privoxy.org/
+ *
+ *                Based on the Internet Junkbuster originally written
+ *                by and Copyright (C) 1997 Anonymous Coders and 
+ *                Junkbusters Corporation.  http://www.junkbusters.com
+ *
+ *                This program is free software; you can redistribute it 
+ *                and/or modify it under the terms of the GNU General
+ *                Public License as published by the Free Software
+ *                Foundation; either version 2 of the License, or (at
+ *                your option) any later version.
+ *
+ *                This program is distributed in the hope that it will
+ *                be useful, but WITHOUT ANY WARRANTY; without even the
+ *                implied warranty of MERCHANTABILITY or FITNESS FOR A
+ *                PARTICULAR PURPOSE.  See the GNU General Public
+ *                License for more details.
+ *
+ *                The GNU General Public License should be included with
+ *                this file.  If not, you can view it at
+ *                http://www.gnu.org/copyleft/gpl.html
+ *                or write to the Free Software Foundation, Inc., 59
+ *                Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ *********************************************************************/
+   
+
+-------------------------------------------------------------------------------
+
+To build Privoxy from source, autoconf, GNU make (gmake), and, of course, a C
+compiler like gcc are required.
+
+When building from a source tarball (either release version or nightly CVS
+tarball), first unpack the source:
+
+ tar xzvf privoxy-0.0.0-beta-src* [.tgz or .tar.gz]                            
+ cd privoxy-0.0.0-beta                                                         
+
+For retrieving the current CVS sources, you'll need CVS installed. Note that
+sources from CVS are development quality, and may not be stable, or well
+tested. To download CVS source:
+
+  cvs -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa login          
+  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co current 
+  cd current                                                                         
+
+This will create a directory named current/, which will contain the source
+tree.
+
+You can also check out any Privoxy "branch", just exchange the current name
+with the wanted branch name (Example: v_3_0_branch for the 3.0 cvs tree).
+
+It is also strongly recommended to not run Privoxy as root, and instead it is
+suggested to create a "privoxy" user and group for this purpose. See your local
+documentation for the correct command line to do this.
+
+/etc/passwd might then look like:
+
+  privoxy:*:7777:7777:privoxy proxy:/no/home:/no/shell                         
+
+And then /etc/group, like:
+
+  privoxy:*:7777:                                                              
+
+Some binary packages may do this for you.
+
+Then, to build from either unpacked tarball or CVS source:
+
+ autoheader                                                                    
+ autoconf                                                                      
+ ./configure      # (--help to see options)                                    
+ make             # (the make from gnu, gmake for *BSD)                        
+ su                                                                            
+ make -n install  # (to see where all the files will go)                       
+ make -s install  # (to really install, -s to silence output)                  
+
+If you have GNU make, you can have the first four steps automatically done for
+you by just typing:
+
+  make                                                                         
+
+in the freshly downloaded or unpacked source directory.
+
+WARNING: If installing as root, the install will fail unless another user is
+specified. configure accepts --with-user and --with-group options for setting
+user and group ownership of the configuration files (which need to be writable
+by the daemon). The specified user must already exist. Or if there is already a
+privoxy user on the system, and no user was specified during configure, make
+install then will use the privoxy user. When starting Privoxy, it should be run
+as this same user that owns the configuration and log files.
+
+Alternately, you can specify user and group on the make command line, but be
+sure both already exist:
+
+ make -s install  USER=privoxy GROUP=privoxy                                   
+
+If no group is specified, the install will assume a group exists with the same
+name as the specified user.
+
+The default installation path for make install is /usr/local. This may of
+course be customized with the various ./configure path options. If you are
+doing a root install to anywhere else besides /usr/local, be sure to set the
+appropriate paths with the correct configure options (./configure --help).
+
+If you do install to /usr/local, the install will use sysconfdir=$prefix/etc/
+privoxy by default. All other destinations, and the direct usage of
+--sysconfdir flag behave like normal, i.e. will not add the extra privoxy
+directory. This is for a safer install, as there may already exist another
+program that uses a file with the "config" name, and thus makes /usr/local/etc
+cleaner.
+
+If installing to /usr/local, the docs will go by default to $prefix/share/doc.
+But if this directory doesn't exist, it will then try $prefix/doc and install
+there before creating a new $prefix/share/doc just for Privoxy.
+
+Again, if the installs goes to /usr/local, the localstatedir (ie: var/) will
+default to /var instead of $prefix/var so the logs will go to /var/log/privoxy
+/, and the pid file will be created in /var/run/privoxy.pid.
+
+make install will attempt to set the correct values in config (main
+configuration file). You may want to check this to make sure all values are
+correct. If appropriate, an init script will be installed, but it is up to the
+user to determine how and where to start Privoxy. The init script should be
+checked for correct paths and values, if anything other than a default install
+is done.
+
+If install finds previous versions of any configuration files, these will not
+be overwritten, and the new ones will be installed with a "new" extension. You
+will then need to manually update the installed configuration files as needed.
+All template files will be overwritten. If you have customized, local
+templates, you should save these first. If a previous version of Privoxy is
+already running, you will have to restart it manually.
+
+For more detailed instructions on how to build Redhat and SuSE RPMs, Windows
+self-extracting installers, building on platforms with special requirements
+etc, please consult the developer manual.
+
+For binary RPM installation, and other platforms, see the User Manual as well.
+
+The simplest command line to start Privoxy is $path/privoxy --user=privoxy
+$path/etc/privoxy/config. See privoxy --usage, or the man page, for other
+options, and configuration.
+

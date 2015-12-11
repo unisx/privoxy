@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>What's New in this Release</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Privoxy 3.0.14 User Manual"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="NEXT"
+TITLE="Quickstart to Using Privoxy"
+HREF="quickstart.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html;
+charset=ISO-8859-1">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
+><BODY
+CLASS="SECT1"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Privoxy 3.0.14 User Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="WHATSNEW"
+>3. What's New in this Release</A
+></H1
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy 3.0.14 Beta</SPAN
+> is a bugfix-release
+ for the previous beta which introduced IPv6 support,  improved keep-alive
+ support and a bunch of minor improvements. The changes since 3.0.12:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>    Added IPv6 support. Thanks to Petr Pisar who not only provided
+    the initial patch but also helped a lot with the integration.
+   </P
+></LI
+><LI
+><P
+>    Added client-side keep-alive support.
+   </P
+></LI
+><LI
+><P
+>    The connection sharing code is only used if the connection-sharing
+    option is enabled.
+   </P
+></LI
+><LI
+><P
+>    The latency is taken into account when evaluating whether or not to
+    reuse a connection. This should significantly reduce the number of
+    connections problems several users reported.
+   </P
+></LI
+><LI
+><P
+>    The max-client-connections option has been added to restrict
+    the number of client connections below a value enforced by
+    the operating system.
+   </P
+></LI
+><LI
+><P
+>    If the server doesn't specify how long the connection stays alive,
+    Privoxy errs on the safe side of caution and assumes it's only a second.
+   </P
+></LI
+><LI
+><P
+>    Setting keep-alive-timeout to 0 disables keep-alive support. Previously
+    Privoxy would claim to allow persistence but not reuse the connection.
+   </P
+></LI
+><LI
+><P
+>    Pipelined requests are less likely to be mistaken for the request
+    body of the previous request. Note that Privoxy still has no real
+    pipeline support and will either serialize pipelined requests or
+    drop them in which case the client has to resent them.
+   </P
+></LI
+><LI
+><P
+>    Fixed a crash on some Windows versions when header randomization
+    is enabled and the date couldn't be parsed.
+   </P
+></LI
+><LI
+><P
+>    Privoxy's keep-alive timeout for the current connection is reduced
+    to the one specified in the client's Keep-Alive header.
+   </P
+></LI
+><LI
+><P
+>    For HTTP/1.1 requests, Privoxy implies keep-alive support by not
+    setting any Connection header instead of using 'Connection: keep-alive'.
+   </P
+></LI
+><LI
+><P
+>    If the socket isn't reusable, Privoxy doesn't temporarily waste
+    a socket slot to remember the connection.
+   </P
+></LI
+><LI
+><P
+>    If keep-alive support is disabled but compiled in, the client's
+    Keep-Alive header is removed.
+   </P
+></LI
+><LI
+><P
+>    Fixed a bug on mingw32 where downloading large files failed if
+    keep-alive support was enabled.
+   </P
+></LI
+><LI
+><P
+>    Fixed a bug that (at least theoretically) could cause log
+    timestamps to be occasionally off by about a second.
+   </P
+></LI
+><LI
+><P
+>    The configure script respects the $PATH variable when searching
+    for groups and id.
+   </P
+></LI
+><LI
+><P
+>    Compressed content with extra fields couldn't be decompressed
+    and would get passed to the client unfiltered. This problem
+    has only be detected through statical analysis with clang as
+    nobody seems to be using extra fields anyway.
+   </P
+></LI
+><LI
+><P
+>    If the server resets the Connection after sending only the headers
+    Privoxy forwards what it got to the client. Previously Privoxy
+    would deliver an error message instead.
+   </P
+></LI
+><LI
+><P
+>    Error messages in case of connection timeouts use the right
+    HTTP status code.
+   </P
+></LI
+><LI
+><P
+>    If spawning a child to handle a request fails, the client
+    gets an error message and Privoxy continues to listen for
+    new requests right away.
+   </P
+></LI
+><LI
+><P
+>    The error messages in case of server-connection timeouts or
+    prematurely closed server connections are now template-based.
+   </P
+></LI
+><LI
+><P
+>    If zlib support isn't compiled in, Privoxy no longer tries to
+    filter compressed content unless explicitly asked to do so.
+   </P
+></LI
+><LI
+><P
+>    In case of connections that are denied based on ACL directives,
+    the memory used for the client IP is no longer leaked.
+   </P
+></LI
+><LI
+><P
+>    Fixed another small memory leak if the client request times out
+    while waiting for client headers other than the request line.
+   </P
+></LI
+><LI
+><P
+>    The client socket is kept open until the server socket has
+    been marked as unused. This should increase the chances that
+    the still-open connection will be reused for the client's next
+    request to the same destination. Note that this only matters
+    if connection-sharing is enabled.
+   </P
+></LI
+><LI
+><P
+>    A TODO list has been added to the source tarballs to give potential
+    volunteers a better idea of what the current goals are. Donations
+    are still welcome too: http://www.privoxy.org/faq/general.html#DONATE
+   </P
+></LI
+></UL
+></P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="UPGRADERSNOTE"
+>3.1. Note to Upgraders</A
+></H2
+><P
+> A quick list of things to be aware of before upgrading from earlier 
+ versions of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>   The recommended way to upgrade <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is to backup your old 
+   configuration files, install the new ones, verify that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+   is working correctly and finally merge back your changes using
+   <SPAN
+CLASS="APPLICATION"
+>diff</SPAN
+> and maybe <SPAN
+CLASS="APPLICATION"
+>patch</SPAN
+>.
+  </P
+><P
+>   There are a number of new features in each <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> release and
+   most of them have to be explicitly enabled in the configuration
+   files. Old configuration files obviously don't do that and due
+   to syntax changes using old configuration files with a new
+   <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> isn't always possible anyway.
+  </P
+></LI
+><LI
+><P
+>  
+    Note that some installers remove earlier versions completely,
+    including configuration files, therefore you should really save
+    any important configuration files!
+  </P
+></LI
+><LI
+><P
+>  
+   On the other hand, other installers don't overwrite existing configuration 
+   files, thinking you will want to do that yourself.
+  </P
+></LI
+><LI
+><P
+>  
+   <TT
+CLASS="FILENAME"
+>standard.action</TT
+> has been merged into
+   the <TT
+CLASS="FILENAME"
+>default.action</TT
+> file.
+  </P
+></LI
+><LI
+><P
+>   In the default configuration only fatal errors are logged now.
+   You can change that in the <A
+HREF="config.html#DEBUG"
+>debug section</A
+>
+   of the configuration file. You may also want to enable more verbose
+   logging until you verified that the new <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> version is working
+   as expected.
+  </P
+></LI
+><LI
+><P
+>     Three other config file settings are now off by default: 
+     <A
+HREF="config.html#ENABLE-REMOTE-TOGGLE"
+>enable-remote-toggle</A
+>,
+     <A
+HREF="config.html#ENABLE-REMOTE-HTTP-TOGGLE"
+>enable-remote-http-toggle</A
+>,
+     and  <A
+HREF="config.html#ENABLE-EDIT-ACTIONS"
+>enable-edit-actions</A
+>. 
+     If you use or want these, you will need to explicitly enable them, and
+     be aware of the security issues involved. 
+    </P
+></LI
+></UL
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installation</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Quickstart to Using Privoxy</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,651 @@
+<HTML
+><HEAD
+><TITLE
+>What's New in this Release</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
+"><LINK
+REL="HOME"
+TITLE="Privoxy 3.0.6 User Manual"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="NEXT"
+TITLE="Quickstart to Using Privoxy"
+HREF="quickstart.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
+><BODY
+CLASS="SECT1"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Privoxy 3.0.6 User Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="WHATSNEW"
+></A
+>3. What's New in this Release</H1
+><P
+> There are many improvements and new features since <SPAN
+CLASS="APPLICATION"
+>Privoxy 3.0.3</SPAN
+>, the last stable release:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>    Multiple <A
+HREF="filter-file.html"
+>filter files</A
+> can now be specified in <TT
+CLASS="FILENAME"
+>config</TT
+>. This allows for 
+    locally defined filters that can be maintained separately from the filters as
+    supplied by the developers, i.e. <TT
+CLASS="FILENAME"
+>default.filter</TT
+>.
+   </P
+></LI
+><LI
+><P
+>  
+   There are a number of new <A
+HREF="actions-file.html"
+>actions</A
+>:
+  </P
+><P
+>  <P
+></P
+><UL
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CONTENT-TYPE-OVERWRITE"
+>content-type-overwrite</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-CLIENT-HEADER"
+>crunch-client-header</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-IF-NONE-MATCH"
+>crunch-if-none-match</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-SERVER-HEADER"
+>crunch-server-header</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-CLIENT-HEADERS"
+>filter-client-headers</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FILTER-SERVER-HEADERS"
+>filter-server-headers</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FORCE-TEXT-MODE"
+>force-text-mode</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HANDLE-AS-EMPTY-DOCUMENT"
+>handle-as-empty-document</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-ACCEPT-LANGUAGE"
+>hide-accept-language</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-CONTENT-DISPOSITION"
+>hide-content-disposition</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-IF-MODIFIED-SINCE"
+>hide-if-modified-since</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#INSPECT-JPEGS"
+>inspect-jpegs</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#OVERWRITE-LAST-MODIFIED"
+>overwrite-last-modified</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#REDIRECT"
+>redirect</A
+></TT
+>
+      </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#TREAT-FORBIDDEN-CONNECTS-LIKE-BLOCKS"
+>treat-forbidden-connects-like-blocks</A
+></TT
+>
+      </P
+></LI
+></UL
+>
+  </P
+><P
+>     In addition, <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FAST-REDIRECTS"
+>fast-redirects</A
+></TT
+>
+     has been significantly improved with enhanced syntax.
+  </P
+><P
+>     And <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-REFERRER"
+>hide-referrer</A
+></TT
+>
+     has a new option, <TT
+CLASS="LITERAL"
+>conditional block</TT
+>.
+   </P
+></LI
+><LI
+><P
+>    <SPAN
+CLASS="APPLICATION"
+>MS-Windows</SPAN
+> versions can now be 
+    <A
+HREF="installation.html#INSTALLATION-PACK-WIN"
+>installed and 
+    started as a <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>Windows service</I
+></SPAN
+></A
+>.
+   </P
+></LI
+><LI
+><P
+>    <TT
+CLASS="FILENAME"
+>config</TT
+> has two new options: 
+    <A
+HREF="config.html#ENABLE-REMOTE-HTTP-TOGGLE"
+>enable-remote-http-toggle</A
+>, 
+    and <A
+HREF="config.html#FORWARDED-CONNECT-RETRIES"
+>forwarded-connect-retries</A
+>.
+   </P
+><P
+>    And there is improved handling of the <A
+HREF="config.html#USER-MANUAL"
+>user-manual</A
+>
+    option, for placing documentation and help files on the local system.
+   </P
+></LI
+><LI
+><P
+>    There are six new <A
+HREF="actions-file.html#FILTER"
+>filters</A
+>.
+   </P
+></LI
+><LI
+><P
+>    Actions files problems and suggestions are now being directed to: 
+    <A
+HREF="http://sourceforge.net/tracker/?group_id=11118&atid=460288"
+TARGET="_top"
+>http://sourceforge.net/tracker/?group_id=11118&#38;atid=460288</A
+>.
+    Please use this to report such configuration related problems as missed
+    ads, sites that don't function properly due to one action or another, 
+    innocent images being blocked, etc.
+   </P
+></LI
+><LI
+><P
+>    In addition, there are numerous bug fixes and significant enhancements,
+    including error pages should no longer be cached if the problem is fixed,
+    much better DNS error handling, various logging improvements, and 
+    configuration updates for better ad blocking and junk elimination.
+   </P
+></LI
+></UL
+></P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="UPGRADERSNOTE"
+></A
+>3.1. Note to Upgraders</H2
+><P
+> A quick list of things to be aware of before upgrading from earlier 
+ versions of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>  
+    Some installers may remove earlier versions completely, including 
+    configuration files. Save any important configuration files!
+  </P
+></LI
+><LI
+><P
+>  
+   On the other hand, other installers may not overwrite any existing configuration 
+   files, thinking you will want to do that. You may want to manually check 
+   your saved files against the newer versions to see if the improvements have
+   merit, or whether there are new options that you may want to consider.
+   There are a number of new features, but most won't be available unless 
+   these features are incorporated into your configuration somehow.
+  </P
+></LI
+><LI
+><P
+>     See the full documentation on 
+     <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#FAST-REDIRECTS"
+>fast-redirects</A
+></TT
+>
+     which has changed syntax, and will require adjustments to local configs, 
+     such as <TT
+CLASS="FILENAME"
+>user.action</TT
+>. You must reference the new 
+     syntax: 
+   </P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  { +fast-redirects{check-decoded-url} }
+   .example.com
+   mybank.com
+   .google.</PRE
+></TD
+></TR
+></TABLE
+></P
+></LI
+><LI
+><P
+>     The <TT
+CLASS="FILENAME"
+>jarfile</TT
+>, 
+     <A
+HREF="http://en.wikipedia.org/wiki/Browser_cookie"
+TARGET="_top"
+>cookie</A
+> logger, is off by default now.
+    </P
+></LI
+><LI
+><P
+>  
+   What constitutes a <SPAN
+CLASS="QUOTE"
+>"default"</SPAN
+> configuration has changed, 
+   and you may want to review which actions are <SPAN
+CLASS="QUOTE"
+>"on"</SPAN
+> by 
+   default. This is primarily a matter of emphasis, but some features 
+   you may have been used to, may now be <SPAN
+CLASS="QUOTE"
+>"off"</SPAN
+> by default.
+   There are also a number of new actions and filters you may want to
+   consider, most of which are not fully incorporated into the default
+   settings as yet (see above).
+  </P
+></LI
+><LI
+><P
+>    The default actions setting is now <TT
+CLASS="LITERAL"
+>Cautious</TT
+>. Previous
+    releases had a default setting of <TT
+CLASS="LITERAL"
+>Medium</TT
+>. Experienced
+    users may want to adjust this, as it is fairly conservative by <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    standards and past practices. See <A
+HREF="http://config.privoxy.org/edit-actions-list?f=default"
+TARGET="_top"
+>    http://config.privoxy.org/edit-actions-list?f=default</A
+>. New users
+    should try the default settings for a while before turning up the volume.
+   </P
+></LI
+><LI
+><P
+>    The default setting has filtering turned <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>off</I
+></SPAN
+>, which
+    subsequently means that compression is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>on</I
+></SPAN
+>. Remember
+    that filtering does not work on compressed pages, so if you use, or want to
+    use, filtering, you will need to force compression off. Example:
+   </P
+><P
+> <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>  { +<A
+HREF="actions-file.html#FILTER"
+>filter</A
+>{google}  +<A
+HREF="actions-file.html#PREVENT-COMPRESSION"
+>prevent-compression</A
+> }
+   .google.</PRE
+></TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    Or if you use a number of filters, or filter many sites, you may just want
+    to turn off compression for all sites in
+    <TT
+CLASS="FILENAME"
+>default.action</TT
+> (or
+    <TT
+CLASS="FILENAME"
+>user.action</TT
+>). 
+   </P
+></LI
+><LI
+><P
+>   Also, <A
+HREF="actions-file.html#SESSION-COOKIES-ONLY"
+>session-cookies-only</A
+> is 
+   off by default now. If you've liked this feature in the past, you may want 
+   to turn it back on in <TT
+CLASS="FILENAME"
+>user.action</TT
+> now.
+  </P
+></LI
+><LI
+><P
+>   
+   Some installers may not automatically start
+   <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> after installation.
+  </P
+></LI
+></UL
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installation</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Quickstart to Using Privoxy</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

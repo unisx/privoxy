@@ -1,0 +1,42 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/privoxy.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: privoxy.sgml,v 1.7.2.1 2004/01/30 13:13:40 oes Exp $
+
+ Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  privoxy-man-page
+  user-manual
+  faq
+  developer-manual
+  README
+  webserver/index.sgml
+
+-->
+
+<para>
+ <application>Privoxy</application> is a web proxy with advanced filtering
+ capabilities for protecting privacy, modifying web page content, managing
+ cookies, controlling access, and removing ads, banners, pop-ups and other
+ obnoxious Internet junk. <application>Privoxy</application> has a very
+ flexible configuration and can be customized to suit individual needs and
+ tastes. <application>Privoxy</application> has application for both
+ stand-alone systems and multi-user networks.
+</para>
+
+<para>
+ <application>Privoxy</application> is based on <application>Internet
+ Junkbuster</application> (tm).
+</para>

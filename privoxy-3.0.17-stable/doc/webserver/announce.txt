@@ -1,0 +1,260 @@
+              Announcing Privoxy v.3.0.17 stable
+-----------------------------------------------------------------
+
+This is mainly a bug-fix release for the previously released Privoxy 3.0.16.
+
+It contains fixes for two bugs that could cause connections to hang under
+certain circumstances when keep-alive support was enabled, until they timed
+out or where closed by the server.
+
+See http://www.privoxy.org/3.0.17/user-manual/whatsnew.html for details.
+
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+*** Version 3.0.17 Stable ***
+
+- Fixed last-chunk-detection for responses where the content was small
+  enough to be read with the body, causing Privoxy to wait for the
+  end of the content until the server closed the connection or the
+  request timed out. Reported by "Karsten" in #3028326.
+- Responses with status code 204 weren't properly detected as body-less
+  like RFC2616 mandates. Like the previous bug, this caused Privoxy to
+  wait for the end of the content until the server closed the connection
+  or the request timed out. Fixes #3022042 and #3025553, reported by a
+  user with no visible name. Most likely also fixes a bunch of other
+  AJAX-related problem reports that got closed in the past due to
+  insufficient information and lack of feedback.
+- Fixed an ACL bug that made it impossible to build a blacklist.
+  Usually the ACL directives are used in a whitelist, which worked
+  as expected, but blacklisting is still useful for public proxies
+  where one only needs to deny known abusers access.
+- Added LOG_LEVEL_RECEIVED to log the not-yet-parsed data read from the
+  network. This should make debugging various parsing issues a lot easier.
+- The IPv6 code is enabled by default on Windows versions that support it.
+  Patch submitted by oCameLo in #2942729.
+- In mingw32 versions, the user.filter file is reachable through the
+  GUI, just like default.filter is. Feature request 3040263.
+- Added the configure option --enable-large-file-support to set a few
+  defines that are required by platforms like GNU/Linux to support files
+  larger then 2GB. Mainly interesting for users without proper logfile
+  management.
+- Logging with "debug 16" no longer stops at the first nul byte which is
+  pretty useless. Non-printable characters are replaced with their hex value
+  so the result can't span multiple lines making parsing them harder then
+  necessary.
+- Privoxy logs when reading an action, filter or trust file.
+- Fixed incorrect regression test markup which caused a test in
+  3.0.16 to fail while Privoxy itself was working correctly.
+  While Privoxy accepts hide-referer, too, the action name is actually
+  hide-referrer which is also the name used one the final results page,
+  where the test expected the alias.
+
+- CGI interface improvements:
+  - In finish_http_response(), continue to add the 'Connection: close'
+    header if the client connection will not be kept alive.
+    Anonymously pointed out in #2987454.
+  - Apostrophes in block messages no longer cause parse errors
+    when the blocked page is viewed with JavaScript enabled.
+    Reported by dg1727 in #3062296.
+  - Fix a bunch of anchors that used underscores instead of dashes.
+  - Allow to keep the client connection alive after crunching the previous request.
+    Already opened server connections can be kept alive, too.
+  - In cgi_show_url_info(), don't forget to prefix URLs that only contain
+    http:// or https:// in the path. Fixes #2975765 reported by Adam Piggott.
+  - Show the 404 CGI page if cgi_send_user_manual() is called while
+    local user manual delivery is disabled.
+
+- Action file improvements:
+  - Enable user.filter by default. Suggested by David White in #3001830.
+  - Block .sitestat.com/. Reported by johnd16 in #3002725.
+  - Block .atemda.com/. Reported by johnd16 in #3002723.
+  - Block js.adlink.net/. Reported by johnd16 in #3002720.
+  - Block .analytics.yahoo.com/. Reported by johnd16 in #3002713.
+  - Block sb.scorecardresearch.com, too. Reported by dg1727 in #2992652.
+  - Fix problems noticed on Yahoo mail and news pages.
+  - Remove the too broad yahoo section, only keeping the
+    fast-redirects exception as discussed on ijbswa-devel@.
+  - Don't block adesklets.sourceforge.net. Reported in #2974204.
+  - Block chartbeat ping tracking. Reported in #2975895.
+  - Tag CSS and image requests with cautious and medium settings, too.
+  - Don't handle view.atdmt.com as image. It's used for click-throughs
+    so users should be able to "go there anyway".
+    Reported by Adam Piggott in #2975927.
+  - Also let the refresh-tags filter remove invalid refresh tags where
+    the 'url=' part is missing. Anonymously reported in #2986382.
+    While at it, update the description to mention the fact that only
+    refresh tags with refresh times above 9 seconds are covered.
+  - javascript needs to be blocked with +handle-as-empty-document to
+    work around Firefox bug 492459.  So move .js blockers from
+    +block{Might be a web-bug.} -handle-as-empty-document to
+    +block{Might be a web-bug.} +handle-as-empty-document.
+  - ijbswa-Feature Requests-3006719 - Block 160x578 Banners.
+  - Block another omniture tracking domain.
+  - Added a range-requests tagger.
+  - Added two sections to get Flickr's Ajax interface working with
+    default pre-settings. If you change the configuration to block
+    cookies by default, you'll need additional exceptions.
+    Reported by Mathias Homann in #3101419 and by Patrick on ijbswa-users@.
+
+- Documentation improvements:
+  - Explicitly mention how to match all URLs.
+  - Consistently recommend socks5 in the Tor FAQ entry and mention
+    its advantage compared to socks4a. Reported by David in #2960129.
+  - Slightly improve the explanation of why filtering may appear
+    slower than it is.
+  - Grammar fixes for the ACL section.
+  - Fixed a link to the 'intercepting' entry and add another one.
+  - Rename the 'Other' section to 'Mailing Lists' and reword it
+    to make it clear that nobody is forced to use the trackers
+  - Note that 'anonymously' posting on the trackers may not always
+    be possible.
+  - Suggest to enable debug 32768 when suspecting parsing problems.
+
+- Privoxy-Log-Parser improvements:
+  - Gather statistics for ressources, methods, and HTTP versions
+    used by the client.
+  - Also gather statistics for blocked and redirected requests.
+  - Provide the percentage of keep-alive offers the client accepted.
+  - Add a --url-statistics-threshold option.
+  - Add a --host-statistics-threshold option to also gather
+    statistics about how many request where made per host.
+  - Fix a bug in handle_loglevel_header() where a 'scan: ' got lost.
+  - Add a --shorten-thread-ids option to replace the thread id with
+    a decimal number.
+  - Accept and ignore: Looks like we got the last chunk together
+    with the server headers. We better stop reading.
+  - Accept and ignore: Continue hack in da house.
+  - Accept and higlight: Rejecting connection from 10.0.0.2.
+    Maximum number of connections reached.
+  - Accept and highlight: Loading actions file: /usr/local/etc/privoxy/default.action
+  - Accept and highlight: Loading filter file: /usr/local/etc/privoxy/default.filter
+  - Accept and highlight: Killed all-caps Host header line: HOST: bestproxydb.com
+  - Accept and highlight: Reducing expected bytes to 0. Marking
+    the server socket tainted after throwing 4 bytes away.
+  - Accept: Merged multiple header lines to: 'X-FORWARDED-PROTO: http X-HOST: 127.0.0.1'
+
+- Code cleanups:
+  - Remove the next member from the client_state struct. Only the main
+    thread needs access to all client states so give it its own struct.
+  - Garbage-collect request_contains_null_bytes().
+  - Ditch redundant code in unload_configfile().
+  - Ditch LogGetURLUnderCursor() which doesn't seem to be used anywhere.
+  - In write_socket(), remove the write-only variable write_len in
+    an ifdef __OS2__ block. Spotted by cppcheck.
+  - In connect_to(), don't declare the variable 'flags' on OS/2 where
+    it isn't used. Spotted by cppcheck.
+  - Limit the scope of various variables. Spotted by cppcheck.
+  - In add_to_iob(), turn an interestingly looking for loop into a
+    boring while loop.
+  - Code cleanup in preparation for external filters.
+  - In listen_loop(), mention the socket on which we accepted the
+    connection, not just the source IP address.
+  - In write_socket(), also log the socket we're writing to.
+  - In log_error(), assert that escaped characters get logged
+    completely or not at all.
+  - In log_error(), assert that ival and sval have reasonable values.
+    There's no reason not to abort() if they don't.
+  - Remove an incorrect cgi_error_unknown() call in a
+    cannnot-happen-situation in send_crunch_response().
+  - Clean up white-space in http_response definition and
+    move the crunch_reason to the beginning.
+  - Turn http_response.reason into an enum and rename it
+    to http_response.crunch_reason.
+  - Silence a 'gcc (Debian 4.3.2-1.1) 4.3.2' warning on i686 GNU/Linux.
+  - Fix white-space in a log message in remove_chunked_transfer_coding().
+    While at it, add a note that the message doesn't seem to
+    be entirely correct and should be improved later on.
+
+- GNUmakefile improvements:
+  - Use $(SSH) instead of ssh, so one only needs to specify a username once.
+  - Removed references to the action feedback thingy that hasn't been
+    working for years.
+  - Consistently use shell.sourceforge.net instead of shell.sf.net so
+    one doesn't need to check server fingerprints twice.
+  - Removed GNUisms in the webserver and webactions targets so they
+    work with standard tar.
+
+-----------------------------------------------------------------
+About Privoxy:
+-----------------------------------------------------------------
+
+Privoxy is a non-caching web proxy with advanced filtering capabilities for
+enhancing privacy, modifying web page data and HTTP headers, controlling
+access, and removing ads and other obnoxious Internet junk. Privoxy has a
+flexible configuration and can be customized to suit individual needs and
+tastes. It has application for both stand-alone systems and multi-user
+networks.
+
+Privoxy is Free Software and licensed under the GNU GPLv2.
+
+Privoxy is an associated project of Software in the Public Interest (SPI).
+
+Helping hands and donations are welcome:
+
+  * http://www.privoxy.org/faq/general.html#PARTICIPATE
+
+  * http://www.privoxy.org/faq/general.html#DONATE
+
+At present, Privoxy is known to run on Windows(95, 98, ME, 2000,
+XP, Vista), Linux (Ubuntu, RedHat, SuSE, Debian, Fedora, Gentoo and
+others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD, Solaris, and
+various other flavors of Unix.
+
+In addition to the core features of ad blocking and cookie management,
+Privoxy provides many supplemental features, that give the end-user
+more control, more privacy and more freedom:
+
+
+    *  Supports "Connection: keep-alive". Outgoing connections can be kept
+       alive independently from the client. Currently not available on all
+       platforms.
+
+    *  Supports IPv6, provided the operating system does so too,
+       and the configure script detects it.
+
+    *  Supports tagging which allows to change the behaviour based on client
+       and server headers.
+
+    *  Can be run as an "intercepting" proxy, which obviates the need to
+       configure browsers individually.
+
+    *  Sophisticated actions and filters for manipulating both server and
+       client headers.
+
+    *  Can be chained with other proxies.
+
+    *  Integrated browser based configuration and control utility at
+       http://config.privoxy.org/ (shortcut: http://p.p/). Browser-based
+       tracing of rule and filter effects. Remote toggling.
+
+    *  Web page filtering (text replacements, removes banners based on size,
+       invisible <quote>web-bugs</quote> and HTML annoyances, etc.)
+
+    *  Modularized configuration that allows for standard settings and user
+       settings to reside in separate files, so that installing updated actions
+       files won't overwrite individual user settings.
+
+    *  Support for Perl Compatible Regular Expressions in the configuration
+       files, and a more sophisticated and flexible configuration syntax.
+
+    *  GIF de-animation.
+
+    *  Bypass many click-tracking scripts (avoids script redirection).
+
+    *  User-customizable HTML templates for most proxy-generated pages (e.g.
+       "blocked" page).
+
+    *  Auto-detection and re-reading of config file changes.
+    
+    *  Most features are controllable on a per-site or per-location basis.
+    
+
+Download location: 
+   http://sourceforge.net/project/showfiles.php?group_id=11118
+ 
+Home Page: 
+   http://www.privoxy.org/
+
+
+  - Privoxy Developers <ijbswa-developers@lists.sourceforge.net>

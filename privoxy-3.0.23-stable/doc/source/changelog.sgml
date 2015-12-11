@@ -1,0 +1,153 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/changelog.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+
+ $Id: changelog.sgml,v 2.11 2015/01/24 16:43:58 fabiankeil Exp $
+
+ Copyright (C) 2013 Privoxy Developers http://www.privoxy.org/
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished
+ docs all display as intended.
+
+ This file is included into:
+
+  user-manual
+-->
+
+<para>
+  <application>Privoxy 3.0.23</application> stable is a bug-fix release,
+  some of the fixed bugs are security issues (CVE requests pending):
+</para>
+
+<!--
+ The SGML ChangeLog can be generated with: utils/changelog2doc.pl ChangeLog
+-->
+<para>
+
+<para>
+ <itemizedlist>
+  <listitem>
+   <para>
+    Bug fixes:
+    <itemizedlist>
+    <listitem>
+     <para>
+      Fixed a DoS issue in case of client requests with incorrect
+      chunk-encoded body. When compiled with assertions enabled
+      (the default) they could previously cause Privoxy to abort().
+      Reported by Matthew Daley.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fixed multiple segmentation faults and memory leaks in the
+      pcrs code. This fix also increases the chances that an invalid
+      pcrs command is rejected as such. Previously some invalid commands
+      would be loaded without error. Note that Privoxy's pcrs sources
+      (action and filter files) are considered trustworthy input and
+      should not be writable by untrusted third-parties.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Fixed an 'invalid read' bug which could at least theoretically
+      cause Privoxy to crash. So far, no crashes have been observed.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Compiles with --disable-force again. Reported by Kay Raven.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Client requests with body that can't be delivered no longer
+      cause pipelined requests behind them to be rejected as invalid.
+      Reported by Basil Hussain.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    General improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      If a pcrs command is rejected as invalid, Privoxy now logs
+      the cause of the problem as text. Previously the pcrs error
+      code was logged.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The tests are less likely to cause false positives.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Action file improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      '.sify.com/' is no longer blocked. Apparently it is not actually
+      a pure tracking site (anymore?). Reported by Andrew on ijbswa-users@.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Unblock banners on .amnesty.de/ which aren't ads.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Documentation improvements:
+    <itemizedlist>
+    <listitem>
+     <para>
+      The 'Would you like to donate?' section now also contains
+      a "Paypal" address.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The list of supported operating systems has been updated.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The existence of the SF support and feature trackers has been
+      deemphasized because they have been broken for months.
+      Most of the time the mailing lists still work.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      The claim that default.action updates are sometimes released
+      on their own has been removed. It hasn't happened in years.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      Explicitly mention that Tor's port may deviate from the default
+      when using a bundle. Requested by Andrew on ijbswa-users@.
+     </para>
+     </listitem>
+    </itemizedlist>
+   </para>
+  </listitem>
+ </itemizedlist>
+</para>

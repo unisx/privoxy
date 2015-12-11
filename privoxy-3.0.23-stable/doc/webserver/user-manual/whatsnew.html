@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+  <title>What's New in this Release</title>
+  <meta name="GENERATOR" content=
+  "Modular DocBook HTML Stylesheet Version 1.79">
+  <link rel="HOME" title="Privoxy 3.0.23 User Manual" href="index.html">
+  <link rel="PREVIOUS" title="Installation" href="installation.html">
+  <link rel="NEXT" title="Quickstart to Using Privoxy" href=
+  "quickstart.html">
+  <link rel="STYLESHEET" type="text/css" href="../p_doc.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <link rel="STYLESHEET" type="text/css" href="p_doc.css">
+</head>
+
+<body class="SECT1" bgcolor="#EEEEEE" text="#000000" link="#0000FF" vlink=
+"#840084" alink="#0000FF">
+  <div class="NAVHEADER">
+    <table summary="Header navigation table" width="100%" border="0"
+    cellpadding="0" cellspacing="0">
+      <tr>
+        <th colspan="3" align="center">Privoxy 3.0.23 User Manual</th>
+      </tr>
+
+      <tr>
+        <td width="10%" align="left" valign="bottom"><a href=
+        "installation.html" accesskey="P">Prev</a></td>
+
+        <td width="80%" align="center" valign="bottom"></td>
+
+        <td width="10%" align="right" valign="bottom"><a href=
+        "quickstart.html" accesskey="N">Next</a></td>
+      </tr>
+    </table>
+    <hr align="left" width="100%">
+  </div>
+
+  <div class="SECT1">
+    <h1 class="SECT1"><a name="WHATSNEW" id="WHATSNEW">3. What's New in this
+    Release</a></h1>
+
+    <p><span class="APPLICATION">Privoxy 3.0.23</span> stable is a bug-fix
+    release, some of the fixed bugs are security issues (CVE requests
+    pending):</p>
+
+    <ul>
+      <li>
+        <p>Bug fixes:</p>
+
+        <ul>
+          <li>
+            <p>Fixed a DoS issue in case of client requests with incorrect
+            chunk-encoded body. When compiled with assertions enabled (the
+            default) they could previously cause Privoxy to abort(). Reported
+            by Matthew Daley.</p>
+          </li>
+
+          <li>
+            <p>Fixed multiple segmentation faults and memory leaks in the
+            pcrs code. This fix also increases the chances that an invalid
+            pcrs command is rejected as such. Previously some invalid
+            commands would be loaded without error. Note that Privoxy's pcrs
+            sources (action and filter files) are considered trustworthy
+            input and should not be writable by untrusted third-parties.</p>
+          </li>
+
+          <li>
+            <p>Fixed an 'invalid read' bug which could at least theoretically
+            cause Privoxy to crash. So far, no crashes have been
+            observed.</p>
+          </li>
+
+          <li>
+            <p>Compiles with --disable-force again. Reported by Kay
+            Raven.</p>
+          </li>
+
+          <li>
+            <p>Client requests with body that can't be delivered no longer
+            cause pipelined requests behind them to be rejected as invalid.
+            Reported by Basil Hussain.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>General improvements:</p>
+
+        <ul>
+          <li>
+            <p>If a pcrs command is rejected as invalid, Privoxy now logs the
+            cause of the problem as text. Previously the pcrs error code was
+            logged.</p>
+          </li>
+
+          <li>
+            <p>The tests are less likely to cause false positives.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Action file improvements:</p>
+
+        <ul>
+          <li>
+            <p>'.sify.com/' is no longer blocked. Apparently it is not
+            actually a pure tracking site (anymore?). Reported by Andrew on
+            ijbswa-users@.</p>
+          </li>
+
+          <li>
+            <p>Unblock banners on .amnesty.de/ which aren't ads.</p>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <p>Documentation improvements:</p>
+
+        <ul>
+          <li>
+            <p>The 'Would you like to donate?' section now also contains a
+            "Paypal" address.</p>
+          </li>
+
+          <li>
+            <p>The list of supported operating systems has been updated.</p>
+          </li>
+
+          <li>
+            <p>The existence of the SF support and feature trackers has been
+            deemphasized because they have been broken for months. Most of
+            the time the mailing lists still work.</p>
+          </li>
+
+          <li>
+            <p>The claim that default.action updates are sometimes released
+            on their own has been removed. It hasn't happened in years.</p>
+          </li>
+
+          <li>
+            <p>Explicitly mention that Tor's port may deviate from the
+            default when using a bundle. Requested by Andrew on
+            ijbswa-users@.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="SECT2">
+      <h2 class="SECT2"><a name="UPGRADERSNOTE" id="UPGRADERSNOTE">3.1. Note
+      to Upgraders</a></h2>
+
+      <p>A quick list of things to be aware of before upgrading from earlier
+      versions of <span class="APPLICATION">Privoxy</span>:</p>
+
+      <ul>
+        <li>
+          <p>The recommended way to upgrade <span class=
+          "APPLICATION">Privoxy</span> is to backup your old configuration
+          files, install the new ones, verify that <span class=
+          "APPLICATION">Privoxy</span> is working correctly and finally merge
+          back your changes using <span class="APPLICATION">diff</span> and
+          maybe <span class="APPLICATION">patch</span>.</p>
+
+          <p>There are a number of new features in each <span class=
+          "APPLICATION">Privoxy</span> release and most of them have to be
+          explicitly enabled in the configuration files. Old configuration
+          files obviously don't do that and due to syntax changes using old
+          configuration files with a new <span class=
+          "APPLICATION">Privoxy</span> isn't always possible anyway.</p>
+        </li>
+
+        <li>
+          <p>Note that some installers remove earlier versions completely,
+          including configuration files, therefore you should really save any
+          important configuration files!</p>
+        </li>
+
+        <li>
+          <p>On the other hand, other installers don't overwrite existing
+          configuration files, thinking you will want to do that
+          yourself.</p>
+        </li>
+
+        <li>
+          <p>In the default configuration only fatal errors are logged now.
+          You can change that in the <a href="config.html#DEBUG">debug
+          section</a> of the configuration file. You may also want to enable
+          more verbose logging until you verified that the new <span class=
+          "APPLICATION">Privoxy</span> version is working as expected.</p>
+        </li>
+
+        <li>
+          <p>Three other config file settings are now off by default:
+          <a href="config.html#ENABLE-REMOTE-TOGGLE">enable-remote-toggle</a>,
+          <a href=
+          "config.html#ENABLE-REMOTE-HTTP-TOGGLE">enable-remote-http-toggle</a>,
+          and <a href=
+          "config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions</a>. If you
+          use or want these, you will need to explicitly enable them, and be
+          aware of the security issues involved.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NAVFOOTER">
+    <hr align="left" width="100%">
+
+    <table summary="Footer navigation table" width="100%" border="0"
+    cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="33%" align="left" valign="top"><a href="installation.html"
+        accesskey="P">Prev</a></td>
+
+        <td width="34%" align="center" valign="top"><a href="index.html"
+        accesskey="H">Home</a></td>
+
+        <td width="33%" align="right" valign="top"><a href="quickstart.html"
+        accesskey="N">Next</a></td>
+      </tr>
+
+      <tr>
+        <td width="33%" align="left" valign="top">Installation</td>
+
+        <td width="34%" align="center" valign="top">&nbsp;</td>
+
+        <td width="33%" align="right" valign="top">Quickstart to Using
+        Privoxy</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

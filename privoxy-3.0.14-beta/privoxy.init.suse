@@ -1,0 +1,86 @@
+#! /bin/sh
+#  ********************************************************************
+# 
+#  File        :  $Source: /cvsroot/ijbswa/current/privoxy.init.suse,v $
+# 
+#  Purpose     :  This shell script takes care of starting and stopping
+#                 privoxy.
+# 
+#  Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+#                 Privoxy team. http://www.privoxy.org/
+# 
+#                 Based on the Internet Junkbuster originally written
+#                 by and Copyright (C) 1997 Anonymous Coders and
+#                 Junkbusters Corporation.  http://www.junkbusters.com
+# 
+#                 This program is free software; you can redistribute it
+#                 and/or modify it under the terms of the GNU General
+#                 Public License as published by the Free Software
+#                 Foundation; either version 2 of the License, or (at
+#                 your option) any later version.
+# 
+#                 This program is distributed in the hope that it will
+#                 be useful, but WITHOUT ANY WARRANTY; without even the
+#                 implied warranty of MERCHANTABILITY or FITNESS FOR A
+#                 PARTICULAR PURPOSE.  See the GNU General Public
+#                 License for more details.
+# 
+#                 The GNU General Public License should be included with
+#                 this file.  If not, you can view it at
+#                 http://www.gnu.org/copyleft/gpl.html
+#                 or write to the Free Software Foundation, Inc., 59
+#                 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# 
+# ********************************************************************/
+### BEGIN INIT INFO
+# Provides:       privoxy
+# Required-Start: $network $syslog $remote_fs
+# Required-Stop:
+# Default-Start:  3 5
+# Default-Stop:   0 1 2 6
+# Description:    Starts Privoxy
+### END INIT INFO
+
+. /etc/rc.status
+rc_reset  
+
+case "$1" in
+    start)
+        echo -n "Starting Privoxy"
+        if [ ! -f /var/run/privoxy.pid ] || ! kill -0 `cat /var/run/privoxy.pid` 2> /dev/null; then
+           /usr/sbin/privoxy --user privoxy.privoxy --pidfile /var/run/privoxy.pid /etc/privoxy/config 2> /dev/null
+        else     
+           false 
+        fi
+	rc_status -v
+        ;;
+    stop)
+        echo -n "Shutting down Privoxy"
+        killproc -TERM /usr/sbin/privoxy && rm -f /var/run/privoxy.pid
+	rc_status -v
+        ;;
+    reload)
+        echo -n "Reloading Privoxy"
+        kill -HUP `cat /var/run/privoxy.pid`
+        rc_status -v
+        ;;
+    try-restart)
+        $0 stop && $0 start
+	rc_status
+        ;;
+    restart)
+        $0 stop
+        $0 start
+        rc_status
+        ;;           
+    status)
+	echo -n "Checking for Privoxy"
+        checkproc /usr/sbin/privoxy
+	rc_status -v
+        ;;
+    *)
+        echo "Usage: $0 {start|restart|reload|status|stop}"
+        exit 1
+esac
+
+rc_exit

@@ -1,0 +1,112 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/p-authors.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: p-authors.sgml,v 2.16 2006/09/20 01:47:00 hal9 Exp $
+
+ Copyright (C) 2001-2006 Privoxy Developers http://privoxy.org
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  privoxy-man-page
+  AUTHORS
+  user-manual
+
+-->
+<![%p-authors-formal;[
+<para>
+Current Privoxy Team:
+</para>
+]]>
+
+<literallayout>
+ Fabian Keil, developer
+ David Schmidt, developer
+<![%p-authors-formal;[
+]]>
+ 
+ Hal Burgiss
+ Ian Cummings
+ Félix Rauch
+ Roland Rosenfeld
+<![%p-authors-formal;[
+</literallayout>
+
+<para>
+ Former Privoxy Team Members:
+</para>
+
+<literallayout>
+ Johny Agotnes 
+ Rodrigo Barbosa
+ Moritz Barsnick
+ Brian Dessent
+ Jon Foster
+ Karsten Hopp
+ Alexander Lazic
+ Daniel Leite
+ Gábor Lipták
+ Adam Lock
+ Guy Laroche
+ Mark Martinec 
+ Andreas Oesterhelt
+ Haroon Rafique
+ Georg Sauthoff
+ Thomas Steudten
+ Joerg Strohmayer
+ Rodney Stromlund
+ Sviatoslav Sviridov
+ Sarantis Paskalis
+ Stefan Waldherr
+]]>
+</literallayout>
+<![%p-authors-formal;[
+<para>
+ Thanks to the many people who have tested Privoxy, reported bugs, made
+ suggestions or contributed in some way. These include (in alphabetical order):
+</para>
+<literallayout>
+ Ken Arromdee
+ Devin Bayer
+ Reiner Buehl
+ Andrew J. Caines
+ Clifford Caoile
+ Michael T. Davis
+ Mattes Dolak 
+ Ulrich Drepper
+ Peter E
+ Aaron Hamid
+ Magnus Holmgren
+ Don Libes  
+ Paul Lieverse
+ Jindrich Makovicka 
+ David Mediavilla 
+ Oliver Stoeneberg
+ Roberto Ragusa
+ Maynard Riley
+ Bart Schelstraete
+ Bobby G. Vinyard
+ Darren Wiebe
+ Jörg Weinmann 
+ Oliver Yeoh
+ Jamie Zawinski
+</literallayout>
+
+<para>
+ Privoxy is based in part on code originally developed by:
+</para>
+
+<literallayout>
+ Junkbusters Corp.
+ Anonymous Coders
+</literallayout>
+]]>

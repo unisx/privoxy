@@ -1,0 +1,2412 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN"[
+<!entity % dummy "IGNORE"> 
+<!entity supported SYSTEM "supported.sgml">
+<!entity newfeatures SYSTEM "newfeatures.sgml">
+<!entity p-intro SYSTEM "privoxy.sgml">
+<!entity seealso SYSTEM "seealso.sgml">
+<!entity contacting SYSTEM "contacting.sgml">
+<!entity history SYSTEM "history.sgml">
+<!entity copyright SYSTEM "copyright.sgml">
+<!entity license SYSTEM "license.sgml">
+<!entity p-version "3.0.3">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
+<!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
+<!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
+<!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
+<!entity  my-copy "&copy;">          <!-- kludge for docbook2man          -->
+]>
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/faq.sgml,v $
+
+ Purpose     :  FAQ
+                This file belongs into
+                ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
+                
+ $Id: faq.sgml,v 1.61.2.40 2004/01/30 17:00:33 oes Exp $
+
+ Copyright (C) 2001-2004 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ Based partially on the Internet Junkbuster FAQ originally written by and
+ Copyright (C) 1997 Anonymous Coders and Junkbusters Corporation.
+ http://www.junkbusters.com/
+
+ <Qandaset defaultlabel='qanda'>
+  <QandAEntry>
+   <question>
+    <para> 
+     How are you?
+    </para>
+   </question>
+   <answer>
+    <para> 
+     Fine.
+    </para>
+   </answer>
+  </QandAEntry>
+ </QandASet>
+
+ ========================================================================
+ NOTE: Please read developer-manual/documentation.html before touching 
+ this file!
+
+ Please we keep the info in this file as version independent as possible 
+ so we only have to maintain one FAQ. Where significant changes are 
+ made to Privoxy configuration, please note the change in such a way that 
+ it makes sense to both users of older and newer versions.
+ ========================================================================
+
+
+-->
+
+
+<article id="index" class="faq">
+<artheader>
+<title>Privoxy Frequently Asked Questions</title>
+
+<pubdate>
+ <subscript>
+<!-- Completely the wrong markup, but very little is allowed  -->
+<!-- in this part of an article. FIXME -->
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2004 by 
+ <ulink url="http://www.privoxy.org">Privoxy Developers</ulink>
+ </subscript>
+</pubdate>
+
+<pubdate>$Id: faq.sgml,v 1.61.2.40 2004/01/30 17:00:33 oes Exp $</pubdate>
+
+<!--
+
+Note: this should generate a separate page, and a live link to it. 
+But it doesn't for some mysterious reason. Please leave commented
+unless it can be fixed proper. For the time being, the copyright 
+statement will be in copyright.smgl.
+
+Hal.
+
+<legalnotice id="legalnotice"> 
+ <para>
+  text goes here ........
+ </para>
+</legalnotice>
+
+-->
+
+<!--
+<authorgroup>
+ <author>
+  <affiliation>
+   <orgname>By: Privoxy Developers</orgname>
+   </affiliation>
+ </author>
+</authorgroup>
+-->
+<abstract>
+<![%dummy;[
+<para>
+ <comment>
+  This is here to keep vim syntax file from breaking :/
+  If I knew enough to fix it, I would.
+  PLEASE DO NOT REMOVE! HB: hal@foobox.net
+ </comment>
+</para>
+]]>
+ <para>
+ This FAQ gives quick answers to frequently asked  questions about
+ <ulink url="http://www.privoxy.org/">Privoxy</ulink>.
+ It can't and doesn't replace the
+ <ulink url="../user-manual/index.html"><citetitle>User Manual</citetitle></ulink>.
+<!-- 
+ This works, at least in some situtations:
+ Test: <ulink url="privoxy-user-manual.pdf"><citetitle>User Manual</citetitle></ulink>.
+--> 
+ </para>
+
+<!-- Include privoxy.sgml boilerplate: -->
+ &p-intro;
+<!-- end boilerplate -->
+
+ <para>
+  Please note that this document is constantly evolving. This copy represents
+  the state at the release of version &p-version;.
+  You can find the latest version of the document at <ulink
+  url="http://www.privoxy.org/faq/">http://www.privoxy.org/faq/</ulink>.
+  Please see the <link linkend="contact">Contact section</link> if you want to
+  contact the developers. 
+ </para>
+
+<!--   <para> -->
+<!--    Feel free to send a note to the developers at <email>ijbswa-developers@lists.sourceforge.net</email>. -->
+<!--   </para> -->
+</abstract>
+</artheader>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect1 id="general"><title>General Information</title>
+
+<sect2 renderas="sect3" id="newjb"><title>What is this new version of <application>Privoxy</application>?</title>
+
+<!-- Include history.sgml -->
+ &history;
+<!-- end -->
+
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="whyprivoxy">Why <quote>Privoxy</quote>? Why a name change at all?</title>
+<para>
+ <application>Privoxy</application> is the 
+ <quote><emphasis>Privacy Enhancing Proxy</emphasis></quote>. Also, its content
+ modification and junk suppression allow you to browse your
+ <quote><emphasis>private</emphasis> edition</quote> of the web.
+</para>
+<para>
+ <ulink url="http://junkbusters.com/">Junkbusters Corporation</ulink>
+ continues to offer their original version of the <application>Internet
+ Junkbuster</application>, so publishing our
+ <application> Junkbuster</application>-derived software under the same name
+ led to confusion.
+</para>
+<para>
+ There are also potential legal complications from the continued use of the 
+ <application>Junkbuster</application> name, which is a registered trademark of 
+ <ulink url="http://junkbusters.com/">Junkbusters Corporation</ulink>.
+ There are, however, no objections from Junkbusters Corporation to the 
+ <application>Privoxy</application> project itself, and they, in fact, still
+ share our ideals and goals.
+</para>
+<para>
+ The developers also believed that there are so many changes from the original 
+ code, that it was time to make a clean break from the past and make 
+ a name in their own right<![%p-not-stable;[, especially now with the pending
+ release of version 3.0]]>.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="differs"><title>How does <application>Privoxy</application> differ
+from the old <application>Junkbuster?</application></title> 
+<para>
+ <application>Privoxy</application> picks up where
+ <application>Junkbuster</application> left off. All the old features remain.
+ The new <application>Privoxy</application> still blocks ads and banners,
+ still manages cookies, and still helps protect your privacy. But, these are
+ all enhanced, and many new features have been added, all in the same vein.
+ </para>
+ <para>
+ The configuration has changed significantly as well. This is something that
+ users will notice right off the bat if upgrading from 
+ <application>Junkbuster</application> 2.0.x. The <quote>blocklist</quote>
+ <quote>cookielist</quote>, <quote>imagelist</quote> and much more has been
+ combined into the <quote>actions</quote> files, with a completely different
+ syntax. See the <ulink url="../user-manual/upgradersnote.html">note to
+ upgraders</ulink> for  details.
+</para>
+<para>
+ <application>Privoxy</application>'s new features include:
+</para>
+
+<!-- Include newfeatures.sgml: --> 
+ &newfeatures;
+<!-- end include -->
+
+</sect2>
+
+<sect2 renderas="sect3" id="proxymoron"><title>What is a <quote>proxy</quote>? How does
+<application>Privoxy</application> work? </title>
+ <para>
+  A web proxy is a service, based on a software such as <application>Privoxy</application>,
+  that clients (i.e. browsers) can use instead of connecting directly to the web
+  servers on the Internet. The clients then ask the proxy to fetch the objects
+  they need (web pages, images, movies etc) on their behalf, and when the proxy
+  has done so, it hands the results back to the client.
+ </para>
+ <para>
+  There are many reasons to use web proxies, such as security (firewalling),
+  efficiency (caching) and others, and there are just as many different proxies
+  to accommodate those needs.
+ </para>
+ <para>
+  <application>Privoxy</application> is a proxy that is solely focused on privacy
+  protection and junk elimination. Sitting between your browser(s) and the Internet,
+  it is in a perfect position to filter outbound personal information that your
+  browser is leaking, as well as inbound junk. It uses a variety of techniques to do
+  this, all of which are under your control via the various configuration
+  files and options.
+ </para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="whatsanad">
+<title id="knows">How does <application>Privoxy</application> know what is
+an ad, and what is not?</title>
+<para>
+ <application>Privoxy</application>'s approach to blocking ads is twofold:
+</para>
+<para>
+ First, there are certain patterns in the <emphasis>locations</emphasis> (URLs)
+ of banner images. This applies to both the path (you wouldn't guess how many
+ web sites serve their banners from a directory called <quote>banners</quote>!)
+ and the host (blocking the big banner hosting services like doublecklick.net
+ already helps a lot). <application>Privoxy</application> takes advantage of this
+ fact by using <ulink url="../user-manual/actions-file.html#AF-PATTERNS">URL
+ patterns</ulink> to sort out and block the requests for banners.
+</para>
+<para>
+ Second, banners tend to come in certain <emphasis>sizes</emphasis>. But you
+ can't tell the size of an image by its URL without downloading it, and if you
+ do, it's too late to save bandwidth. Therefore, <application>Privoxy</application>
+ also inspects the HTML sources of web pages while they are loaded, and replaces
+ references to images with standard banner sizes by dummy references, so that
+ your browser doesn't request them anymore in the first place.
+</para>
+<para>
+ Both of this involves a certain amount of guesswork and is, of course, freely
+ configurable.
+</para>
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="mistakes">Can <application>Privoxy</application> make mistakes? 
+This does not sound very scientific.</title>
+<para>
+ Actually, it's a black art ;-) And yes, it is always possible to have a broad
+ rule accidentally block or change something by mistake. You will almost surely
+ run into such situations at some point. It is tricky writing rules to
+ cover every conceivable possibility, and not occasionally get false positives.
+</para>
+
+<para>
+ But this should not be a big concern since the
+ <application>Privoxy</application> configuration is very flexible, and
+ includes tools to help identify these types of situations so they can be
+ addressed as needed, allowing you to customize your installation.
+ (<link linkend="badsite">See the Troubleshooting section below</link>.)
+</para>
+
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="configornot">Will I have to configure <application>Privoxy</application>
+ before I can use it?</title>
+<para>
+ No, not really. The default installation should give you a good starting
+ point, and block <emphasis>most</emphasis> unwanted content.
+</para>
+<para>
+ But you will certainly run into situations where there are false positives,
+ or ads not being blocked that you may not want to see. In these cases, you
+ would certainly benefit by customizing <application>Privoxy's</application>
+ configuration to more closely match your individual situation. And we would
+ encourage you to do this. This is where the real power of
+ <application>Privoxy</application> lies!
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="browsers2"><title>My browser does the same things as
+<application>Privoxy</application>. Why should I use
+<application>Privoxy</application> at all?</title>
+ <para>
+  Modern browsers do indeed have <emphasis>some</emphasis> of the same
+  functionality as <application>Privoxy</application>. Maybe this is
+  adequate for you. But <application>Privoxy</application> is much more
+  versatile and powerful, and can do a number of things that browsers just can't.
+ </para>
+ <para>
+  In addition, a proxy is good choice if you use multiple browsers, or 
+  have a LAN with multiple computers. This way all the configuration 
+  is in one place, and you don't have to maintain a similar configuration 
+  for possibly many browsers.
+ </para>
+</sect2>
+
+
+
+<sect2 renderas="sect3" id="license"><title>Is there is a license or fee? What about a 
+warranty? Registration?</title>
+ <para>
+  <application>Privoxy</application> is licensed under the <ulink
+  url="http://www.gnu.org/copyleft/gpl.html">GNU General Public License (GPL)</ulink>.
+  It is free to use, copy, modify or distribute as you wish under the terms of this
+  license.  Please see the <link linkend="copyright">Copyright</link> section for more
+  information on the license and copyright. Or the <filename>LICENSE</filename> file 
+  that should be included.
+ </para>
+ <para>
+  There is <emphasis>no warranty</emphasis> of any kind, expressed, implied or otherwise.
+  That is something that would cost real money ;-) There is no registration either.
+  <application>Privoxy</application> really is <emphasis>free</emphasis>
+  in every respect!
+ </para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="jointeam"><title>I would like to help you, what do I do?</title>
+
+<sect3 renderas="sect4" id="jointeam-money"><title>Money Money Money</title>
+<para>
+ We, of course, welcome donations and could use money for domain registering,
+ buying software to test <application>Privoxy</application> with, and, of course,
+ for regular world-wide get-togethers (hahaha). If you enjoy the software and feel
+ like helping us with a donation, just <ulink
+ url="mailto:developers@privoxy.org">drop us a note</ulink>.
+</para>
+</sect3>
+
+<sect3 renderas="sect4" id="jointeam-software"><title>Software</title>
+<para>
+ If you are a vendor of a web-related software like a browser, web server
+ or proxy, and would like us to ensure that <application>Privoxy</application>
+ runs smoothly with your product, you might consider supplying us with a
+ copy or license. We can't, however, guarantee that we will fix all potential
+ compatibility issues as a result.
+</para>
+</sect3>
+
+<sect3 renderas="sect4" id="jointeam-work"><title>You want to work with us?</title>
+<para>
+   Well, helping the team is always a good idea. We welcome new developers,
+   packaging gurus or documentation writers. Simply <ulink
+   url="https://sourceforge.net/account/register.php">get an account on SourceForge.net</ulink>
+   and mail your id to the <ulink url="mailto:developers@privoxy.org">developers
+   mailing list</ulink>. Then read the <ulink
+   url="../developer-manual/index.html">Developer's Manual</ulink>.
+</para>
+<para>
+ Once we have added you to the team, you'll have write access to the <ulink
+ url="http://sourceforge.net/cvs/?group_id=11118">CVS repository</ulink>, and
+ together we'll find a suitable task for you.
+</para>
+</sect3>
+
+</sect2>
+
+</sect1>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect1  id="installation"><title>Installation</title>
+
+<sect2 renderas="sect3" id="whichbrowsers">
+<title>Which browsers are supported by <application>Privoxy</application>?</title>
+<para>
+ Any browser that can be configured to use a proxy, which 
+ should be virtually all browsers. Direct browser support is not necessary
+ since <application>Privoxy</application> runs as a separate application and
+ talks to the browser in the standardized HTTP protocol, just like a web server
+ does.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="whichos">
+<title>Which operating systems are supported?</title>
+<!--
+Include supported.sgml here:
+-->
+&supported;
+</sect2>
+
+<sect2 renderas="sect3" id="email-client">
+<title>Can I use <application>Privoxy</application> with my email client?</title>
+<para>
+ As long as there is some way to set a HTTP proxy for the client, then yes,
+ any application can be used, whether it is strictly speaking a
+ <quote>browser</quote> or not. Though this may not be the best approach for
+ dealing with some of the common abuses of HTML in email. See <link
+ linkend="outlook">How can I configure <application>Privoxy</application>
+ with <application>Outlook Express</application>?</link> below for more on
+ this. 
+</para>
+<para>
+ Be aware that HTML email presents a number of unique security and privacy
+ related issues, that can require advanced skills to overcome. The developers
+ recommend using email clients that can be configured to convert HTML to plain
+ text for these reasons.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="newinstall"><title>Can I install  
+ <application>Privoxy</application> over <application>Junkbuster</application>?</title>
+ <para>
+   We recommend you un-install <application>Junkbuster</application>
+   first to minimize conflicts and confusion. You may want to 
+   save your old configuration files for future reference. The configuration
+   files and syntax have substantially changed, so you will need to manually
+   port your old patterns. See the <ulink url="../user-manual/upgradersnote.html">note
+   to upgraders</ulink> and <ulink url="../user-manual/installation.html">installation
+   chapter</ulink> in the <ulink url="../user-manual/index.html">user manual</ulink>
+   for details.
+ </para>
+ <para>
+  Note: Some installers may automatically un-install
+  <application>Junkbuster</application>, if present!
+ </para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="firststep">I just installed <application>Privoxy</application>. Is there anything 
+special I have to do now?</title>
+
+<para>
+ All browsers must be told to use <application>Privoxy</application> 
+ as a proxy by specifying the correct proxy address and port number 
+ in the appropriate configuration area for the browser. See below.
+ You should also flush your browser's memory and disk cache to get rid of any
+ cached junk items, and remove any stored cookies.
+
+</para>
+
+</sect2>
+
+
+<sect2 renderas="sect3" id="localhost"><title>What is the proxy address of <application>Privoxy</application>?</title>
+ <para>
+  If you set up the <application>Privoxy</application> to run on
+  the computer you browse from (rather than your ISP's server or some
+  networked computer on a LAN), the proxy will be on <literal>127.0.0.1</literal> 
+  (sometimes referred to as <quote>localhost</quote>,
+  which is the special name used by every computer on the Internet to refer
+  to itself) and the port will be 8118 (unless you have <application>Privoxy</application>
+  to run on a different port with the <ulink
+  url="../user-manual/config.html#LISTEN-ADDRESS">listen-address</ulink> config option). 
+ </para>
+ <para>
+  When configuring your browser's proxy settings you typically enter
+  the word <quote>localhost</quote> or the IP address <quote>127.0.0.1</quote>
+  in the boxes next to <quote>HTTP</quote> and <quote>Secure</quote> (HTTPS) and
+  then the number <quote>8118</quote> for <quote>port</quote>. 
+  This tells your browser to send all web requests to <application>Privoxy</application>
+  instead of directly to the Internet.
+ </para>
+ <para>
+  <application>Privoxy</application> can also be used to proxy for 
+  a Local Area Network. In this case, your would enter either the IP 
+  address of the LAN host where <application>Privoxy</application> 
+  is running, or the equivalent hostname. Port assignment would be 
+  same as above. Note that <application>Privoxy</application> doesn't
+  listen on any LAN interfaces by default.
+ </para>
+ <para>
+  <application>Privoxy</application> does not currently handle
+  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. 
+ </para>
+</sect2>
+
+<sect2 renderas="sect3" id="nothing">
+<title>I just installed <application>Privoxy</application>, and nothing is happening.
+All the ads are there. What's wrong?</title>
+
+<para>
+ Did you configure your browser to use <application>Privoxy</application> 
+ as a proxy? It does not sound like it. See above. You might also try flushing
+ the browser's caches to force a full re-reading of pages. You can verify 
+ that <application>Privoxy</application> is running, and your browser 
+ is correctly configured by entering the special URL: 
+ <ulink url="http://p.p/">http://p.p/</ulink>. 
+ <!-- Use http://p.p/ instead of http://config.privoxy.org/ here because
+      of potential redirect caching problem (see next Q). -->
+ This should take you to a page titled <quote>This is Privoxy..</quote> with
+ access to <application>Privoxy's</application> internal configuration.
+ If you see this, then you are good to go. If you receive a page saying 
+ <quote>Privoxy is not running</quote>, then the browser is not set up to use
+ your <application>Privoxy</application> installation.
+ If you receive anything else (probably nothing at all), it could either
+ be that the browser is not set up correctly, or that
+ <application>Privoxy</application> is not running at all. Check the <ulink
+ url="../user-manual/config.html#LOGFILE">log file</ulink>. For instructions
+ on starting <application>Privoxy</application> and browser configuration,
+ see the <ulink url="http://www.privoxy.org/user-manual/startup.html">chapter
+ on starting <application>Privoxy</application></ulink> in the
+ <ulink url="http://www.privoxy.org/user-manual/">user manual</ulink>.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="notused">
+<title>I get a <quote>Privoxy is not being used</quote> dummy page although
+<application>Privoxy</application> is running and being used.</title>
+
+<para>
+ First, make sure that Privoxy is <emphasis>really</emphasis> running and
+ being used by visiting <ulink url="http://p.p/">http://p.p/</ulink>. You
+ should see the <application>Privoxy</application> main page. If not, see
+ the <ulink url="http://www.privoxy.org/user-manual/startup.html">chapter
+ on starting <application>Privoxy</application></ulink> in the
+ <ulink url="http://www.privoxy.org/user-manual/">user manual</ulink>.
+</para>
+
+<para>
+ Now if <ulink url="http://p.p/">http://p.p/</ulink> works for you, but
+ other parts of <application>Privoxy</application>'s web interface show
+ the dummy page, your browser has cached a redirection it encountered before
+ <application>Privoxy</application> was being used. You need to clear your
+ browser's cache. Note that shift-reloading the dummy page won't help, since
+ that'll only refresh the dummy page, not the redirection that lead you there.
+</para>
+
+<para>
+ The procedure for clearing the cache varies from browser to browser. As an
+ example, <application>Mozilla</application> users would click 
+ <guibutton>Edit</guibutton> --> <guibutton>Preferences</guibutton> -->
+ <guibutton>Advanced</guibutton> --> <guibutton>Cache</guibutton> and
+ then click both <quote><guibutton>Clear Memory Cache</guibutton></quote>
+ and <quote><guibutton>Clear Disk Cache</guibutton></quote>.
+</para>
+</sect2>
+
+</sect1>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect1 id="configuration"><title>Configuration</title>
+
+<sect2 renderas="sect3" id="getupdates"><title>Where can I get updated Actions Files?</title>
+ <para>
+   Based on your feedback and the continuing development, updated actions files will be
+   made available on the <ulink
+  url="http://sourceforge.net/project/showfiles.php?group_id=11118">files section</ulink> of
+  our <ulink url="http://sf.net/projects/ijbswa/">project page</ulink>.
+ </para>
+
+ <para>
+  If you wish to receive an email notification whenever we release updates of
+  <application>Privoxy</application> or the actions file, <ulink
+  url="http://lists.sourceforge.net/lists/listinfo/ijbswa-announce/">subscribe
+  to our announce  mailing list</ulink>, ijbswa-announce@lists.sourceforge.net.
+ </para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="newconfig"><title>Can I use my old config files?</title>
+ <para>
+   The syntax, number, and purpose of configuration files has substantially
+   changed from <application>Junkbuster</application> and earlier versions
+   of <application>Privoxy</application>. The old files, like <filename>blocklist</filename>
+   will not work at all. If you are upgrading from a 2.0.x version, you will
+   need to port your configuration data to the new format. Note that even the
+   pattern syntax has changed! Even configuration files from the 2.9.x versions
+   will need to be adapted, as configuration syntax has been very much in flow
+   in the 2.9.x series.
+ </para>
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="actionsfile">What is an <quote>actions</quote> file?</title>
+
+<para>
+ <ulink url="../user-manual/actions-file.html">Actions files</ulink>
+ are where various <ulink url="../user-manual/actions-file.html#ACTIONS">actions</ulink>
+ that <application>Privoxy</application> might take while processing a certain
+ request, are configured. Typically, you would define a set of default actions
+ that apply to all URLs, then add exceptions to these defaults where needed.
+</para>
+ 
+<para>
+ Actions can be defined on a <ulink
+ url="../user-manual/actions-file.html#AF-PATTERNS">URL pattern</ulink> basis, i.e.
+ for single URLs, whole web sites, groups or parts thereof etc. Actions can also be
+ grouped together and then applied to requests matching one or more patterns.
+ There are many possible actions that might apply to any given site. As an example,
+ if you are blocking cookies as one of your default actions, but need to accept
+ cookies from a given site, you would need to define an exception for this
+ site in one of your actions files, preferably in <filename>user.action</filename>.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="actionss">
+<title>The <quote>actions</quote> concept confuses me. Please list 
+some of these <quote>actions</quote>.</title>
+<para>
+ For a comprehensive discussion of the actions concept, please refer
+ to the <ulink url="../user-manual/actions-file.html">actions file
+ chapter</ulink> in the <ulink url="../user-manual/index.html">user
+ manual</ulink>. It includes a <ulink
+ url="../user-manual/actions-file.html#ACTIONS">list of all actions</ulink>
+ and an <ulink url="../user-manual/actions-file.html#ACT-EXAMPLES">actions
+ file tutorial</ulink> to get you started.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="actconfig">How are actions files configured? What is the easiest
+way to do this?</title> 
+
+<para>
+ Actions files are just text files in a special syntax and can be edited
+ with a text editor. But probably the easiest way is to access
+ <application>Privoxy</application>'s user interface with your web browser
+ at <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>
+ (Shortcut: <ulink url="http://p.p/">http://p.p/</ulink>) and then select
+ <quote><ulink url="http://config.privoxy.org/show-status">View &
+ change the current configuration</ulink></quote> from the menu.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title>There are several different <quote>actions</quote> files. What are
+the differences?</title>
+<para>
+ As of <application>Privoxy</application> v2.9.15, three actions files 
+ are being included, to be used for 
+ different purposes: These are 
+ <filename>default.action</filename>, the <quote>main</quote> actions file
+ which is actively maintained by the <application>Privoxy</application>
+ developers, <filename>user.action</filename>, where users are encouraged
+ to make their private customizations, and <filename>standard.action</filename>, 
+ which is for internal <application>Privoxy</application> use only.
+ Please see <ulink url="../user-manual/actions-file.html">the actions chapter</ulink>
+ in the <ulink url="../user-manual/index.html">user manual</ulink> for a more
+ detailed explanation.
+</para>
+
+<para>
+ Earlier versions included three different versions of the 
+ <filename>default.action</filename> file. The new scheme allows for 
+ greater flexibility of local configuration, and for browser based 
+ selection of pre-defined <quote>aggressiveness</quote> levels.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="yahoo"><title>How can I make my Yahoo/Hotmail/GMX account work?</title>
+ <para>
+  The default configuration shouldn't impact the usability of any of these services.
+  It will, however, make all cookies temporary, so that your browser will forget your
+  login credentials in between browser sessions. If you would like not to have to log
+  in manually each time you access those websites, simply turn off all cookie handling
+  for them in the <filename>user.action</filename> file. An example for yahoo might
+  look like:
+ </para>
+ <para>
+  <screen># Allow all cookies for Yahoo login:
+#
+{ -<ulink url="../user-manual/actions-file.html#CRUNCH-INCOMING-COOKIES">crunch-incoming-cookies</ulink> -<ulink url="../user-manual/actions-file.html#CRUNCH-OUTGOING-COOKIES">crunch-outgoing-cookies</ulink> -<ulink url="../user-manual/actions-file.html#SESSION-COOKIES-ONLY">session-cookies-only</ulink> }
+.login.yahoo.com</screen>
+ </para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="configfiles"> <title>What's the difference between the
+<quote>Cautious</quote>, <quote>Medium</quote> and <quote>Adventuresome</quote> defaults?</title>
+ <para>
+  Configuring <application>Privoxy</application> is not entirely trivial. To
+  help you get started, we provide you with three different default action
+  <quote>profiles</quote> in the web based actions file editor at <ulink
+  url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>.
+  See the <ulink url="../user-manual/actions-file.html"><citetitle>User
+  Manual</citetitle></ulink> for a list of actions, and how the default 
+  profiles are set.
+ </para>
+
+<para>
+ Where the defaults are likely to break some sites, exceptions for
+ known popular <quote>problem</quote> sites are included, but in
+ general, the more aggressive your default settings are, the more exceptions
+ you will have to make later. See the <ulink
+ url="../user-manual/index.html"><citetitle>User Manual</citetitle></ulink>
+ for a more deatiled discussion.
+</para>
+
+<para>
+ It should be noted that the <quote>Adventuresome</quote> profile (formerly known 
+ as the <quote>Advanced</quote> profile) is not only more
+ aggressive, but also includes fun and, extreme usage of most of
+ <application>Privoxy's</application> features. Use at your own risk!
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="browseconfig"> <title>Why can I change the configuration 
+with a browser? Does that not raise security issues?</title>
+ <para>
+  It may seem strange that regular users can edit the config files with their
+  browsers, although the whole <filename>/etc/privoxy</filename> hierarchy
+  belongs to the user <quote>privoxy</quote>, with only 644 permissions.
+ </para>
+ <para>
+  When you use the browser-based editor, <application>Privoxy</application>
+  itself is writing to the config files.  Because
+  <application>Privoxy</application> is running as the user <quote>privoxy</quote>,
+  it can update the config files.
+ </para>
+ <para>
+  If you run <application>Privoxy</application> for multiple untrusted users (e.g. in
+  a LAN), you will probably want to turn the web-based editor and remote toggle
+  features off by setting <quote><literal><ulink
+  url="../user-manual/config.html#ENABLE-EDIT-ACTIONS">enable-edit-actions</ulink>
+  0</literal></quote> and <quote><literal><ulink
+  url="../user-manual/config.html#ENABLE-REMOTE-TOGGLE">enable-remote-toggle</ulink>
+  0</literal></quote> in the <ulink url="../user-manual/config.html">main configuration file</ulink>.
+ </para>
+ <para>
+  Note that in the default configuration, only local users (i.e. those on
+  <quote>localhost</quote>) can connect to <application>Privoxy</application>,
+  so this is not (normally) a security problem.
+ </para>
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="filterfile">What is the <filename>default.filter</filename> file? What is a <quote>filter</quote>?</title>
+<para>
+ The <ulink url="../user-manual/filter-file.html"><filename>default.filter</filename></ulink>
+ file is where <emphasis>filters</emphasis> are defined, which can be used to modify or
+ remove, web page content on the fly. Filters apply to <emphasis>anything</emphasis>
+ in the page source, including HTML tags, and JavaScript. Regular expressions are used
+ to accomplish this. There are a number of pre-defined filters to deal with common
+ annoyances. The filters are only defined here, to invoke them, you need to use the
+ <ulink
+ url="../user-manual/actions-file.html#FILTER"><literal>filter</literal>
+ action</ulink> in one of the actions files. Filtering is automatically
+ disabled for inappropriate MIME types.
+</para>
+
+<para>
+ If you are familiar with regular expressions, and HTML, you can look at 
+ the provided <filename>default.filter</filename> with a text editor and define
+ your own filters.  This is potentially a very powerful feature, but
+ requires some expertise in both regular expressions and HTML/HTTP. 
+</para>
+
+<para>
+ Presently, there is no GUI editor option for this part of the configuration, 
+ but you can disable/enable the various pre-defined filters of the included 
+ <filename>default.filter</filename> file with the <ulink
+ url="http://config.privoxy.org/show-status">web-based actions file editor</ulink>.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="lanconfig">How can I set up <application>Privoxy</application> to act as a proxy for my 
+ LAN?</title>
+<para>
+ By default, <application>Privoxy</application> only responds to requests 
+ from <literal>127.0.0.1</literal> (localhost). To have it act as a server for
+ a network, this needs to be changed in the <ulink
+ url="../user-manual/config.html">main configuration file</ulink>. Look for
+ the <literal><ulink
+ url="../user-manual/config.html#LISTEN-ADDRESS">listen-address</ulink></literal>
+ option, which may be commented out with a <quote>#</quote> symbol. Make sure
+ it is uncommented, and assign it the address of the LAN gateway interface,
+ and port number to use. Assuming your LAN address is 192.168.1.1 and you
+ wish to run <application>Privoxy</application> on port 8118, this line
+ should look like:
+</para>
+
+<para>
+ <screen>
+  listen-address  192.168.1.1:8118</screen>
+</para>
+
+<para>
+ Save the file, and restart <application>Privoxy</application>. Configure 
+ all browsers on the network then to use this address and port number.
+</para>
+
+<para>
+ Alternately, you can have <application>Privoxy</application> listen on 
+ all available interfaces:
+</para>
+
+<para>
+ <screen>
+  listen-address    :8118</screen>
+</para>
+
+<para>
+ And then use <application>Privoxy's</application> 
+ <ulink
+ url="../user-manual/config.html#PERMIT-ACCESS">permit-access</ulink> 
+ feature to limit connections. A firewall in this situation is recommended 
+ as well.
+</para>
+
+<para>
+ The above steps should be the same for any TCP network, regardless of
+ operating system.
+</para>
+
+<para>
+ If you run <application>Privoxy</application> on a LAN with untrusted users,
+ we recommend that you double-check the <ulink
+ url="../user-manual/config.html#ACCESS-CONTROL">access control and security</ulink>
+ options!
+</para>
+
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="noseeum">Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</title>
+<para>
+ The replacement for blocked images can be controlled with the <ulink
+ url="../user-manual/actions-file.html#SET-IMAGE-BLOCKER"><literal>set-image-blocker</literal>
+ action</ulink>. You have the choice of a checkerboard pattern, a transparent 1x1 GIF
+ image (aka <quote>blank</quote>), or a redirect to a custom image of your choice.
+ Note that this choice only has effect for images which are blocked as images, i.e.
+ whose URLs match both a <literal><ulink
+ url="../user-manual/actions-file.html#HANDLE-AS-IMAGE">handle-as-image</ulink></literal>
+ <emphasis>and</emphasis> <literal><ulink
+ url="../user-manual/actions-file.html#BLOCK">block</ulink></literal> action.
+</para>
+<para>
+ If you want to see nothing, then change the <ulink
+ url="../user-manual/actions-file.html#SET-IMAGE-BLOCKER"><literal>set-image-blocker</literal>
+ action</ulink> to <quote>blank</quote>. This can be done by editing the 
+ <filename>default.action</filename> file, or trough the <ulink
+ url="http://config.privoxy.org/show-status">web-based actions file editor</ulink>.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="whyseeum">Why would anybody want to see a checkerboard pattern?</title>
+<para>
+ Remember that <link linkend="whatsanad">telling which image is an ad and which
+ isn't</link>, is mostly guesswork. While we hope that the standard configuration
+ is rather smart, it can and will make errors. The checkerboard image is visually
+ decent, but it shows you that and where images were blocked, which can be very
+ helpful in case some navigation aid or otherwise innocent image was
+ erraneously blocked. Some people might also enjoy seeing how many banners
+ they <emphasis>don't</emphasis> have to see..
+</para>
+
+</sect2>
+
+<!-- This has changed with the adaptive "blocked" page
+
+<sect2 renderas="sect3">
+<title id="blockedisugly">I see large red banners on some pages that say 
+<quote>Blocked</quote>. Why and how do I get rid of this?</title>
+<para>
+ These are URLs that match something in one of 
+ <application>Privoxy's</application> block actions 
+ (<ulink
+ url="../user-manual/actions-file.html#BLOCK"><quote>+block</quote></ulink>).
+ It is meant to be a warning so that you know something has been blocked and
+ an easy way for you to see why. These are handled differently than what has
+ been defined explicitly as <quote>images</quote> (e.g. ads that are GIF image
+ files). Depending on the URL itself, it is sometimes hard for
+ <application>Privoxy</application> to really know whether there is indeed an
+ ad image there or not. And there are limitations as to what
+ <application>Privoxy</application> can do to <quote>fool</quote> the
+ browser.
+</para>
+
+<para>
+ For instance, if the ad is in a frame, then it is embedded in the separate
+ HTML page used for the frame. In this case, you cannot just substitute an
+ aribitrary image (like we would for a <quote>blank</quote> image), for an HTML
+ page. The browser is expecting an HTML page, and that is what it must have
+ for frames. Such situations can be a little trickier to deal with, and 
+ <application>Privoxy</application> may show the <quote>Blocked</quote> page,
+ despite your best efforts.
+</para>
+
+<para>
+ If you want these to be treated as if they were images, so that they can be
+ made invisible, you can try moving the offending URL from the
+ <quote>+block</quote> section to the <quote>+imageblock</quote> section of
+ your actions file. Just be forewarned, if any URL is made
+ <quote>invisible</quote>, you may not have any inkling that something has
+ been removed from that page, or why. If this approach does not work, then you are
+ probably dealing with a frame (or <quote>ilayer</quote>), and the only thing
+ that can go there is an HTML page of some sort.
+</para>
+<para>
+ To deal with this situation, you could modify the
+ <quote><filename>block</filename></quote> HTML template that is used by
+ <application>Privoxy</application> to display this, and make it something
+ more to your liking. Currently, there is no configuration option for this.
+ You will have to modify, or create your own page, and use this to replace
+ <filename>templates/blocked</filename>, which is what
+ <application>Privoxy</application> uses to display the <quote>Blocked</quote>
+ page.
+</para>
+<para>
+ Another way to deal with this is find why and where
+ <application>Privoxy</application> is blocking the frame, and 
+ diable this. Then let the <quote>+set-image-blocker</quote> action 
+ handle the ad that is embedded in the frame's HTML page. 
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="alliseeisred">
+<title>I cannot see all of the <quote>Blocked</quote> page banner. Help.</title>
+<para>
+ There is not enough available space to fit the entire Blocked page. Try right
+ clicking on the visible portion, and select <quote>Show Frame</quote>,
+ or equivalent. This will usually allow you to see the entire Privoxy
+ <quote>Blocked</quote> page, and from there you can see just what is being
+ blocked, and why.
+</para>
+<para>
+ As of Privoxy 2.9.14, the Blocked banner page is re-sizeable, and tries
+ to adjust to the allotted space. There may be occassions where there 
+ just isn't enough room to display much of anything useful though. 
+
+</para>
+</sect2>
+
+-->
+
+<sect2 renderas="sect3">
+<title id="blockedbytext">I see some images being replaced by a text
+instead of the checkerboard image. Why and how do I get rid of this?</title>
+<para>
+ This happens when the banners are not embedded in the HTML code of the
+ page itself, but in separate HTML (sub)documents that are loaded into (i)frames
+ or (i)layers, and these external HTML documents are blocked. Being non-images
+ they get replaced by a substitute HTML page rather than a substitute image,
+ which wouldn't work out technically, since the browser expects and accepts
+ only HTML when it has requested an HTML document. 
+</para>
+<para>
+ The substitute page adapts to the available space and shows itself as a
+ miniature two-liner if loaded into small frames, or full-blown with a
+ large red "BLOCKED" banner if space allows.
+</para>
+<para>
+ If you prefer the banners to be blocked by images, you must see to it that
+ the HTML documents in which they are embedded are not blocked. Clicking
+ the <quote>See why</quote> link offered in the substitute page will show
+ you which rule blocked the page. After changing the rule and un-blocking
+ the HTML documents, the browser will try to load the actual banner images
+ and the usual image blocking will (hopefully!) kick in.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="srvany">
+<title>Can <application>Privoxy</application> run as a service 
+on Win2K/NT?</title>
+<para>
+ Yes, it can run as a system service using <command>srvany.exe</command>.
+ See the discussion at <ulink
+ url="http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118">http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118</ulink>,
+ for details, and a sample configuration.
+</para>
+<para>
+ Version 3.0.1 fixes the problem where the icon and menu where not available
+ in the taskbar for this usage.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="otherproxy">
+<title>How can I make <application>Privoxy</application> work with other 
+proxies like <application>Squid</application>?</title>
+<para>
+ This can be done and is often useful to combine the benefits of
+ <application>Privoxy</application> with those of a caching proxy.
+ See the <ulink
+ url="../user-manual/config.html#FORWARDING">forwarding chapter</ulink>
+ in the <ulink url="../user-manual/index.html">user manual</ulink> which
+ describes how to do this.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="port-80">
+<title>Can I just set <application>Privoxy</application> to use port 80
+and thus avoid individual browser configuration?</title>
+
+<para>
+ No, its more complicated than that. This only works with special kinds 
+ of proxies known as <quote>transparent</quote> proxies (see below).
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="transparent">
+<title>Can <application>Privoxy</application> run as a <quote>transparent
+</quote> proxy?</title>
+<para>
+ No, <application>Privoxy</application> currently does not have this ability, 
+ though it is planned for a future release. Transparent proxies require 
+ special handling of the request headers beyond what
+ <application>Privoxy</application> is now capable of.
+</para>
+
+<para>
+ Chaining <application>Privoxy</application> behind another proxy that has 
+ this ability should work though. 
+ See the <ulink
+ url="../user-manual/config.html#FORWARDING">forwarding chapter</ulink>
+ in the <ulink url="../user-manual/index.html">user manual</ulink>. As
+ a transparent proxy to be used for chaining we recommend Transproxy
+ (<ulink url="http://www.transproxy.nlc.net.au/">http://www.transproxy.nlc.net.au/</ulink>).
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="outlook">
+<title>How can I configure <application>Privoxy</application> for use with <application>Outlook
+ Express</application>?</title>
+<para>
+ <application>Outlook Express</application> uses <application>Internet Explorer</application> 
+ components to both render HTML, and fetch any HTTP requests that may be embedded in an HTML email.
+ So however you have <application>Privoxy</application> configured to work
+ with IE, this configuration should automatically be shared.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="outlook-more">
+<title>How can I have separate rules just for HTML mail?</title>
+<para>
+ The short answer is, you can't. <application>Privoxy</application> has no way
+ of knowing which particular application makes a request, so there is no way to
+ distinguish between web pages and HTML mail.
+ <application>Privoxy</application> just blindly proxies all requests. In the
+ case of <application>Outlook Express</application> (see above), OE uses 
+ IE anyway, and there is no way for <application>Privoxy</application> to ever 
+ be able to distinguish between them (nor could any other proxy type application for
+ that matter).
+</para>
+<para>
+ For a good discussion of some of the issues involved (including privacy and 
+ security issues), see 
+ <ulink url="http://sourceforge.net/tracker/?func=detail&#38;atid=211118&#38;aid=629518&#38;group_id=11118">http://sourceforge.net/tracker/?func=detail&#38;atid=211118&#38;aid=629518&#38;group_id=11118</ulink>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="allow-cookies">
+<title>How can I allow permanent cookies for my trusted sites?</title>
+
+<para>
+  There are several actions that relate to cookies. The default behavior is to 
+  allow only <quote>session cookies</quote>, which means the cookies only last
+  for the current browser session. This eliminates most kinds of abuse related 
+  to cookies. But there may be cases where we want cookies to last.
+</para>
+<para>
+  To disable all cookie actions, so that cookies are allowed unrestricted,
+  both in and out, for <literal>example.com</literal>: 
+</para>
+<para>
+ <screen>
+ { -crunch-incoming-cookies -crunch-outgoing-cookies -session-cookies-only -filter{content-cookies} }
+  .example.com</screen>
+</para>
+<para>
+ Place the above in <filename>user.action</filename>. Note some of these may
+ be off by default anyway, so this might be redundant, but there is no harm
+ being explicit in what you want to happen. <filename>user.action</filename>
+ includes an alias for this situation, called
+ <literal>allow-cookies</literal>.
+</para>
+</sect2>
+
+</sect1>
+
+<!--  ~  End section  ~  -->
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect1 id="misc"><title>Miscellaneous</title>
+
+<sect2 renderas="sect3">
+<title id="slowsme">How much does <application>Privoxy</application> slow my browsing down? This 
+has to add extra time to browsing.</title>
+<para>
+ It should not slow you down any in real terms, and may actually help 
+ speed things up since ads, banners and other junk are not being displayed.
+ The actual processing time required by <application>Privoxy</application> 
+ itself for each page, is relatively small in the overall scheme of things,
+ and happens very quickly. This is typically more than offset by time saved
+ not downloading and rendering ad images.
+</para>
+
+<para>
+ <quote>Filtering</quote> content via the <literal><ulink
+ url="../user-manual/actions-file.html#FILTER">filter</ulink></literal> or
+ <literal><ulink
+ url="../user-manual/actions-file.html#DEANIMATE-GIFS">deanimate-gifs</ulink></literal>
+ actions may cause a perceived slowdown, since the entire document needs to be buffered
+ before displaying. See below.
+</para>
+
+</sect2>
+
+
+<sect2 renderas="sect3" id="loadingtimes"><title>I noticed considerable
+delays in page requests compared to the old Junkbuster. What's wrong?</title>
+<para>
+ If you use any <literal><ulink
+ url="../user-manual/actions-file.html#FILTER">filter</ulink></literal> action,
+ such as filtering banners by size, web-bugs etc, or the <literal><ulink
+ url="../user-manual/actions-file.html#DEANIMATE-GIFS">deanimate-gifs</ulink></literal>
+ action, the entire document must be loaded into memory in order for the filtering 
+ mechanism to work, and nothing is sent to the browser during this time.
+</para>
+<para>
+ The loading time does not really change in real numbers, but the feeling is
+ different, because most browsers are able to start rendering incomplete
+ content, giving the user a feeling of "it works". This effect is especially
+ noticeable on slow dialup connections.
+ </para>
+<para>
+ Filtering is automatically disabled for inappropriate MIME types. But note 
+ that if the web server mis-reports the MIME type, then content that should
+ not be filtered, could be. <application>Privoxy</application> only knows how
+ to differentiate filterable content because of the MIME type as reported by
+ the server, or because of some configuration setting that enables/disables
+ filtering.
+
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="configurl"><title>What are "http://config.privoxy.org/" and
+"http://p.p/"?</title>
+<para>
+ <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink> is the
+ address of <application>Privoxy</application>'s built-in user interface, and 
+ <ulink url="http://p.p/">http://p.p/</ulink> is a shortcut for it.
+</para>
+<para>
+ Since <application>Privoxy</application> sits between your web browser and the Internet, 
+ it can simply intercept requests for these addresses and answer them with its built-in
+ <quote>web server</quote>.
+</para>
+<para>
+ This also makes for a good test for your browser configuration: If entering the
+ URL <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>
+ takes you to a page saying <quote>This is Privoxy ...</quote>, everything is OK.
+ If you get a page saying <quote>Privoxy is not working</quote> instead, then
+ your browser didn't use <application>Privoxy</application> for the request,
+ hence it could not be intercepted, and you have accessed the <emphasis>real</emphasis>
+ web site at config.privoxy.org.
+</para>
+<para>
+ With recent versions of <application>Privoxy</application> (version 2.9.x and
+ later), the user interface features information on the run time status, the
+ configuration, and even a built-in editor for the <ulink
+ url="../user-manual/actions-file.html">actions files</ulink>.
+</para>
+
+<para>
+ Note that the built-in URLs from earlier versions of <application>Junkbuster</application>
+ / <application>Privoxy</application>, http://example.com/show-proxy-args and http://i.j.b/,
+ are no longer supported. If you still use such an old version, you should really consider
+ upgrading to &p-version;.
+</para>
+</sect2>
+
+<!--
+FIXME: commented out until we have data. HB 03/18/02.
+
+<sect2 renderas="sect3" id="badfiledesc"><title>I get the message 'Bad File Descriptor', why?</title>
+<para>
+   Fill me.
+</para>
+</sect2>
+
+-->
+
+<sect2 renderas="sect3" id="blocklist"><title>Do you still maintain the blocklists?</title>
+ <para>
+  No. The patterns for blocking now reside (among other things) in the <ulink
+  url="../user-manual/actions-file.html">actions files</ulink>, which are 
+  actively maintained instead. See next question ...
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="newads"><title>How can I submit new ads?</title>
+<para>
+Yes, absolutely! Please see the <link linkend="contact">Contact section</link> for
+how to do that. Please note that you (technically) need the latest
+<application>Privoxy</application> version for this to work.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="ip"><title>How can I hide my IP address?</title>
+<para>
+ If you run both the browser and the proxy locally, you cannot hide your IP
+ address with <application>Privoxy</application> or any other software. The
+ server needs to know your IP address to send the answers back to you. 
+</para>
+<para>
+ Fortunately there are many publicly usable anonymous proxies out there, which
+ solve the problem by providing a further level of indirection between you and
+ the web server, shared by many people, and thus letting your requests "drown"
+ in white noise of unrelated requests as far as user tracking is concerned.
+</para>
+<para>
+ Most of them will, however, log your IP address and make it available to the
+ authorities in case you abuse that anonymity for criminal purposes. In fact
+ you can't even rule out that some of them only exist to *collect* information
+ on (those suspicious) people with a more than average preference for privacy.
+</para>
+<para>
+ You can find a list of anonymous public proxies at <ulink
+ url="http://www.multiproxy.org/anon_list.htm">multiproxy.org</ulink> and many
+ more through Google. A particularly interesting project is the JAP service
+ offered by the Technical University of Dresden (<ulink
+ url="http://anon.inf.tu-dresden.de/index_en.html">http://anon.inf.tu-dresden.de/index_en.html</ulink>).
+</para>
+<para>
+ There is, however, even in the single-machine case the possibility to make the
+ server believe that your machine is in fact a shared proxy serving a whole big
+ LAN, and we are looking into that.
+</para>
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="anonforsure">Can <application>Privoxy</application> guarantee I am anonymous?</title>
+<para>
+ No. Your chances of remaining anonymous are greatly improved, but unless you
+ are an expert on Internet security it would be safest to assume that
+ everything you do on the Web can be traced back to you.
+</para>
+<para>
+ <application>Privoxy</application> can remove various information about you,
+ and allows <emphasis>you</emphasis> more freedom  to decide which sites 
+ you can trust, and what details you want to reveal. But it's still possible
+ that web sites can find out who you are. Here's one way this can happen.
+</para>
+<para>
+ A few browsers disclose the user's email address in certain situations, such
+ as when transferring a file by FTP. <application>Privoxy</application>
+ does not filter FTP. If you need this feature, or are concerned about the
+ mail handler of your browser disclosing your email address, you might
+ consider products such as <application>NSClean</application>.
+</para>
+<para>
+ Browsers available only as binaries could use non-standard headers to give
+ out any information they can have access to: see the manufacturer's license
+ agreement. It's impossible to anticipate and prevent every breach of privacy
+ that might occur. The professionally paranoid prefer browsers available as
+ source code, because anticipating their behavior is easier. Trust the source,
+ Luke!
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="sitebreak">Might some things break because header information or
+content is being altered?</title>
+
+<para>
+ Definitely. More and more sites use HTTP header content to decide what to
+ display and how to display it. There is many ways that this can be handled, 
+ so having hard and fast rules, is tricky.
+</para>
+
+<para>
+ <quote>User-Agent</quote> in particular is often used in this way to identify
+ the browser, and adjust content accordingly. Changing this now (at least not
+ further than removing the OS information) is not recommended, since so many
+ sites do look for it. You may get undesirable results by changing this.
+</para>
+
+<para>
+ For instance, different browsers use different encodings of Russian and Czech
+ characters, certain web servers convert pages on-the-fly according to the
+ User Agent header. Giving a <quote>User Agent</quote> with the wrong
+ operating system or browser manufacturer causes some sites in these languages
+ to be garbled; Surfers to Eastern European sites should change it to
+ something closer. And then some page access counters work by looking at the
+ <quote>Referer</quote> header; they may fail or break if unavailable. The
+ weather maps of Intellicast have been blocked by their server when no
+ <quote>Referer</quote> or cookie is provided, is another example. (But you
+ can forge both headers without giving information away). There are
+ many other ways things can go wrong when trying to fool a web server.
+</para>
+
+<para>
+ Similar thoughts apply to modifying JavaScript, and, to a lesser degree,
+ HTML elements.
+</para>
+
+<para>
+ If you have problems with a site, you will have to adjust your configuration 
+ accordingly. Cookies are probably the most likely adjustment that may 
+ be required, but by no means the only one.
+</para>
+
+</sect2>
+
+
+<sect2 renderas="sect3">
+<title id="caching">Can <application>Privoxy</application> act as a <quote>caching</quote> proxy to 
+speed up web browsing?</title>
+<para>
+ No, it does not have this ability at all. You want something like 
+ <ulink url="http://www.squid-cache.org/">Squid</ulink> for this. And, yes, 
+ before you ask, <application>Privoxy</application> can co-exist 
+ with other kinds of proxies like <application>Squid</application>.
+ See the <ulink url="../user-manual/config.html#FORWARDING">forwarding
+ chapter</ulink> in the <ulink url="../user-manual/index.html">user
+ manual</ulink> for details.
+</para>
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="firewall">What about as a firewall? Can <application>Privoxy</application> protect me?</title>
+<para>
+ Not in the way you mean, or in the way a true firewall can. 
+ <application>Privoxy</application> can help protect your privacy, but not
+ protect you from intrusion attempts. It is, of course, perfectly possible
+ and recommended to use <emphasis>both</emphasis>.
+</para>
+</sect2>
+
+<!-- No longer needed
+<sect2 renderas="sect3">
+<title id="logo">The <application>Privoxy</application> logo that replaces ads is very blocky 
+and ugly looking. Can't a better font be used?</title>
+
+<para>
+ This is not a font problem. The logo is an image that is created by 
+ <application>Privoxy</application> on the fly. So as to not waste 
+ memory, the image is rather small. The blockiness comes when the 
+ image is scaled to fill a largish area. There is not much to be done 
+ about this, other than to use one of the other
+ <quote>imageblock</quote> directives: <emphasis>pattern</emphasis>, 
+ <emphasis>blank</emphasis>, or a URL of your choosing.
+</para>
+<para>
+Given the above problem, we have decided to remove the logo option entirely 
+[as of v2.9.13].
+</para>
+</sect2>
+-->
+
+<sect2 renderas="sect3">
+<title id="wasted">I have large empty spaces / a checkerboard pattern now where
+ads used to be. Why?</title>
+<para>
+ It would be technically possible eliminate the banners in a way that frees
+ their screen estate in many cases, by doing all banner blocking with filters,
+ i.e. eliminating the whole image references from the HTML pages instead
+ of letting them stay in, and blocking the resulting requests for the
+ banners themselves.
+</para>
+<para>
+ But this would consume considerable CPU resources, would likely destroy
+ the layout of many web pages which rely on the banners consuming a certain
+ amount of screen space, and would fail in other cases, where the screen space
+ is reserved e.g. by tables anyway. Also, making the banners disappear without
+ a visual trace complicates troubleshooting.
+</para>
+<para>
+ So we won't support this in the default configuration, but you can of course
+ define appropriate filters yourself.
+</para>
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="ssl">How can <application>Privoxy</application> filter Secure (HTTPS) URLs?</title>
+<para>
+ Since secure HTTP connections are encrypted SSL sessions between your browser
+ and the secure site, and are meant to be reliably <emphasis>secure</emphasis>,
+ there is little that <application>Privoxy</application> can do but hand the raw
+ gibberish data though from one end to the other unprocessed.
+</para>
+<para>
+ The only exception to this is blocking by host patterns, as the client needs
+ to tell <application>Privoxy</application> the name of the remote server,
+ so that <application>Privoxy</application> can establish the connection.
+ If that name matches a host-only pattern, the connection will be blocked.
+</para>
+<para>
+ As far as ad blocking is concerned, this is less of a restriction than it may
+ seem, since ad sources are often identifiable by the host name, and often
+ the banners to be placed in an encrypted page come unencrypted nonetheless
+ for efficiency reasons, which exposes them to the full power of 
+ <application>Privoxy</application>'s ad blocking.
+</para>
+<para>
+ <quote>Content cookies</quote> (those that are embedded in the actual HTML or
+ JS page content, see <literal><ulink
+ url="../user-manual/actions-file.html#FILTER-CONTENT-COOKIES">filter{content-cookies}</ulink></literal>), 
+ in an SSL transaction will be impossible to block under these conditions. 
+ Fortunately, this does not seem to be a very common scenario since most 
+ cookies come by traditional means.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="secure"><application>Privoxy</application> runs as a <quote>server</quote>. How 
+secure is it? Do I need to take any special precautions?</title>
+<para>
+ There are no known exploits that might affect
+ <application>Privoxy</application>. On Unix-like systems, 
+ <application>Privoxy</application> can run as a non-privileged 
+ user, which is how we recommend it be run. Also, by default 
+ <application>Privoxy</application> only listens to requests 
+ from <quote>localhost</quote> only. The server aspect of
+ <application>Privoxy</application> is not itself directly exposed to the
+ Internet in this configuration. If you want to have
+ <application>Privoxy</application> serve as a LAN proxy, this will have to
+ be opened up to allow for LAN requests. In this case, we'd recommend
+ you specify only the LAN gateway address, e.g. 192.168.1.1, in the main 
+ <application>Privoxy</application> configuration file and check all <ulink
+ url="../user-manual/config.html#ACCESS-CONTROL">access control and security
+ options</ulink>. All LAN hosts can then use this as their proxy address
+ in the browser proxy configuration, but <application>Privoxy</application>
+ will not listen on any external interfaces. ACLs can be defined in addition,
+ and using a firewall is always good too. Better safe than sorry.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3" id="turnoff">
+<title>How can I temporarily disable <application>Privoxy</application>?</title>
+<para>
+ The easiest way is to access <application>Privoxy</application> with your 
+ browser by using the remote toggle URL: <ulink
+ url="http://config.privoxy.org/toggle">http://config.privoxy.org/toggle</ulink>.
+ See the <ulink url="../user-manual/appendix.html#BOOKMARKLETS">Bookmarklets section</ulink> 
+ of the <citetitle>User Manual</citetitle> for an easy way to access this 
+ feature.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="reallyoff">
+<title>When <quote>disabled</quote> is <application>Privoxy</application> totally 
+out of the picture?</title>
+<para>
+ No, this just means all filtering and actions are disabled.
+ <application>Privoxy</application> is still acting as a proxy, but just not 
+ doing any of the things that <application>Privoxy</application> would
+ normally be expected to do. It is still a <quote>middle-man</quote> in 
+ the interaction between your browser and web sites.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="crunch">
+<title>My logs show <application>Privoxy</application> <quote>crunches</quote> 
+ads, but also its own CGI pages. What is a <quote>crunch</quote>?</title>
+<para>
+ A <quote>crunch</quote> simply means <application>Privoxy</application> intercepted 
+ <emphasis>something</emphasis>, nothing more. Often this is indeed ads or
+ banners, but <application>Privoxy</application> uses the same mechanism for
+ trapping requests for its own internal pages. For instance, a request for
+ <application>Privoxy's</application> configuration page at: <ulink
+ url="http://config.privoxy.org">http://config.privoxy.org</ulink>, is
+ intercepted (i.e. it does not go out to the 'net), and the familiar CGI
+ configuration is returned to the browser, and the log consequently will show
+ a <quote>crunch</quote>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="downloads">
+<title>Can <application>Privoxy</application> effect files that I download
+from a webserver? FTP server?</title>
+<para>
+ From the webserver's perspective, there is no difference between
+ viewing a document (i.e. a page), and downloading a file. The same is true of
+ <application>Privoxy</application>. If there is a match for a <literal><ulink
+ url="../user-manual/actions-file.html#BLOCK">block</ulink></literal> pattern,
+ it will still be blocked, and of course this is obvious. 
+ </para>
+ <para>
+ Filtering is potentially more of a concern since the results are not always
+ so obvious, and the effects of filtering are there whether the file is simply
+ viewed, or downloaded. And potentially whether the content is some obnoxious
+ advertizement, or Mr. Jimmy's latest/greatest source code jewel. Of course,
+ one of these presumably is <quote>bad</quote> content that we don't want, and
+ the other is <quote>good</quote> content that we do want.
+ <application>Privoxy</application> is blind to the differences, and can only
+ distinguish <quote>good from bad</quote> by the configuration parameters
+ <emphasis>we</emphasis> give it.
+</para>
+<para>
+ <application>Privoxy</application> knows the differences in files according
+ to the <quote>Document Type</quote> as reported by the webserver. If this is
+ reported accurately (e.g. <quote>application/zip</quote> for a zip archive),
+ then <application>Privoxy</application> knows to ignore these where
+ appropriate. <application>Privoxy</application> potentially can filter HTML
+ as well as plain text documents, subject to configuration parameters of
+ course. Also, documents that are of an unknown type (generally assumed to be
+ <quote>text/plain</quote>) can be filtered, as will those that might be
+ incorrectly reported by the webserver. If such a file is a downloaded file
+ that is intended to be saved to disk, then any content that might have been
+ altered by filtering, will be saved too, for these (probably rare) cases.
+</para>
+<para>
+ Note that versions later than 3.0.2 do NOT filter document types of
+ <quote>text/plain</quote>. Prior to this, <application>Privoxy</application>
+ did filter this document type.
+</para>
+<para>
+ In short, filtering is <quote>ON</quote> if a) the Document Type as reported
+ by the webserver is appropriate <emphasis>and</emphasis> b) the configuration
+ allows it (or at least does not disallow it). That's it. There is no magic
+ cookie anywhere to say this is <quote>good</quote> and this is
+ <quote>bad</quote>. It's the configuration that let's it all happen or not.
+</para>
+<para>
+ If you download text files, you probably do not want these to be filtered,
+ particularly if the content is source code, or other critical content. Source
+ code sometimes might be mistaken for Javascript (i.e. the kind that might
+ open a pop-up window). It is recommended to turn off filtering for download
+ sites (particularly if the content may be plain text files and you are using
+ version 3.0.2 or earlier) in your <filename>user.action</filename> file. And
+ also, for any site or page where making <emphasis>any</emphasis> changes at
+ all to the content is to be avoided.
+</para>
+<para>
+ <application>Privoxy</application> does not do FTP at all, only HTTP 
+  protocols, so please don't even try.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="downloads2">
+<title>I just downloaded a Perl script, and <application>Privoxy</application>
+altered it! Yikes, what is wrong!</title>
+<para>
+ Please read above.
+</para>
+</sect2>
+
+
+<sect2 renderas="sect3" id="seealso">
+<title>Where can I find more information about <application>Privoxy</application>
+and related issues?</title>
+<!-- Include seealso.sgml boilerplate: -->
+ &seealso;
+<!-- end boilerplate -->
+
+<!--
+<para>
+ Please see the 
+ <ulink url="../user-manual/seealso.html">user-manual</ulink> for 
+ others references.
+</para>
+-->
+</sect2>
+
+<sect2 renderas="sect3" id="microsuck">
+<title>I've noticed that Privoxy changes <quote>Microsoft</quote> to 
+<quote>MicroSuck</quote>! Why are you manipulating my browsing?</title>
+
+<para>
+ We're not. The text substitutions that you are seeing are disabled
+ in the default configuration as shipped. You have either manually
+ activated the <quote><literal>fun</literal></quote> filter which
+ is clearly labeled <quote>Text replacements for subversive browsing
+ fun!</quote> or you have implicitly activated it by choosing the
+ <quote>Adventuresome</quote> profile in the web-based editor (formerly known 
+ as the <application>Advanced</application> profile).
+</para>
+</sect2>
+
+</sect1>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+
+<sect1 id="trouble">
+<title>Troubleshooting</title>
+
+<sect2 renderas="sect3">
+<title id="refused">I just upgraded and am getting <quote>connection refused</quote>
+with every web page?</title>
+<para>
+ Either <application>Privoxy</application> is not running, or your 
+ browser is configured for a different port than what
+ <application>Privoxy</application> is using.
+</para>
+
+<para>
+ The old <application>Privoxy</application> (and also
+ <application>Junkbuster</application>) used port 8000 by 
+ default. This has been changed to port 8118 now, due to a conflict 
+ with NAS (Network Audio Service), which uses port 8000. If you haven't, 
+ you need to change your browser to the new port number, or alternately 
+ change the <ulink
+ url="../user-manual/config.html#LISTEN-ADDRESS"><literal>listen-address</literal>
+ option</ulink> in <application>Privoxy's</application> <ulink
+ url="../user-manual/config.html">main configuration file</ulink>.
+</para>
+
+</sect2>
+
+<sect2 renderas="sect3">
+<title id="flushit">I just added a new rule, but the steenkin ad is 
+still getting through. How?</title>
+<para>
+ If the ad had been displayed before you added its URL, it will probably be
+ held in the browser's cache for some time, so it will be displayed without
+ the need for any request to the server, and <application>Privoxy</application>
+ will not be in the picture. The best thing to do is try flushing the browser's
+ caches. And then try again.
+</para>
+
+<para>
+ If this doesn't help, you probably have an error in the rule you
+ applied. Try pasting the full URL of the offending ad into <ulink
+ url="http://config.privoxy.org/show-url-info">http://config.privoxy.org/show-url-info</ulink>
+ and see if it really matches your new rule.
+</para>
+
+</sect2>
+
+<sect2 id="badsite" renderas="sect3">
+<title >One of my favorite sites does not work with <application>Privoxy</application>.
+What can I do?</title>
+
+<para>
+ First verify that it is indeed a <application>Privoxy</application> problem, 
+ by toggling off <application>Privoxy</application> through <ulink
+ url="http://config.privoxy.org/toggle">http://config.privoxy.org/toggle</ulink>,
+ and then shift-reloading the problem page (i.e. holding down the shift key
+ while clicking reload. Alternatively, flush your browser's disk and memory
+ caches).
+</para>
+
+<para>
+ If still a problem, go to <ulink
+ url="http://config.privoxy.org/show-url-info">http://config.privoxy.org/show-url-info</ulink>
+ and paste the full URL of the page in question into the prompt. See which actions
+ are being applied to the URL, and which matches in which actions files are
+ responsible for that. Now, armed with this information, go to <ulink
+ url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>
+ and select the appropriate actions files for editing.
+</para>
+<para>
+ You can now either look for a section which disables the actions that
+ you suspect to cause the problem and add a pattern for your site there,
+ or make up a completely new section for your site. In any case, the recommended
+ way is to disable only the prime suspect, reload the problem page, and only
+ if the problem persists, disable more and more actions until you have
+ identified the culprit. You may or may not want to turn the other actions
+ on again. Remember to flush your browser's caches in between any such changes!
+</para>
+<para>
+ Alternately, if you are comfortable with a text editor, you can accomplish 
+ the same thing by editing the appropriate actions file. Probably the easiest 
+ way to deal with such problems when editing by hand is to add your
+ site to a <literal>{ fragile }</literal> section in <filename>user.action</filename>,
+ which is an alias that turns off most <quote>dangerous</quote>
+ actions, but is also likely to turn off more actions then needed, and thus lower
+ your privacy and protection more than necessary, 
+</para>
+<para>
+ Troubleshooting actions is discussed in more detail in the <ulink
+ url="../user-manual/appendix.html#ACTIONSANAT">user-manual appendix</ulink>.
+ There is also an <ulink
+ url="../user-manual/actions-file.html#ACT-EXAMPLES">actions tutorial</ulink>.
+</para>
+
+</sect2>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 id="dun" renderas="sect3">
+<title>After installing <application>Privoxy</application>, I have to log in
+every time I start IE. What gives?</title>
+
+<para>
+ This is a quirk that effects the installation of
+ <application>Privoxy</application>, in conjunction with Internet Explorer and
+ Internet Connection Sharing on Windows 2000 and Windows XP. The symptoms may
+ appear to be corrupted or invalid DUN settings, or passwords.
+</para>
+
+<para>
+ When setting up an NT based Windows system with
+ <application>Privoxy</application> you may find that things do not seem to be
+ doing what you expect. When you set your system up you will probably have set
+ up Internet Connection Sharing (ICS) with Dial up Networking (DUN) when
+ logged in with administrator privileges. You will probably have made this DUN
+ connection available to other accounts that you may have set-up on your
+ system. E.g. Mum or Dad sets up the system and makes accounts suitably
+ configured for the kids.
+</para>
+
+<para>
+ When setting up <application>Privoxy</application> in this environment you
+ will have to alter the proxy set-up of Internet Explorer (IE) for the
+ specific DUN connection on which you wish to use
+ <application>Privoxy</application>. When you do this the ICS DUN set-up
+ becomes user specific. In this instance you will see no difference if you
+ change the DUN connection under the account used to set-up the connection.
+ However when you do this from another user you will notice that the DUN
+ connection changes to make available to "Me only". You will also find that
+ you have to store the password under each different user!
+</para>
+
+<para>
+ The reason for this is that each user's set-up for IE is user specific. Each
+ set-up DUN connection and each LAN connection in IE store the settings for
+ each user individually. As such this enforces individual configurations
+ rather than common ones. Hence the first time you use a DUN connection after
+ re-booting your system it may not perform as you expect, and prompt you for 
+ the password. Just set and save the password again and all should be OK.
+</para>
+
+<para>
+[Thanks to Ray Griffith for this submission.]
+</para>
+</sect2>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 id="ftp" renderas="sect3">
+<title>I cannot connect to any FTP sites. <application>Privoxy</application>
+ seems to be blocking me.</title>
+ <para>
+  <application>Privoxy</application> cannot act as a proxy for FTP traffic, 
+  so do not configure your browser to use <application>Privoxy</application>
+  as an FTP proxy. The same is true for <emphasis>any protocol other than HTTP
+  or HTTPS</emphasis>. 
+ </para>
+ <para>
+  Most browsers understand FTP as well as HTTP. If you connect to a site, with
+  a URL like <literal>ftp://ftp.example.com</literal>, your browser is making
+  an FTP connection, and not a HTTP connection. So while your browser may 
+  speak FTP, <application>Privoxy</application> does not, and cannot proxy 
+  such traffic.
+ </para>
+ <para>
+  To complicate matters, some systems may have a generic <quote>proxy</quote>
+  setting, which will silently enable <emphasis>both</emphasis> HTTP and FTP
+  proxying! So it is possible to accidentally enable FTP proxying in these
+  cases. And of course, if this happens, <application>Privoxy</application>
+  will indeed cause problems since it does not know FTP.
+ </para>
+ <para>
+  Will <application>Privoxy</application> ever proxy FTP traffic? Unlikely.
+  There just is not much reason, and the work to make this happen is more than
+  it may seem.
+ </para>
+</sect2>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 id="osxie" renderas="sect3">
+<title>In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+ <application>Privoxy</application> as the HTTP proxy.</title>
+ <para>
+  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
+  network settings.  In order to change the HTTP proxy, open System
+  Preferences, and click on the Network icon.  In the settings pane that
+  comes up, click on the Proxies tab.  Ensure the "Web Proxy (HTTP)" checkbox 
+  is checked and enter <literal>127.0.0.1</literal> in the entry field.  
+  Enter <literal>8118</literal> in the Port field.  The next time you start
+  IE, it should reflect these values.
+ </para>
+</sect2>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="osxuninstall">
+<title>In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+ uninstall it.  Now the finder tells me I don't have sufficient privileges to
+ empty the trash.</title>
+ <para>
+  Just dragging the <application>Privoxy</application> folder to the trash is
+  not enough to delete it.  <application>Privoxy</application> supplies an
+  <application>uninstall.command</application> file that takes care of
+  these details.  Open the trash, drag the <application>uninstall.command</application>
+  file out of the trash and double-click on it.  You will be prompted for
+  confirmation and the administration password.
+ </para> 
+ <para>
+  The trash may still appear full after this command; emptying the trash 
+  from the desktop should make it appear empty again.
+ </para>
+</sect2>
+
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="osximages">
+<title>In Mac OSX Panther (10.3), images often fail to load and/or I
+ experience random delays in page loading. I'm using
+ <literal>localhost</literal> as my browser's proxy setting.</title>
+ <para>
+  We believe this is due to an IPv6-related bug in OSX, but don't fully
+  understand the issue yet. In any case, changing the proxy setting to 
+  <literal>127.0.0.1</literal> instead of <literal>localhost</literal>
+  works around the problem.
+ </para>
+</sect2>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="blankpage">
+<title>I get a completely blank page at one site. <quote>View Source</quote>
+ shows only: <markup><![CDATA[<html><body></body></html>]]></markup>. Without
+ <application>Privoxy</application> the page loads fine.</title>
+ <para>
+  Chances are that the site suffers from a bug in
+  <ulink url="http://www.php.net/"><application>PHP</application></ulink>,
+  which results in empty pages being sent if the client explicitly requests
+  an uncompressed page, like <application>Privoxy</application> does.
+  This bug has been fixed in PHP 4.2.3.
+ </para>
+ <para>
+  To find out if this is in fact the source of the problem, try adding
+  the site to a <literal>-prevent-compression</literal> section in
+  <filename>user.action</filename>:
+ </para>
+ <screen>
+   # Make exceptions for ill-behaved sites:                                     
+   #                                                                    
+   {-prevent-compression}                                               
+    .example.com</screen>
+ <para>
+  If that works, you may also want to report the problem to the
+  site's webmasters, telling them to use zlib.output_compression
+  instead of ob_gzhandler in their PHP applications (workaround)
+  or upgrade to PHP 4.2.3 or later (fix).
+ </para>
+</sect2>
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="error503">
+<title>Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</title>
+ <para>
+  More than likely this is a problem with the network stack. ZoneAlarm has
+  been reported to cause this symptom -- even if not running. The solution is
+  to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
+  something better behaved in its place. Other firewall type products may
+  cause similar type problems if not configured correctly.
+ </para>
+</sect2>
+
+<sect2 renderas="sect3" id="nohostname">
+<title>My logs show many <quote>Unable to get my own hostname</quote> lines.
+Why?</title>
+<para>
+ <application>Privoxy</application> tries to get the hostname of the system
+ its running on from the IP address of the system interface it is bound to
+ (from the <filename>config</filename> file
+ <emphasis>listen-address</emphasis> setting). If the system cannot supply
+ this information, <application>Privoxy</application> logs this condition. 
+</para>
+<para>
+ Typically, this would be considered a system configuration error. It is not a
+ fatal error to <application>Privoxy</application> however, but may result in 
+ a much slower response from <application>Privoxy</application> due to DNS
+ timeouts.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="inuse">
+<title>When I try to launch <application>Privoxy</application>, I get an 
+error message <quote>port 8118 is already in use</quote> (or similar wording).
+Why?</title>
+<para>
+ Port 8118 is <application>Privoxy's</application> default TCP 
+ <quote>listening</quote> port. Typically this message would mean that there
+ is already one instance of <application>Privoxy</application> running, and
+ you are actually trying to start a second <application>Privoxy</application> 
+ on the same port, which will not work. How and why this might happen varies
+ from platform to platform, but you need to check your installation and
+ start-up procedures.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer">
+<title>
+ Pages with UTF-8 fonts are garbled.
+</title>
+<para>
+ This is caused by the <quote>demoronizer</quote> filter, which was introduced 
+ in version 3.0.2, and was inappropriately turned on by default. You should 
+ either upgrade <application>Privoxy</application>, or at least upgrade to the most 
+ recent <filename>default.action</filename> file available from 
+ <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">SourceForge</ulink>.
+ Or you can simply disable the demoronizer filter.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer2">
+<title>
+ Why are binary files (such as images) corrupted when <application>Privoxy</application>
+ is used?
+</title>
+<para>
+ This may also be caused by the <quote>demoronizer</quote> filter, 
+ in conjunction with a web server that is misreporting a file type. Binary 
+ files are exempted from <application>Privoxy's</application> filtering
+ (unless the web server by mistake says the file is a plain text file). Either
+ upgrade <application>Privoxy</application>, or go to the most recent
+ <filename>default.action</filename> file available from <ulink
+ url="http://sourceforge.net/project/showfiles.php?group_id=11118">SourceForge</ulink>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer3">
+<title>
+ What is the <quote>demoronizer</quote> and why is it there?
+</title>
+<para>
+ The original demoronizer was a Perl script that cleaned up HTML pages which 
+ were created with certain Microsoft products. MS has used proprietary extensions 
+ to standardized font encodings (ISO 8859-1), which has caused problems for pages
+ that are viewed with non-Microsoft products (and are expecting to see a
+ standard set of fonts). The demoronizer corrected these errors so the pages
+ displayed correctly. <application>Privoxy</application> borrowed from this
+ script, introducing a filter based on the original demoronizer, which in turn could
+ correct these errors on the fly. 
+</para>
+<para>
+ But this is only needed in some situations, and will cause serious problems in some 
+ other situations.
+</para>
+<para>
+ If you are using Microsoft products, you do not need it. If you need to view 
+ pages with UTF-8 characters (such as Cyrillic or Chinese), then it will 
+ cause corruption of the fonts, and thus <emphasis>should not be on</emphasis>.
+</para>
+<para>
+ On the other hand, if you use non-Microsoft products, and you occasionally 
+ notice wierd characters on pages, you might want to try it.
+</para>
+<para>
+ This filter was introduced with version 3.0.2 of <application>Privoxy</application>,
+ and was on by default in that version. It is off in all subsequent versions 
+ (unless turned on by the user).
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="windowopen">
+<title>
+ Why do I keep seeing <quote>PrivoxyWindowOpen()</quote> in raw source code?
+</title>
+<para>
+ <application>Privoxy</application> is attempting to disable malicious 
+ Javascript in this case, with the <literal>unsolicited-popups</literal>
+ filter. <application>Privoxy</application> cannot tell very well 
+ <quote>good</quote> code snippets from <quote>bad</quote> code snippets.
+</para>
+<para>
+ If you see this in HTML source, and the page displays without problems, then 
+ this is good, and likely some pop-up window was disabled. If you see this 
+ where it is causing a problem, such as a downloaded program source code file, 
+ then you should set an exception for this site or page such that the
+ integrity of the page stays in tact by disabling all filtering.
+</para>
+</sect2>
+
+</sect1>
+
+  <!--   ~~~~~       New section      ~~~~~     -->
+  <sect1 id="contact"><title>Contacting the developers, Bug Reporting and Feature Requests</title>
+<!-- Include contacting.sgml  -->
+ &contacting;
+<!-- end contacting -->
+  </sect1>
+  
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect1 id="copyright"><title>Privoxy Copyright, License and History</title>
+
+ <!-- Include copyright.sgml -->
+  &copyright;
+ <!-- end -->
+  
+
+  <para>
+   Portions of this document are <quote>borrowed</quote> from the original
+   <application>Junkbuster</application> (tm) FAQ, and modified as 
+   appropriate for <application>Privoxy</application>.
+  </para>
+
+ <!--   ~~~~~       New section      ~~~~~     -->
+ <sect2><title>License</title>
+ <!-- Include copyright.sgml: -->
+  &license;
+ <!-- end copyright -->
+ </sect2>
+ <!--  ~  End section  ~  -->
+
+ <!--   ~~~~~       New section      ~~~~~     -->
+ <sect2><title>History</title>
+ <!-- Include history.sgml -->
+  &history;
+ <!-- end -->
+ </sect2>
+
+ </sect1>
+ <!--  ~  End section  ~  -->
+ 
+  
+<!--   ~~~~~       New section      ~~~~~     -->
+<!--
+<sect1 id="seealso"><title>See also</title>
+-->
+<!-- Include seealso.sgml -->
+<!--
+ &see;
+-->
+<!-- end  -->
+<!--
+</sect1>
+-->
+
+<!-- hhmts end -->
+ <!--
+ Tue 09/11/01 06:38:14 PM EST: Test SGML doc by Hal Burgiss.
+ 
+ This program is free software; you can redistribute it 
+ and/or modify it under the terms of the GNU General
+ Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at
+ your option) any later version.
+
+ This program is distributed in the hope that it will
+ be useful, but WITHOUT ANY WARRANTY; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE.  See the GNU General Public
+ License for more details.
+
+ The GNU General Public License should be included with
+ this file.  If not, you can view it at
+ http://www.gnu.org/copyleft/gpl.html
+ or write to the Free Software Foundation, Inc., 59
+ Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+$Log: faq.sgml,v $
+Revision 1.61.2.40  2004/01/30 17:00:33  oes
+Added OSX Panther problem
+
+Revision 1.61.2.39  2004/01/29 22:53:08  hal9
+Minor changes for exempting docs of text/plain. Change copyright date.
+
+Revision 1.61.2.38  2003/12/10 03:39:45  hal9
+Added FAQs for: demoronizer, related problems and why its included. Also,
+port 8118 already in use questions, and PrivoxyWindowOpen() questions. All in
+troubleshooting section.
+
+Revision 1.61.2.37  2003/10/17 11:01:50  oes
+Added Q&A for "not being used" page problem
+
+Revision 1.61.2.36  2003/06/26 23:49:20  hal9
+More on the filter/source code problem.
+
+Revision 1.61.2.35  2003/06/26 13:38:08  hal9
+Add FAQ on whether configuring Privoxy is necessary or not.
+
+Revision 1.61.2.34  2003/06/26 03:00:03  hal9
+Sorry, found another copyright date.
+
+Revision 1.61.2.33  2003/06/26 02:57:05  hal9
+Fix typo (finally!) and very minor modifications.
+
+Revision 1.61.2.32  2003/06/26 02:52:04  hal9
+Test, no changes.
+
+Revision 1.61.2.31  2003/06/25 01:27:51  hal9
+Fix copyright, and a few nits.
+
+Revision 1.61.2.30  2003/06/25 01:13:52  hal9
+Add:
+
+ - FAQ on "Unable to get my own hostname"
+ - Another one on filtering effects on text files.
+
+Revision 1.61.2.29  2003/06/15 21:32:58  hal9
+Add to the 4.17 (filtering effects on downloaded files).
+
+Revision 1.61.2.28  2003/03/18 19:37:21  oes
+s/Advanced|Radical/Adventuresome/g to avoid complaints re fun filter
+
+Revision 1.61.2.27  2002/12/01 06:31:58  hal9
+Add faq on win32 error 503 due to ZoneAlarm.
+
+Revision 1.61.2.26  2002/11/17 06:41:06  hal9
+Move default profiles table from FAQ to U-M, and other minor related changes.
+Add faq on cookies.
+
+Revision 1.61.2.25  2002/10/29 03:21:50  hal9
+Add 3 Q/A's relating to HTML in email. Other minor touchups.
+
+Revision 1.61.2.24  2002/10/15 12:50:22  oes
+s/Advanced/Radical/ (stupid me)
+
+Revision 1.61.2.23  2002/10/15 12:38:56  oes
+Added Microsuck faq; more detail for PHP problem
+
+Revision 1.61.2.22  2002/10/12 01:13:13  hal9
+Updates for demoronizer, more commentary on Radical profile, and update on
+the srvany.exe/icon fix.
+
+Revision 1.61.2.21  2002/10/10 04:09:35  hal9
+s/Advanced/Radical/ and added very brief note.
+
+Revision 1.61.2.20  2002/09/26 01:22:45  hal9
+Small additions for LAN setup, content-cookies/SSL, and FTP non-support.
+
+Revision 1.61.2.19  2002/08/25 23:31:56  hal9
+Fix one grammatical error. Add brief FAQ relating to tranparent proxies (ie
+port 80 setting). Add FAQ on effects of Privoxy on downloaded files
+(especially filtering).
+
+Revision 1.61.2.18  2002/08/14 16:39:37  hal9
+Fix wrong tag on FAQ addition.
+
+Revision 1.61.2.17  2002/08/14 00:01:18  hal9
+Add a crunch FAQ.
+
+Revision 1.61.2.16  2002/08/13 00:10:38  hal9
+Add faq to troubleshooting re: blank page syndrome, ie {-prevent-compression}.
+
+Revision 1.61.2.15  2002/08/10 11:34:22  oes
+Add disclaimer about probably being out-of-date
+
+Revision 1.61.2.14  2002/08/07 02:53:43  hal9
+Fix some minor markup errors, and move one OSX Q/A to troubleshooting section.
+
+Revision 1.61.2.13  2002/08/06 11:55:32  oes
+Added missing close tag
+
+Revision 1.61.2.12  2002/08/06 11:43:46  david__schmidt
+Updated OSX uninstall FAQ... we have an uninstall script now.
+
+Revision 1.61.2.11  2002/08/06 08:54:03  oes
+Style police: Fixed formatting details
+
+Revision 1.61.2.10  2002/08/02 14:00:25  david__schmidt
+Made the OSX removal commands far less dangerous
+
+Revision 1.61.2.9  2002/08/02 13:14:45  oes
+Added warning about sudo rm -r for Mac OSX deinstallation; moved this item to install section
+
+Revision 1.61.2.8  2002/08/02 02:01:42  david__schmidt
+Add FAQ item for MSIE on OSX HTTP proxy confusion
+
+Revision 1.61.2.7  2002/08/02 01:46:01  david__schmidt
+Added FAQ item for Mac OSX uninstall woes
+
+Revision 1.61.2.6  2002/07/30 20:04:56  hal9
+Fix typo: 'schould'.
+
+Revision 1.61.2.5  2002/07/26 15:22:58  oes
+- Updated to reflect changes in standard.action
+- Added info on where to get updated actions files
+
+Revision 1.61.2.4  2002/07/25 21:42:29  hal9
+Add brief notes on not proxying non-HTTP protocols.
+
+Revision 1.61.2.3  2002/06/09 16:36:33  hal9
+Clarifications on filtering and MIME. Hardcode 'latest release' in index.html.
+
+Revision 1.61.2.2  2002/06/06 02:51:34  hal9
+Fix typo in URL http:/config.privoxy.org
+
+Revision 1.61.2.1  2002/06/05 23:10:43  hal9
+Add new FAQ re: DUN/IE. Change release date from May to June :)
+
+Revision 1.61  2002/05/25 12:37:25  hal9
+Various minor changes and edits.
+
+Revision 1.60  2002/05/22 17:17:48  oes
+Proofread & added more links into u-m
+
+Revision 1.59  2002/05/15 04:03:30  hal9
+Fix ulink -> link markup.
+
+Revision 1.58  2002/05/10 01:48:20  hal9
+This is mostly proposed copyright/licensing additions and changes. Docs
+are still GPL, but licensing and copyright are more visible. Also, copyright
+changed in doc header comments (eliminate references to JB except FAQ).
+
+Revision 1.57  2002/05/05 20:26:02  hal9
+Sorting out license vs copyright in these docs.
+
+Revision 1.56  2002/05/04 08:44:44  swa
+bumped version
+
+Revision 1.55  2002/05/04 00:41:56  hal9
+-Remove TOC/first page kludge in favor of proper handling via dsl file.
+
+Revision 1.54  2002/05/03 05:06:44  hal9
+Add brief Q/A on transparent proxies.
+
+Revision 1.53  2002/05/03 01:34:52  hal9
+Fix section numbering for new sections (due to TOC kludge).
+
+Revision 1.52  2002/04/29 03:08:43  hal9
+-Added new Q/A on new actions file set up (pointer to u-m)
+-Fixed a few broken links and converted old actions as a result of
+ recent changes.
+
+Revision 1.51  2002/04/26 17:24:31  swa
+bookmarks cleaned, changed structure of user manual, screen and programlisting cleanups, and numerous other changes that I forgot
+
+Revision 1.50  2002/04/26 05:25:23  hal9
+Mass commit to catch a few scattered fixes.
+
+Revision 1.49  2002/04/12 10:10:18  swa
+version update
+
+Revision 1.48  2002/04/10 18:45:15  swa
+generated
+
+Revision 1.47  2002/04/10 04:05:32  hal9
+More on BML, etc.
+
+Revision 1.45  2002/04/08 22:59:26  hal9
+Version update. Spell chkconfig correctly :)
+
+Revision 1.44  2002/04/07 21:24:29  hal9
+Touch up on name change.
+
+Revision 1.43  2002/04/04 21:59:53  hal9
+Added NT/W2K service/icon situation.
+
+Revision 1.42  2002/04/04 18:46:47  swa
+consistent look. reuse of copyright, history et. al.
+
+Revision 1.41  2002/04/04 06:48:37  hal9
+Structural changes to allow for conditional inclusion/exclusion of content
+based on entity toggles, e.g. 'entity % p-not-stable  "INCLUDE"'. And
+definition of internal entities, e.g. 'entity p-version "2.9.13"' that will
+eventually be set by Makefile.
+More boilerplate text for use across multiple docs.
+
+Revision 1.40  2002/04/03 04:22:03  hal9
+Fixed several typos.
+
+Revision 1.39  2002/04/03 03:53:03  hal9
+Revert some changes, and then make some news, to layout, and appearance.
+
+Revision 1.38  2002/04/02 03:49:10  hal9
+Major changes to doc structure and layout. Sections are not automatically
+numbered now. TOC is on page by itself.
+
+Revision 1.37  2002/04/01 16:24:07  hal9
+-Rework of supported Q/A.
+-Set up entities to include boilerplate text.
+
+Revision 1.36  2002/03/31 23:18:47  hal9
+More on dealing with BLOCKED.
+
+Revision 1.35  2002/03/30 04:14:19  hal9
+Fix privoxy.org/config links.
+
+Revision 1.34  2002/03/29 04:35:56  hal9
+Touch ups.
+
+Revision 1.33  2002/03/29 01:31:48  hal9
+Several new Q/A's and other touch ups.
+
+Revision 1.32  2002/03/27 00:57:03  hal9
+Touch ups for name change.
+
+Revision 1.31  2002/03/26 22:29:55  swa
+we have a new homepage!
+
+Revision 1.30  2002/03/25 16:39:22  hal9
+A few new sections. Made all links relative to user-manual.
+
+Revision 1.29  2002/03/25 05:23:57  hal9
+Moved section, and touch ups.
+
+Revision 1.28  2002/03/25 04:27:33  hal9
+New section related to name change.
+
+Revision 1.25  2002/03/24 16:08:08  swa
+we are too lazy to make a block-built
+privoxy logo. hence removed the option.
+
+Revision 1.24  2002/03/24 15:46:20  swa
+name change related issue.
+
+Revision 1.23  2002/03/24 12:33:01  swa
+more additions.
+
+Revision 1.22  2002/03/24 11:51:00  swa
+name change. changed filenames.
+
+Revision 1.21  2002/03/24 11:01:06  swa
+name change
+
+Revision 1.20  2002/03/23 15:13:11  swa
+renamed every reference to the old name with foobar.
+fixed "application foobar application" tag, fixed
+"the foobar" with "foobar". left junkbustser in cvs
+comments and remarks to history untouched.
+
+Revision 1.19  2002/03/21 17:01:54  hal9
+Some touch ups.
+
+Revision 1.18  2002/03/18 16:40:31  hal9
+More additions.
+
+Revision 1.17  2002/03/18 03:53:53  hal9
+Some new additions.
+
+Revision 1.16  2002/03/17 21:32:56  hal9
+A few more additions.
+
+Revision 1.15  2002/03/17 07:25:59  hal9
+Correcting some of my typos, and some additions.
+
+Revision 1.14  2002/03/17 02:39:13  hal9
+A little more added ...
+
+Revision 1.13  2002/03/17 00:22:20  hal9
+Adding new stuff, and trying to incorporate stuff from old faq.
+
+Revision 1.12  2002/03/11 20:13:21  swa
+typo
+
+Revision 1.11  2002/03/11 18:42:27  swa
+new section
+
+Revision 1.10  2002/03/11 13:13:27  swa
+correct feedback channels
+
+Revision 1.9  2002/03/10 23:34:04  swa
+more info on not hiding ip address
+
+Revision 1.8  2002/03/09 15:55:48  swa
+added default config section
+
+Revision 1.7  2002/03/07 18:16:55  swa
+looks better
+
+Revision 1.6  2002/03/07 13:16:31  oes
+Committing changes by Stefan
+
+Revision 1.5  2002/03/02 15:50:04  swa
+2.9.11 version. more input for docs.
+
+Revision 1.4  2002/02/24 14:34:24  jongfoster
+Formatting changes.  Now changing the doctype to DocBook XML 4.1
+will work - no other changes are needed.
+
+Revision 1.3  2001/09/23 10:13:48  swa
+upload process established. run make webserver and
+the documentation is moved to the webserver. documents
+are now linked correctly.
+
+Revision 1.2  2001/09/13 15:20:17  swa
+merged standards into developer manual
+
+Revision 1.1  2001/09/12 15:36:41  swa
+source files for junkbuster documentation
+
+Revision 1.3  2001/09/10 17:43:59  swa
+first proposal of a structure.
+
+Revision 1.2  2001/06/13 14:28:31  swa
+docs should have an author.
+
+Revision 1.1  2001/06/13 14:20:37  swa
+first import of project's documentation for the webserver.
+
+-->
+
+</article>

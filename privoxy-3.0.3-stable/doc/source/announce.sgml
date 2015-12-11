@@ -1,0 +1,113 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!entity % dummy "IGNORE"> 
+<!entity supported SYSTEM "../supported.sgml">
+<!entity p-intro SYSTEM "../privoxy.sgml">
+<!entity contacting SYSTEM "../contacting.sgml">
+<!entity history SYSTEM "../history.sgml">
+<!entity newfeatures SYSTEM "../newfeatures.sgml">
+<!entity p-version "3.0.0">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
+<!entity % p-supp-userman "IGNORE">
+<!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
+<!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
+<!entity % announce-big "IGNORE"> <!-- toggle for short vs long version -->
+]>
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/announce.sgml,v $
+
+ Purpose     :  Announcement text
+                
+ $Id: announce.sgml,v 1.1.2.2 2002/08/30 02:52:11 hal9 Exp $
+
+ Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ========================================================================
+ NOTE: Please read developer-manual/documentation.html before touching 
+ anything in this, or other Privoxy documentation. You have been warned!
+ Failure to abide by this rule will result in the revocation of your license 
+ to live a peaceful existence!
+ ========================================================================
+
+ ===================================================================
+ NOTE: This will is designed to build a generic announcement for use 
+ with new releases of Privoxy. It will build both a short and long 
+ version. Also, both text and html versions are generated, so that 
+ press release packages can contain both formats for those that might 
+ prefer HTML ready announce text.
+
+ This may require a small bit of hand editing before processing. 
+ The intention is to minimize this as much as possible.
+
+ To create: make announce
+ ===================================================================
+
+-->
+<article id="index">
+<![%dummy;[
+ <para>
+ <comment>
+  This is here to keep vim syntax file from breaking :/
+  If I knew enough to fix it, I would.
+  PLEASE DO NOT REMOVE! HB: hal@foobox.net
+ </comment>
+ </para>
+]]>
+
+<para>
+ Announcing <application>Privoxy</application> 
+ v.&p-version;<![%p-not-stable;[-&p-status;, and release candidate for 
+ v3.0 stable]]>.
+</para>
+<para>
+ <![%p-stable;[
+ This is the first stable release of Privoxy.
+ ]]>
+</para>
+
+
+<!-- Include privoxy.sgml boilerplate: -->
+ &p-intro;
+<!-- end boilerplate -->
+
+<!-- Include supported.sgml boilerplate: -->
+ &supported;
+<!-- end boilerplate -->
+
+<para>
+ In addition to the traditional features of <application>Internet
+ Junkbuster</application>, such as ad and banner blocking, cookie
+ management/protection, and HTTP header manipulation,
+ <application>Privoxy</application> 
+ adds many enhancements, and new features in the same vein.
+</para>
+
+<![%announce-big;[
+<!-- Include newfeatures.sgml boilerplate: -->
+  &newfeatures;
+<!-- end boilerplate -->
+
+<!-- Include history.sgml boilerplate: -->
+ <!-- &history; this doesn't work so well here --> 
+<!-- end boilerplate -->
+
+]]>
+
+<para> 
+ <literallayout>Download location: 
+   <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">http://sourceforge.net/project/showfiles.php?group_id=11118</ulink>
+ </literallayout>
+</para>
+
+<para> 
+ <literallayout>Home Page: 
+   <ulink url="http://www.privoxy.org/">http://www.privoxy.org/</ulink>
+ </literallayout>
+</para>
+
+
+<epigraph><attribution>Privoxy Developers <email>developers@privoxy.org</email></attribution><para></para></epigraph>
+
+</article>

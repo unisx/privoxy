@@ -1,0 +1,148 @@
+                 Announcing Privoxy v.3.0.11
+-----------------------------------------------------------------
+
+3.0.11 is a stable release which includes many enhancements but no major 
+new features. The most prominent new feature is "keep-alive" support for 
+outgoing connections.
+
+See http://www.privoxy.org/3.0.11/user-manual/whatsnew.html for details.
+
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+
+*** Version 3.0.11 ***
+	
+- On most platforms, outgoing connections can be kept alive and
+  reused if the server supports it. Whether or not this improves
+  things depends on the connection.
+- When dropping privileges, membership in supplementary groups
+  is given up as well. Not doing that can lead to Privoxy running
+  with more rights than necessary and violates the principle of
+  least privilege. Users of the --user option are advised to update.
+  Thanks to Matthias Drochner for reporting the problem,
+  providing the initial patch and testing the final version.
+- Passing invalid users or groups with the --user option
+  didn't lead to program exit. Regression introduced in 3.0.7.
+- The match all section has been moved from default.action
+  to a new file called match-all.action. As a result the
+  default.action no longer needs to be touched by the user
+  and can be safely overwritten by updates.
+- The standard.action file has been removed. Its content
+  is now part of the default.action file.
+- In some situations the logged content length was slightly too low.
+- Crunched requests are logged with their own log level.
+  If you used "debug 1" in the past, you'll probably want
+  to additionally enable "debug 1024", otherwise only passed
+  requests will be logged. If you only care about crunched
+  requests, simply replace "debug 1" with "debug 1024".
+- The crunch reason has been moved to the beginning of the
+  crunch message. For HTTP URLs, the protocol is logged as well.
+- Log messages are shortened by printing the thread id on its
+  own (as opposed to putting it inside the string "Privoxy()").
+- The config option socket-timeout has been added to control
+  the time Privoxy waits for data to arrive on a socket.
+- Support for remote toggling is controlled by the configure
+  option --disable-toggle only. In previous versions it also
+  depended on the action editor and thus configuring with the
+  --disable-editor option would disable remote toggling support
+  as well.
+- Requests with invalid HTTP versions are rejected.
+- The template symbol @date@ can be used to include a date(1)-like
+  time string. Initial patch submitted by Endre Szabo.
+- Responses from shoutcast servers are accepted again.
+  Problem reported and fix suggested by Stefan.
+- The hide-forwarded-for-headers action has been replaced with
+  the change-x-forwarded-for{} action which can also be used to
+  add X-Forwarded-For headers. The latter functionality already
+  existed in Privoxy versions prior to 3.0.7 but has been removed
+  as it was often used unintentionally (by not using the
+  hide-forwarded-for-headers action).
+- A "clear log" view option was added to the mingw32 version
+  to clear out all of the lines in the Privoxy log window.
+  Based on a patch submitted by T Ford.
+- The mingw32 version uses "critical sections" now, which prevents
+  log message corruption under load. As a side effect, the
+  "no thread-safe PRNG" warning could be removed as well.
+- The mingw32 version's task bar icon is crossed out and
+  the color changed to gray if Privoxy is toggled off.
+
+-----------------------------------------------------------------
+About Privoxy:
+-----------------------------------------------------------------
+
+Privoxy is a non-caching web proxy with advanced filtering
+capabilities for enhancing privacy, modifying web page data,
+managing HTTP cookies, controlling access, and removing ads,
+banners, pop-ups and other obnoxious Internet junk. Privoxy
+has a flexible configuration and can be customized to suit
+individual needs and tastes. Privoxy has application for
+both stand-alone systems and multi-user networks.
+
+Privoxy is based on Internet Junkbuster (tm).
+
+At present, Privoxy is known to run on Windows(95, 98, ME, 2000,
+XP, Vista), Linux (Ubuntu, RedHat, SuSE, Debian, Fedora, Gentoo and
+others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD, Solaris, and
+various other flavors of Unix.
+
+In addition to the core features of ad blocking and cookie management,
+Privoxy provides many supplemental features, that give the end-user
+more control, more privacy and more freedom:
+
+
+    *  Can keep outgoing connections alive and reuse them later on.
+
+    *  Supports tagging which allows to change the behaviour based on client
+       and server headers.
+
+    *  Can be run as an "intercepting" proxy, which obviates the need to
+       configure browsers individually.
+
+    *  Sophisticated actions and filters for manipulating both server and
+       client headers.
+
+    *  Can be chained with other proxies.
+
+    *  Integrated browser based configuration and control utility at
+       http://config.privoxy.org/ (shortcut: http://p.p/). Browser-based
+       tracing of rule and filter effects. Remote toggling.
+
+    *  Web page filtering (text replacements, removes banners based on size,
+       invisible "web-bugs", JavaScript and HTML annoyances, pop-up windows,
+       etc.)
+
+    *  Modularized configuration that allows for standard settings and user
+       settings to reside in separate files, so that installing updated actions
+       files won't overwrite individual user settings.
+
+    *  Support for Perl Compatible Regular Expressions in the configuration
+       files, and a more sophisticated and flexible configuration syntax.
+
+    *  Improved cookie management features (e.g. session based cookies).
+
+    *  GIF de-animation.
+
+    *  Bypass many click-tracking scripts (avoids script redirection).
+
+    *  Multi-threaded (POSIX and native threads).
+
+    *  User-customizable HTML templates for most proxy-generated pages (e.g.
+       "blocked" page).
+
+    *  Auto-detection and re-reading of config file changes.
+
+    *  Improved signal handling, and a true daemon mode (Unix).
+    
+    *  Every feature now controllable on a per-site or per-location basis,
+       configuration more powerful and versatile over-all.
+    
+
+Download location: 
+   http://sourceforge.net/project/showfiles.php?group_id=11118
+ 
+Home Page: 
+   http://www.privoxy.org/
+
+
+  - Privoxy Developers <ijbswa-developers@lists.sourceforge.net>

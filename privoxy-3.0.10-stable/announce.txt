@@ -1,0 +1,162 @@
+                 Announcing Privoxy v.3.0.10
+-----------------------------------------------------------------
+
+3.0.9 is a stable release which includes many enhancements but no major 
+new features. The most prominent improvements are SOCKS5 support and 
+zlib support for the default Privoxy builds.
+
+See http://www.privoxy.org/3.0.10/user-manual/whatsnew.html for details.
+
+--------------------------------------------------------------------
+ChangeLog for Privoxy
+--------------------------------------------------------------------
+
+*** Version 3.0.10 ***
+
+- Ordinary configuration file changes no longer cause program
+  termination on OS/2 if the name of the logfile hasn't been
+  changed as well. This regression probably crept in with the
+  logging improvements in 3.0.7. Reported by Maynard.
+- The img-reorder filter is less likely to mess up JavaScript code in
+  img tags. Problem and solution reported by Glenn Washburn in #2014552.
+- The source tar ball now includes Privoxy-Log-Parser,
+  a syntax-highlighter for Privoxy logs. For fancy screenshots see:
+  http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
+  Documentation is available through perldoc(1).
+
+*** Version 3.0.9 Beta ***
+
+- Added SOCKS5 support (with address resolution done by
+  the SOCKS5 server). Patch provided by Eric M. Hopper.
+- The "blocked" CGI pages include a block reason that was
+  provided as argument to the last-applying block action.
+- If enable-edit-actions is disabled (the default since 3.0.7 beta)
+  the show-status page hides the edit buttons and explains why.
+  Previously the user would get the "this feature has been disabled"
+  message after using the edit button.
+- Forbidden CONNECT requests are treated like blocks by default.
+  The now-pointless treat-forbidden-connects-like-blocks action
+  has been removed.
+- Not enabling limit-connect now allows CONNECT requests to all ports.
+  In previous versions it would only allow CONNECT requests to port 443.
+  Use +limit-connect{443} if you think you need the old default behaviour.
+- The CGI editor gets turned off after three edit requests with invalid
+  file modification timestamps. This makes life harder for attackers
+  who can leverage browser bugs to send fake Referers and intend to
+  brute-force edit URLs.
+- Action settings for multiple patterns in the same section are
+  shared in memory. As a result these sections take up less space
+  (and are loaded slightly faster). Problem reported by Franz Schwartau.
+- Linear white space in HTTP headers will be normalized to single
+  spaces before parsing the header's content, headers split across
+  multiple lines get merged first. This should prevent problems like:
+   * letting the session-cookies-only action slip
+     some Cookies through unmodified,
+   * only suppressing the first line of a header,
+     thus creating an invalid one, and
+   * to incorrectly block headers with valid timestamps
+     that weren't properly recognized.
+  Headers that could trigger these problems are unlikely to appear
+  in "normal" web traffic, but could be intentionally generated to
+  fool some of Privoxy's header parsers.
+- Host information is gathered outside the main thread so it's less
+  likely to delay other incoming connections if the host is misconfigured.
+- New config option "hostname" to use a hostname other than
+  the one returned by the operating system. Useful to speed-up responses
+  for CGI requests on misconfigured systems. Requested by Max Khon.
+- The CGI editor supports the "disable all filters of this type"
+  directives "-client-header-filter", "-server-header-filter",
+  "-client-header-tagger" and "-server-header-tagger".
+- Fixed false-positives with the link-by-url filter and URLs that
+  contain the pattern "/jump/".
+- The less-download-windows filter no longer messes
+  "Content-Type: application/x-shockwave-flash" headers up.
+- In the show-url-info page's "Final results" section active and
+  inactive actions are listed separately. Patch provided by Lee.
+- The GNUmakefile supports the DESTDIR variable. Patch for
+  the install target submitted by Radoslaw Zielinski.
+- Embedding the content of configuration files in the show-status
+  page is significantly faster now. For a largish action file (1 MB)
+  a speedup of about 2450 times has been measured. This is mostly
+  interesting if you are using large action files or regularly use
+  Privoxy-Regression-Test while running Privoxy through Valgrind,
+  for stock configuration files it doesn't really matter.
+- If zlib support is unavailable and there are content
+  filters active but the prevent-compression action is disabled,
+  the show-url-info page includes a warning that compression
+  might prevent filtering.
+- The show-url-info page provides an OpenSearch Description that
+  allows to access the page through browser search plugins.
+- Custom client-header filters that rewrite the request line
+  incorrectly no longer cause Privoxy to crash. Reported by din_a4.
+- The obsolete kill-popups action has been removed as the
+  PCRS-based popup filters can do the same and are slightly
+  less unreliable.
+- The inspect-jpegs action has been removed.
+- The send-wafer and send-vanilla-wafer actions have been removed.
+  They weren't particular useful and their behaviour could be emulated
+  with add-header anyway.
+- Privoxy-Regression-Test has been significantly improved.
+- Most sections in the default.action file contain tests for
+  Privoxy-Regression-Test to verify that they are working as intended.
+- Parts of Privoxy have been refactored to increase maintainability.
+- Building with zlib (if available) is done by default.
+
+-----------------------------------------------------------------
+About Privoxy:
+-----------------------------------------------------------------
+
+Privoxy is a web proxy with advanced filtering capabilities for
+protecting privacy, modifying web page data, managing cookies,
+controlling access, and removing ads, banners, pop-ups and other
+obnoxious Internet junk. Privoxy has a very flexible
+configuration and can be customized to suit individual needs
+and tastes. Privoxy has application for both stand-alone systems
+and multi-user networks.
+
+Privoxy is based on Internet Junkbuster (tm).
+
+At present, Privoxy is known to run on Windows(95, 98, ME, 2000,
+XP, Vista), Linux (Ubuntu, RedHat, SuSE, Debian, Fedora, Gentoo and
+others), Mac OSX, OS/2, AmigaOS, FreeBSD, NetBSD, OpenBSD, Solaris, and
+various other flavors of Unix.
+
+In addition to the traditional features of ad and junk blocking, and cookie
+management, Privoxy adds these features:
+
+  * Can be run as an "intercepting" proxy, which obviates the need to
+    configure browsers individually.
+
+  * Sophisticated actions and filters for manipulating both server and client
+    headers.        
+
+  * Can be chained with other proxies.
+
+  * Integrated browser based configuration and control utility
+    at http://config.privoxy.org/ (shortcut: http://p.p/). Browser-based
+    tracing of rule and filter effects. Remote toggling.
+
+  * Bypass many click-tracking scripts (avoids script redirection).
+   
+  * Multi-threaded (POSIX and native threads).
+   
+  * User-customizable HTML templates for all proxy-generated pages (e.g.
+    "blocked" page).
+   
+  * Auto-detection and re-reading of config file changes.
+   
+  * Improved signal handling, and a true daemon mode (Unix).
+   
+  * Every feature now controllable on a per-site or per-location basis,
+    configuration more powerful and versatile over-all.
+   
+  * Many smaller new features added, limitations and bugs removed.
+
+Download location: 
+   http://sourceforge.net/project/showfiles.php?group_id=11118
+ 
+Home Page: 
+   http://www.privoxy.org/
+
+
+  - Privoxy Developers <ijbswa-developers@lists.sourceforge.net>

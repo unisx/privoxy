@@ -1,0 +1,482 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>What's New in this Release</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Privoxy 3.0.10 User Manual"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Installation"
+HREF="installation.html"><LINK
+REL="NEXT"
+TITLE="Quickstart to Using Privoxy"
+HREF="quickstart.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="../p_doc.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html;
+charset=ISO-8859-1">
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="p_doc.css">
+</head
+><BODY
+CLASS="SECT1"
+BGCOLOR="#EEEEEE"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Privoxy 3.0.10 User Manual</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="WHATSNEW"
+>3. What's New in this Release</A
+></H1
+><P
+> There are many improvements and new features since <SPAN
+CLASS="APPLICATION"
+>Privoxy 3.0.8</SPAN
+>, the last stable release:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>    Added SOCKS5 support (with address resolution done by
+    the SOCKS5 server). Patch provided by Eric M. Hopper.
+   </P
+></LI
+><LI
+><P
+>    The "blocked" CGI pages include a block reason that was
+    provided as argument to the last-applying block action.
+   </P
+></LI
+><LI
+><P
+>    If enable-edit-actions is disabled (the default since 3.0.7 beta)
+    the show-status page hides the edit buttons and explains why.
+    Previously the user would get the "this feature has been disabled"
+    message after using the edit button.
+   </P
+></LI
+><LI
+><P
+>    Forbidden CONNECT requests are treated like blocks by default.
+    The now-pointless treat-forbidden-connects-like-blocks action
+    has been removed.
+   </P
+></LI
+><LI
+><P
+>    Not enabling limit-connect now allows CONNECT requests to all ports.
+    In previous versions it would only allow CONNECT requests to port 443.
+    Use +limit-connect{443} if you think you need the old default behaviour.
+   </P
+></LI
+><LI
+><P
+>    The CGI editor gets turned off after three edit requests with invalid
+    file modification timestamps. This makes life harder for attackers
+    who can leverage browser bugs to send fake Referers and intend to
+    brute-force edit URLs.
+   </P
+></LI
+><LI
+><P
+>    Action settings for multiple patterns in the same section are
+    shared in memory. As a result these sections take up less space
+    (and are loaded slightly faster). Problem reported by Franz Schwartau.
+   </P
+></LI
+><LI
+><P
+>    Linear white space in HTTP headers will be normalized to single
+    spaces before parsing the header's content, headers split across
+    multiple lines get merged first.
+   </P
+></LI
+><LI
+><P
+>    Host information is gathered outside the main thread so it's less
+    likely to delay other incoming connections if the host is misconfigured.
+   </P
+></LI
+><LI
+><P
+>    New config option "hostname" to use a hostname other than
+    the one returned by the operating system. Useful to speed-up responses
+    for CGI requests on misconfigured systems. Requested by Max Khon.
+   </P
+></LI
+><LI
+><P
+>    The CGI editor supports the "disable all filters of this type"
+    directives "-client-header-filter", "-server-header-filter",
+    "-client-header-tagger" and "-server-header-tagger".
+   </P
+></LI
+><LI
+><P
+>    Fixed false-positives with the link-by-url filter and URLs that
+    contain the pattern "/jump/".
+   </P
+></LI
+><LI
+><P
+>    The less-download-windows filter no longer messes
+    "Content-Type: application/x-shockwave-flash" headers up.
+   </P
+></LI
+><LI
+><P
+>    In the show-url-info page's "Final results" section active and
+    inactive actions are listed separately. Patch provided by Lee.
+   </P
+></LI
+><LI
+><P
+>    The GNUmakefile supports the DESTDIR variable. Patch for
+    the install target submitted by Radoslaw Zielinski.
+   </P
+></LI
+><LI
+><P
+>    Embedding the content of configuration files in the show-status
+    page is significantly faster now. For a largish action file (1 MB)
+    a speedup of about 2450 times has been measured. This is mostly
+    interesting if you are using large action files or regularly use
+    Privoxy-Regression-Test while running Privoxy through Valgrind,
+    for stock configuration files it doesn't really matter.
+   </P
+></LI
+><LI
+><P
+>    If zlib support is unavailable and there are content
+    filters active but the prevent-compression action is disabled,
+    the show-url-info page includes a warning that compression
+    might prevent filtering.
+   </P
+></LI
+><LI
+><P
+>    The show-url-info page provides an OpenSearch Description that
+    allows to access the page through browser search plugins.
+   </P
+></LI
+><LI
+><P
+>    The obsolete kill-popups action has been removed as the
+    PCRS-based popup filters can do the same and are slightly
+    less unreliable.
+   </P
+></LI
+><LI
+><P
+>    The inspect-jpegs action has been removed.
+   </P
+></LI
+><LI
+><P
+>    The send-wafer and send-vanilla-wafer actions have been removed.
+    They weren't particular useful and their behaviour could be emulated
+    with add-header anyway.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Regression-Test has been significantly improved.
+   </P
+></LI
+><LI
+><P
+>    Most sections in the default.action file contain tests for
+    Privoxy-Regression-Test to verify that they are working as intended.
+   </P
+></LI
+><LI
+><P
+>    Parts of Privoxy have been refactored to increase maintainability.
+   </P
+></LI
+><LI
+><P
+>    Building with zlib (if available) is done by default.
+   </P
+></LI
+><LI
+><P
+>    Ordinary configuration file changes no longer cause program
+    termination on OS/2 if the name of the logfile hasn't been
+    changed as well. This regression probably crept in with the
+    logging improvements in 3.0.7. Reported by Maynard.
+   </P
+></LI
+><LI
+><P
+>    The img-reorder filter is less likely to mess up JavaScript code in
+    img tags. Problem and solution reported by Glenn Washburn in #2014552.
+   </P
+></LI
+><LI
+><P
+>    The source tar ball now includes Privoxy-Log-Parser,
+    a syntax-highlighter for Privoxy logs. Documentation is available
+    through perldoc(1), for fancy screenshots see:
+    <A
+HREF="http://www.fabiankeil.de/sourcecode/privoxy-log-parser/"
+TARGET="_top"
+>http://www.fabiankeil.de/sourcecode/privoxy-log-parser/</A
+>.
+   </P
+></LI
+></UL
+></P
+><P
+> For a more detailed list of changes please have a look at the ChangeLog.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="UPGRADERSNOTE"
+>3.1. Note to Upgraders</A
+></H2
+><P
+> A quick list of things to be aware of before upgrading from earlier 
+ versions of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>   The recommended way to upgrade <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is to backup your old 
+   configuration files, install the new ones, verify that <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+   is working correctly and finally merge back your changes using
+   <SPAN
+CLASS="APPLICATION"
+>diff</SPAN
+> and maybe <SPAN
+CLASS="APPLICATION"
+>patch</SPAN
+>.
+  </P
+><P
+>   There are a number of new features in each <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> release and
+   most of them have to be explicitly enabled in the configuration
+   files. Old configuration files obviously don't do that and due
+   to syntax changes using old configuration files with a new
+   <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> isn't always possible anyway.
+  </P
+></LI
+><LI
+><P
+>  
+    Note that some installers remove earlier versions completely,
+    including configuration files, therefore you should really save
+    any important configuration files!
+  </P
+></LI
+><LI
+><P
+>  
+   On the other hand, other installers don't overwrite existing configuration 
+   files, thinking you will want to do that yourself.
+  </P
+></LI
+><LI
+><P
+>  
+   <TT
+CLASS="FILENAME"
+>standard.action</TT
+> now only includes the enabled actions.
+   Not all actions as before.
+  </P
+></LI
+><LI
+><P
+>   In the default configuration only fatal errors are logged now.
+   You can change that in the <A
+HREF="config.html#DEBUG"
+>debug section</A
+>
+   of the configuration file. You may also want to enable more verbose
+   logging until you verified that the new <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> version is working
+   as expected.
+  </P
+></LI
+><LI
+><P
+>     Three other config file settings are now off by default: 
+     <A
+HREF="config.html#ENABLE-REMOTE-TOGGLE"
+>enable-remote-toggle</A
+>,
+     <A
+HREF="config.html#ENABLE-REMOTE-HTTP-TOGGLE"
+>enable-remote-http-toggle</A
+>,
+     and  <A
+HREF="config.html#ENABLE-EDIT-ACTIONS"
+>enable-edit-actions</A
+>. 
+     If you use or want these, you will need to explicitly enable them, and
+     be aware of the security issues involved. 
+    </P
+></LI
+><LI
+><P
+>    The <SPAN
+CLASS="QUOTE"
+>"filter-client-headers"</SPAN
+> and
+    <SPAN
+CLASS="QUOTE"
+>"filter-server-headers"</SPAN
+> actions that were introduced with
+    <SPAN
+CLASS="APPLICATION"
+>Privoxy 3.0.5</SPAN
+> to apply content filters to
+    the headers  have been removed and replaced with new actions.
+    See the <A
+HREF="whatsnew.html"
+>What's New section</A
+> above.
+   </P
+></LI
+></UL
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="quickstart.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installation</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Quickstart to Using Privoxy</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

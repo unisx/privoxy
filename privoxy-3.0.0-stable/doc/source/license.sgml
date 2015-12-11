@@ -1,0 +1,71 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/license.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: license.sgml,v 1.2 2002/05/10 01:48:20 hal9 Exp $
+
+  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+  See LICENSE.
+ 
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  privoxy-man-page
+  user-manual
+  developer-manual
+  faq
+  webserver/index.sgml
+
+-->
+
+<para>
+ <application>Privoxy</application> is free software; you can
+ redistribute it and/or modify it under the terms of the 
+ <citetitle>GNU General Public
+<!--
+ <informalfigure pgwide="1" float="1">
+    <mediaobject>
+       <imageobject>
+          <imagedata scale="300" width="300" scalefit="1" fileref="../gnu.jpg" format="jpg">
+       </imageobject>
+       <textobject>
+          <phrase>GNU's Pet GNU</phrase>
+       </textobject>
+    </mediaobject>
+ </informalfigure>
+ or better:
+ <inlinegraphic depth="1" scale="300" align="left" fileref="../gnu.jpg"></inlinegraphic> 
+-->
+ License</citetitle>, version 2, as published by the Free Software Foundation.
+</para>
+
+<para>
+ This program is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ <citetitle>GNU General Public License</citetitle> for
+<!--
+<figure pgwide="0"><title>The Pythagorean Theorum Illustrated</title>
+</figure>
+--> 
+ more details, which is available from the Free Software Foundation, Inc, 59
+ Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+</para>
+
+<para>
+ You should have received a copy of the <ulink
+ url="http://www.gnu.org/copyleft/gpl.html">
+ <citetitle>GNU General Public License</citetitle></ulink>
+ along with this program; if not, write to the <address> Free Software
+ Foundation, Inc. <street>59 Temple Place</street> - Suite 330
+ <city>Boston</city>, <state>MA</state> <postcode>02111-1307</postcode>
+ <country>USA</country> </address>
+</para>
+

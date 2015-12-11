@@ -1,0 +1,119 @@
+<!--
+ File        :  $Source: /cvsroot/ijbswa/current/doc/source/buildsource.sgml,v $
+
+ Purpose     :  Entity included in other project documents.
+                
+ $Id: buildsource.sgml,v 1.9.2.1 2002/08/25 17:10:55 hal9 Exp $
+
+ Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ See LICENSE.
+
+ ======================================================================
+  This file used for inclusion with other documents only.
+ ======================================================================
+
+ If you make changes to this file, please verify the finished 
+ docs all display as intended.
+
+ This file is included into:
+
+  user-manual
+  README
+
+-->
+
+<para>
+ To build <application>Privoxy</application> from source, 
+ <ulink url="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</ulink>,
+ <ulink
+ url="http://www.gnu.org/software/make/make.html">GNU make
+ (gmake)</ulink>, and, of course, a C compiler like <ulink
+ url="http://www.gnu.org/software/gcc/gcc.html">gcc</ulink> are required.
+</para>
+
+<para>
+ When building from a source tarball (either release version or
+ <ulink
+ url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.gz">nightly CVS
+ tarball</ulink>), first unpack the source: 
+</para>
+
+<para>
+ <screen>
+ tar xzvf privoxy-&p-version;<![%p-not-stable;[-beta]]>-src* [.tgz or .tar.gz]
+ cd privoxy-&p-version;<![%p-not-stable;[-beta]]>
+</screen>
+</para>
+
+<para>
+ For retrieving the current CVS sources, you'll need CVS installed.
+ Note that sources from CVS are development quality, and may not be
+ stable, or well tested. To download CVS source:
+</para>
+
+<para>
+ <screen>
+  cvs -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa login
+  cvs -z3 -d:pserver:anonymous@cvs.ijbswa.sourceforge.net:/cvsroot/ijbswa co current
+  cd current
+</screen>
+</para>
+
+<para>
+ This will create a directory named <filename>current/</filename>, which will 
+ contain the source tree.
+</para>
+
+<para>
+ Then, in either case, to build from unpacked tarball or CVS source:
+</para>
+
+<para>
+ <screen>
+ autoheader
+ autoconf
+ ./configure      # (--help to see options)
+ make             # (the make from gnu, gmake for *BSD) 
+ su 
+ make -n install  # (to see where all the files will go)
+ make install     # (to really install)
+</screen>
+</para>
+
+<warning>
+ <para> 
+  The <quote>make install</quote> target is temporary quite broken! It is
+  recommended to use a binary package, or do a source build, and manually 
+  install the components. Sorry.
+ </para>
+</warning>
+
+<para>
+  If you have gnu make, you can have the first four steps 
+  automatically done for you by just typing:
+</para>
+
+<para>
+ <screen>
+  make
+</screen>
+</para>
+
+<para>
+  in the freshly downloaded or unpacked source directory.
+</para>
+
+<para>
+ For more detailed instructions on how to build Redhat and SuSE RPMs,
+ Windows self-extracting installers, building on platforms with
+ special requirements etc, please consult the <ulink
+ url="../developer-manual/newrelease.html">developer manual</ulink>.
+</para>
+
+<!-- print for README only -->
+ <![%p-readme;[
+ <para>
+  For binary RPM installation, and other platforms, see the user-manual 
+  as well.
+ </para>
+]]>
