@@ -1,6 +1,5 @@
 # Object files
 *.o
-*.ko
 *.obj
 *.elf
 
@@ -9,7 +8,6 @@
 *.pch
 
 # Libraries
-*.lib
 *.a
 *.la
 *.lo
@@ -30,3 +28,4 @@
 
 # Debug files
 *.dSYM/
+*~
