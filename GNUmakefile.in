@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.228 2014/10/21 15:31:16 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.230 2015/01/24 16:40:07 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2014 members of the
 # Privoxy team. http://www.privoxy.org/
@@ -646,14 +646,20 @@ web-faq:
 	@$(ECHO) Enforcing reasonable permissions ...
 	@$(SSH) shell.sourceforge.net 'find $(WWW_ROOT)/htdocs/faq/ -type f | xargs chmod 664 2>/dev/null'
 
+web-user-manual:
+	@$(ECHO) Updating the user manual on the webserver (do not use in case of version changes) ...
+	@$(RSYNC) doc/webserver/user-manual/*.html shell.sourceforge.net:$(WWW_ROOT)/htdocs/user-manual/
+	@$(ECHO) Enforcing reasonable permissions ...
+	@$(SSH) shell.sourceforge.net 'find $(WWW_ROOT)/htdocs/user-manual/ -type f | xargs chmod 664 2>/dev/null'
+
 #############################################################################
 #
 # Try to clean up the generated HTML files.
 #
-# The files are a such a mess that some of them require two tidy runs
-# in row as the first abort prematurely. The vanilla tidy output renders
-# poorly as it contains a bit too much white-space, so we additionally run
-# the files through perl to fix this again.
+# The files are such a mess that some of them require two tidy runs in a
+# row as the first one aborts prematurely. The vanilla tidy output renders
+# poorly because it contains a bit too much whitespace, so we additionally
+# run the files through perl to fix this again.
 #
 #############################################################################
 dok-tidy:

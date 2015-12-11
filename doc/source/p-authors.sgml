@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
 
- $Id: p-authors.sgml,v 2.61 2014/11/03 14:40:53 fabiankeil Exp $
+ $Id: p-authors.sgml,v 2.64 2015/01/24 16:43:11 fabiankeil Exp $
 
  Copyright (C) 2001-2013 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -94,6 +94,7 @@ Current Privoxy Team:
  Ramkumar Chinchani
  Billy Crook
  Frédéric Crozat
+ Matthew Daley
  Michael T. Davis
  Markus Dittrich
  Mattes Dolak
@@ -113,6 +114,7 @@ Current Privoxy Team:
  Jeff H.
  Tim H.
  Aaron Hamid
+ Basil Hussain
  Darel Henman
  Magnus Holmgren
  Eric M. Hopper
@@ -146,6 +148,7 @@ Current Privoxy Team:
  Adam Piggott
  Petr Písar
  Dan Price
+ Kai Raven
  Roberto Ragusa
  Félix Rauch
  Chris John Riley

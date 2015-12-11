@@ -115,41 +115,6 @@
 
     <tr>
       <td class="box">
-        <h2>Bookmarklets</h2>
-          <p>Here are some bookmarklets to allow you to easily access a
-            "mini" version of this page.  They are known to work with MS
-            Internet Explorer, Netscape and Mozilla, but should work equally
-            well in other browsers which support JavaScript.  They are designed
-            to run directly from your bookmarks - <b>not</b> by clicking the
-            links below (although that will work for testing).
-          </p>
-          <p>To save them, right-click the link and choose
-            "Add to Favorites" (IE) or "Add Bookmark" (Netscape).  You
-            will get a warning that the bookmark "may not be safe" - just
-            click OK.  Then you can run the Bookmarklet directly from your
-            favourites/bookmarks.  For even faster access, you can put
-            them on the "Links" bar (IE) or the "Personal Toolbar"
-            (Netscape), and run them with a single click.
-          </p>
-
-          <ul>
-            <li><a href="javascript:void(window.open('@default-cgi@toggle?mini=y&amp;set=enabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">Privoxy - Enable</a></li>
-            <li><a href="javascript:void(window.open('@default-cgi@toggle?mini=y&amp;set=disabled','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">Privoxy - Disable</a></li>
-            <li><a href="javascript:void(window.open('@default-cgi@toggle?mini=y&amp;set=toggle','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">Privoxy - Toggle Privoxy</a>
-                  (Toggles between enabled and disabled)</li>
-            <li><a href="javascript:void(window.open('@default-cgi@toggle?mini=y','ijbstatus','width=250,height=100,resizable=yes,scrollbars=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no').focus());">Privoxy - View Status</a></li>
-          </ul>
-
-          <p>
-            <b>Credit:</b> The site which gave us the general idea for these
-            bookmarklets is <a href="http://www.bookmarklets.com/">www.bookmarklets.com</a>.
-            They have <a href="http://www.bookmarklets.com/about/">more information</a> about them.
-          </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td class="box">
         <h2>More Privoxy:</h2>
         <ul>@menu@<li><a href="@user-manual@">Documentation</a></li></ul>
       </td>
