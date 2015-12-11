@@ -11,8 +11,8 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.14">
-<!entity p-status "BETA">
+<!entity p-version "3.0.15">
+<!entity p-status "beta">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
@@ -34,7 +34,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 2.112 2009/07/24 12:20:30 fabiankeil Exp $
+ $Id: user-manual.sgml,v 2.115 2009/10/10 06:19:34 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -60,7 +60,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 2.112 2009/07/24 12:20:30 fabiankeil Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 2.115 2009/10/10 06:19:34 fabiankeil Exp $</pubdate>
 
 <!--
 
@@ -437,9 +437,130 @@ How to install the binary packages depends on your operating system:
 <sect1 id="whatsnew">
 <title>What's New in this Release</title>
 <para>
- <application>Privoxy 3.0.14 Beta</application> is a bugfix-release
- for the previous beta which introduced IPv6 support,  improved keep-alive
- support and a bunch of minor improvements. The changes since 3.0.12:
+ <application>Privoxy 3.0.15 beta</application> is a bug-fix release
+ for the previous beta. The changes since 3.0.14 are:
+</para>
+
+<para>
+ <itemizedlist>
+  <listitem>
+   <para>
+    In case of missing server data, no error message is send to the
+    client if the request arrived on a reused connection. The client
+    is then supposed to silently retry the request without bothering
+    the user. This should significantly reduce the frequency of the
+    "No server or forwarder data received" error message many users
+    reported.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    More reliable detection of prematurely closed client sockets
+    with keep-alive enabled.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+    FEATURE_CONNECTION_SHARING and now available on
+    all platforms.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Improved handling of POST requests on reused connections.
+    Should fix problems with stalled connections after submitting
+    form data with some browser configurations.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed various latency calculation issues.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Allows the client to pass NTLM authentication requests to a
+    forwarding proxy. This was already assumed and hinted to work
+    in 3.0.13 beta but actually didn't. Now it's confirmed to work
+    with IE, Firefox and Chrome.
+    Thanks to Francois Botha and Wan-Teh Chang
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fixed a calculation problem if receiving the server headers
+    takes more than two reads, that could cause Privoxy to terminate
+    the connection prematurely. Reported by Oliver.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Compiles again on platforms such as OpenBSD and systems
+    using earlier glibc version that don't support AI_ADDRCONFIG.
+    Anonymously submitted in #2872591.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    A bunch of MS VC project files and Suse and Redhat RPM spec
+    files have been removed as they were no longer maintained for
+    quite some time.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Overly long action lines are properly rejected with a proper
+    error message. Previously they would be either rejected as
+    invalid or cause a core dump through abort().
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Already timed-out connections are no longer temporarily remembered.
+    They weren't reused anyway, but wasted a socket slot.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    len refers to the number of bytes actually read which might
+    differ from the ones received. Adjust log messages accordingly.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    The optional JavaScript on the CGI page uses encodeURIComponent()
+    instead of escape() which doesn't encode all characters that matter.
+    Anonymously reported in #2832722.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Fix gcc45 warnings in decompress_iob().
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Various log message improvements.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Regression-Test supports redirect tests.
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    Privoxy-Log-Parser can gather some connection statistics.
+   </para>
+  </listitem>
+ </itemizedlist>
+</para>
+
+<para>
+ If you missed the previous two beta versions, you may also be
+ interested in the additional changes since 3.0.12, the
+ last stable release:
 </para>
 
 <para>
@@ -8566,6 +8687,15 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  USA
 
  $Log: user-manual.sgml,v $
+ Revision 2.115  2009/10/10 06:19:34  fabiankeil
+ Ditch a duplicated 'since'.
+
+ Revision 2.114  2009/10/10 05:51:48  fabiankeil
+ Update "What's new" section.
+
+ Revision 2.113  2009/10/10 05:48:55  fabiankeil
+ Prepare for 3.0.15 beta.
+
  Revision 2.112  2009/07/24 12:20:30  fabiankeil
  Remove duplicated period.
 

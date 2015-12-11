@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/default.filter,v $
 # 
-#  $Id: default.filter,v 1.72 2009/05/16 13:27:20 fabiankeil Exp $
+#  $Id: default.filter,v 1.76 2009/10/03 10:40:05 fabiankeil Exp $
 #
 #  Purpose     :  Rules to process the content of web pages
 # 
@@ -580,7 +580,9 @@ s@</head>@<style type="text/css">\n\
  \#fbc, \#fbl, \#ra, .rhh {visibility: hidden !important;}\n\
  \#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, .ch, \#ads,\
  \#toolbar, \#google_ads_frame, \#mbEnd {display: none !important;}\n\
- .main_body, .j {width: 100%}\n</style>\n$0@
+ .main_body, .j, \#res, .med, .hd, .g, .s\n\
+ {width: 99%; max-width: 100%; margin-left: 0; margin-right: 0;}\n\
+ </style>\n$0@
 s@<div style=\"padding-top:11px;min-width:500px\">@<div id="main_body">@
 s@(<table cellspacing=0 cellpadding=0 width=25% align=right bgcolor=\#ffffff border=0\
 |</font></td></tr></tbody></table><table align=\"right\" bgcolor=\"\#ffffff\"\
@@ -600,9 +602,12 @@ s@</head>@\n<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's yahoo filter. */\n\
  \#symadbn, \#ymadbn, .yschbox, .yschhd, .bbox, \#yschsec, \#sec,\
  \#yschanswr, .yschftad, .yschspn, .yschspns, \#ygrp-sponsored-links,\
- \#nwad, \#MWA2, \#MSCM, \#yregad, \
+ \#nwad, \#MWA2, \#MSCM, \#yregad, \#sponsored-links,\
  \#ks-ypn-ads, .ad, \#east, \#ygrp-vital {display: none !important;}\n\
- \#yschpri, \#yschweb, \#pri, \#web, \#main {width: 100% !important; max-width: 100% !important;}\n\
+ \#yschpri, \#yschweb, \#pri, \#web, \#main, .yschttl, .abstr, .res \n\
+ {width: 99% !important; max-width: 100% !important;}\n\
+ .yschttl, .res, .res.indent, \#web {padding: 0px; margin: 0px !important;}\n\
+ \#web {padding-left: 0.5em}\n\
  \#yschqcon, \#yschtg {width: auto !important; /* No useless horizontal scrollbar please */}\n\
  \#composebox \#compose_editorArea {width: 70% !important; /* reasonably sized reply textarea please */\n\
  </style>\n$0\n@
@@ -621,7 +626,7 @@ s@</head>@<style type="text/css">\n\
  /* Style sheet inserted by Privoxy's msn filter. */\n\
  .msn_ads, \#at, \#ar, .mktmsg {display: none !important;}\n\
  \#results, .flank, .results_area_flank, .results_area_stroke,\n\
- \#results_area, .SearchSection, .not, .sc_rslth1\n\
+ \#results_area, \#content, .sb_tlst, .sa_cc, .sb_ph, \#sw_main,\n\
 .content, \#sw_foot, \#bf, \#sw_content, \#sidebar, \#pag\n\
  {width: 99% !important; min-width: 99% !important;\n\
  max-width: 100% !important; /* width:100% sometimes causes horizontal scrollbars */}\n\

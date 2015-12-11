@@ -8,7 +8,7 @@
 #
 # http://www.fabiankeil.de/sourcecode/privoxy-log-parser/
 #
-# $Id: privoxy-log-parser.pl,v 1.42 2009/07/21 14:04:25 fabiankeil Exp $
+# $Id: privoxy-log-parser.pl,v 1.57 2009/10/10 05:50:02 fabiankeil Exp $
 #
 # TODO:
 #       - LOG_LEVEL_CGI, LOG_LEVEL_ERROR, LOG_LEVEL_WRITE content highlighting
@@ -59,7 +59,7 @@ use constant {
     CLI_OPTION_ERROR_LOG_FILE => '/var/log/privoxy-log.log',
     CLI_OPTION_SHOW_INEFFECTIVE_FILTERS => 0,
     CLI_OPTION_ACCEPT_UNKNOWN_MESSAGES => 0,
-    CLI_OPTION_STATISTIC => 0,
+    CLI_OPTION_STATISTICS => 0,
 
     SUPPRESS_SUCCEEDED_FILTER_ADDITIONS => 1,
     SHOW_SCAN_INTRO => 0,
@@ -187,6 +187,8 @@ sub prepare_our_stuff () {
     prepare_colour_array(\@all_colours);
     prepare_colour_array(\@time_colours);
     init_css_colours();
+
+    init_stats();
 }
 
 sub paint_it ($) {
@@ -1478,9 +1480,15 @@ sub handle_loglevel_connect ($) {
     } elsif ($c =~ m/^Found reusable socket/) {
 
         # Found reusable socket 9 for www.privoxy.org:80 in slot 0.
+        # 3.0.15 and later:
+        # Found reusable socket 8 for www.privoxy.org:80 in slot 2.\
+        #  Timestamp made 0 seconds ago. Timeout: 1. Latency: 0.
         $c =~ s@(?<=Found reusable socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c = highlight_matched_host($c, '(?<=for )[^\s]+');
         $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=made )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Timeout: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Latency: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^Marking open socket/) {
 
@@ -1511,11 +1519,20 @@ sub handle_loglevel_connect ($) {
     } elsif ($c =~ m/^The connection to/) {
 
         # The connection to www.privoxy.org:80 in slot 6 timed out. Closing socket 19. Timeout is: 61.
+        # 3.0.15 and later:
+        # The connection to 1.bp.blogspot.com:80 in slot 0 timed out. Closing socket 5.\
+        #  Timeout is: 1. Assumed latency: 4.
         # The connection to 10.0.0.1:80 in slot 0 is no longer usable. Closing socket 4.
         $c = highlight_matched_host($c, '(?<=connection to )[^\s]+');
         $c =~ s@(?<=in slot )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=Closing socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=Timeout is: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=Assumed latency: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Stopped waiting for the request line./) {
+
+        # Stopped waiting for the request line. Timeout: 121.
+        $c =~ s@(?<=Timeout: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^Waiting for \d/) {
 
@@ -1531,9 +1548,14 @@ sub handle_loglevel_connect ($) {
 
         # Done reading from server. Expected content length: 24892. \
         #  Actual content length: 24892. Most recently received: 4412.
-        $c =~ s@(?<=Expected content length: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
-        $c =~ s@(?<=Actual content length: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        # 3.0.15 and later:
+        # Done reading from server. Expected content length: 24892. \
+        #  Actual content length: 24892. Bytes most recently read: 4412.
+        # Done reading from server. Content length: 6018 as expected. \
+        #  Bytes most recently read: 294.
+        $c =~ s@(?<=ontent length: )(\d+)@$h{'Number'}$1$h{'Standard'}@g;
         $c =~ s@(?<=received: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=read: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^Continuing buffering headers/) {
 
@@ -1541,6 +1563,9 @@ sub handle_loglevel_connect ($) {
         $c =~ s@(?<=byte_count: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=header_offset: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
         $c =~ s@(?<=len: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        # 3.0.15 and later:
+        # Continuing buffering headers. Bytes most recently read: %d.
+        $c =~ s@(?<=read: )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
     } elsif ($c =~ m/^Received \d+ bytes while/) {
 
@@ -1594,6 +1619,29 @@ sub handle_loglevel_connect ($) {
 
         $c =~ s@(?<=server socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
 
+    } elsif ($c =~ m/^Reduced expected bytes to /) {
+
+        # Reduced expected bytes to 0 to account for the 1542 ones we already got.
+        $c =~ s@(?<=bytes to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=for the )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^The client closed socket /) {
+
+        # The client closed socket 2 while the server socket 4 is still open.
+        $c =~ s@(?<=closed socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=server socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Expected client content length set /) {
+
+        # Expected client content length set to 667325411 after reading 4999 bytes.
+        $c =~ s@(?<=set to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+        $c =~ s@(?<=reading )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
+    } elsif ($c =~ m/^Waiting for up to /) {
+
+        # Waiting for up to 4999 bytes from the client.
+        $c =~ s@(?<=up to )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+
     } elsif ($c =~ m/^Looks like we rea/ or
              $c =~ m/^Unsetting keep-alive flag/ or
              $c =~ m/^No connections to wait/ or
@@ -1602,7 +1650,10 @@ sub handle_loglevel_connect ($) {
              $c =~ m/^Possible pipeline attempt detected./ or
              $c =~ m/^POST request detected. The connection will not be kept alive./ or
              $c =~ m/^The server still wants to talk, but the client hung up on us./ or
-             $c =~ m/^The server didn't specify how long the connection will stay open/) {
+             $c =~ m/^The server didn't specify how long the connection will stay open/ or
+             $c =~ m/^There might be a request body. The connection will not be kept alive/ or
+             $c =~ m/^Stopping to watch the client socket. There's already another request waiting./ or
+             $c =~ m/^Done reading from the client\.$/) {
 
         # Looks like we reached the end of the last chunk. We better stop reading.
         # Looks like we read the end of the last chunk together with the server \
@@ -1616,6 +1667,9 @@ sub handle_loglevel_connect ($) {
         # POST request detected. The connection will not be kept alive.
         # The server still wants to talk, but the client hung up on us.
         # The server didn't specify how long the connection will stay open. Assume it's only a second.
+        # There might be a request body. The connection will not be kept alive.
+        # Stopping to watch the client socket. There's already another request waiting.
+        # Done reading from the client\.
 
     } else {
 
@@ -1787,9 +1841,166 @@ sub handle_loglevel_force ($) {
     return $c;
 }
 
+sub handle_loglevel_error ($) {
+
+    my $c = shift;
+    our %h;
+
+    if ($c =~ m/^Empty server or forwarder response received on socket \d+./) {
+
+        # Empty server or forwarder response received on socket 4.
+        $c =~ s@(?<=on socket )(\d+)@$h{'Number'}$1$h{'Standard'}@;
+    }
+    # XXX: There are probably more messages that deserve highlighting.
+
+    return $c;
+}
+
+
 sub handle_loglevel_ignore ($) {
     return shift;
 }
+
+sub gather_loglevel_request_stats ($$) {
+    my $c = shift;
+    my $thread = shift;
+    our %stats;
+
+    $stats{requests}++;
+}
+
+sub gather_loglevel_crunch_stats ($$) {
+    my $c = shift;
+    my $thread = shift;
+    our %stats;
+
+    $stats{requests}++;
+    $stats{crunches}++;
+}
+
+
+sub gather_loglevel_error_stats ($$) {
+
+    my $c = shift;
+    my $thread = shift;
+    our %stats;
+    our %thread_data;
+
+    if ($c =~ m/^Empty server or forwarder response received on socket \d+./) {
+
+        # Empty server or forwarder response received on socket 4.
+        $stats{'empty-responses'}++;
+        if ($thread_data{$thread}{'new_connection'}) {
+            $stats{'empty-responses-on-new-connections'}++;
+        } else {
+            $stats{'empty-responses-on-reused-connections'}++;
+        }
+    }
+}
+
+sub gather_loglevel_connect_stats ($$) {
+
+    my $c = shift;
+    my $thread = shift;
+    our %thread_data;
+    our %stats;
+
+    if ($c =~ m/^via ([^\s]+) to: [^\s]+/) {
+
+        # Connect: via 10.0.0.1:8123 to: www.example.org.noconnect
+        $thread_data{$thread}{'forwarder'} = $1; # XXX: is this missue?
+
+    } elsif ($c =~ m/^to ([^\s]*)$/) {
+
+        # Connect: to lists.sourceforge.net:443
+
+        $thread_data{$thread}{'forwarder'} = 'direct connection';
+
+    } elsif ($c =~ m/^Created new connection to/) {
+
+        # Created new connection to www.privoxy.org:80 on socket 11.
+
+        $thread_data{$thread}{'new_connection'} = 1;
+
+    } elsif ($c =~ m/^Reusing server socket \d./ or
+             $c =~ m/^Found reusable socket/) {
+
+        # Reusing server socket 4. Opened for 10.0.0.1.
+        # Found reusable socket 9 for www.privoxy.org:80 in slot 0.
+
+        $thread_data{$thread}{'new_connection'} = 0;
+        $stats{'reused-connections'}++;
+    }
+}
+
+sub gather_loglevel_header_stats ($) {
+
+    my $c = shift;
+    my $thread = shift;
+    our %stats;
+
+    if ($c =~ m/^A HTTP\/1\.1 response without/ or
+        $c =~ m/^Keeping the server header 'Connection: keep-alive' around./)
+    {
+        # A HTTP/1.1 response without Connection header implies keep-alive.
+        # Keeping the server header 'Connection: keep-alive' around.
+        $stats{'server-keep-alive'}++;
+    }
+}
+
+sub init_stats () {
+    our %stats = (
+        requests => 0,
+        crunches => 0,
+        'server-keep-alive' => 0,
+        'reused-connections' => 0,
+        'empty-responses' => 0,
+        'empty-responses-on-new-connections' => 0,
+        'empty-responses-on-reused-connections' => 0,
+        );
+}
+
+sub get_percentage ($$) {
+    my $big = shift;
+    my $small = shift;
+    return "NaN" if ($big eq 0);
+    return sprintf("%.2f%%", $small / $big * 100);
+}
+
+sub print_stats () {
+
+    our %stats;
+    my $new_connections = $stats{requests} - $stats{crunches} - $stats{'reused-connections'};
+    my $outgoing_requests = $stats{requests} - $stats{crunches};
+
+    if ($stats{requests} eq 0) {
+        print "No requests yet.\n";
+        return;
+    }
+
+    print "Client requests total: " . $stats{requests} . "\n";
+    print "Crunches: " . $stats{crunches} . " (" .
+        get_percentage($stats{requests}, $stats{crunches}) . ")\n";
+    print "Outgoing requests: " . $outgoing_requests . " (" .
+        get_percentage($stats{requests}, $outgoing_requests) . ")\n";
+    print "Server keep-alive offers: " . $stats{'server-keep-alive'} . " (" .
+        get_percentage($stats{requests}, $stats{'server-keep-alive'}) . ")\n";
+    print "New outgoing connections: " . $new_connections . " (" .
+        get_percentage($stats{requests}, $new_connections) . ")\n";
+    print "Reused connections: " . $stats{'reused-connections'} . " (" .
+        get_percentage($stats{requests}, $stats{'reused-connections'}) . ")\n";
+    print "Empty responses: " . $stats{'empty-responses'} . " (" .
+        get_percentage($stats{requests}, $stats{'empty-responses'}) . ")\n";
+    print "Empty responses on new connections: "
+         . $stats{'empty-responses-on-new-connections'} . " (" .
+        get_percentage($stats{requests}, $stats{'empty-responses-on-new-connections'})
+        . ")\n";
+    print "Empty responses on reused connections: " .
+        $stats{'empty-responses-on-reused-connections'} . " (" .
+        get_percentage($stats{requests}, $stats{'empty-responses-on-reused-connections'}) .
+        ")\n";
+}
+
 
 ################################################################################
 # Functions that actually print stuff
@@ -1875,7 +2086,6 @@ sub parse_loop () {
     my $time_colour;
     our $no_special_header_highlighting;
     $time_colour = paint_it('white');
-    my %log_level_count;
 
     my %log_level_handlers = (
         'Re-Filter'         => \&handle_loglevel_re_filter,
@@ -1888,7 +2098,7 @@ sub parse_loop () {
         'Info'              => \&handle_loglevel_info,
         'CGI'               => \&handle_loglevel_cgi,
         'Force'             => \&handle_loglevel_force,
-        'Error'             => \&handle_loglevel_ignore,
+        'Error'             => \&handle_loglevel_error,
         'Fatal error'       => \&handle_loglevel_ignore,
         'Writing'           => \&handle_loglevel_ignore,
         'Unknown log level' => \&handle_loglevel_ignore,
@@ -1914,8 +2124,6 @@ sub parse_loop () {
             $req{$t}{'content'} = $content;
             $req{$t}{'log-message'} = $_;
             $no_special_header_highlighting = 0;
-
-            $log_level_count{$log_level}++;
 
             if (defined($log_level_handlers{$log_level})) {
 
@@ -1974,12 +2182,51 @@ sub parse_loop () {
             }
         }
     }
+}
 
-    if (cli_option_is_set('statistic')) {
-        foreach (keys %log_level_count) {
-            print $_ . ": " . $log_level_count{$_} . " ";
+sub stats_loop () {
+
+    my ($day, $time_stamp, $thread, $log_level, $content, $c, $msecs);
+    my %log_level_handlers = (
+         'Re-Filter'         => \&handle_loglevel_ignore,
+         'Header'            => \&gather_loglevel_header_stats,
+         'Connect'           => \&gather_loglevel_connect_stats,
+         'Redirect'          => \&handle_loglevel_ignore,
+         'Request'           => \&gather_loglevel_request_stats,
+         'Crunch'            => \&gather_loglevel_crunch_stats,
+         'Gif-Deanimate'     => \&handle_loglevel_ignore,
+         'Info'              => \&handle_loglevel_ignore,
+         'CGI'               => \&handle_loglevel_ignore,
+         'Force'             => \&handle_loglevel_ignore,
+         'Error'             => \&gather_loglevel_error_stats,
+         'Fatal error'       => \&handle_loglevel_ignore,
+         'Writing'           => \&handle_loglevel_ignore,
+         'Unknown log level' => \&handle_loglevel_ignore
+    );
+
+    while (<>) {
+        if (m/^(\w{3} \d{2}) (\d\d:\d\d:\d\d)\.?(\d+)? (?:Privoxy\()?([^\)\s]*)[\)]? ([\w -]*): (.*?)\r?$/) {
+            $day = $1;
+            $time_stamp = $2;
+            $msecs = $3 ? $3 : 0;
+            $log_level = $5;
+            $content = $c = $6;
+            $thread = $4;
+
+            if (defined($log_level_handlers{$log_level})) {
+
+                $content = $log_level_handlers{$log_level}($content, $thread);
+
+            } else {
+
+                die "No handler found for log level \"$log_level\"\n";
+
+            }
         }
     }
+
+    print_stats();
+
 }
 
 sub VersionMessage {
@@ -2002,7 +2249,7 @@ sub get_cli_options () {
         'no-msecs'                 => CLI_OPTION_NO_MSECS,
         'show-ineffective-filters' => CLI_OPTION_SHOW_INEFFECTIVE_FILTERS,
         'accept-unknown-messages'  => CLI_OPTION_ACCEPT_UNKNOWN_MESSAGES,
-        'statistic'                => CLI_OPTION_STATISTIC,
+        'statistics'               => CLI_OPTION_STATISTICS,
     ); 
 
     GetOptions (
@@ -2013,12 +2260,35 @@ sub get_cli_options () {
         'no-msecs'                 => \$cli_options{'no-msecs'},
         'show-ineffective-filters' => \$cli_options{'show-ineffective-filters'},
         'accept-unknown-messages'  => \$cli_options{'accept-unknown-messages'},
-        'statistic'                => \$cli_options{'statistic'},
-        'version'                  => sub { VersionMessage && exit(0) }
+        'statistics'               => \$cli_options{'statistics'},
+        'version'                  => sub { VersionMessage && exit(0) },
+        'help'                     => \&help,
    );
 }
 
+sub help () {
 
+    our %cli_options;
+
+    VersionMessage();
+
+    print << "    EOF"
+
+Options and their default values if they have any:
+    [--accept-unknown-messages]
+    [--html-output]
+    [--no-embedded-css]
+    [--no-msecs]
+    [--no-syntax-highlighting]
+    [--show-ineffective-filters]
+    [--statistics]
+    [--title $cli_options{'title'}]
+    [--version]
+see "perldoc $0" for more information
+    EOF
+    ;
+    exit(0);
+}
 
 ################################################################################
 # main
@@ -2031,7 +2301,11 @@ sub main () {
 
     print_intro();
 
-    parse_loop();
+    if (cli_option_is_set('statistics')) {
+        stats_loop();
+    } else {
+        parse_loop();
+    }
 
     print_outro();
 }
@@ -2087,6 +2361,11 @@ codes.
 
 [B<--show-ineffective-filters>] Don't suppress log lines for filters
 that didn't modify the content.
+
+[B<--statistics>] Gather various statistics instead of syntax highlighting
+log messages. This is an experimental feature, if the results look wrong
+they very well might be. Also note that the results a pretty much guaranteed
+to be incorrect if Privoxy and Privoxy-Log-Parser aren't in sync.
 
 [B<--version>] Print version and exit.
 

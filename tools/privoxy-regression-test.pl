@@ -7,7 +7,7 @@
 # A regression test "framework" for Privoxy. For documentation see:
 # perldoc privoxy-regression-test.pl
 #
-# $Id: privoxy-regression-test.pl,v 1.51 2009/06/15 20:47:49 fabiankeil Exp $
+# $Id: privoxy-regression-test.pl,v 1.57 2009/10/08 11:48:20 fabiankeil Exp $
 #
 # Wish list:
 #
@@ -83,6 +83,7 @@ use constant {
     STICKY_ACTIONS_TEST =>  5,
     TRUSTED_CGI_REQUEST =>  6,
     BLOCK_TEST          =>  7,
+    REDIRECT_TEST       =>108,
 };
 
 sub init_our_variables () {
@@ -202,7 +203,7 @@ sub token_starts_new_test ($) {
     my $token = shift;
     my @new_test_directives = ('set header', 'fetch test',
          'trusted cgi request', 'request header', 'method test',
-         'blocked url', 'url');
+         'blocked url', 'url', 'redirected url');
 
     foreach my $new_test_directive (@new_test_directives) {
         return 1 if $new_test_directive eq $token;
@@ -285,6 +286,11 @@ sub enlist_new_test ($$$$$$) {
 
         l(LL_FILE_LOADING, "Sticky URL to test: " . $value);
         $type = STICKY_ACTIONS_TEST;
+
+    } elsif ($token eq 'redirected url') {
+
+        l(LL_FILE_LOADING, "Redirected URL to test: " . $value);
+        $type = REDIRECT_TEST;
 
     } else {
 
@@ -425,6 +431,11 @@ sub load_action_files ($) {
 
                 l(LL_FILE_LOADING, "Method: " . $value);
                 $regression_tests[$si][$ri]{'method'} = $value;
+
+            } elsif ($token eq 'redirect destination') {
+
+                l(LL_FILE_LOADING, "Redirect destination: " . $value);
+                $regression_tests[$si][$ri]{'redirect destination'} = $value;
 
             } elsif ($token eq 'url') {
 
@@ -644,39 +655,21 @@ sub register_dependency ($$) {
 sub execute_regression_test ($) {
 
     my $test = shift;
-    my $result = 0;
+    my $type = $test->{'type'};
+    my %test_subs = (
+        (CLIENT_HEADER_TEST) => \&execute_client_header_regression_test,
+        (SERVER_HEADER_TEST) => \&execute_server_header_regression_test,
+        (DUMB_FETCH_TEST) => \&execute_dumb_fetch_test,
+        (TRUSTED_CGI_REQUEST) => \&execute_dumb_fetch_test,
+        (METHOD_TEST) => \&execute_method_test,
+        (BLOCK_TEST) => \&execute_block_test,
+        (STICKY_ACTIONS_TEST) => \&execute_sticky_actions_test,
+        (REDIRECT_TEST) => \&execute_redirect_test);
 
-    if ($test->{'type'} == CLIENT_HEADER_TEST) {
+    die "Unsupported test type detected: " . $type
+        unless defined ($test_subs{$type});
 
-        $result = execute_client_header_regression_test($test);
-
-    } elsif ($test->{'type'} == SERVER_HEADER_TEST) {
-
-        $result = execute_server_header_regression_test($test);
-
-    } elsif ($test->{'type'} == DUMB_FETCH_TEST
-          or $test->{'type'} == TRUSTED_CGI_REQUEST) {
-
-        $result = execute_dumb_fetch_test($test);
-
-    } elsif ($test->{'type'} == METHOD_TEST) {
-
-        $result = execute_method_test($test);
-
-    } elsif ($test->{'type'} == BLOCK_TEST) {
-
-        $result = execute_block_test($test);
-
-    } elsif ($test->{'type'} == STICKY_ACTIONS_TEST) {
-
-        $result = execute_sticky_actions_test($test);
-
-    } else {
-
-        die "Unsupported test type detected: " . $test->{'type'};
-    }
-
-    return $result;
+    return $test_subs{$type}($test);
 }
 
 sub execute_method_test ($) {
@@ -699,6 +692,51 @@ sub execute_method_test ($) {
     $status_code = get_status_code($buffer_ref);
 
     return check_status_code_result($status_code, $expected_status_code);
+}
+
+sub execute_redirect_test ($) {
+
+    my $test = shift;
+    my $buffer_ref;
+    my $status_code;
+
+    my $curl_parameters = '';
+    my $url = $test->{'data'};
+    my $redirect_destination;
+    my $expected_redirect_destination = $test->{'redirect destination'};
+
+    # XXX: Check if a redirect actualy applies before doing the request.
+    #      otherwise the test may hit a real server in failure cases.
+
+    $curl_parameters .= '--head ';
+
+    $curl_parameters .= quote($url);
+
+    $buffer_ref = get_page_with_curl($curl_parameters);
+    $status_code = get_status_code($buffer_ref);
+
+    if ($status_code ne "302") {
+        l(LL_VERBOSE_FAILURE,
+          "Ooops. Expected redirect to: '" . $expected_redirect_destination
+          . "' but got a response with status code: " . $status_code);
+        return 0;
+    }
+    foreach (@{$buffer_ref}) {
+        if (/^Location: (.*)\r\n/) {
+            $redirect_destination = $1;
+            last;
+        }
+    }
+
+    my $success = ($redirect_destination eq $expected_redirect_destination);
+
+    unless ($success) {
+        l(LL_VERBOSE_FAILURE,
+          "Ooops. Expected redirect to: '" . $expected_redirect_destination
+          . "' but the redirect leads to: '" . $redirect_destination. "'");
+    }
+
+    return $success;
 }
 
 sub execute_dumb_fetch_test ($) {
@@ -1369,6 +1407,13 @@ sub log_result ($$) {
             $message .= ' and URL: ';
             $message .= quote($test->{'data'});
 
+        } elsif ($test->{'type'} == REDIRECT_TEST) {
+
+            $message .= ' Redirected URL: ';
+            $message .= quote($test->{'data'});
+            $message .= ' and redirect destination: ';
+            $message .= quote($test->{'redirect destination'});
+
         } else {
 
             die "Incomplete support for test type " . $test->{'type'} .  " detected.";
@@ -1446,7 +1491,7 @@ sub parse_cli_options () {
         'fuzzer-address=s'   => \$cli_options{'fuzzer-address'},
         'fuzzer-feeding'     => \$cli_options{'fuzzer-feeding'},
         'header-fuzzing'     => \$cli_options{'header-fuzzing'},
-        'help'               => sub {help},
+        'help'               => \&help,
         'level=s'            => \$cli_options{'level'},
         'loops=s'            => \$cli_options{'loops'},
         'max-level=s'        => \$cli_options{'max-level'},
@@ -1619,6 +1664,11 @@ To verify that a specific set of actions is applied to an URL, use:
 The sticky actions will be checked for all URLs below it
 until the next sticky actions directive.
 
+To verify that requests for a URL get redirected, use:
+
+    # Redirected URL = http://www.example.com/redirect-me
+    # Redirect Destination = http://www.example.org/redirected
+
 =head1 TEST LEVELS
 
 All tests have test levels to let the user
@@ -1626,9 +1676,15 @@ control which ones to execute (see I<OPTIONS> below).
 Test levels are either set with the B<Level> directive,
 or implicitly through the test type.
 
-Block tests default to level 7, fetch tests to level 6,
-"Sticky Actions" tests default to level 5, tests for trusted CGI
-requests to level 3 and client-header-action tests to level 1.
+Redirect tests default to level 108, block tests to level 7,
+fetch tests to level 6, "Sticky Actions" tests default to
+level 5, tests for trusted CGI requests to level 3 and
+client-header-action tests to level 1.
+
+The current redirect test level is above the default
+max-level value as failed tests will result in outgoing
+connections. Use the B<--max-level> option to run them
+as well.
 
 =head1 OPTIONS
 

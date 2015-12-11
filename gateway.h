@@ -1,6 +1,6 @@
 #ifndef GATEWAY_H_INCLUDED
 #define GATEWAY_H_INCLUDED
-#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.17 2009/07/11 14:49:09 fabiankeil Exp $"
+#define GATEWAY_H_VERSION "$Id: gateway.h,v 1.19 2009/10/03 10:37:49 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.h,v $
@@ -9,7 +9,7 @@
  *                using a "gateway" (i.e. HTTP proxy and/or SOCKS4
  *                proxy).  Also contains the list of gateway types.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -48,7 +48,6 @@ struct client_state;
 extern jb_socket forwarded_connect(const struct forward_spec * fwd, 
                                    struct http_request *http, 
                                    struct client_state *csp);
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 
 /*
  * Default number of seconds after which an
@@ -56,18 +55,20 @@ extern jb_socket forwarded_connect(const struct forward_spec * fwd,
  */
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 180
 
+#ifdef FEATURE_CONNECTION_SHARING
 extern void set_keep_alive_timeout(unsigned int timeout);
 extern void initialize_reusable_connections(void);
 extern void forget_connection(jb_socket sfd);
-extern void remember_connection(const struct client_state *csp,
-                                const struct forward_spec *fwd);
+extern void remember_connection(const struct reusable_connection *connection);
 extern int close_unusable_connections(void);
+#endif /* FEATURE_CONNECTION_SHARING */
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 extern void mark_connection_closed(struct reusable_connection *closed_connection);
 extern int connection_destination_matches(const struct reusable_connection *connection,
                                           const struct http_request *http,
                                           const struct forward_spec *fwd);
-#endif /* FEATURE_CONNECTION_KEEP_ALIVE */
-
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 /*
  * Solaris fix

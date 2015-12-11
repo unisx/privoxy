@@ -238,6 +238,14 @@
               </td>
             </tr>
             <tr>
+              <td><code>FEATURE_CONNECTION_SHARING</code></td>
+              <td>@if-FEATURE_CONNECTION_SHARING-then@ Yes @else-not-FEATURE_CONNECTION_SHARING@ No @endif-FEATURE_CONNECTION_SHARING@</td>
+              <td>
+               Allows to share outgoing connections between incoming connections.
+               Requires the connection-sharing config directive to be set.
+              </td>
+            </tr>
+            <tr>
               <td><code>FEATURE_FAST_REDIRECTS</code></td>
               <td>@if-FEATURE_FAST_REDIRECTS-then@ Yes @else-not-FEATURE_FAST_REDIRECTS@ No @endif-FEATURE_FAST_REDIRECTS@</td>
               <td>Allows the +fast-redirects action, to bypass redirect and logging scripts.</td>

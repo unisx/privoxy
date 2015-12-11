@@ -10,7 +10,7 @@
  *                introduced because the compile command line started
  *                getting ludicrously long with feature defines.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -147,11 +147,6 @@
 #undef FEATURE_IMAGE_DETECT_MSIE
 
 /*
- * Kills JavaScript popups - window.open, onunload, etc.
- */
-#undef FEATURE_KILL_POPUPS
-
-/*
  * Use PNG instead of GIF for built-in images
  */
 #undef FEATURE_NO_GIFS
@@ -167,9 +162,14 @@
 #undef FEATURE_EXTENDED_HOST_PATTERNS
 
 /*
- * Keep outgoing connections alive if possible.
+ * Keep connections alive if possible.
  */
 #undef FEATURE_CONNECTION_KEEP_ALIVE
+
+/*
+ * Allow to share outgoing connections between incoming connections.
+ */
+#undef FEATURE_CONNECTION_SHARING
 
 /*
  * Use POSIX threads instead of native threads.

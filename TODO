@@ -1,4 +1,4 @@
-$Id: TODO,v 1.5 2009/06/21 12:02:30 fabiankeil Exp $
+$Id: TODO,v 1.6 2009/09/06 17:20:31 fabiankeil Exp $
 
 Some Privoxy related task, not ordered in any way.
 
@@ -130,7 +130,8 @@ Some Privoxy related task, not ordered in any way.
     software projects" for the Co-Advisor HTTP compliance tests:
     http://coad.measurement-factory.com/details.html#pricing
 
-57) Allow piping into external filter programs.
+57) Allow piping into external programs to allow more powerful
+    filters and policy decisions.
 
 58) Move more template strings from the code into the actual templates.
 

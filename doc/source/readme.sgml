@@ -4,8 +4,8 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.14">
-<!entity p-status "BETA">
+<!entity p-version "3.0.15">
+<!entity p-status "beta">
 <!entity % p-not-stable "INCLUDE">
 <!entity % p-stable "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 2.30 2009/07/18 16:24:39 fabiankeil Exp $
+ $Id: readme.sgml,v 2.32 2009/10/10 05:52:55 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers http://www.privoxy.org/
  See LICENSE.
@@ -80,7 +80,7 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009  the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -128,10 +128,10 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
 <para>
- July 2009, Privoxy 3.0.14 beta is released.
+ October 2009, Privoxy 3.0.15 beta is released.
 </para>
 <para>
- This is a bugfix-release for the previous beta which introduced IPv6
+ This is a bugfix-release for the previous betas which introduced IPv6
  support, improved keep-alive support and a bunch of minor improvements.
  See the "ChangeLog", and the "What's New" section and the
  "Upgrader's Notes" in <citetitle>the User Manual</citetitle> for details.
@@ -167,9 +167,6 @@
  If no config_file is specified on the command line, Privoxy will look for a
  file named 'config' in the current directory (except Win32 which will look
  for 'config.txt'). If no config_file is found, Privoxy will fail to start.
-</para>
-<para>
- Or for Red Hat and Fedora based distributions: /etc/rc.d/init.d/privoxy start
 </para>
 <para>
  Or Debian and Ubuntu: /etc/init.d/privoxy start
@@ -246,7 +243,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 2.30 2009/07/18 16:24:39 fabiankeil Exp $ -->
+<!--  $Id: readme.sgml,v 2.32 2009/10/10 05:52:55 fabiankeil Exp $ -->
 <!-- </para> -->
 
 </article>

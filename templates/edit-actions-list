@@ -5,7 +5,7 @@
 # Purpose     :  Template used to edit the actions file.
 # 
 #
-# Copyright   :  Written by and Copyright (C) 2001-2007 the SourceForge
+# Copyright   :  Written by and Copyright (C) 2001-2009 the
 #                Privoxy team. http://www.privoxy.org/
 #
 #                Original Author: Copyright (C) 2001 Jonathan Foster
@@ -136,7 +136,7 @@ function e_p(link,pattern,curtext)
    if ((newtext=window.prompt("Edit the pattern to your needs:", unescape(curtext))) != null)
    {
       if (newtext != "")
-      { link.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+escape(newtext); }
+      { link.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+encodeURIComponent(newtext); }
       else
       { link.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern; }
       return true;
@@ -148,7 +148,7 @@ function a_p(link,section)
 {
    if (((newtext=window.prompt("Enter the new pattern:", "")) != null ) && (newtext != ""))
    {
-      link.href="edit-actions-add-url?f=@f@&v=@v@&s="+section+"&u="+escape(newtext);
+      link.href="edit-actions-add-url?f=@f@&v=@v@&s="+section+"&u="+encodeURIComponent(newtext);
       return true;
    }
    return false;

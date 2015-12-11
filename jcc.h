@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.26 2009/05/16 13:27:20 fabiankeil Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.27 2009/09/10 14:42:01 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.h,v $
@@ -104,9 +104,9 @@ extern privoxy_mutex_t rand_mutex;
 /* Functions */
 
 #ifdef __MINGW32__
-int real_main(int argc, const char *argv[]);
+int real_main(int argc, char **argv);
 #else
-int main(int argc, const char *argv[]);
+int main(int argc, char **argv);
 #endif
 
 /* Revision control strings from this header and associated .c file */

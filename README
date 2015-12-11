@@ -4,7 +4,7 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009  the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -32,7 +32,7 @@
  *
  *********************************************************************/
 
-This README is included with the development version of Privoxy 3.0.14. See
+This README is included with the development version of Privoxy 3.0.15. See
 http://www.privoxy.org/ for more information. The current code maturity level
 is "beta", but seems stable to us :).
 
@@ -54,9 +54,9 @@ Donations are welcome.
 
 1. IMPORTANT CHANGES
 
-July 2009, Privoxy 3.0.14 beta is released.
+October 2009, Privoxy 3.0.15 beta is released.
 
-This is a bugfix-release for the previous beta which introduced IPv6 support,
+This is a bugfix-release for the previous betas which introduced IPv6 support,
 improved keep-alive support and a bunch of minor improvements. See the
 "ChangeLog", and the "What's New" section and the "Upgrader's Notes" in the
 User Manual for details.
@@ -84,8 +84,6 @@ configuration and usage issues.
 If no config_file is specified on the command line, Privoxy will look for a
 file named 'config' in the current directory (except Win32 which will look for
 'config.txt'). If no config_file is found, Privoxy will fail to start.
-
-Or for Red Hat and Fedora based distributions: /etc/rc.d/init.d/privoxy start
 
 Or Debian and Ubuntu: /etc/init.d/privoxy start
 

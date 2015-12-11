@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.73 2009/05/16 13:27:20 fabiankeil Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.74 2009/09/26 13:29:57 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loaders.c,v $
@@ -760,10 +760,14 @@ char *read_config_line(char *buf, size_t buflen, FILE *fp, unsigned long *linenu
    else
    {
       assert(buf2);
-      assert(strlen(buf2) + 1U < buflen);
-      strncpy(buf, buf2, buflen - 1);
+      if (strlen(buf2) + 1U > buflen)
+      {
+         log_error(LOG_LEVEL_FATAL,
+            "Max line limit reached. Linenumber: %u. Lenght: %u. Max lenght: %u.",
+            *linenum, strlen(buf2), buflen-1);
+      }
+      strlcpy(buf, buf2, buflen);
       free(buf2);
-      buf[buflen - 1] = '\0';
       return buf;
    }
 }

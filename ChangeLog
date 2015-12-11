@@ -1,6 +1,52 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.15 Beta ***
+
+- In case of missing server data, no error message is send to the
+  client if the request arrived on a reused connection. The client
+  is then supposed to silently retry the request without bothering
+  the user. This should significantly reduce the frequency of the
+  "No server or forwarder data received" error message many users
+  reported.
+- More reliable detection of prematurely closed client sockets
+  with keep-alive enabled.
+- FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+  FEATURE_CONNECTION_SHARING and now available on
+  all platforms.
+- Improved handling of POST requests on reused connections.
+  Should fix problems with stalled connections after submitting
+  form data with some browser configurations.
+- Fixed various latency calculation issues.
+- Allows the client to pass NTLM authentication requests to a
+  forwarding proxy. This was already assumed and hinted to work
+  in 3.0.13 beta but actually didn't. Now it's confirmed to work
+  with IE, Firefox and Chrome.
+  Thanks to Francois Botha and Wan-Teh Chang
+- Fixed a calculation problem if receiving the server headers
+  takes more than two reads, that could cause Privoxy to terminate
+  the connection prematurely. Reported by Oliver.
+- Compiles again on platforms such as OpenBSD and systems
+  using earlier glibc version that don't support AI_ADDRCONFIG.
+  Anonymously submitted in #2872591.
+- A bunch of MS VC project files and Suse and Redhat RPM spec
+  files have been removed as they were no longer maintained for
+  quite some time.
+- Overly long action lines are properly rejected with a proper
+  error message. Previously they would be either rejected as
+  invalid or cause a core dump through abort().
+- Already timed-out connections are no longer temporarily remembered.
+  They weren't reused anyway, but wasted a socket slot.
+- len refers to the number of bytes actually read which might
+  differ from the ones received. Adjust log messages accordingly.
+- The optional JavaScript on the CGI page uses encodeURIComponent()
+  instead of escape() which doesn't encode all characters that matter.
+  Anonymously reported in #2832722.
+- Fix gcc45 warnings in decompress_iob().
+- Various log message improvements.
+- Privoxy-Regression-Test supports redirect tests.
+- Privoxy-Log-Parser can gather some connection statistics.
+
 *** Version 3.0.14 Beta ***
 
 - The latency is taken into account when evaluating whether or not to

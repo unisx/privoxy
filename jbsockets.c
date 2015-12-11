@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.65 2009/07/22 22:27:16 fabiankeil Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.68 2009/10/04 16:38:26 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jbsockets.c,v $
@@ -169,7 +169,10 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
    memset((char *)&hints, 0, sizeof(hints));
    hints.ai_family = AF_UNSPEC;
    hints.ai_socktype = SOCK_STREAM;
-   hints.ai_flags = AI_ADDRCONFIG | AI_NUMERICSERV; /* avoid service look-up */
+   hints.ai_flags = AI_NUMERICSERV; /* avoid service look-up */
+#ifdef AI_ADDRCONFIG
+   hints.ai_flags |= AI_ADDRCONFIG;
+#endif
    if ((retval = getaddrinfo(host, service, &hints, &result)))
    {
       log_error(LOG_LEVEL_INFO,
@@ -565,7 +568,7 @@ int read_socket(jb_socket fd, char *buf, int len)
 #elif defined(__BEOS__) || defined(AMIGA) || defined(__OS2__)
    return(recv(fd, buf, (size_t)len, 0));
 #else
-   return(read(fd, buf, (size_t)len));
+   return((int)read(fd, buf, (size_t)len));
 #endif
 }
 
@@ -586,6 +589,7 @@ int read_socket(jb_socket fd, char *buf, int len)
  *********************************************************************/
 int data_is_available(jb_socket fd, int seconds_to_wait)
 {
+   char buf[10];
    fd_set rfds;
    struct timeval timeout;
    int n;
@@ -606,7 +610,7 @@ int data_is_available(jb_socket fd, int seconds_to_wait)
    /*
     * XXX: Do we care about the different error conditions?
     */
-   return (n == 1);
+   return ((n == 1) && (1 == recv(fd, buf, 1, MSG_PEEK)));
 }
 
 
@@ -702,7 +706,10 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
       hints.ai_family = AF_UNSPEC;
    }
    hints.ai_socktype = SOCK_STREAM;
-   hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+   hints.ai_flags = AI_PASSIVE;
+#ifdef AI_ADDRCONFIG
+   hints.ai_flags |= AI_ADDRCONFIG;
+#endif
    hints.ai_protocol = 0; /* Realy any stream protocol or TCP only */
    hints.ai_canonname = NULL;
    hints.ai_addr = NULL;

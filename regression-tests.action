@@ -1,5 +1,5 @@
 #############################################################################
-# $Id: regression-tests.action,v 1.32 2009/07/19 09:21:19 fabiankeil Exp $
+# $Id: regression-tests.action,v 1.33 2009/10/10 14:28:40 fabiankeil Exp $
 #############################################################################
 #
 # This is a configuration file for Privoxy-Regression-Test
@@ -684,8 +684,6 @@ TAG:^Max-Forwards header without TRACE method$
 # Fetch Test = http://p.p/user-manual/startup.html
 # Level = 9
 # Fetch Test = http://p.p/user-manual/templates.html
-# Level = 9
-# Fetch Test = http://p.p/user-manual/upgradersnote.html
 # Level = 9
 # Fetch Test = http://p.p/user-manual/whatsnew.html
 # Level = 9

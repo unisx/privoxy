@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.275 2009/07/22 22:31:54 fabiankeil Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.302 2009/10/09 16:50:50 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/jcc.c,v $
@@ -1026,6 +1026,7 @@ static int server_response_is_complete(struct client_state *csp,
 }
 
 
+#ifdef FEATURE_CONNECTION_SHARING
 /*********************************************************************
  *
  * Function    :  wait_for_alive_connections
@@ -1053,6 +1054,7 @@ static void wait_for_alive_connections(void)
    log_error(LOG_LEVEL_CONNECT, "No connections to wait for left.");
 
 }
+#endif /* def FEATURE_CONNECTION_SHARING */
 
 
 /*********************************************************************
@@ -1122,6 +1124,94 @@ void save_connection_destination(jb_socket sfd,
    }
    server_connection->forward_port = fwd->forward_port;
 }
+
+
+/*********************************************************************
+ *
+ * Function    : verify_request_length
+ *
+ * Description : Checks if we already got the whole client requests
+ *               and sets CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ if
+ *               we do.
+ *
+ *               Data that doesn't belong to the current request is
+ *               thrown away to let the client retry on a clean socket.
+ *
+ *               XXX: This is a hack until we can deal with multiple
+ *                    pipelined requests at the same time.
+ *
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  void
+ *
+ *********************************************************************/
+static void verify_request_length(struct client_state *csp)
+{
+   unsigned long long buffered_request_bytes =
+      (unsigned long long)(csp->iob->eod - csp->iob->cur);
+
+   if ((csp->expected_client_content_length != 0)
+      && (buffered_request_bytes != 0))
+   {
+      if (csp->expected_client_content_length >= buffered_request_bytes)
+      {
+         csp->expected_client_content_length -= buffered_request_bytes;
+         log_error(LOG_LEVEL_CONNECT, "Reduced expected bytes to %llu "
+            "to account for the %llu ones we already got.",
+            csp->expected_client_content_length, buffered_request_bytes);
+      }
+      else
+      {
+         assert(csp->iob->eod > csp->iob->cur + csp->expected_client_content_length);
+         csp->iob->eod = csp->iob->cur + csp->expected_client_content_length;
+         log_error(LOG_LEVEL_CONNECT, "Reducing expected bytes to 0. "
+            "Marking the server socket tainted after throwing %llu bytes away.",
+            buffered_request_bytes - csp->expected_client_content_length);
+         csp->expected_client_content_length = 0;
+         csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
+      }
+
+      if (csp->expected_client_content_length == 0)
+      {
+         csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
+      }
+   }
+
+   if (!(csp->flags & CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ)
+    && ((csp->iob->cur[0] != '\0') || (csp->expected_client_content_length != 0)))
+   {
+      csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
+      if (strcmpic(csp->http->gpc, "GET")
+         && strcmpic(csp->http->gpc, "HEAD")
+         && strcmpic(csp->http->gpc, "TRACE")
+         && strcmpic(csp->http->gpc, "OPTIONS")
+         && strcmpic(csp->http->gpc, "DELETE"))
+      {
+         /* XXX: this is an incomplete hack */
+         csp->flags &= ~CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
+         log_error(LOG_LEVEL_CONNECT,
+            "There might be a request body. The connection will not be kept alive.");
+      }
+      else
+      {
+         /* XXX: and so is this */
+         csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
+         log_error(LOG_LEVEL_CONNECT,
+            "Possible pipeline attempt detected. The connection will not "
+            "be kept alive and we will only serve the first request.");
+         /* Nuke the pipelined requests from orbit, just to be sure. */
+         csp->iob->buf[0] = '\0';
+         csp->iob->eod = csp->iob->cur = csp->iob->buf;
+      }
+   }
+   else
+   {
+      csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
+      log_error(LOG_LEVEL_CONNECT, "Complete client request received.");
+   }
+}
 #endif /* FEATURE_CONNECTION_KEEP_ALIVE */
 
 
@@ -1141,10 +1231,12 @@ void save_connection_destination(jb_socket sfd,
  *********************************************************************/
 static void mark_server_socket_tainted(struct client_state *csp)
 {
-   if ((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE))
+   if ((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
+      && !(csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED))
    {
       log_error(LOG_LEVEL_CONNECT,
-         "Marking the server socket %d tainted.", csp->sfd);
+         "Marking the server socket %d tainted.",
+         csp->server_connection.sfd);
       csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
    }
 }
@@ -1173,8 +1265,9 @@ static char *get_request_line(struct client_state *csp)
    {
       if (!data_is_available(csp->cfd, csp->config->socket_timeout))
       {
-         log_error(LOG_LEVEL_ERROR,
-            "Stopped waiting for the request line.");
+         log_error(LOG_LEVEL_CONNECT,
+            "Stopped waiting for the request line. Timeout: %d.",
+            csp->config->socket_timeout);
          write_socket(csp->cfd, CLIENT_CONNECTION_TIMEOUT_RESPONSE,
             strlen(CLIENT_CONNECTION_TIMEOUT_RESPONSE));
          return NULL;
@@ -1239,6 +1332,7 @@ static jb_err receive_client_request(struct client_state *csp)
    req = get_request_line(csp);
    if (req == NULL)
    {
+      mark_server_socket_tainted(csp);
       return JB_ERR_PARSE;
    }
    assert(*req != '\0');
@@ -1456,39 +1550,9 @@ static jb_err parse_client_request(struct client_state *csp)
    }
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-   if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE))
+   if (csp->http->ssl == 0)
    {
-      if (csp->iob->cur[0] != '\0')
-      {
-         csp->flags |= CSP_FLAG_SERVER_SOCKET_TAINTED;
-         if (strcmpic(csp->http->gpc, "GET")
-          && strcmpic(csp->http->gpc, "HEAD")
-          && strcmpic(csp->http->gpc, "TRACE")
-          && strcmpic(csp->http->gpc, "OPTIONS")
-          && strcmpic(csp->http->gpc, "DELETE"))
-         {
-            /* XXX: this is an incomplete hack */
-            csp->flags &= ~CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
-            log_error(LOG_LEVEL_CONNECT,
-               "There might be a request body. The connection will not be kept alive.");
-         }
-         else
-         {
-            /* XXX: and so is this */
-            csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
-            log_error(LOG_LEVEL_CONNECT,
-               "Possible pipeline attempt detected. The connection will not "
-               "be kept alive and we will only serve the first request.");
-            /* Nuke the pipelined requests from orbit, just to be sure. */
-            csp->iob->buf[0] = '\0';
-            csp->iob->eod = csp->iob->cur = csp->iob->buf;
-         }
-      }
-      else
-      {
-         csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
-         log_error(LOG_LEVEL_CONNECT, "Complete client request received.");
-      }
+      verify_request_length(csp);
    }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
@@ -1539,6 +1603,9 @@ static void chat(struct client_state *csp)
    /* Skeleton for HTTP response, if we should intercept the request */
    struct http_response *rsp;
    struct timeval timeout;
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   int watch_client_socket = 1;
+#endif
 
    memset(buf, 0, sizeof(buf));
 
@@ -1647,27 +1714,27 @@ static void chat(struct client_state *csp)
    /* here we connect to the server, gateway, or the forwarder */
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-   if ((csp->sfd != JB_INVALID_SOCKET)
-      && socket_is_still_usable(csp->sfd)
+   if ((csp->server_connection.sfd != JB_INVALID_SOCKET)
+      && socket_is_still_usable(csp->server_connection.sfd)
       && connection_destination_matches(&csp->server_connection, http, fwd))
    {
       log_error(LOG_LEVEL_CONNECT,
          "Reusing server socket %u. Opened for %s.",
-         csp->sfd, csp->server_connection.host);
+         csp->server_connection.sfd, csp->server_connection.host);
    }
    else
    {
-      if (csp->sfd != JB_INVALID_SOCKET)
+      if (csp->server_connection.sfd != JB_INVALID_SOCKET)
       {
          log_error(LOG_LEVEL_CONNECT,
             "Closing server socket %u. Opened for %s.",
-            csp->sfd, csp->server_connection.host);
-         close_socket(csp->sfd);
+            csp->server_connection.sfd, csp->server_connection.host);
+         close_socket(csp->server_connection.sfd);
          mark_connection_closed(&csp->server_connection);
       }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
-      while ((csp->sfd = forwarded_connect(fwd, http, csp))
+      while ((csp->server_connection.sfd = forwarded_connect(fwd, http, csp))
          && (errno == EINVAL)
          && (forwarded_connect_retries++ < max_forwarded_connect_retries))
       {
@@ -1676,7 +1743,7 @@ static void chat(struct client_state *csp)
             forwarded_connect_retries, http->hostport);
       }
 
-      if (csp->sfd == JB_INVALID_SOCKET)
+      if (csp->server_connection.sfd == JB_INVALID_SOCKET)
       {
          if (fwd->type != SOCKS_NONE)
          {
@@ -1703,8 +1770,10 @@ static void chat(struct client_state *csp)
          return;
       }
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      save_connection_destination(csp->sfd, http, fwd, &csp->server_connection);
-      csp->server_connection.keep_alive_timeout = (unsigned)csp->config->keep_alive_timeout;
+      save_connection_destination(csp->server_connection.sfd,
+         http, fwd, &csp->server_connection);
+      csp->server_connection.keep_alive_timeout =
+         (unsigned)csp->config->keep_alive_timeout;
    }
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
@@ -1722,8 +1791,8 @@ static void chat(struct client_state *csp)
        * Write the client's (modified) header to the server
        * (along with anything else that may be in the buffer)
        */
-      if (write_socket(csp->sfd, hdr, strlen(hdr))
-       || (flush_socket(csp->sfd, csp->iob) <  0))
+      if (write_socket(csp->server_connection.sfd, hdr, strlen(hdr))
+       || (flush_socket(csp->server_connection.sfd, csp->iob) <  0))
       {
          log_error(LOG_LEVEL_CONNECT,
             "write header to: %s failed: %E", http->hostport);
@@ -1760,7 +1829,8 @@ static void chat(struct client_state *csp)
    /* we're finished with the client's header */
    freez(hdr);
 
-   maxfd = (csp->cfd > csp->sfd) ? csp->cfd : csp->sfd;
+   maxfd = (csp->cfd > csp->server_connection.sfd) ?
+      csp->cfd : csp->server_connection.sfd;
 
    /* pass data between the client and server
     * until one or the other shuts down the connection.
@@ -1780,9 +1850,9 @@ static void chat(struct client_state *csp)
       FD_ZERO(&rfds);
 #endif
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      if ((csp->flags & CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ))
+      if (!watch_client_socket)
       {
-         maxfd = csp->sfd;
+         maxfd = csp->server_connection.sfd;
       }
       else
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
@@ -1790,7 +1860,7 @@ static void chat(struct client_state *csp)
          FD_SET(csp->cfd, &rfds);
       }
 
-      FD_SET(csp->sfd, &rfds);
+      FD_SET(csp->server_connection.sfd, &rfds);
 
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
       if ((csp->flags & CSP_FLAG_CHUNKED)
@@ -1807,10 +1877,20 @@ static void chat(struct client_state *csp)
       }
       if (server_body && server_response_is_complete(csp, byte_count))
       {
-         log_error(LOG_LEVEL_CONNECT,
-            "Done reading from server. Expected content length: %llu. "
-            "Actual content length: %llu. Most recently received: %d.",
-            csp->expected_content_length, byte_count, len);
+         if (csp->expected_content_length == byte_count)
+         {
+            log_error(LOG_LEVEL_CONNECT,
+               "Done reading from server. Content length: %llu as expected. "
+               "Bytes most recently read: %d.",
+               byte_count, len);
+         }
+         else
+         {
+            log_error(LOG_LEVEL_CONNECT,
+               "Done reading from server. Expected content length: %llu. "
+               "Actual content length: %llu. Bytes most recently read: %d.",
+               csp->expected_content_length, byte_count, len);
+         }
          len = 0;
          /*
           * XXX: should not jump around,
@@ -1851,7 +1931,51 @@ static void chat(struct client_state *csp)
        */
       if (FD_ISSET(csp->cfd, &rfds))
       {
-         len = read_socket(csp->cfd, buf, sizeof(buf) - 1);
+         int max_bytes_to_read = sizeof(buf) - 1;
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+         if ((csp->flags & CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ))
+         {
+            if (data_is_available(csp->cfd, 0))
+            {
+               /*
+                * If the next request is already waiting, we have
+                * to stop select()ing the client socket. Otherwise
+                * we would always return right away and get nothing
+                * else done.
+                */
+               watch_client_socket = 0;
+               log_error(LOG_LEVEL_CONNECT,
+                  "Stopping to watch the client socket. "
+                  "There's already another request waiting.");
+               continue;
+            }
+            /*
+             * If the client socket is set, but there's no data
+             * available on the socket, the client went fishing
+             * and continuing talking to the server makes no sense.
+             */
+            log_error(LOG_LEVEL_CONNECT,
+               "The client closed socket %d while "
+               "the server socket %d is still open.",
+               csp->cfd, csp->server_connection.sfd);
+            mark_server_socket_tainted(csp);
+            break;
+         }
+         if (csp->expected_client_content_length != 0)
+         {
+            if (csp->expected_client_content_length < (sizeof(buf) - 1))
+            {
+               max_bytes_to_read = (int)csp->expected_client_content_length;
+            }
+            log_error(LOG_LEVEL_CONNECT,
+               "Waiting for up to %d bytes from the client.",
+               max_bytes_to_read);
+         }
+         assert(max_bytes_to_read < sizeof(buf));
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+         len = read_socket(csp->cfd, buf, max_bytes_to_read);
 
          if (len <= 0)
          {
@@ -1860,7 +1984,25 @@ static void chat(struct client_state *csp)
             break; /* "game over, man" */
          }
 
-         if (write_socket(csp->sfd, buf, (size_t)len))
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+         if (csp->expected_client_content_length != 0)
+         {
+            assert(len <= max_bytes_to_read);
+            csp->expected_client_content_length -= (unsigned)len;
+            log_error(LOG_LEVEL_CONNECT,
+               "Expected client content length set to %llu "
+               "after reading %d bytes.",
+               csp->expected_client_content_length, len);
+            if (csp->expected_client_content_length == 0)
+            {
+               log_error(LOG_LEVEL_CONNECT,
+                  "Done reading from the client.");
+               csp->flags |= CSP_FLAG_CLIENT_REQUEST_COMPLETELY_READ;
+            }
+         }
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+
+         if (write_socket(csp->server_connection.sfd, buf, (size_t)len))
          {
             log_error(LOG_LEVEL_ERROR, "write to: %s failed: %E", http->host);
             mark_server_socket_tainted(csp);
@@ -1874,7 +2016,7 @@ static void chat(struct client_state *csp)
        * If `hdr' is null, then it's the header otherwise it's the body.
        * FIXME: Does `hdr' really mean `host'? No.
        */
-      if (FD_ISSET(csp->sfd, &rfds))
+      if (FD_ISSET(csp->server_connection.sfd, &rfds))
       {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
          if (!socket_is_still_usable(csp->cfd))
@@ -1892,7 +2034,7 @@ static void chat(struct client_state *csp)
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
          fflush(NULL);
-         len = read_socket(csp->sfd, buf, sizeof(buf) - 1);
+         len = read_socket(csp->server_connection.sfd, buf, sizeof(buf) - 1);
 
          if (len < 0)
          {
@@ -2113,7 +2255,6 @@ static void chat(struct client_state *csp)
          }
          else
          {
-            const char *header_start;
             /*
              * We're still looking for the end of the server's header.
              * Buffer up the data we just read.  If that fails, there's
@@ -2127,8 +2268,6 @@ static void chat(struct client_state *csp)
                mark_server_socket_tainted(csp);
                return;
             }
-
-            header_start = csp->iob->cur;
 
             /* Convert iob into something sed() can digest */
             if (JB_ERR_PARSE == get_server_headers(csp))
@@ -2155,23 +2294,40 @@ static void chat(struct client_state *csp)
                    * Since we have to wait for more from the server before
                    * we can parse the headers we just continue here.
                    */
-                  long header_offset = csp->iob->cur - header_start;
-                  assert(csp->iob->cur >= header_start);
-                  byte_count += (unsigned long long)(len - header_offset);
-                  log_error(LOG_LEVEL_CONNECT, "Continuing buffering headers. "
-                     "byte_count: %llu. header_offset: %d. len: %d.",
-                     byte_count, header_offset, len);
+                  log_error(LOG_LEVEL_CONNECT,
+                     "Continuing buffering headers. Bytes most recently read: %d.",
+                     len);
                   continue;
                }
+            }
+            else
+            {
+               /*
+                * Account for the content bytes we
+                * might have gotten with the headers.
+                */
+               assert(csp->iob->eod >= csp->iob->cur);
+               byte_count = (unsigned long long)(csp->iob->eod - csp->iob->cur);
             }
 
             /* Did we actually get anything? */
             if (NULL == csp->headers->first)
             {
-               log_error(LOG_LEVEL_ERROR,
-                  "Empty server or forwarder response received on socket %d.", csp->sfd);
+               if ((csp->flags & CSP_FLAG_REUSED_CLIENT_CONNECTION))
+               {
+                  log_error(LOG_LEVEL_ERROR,
+                     "Empty server or forwarder response received on socket %d. "
+                     "Closing client connection %d without sending data.",
+                     csp->server_connection.sfd, csp->cfd);
+               }
+               else
+               {
+                  log_error(LOG_LEVEL_ERROR,
+                     "Empty server or forwarder response received on socket %d.",
+                     csp->server_connection.sfd);
+                  send_crunch_response(csp, error_response(csp, "no-server-data"));
+               }
                log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 502 0", csp->ip_addr_str, http->cmd);
-               send_crunch_response(csp, error_response(csp, "no-server-data"));
                free_http_request(http);
                mark_server_socket_tainted(csp);
                return;
@@ -2261,18 +2417,6 @@ static void chat(struct client_state *csp)
                   mark_server_socket_tainted(csp);
                   return;
                }
-
-               byte_count += (unsigned long long)len;
-            }
-            else
-            {
-               /*
-                * XXX: the header lenght should probably
-                * be calculated by get_server_headers().
-                */
-               long header_length = csp->iob->cur - header_start;
-               assert(csp->iob->cur > header_start);
-               byte_count += (unsigned long long)(len - header_length);
             }
 
             /* we're finished with the server's header */
@@ -2352,38 +2496,46 @@ static void serve(struct client_state *csp)
 #endif /* def AMIGA */
 {
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef FEATURE_CONNECTION_SHARING
    static int monitor_thread_running = 0;
+#endif /* def FEATURE_CONNECTION_SHARING */
    int continue_chatting = 0;
-   unsigned int latency = 0;
 
    do
    {
+      unsigned int latency;
+
       chat(csp);
 
-      if ((csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
-         && !(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
-      {
-         log_error(LOG_LEVEL_CONNECT, "The server didn't specify how long "
-            "the connection will stay open. Assume it's only a second.");
-         csp->server_connection.keep_alive_timeout = 1;
-      }
+      latency = (unsigned)(csp->server_connection.response_received -
+         csp->server_connection.request_sent) / 2;
 
       continue_chatting = (csp->config->feature_flags
          & RUNTIME_FEATURE_CONNECTION_KEEP_ALIVE)
          && (csp->flags & CSP_FLAG_SERVER_CONNECTION_KEEP_ALIVE)
          && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED)
          && (csp->cfd != JB_INVALID_SOCKET)
-         && (csp->sfd != JB_INVALID_SOCKET)
-         && socket_is_still_usable(csp->sfd)
+         && (csp->server_connection.sfd != JB_INVALID_SOCKET)
+         && socket_is_still_usable(csp->server_connection.sfd)
          && (latency < csp->server_connection.keep_alive_timeout);
 
       if (continue_chatting)
       {
-         unsigned int client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
+         unsigned int client_timeout;
+
+         if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
+         {
+            log_error(LOG_LEVEL_CONNECT, "The server didn't specify how long "
+               "the connection will stay open. Assume it's only a second.");
+            csp->server_connection.keep_alive_timeout = 1;
+         }
+
+         client_timeout = (unsigned)csp->server_connection.keep_alive_timeout - latency;
+
          log_error(LOG_LEVEL_CONNECT,
             "Waiting for the next client request. "
             "Keeping the server socket %d to %s open.",
-            csp->sfd, csp->server_connection.host);
+            csp->server_connection.sfd, csp->server_connection.host);
 
          if ((csp->flags & CSP_FLAG_CLIENT_CONNECTION_KEEP_ALIVE)
             && data_is_available(csp->cfd, (int)client_timeout)
@@ -2398,6 +2550,7 @@ static void serve(struct client_state *csp)
             csp->content_type = 0;
             csp->content_length = 0;
             csp->expected_content_length = 0;
+            csp->expected_client_content_length = 0;
             list_remove_all(csp->headers);
             freez(csp->iob->buf);
             memset(csp->iob, 0, sizeof(csp->iob));
@@ -2413,17 +2566,26 @@ static void serve(struct client_state *csp)
             }
 
             /* XXX: Store per-connection flags someplace else. */
-            csp->flags = CSP_FLAG_ACTIVE | (csp->flags & CSP_FLAG_TOGGLED_ON);
+            csp->flags = CSP_FLAG_ACTIVE |
+               (csp->flags & CSP_FLAG_TOGGLED_ON) | CSP_FLAG_REUSED_CLIENT_CONNECTION;
          }
          else
          {
             log_error(LOG_LEVEL_CONNECT,
                "No additional client request received in time.");
+#ifdef FEATURE_CONNECTION_SHARING
             if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
-               && (socket_is_still_usable(csp->sfd)))
+               && (socket_is_still_usable(csp->server_connection.sfd)))
             {
-               remember_connection(csp, forward_url(csp, csp->http));
-               csp->sfd = JB_INVALID_SOCKET;
+               time_t time_open = time(NULL) - csp->server_connection.timestamp;
+
+               if (csp->server_connection.keep_alive_timeout < time_open + latency)
+               {
+                  break;
+               }
+
+               remember_connection(&csp->server_connection);
+               csp->server_connection.sfd = JB_INVALID_SOCKET;
                close_socket(csp->cfd);
                csp->cfd = JB_INVALID_SOCKET;
                privoxy_mutex_lock(&connection_reuse_mutex);
@@ -2437,29 +2599,33 @@ static void serve(struct client_state *csp)
                }
                privoxy_mutex_unlock(&connection_reuse_mutex);
             }
+#endif /* def FEATURE_CONNECTION_SHARING */
             break;
          }
       }
-      else if (csp->sfd != JB_INVALID_SOCKET)
+      else if (csp->server_connection.sfd != JB_INVALID_SOCKET)
       {
          log_error(LOG_LEVEL_CONNECT,
             "The connection on server socket %d to %s isn't reusable. "
-            "Closing.", csp->sfd, csp->server_connection.host);
+            "Closing.", csp->server_connection.sfd, csp->server_connection.host);
       }
    } while (continue_chatting);
 
-   mark_connection_closed(&csp->server_connection);
 #else
    chat(csp);
 #endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
-   if (csp->sfd != JB_INVALID_SOCKET)
+   if (csp->server_connection.sfd != JB_INVALID_SOCKET)
    {
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
-      forget_connection(csp->sfd);
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
-      close_socket(csp->sfd);
+#ifdef FEATURE_CONNECTION_SHARING
+      forget_connection(csp->server_connection.sfd);
+#endif /* def FEATURE_CONNECTION_SHARING */
+      close_socket(csp->server_connection.sfd);
    }
+
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+   mark_connection_closed(&csp->server_connection);
+#endif
 
    if (csp->cfd != JB_INVALID_SOCKET)
    {
@@ -2691,9 +2857,9 @@ static void initialize_mutexes(void)
  *
  *********************************************************************/
 #ifdef __MINGW32__
-int real_main(int argc, const char *argv[])
+int real_main(int argc, char **argv)
 #else
-int main(int argc, const char *argv[])
+int main(int argc, char **argv)
 #endif
 {
    int argc_pos = 0;
@@ -3207,13 +3373,13 @@ static void listen_loop(void)
 
    config = load_config();
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef FEATURE_CONNECTION_SHARING
    /*
     * XXX: Should be relocated once it no
     * longer needs to emit log messages.
     */
    initialize_reusable_connections();
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+#endif /* def FEATURE_CONNECTION_SHARING */
 
    bfd = bind_port_helper(config);
 
@@ -3256,7 +3422,7 @@ static void listen_loop(void)
       }
 
       csp->flags |= CSP_FLAG_ACTIVE;
-      csp->sfd    = JB_INVALID_SOCKET;
+      csp->server_connection.sfd = JB_INVALID_SOCKET;
 
       csp->config = config = load_config();
 

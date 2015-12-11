@@ -1,4 +1,4 @@
-const char gateway_rcs[] = "$Id: gateway.c,v 1.57 2009/07/13 17:12:28 fabiankeil Exp $";
+const char gateway_rcs[] = "$Id: gateway.c,v 1.64 2009/10/03 10:37:49 fabiankeil Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/gateway.c,v $
@@ -7,7 +7,7 @@ const char gateway_rcs[] = "$Id: gateway.c,v 1.57 2009/07/13 17:12:28 fabiankeil
  *                using a "forwarder" (i.e. HTTP proxy and/or a SOCKS4
  *                or SOCKS5 proxy).
  *
- * Copyright   :  Written by and Copyright (C) 2001-2009 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001-2009 the
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -125,7 +125,7 @@ struct socks_reply {
 
 static const char socks_userid[] = "anonymous";
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef FEATURE_CONNECTION_SHARING
 
 #define MAX_REUSABLE_CONNECTIONS 100
 static unsigned int keep_alive_timeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
@@ -169,22 +169,20 @@ extern void initialize_reusable_connections(void)
  *
  * Function    :  remember_connection
  *
- * Description :  Remembers a connection for reuse later on.
+ * Description :  Remembers a server connection for reuse later on.
  *
  * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  fwd = The forwarder settings used.
+ *          1  :  connection = The server connection to remember.
  *
  * Returns     : void
  *
  *********************************************************************/
-void remember_connection(const struct client_state *csp, const struct forward_spec *fwd)
+void remember_connection(const struct reusable_connection *connection)
 {
    unsigned int slot = 0;
    int free_slot_found = FALSE;
-   const struct reusable_connection *connection = &csp->server_connection;
-   const struct http_request *http = csp->http;
 
+   assert(NULL != connection);
    assert(connection->sfd != JB_INVALID_SOCKET);
 
    if (mark_connection_unused(connection))
@@ -202,7 +200,7 @@ void remember_connection(const struct client_state *csp, const struct forward_sp
          assert(reusable_connection[slot].in_use == 0);
          log_error(LOG_LEVEL_CONNECT,
             "Remembering socket %d for %s:%d in slot %d.",
-            connection->sfd, http->host, http->port, slot);
+            connection->sfd, connection->host, connection->port, slot);
          free_slot_found = TRUE;
          break;
       }
@@ -212,37 +210,36 @@ void remember_connection(const struct client_state *csp, const struct forward_sp
    {
       log_error(LOG_LEVEL_CONNECT,
         "No free slots found to remembering socket for %s:%d. Last slot %d.",
-        http->host, http->port, slot);
+        connection->host, connection->port, slot);
       privoxy_mutex_unlock(&connection_reuse_mutex);
       close_socket(connection->sfd);
       return;
    }
 
-   assert(NULL != http->host);
-   reusable_connection[slot].host = strdup(http->host);
+   assert(NULL != connection->host);
+   reusable_connection[slot].host = strdup(connection->host);
    if (NULL == reusable_connection[slot].host)
    {
       log_error(LOG_LEVEL_FATAL, "Out of memory saving socket.");
    }
    reusable_connection[slot].sfd = connection->sfd;
-   reusable_connection[slot].port = http->port;
+   reusable_connection[slot].port = connection->port;
    reusable_connection[slot].in_use = 0;
    reusable_connection[slot].timestamp = connection->timestamp;
    reusable_connection->request_sent = connection->request_sent;
    reusable_connection->response_received = connection->response_received;
    reusable_connection[slot].keep_alive_timeout = connection->keep_alive_timeout;
 
-   assert(NULL != fwd);
    assert(reusable_connection[slot].gateway_host == NULL);
    assert(reusable_connection[slot].gateway_port == 0);
    assert(reusable_connection[slot].forwarder_type == SOCKS_NONE);
    assert(reusable_connection[slot].forward_host == NULL);
    assert(reusable_connection[slot].forward_port == 0);
 
-   reusable_connection[slot].forwarder_type = fwd->type;
-   if (NULL != fwd->gateway_host)
+   reusable_connection[slot].forwarder_type = connection->forwarder_type;
+   if (NULL != connection->gateway_host)
    {
-      reusable_connection[slot].gateway_host = strdup(fwd->gateway_host);
+      reusable_connection[slot].gateway_host = strdup(connection->gateway_host);
       if (NULL == reusable_connection[slot].gateway_host)
       {
          log_error(LOG_LEVEL_FATAL, "Out of memory saving gateway_host.");
@@ -252,11 +249,11 @@ void remember_connection(const struct client_state *csp, const struct forward_sp
    {
       reusable_connection[slot].gateway_host = NULL;
    }
-   reusable_connection[slot].gateway_port = fwd->gateway_port;
+   reusable_connection[slot].gateway_port = connection->gateway_port;
 
-   if (NULL != fwd->forward_host)
+   if (NULL != connection->forward_host)
    {
-      reusable_connection[slot].forward_host = strdup(fwd->forward_host);
+      reusable_connection[slot].forward_host = strdup(connection->forward_host);
       if (NULL == reusable_connection[slot].forward_host)
       {
          log_error(LOG_LEVEL_FATAL, "Out of memory saving forward_host.");
@@ -266,12 +263,14 @@ void remember_connection(const struct client_state *csp, const struct forward_sp
    {
       reusable_connection[slot].forward_host = NULL;
    }
-   reusable_connection[slot].forward_port = fwd->forward_port;
+   reusable_connection[slot].forward_port = connection->forward_port;
 
    privoxy_mutex_unlock(&connection_reuse_mutex);
 }
+#endif /* def FEATURE_CONNECTION_SHARING */
 
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /*********************************************************************
  *
  * Function    :  mark_connection_closed
@@ -300,8 +299,10 @@ void mark_connection_closed(struct reusable_connection *closed_connection)
    freez(closed_connection->forward_host);
    closed_connection->forward_port = 0;
 }
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 
+#ifdef FEATURE_CONNECTION_SHARING
 /*********************************************************************
  *
  * Function    :  forget_connection
@@ -345,8 +346,10 @@ void forget_connection(jb_socket sfd)
 
    privoxy_mutex_unlock(&connection_reuse_mutex);
 }
+#endif /* def FEATURE_CONNECTION_SHARING */
 
 
+#ifdef FEATURE_CONNECTION_KEEP_ALIVE
 /*********************************************************************
  *
  * Function    :  connection_destination_matches
@@ -396,8 +399,10 @@ int connection_destination_matches(const struct reusable_connection *connection,
    return (!strcmpic(connection->host, http->host));
 
 }
+#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
 
 
+#ifdef FEATURE_CONNECTION_SHARING
 /*********************************************************************
  *
  * Function    :  close_unusable_connections
@@ -423,14 +428,14 @@ int close_unusable_connections(void)
          && (JB_INVALID_SOCKET != reusable_connection[slot].sfd))
       {
          time_t time_open = time(NULL) - reusable_connection[slot].timestamp;
-         time_t latency = reusable_connection[slot].response_received -
-            reusable_connection[slot].request_sent;
+         time_t latency = (reusable_connection[slot].response_received -
+            reusable_connection[slot].request_sent) / 2;
 
          if (reusable_connection[slot].keep_alive_timeout < time_open + latency)
          {
             log_error(LOG_LEVEL_CONNECT,
                "The connection to %s:%d in slot %d timed out. "
-               "Closing socket %d. Timeout is: %d. Assumed latency: %d",
+               "Closing socket %d. Timeout is: %d. Assumed latency: %d.",
                reusable_connection[slot].host,
                reusable_connection[slot].port, slot,
                reusable_connection[slot].sfd,
@@ -498,8 +503,13 @@ static jb_socket get_reusable_connection(const struct http_request *http,
             reusable_connection[slot].in_use = TRUE;
             sfd = reusable_connection[slot].sfd;
             log_error(LOG_LEVEL_CONNECT,
-               "Found reusable socket %d for %s:%d in slot %d.",
-               sfd, reusable_connection[slot].host, reusable_connection[slot].port, slot);
+               "Found reusable socket %d for %s:%d in slot %d. "
+               "Timestamp made %d seconds ago. Timeout: %d. Latency: %d.",
+               sfd, reusable_connection[slot].host, reusable_connection[slot].port,
+               slot, time(NULL) - reusable_connection[slot].timestamp,
+               reusable_connection[slot].keep_alive_timeout,
+               (int)(reusable_connection[slot].response_received -
+               reusable_connection[slot].request_sent));
             break;
          }
       }
@@ -574,7 +584,7 @@ void set_keep_alive_timeout(unsigned int timeout)
 {
    keep_alive_timeout = timeout;
 }
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+#endif /* def FEATURE_CONNECTION_SHARING */
 
 
 /*********************************************************************
@@ -600,7 +610,7 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
    int dest_port;
    jb_socket sfd = JB_INVALID_SOCKET;
 
-#ifdef FEATURE_CONNECTION_KEEP_ALIVE
+#ifdef FEATURE_CONNECTION_SHARING
    if ((csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
       && !(csp->flags & CSP_FLAG_SERVER_SOCKET_TAINTED))
    {
@@ -610,7 +620,7 @@ jb_socket forwarded_connect(const struct forward_spec * fwd,
          return sfd;
       }
    }
-#endif /* def FEATURE_CONNECTION_KEEP_ALIVE */
+#endif /* def FEATURE_CONNECTION_SHARING */
 
    /* Figure out if we need to connect to the web server or a HTTP proxy. */
    if (fwd->forward_host)
@@ -685,7 +695,7 @@ static jb_socket socks4_connect(const struct forward_spec * fwd,
                                 int target_port,
                                 struct client_state *csp)
 {
-   unsigned int web_server_addr;
+   unsigned long web_server_addr;
    char buf[BUFFER_SIZE];
    struct socks_op    *c = (struct socks_op    *)buf;
    struct socks_reply *s = (struct socks_reply *)buf;

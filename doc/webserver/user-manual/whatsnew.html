@@ -7,7 +7,7 @@
 NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.14 User Manual"
+TITLE="Privoxy 3.0.15 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Installation"
@@ -42,7 +42,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.14 User Manual</TH
+>Privoxy 3.0.15 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -84,10 +84,130 @@ NAME="WHATSNEW"
 ><P
 > <SPAN
 CLASS="APPLICATION"
->Privoxy 3.0.14 Beta</SPAN
-> is a bugfix-release
- for the previous beta which introduced IPv6 support,  improved keep-alive
- support and a bunch of minor improvements. The changes since 3.0.12:</P
+>Privoxy 3.0.15 beta</SPAN
+> is a bug-fix release
+ for the previous beta. The changes since 3.0.14 are:</P
+><P
+> <P
+></P
+><UL
+><LI
+><P
+>    In case of missing server data, no error message is send to the
+    client if the request arrived on a reused connection. The client
+    is then supposed to silently retry the request without bothering
+    the user. This should significantly reduce the frequency of the
+    "No server or forwarder data received" error message many users
+    reported.
+   </P
+></LI
+><LI
+><P
+>    More reliable detection of prematurely closed client sockets
+    with keep-alive enabled.
+   </P
+></LI
+><LI
+><P
+>    FEATURE_CONNECTION_KEEP_ALIVE is decoupled from
+    FEATURE_CONNECTION_SHARING and now available on
+    all platforms.
+   </P
+></LI
+><LI
+><P
+>    Improved handling of POST requests on reused connections.
+    Should fix problems with stalled connections after submitting
+    form data with some browser configurations.
+   </P
+></LI
+><LI
+><P
+>    Fixed various latency calculation issues.
+   </P
+></LI
+><LI
+><P
+>    Allows the client to pass NTLM authentication requests to a
+    forwarding proxy. This was already assumed and hinted to work
+    in 3.0.13 beta but actually didn't. Now it's confirmed to work
+    with IE, Firefox and Chrome.
+    Thanks to Francois Botha and Wan-Teh Chang
+   </P
+></LI
+><LI
+><P
+>    Fixed a calculation problem if receiving the server headers
+    takes more than two reads, that could cause Privoxy to terminate
+    the connection prematurely. Reported by Oliver.
+   </P
+></LI
+><LI
+><P
+>    Compiles again on platforms such as OpenBSD and systems
+    using earlier glibc version that don't support AI_ADDRCONFIG.
+    Anonymously submitted in #2872591.
+   </P
+></LI
+><LI
+><P
+>    A bunch of MS VC project files and Suse and Redhat RPM spec
+    files have been removed as they were no longer maintained for
+    quite some time.
+   </P
+></LI
+><LI
+><P
+>    Overly long action lines are properly rejected with a proper
+    error message. Previously they would be either rejected as
+    invalid or cause a core dump through abort().
+   </P
+></LI
+><LI
+><P
+>    Already timed-out connections are no longer temporarily remembered.
+    They weren't reused anyway, but wasted a socket slot.
+   </P
+></LI
+><LI
+><P
+>    len refers to the number of bytes actually read which might
+    differ from the ones received. Adjust log messages accordingly.
+   </P
+></LI
+><LI
+><P
+>    The optional JavaScript on the CGI page uses encodeURIComponent()
+    instead of escape() which doesn't encode all characters that matter.
+    Anonymously reported in #2832722.
+   </P
+></LI
+><LI
+><P
+>    Fix gcc45 warnings in decompress_iob().
+   </P
+></LI
+><LI
+><P
+>    Various log message improvements.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Regression-Test supports redirect tests.
+   </P
+></LI
+><LI
+><P
+>    Privoxy-Log-Parser can gather some connection statistics.
+   </P
+></LI
+></UL
+></P
+><P
+> If you missed the previous two beta versions, you may also be
+ interested in the additional changes since 3.0.12, the
+ last stable release:</P
 ><P
 > <P
 ></P
@@ -437,5 +557,4 @@ VALIGN="top"
 ></TABLE
 ></DIV
 ></BODY
-></HTML
->
+></HTML>

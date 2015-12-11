@@ -11,7 +11,7 @@
 #
 #  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 #
-#  $Id: default.action.master,v 1.184 2009/07/21 14:19:57 fabiankeil Exp $
+#  $Id: default.action.master,v 1.191 2009/10/02 18:07:22 fabiankeil Exp $
 #
 #  Requires    :  This version requires Privoxy v3.0.11 or later due to
 #                 syntax changes.
@@ -915,6 +915,10 @@ static.lycos-europe.net
 #MASTER# BLOCK-REFERRER: http://crooksandliars.com/
 # Blocked URL = http://rotator.adjuggler.com/servlet/ajrotator/616245/0/vh?z=csm&dim=616028
 .adjuggler.com/servlet/ajrotator/
+#MASTER# Remark: nothing but "sponsored listings"
+# Blocked URL = http://bcc.co.uk/
+bcc.co.uk/
+
 
 
 #----------------------------------------------------------------------------
@@ -1609,6 +1613,14 @@ tags.gawker.com/.*css$
 #MASTER# UNBLOCK-REFERRER: http://idonthateyouall.imeem.com/video/8zH0_f9i/kiley_rilo_pull_me_in_tighter_art_video/
 # URL = http://ad.doubleclick.net/crossdomain.xml
 ad.doubleclick.net/crossdomain\.xml
+#MASTER# REMARKS: Support request 2838390: 2009-08-16: nfl.com videos not working
+#MASTER# REMARKS: bbc.co.uk videos references ad.uk.doubleclick.net
+# URL = http://ad.doubleclick.net/879366/DartShell9_8.swf?adServerHost=http://ad.doubleclick.net
+# URL = http://ad.doubleclick.net/pfadx/DARTSHELLCONFIGXML;dcmt=text/xml;
+# URL = http://ad.doubleclick.net/879366/DartShellPlayer9_8_01_00.swf
+# URL = http://ad.uk.doubleclick.net/879366/DartShell7_7.swf?adServerHost=http://ad.uk.doubleclick.net
+.doubleclick.net/.*/DartShell.*\.swf
+.doubleclick.net/.*/DARTSHELLCONFIGXML
 #MASTER# REMARKS: Actionsfile feedback item #2021509  2008-07-18
 #MASTER# REMARKS: Allow realplayer site help popup windows
 #MASTER# UNBLOCK-REFERRER: http://real.custhelp.com/cgi-bin/real.cfg/php/enduser/std_adp.php?p_faqid=4512
@@ -1659,6 +1671,12 @@ lads.myspacecdn.com/
 #MASTER# REMARKS: AF#2789653 iTunes download blocked
 # URL = http://a957.phobos.apple.com/us/r1000/000/Music/ad/47/56/mzi.gnjsyarh.aac.a.m4p
 .phobos.apple.com/
+# URL = http://eas8.emediate.eu/eas?camp=114;ty=ct;EASLink=http://www.jp.dk
+.emediate.eu/.*EASLink=
+#MASTER# REMARKS: Actionfile tracker ID: 2838501:  2009-08-16
+# URL = http://new.meteo.pl/advajax.js
+.meteo.pl/advajax\.js
+
 
 
 #############################################################################
@@ -1680,7 +1698,7 @@ images.apple.com
 #MASTER# REMARKS: Actions Tracker 1293057 09/02/06
 .update.microsoft.com
 #MASTER# REMARKS: Various reports 09/16/06. This site also requires pop-ups.
-mail.google.
+mail.google.*
 
 #----------------------------------------------------------------------------
 # Semi-fragile, allow for blocks.
@@ -1703,7 +1721,7 @@ mail.google.
 .dabs.com
 .overclockers.co.uk
 .db24.de
-.ebay.
+.ebay.*
 .mobile.de
 www.fondationlejeu.com
 www.techtv.com
@@ -1752,7 +1770,8 @@ i.cnn.net/cnn/.*/clickability/button
 # Sticky Actions = -fast-redirects
 www.ukc.ac.uk/cgi-bin/wac\.cgi\?
 #MASTER# PROBLEM-URL: http://www.google.com/search?q=foo
-.google.
+# URL = http://www.google.com/search?q=foo
+.google.*
 #MASTER# PROBLEM-URL: http://de.altavista.com/q?pg=q&q=foo&kl=XX&search.x=28&search.y=8&what=web
 .altavista.com/(.*(like|url|link):|trans.*urltext=)http
 #MASTER# PROBLEM-URL: http://www.speedfind.de/cgi-bin/search?q=foo&t=STANDARD
@@ -1835,6 +1854,17 @@ view.samurajdata.se/ps\.php\?url=
 .youtube.com/swf/.*swf=
 # URL = http://redbot.org/?uri=http%3A//apache.org/
 .redbot.org/
+
+{+redirect{s@.*url=@http://@} -block}
+# Sticky Actions = +redirect -block
+# URL = http://go.eniro.dk/lg/ni/http:/eas8.emediate.eu/eas?camp=79;ty=ct;EASLink=http://www.bt.dk?http://redirect.metropol.dk/cgi-bin/redir.pl?url=www.bt.dk
+# URL = http://eas8.emediate.eu/eas?camp=79;ty=ct;EASLink=http://www.bt.dk?http://redirect.metropol.dk/cgi-bin/redir.pl?url=www.bt.dk
+# Redirected URL = http://go.eniro.dk/lg/ni/http:/eas8.emediate.eu/eas?camp=79;ty=ct;EASLink=http://www.bt.dk?http://redirect.metropol.dk/cgi-bin/redir.pl?url=www.bt.dk
+# Redirect Destination = http://www.bt.dk
+# Redirected URL = http://eas8.emediate.eu/eas?camp=79;ty=ct;EASLink=http://www.bt.dk?http://redirect.metropol.dk/cgi-bin/redir.pl?url=www.bt.dk
+# Redirect Destination = http://www.bt.dk
+go.eniro.dk/.*EASLink=http://.*url=(?!<=http:)
+.emediate.eu/.*EASLink=http://.*url=(?!<=http:)
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode or other automatically parsed content
@@ -2111,21 +2141,33 @@ blogs.msdn.com
 # URL = http://blogs.msdn.com/wga/archive/2006/07/16/667063.aspx
 blogs.msdn.com
 
+{-filter{jumping-windows}}
+# Sticky Actions = -filter{jumping-windows}
+# URL = http://www.openstreetmap.org
+.openstreetmap.org
+
 {+fast-redirects{check-decoded-url} -block}
 # Sticky Actions = +fast-redirects{check-decoded-url} -block
 #MASTER# REMARKS: Yahoo search results. Added 2007-01-19 fk
 #MASTER# REDIRECT-REFERRER: http://search.yahoo.com/search?p=privoxy
 # URL = http://rds.yahoo.com/_ylt=A0geuryczbBF._YAEmxXNyoA;_ylu=X3oDMTB2b2gzdDdtBGNvbG8DZQRsA1dTMQRwb3MDMQRzZWMDc3IEdnRpZAM-/SIG=11b3qg40n/EXP=1169301276/**http%3a//www.privoxy.org/
 rds.yahoo.com/
-#MASTER# COMMENTS: Verified 2007-01-19 fk
+# Redirected URL = http://rds.yahoo.com/_ylt=A0geuryczbBF._YAEmxXNyoA;_ylu=X3oDMTB2b2gzdDdtBGNvbG8DZQRsA1dTMQRwb3MDMQRzZWMDc3IEdnRpZAM-/SIG=11b3qg40n/EXP=1169301276/**http%3a//www.privoxy.org/
+# Redirect Destination = http://www.privoxy.org/
 #MASTER# REDIRECT-REFERRER: http://www.gamefaqs.com/computer/doswin/game/914819.html
 # URL = http://dw.com.com/redir?asid=0&astid=8&siteid=19&edid=107&destCat=33862&destURL=http%3A%2F%2Fdb.gamefaqs.com%2Fcomputer%2Fdoswin%2Ffile%2Fvampire_tmb_b.txt
 dw.com.com/redir\?
+# Redirected URL = http://dw.com.com/redir?asid=0&astid=8&siteid=19&edid=107&destCat=33862&destURL=http%3A%2F%2Fdb.gamefaqs.com%2Fcomputer%2Fdoswin%2Ffile%2Fvampire_tmb_b.txt
+# Redirect Destination = http://db.gamefaqs.com/computer/doswin/file/vampire_tmb_b.txt
 #MASTER# REMARKS: Action tracker 1593393. Added 2007-01-20.
 # URL = http://wzus.bloglines.com/r?t=a&d=us&s=bl&c=blen&ti=1&ai=51060&l=dir&o=0&sv=z6f537f5b&ip=971AC44B&u=http%3A%2F%2Fwww.skweezer.net%2Fbloglines%2Fskweeze.aspx%3F%26i%3Dd%26l%3Den%26r%3Dhttp%253A%252F%252Fwww.bloglines.com%252Fmyblogs_display%253Fsub%253D29302699%2526site%253D5382440%26url%3Dhttp%253A%252F%252Fpermalink.gmane.org%252Fgmane.linux.debian.devel.changes.unstable%252F97340
+# Redirected URL = http://wzus.bloglines.com/r?t=a&d=us&s=bl&c=blen&ti=1&ai=51060&l=dir&o=0&sv=z6f537f5b&ip=971AC44B&u=http%3A%2F%2Fwww.skweezer.net%2Fbloglines%2Fskweeze.aspx%3F%26i%3Dd%26l%3Den%26r%3Dhttp%253A%252F%252Fwww.bloglines.com%252Fmyblogs_display%253Fsub%253D29302699%2526site%253D5382440%26url%3Dhttp%253A%252F%252Fpermalink.gmane.org%252Fgmane.linux.debian.devel.changes.unstable%252F97340
+# Redirect Destination = http://www.skweezer.net/bloglines/skweeze.aspx?&i=d&l=en&r=http%3A%2F%2Fwww.bloglines.com%2Fmyblogs_display%3Fsub%3D29302699%26site%3D5382440&url=http%3A%2F%2Fpermalink.gmane.org%2Fgmane.linux.debian.devel.changes.unstable%2F97340
 .bloglines.com/r\?
 www.skweezer.net/bloglines
 # URL = http://media.fastclick.net/w/get.media?sid=4681&m=5&tp=6&url=http%3A//www.sciam.com/article.cfm%3FchanID%3Dsa003%26articleID%3DC7C87ECC-E7F2-99DF-39AEFF3D7D1A8CFB%26ref%3Drss
+# Redirected URL = http://media.fastclick.net/w/get.media?sid=4681&m=5&tp=6&url=http%3A//www.sciam.com/article.cfm%3FchanID%3Dsa003%26articleID%3DC7C87ECC-E7F2-99DF-39AEFF3D7D1A8CFB%26ref%3Drss
+# Redirect Destination = http://www.sciam.com/article.cfm?chanID=sa003&articleID=C7C87ECC-E7F2-99DF-39AEFF3D7D1A8CFB&ref=rss
 .fastclick.net/w/get\.media\?
 
 {+block{Looks like an anti-leech trigger URL.}}
@@ -2154,6 +2196,8 @@ www.skweezer.net/bloglines
 {+redirect{http://config.privoxy.org/}}
 # Sticky Actions = +redirect{http://config.privoxy.org/}
 # URL = http://www.privoxy.org/config
+# Redirected URL = http://www.privoxy.org/config
+# Redirect Destination = http://config.privoxy.org/
 .privoxy.org/config
 
 #MASTER# REMARKS: Privoxy's "unsafe" CGI pages check the referrer
@@ -2175,6 +2219,8 @@ config.privoxy.org/
 # XXX: Privoxy-Regression-Test currently doesn't allow backslashes.
 # Sticky Actions = -fast-redirects +redirect
 # URL = http://us.ard.yahoo.com/SIG=AAAAAAAAA/M=NNNNNN.NNNNNNN.NNNNNNN.NNNNNNN/D=mail/S=NNNNNNNNN:HEADR/Y=YAHOO/EXP=NNNNNNNNNN/A=NNNNNNN/R=N/SIG=AAAAAAAAA/*http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
+# Redirected URL = http://us.ard.yahoo.com/SIG=AAAAAAAAA/M=NNNNNN.NNNNNNN.NNNNNNN.NNNNNNN/D=mail/S=NNNNNNNNN:HEADR/Y=YAHOO/EXP=NNNNNNNNNN/A=NNNNNNN/R=N/SIG=AAAAAAAAA/*http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
+# Redirect Destination = http://login.yahoo.com/config/login?logout=1&.done=http://mail.yahoo.com&.src=ym&.intl=us
 .yahoo./.*http://login.yahoo.com/config/login.*http://
 
 #----------------------------------------------------------------------------

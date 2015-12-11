@@ -1,6 +1,6 @@
 #ifndef LOADCFG_H_INCLUDED
 #define LOADCFG_H_INCLUDED
-#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.14 2009/05/16 13:27:20 fabiankeil Exp $"
+#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.15 2009/09/10 14:45:17 fabiankeil Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/loadcfg.h,v $
@@ -61,7 +61,7 @@ extern const char *configfile;
  * we need to have these globally available.
  */
 extern int Argc;
-extern const char **Argv;
+extern char * const * Argv;
 extern short int MustReload;
 
 
