@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Miscellaneous</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,20 +74,20 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="MISC"
-></A
->4. Miscellaneous</H1
+>4. Miscellaneous</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN500"
-></A
+NAME="AEN537"
 >4.1. How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > slow my browsing down? This 
-has to add extra time to browsing.</H3
+has to add extra time to browsing.</A
+></H3
 ><P
 > It should not slow you down any in real terms, and may actually help 
  speed things up since ads, banners and other junk are not being displayed.
@@ -102,21 +102,21 @@ CLASS="APPLICATION"
 > <SPAN
 CLASS="QUOTE"
 >"Filtering"</SPAN
-> content via the <TT
+> content via the <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#FILTER"
 TARGET="_top"
 >filter</A
-></TT
+></VAR
 > or
- <TT
+ <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#DEANIMATE-GIFS"
 TARGET="_top"
 >deanimate-gifs</A
-></TT
+></VAR
 >
  actions may cause a perceived slowdown, since the entire document needs to be buffered
  before displaying. See below.</P
@@ -127,25 +127,25 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOADINGTIMES"
-></A
 >4.2. I noticed considerable
-delays in page requests compared to the old Junkbuster. What's wrong?</H3
+delays in page requests compared to the old Junkbuster. What's wrong?</A
+></H3
 ><P
-> If you use any <TT
+> If you use any <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#FILTER"
 TARGET="_top"
 >filter</A
-></TT
+></VAR
 > action,
- such as filtering banners by size, web-bugs etc, or the <TT
+ such as filtering banners by size, web-bugs etc, or the <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#DEANIMATE-GIFS"
 TARGET="_top"
 >deanimate-gifs</A
-></TT
+></VAR
 >
  action, the entire document must be loaded into memory in order for the filtering 
  mechanism to work, and nothing is sent to the browser during this time.</P
@@ -156,7 +156,15 @@ TARGET="_top"
  noticeable on slow dialup connections.
  </P
 ><P
-> Filtering is automatically disabled for inappropriate MIME types.&#13;</P
+> Filtering is automatically disabled for inappropriate MIME types. But note 
+ that if the web server mis-reports the MIME type, then content that should
+ not be filtered, could be. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> only knows how
+ to differentiate filterable content because of the MIME type as reported by
+ the server, or because of some configuration setting that enables/disables
+ filtering.&#13;</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -164,9 +172,9 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONFIGURL"
-></A
 >4.3. What are "http://config.privoxy.org/" and
-"http://p.p/"?</H3
+"http://p.p/"?</A
+></H3
 ><P
 > <A
 HREF="http://config.privoxy.org/"
@@ -240,7 +248,7 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >, http://example.com/show-proxy-args and http://i.j.b/,
  are no longer supported. If you still use such an old version, you should really consider
- upgrading to 3.0.2.</P
+ upgrading to 3.0.3.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -248,8 +256,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BLOCKLIST"
-></A
->4.4. Do you still maintain the blocklists?</H3
+>4.4. Do you still maintain the blocklists?</A
+></H3
 ><P
 >  No. The patterns for blocking now reside (among other things) in the <A
 HREF="../user-manual/actions-file.html"
@@ -264,8 +272,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NEWADS"
-></A
->4.5. How can I submit new ads?</H3
+>4.5. How can I submit new ads?</A
+></H3
 ><P
 >Yes, absolutely! Please see the <A
 HREF="contact.html"
@@ -283,8 +291,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="IP"
-></A
->4.6. How can I hide my IP address?</H3
+>4.6. How can I hide my IP address?</A
+></H3
 ><P
 > If you run both the browser and the proxy locally, you cannot hide your IP
  address with <SPAN
@@ -324,12 +332,12 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN560"
-></A
+NAME="AEN598"
 >4.7. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> guarantee I am anonymous?</H3
+> guarantee I am anonymous?</A
+></H3
 ><P
 > No. Your chances of remaining anonymous are greatly improved, but unless you
  are an expert on Internet security it would be safest to assume that
@@ -373,10 +381,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN571"
-></A
+NAME="AEN609"
 >4.8. Might some things break because header information or
-content is being altered?</H3
+content is being altered?</A
+></H3
 ><P
 > Definitely. More and more sites use HTTP header content to decide what to
  display and how to display it. There is many ways that this can be handled, 
@@ -423,8 +431,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN582"
-></A
+NAME="AEN620"
 >4.9. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -432,7 +439,8 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"caching"</SPAN
 > proxy to 
-speed up web browsing?</H3
+speed up web browsing?</A
+></H3
 ><P
 > No, it does not have this ability at all. You want something like 
  <A
@@ -465,12 +473,12 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN592"
-></A
+NAME="AEN630"
 >4.10. What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> protect me?</H3
+> protect me?</A
+></H3
 ><P
 > Not in the way you mean, or in the way a true firewall can. 
  <SPAN
@@ -491,10 +499,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN598"
-></A
+NAME="AEN636"
 >4.11. I have large empty spaces / a checkerboard pattern now where
-ads used to be. Why?</H3
+ads used to be. Why?</A
+></H3
 ><P
 > It would be technically possible eliminate the banners in a way that frees
  their screen estate in many cases, by doing all banner blocking with filters,
@@ -516,12 +524,12 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN603"
-></A
+NAME="AEN641"
 >4.12. How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> filter Secure (HTTPS) URLs?</H3
+> filter Secure (HTTPS) URLs?</A
+></H3
 ><P
 > Since secure HTTP connections are encrypted SSL sessions between your browser
  and the secure site, and are meant to be reliably <SPAN
@@ -561,13 +569,13 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"Content cookies"</SPAN
 > (those that are embedded in the actual HTML or
- JS page content, see <TT
+ JS page content, see <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#FILTER-CONTENT-COOKIES"
 TARGET="_top"
 >filter{content-cookies}</A
-></TT
+></VAR
 >), 
  in an SSL transaction will be impossible to block under these conditions. 
  Fortunately, this does not seem to be a very common scenario since most 
@@ -578,8 +586,7 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN618"
-></A
+NAME="AEN656"
 >4.13. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -587,7 +594,8 @@ CLASS="APPLICATION"
 CLASS="QUOTE"
 >"server"</SPAN
 >. How 
-secure is it? Do I need to take any special precautions?</H3
+secure is it? Do I need to take any special precautions?</A
+></H3
 ><P
 > There are no known exploits that might affect
  <SPAN
@@ -640,11 +648,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="TURNOFF"
-></A
 >4.14. How can I temporarily disable <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->?</H3
+>?</A
+></H3
 ><P
 > The easiest way is to access <SPAN
 CLASS="APPLICATION"
@@ -672,7 +680,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="REALLYOFF"
-></A
 >4.15. When <SPAN
 CLASS="QUOTE"
 >"disabled"</SPAN
@@ -680,7 +687,8 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > totally 
-out of the picture?</H3
+out of the picture?</A
+></H3
 ><P
 > No, this just means all filtering and actions are disabled.
  <SPAN
@@ -703,7 +711,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CRUNCH"
-></A
 >4.16. My logs show <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -714,7 +721,8 @@ CLASS="QUOTE"
 ads, but also its own CGI pages. What is a <SPAN
 CLASS="QUOTE"
 >"crunch"</SPAN
->?</H3
+>?</A
+></H3
 ><P
 > A <SPAN
 CLASS="QUOTE"
@@ -756,28 +764,56 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DOWNLOADS"
-></A
 >4.17. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > effect files that I download
-from a webserver? FTP server?</H3
+from a webserver? FTP server?</A
+></H3
 ><P
 > From the webserver's perspective, there is no difference between
  viewing a document (i.e. a page), and downloading a file. The same is true of
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->. If there is a match for a <TT
+>. If there is a match for a <VAR
 CLASS="LITERAL"
 ><A
 HREF="../user-manual/actions-file.html#BLOCK"
 TARGET="_top"
 >block</A
-></TT
+></VAR
 > pattern,
- it will still be blocked, and of course this is obvious. Filtering is
- potentially more of a concern since the results are not always so obvious.</P
+ it will still be blocked, and of course this is obvious. 
+ </P
+><P
+> Filtering is potentially more of a concern since the results are not always
+ so obvious, and the effects of filtering are there whether the file is simply
+ viewed, or downloaded. And potentially whether the content is some obnoxious
+ advertizement, or Mr. Jimmy's latest/greatest source code jewel. Of course,
+ one of these presumably is <SPAN
+CLASS="QUOTE"
+>"bad"</SPAN
+> content that we don't want, and
+ the other is <SPAN
+CLASS="QUOTE"
+>"good"</SPAN
+> content that we do want.
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is blind to the differences, and can only
+ distinguish <SPAN
+CLASS="QUOTE"
+>"good from bad"</SPAN
+> by the configuration parameters
+ <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>we</I
+></SPAN
+> give it.</P
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -795,21 +831,89 @@ CLASS="QUOTE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > knows to ignore these where
- appropriate. It is possible, however, that documents that are of an unknown
- type (generally assumed to be <SPAN
+ appropriate. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> potentially can filter HTML
+ as well as plain text documents, subject to configuration parameters of
+ course. Also, documents that are of an unknown type (generally assumed to be
+ <SPAN
 CLASS="QUOTE"
 >"text/plain"</SPAN
->) will be filtered, as
- will those that might be incorrectly reported by the webserver. If such a
- file is a downloaded file that is intended to be saved to disk, then any
- content that might have been altered by filtering, will be saved too, for
- these (probably very rare) cases.</P
+>) can be filtered, as will those that might be
+ incorrectly reported by the webserver. If such a file is a downloaded file
+ that is intended to be saved to disk, then any content that might have been
+ altered by filtering, will be saved too, for these (probably rare) cases.</P
+><P
+> Note that versions later than 3.0.2 do NOT filter document types of
+ <SPAN
+CLASS="QUOTE"
+>"text/plain"</SPAN
+>. Prior to this, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ did filter this document type.</P
+><P
+> In short, filtering is <SPAN
+CLASS="QUOTE"
+>"ON"</SPAN
+> if a) the Document Type as reported
+ by the webserver is appropriate <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>and</I
+></SPAN
+> b) the configuration
+ allows it (or at least does not disallow it). That's it. There is no magic
+ cookie anywhere to say this is <SPAN
+CLASS="QUOTE"
+>"good"</SPAN
+> and this is
+ <SPAN
+CLASS="QUOTE"
+>"bad"</SPAN
+>. It's the configuration that let's it all happen or not.</P
+><P
+> If you download text files, you probably do not want these to be filtered,
+ particularly if the content is source code, or other critical content. Source
+ code sometimes might be mistaken for Javascript (i.e. the kind that might
+ open a pop-up window). It is recommended to turn off filtering for download
+ sites (particularly if the content may be plain text files and you are using
+ version 3.0.2 or earlier) in your <TT
+CLASS="FILENAME"
+>user.action</TT
+> file. And
+ also, for any site or page where making <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>any</I
+></SPAN
+> changes at
+ all to the content is to be avoided.</P
 ><P
 > <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > does not do FTP at all, only HTTP 
-  protocols.</P
+  protocols, so please don't even try.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DOWNLOADS2"
+>4.18. I just downloaded a Perl script, and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+altered it! Yikes, what is wrong!</A
+></H3
+><P
+> Please read above.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -817,12 +921,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="SEEALSO"
-></A
->4.18. Where can I find more information about <SPAN
+>4.19. Where can I find more information about <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
-and related issues?</H3
+and related issues?</A
+></H3
 ><P
 > Other references and sites of interest to <SPAN
 CLASS="APPLICATION"
@@ -1114,23 +1218,23 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="MICROSUCK"
-></A
->4.19. I've noticed that Privoxy changes <SPAN
+>4.20. I've noticed that Privoxy changes <SPAN
 CLASS="QUOTE"
 >"Microsoft"</SPAN
 > to 
 <SPAN
 CLASS="QUOTE"
 >"MicroSuck"</SPAN
->! Why are you manipulating my browsing?</H3
+>! Why are you manipulating my browsing?</A
+></H3
 ><P
 > We're not. The text substitutions that you are seeing are disabled
  in the default configuration as shipped. You have either manually
  activated the <SPAN
 CLASS="QUOTE"
->"<TT
+>"<VAR
 CLASS="LITERAL"
->fun</TT
+>fun</VAR
 >"</SPAN
 > filter which
  is clearly labeled <SPAN

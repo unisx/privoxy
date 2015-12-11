@@ -1,8 +1,8 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.104.2.21 2002/11/04 07:04:03 hal9 Exp $
+# $Id: GNUmakefile.in,v 1.104.2.25 2004/01/31 01:15:33 oes Exp $
 #
-# Written by and Copyright (C) 2001 the SourceForge
+# Written by and Copyright (C) 2001 - 2004 the SourceForge
 # Privoxy team. http://www.privoxy.org/
 #
 # Based on the Internet Junkbuster originally written
@@ -632,7 +632,8 @@ tarball-dist: dist-check clean clobber
 	$(LN) -s current ../privoxy-$(VERSION)-$(CODE_STATUS)
 
 	for i in `find . -type f -a -not \( -path "*/CVS*" -o -name ".*" \
-	-o -path "*/debian/*" -o -path "*/actions/*" -o -name "*.php" -o -name "PACKAGERS" \)`; do \
+	-o -path "*/debian/*" -o -path "*/actions/*" -o -name "*.php" -o \
+	-name "PACKAGERS" -o -path "*/pdf/*" \)`; do \
 	   files="$$files privoxy-$(VERSION)-$(CODE_STATUS)/$$i"; \
 	done &&  \
 	cd .. && $(TAR) -cvhf privoxy-$(VERSION)-$(CODE_STATUS)-src.tar $$files ; \
@@ -745,7 +746,8 @@ dok-webserver:
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
      s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps consumers reduce unwanted junk email and protect their privacy from direct marketing companies.\"><\/HEAD/;\
 	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
-	s/\.\d\. //'\
+	s/\.\d\. //;\
+	s/__copy/&copy;/'\
      doc/webserver/index.html && $(RM) doc/webserver/*.bak
 
 # privoxy-index.html for local documentation:
@@ -754,9 +756,9 @@ dok-index:
 	$(PERL) -pi.bak -e 's/..\/p_doc.css/p_doc.css/;\
      s/<\/HEAD/\n<meta name=\"description\" content=\"Privoxy helps consumers reduce unwanted junk email and protect their privacy from direct marketing companies.\"><\/HEAD/;\
 	s/<\/HEAD/\n<meta name="MSSmartTagsPreventParsing" content="TRUE"><\/HEAD/;\
-	s/\.\d\. //'\
+	s/\.\d\. //;\
+	s/__copy/&copy;/' \
      doc/webserver/privoxy-index.html && $(RM) doc/webserver/*.bak
-
 
 # Main documentation target.
 dok: dok-release dok-devel dok-user dok-faq dok-readme dok-webserver dok-authors dok-index
@@ -833,14 +835,14 @@ dok-pdf: dok-shtml
 
 # Create release announcement in text and html, with short and long versions.
 # This is a standalone target, and must be invoked directly.
-announce: dok-release
-	mkdir -p $(DOC_TMP)
-	cd $(DOC_TMP) && cp -f ../announce.sgml . && $(DB) -iannounce-big announce.sgml &&\
-	mv -f index.html announce.html && $(WDUMP) announce.html > announce.txt
-	cd $(DOC_TMP) && $(DB) announce.sgml &&\
-	mv -f index.html announce-mini.html && $(WDUMP) announce-mini.html > announce-mini.txt &&\
-	mv -f *html *txt ../../.. 
-	rm -fr $(DOC_TMP)
+# announce: dok-release
+# 	mkdir -p $(DOC_TMP)
+# 	cd $(DOC_TMP) && cp -f ../announce.sgml . && $(DB) -iannounce-big announce.sgml &&\
+# 	mv -f index.html announce.html && $(WDUMP) announce.html > announce.txt
+# 	cd $(DOC_TMP) && $(DB) announce.sgml &&\
+# 	mv -f index.html announce-mini.html && $(WDUMP) announce-mini.html > announce-mini.txt &&\
+# 	mv -f *html *txt ../../.. 
+# 	rm -fr $(DOC_TMP)
 
 # The main Privoxy config file, generated from sgml sources. 
 # NOTE: This will require some hand editing. The new file is outputted 
@@ -864,7 +866,7 @@ config-file: dok-release
 				 s/^/#  /;  /^#  #{12,}/ && s/^#  #/####/;\
                      s/^.*$$// if $$hit_option;\
                      $$hit_option=0;\
-                     s/^\n//;  s/^#\s*-{20,}//;\
+                     s/^\n//;  s/^#\s*-{20,}//; s/ *$$//;\
                      $$hit_option=1 if s/^#\s+@@//;'   config.new
 	$(RM) *.bak
 	@$(ECHO)  "****************************************************"
@@ -925,11 +927,28 @@ web-actions: tidy
 	@ssh ijbswa.sourceforge.net 'find /home/groups/i/ij/ijbswa/htdocs/actions/ -type f | xargs chmod 664 2>/dev/null'
 	@ssh ijbswa.sourceforge.net 'chmod 666 /home/groups/i/ij/ijbswa/htdocs/actions/results/actions-feedback.txt 2>/dev/null'
 
+## 
+dok-put:
+	tar --exclude ".cvsignore" --exclude "CVS" --exclude "source" --exclude ".htaccess" \
+	     --exclude "obsolete" --exclude "actions" --exclude "*.zip" --exclude "robots.txt"\
+		doc/* INSTALL LICENSE AUTHORS README \
+		-czf $(DOC_FILE) ;\
+		$(ECHO) "Uploading doc package ..." ;\
+		scp $(DOC_FILE) ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/docs/
+		@ssh ijbswa.sourceforge.net 'chmod 775 /home/groups/i/ij/ijbswa/htdocs/docs/*gz 2>/dev/null; true'
+		$(RM) $(DOC_FILE)
+
+dok-get:
+	cd /tmp ;\
+	$(WGET) http://privoxy.org/docs/$(DOC_FILE) ;\
+	$(TAR) -zxvf $(DOC_FILE)
+
+
 #############################################################################
 # Source file dependencies
 #############################################################################
 
-actions.@OBJEXT@:   actions.c   actions.h   config.h $(PROJECT_H_DEPS) errlog.h jcc.h list.h loaders.h miscutil.h actionlist.h
+actions.@OBJEXT@:   actions.c   actions.h   config.h $(PROJECT_H_DEPS) errlog.h jcc.h list.h loaders.h miscutil.h actionlist.h ssplit.h
 cgi.@OBJEXT@:       cgi.c       cgi.h       config.h $(PROJECT_H_DEPS) cgiedit.h cgisimple.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
 cgiedit.@OBJEXT@:   cgiedit.c   cgiedit.h   config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
 cgisimple.@OBJEXT@: cgisimple.c cgisimple.h config.h $(PROJECT_H_DEPS) cgi.h list.h pcrs.h encode.h ssplit.h jcc.h filters.h actions.h errlog.h miscutil.h
@@ -1062,7 +1081,7 @@ install: CONF_DEST LOG_DEST PID_DEST check_doc GROUP_T
 # 	if [ -n "$(GROUP_T)" ] && [ -n "$(USER)" ] && ! $(GROUPS) $(USER) | $(GREP) "\<$(GROUP_T)\>" >/dev/null; then \
 # 		$(ECHO) Group $(GROUP_T) for User $(USER) is invalid && exit 1 ;\
 # 	fi
-	
+
 	@$(ECHO) "Creating directories, and preparing $(PROGRAM_V) installation"
 	$(CHMOD) $(DIR_MODE) $(MKDIR)
 	@$(MKDIR) $(SBIN_DEST) $(prefix) $(CONF_DEST) $(CONF_DEST)/templates $(SHARE_DEST) \
@@ -1248,7 +1267,7 @@ uninstall: CONF_DEST LOG_DEST PID_DEST check_doc
 	done
 	-@test -d $(CONF_DEST)/templates && $(RM) -r $(CONF_DEST)/templates &&\
 	$(ECHO) "Removing $(CONF_DEST)/templates/*"
-	
+
 	@# man page and docs
 	@$(ECHO) Removing $(PROGRAM) docs
 	-$(RM) $(MAN_DEST)/privoxy.1*
@@ -1322,6 +1341,22 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.104.2.25  2004/01/31 01:15:33  oes
+# Fixed a typo; updated copyright notice
+#
+# Revision 1.104.2.24  2003/12/03 10:30:02  oes
+# - Added new dependency: actions.c -> ssplit.h
+# - Excluded PDF docs from src tarball
+#
+# Revision 1.104.2.23  2003/04/20 17:28:52  hal9
+# Strip trailing spaces from config-file generation, bug #724596.
+#
+# Revision 1.104.2.22  2003/03/28 03:32:01  hal9
+# Minor changes for Privoxy home page:
+#  - Handle &copy; more sanely
+#  - include link to announce.txt
+# Also, disable 'make announce' target.
+#
 # Revision 1.104.2.21  2002/11/04 07:04:03  hal9
 # Catch up with main trunk install/uninstall. Quiet output, etc.
 #

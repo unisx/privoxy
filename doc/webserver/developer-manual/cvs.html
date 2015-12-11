@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >The CVS Repository</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
 TITLE="Privoxy Developer Manual"
 HREF="index.html"><LINK
@@ -74,8 +74,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CVS"
-></A
->2. The CVS Repository</H1
+>2. The CVS Repository</A
+></H1
 ><P
 >      If you become part of the active development team, you will eventually
       need write access to our holy grail, the CVS repository. One of the 
@@ -88,8 +88,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSACCESS"
-></A
->2.1. Access to CVS</H2
+>2.1. Access to CVS</A
+></H2
 ><P
 >        The project's CVS repository is hosted on
         <A
@@ -105,17 +105,17 @@ TARGET="_top"
         documentation</A
 > for the technical access details for your
         operating system. For historical reasons, the CVS server is
-        called <TT
+        called <VAR
 CLASS="LITERAL"
->cvs.ijbswa.sourceforge.net</TT
+>cvs.ijbswa.sourceforge.net</VAR
 >, the repository is
-        called <TT
+        called <VAR
 CLASS="LITERAL"
->ijbswa</TT
+>ijbswa</VAR
 >, and the source tree module is called
-        <TT
+        <VAR
 CLASS="LITERAL"
->current</TT
+>current</VAR
 >.
       </P
 ></DIV
@@ -125,13 +125,13 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSBRANCHES"
-></A
->2.2. Branches</H2
+>2.2. Branches</A
+></H2
 ><P
 >       Within the CVS repository, there are modules and branches. As
-       mentioned, the sources are in the <TT
+       mentioned, the sources are in the <VAR
 CLASS="LITERAL"
->current</TT
+>current</VAR
 >
        <SPAN
 CLASS="QUOTE"
@@ -146,9 +146,9 @@ TARGET="_top"
      </P
 ><P
 >       Branches are used to fork a sub-development path from the main trunk.
-       Within the <TT
+       Within the <VAR
 CLASS="LITERAL"
->current</TT
+>current</VAR
 > module where the sources are, there
        is always at least one <SPAN
 CLASS="QUOTE"
@@ -178,13 +178,13 @@ HREF="newrelease.html#VERSIONNUMBERS"
        checked into to two different places (assuming its a bugfix and needs 
        fixing in both the stable and unstable trees). This also means that in
        order to have access to both trees, both will have to be checked out 
-       separately. Use the <TT
+       separately. Use the <VAR
 CLASS="LITERAL"
->cvs -r</TT
+>cvs -r</VAR
 > flag to check out a 
-       branch, e.g: <TT
+       branch, e.g: <VAR
 CLASS="LITERAL"
->cvs co -r v_3_0_branch current</TT
+>cvs co -r v_3_0_branch current</VAR
 >.
      </P
 ></DIV
@@ -194,8 +194,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CVSCOMMIT"
-></A
->2.3. CVS Commit Guidelines</H2
+>2.3. CVS Commit Guidelines</A
+></H2
 ><P
 >        The source tree is the heart of every software project. Every effort must
         be made to ensure that it is readable, compilable and consistent at all
@@ -281,9 +281,9 @@ TARGET="_top"
 >       Stable branches are handled with more care, especially after the 
        initial *.*.0 release, and we are just in bugfix mode. In addition to 
        the above, the below applies only to the stable branch (currently the 
-       <TT
+       <VAR
 CLASS="LITERAL"
->v_3_0_branch</TT
+>v_3_0_branch</VAR
 > branch):
       </P
 ><P

@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "0.0.0">
-<!entity p-status "UNRELEASED">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.3">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -24,9 +24,9 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 1.61.2.28 2003/03/18 19:37:21 oes Exp $
+ $Id: faq.sgml,v 1.61.2.40 2004/01/30 17:00:33 oes Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2004 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  Based partially on the Internet Junkbuster FAQ originally written by and
@@ -50,7 +50,7 @@
 
  ========================================================================
  NOTE: Please read developer-manual/documentation.html before touching 
- to live a peaceful existence!
+ this file!
 
  Please we keep the info in this file as version independent as possible 
  so we only have to maintain one FAQ. Where significant changes are 
@@ -70,12 +70,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001, 2002 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001-2004 by 
  <ulink url="http://www.privoxy.org">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 1.61.2.28 2003/03/18 19:37:21 oes Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 1.61.2.40 2004/01/30 17:00:33 oes Exp $</pubdate>
 
 <!--
 
@@ -276,8 +276,8 @@ an ad, and what is not?</title>
 This does not sound very scientific.</title>
 <para>
  Actually, it's a black art ;-) And yes, it is always possible to have a broad
- rule accidentally block or change something by mistake. There is a good chance
- you may run into such a situation at some point. It is tricky writing rules to
+ rule accidentally block or change something by mistake. You will almost surely
+ run into such situations at some point. It is tricky writing rules to
  cover every conceivable possibility, and not occasionally get false positives.
 </para>
 
@@ -291,6 +291,24 @@ This does not sound very scientific.</title>
 
 </sect2>
 
+
+<sect2 renderas="sect3">
+<title id="configornot">Will I have to configure <application>Privoxy</application>
+ before I can use it?</title>
+<para>
+ No, not really. The default installation should give you a good starting
+ point, and block <emphasis>most</emphasis> unwanted content.
+</para>
+<para>
+ But you will certainly run into situations where there are false positives,
+ or ads not being blocked that you may not want to see. In these cases, you
+ would certainly benefit by customizing <application>Privoxy's</application>
+ configuration to more closely match your individual situation. And we would
+ encourage you to do this. This is where the real power of
+ <application>Privoxy</application> lies!
+</para>
+
+</sect2>
 
 <sect2 renderas="sect3" id="browsers2"><title>My browser does the same things as
 <application>Privoxy</application>. Why should I use
@@ -479,8 +497,7 @@ special I have to do now?</title>
  </para>
  <para>
   <application>Privoxy</application> does not currently handle
-  protocols such as FTP, SMTP, IM, IRC, ICQ, or other Internet
-  protocols. 
+  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. 
  </para>
 </sect2>
 
@@ -494,7 +511,9 @@ All the ads are there. What's wrong?</title>
  the browser's caches to force a full re-reading of pages. You can verify 
  that <application>Privoxy</application> is running, and your browser 
  is correctly configured by entering the special URL: 
- <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>.
+ <ulink url="http://p.p/">http://p.p/</ulink>. 
+ <!-- Use http://p.p/ instead of http://config.privoxy.org/ here because
+      of potential redirect caching problem (see next Q). -->
  This should take you to a page titled <quote>This is Privoxy..</quote> with
  access to <application>Privoxy's</application> internal configuration.
  If you see this, then you are good to go. If you receive a page saying 
@@ -503,9 +522,45 @@ All the ads are there. What's wrong?</title>
  If you receive anything else (probably nothing at all), it could either
  be that the browser is not set up correctly, or that
  <application>Privoxy</application> is not running at all. Check the <ulink
- url="../user-manual/config.html#LOGFILE">log file</ulink>.
+ url="../user-manual/config.html#LOGFILE">log file</ulink>. For instructions
+ on starting <application>Privoxy</application> and browser configuration,
+ see the <ulink url="http://www.privoxy.org/user-manual/startup.html">chapter
+ on starting <application>Privoxy</application></ulink> in the
+ <ulink url="http://www.privoxy.org/user-manual/">user manual</ulink>.
 </para>
 
+</sect2>
+
+<sect2 renderas="sect3" id="notused">
+<title>I get a <quote>Privoxy is not being used</quote> dummy page although
+<application>Privoxy</application> is running and being used.</title>
+
+<para>
+ First, make sure that Privoxy is <emphasis>really</emphasis> running and
+ being used by visiting <ulink url="http://p.p/">http://p.p/</ulink>. You
+ should see the <application>Privoxy</application> main page. If not, see
+ the <ulink url="http://www.privoxy.org/user-manual/startup.html">chapter
+ on starting <application>Privoxy</application></ulink> in the
+ <ulink url="http://www.privoxy.org/user-manual/">user manual</ulink>.
+</para>
+
+<para>
+ Now if <ulink url="http://p.p/">http://p.p/</ulink> works for you, but
+ other parts of <application>Privoxy</application>'s web interface show
+ the dummy page, your browser has cached a redirection it encountered before
+ <application>Privoxy</application> was being used. You need to clear your
+ browser's cache. Note that shift-reloading the dummy page won't help, since
+ that'll only refresh the dummy page, not the redirection that lead you there.
+</para>
+
+<para>
+ The procedure for clearing the cache varies from browser to browser. As an
+ example, <application>Mozilla</application> users would click 
+ <guibutton>Edit</guibutton> --> <guibutton>Preferences</guibutton> -->
+ <guibutton>Advanced</guibutton> --> <guibutton>Cache</guibutton> and
+ then click both <quote><guibutton>Clear Memory Cache</guibutton></quote>
+ and <quote><guibutton>Clear Disk Cache</guibutton></quote>.
+</para>
 </sect2>
 
 </sect1>
@@ -1106,7 +1161,12 @@ delays in page requests compared to the old Junkbuster. What's wrong?</title>
  noticeable on slow dialup connections.
  </para>
 <para>
- Filtering is automatically disabled for inappropriate MIME types.
+ Filtering is automatically disabled for inappropriate MIME types. But note 
+ that if the web server mis-reports the MIME type, then content that should
+ not be filtered, could be. <application>Privoxy</application> only knows how
+ to differentiate filterable content because of the MIME type as reported by
+ the server, or because of some configuration setting that enables/disables
+ filtering.
 
 </para>
 </sect2>
@@ -1457,24 +1517,65 @@ from a webserver? FTP server?</title>
  viewing a document (i.e. a page), and downloading a file. The same is true of
  <application>Privoxy</application>. If there is a match for a <literal><ulink
  url="../user-manual/actions-file.html#BLOCK">block</ulink></literal> pattern,
- it will still be blocked, and of course this is obvious. Filtering is
- potentially more of a concern since the results are not always so obvious.
+ it will still be blocked, and of course this is obvious. 
+ </para>
+ <para>
+ Filtering is potentially more of a concern since the results are not always
+ so obvious, and the effects of filtering are there whether the file is simply
+ viewed, or downloaded. And potentially whether the content is some obnoxious
+ advertizement, or Mr. Jimmy's latest/greatest source code jewel. Of course,
+ one of these presumably is <quote>bad</quote> content that we don't want, and
+ the other is <quote>good</quote> content that we do want.
+ <application>Privoxy</application> is blind to the differences, and can only
+ distinguish <quote>good from bad</quote> by the configuration parameters
+ <emphasis>we</emphasis> give it.
 </para>
 <para>
  <application>Privoxy</application> knows the differences in files according
  to the <quote>Document Type</quote> as reported by the webserver. If this is
  reported accurately (e.g. <quote>application/zip</quote> for a zip archive),
  then <application>Privoxy</application> knows to ignore these where
- appropriate. It is possible, however, that documents that are of an unknown
- type (generally assumed to be <quote>text/plain</quote>) will be filtered, as
- will those that might be incorrectly reported by the webserver. If such a
- file is a downloaded file that is intended to be saved to disk, then any
- content that might have been altered by filtering, will be saved too, for
- these (probably very rare) cases.
+ appropriate. <application>Privoxy</application> potentially can filter HTML
+ as well as plain text documents, subject to configuration parameters of
+ course. Also, documents that are of an unknown type (generally assumed to be
+ <quote>text/plain</quote>) can be filtered, as will those that might be
+ incorrectly reported by the webserver. If such a file is a downloaded file
+ that is intended to be saved to disk, then any content that might have been
+ altered by filtering, will be saved too, for these (probably rare) cases.
+</para>
+<para>
+ Note that versions later than 3.0.2 do NOT filter document types of
+ <quote>text/plain</quote>. Prior to this, <application>Privoxy</application>
+ did filter this document type.
+</para>
+<para>
+ In short, filtering is <quote>ON</quote> if a) the Document Type as reported
+ by the webserver is appropriate <emphasis>and</emphasis> b) the configuration
+ allows it (or at least does not disallow it). That's it. There is no magic
+ cookie anywhere to say this is <quote>good</quote> and this is
+ <quote>bad</quote>. It's the configuration that let's it all happen or not.
+</para>
+<para>
+ If you download text files, you probably do not want these to be filtered,
+ particularly if the content is source code, or other critical content. Source
+ code sometimes might be mistaken for Javascript (i.e. the kind that might
+ open a pop-up window). It is recommended to turn off filtering for download
+ sites (particularly if the content may be plain text files and you are using
+ version 3.0.2 or earlier) in your <filename>user.action</filename> file. And
+ also, for any site or page where making <emphasis>any</emphasis> changes at
+ all to the content is to be avoided.
 </para>
 <para>
  <application>Privoxy</application> does not do FTP at all, only HTTP 
-  protocols.
+  protocols, so please don't even try.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="downloads2">
+<title>I just downloaded a Perl script, and <application>Privoxy</application>
+altered it! Yikes, what is wrong!</title>
+<para>
+ Please read above.
 </para>
 </sect2>
 
@@ -1668,14 +1769,27 @@ every time I start IE. What gives?</title>
  <para>
   <application>Privoxy</application> cannot act as a proxy for FTP traffic, 
   so do not configure your browser to use <application>Privoxy</application>
-  as an FTP proxy. The same is true for any protocol other than HTTP or HTTPS.
+  as an FTP proxy. The same is true for <emphasis>any protocol other than HTTP
+  or HTTPS</emphasis>. 
  </para>
-  <para>
+ <para>
   Most browsers understand FTP as well as HTTP. If you connect to a site, with
   a URL like <literal>ftp://ftp.example.com</literal>, your browser is making
   an FTP connection, and not a HTTP connection. So while your browser may 
   speak FTP, <application>Privoxy</application> does not, and cannot proxy 
   such traffic.
+ </para>
+ <para>
+  To complicate matters, some systems may have a generic <quote>proxy</quote>
+  setting, which will silently enable <emphasis>both</emphasis> HTTP and FTP
+  proxying! So it is possible to accidentally enable FTP proxying in these
+  cases. And of course, if this happens, <application>Privoxy</application>
+  will indeed cause problems since it does not know FTP.
+ </para>
+ <para>
+  Will <application>Privoxy</application> ever proxy FTP traffic? Unlikely.
+  There just is not much reason, and the work to make this happen is more than
+  it may seem.
  </para>
 </sect2>
 
@@ -1713,6 +1827,19 @@ every time I start IE. What gives?</title>
  </para>
 </sect2>
 
+
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="osximages">
+<title>In Mac OSX Panther (10.3), images often fail to load and/or I
+ experience random delays in page loading. I'm using
+ <literal>localhost</literal> as my browser's proxy setting.</title>
+ <para>
+  We believe this is due to an IPv6-related bug in OSX, but don't fully
+  understand the issue yet. In any case, changing the proxy setting to 
+  <literal>127.0.0.1</literal> instead of <literal>localhost</literal>
+  works around the problem.
+ </para>
+</sect2>
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect2 renderas="sect3" id="blankpage">
@@ -1756,20 +1883,123 @@ every time I start IE. What gives?</title>
  </para>
 </sect2>
 
-</sect1>
-<!--
-</sect1>
--->
-
-<!--   ~~~~~       New section      ~~~~~     -->
-<!--
-FIXME: Commented out until we have something to put here. HB 03/18/02.
-<sect1 id="knownissues"><title>Known Issues</title>
+<sect2 renderas="sect3" id="nohostname">
+<title>My logs show many <quote>Unable to get my own hostname</quote> lines.
+Why?</title>
 <para>
-   Fill me.
+ <application>Privoxy</application> tries to get the hostname of the system
+ its running on from the IP address of the system interface it is bound to
+ (from the <filename>config</filename> file
+ <emphasis>listen-address</emphasis> setting). If the system cannot supply
+ this information, <application>Privoxy</application> logs this condition. 
 </para>
+<para>
+ Typically, this would be considered a system configuration error. It is not a
+ fatal error to <application>Privoxy</application> however, but may result in 
+ a much slower response from <application>Privoxy</application> due to DNS
+ timeouts.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="inuse">
+<title>When I try to launch <application>Privoxy</application>, I get an 
+error message <quote>port 8118 is already in use</quote> (or similar wording).
+Why?</title>
+<para>
+ Port 8118 is <application>Privoxy's</application> default TCP 
+ <quote>listening</quote> port. Typically this message would mean that there
+ is already one instance of <application>Privoxy</application> running, and
+ you are actually trying to start a second <application>Privoxy</application> 
+ on the same port, which will not work. How and why this might happen varies
+ from platform to platform, but you need to check your installation and
+ start-up procedures.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer">
+<title>
+ Pages with UTF-8 fonts are garbled.
+</title>
+<para>
+ This is caused by the <quote>demoronizer</quote> filter, which was introduced 
+ in version 3.0.2, and was inappropriately turned on by default. You should 
+ either upgrade <application>Privoxy</application>, or at least upgrade to the most 
+ recent <filename>default.action</filename> file available from 
+ <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">SourceForge</ulink>.
+ Or you can simply disable the demoronizer filter.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer2">
+<title>
+ Why are binary files (such as images) corrupted when <application>Privoxy</application>
+ is used?
+</title>
+<para>
+ This may also be caused by the <quote>demoronizer</quote> filter, 
+ in conjunction with a web server that is misreporting a file type. Binary 
+ files are exempted from <application>Privoxy's</application> filtering
+ (unless the web server by mistake says the file is a plain text file). Either
+ upgrade <application>Privoxy</application>, or go to the most recent
+ <filename>default.action</filename> file available from <ulink
+ url="http://sourceforge.net/project/showfiles.php?group_id=11118">SourceForge</ulink>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="demoronizer3">
+<title>
+ What is the <quote>demoronizer</quote> and why is it there?
+</title>
+<para>
+ The original demoronizer was a Perl script that cleaned up HTML pages which 
+ were created with certain Microsoft products. MS has used proprietary extensions 
+ to standardized font encodings (ISO 8859-1), which has caused problems for pages
+ that are viewed with non-Microsoft products (and are expecting to see a
+ standard set of fonts). The demoronizer corrected these errors so the pages
+ displayed correctly. <application>Privoxy</application> borrowed from this
+ script, introducing a filter based on the original demoronizer, which in turn could
+ correct these errors on the fly. 
+</para>
+<para>
+ But this is only needed in some situations, and will cause serious problems in some 
+ other situations.
+</para>
+<para>
+ If you are using Microsoft products, you do not need it. If you need to view 
+ pages with UTF-8 characters (such as Cyrillic or Chinese), then it will 
+ cause corruption of the fonts, and thus <emphasis>should not be on</emphasis>.
+</para>
+<para>
+ On the other hand, if you use non-Microsoft products, and you occasionally 
+ notice wierd characters on pages, you might want to try it.
+</para>
+<para>
+ This filter was introduced with version 3.0.2 of <application>Privoxy</application>,
+ and was on by default in that version. It is off in all subsequent versions 
+ (unless turned on by the user).
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="windowopen">
+<title>
+ Why do I keep seeing <quote>PrivoxyWindowOpen()</quote> in raw source code?
+</title>
+<para>
+ <application>Privoxy</application> is attempting to disable malicious 
+ Javascript in this case, with the <literal>unsolicited-popups</literal>
+ filter. <application>Privoxy</application> cannot tell very well 
+ <quote>good</quote> code snippets from <quote>bad</quote> code snippets.
+</para>
+<para>
+ If you see this in HTML source, and the page displays without problems, then 
+ this is good, and likely some pop-up window was disabled. If you see this 
+ where it is causing a problem, such as a downloaded program source code file, 
+ then you should set an exception for this site or page such that the
+ integrity of the page stays in tact by disabling all filtering.
+</para>
+</sect2>
+
 </sect1>
--->
 
   <!--   ~~~~~       New section      ~~~~~     -->
   <sect1 id="contact"><title>Contacting the developers, Bug Reporting and Feature Requests</title>
@@ -1785,6 +2015,7 @@ FIXME: Commented out until we have something to put here. HB 03/18/02.
   &copyright;
  <!-- end -->
   
+
   <para>
    Portions of this document are <quote>borrowed</quote> from the original
    <application>Junkbuster</application> (tm) FAQ, and modified as 
@@ -1827,8 +2058,6 @@ FIXME: Commented out until we have something to put here. HB 03/18/02.
  <!--
  Tue 09/11/01 06:38:14 PM EST: Test SGML doc by Hal Burgiss.
  
- Last modified: Mon Sep 10 19:22:09 CEST 2001
- 
  This program is free software; you can redistribute it 
  and/or modify it under the terms of the GNU General
  Public License as published by the Free Software
@@ -1848,6 +2077,47 @@ FIXME: Commented out until we have something to put here. HB 03/18/02.
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 $Log: faq.sgml,v $
+Revision 1.61.2.40  2004/01/30 17:00:33  oes
+Added OSX Panther problem
+
+Revision 1.61.2.39  2004/01/29 22:53:08  hal9
+Minor changes for exempting docs of text/plain. Change copyright date.
+
+Revision 1.61.2.38  2003/12/10 03:39:45  hal9
+Added FAQs for: demoronizer, related problems and why its included. Also,
+port 8118 already in use questions, and PrivoxyWindowOpen() questions. All in
+troubleshooting section.
+
+Revision 1.61.2.37  2003/10/17 11:01:50  oes
+Added Q&A for "not being used" page problem
+
+Revision 1.61.2.36  2003/06/26 23:49:20  hal9
+More on the filter/source code problem.
+
+Revision 1.61.2.35  2003/06/26 13:38:08  hal9
+Add FAQ on whether configuring Privoxy is necessary or not.
+
+Revision 1.61.2.34  2003/06/26 03:00:03  hal9
+Sorry, found another copyright date.
+
+Revision 1.61.2.33  2003/06/26 02:57:05  hal9
+Fix typo (finally!) and very minor modifications.
+
+Revision 1.61.2.32  2003/06/26 02:52:04  hal9
+Test, no changes.
+
+Revision 1.61.2.31  2003/06/25 01:27:51  hal9
+Fix copyright, and a few nits.
+
+Revision 1.61.2.30  2003/06/25 01:13:52  hal9
+Add:
+
+ - FAQ on "Unable to get my own hostname"
+ - Another one on filtering effects on text files.
+
+Revision 1.61.2.29  2003/06/15 21:32:58  hal9
+Add to the 4.17 (filtering effects on downloaded files).
+
 Revision 1.61.2.28  2003/03/18 19:37:21  oes
 s/Advanced|Radical/Adventuresome/g to avoid complaints re fun filter
 

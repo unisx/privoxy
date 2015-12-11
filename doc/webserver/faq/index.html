@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Privoxy Frequently Asked Questions</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="NEXT"
 TITLE="General Information"
 HREF="general.html"><LINK
@@ -27,15 +27,15 @@ CLASS="TITLEPAGE"
 CLASS="TITLE"
 ><A
 NAME="AEN2"
-></A
->Privoxy Frequently Asked Questions</H1
+>Privoxy Frequently Asked Questions</A
+></H1
 ><P
 CLASS="PUBDATE"
 > <SUB
 > <A
 HREF="copyright.html"
 >Copyright</A
-> © 2001, 2002 by 
+> © 2001-2004 by 
  <A
 HREF="http://www.privoxy.org"
 TARGET="_top"
@@ -45,15 +45,15 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.15.2.9 2003/03/26 02:58:05 hal9 Exp $<BR></P
+>$Id: index.html,v 1.15.2.10 2004/01/31 00:05:43 oes Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
+><P
+></P
 ><A
 NAME="AEN9"
 ></A
-><P
-></P
 ><P
 > This FAQ gives quick answers to frequently asked  questions about
  <A
@@ -77,7 +77,7 @@ CLASS="CITETITLE"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is a web proxy with advanced filtering
- capabilities for protecting privacy, filtering web page content, managing
+ capabilities for protecting privacy, modifying web page content, managing
  cookies, controlling access, and removing ads, banners, pop-ups and other
  obnoxious Internet junk. <SPAN
 CLASS="APPLICATION"
@@ -100,7 +100,7 @@ CLASS="APPLICATION"
 > (tm).</P
 ><P
 >  Please note that this document is constantly evolving. This copy represents
-  the state at the release of version 3.0.2.
+  the state at the release of version 3.0.3.
   You can find the latest version of the document at <A
 HREF="http://www.privoxy.org/faq/"
 TARGET="_top"
@@ -191,6 +191,15 @@ This does not sound very scientific.</A
 ></DT
 ><DT
 >1.7. <A
+HREF="general.html#AEN143"
+>Will I have to configure <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ before I can use it?</A
+></DT
+><DT
+>1.8. <A
 HREF="general.html#BROWSERS2"
 >My browser does the same things as
 <SPAN
@@ -203,30 +212,30 @@ CLASS="APPLICATION"
 > at all?</A
 ></DT
 ><DT
->1.8. <A
+>1.9. <A
 HREF="general.html#LICENSE"
 >Is there is a license or fee? What about a 
 warranty? Registration?</A
 ></DT
 ><DT
->1.9. <A
+>1.10. <A
 HREF="general.html#JOINTEAM"
 >I would like to help you, what do I do?</A
 ></DT
 ><DD
 ><DL
 ><DT
->1.9.1. <A
+>1.10.1. <A
 HREF="general.html#JOINTEAM-MONEY"
 >Money Money Money</A
 ></DT
 ><DT
->1.9.2. <A
+>1.10.2. <A
 HREF="general.html#JOINTEAM-SOFTWARE"
 >Software</A
 ></DT
 ><DT
->1.9.3. <A
+>1.10.3. <A
 HREF="general.html#JOINTEAM-WORK"
 >You want to work with us?</A
 ></DT
@@ -276,7 +285,7 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >2.5. <A
-HREF="installation.html#AEN218"
+HREF="installation.html#AEN226"
 >I just installed <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -300,6 +309,18 @@ CLASS="APPLICATION"
 >, and nothing is happening.
 All the ads are there. What's wrong?</A
 ></DT
+><DT
+>2.8. <A
+HREF="installation.html#NOTUSED"
+>I get a <SPAN
+CLASS="QUOTE"
+>"Privoxy is not being used"</SPAN
+> dummy page although
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is running and being used.</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -321,7 +342,7 @@ HREF="configuration.html#NEWCONFIG"
 ></DT
 ><DT
 >3.3. <A
-HREF="configuration.html#AEN275"
+HREF="configuration.html#AEN312"
 >What is an <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -341,13 +362,13 @@ CLASS="QUOTE"
 ></DT
 ><DT
 >3.5. <A
-HREF="configuration.html#AEN294"
+HREF="configuration.html#AEN331"
 >How are actions files configured? What is the easiest
 way to do this?</A
 ></DT
 ><DT
 >3.6. <A
-HREF="configuration.html#AEN302"
+HREF="configuration.html#AEN339"
 >There are several different <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -382,7 +403,7 @@ with a browser? Does that not raise security issues?</A
 ></DT
 ><DT
 >3.10. <A
-HREF="configuration.html#AEN367"
+HREF="configuration.html#AEN404"
 >What is the <TT
 CLASS="FILENAME"
 >default.filter</TT
@@ -393,7 +414,7 @@ CLASS="QUOTE"
 ></DT
 ><DT
 >3.11. <A
-HREF="configuration.html#AEN383"
+HREF="configuration.html#AEN420"
 >How can I set up <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -402,17 +423,17 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >3.12. <A
-HREF="configuration.html#AEN409"
+HREF="configuration.html#AEN446"
 >Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
 ></DT
 ><DT
 >3.13. <A
-HREF="configuration.html#AEN426"
+HREF="configuration.html#AEN463"
 >Why would anybody want to see a checkerboard pattern?</A
 ></DT
 ><DT
 >3.14. <A
-HREF="configuration.html#AEN431"
+HREF="configuration.html#AEN468"
 >I see some images being replaced by a text
 instead of the checkerboard image. Why and how do I get rid of this?</A
 ></DT
@@ -490,7 +511,7 @@ HREF="misc.html"
 ><DL
 ><DT
 >4.1. <A
-HREF="misc.html#AEN500"
+HREF="misc.html#AEN537"
 >How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -526,7 +547,7 @@ HREF="misc.html#IP"
 ></DT
 ><DT
 >4.7. <A
-HREF="misc.html#AEN560"
+HREF="misc.html#AEN598"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -534,13 +555,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.8. <A
-HREF="misc.html#AEN571"
+HREF="misc.html#AEN609"
 >Might some things break because header information or
 content is being altered?</A
 ></DT
 ><DT
 >4.9. <A
-HREF="misc.html#AEN582"
+HREF="misc.html#AEN620"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -552,7 +573,7 @@ speed up web browsing?</A
 ></DT
 ><DT
 >4.10. <A
-HREF="misc.html#AEN592"
+HREF="misc.html#AEN630"
 >What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -560,13 +581,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.11. <A
-HREF="misc.html#AEN598"
+HREF="misc.html#AEN636"
 >I have large empty spaces / a checkerboard pattern now where
 ads used to be. Why?</A
 ></DT
 ><DT
 >4.12. <A
-HREF="misc.html#AEN603"
+HREF="misc.html#AEN641"
 >How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -574,7 +595,7 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.13. <A
-HREF="misc.html#AEN618"
+HREF="misc.html#AEN656"
 ><SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -630,6 +651,15 @@ from a webserver? FTP server?</A
 ></DT
 ><DT
 >4.18. <A
+HREF="misc.html#DOWNLOADS2"
+>I just downloaded a Perl script, and <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+altered it! Yikes, what is wrong!</A
+></DT
+><DT
+>4.19. <A
 HREF="misc.html#SEEALSO"
 >Where can I find more information about <SPAN
 CLASS="APPLICATION"
@@ -638,7 +668,7 @@ CLASS="APPLICATION"
 and related issues?</A
 ></DT
 ><DT
->4.19. <A
+>4.20. <A
 HREF="misc.html#MICROSUCK"
 >I've noticed that Privoxy changes <SPAN
 CLASS="QUOTE"
@@ -660,7 +690,7 @@ HREF="trouble.html"
 ><DL
 ><DT
 >5.1. <A
-HREF="trouble.html#AEN741"
+HREF="trouble.html#AEN801"
 >I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
@@ -669,7 +699,7 @@ with every web page?</A
 ></DT
 ><DT
 >5.2. <A
-HREF="trouble.html#AEN754"
+HREF="trouble.html#AEN814"
 >I just added a new rule, but the steenkin ad is 
 still getting through. How?</A
 ></DT
@@ -718,6 +748,16 @@ HREF="trouble.html#OSXUNINSTALL"
 ></DT
 ><DT
 >5.8. <A
+HREF="trouble.html#OSXIMAGES"
+>In Mac OSX Panther (10.3), images often fail to load and/or I
+ experience random delays in page loading. I'm using
+ <VAR
+CLASS="LITERAL"
+>localhost</VAR
+> as my browser's proxy setting.</A
+></DT
+><DT
+>5.9. <A
 HREF="trouble.html#BLANKPAGE"
 >I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
@@ -733,9 +773,61 @@ CLASS="APPLICATION"
 > the page loads fine.</A
 ></DT
 ><DT
->5.9. <A
+>5.10. <A
 HREF="trouble.html#ERROR503"
 >Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
+></DT
+><DT
+>5.11. <A
+HREF="trouble.html#NOHOSTNAME"
+>My logs show many <SPAN
+CLASS="QUOTE"
+>"Unable to get my own hostname"</SPAN
+> lines.
+Why?</A
+></DT
+><DT
+>5.12. <A
+HREF="trouble.html#INUSE"
+>When I try to launch <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, I get an 
+error message <SPAN
+CLASS="QUOTE"
+>"port 8118 is already in use"</SPAN
+> (or similar wording).
+Why?</A
+></DT
+><DT
+>5.13. <A
+HREF="trouble.html#DEMORONIZER"
+>Pages with UTF-8 fonts are garbled.</A
+></DT
+><DT
+>5.14. <A
+HREF="trouble.html#DEMORONIZER2"
+>Why are binary files (such as images) corrupted when <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ is used?</A
+></DT
+><DT
+>5.15. <A
+HREF="trouble.html#DEMORONIZER3"
+>What is the <SPAN
+CLASS="QUOTE"
+>"demoronizer"</SPAN
+> and why is it there?</A
+></DT
+><DT
+>5.16. <A
+HREF="trouble.html#WINDOWOPEN"
+>Why do I keep seeing <SPAN
+CLASS="QUOTE"
+>"PrivoxyWindowOpen()"</SPAN
+> in raw source code?</A
 ></DT
 ></DL
 ></DD
@@ -782,12 +874,12 @@ HREF="copyright.html"
 ><DL
 ><DT
 >7.1. <A
-HREF="copyright.html#AEN884"
+HREF="copyright.html#AEN1014"
 >License</A
 ></DT
 ><DT
 >7.2. <A
-HREF="copyright.html#AEN900"
+HREF="copyright.html#AEN1030"
 >History</A
 ></DT
 ></DL

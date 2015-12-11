@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Quickstart to Using Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.2 User Manual"
+TITLE="Privoxy 3.0.3 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Note to Upgraders"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.2 User Manual</TH
+>Privoxy 3.0.3 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,10 +74,10 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="QUICKSTART"
-></A
 >4. Quickstart to Using <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
+></A
 ></H1
 ><P
 > <P
@@ -143,12 +143,12 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 > as HTTP and
    HTTPS (SSL) proxy by setting the proxy configuration for address of
-   <TT
+   <VAR
 CLASS="LITERAL"
->127.0.0.1</TT
-> and port <TT
+>127.0.0.1</VAR
+> and port <VAR
 CLASS="LITERAL"
->8118</TT
+>8118</VAR
 >.
    (<SPAN
 CLASS="APPLICATION"
@@ -190,8 +190,7 @@ HREF="configuration.html"
 >Configuration section</A
 > for more
    configuration options, and how to customize your installation.
- 
-  </P
+ </P
 ></LI
 ><LI
 ><P
@@ -229,6 +228,16 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
+>   For easy access to Privoxy's most important controls, drag the provided
+   <A
+HREF="appendix.html#BOOKMARKLETS"
+>Bookmarklets</A
+> into your browser's
+   personal toolbar.
+  </P
+></LI
+><LI
+><P
 >   Please see the section <A
 HREF="contact.html"
 >Contacting the
@@ -250,8 +259,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="QUICKSTART-AD-BLOCKING"
-></A
->4.1. Quickstart to Ad Blocking</H2
+>4.1. Quickstart to Ad Blocking</A
+></H2
 ><P
 > Ad blocking is but one of <SPAN
 CLASS="APPLICATION"
@@ -360,25 +369,25 @@ CLASS="APPLICATION"
  or a server somewhere else on the Internet. Complex web pages will have many
  such embedded URLs.</P
 ><P
-> The actions we need to know about for ad blocking are:  <TT
+> The actions we need to know about for ad blocking are:  <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
->, <TT
+></VAR
+>, <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></TT
+></VAR
 >, and
- <TT
+ <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></TT
+></VAR
 >:</P
 ><P
 > <P
@@ -386,12 +395,12 @@ HREF="actions-file.html#SET-IMAGE-BLOCKER"
 ><UL
 ><LI
 ><P
->   <TT
+>   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
+></VAR
 > - this action stops
    any contact between your browser and any URL patterns that match this
    action's configuration. It can be used for blocking ads, but also anything
@@ -405,12 +414,12 @@ CLASS="APPLICATION"
 ></LI
 ><LI
 ><P
->   <TT
+>   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></TT
+></VAR
 > - 
    tells <SPAN
 CLASS="APPLICATION"
@@ -438,24 +447,24 @@ CLASS="QUOTE"
 ></LI
 ><LI
 ><P
->   <TT
+>   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#SET-IMAGE-BLOCKER"
 >set-image-blocker</A
-></TT
+></VAR
 > - tells
    <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > what to display in place of an ad image that
    has hit a block rule. For this to come into play, the URL must match a
-   <TT
+   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
+></VAR
 > action somewhere in the
    configuration, <SPAN
 CLASS="emphasis"
@@ -464,12 +473,12 @@ CLASS="EMPHASIS"
 >and</I
 ></SPAN
 >, it must also match an
-   <TT
+   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#HANDLE-AS-IMAGE"
 >handle-as-image</A
-></TT
+></VAR
 > action.
   </P
 ><P
@@ -632,7 +641,7 @@ CLASS="GUIBUTTON"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN454"
+NAME="AEN389"
 ></A
 ><P
 ><B
@@ -651,12 +660,12 @@ SRC="../images/files-in-use.jpg"></P
 ><LI
 ><P
 >   You should have a section with only
-   <TT
+   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
+></VAR
 > listed under 
    <SPAN
 CLASS="QUOTE"
@@ -678,12 +687,12 @@ CLASS="QUOTE"
 >"Actions:"</SPAN
 >.
    This will bring up a list of all actions. Find
-   <TT
+   <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
+></VAR
 > near the top, and click
    in the <SPAN
 CLASS="QUOTE"
@@ -700,12 +709,12 @@ CLASS="GUIBUTTON"
 ></LI
 ><LI
 ><P
->   Now, in the <TT
+>   Now, in the <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#BLOCK"
 >block</A
-></TT
+></VAR
 > actions section,
    click the <SPAN
 CLASS="QUOTE"
@@ -721,9 +730,9 @@ CLASS="GUIMENUITEM"
 >Copy Link Location</SPAN
 >"</SPAN
 >.
-   Remove the <TT
+   Remove the <VAR
 CLASS="LITERAL"
->http://</TT
+>http://</VAR
 > at the beginning of the URL. Then, click
    <SPAN
 CLASS="QUOTE"

@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: contacting.sgml,v 1.15.2.2 2002/07/26 15:21:33 oes Exp $
+ $Id: contacting.sgml,v 1.15.2.3 2004/01/30 12:34:33 oes Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  ======================================================================
@@ -35,8 +35,8 @@
 
 <sect2 id="contact-support"><title>Get Support</title>
 <para>
- For casual users, our support forum at
- <ulink url="http://sourceforge.net/">SourceForge</ulink>
+ For casual users, our 
+ <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">support forum at SourceForge</ulink>
  is probably best suited:
  <ulink url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118">http://sourceforge.net/tracker/?group_id=11118&#38;atid=211118</ulink>
 </para>

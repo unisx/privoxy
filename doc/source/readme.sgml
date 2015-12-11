@@ -4,7 +4,7 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.2">
+<!entity p-version "3.0.3">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -17,9 +17,9 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 1.16.2.7 2003/03/26 00:45:20 oes Exp $
+ $Id: readme.sgml,v 1.16.2.9 2004/01/30 14:09:59 oes Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001 - 2004 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  ========================================================================
@@ -80,7 +80,7 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001 - 2004  the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -115,8 +115,8 @@
  <!-- include some conditional text -->
  This README is included with <![%p-not-stable;[ the development version of]]>
  Privoxy &p-version;<![%p-not-stable;[, which will eventually become Privoxy v3.0 (and soon we
- hope!)]]>. See http://www.privoxy.org/ for more information. The current code
- level is &p-status;<![%p-not-stable;[, and seems stable to us :)]]>.
+ hope!)]]>. See http://www.privoxy.org/ for more information. The current code maturity
+ level is <quote>&p-status;</quote><![%p-not-stable;[, and seems stable to us :)]]>.
 </para>
 </abstract>
 </artheader>
@@ -127,6 +127,12 @@
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
+<para>
+ MORE NEWS! January 2004, Privoxy 3.0.3 is released. This is the another 
+ maintenance release of Privoxy which fixes more bugs, further refines
+ the configuration and works around some known third-party problems. See the
+ ChangeLog for complete details. Upgrading from 3.0.2 is recommended.
+</para>
 <para>
  NEWS! March 2003, Privoxy 3.0.2 is released. This is the first maintenance
  release of Privoxy. There are no significant new features in this release.
@@ -258,7 +264,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 1.16.2.7 2003/03/26 00:45:20 oes Exp $ -->
+<!--  $Id: readme.sgml,v 1.16.2.9 2004/01/30 14:09:59 oes Exp $ -->
 <!-- </para> -->
 
 </article>

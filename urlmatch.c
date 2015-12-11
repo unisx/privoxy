@@ -1,4 +1,4 @@
-const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.5 2003/02/28 13:09:29 oes Exp $";
+const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.7 2003/05/17 15:57:24 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/urlmatch.c,v $
@@ -33,6 +33,18 @@ const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.5 2003/02/28 13:09:29 oes 
  *
  * Revisions   :
  *    $Log: urlmatch.c,v $
+ *    Revision 1.10.2.7  2003/05/17 15:57:24  oes
+ *     - parse_http_url now checks memory allocation failure for
+ *       duplication of "*" URL and rejects "*something" URLs
+ *       Closes bug #736344
+ *     - Added a comment to what might look like a bug in
+ *       create_url_spec (see !bug #736931)
+ *     - Comment cosmetics
+ *
+ *    Revision 1.10.2.6  2003/05/07 12:39:48  oes
+ *    Fix typo: Default port for https URLs is 443, not 143.
+ *    Thanks to Scott Tregear for spotting this one.
+ *
  *    Revision 1.10.2.5  2003/02/28 13:09:29  oes
  *    Fixed a rare double free condition as per Bug #694713
  *
@@ -202,8 +214,15 @@ jb_err parse_http_url(const char * url,
     */  
    if (*http->url == '*')
    {
-      http->path = strdup("*");
-      http->hostport = strdup("");
+      if  ( NULL == (http->path = strdup("*"))
+         || NULL == (http->hostport = strdup("")) ) 
+      {
+         return JB_ERR_MEMORY;
+      }
+      if (http->url[1] != '\0')
+      {
+         return JB_ERR_PARSE;
+      }
       return JB_ERR_OK;
    }
 
@@ -313,7 +332,7 @@ jb_err parse_http_url(const char * url,
       else
       {
          /* No port specified. */
-         http->port = (http->ssl ? 143 : 80);
+         http->port = (http->ssl ? 443 : 80);
       }
 
       http->host = strdup(host);
@@ -625,7 +644,7 @@ static int domain_match(const struct url_spec *pattern, const struct http_reques
  * Function    :  create_url_spec
  *
  * Description :  Creates a "url_spec" structure from a string.
- *                When finished, free with unload_url().
+ *                When finished, free with free_url_spec().
  *
  * Parameters  :
  *          1  :  url = Target url_spec to be filled in.  Will be
@@ -650,10 +669,14 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
    assert(url);
    assert(buf);
 
-   /* Zero memory */
+   /*
+    * Zero memory
+    */
    memset(url, '\0', sizeof(*url));
 
-   /* save a copy of the orignal specification */
+   /*
+    * Save a copy of the orignal specification
+    */
    if ((url->spec = strdup(buf)) == NULL)
    {
       return JB_ERR_MEMORY;
@@ -727,7 +750,9 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
       char *v[150];
       size_t size;
 
-      /* Parse domain part */
+      /*
+       * Parse domain part
+       */
       if (buf[strlen(buf) - 1] == '.')
       {
          url->unanchored |= ANCHOR_RIGHT;
@@ -737,8 +762,9 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
          url->unanchored |= ANCHOR_LEFT;
       }
 
-      /* split domain into components */
-
+      /* 
+       * Split domain into components
+       */
       url->dbuffer = strdup(buf);
       if (NULL == url->dbuffer)
       {
@@ -749,13 +775,17 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
          return JB_ERR_MEMORY;
       }
 
-      /* map to lower case */
+      /* 
+       * Map to lower case
+       */
       for (p = url->dbuffer; *p ; p++)
       {
          *p = tolower((int)(unsigned char)*p);
       }
 
-      /* split the domain name into components */
+      /* 
+       * Split the domain name into components
+       */
       url->dcount = ssplit(url->dbuffer, ".", v, SZ(v), 1, 1);
 
       if (url->dcount < 0)
@@ -771,7 +801,9 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
       else if (url->dcount != 0)
       {
 
-         /* save a copy of the pointers in dvec */
+         /* 
+          * Save a copy of the pointers in dvec
+          */
          size = url->dcount * sizeof(*url->dvec);
 
          url->dvec = (char **)malloc(size);
@@ -788,6 +820,11 @@ jb_err create_url_spec(struct url_spec * url, const char * buf)
 
          memcpy(url->dvec, v, size);
       }
+      /*
+       * else dcount == 0 in which case we needn't do anything,
+       * since dvec will never be accessed and the pattern will
+       * match all domains.
+       */
    }
 
    return JB_ERR_OK;

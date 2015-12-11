@@ -55,9 +55,11 @@
 #  protocol:
 #    The request's protocol: http:// or https://
 #  hostport:
-#    The host and port part of the request that lead to this problem
+#    The host and port part of the blocked request's URL.
 #  path:
-#    The path part of the request that lead to this problem
+#    The path part of the blocked request's URL.
+#  path-ue:
+#    The path part of the blocked request's URL, url-encoded.
 #
 #
 # CONDITIONAL SYMBOLS FOR THIS TEMPLATE AND THEIR DEPANDANT SYMBOLS:
@@ -142,7 +144,7 @@
      document.write('\
    <p class="small" align="center"> \
     <a href="@default-cgi@" target="_blank">Privoxy</a> blocked <b>@protocol@@hostport@@path@</b>. \
-    <br><a href="@default-cgi@show-url-info?url=@hostport@@path@" target="_blank">See why</a> \
+    <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" target="_blank">See why</a> \
     <!-- @if-force-support-start --> \
     or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>. \
     <!-- if-force-support-end@ --> \
@@ -184,7 +186,7 @@
       <td class="box" colspan="2"> \
         <h2>Request for blocked URL</h2> \
         <p>Your request for <b>@protocol@@hostport@@path@</b> was blocked. \
-          <br><a href="@default-cgi@show-url-info?url=@hostport@@path@">See why</a> \
+          <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@">See why</a> \
     <!-- @if-force-support-start --> \
           or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>. \
 <!-- if-force-support-end@ --> \
@@ -259,7 +261,7 @@
   <noscript>
    <p class="small" align="center">
     <a href="@default-cgi@" target="_blank">Privoxy</a> blocked <b>@protocol@@hostport@@path@</b>.
-    <br><a href="@default-cgi@show-url-info?url=@hostport@@path@" target="_blank">See why</a>
+    <br><a href="@default-cgi@show-url-info?url=@hostport@@path-ue@" target="_blank">See why</a>
     <!-- @if-force-support-start -->
     or <a href="http://@hostport@@force-prefix@@path@">go there anyway</a>.
     <!-- if-force-support-end@ -->

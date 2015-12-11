@@ -1,4 +1,4 @@
-.\" Copyright (c) 2001 Andreas S. Oesterhelt <oes@oesterhelt.org>
+.\" Copyright (c) 2001-2003 Andreas S. Oesterhelt <oes@oesterhelt.org>
 .\"
 .\" This is free documentation; you can redistribute it and/or
 .\" modify it under the terms of the GNU General Public License as
@@ -20,7 +20,7 @@
 .\" Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 .\" MA 02111, USA.
 .\"
-.TH PCRS 3 "4 March 2002" "pcrs-0.0.1"
+.TH PCRS 3 "2 December 2003" "pcrs-0.0.3"
 .SH NAME
 pcrs - Perl-compatible regular substitution.
 .SH SYNOPSIS
@@ -251,20 +251,25 @@ Unsupported options are silently ignored.
 
 .RI "The first " subject_length " bytes following " subject " are processed, so"
 .RI  "a " subject_length " that exceeds the actual " subject " is dangerous."
-Note that if you want to get your zero-terminated C strings back including their
-.RI "termination, you must let " subject_length " include the binary zero, i.e."
-set it to
-.BI strlen( subject ") + 1."
+.RI "Note that for zero-terminated C strings, you should set " subject_length " to"
+.BI strlen( subject ) \fR,
+so that the dollar metacharacter matches at the end of the string, not after
+the string-terminating null byte. For convenience, an extra null byte is
+appended to the result so it can again be used as a string.
 
 .RI "The " subject " itself is left untouched, and the " *result " is dynamically"
 .RB "allocated, so it is the caller's responsibility to " free() " it when it's"
 no longer needed.
 
-.RI "The result's length is written to " *result_length "."
+.RI "The result's length (excluding the extra null byte) is written to " *result_length "."
 
 .RB "If the job matched, the " PCRS_SUCCESS " flag in"
 .IB job ->flags
 is set.
+
+
+.SS String subjects
+If your 
 
 .SS Return value and diagnostics
 
@@ -419,9 +424,9 @@ int main(int Argc, char **Argv)
       fprintf(stderr, "%s: compile error:  %s (%d).\\n", Argv[0], pcrs_strerror(err), err);
    }
 
-   if (0 > (err = pcrs_execute(job, Argv[2], strlen(Argv[2]) + 1, &result, &newsize)))
+   if (0 > (err = pcrs_execute(job, Argv[2], strlen(Argv[2]), &result, &newsize)))
    {
-      fprintf(stderr, "%s: Exec error:  %s (%d).\\n", Argv[0], pcrs_strerror(err), err);
+      fprintf(stderr, "%s: exec error:  %s (%d).\\n", Argv[0], pcrs_strerror(err), err);
    }
    else
    {
@@ -446,6 +451,10 @@ The number of capturing subpatterns is currently limited to 33, which
 is a Bad Thing[tm]. It should be dynamically expanded until it reaches the
 .SM PCRE
 limit of 99.
+.br
+This limitation is particularly embarassing since
+.SM PCRE
+3.5 has raised the capturing subpattern limit to 65K.
 
 All of the above values can be adjusted in the "Capacity" section
 .RB "of " pcrs.h "."
@@ -459,8 +468,8 @@ and should be considered high risk.
 
 .SH HISTORY
 .SM PCRS
-was originally written for the Internet Junkbuster project
-(http://sourceforge.net/projects/ijbswa/).
+was originally written for the Privoxy project
+(http://www.privoxy.org/).
 
 .SH SEE ALSO
 .B PCRE(3), perl(1), perlre(1)
@@ -468,7 +477,7 @@ was originally written for the Internet Junkbuster project
 .SH AUTHOR
 
 .SM PCRS
-is Copyright 2000, 2001 by Andreas Oesterhelt <andreas@oesterhelt.org> and is
+is Copyright 2000 - 2003 by Andreas Oesterhelt <andreas@oesterhelt.org> and is
 licensed under the terms of the GNU Lesser General Public License (LGPL),
 version 2.1, which should be included in this distribution, with the exception
 that the permission to replace that license with the GNU General Public

@@ -4,7 +4,7 @@
  *
  * Purpose     :  README file to give a short intro.
  *
- * Copyright   :  Written by and Copyright (C) 2001 the SourceForge
+ * Copyright   :  Written by and Copyright (C) 2001 - 2004  the SourceForge
  *                Privoxy team. http://www.privoxy.org/
  *
  *                Based on the Internet Junkbuster originally written
@@ -31,13 +31,13 @@
  *
  *********************************************************************/
 
-This README is included with Privoxy 3.0.2. See http://www.privoxy.org/ for
-more information. The current code level is stable.
+This README is included with Privoxy 3.0.3. See http://www.privoxy.org/ for
+more information. The current code maturity level is "stable".
 
 -------------------------------------------------------------------------------
 
 Privoxy is a web proxy with advanced filtering capabilities for protecting
-privacy, filtering web page content, managing cookies, controlling access, and
+privacy, modifying web page content, managing cookies, controlling access, and
 removing ads, banners, pop-ups and other obnoxious Internet junk. Privoxy has a
 very flexible configuration and can be customized to suit individual needs and
 tastes. Privoxy has application for both stand-alone systems and multi-user
@@ -48,6 +48,11 @@ Privoxy is based on Internet Junkbuster (tm).
 -------------------------------------------------------------------------------
 
 1. IMPORTANT CHANGES
+
+MORE NEWS! January 2004, Privoxy 3.0.3 is released. This is the another
+maintenance release of Privoxy which fixes more bugs, further refines the
+configuration and works around some known third-party problems. See the
+ChangeLog for complete details. Upgrading from 3.0.2 is recommended.
 
 NEWS! March 2003, Privoxy 3.0.2 is released. This is the first maintenance
 release of Privoxy. There are no significant new features in this release. Some
@@ -109,9 +114,9 @@ Junkbuster v2.0.x. The User Manual has an explanation of all configuration
 options, and examples: http://www.privoxy.org/user-manual/.
 
 Be sure to set your browser(s) for HTTP/HTTPS Proxy at <IP>:<Port>, or whatever
-you specify in the config file under 'listen-address'. DEFAULT is localhost:
-8118. Note that Privoxy ONLY proxies HTTP (and HTTPS) traffic. Do not try it
-with FTP or other protocols for the simple reason it does not work.
+you specify in the config file under 'listen-address'. DEFAULT is
+localhost:8118. Note that Privoxy ONLY proxies HTTP (and HTTPS) traffic. Do not
+try it with FTP or other protocols for the simple reason it does not work.
 
 The actions list can be configured via the web interface accessed via http://
 p.p/, as well other options.
@@ -143,7 +148,7 @@ with the best support:
 
 6.1. Get Support
 
-For casual users, our support forum at SourceForge is probably best suited: 
+For casual users, our support forum at SourceForge is probably best suited:
 http://sourceforge.net/tracker/?group_id=11118&atid=211118
 
 All users are of course welcome to discuss their issues on the users mailing
@@ -166,7 +171,7 @@ debugging. If you are using your own custom configuration, please try the stock
 configs to see if the problem is configuration related.
 
 If not using the latest version, chances are that the bug has been found and
-fixed in the meantime. We would appreciate if you could take the time to 
+fixed in the meantime. We would appreciate if you could take the time to
 upgrade to the latest version (or even the latest CVS snapshot) and verify your
 bug, but this is not required for reporting.
 

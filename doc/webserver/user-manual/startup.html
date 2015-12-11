@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Starting Privoxy</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.2 User Manual"
+TITLE="Privoxy 3.0.3 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Quickstart to Using Privoxy"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.2 User Manual</TH
+>Privoxy 3.0.3 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,10 +74,10 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="STARTUP"
-></A
 >5. Starting <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
+></A
 ></H1
 ><P
 > Before launching <SPAN
@@ -101,7 +101,7 @@ CLASS="APPLICATION"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN505"
+NAME="AEN440"
 ></A
 ><P
 ><B
@@ -217,8 +217,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-REDHAT"
-></A
->5.1. Red Hat and Conectiva</H2
+>5.1. Red Hat and Conectiva</A
+></H2
 ><P
 > We use a script. Note that Red Hat does not start Privoxy upon booting per
  default. It will use the file <TT
@@ -247,8 +247,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-DEBIAN"
-></A
->5.2. Debian</H2
+>5.2. Debian</A
+></H2
 ><P
 > We use a script. Note that Debian starts Privoxy upon booting per
  default.  It will use the file
@@ -278,8 +278,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-SUSE"
-></A
->5.3. SuSE</H2
+>5.3. SuSE</A
+></H2
 ><P
 >We use a script. It will use the file <TT
 CLASS="FILENAME"
@@ -308,8 +308,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-WINDOWS"
-></A
->5.4. Windows</H2
+>5.4. Windows</A
+></H2
 ><P
 >Click on the Privoxy Icon to start Privoxy. If no configuration file is
  specified on the command line, <SPAN
@@ -328,8 +328,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-UNICES"
-></A
->5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</H2
+>5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</A
+></H2
 ><P
 >Example Unix startup command:</P
 ><P
@@ -353,8 +353,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-OS2"
-></A
->5.6. OS/2</H2
+>5.6. OS/2</A
+></H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -376,21 +376,21 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-MACOSX"
-></A
->5.7. Mac OSX</H2
+>5.7. Mac OSX</A
+></H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is configured to
  start automatically when the system restarts.  To start Privoxy by hand,
- double-click on the <TT
+ double-click on the <VAR
 CLASS="LITERAL"
->StartPrivoxy.command</TT
+>StartPrivoxy.command</VAR
 > icon in the
- <TT
+ <VAR
 CLASS="LITERAL"
->/Library/Privoxy</TT
+>/Library/Privoxy</VAR
 > folder.  Or, type this command
  in the Terminal:</P
 ><P
@@ -417,8 +417,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-AMIGAOS"
-></A
->5.8. AmigaOS</H2
+>5.8. AmigaOS</A
+></H2
 ><P
 > Start <SPAN
 CLASS="APPLICATION"
@@ -449,8 +449,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="START-GENTOO"
-></A
->5.9. Gentoo</H2
+>5.9. Gentoo</A
+></H2
 ><P
 > A script is again used. It will use the file <TT
 CLASS="FILENAME"
@@ -477,9 +477,9 @@ CLASS="SCREEN"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > is not automatically started at 
- boot time by default. You can change this with the <TT
+ boot time by default. You can change this with the <VAR
 CLASS="LITERAL"
->rc-update</TT
+>rc-update</VAR
 > 
  command.</P
 ><P
@@ -505,8 +505,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CMDOPTIONS"
-></A
->5.10. Command Line Options</H2
+>5.10. Command Line Options</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"

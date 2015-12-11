@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Templates</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.2 User Manual"
+TITLE="Privoxy 3.0.3 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="The Filter File"
@@ -38,7 +38,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.2 User Manual</TH
+>Privoxy 3.0.3 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -75,8 +75,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="TEMPLATES"
-></A
->10. Templates</H1
+>10. Templates</A
+></H1
 ><P
 > All <SPAN
 CLASS="APPLICATION"
@@ -148,15 +148,15 @@ CLASS="EMPHASIS"
 >Not recommended for the casual user</I
 ></SPAN
 >). Note that
- just like in configuration files, lines starting with <TT
+ just like in configuration files, lines starting with <VAR
 CLASS="LITERAL"
->#</TT
+>#</VAR
 > are
  ignored when the templates are filled in.</P
 ><P
-> The place-holders are of the form <TT
+> The place-holders are of the form <VAR
 CLASS="LITERAL"
->@name@</TT
+>@name@</VAR
 >, and you will
  find a list of available symbols, which vary from template to template,
  in the comments at the start of each file. Note that these comments are not
@@ -191,12 +191,12 @@ CLASS="SCREEN"
 ></P
 ><P
 > If the "unstable" symbol is set, everything in between and including
- <TT
+ <VAR
 CLASS="LITERAL"
->@if-unstable-start</TT
-> and <TT
+>@if-unstable-start</VAR
+> and <VAR
 CLASS="LITERAL"
->if-unstable-end@</TT
+>if-unstable-end@</VAR
 >
  will disappear, leaving nothing but an empty comment:</P
 ><P
@@ -214,9 +214,9 @@ CLASS="SCREEN"
 ></TABLE
 ></P
 ><P
-> There's also an if-then-else construct and an <TT
+> There's also an if-then-else construct and an <VAR
 CLASS="LITERAL"
->#include</TT
+>#include</VAR
 >
  mechanism, but you'll sure find out if you are inclined to edit the
  templates ;-)</P
@@ -225,9 +225,9 @@ CLASS="LITERAL"
  <A
 HREF="http://config.privoxy.org/send-stylesheet"
 TARGET="_top"
-><TT
+><VAR
 CLASS="LITERAL"
->http://config.privoxy.org/send-stylesheet</TT
+>http://config.privoxy.org/send-stylesheet</VAR
 ></A
 >.
  This is, of course, locally served by <SPAN

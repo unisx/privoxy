@@ -1,4 +1,4 @@
-const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.35.2.1 2002/07/04 15:02:38 oes Exp $";
+const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.35.2.3 2003/12/17 16:34:15 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgisimple.c,v $
@@ -36,6 +36,13 @@ const char cgisimple_rcs[] = "$Id: cgisimple.c,v 1.35.2.1 2002/07/04 15:02:38 oe
  *
  * Revisions   :
  *    $Log: cgisimple.c,v $
+ *    Revision 1.35.2.3  2003/12/17 16:34:15  oes
+ *     - Prevent line wrap beween "View/Edit" link buttons on status page
+ *     - Some (mostly irrelevant) fixes for Out-of-mem-case handling
+ *
+ *    Revision 1.35.2.2  2003/04/03 13:48:28  oes
+ *    Don't show "Edit" buttons #ifndef FEATURE_CGI_EDIT_ACTIONS
+ *
  *    Revision 1.35.2.1  2002/07/04 15:02:38  oes
  *    Added ability to send redirects to send-banner CGI, so that it can completely mimic the image blocking action if called with type=auto
  *
@@ -870,14 +877,16 @@ jb_err cgi_show_status(struct client_state *csp,
       {
          if (!err) err = string_append(&s, "<tr><td>");
          if (!err) err = string_join(&s, html_encode(csp->actions_list[i]->filename));
-         snprintf(buf, 100, "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&index=%d\">View</a> ", i);
+         snprintf(buf, 100, "</td><td class=\"buttons\"><a href=\"/show-status?file=actions&index=%d\">View</a>", i);
          if (!err) err = string_append(&s, buf);
 
+#ifdef FEATURE_CGI_EDIT_ACTIONS
          if (NULL == strstr(csp->actions_list[i]->filename, "standard.action") && NULL != csp->config->actions_file_short[i])
          {
-            snprintf(buf, 100, "<a href=\"/edit-actions-list?f=%s\">Edit</a>", csp->config->actions_file_short[i]);
+            snprintf(buf, 100, "&nbsp;&nbsp;<a href=\"/edit-actions-list?f=%s\">Edit</a>", csp->config->actions_file_short[i]);
             if (!err) err = string_append(&s, buf);
          }
+#endif
 
          if (!err) err = string_append(&s, "</td></tr>\n");
       }
@@ -1074,6 +1083,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
 
       if (err == JB_ERR_MEMORY)
       {
+         free_http_request(url_to_query);
          free_current_action(action);
          free_map(exports);
          return JB_ERR_MEMORY;
@@ -1086,6 +1096,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
          if (!err) err = map(exports, "final", 1, lookup(exports, "default"), 1);
 
          free_current_action(action);
+         free_http_request(url_to_query);
 
          if (err)
          {
@@ -1105,6 +1116,7 @@ jb_err cgi_show_url_info(struct client_state *csp,
          {
             free_current_action(action);
             free_map(exports);
+            free_http_request(url_to_query);
             return JB_ERR_MEMORY;
          }
       }

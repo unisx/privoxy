@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.7 2003/03/17 16:48:59 oes Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.14 2003/12/12 12:52:53 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/jcc.c,v $
@@ -33,6 +33,31 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.7 2003/03/17 16:48:59 oes Exp $";
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.92.2.14  2003/12/12 12:52:53  oes
+ *    - Fixed usage info for non-unix platforms
+ *    - Fixed small cmdline parsing bug
+ *
+ *    Revision 1.92.2.13  2003/11/27 19:20:27  oes
+ *    Diagnostics: Now preserve the returncode of pthread_create
+ *    in errno. Closes BR #775721. Thanks to Geoffrey Hausheer.
+ *
+ *    Revision 1.92.2.12  2003/07/11 11:34:19  oes
+ *    No longer ignore SIGCHLD. Fixes bug #769381
+ *
+ *    Revision 1.92.2.11  2003/05/14 12:32:02  oes
+ *    Close jarfile on graceful exit, remove stray line
+ *
+ *    Revision 1.92.2.10  2003/05/08 15:13:46  oes
+ *    Cosmetics: Killed a warning, a typo and an allocation left at exit
+ *
+ *    Revision 1.92.2.9  2003/04/03 15:08:42  oes
+ *    No longer rely on non-POSIX.1 extensions of getcwd().
+ *    Fixes bug #711001
+ *
+ *    Revision 1.92.2.8  2003/03/31 13:12:32  oes
+ *    Replaced setenv() by posix-compliant putenv()
+ *    Thanks to Neil McCalden (nmcc AT users.sf.net).
+ *
  *    Revision 1.92.2.7  2003/03/17 16:48:59  oes
  *    Added chroot ability, thanks to patch by Sviatoslav Sviridov
  *
@@ -699,7 +724,7 @@ pthread_mutex_t gethostbyname_mutex;
 #endif /* def OSX_DARWIN */
 
 #if defined(unix) || defined(__EMX__)
-const char *basedir;
+const char *basedir = NULL;
 const char *pidfile = NULL;
 int received_hup_signal = 0;
 #endif /* defined unix */
@@ -1471,7 +1496,7 @@ static void chat(struct client_state *csp)
 
                   if (write_socket(csp->cfd, hdr, hdrlen)
                    || ((flushed = flush_socket(csp->cfd, csp)) < 0)
-                   || (write_socket(csp->cfd, buf, len)))
+                   || (write_socket(csp->cfd, buf, (size_t) len)))
                   {
                      log_error(LOG_LEVEL_CONNECT, "Flush header and buffers to client failed: %E");
 
@@ -1730,7 +1755,11 @@ static int32 server_thread(void *data)
 void usage(const char *myname)
 {
    printf("Privoxy version " VERSION " (" HOME_PAGE_URL ")\n"
+#if !defined(unix)
+           "Usage: %s [--help] [--version] [configfile]\n"
+#else
            "Usage: %s [--help] [--version] [--no-daemon] [--pidfile pidfile] [--user user[.group]] [configfile]\n"
+#endif
            "Aborting.\n", myname);
  
    exit(2);
@@ -1791,8 +1820,6 @@ int main(int argc, const char *argv[])
     */
    while (++argc_pos < argc)
    {
-#if !defined(_WIN32) || defined(_WIN_CONSOLE)
-
       if (strcmp(argv[argc_pos], "--help") == 0)
       {
          usage(argv[0]);
@@ -1804,11 +1831,13 @@ int main(int argc, const char *argv[])
          exit(0);
       }
 
-      else if (strcmp(argv[argc_pos], "--no-daemon" ) == 0)
+#if defined(unix)
+
+     else if (strcmp(argv[argc_pos], "--no-daemon" ) == 0)
       {
          no_daemon = 1;
       }
-#if defined(unix)
+
       else if (strcmp(argv[argc_pos], "--pidfile" ) == 0)
       {
          if (++argc_pos == argc) usage(argv[0]);
@@ -1840,9 +1869,10 @@ int main(int argc, const char *argv[])
       {
          do_chroot = 1;
       }
+
 #endif /* defined(unix) */
+
       else
-#endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
       {
          configfile = argv[argc_pos];
       }
@@ -1852,16 +1882,17 @@ int main(int argc, const char *argv[])
 #if defined(unix)
    if ( *configfile != '/' )
    {
-      char *abs_file;
+      char *abs_file, cwd[1024];
 
       /* make config-filename absolute here */
-      if ( !(basedir = getcwd( NULL, 1024 )))
+      if ( !(getcwd(cwd, sizeof(cwd))))
       {
          perror("get working dir failed");
          exit( 1 );
       }
 
-      if ( !(abs_file = malloc( strlen( basedir ) + strlen( configfile ) + 5 )))
+      if (!(basedir = strdup(cwd))
+      || (!(abs_file = malloc( strlen( basedir ) + strlen( configfile ) + 5 ))))
       {
          perror("malloc failed");
          exit( 1 );
@@ -1898,14 +1929,13 @@ int main(int argc, const char *argv[])
     *
     * Catch the abort, interrupt and terminate signals for a graceful exit
     * Catch the hangup signal so the errlog can be reopened.
-    * Ignore the broken pipe and child signals
-    *  FIXME: Isn't ignoring the default for SIGCHLD anyway and why ignore SIGPIPE? 
+    * Ignore the broken pipe signals (FIXME: Why?)
     */
 #if !defined(_WIN32) && !defined(__OS2__) && !defined(AMIGA)
 {
    int idx;
    const int catched_signals[] = { SIGABRT, SIGTERM, SIGINT, SIGHUP, 0 };
-   const int ignored_signals[] = { SIGPIPE, SIGCHLD, 0 };
+   const int ignored_signals[] = { SIGPIPE, 0 };
 
    for (idx = 0; catched_signals[idx] != 0; idx++)
    {
@@ -2038,13 +2068,18 @@ int main(int argc, const char *argv[])
       }
       if (do_chroot)
       {
-         if (setenv ("HOME", "/", 1) < 0)
+         char putenv_dummy[64];
+
+         strcpy(putenv_dummy, "HOME=/");
+         if (putenv(putenv_dummy) != 0)
          {
-            log_error(LOG_LEVEL_FATAL, "Cannot setenv(): HOME");
-         }
-         if (setenv ("USER", pw->pw_name, 1) < 0)
+            log_error(LOG_LEVEL_FATAL, "Cannot putenv(): HOME");
+         }                
+
+         snprintf(putenv_dummy, 64, "USER=%s", pw->pw_name);
+         if (putenv(putenv_dummy) != 0)
          {
-            log_error(LOG_LEVEL_FATAL, "Cannot setenv(): USER");
+            log_error(LOG_LEVEL_FATAL, "Cannot putenv(): USER");
          }
       }
    }
@@ -2296,8 +2331,9 @@ static void listen_loop(void)
 
             pthread_attr_init(&attrs);
             pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_DETACHED);
-            child_id = (pthread_create(&the_thread, &attrs,
-               (void*)serve, csp) ? -1 : 0);
+            errno = pthread_create(&the_thread, &attrs,
+               (void*)serve, csp);
+            child_id = errno ? -1 : 0;
             pthread_attr_destroy(&attrs);
          }
 #endif
@@ -2372,7 +2408,7 @@ static void listen_loop(void)
             serve(csp);
 
             /* 
-             * If we've been toggled or we'be blocked the request, tell Mom
+             * If we've been toggled or we've blocked the request, tell Mom
              */
 
 #ifdef FEATURE_TOGGLE
@@ -2485,8 +2521,17 @@ static void listen_loop(void)
    sweep();
 
 #if defined(unix)
-   free(basedir);
+   freez(basedir);
 #endif
+   freez(configfile);
+
+#ifdef FEATURE_COOKIE_JAR
+   if (NULL != config->jar)
+   {
+      fclose(config->jar);
+   }
+#endif
+
 #if defined(_WIN32) && !defined(_WIN_CONSOLE)
    /* Cleanup - remove taskbar icon etc. */
    TermLogWindow();

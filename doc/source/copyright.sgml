@@ -3,9 +3,9 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: copyright.sgml,v 1.7.2.1 2003/03/20 14:56:10 oes Exp $
+ $Id: copyright.sgml,v 1.7.2.2 2004/01/29 22:41:02 hal9 Exp $
 
- Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
+ Copyright (C) 2001-2004 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
 
  ======================================================================
@@ -36,7 +36,7 @@
 -->
 
 <para>
- Copyright &my-copy; 2001 - 2003 by Privoxy Developers <email>developers@privoxy.org</email>
+ Copyright &my-copy; 2001 - 2004 by Privoxy Developers <email>developers@privoxy.org</email>
 </para>
 
 <para>

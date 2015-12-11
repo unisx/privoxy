@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Troubleshooting</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,20 +74,20 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="TROUBLE"
-></A
->5. Troubleshooting</H1
+>5. Troubleshooting</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN741"
-></A
+NAME="AEN801"
 >5.1. I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
 >
-with every web page?</H3
+with every web page?</A
+></H3
 ><P
 > Either <SPAN
 CLASS="APPLICATION"
@@ -113,9 +113,9 @@ CLASS="APPLICATION"
  change the <A
 HREF="../user-manual/config.html#LISTEN-ADDRESS"
 TARGET="_top"
-><TT
+><VAR
 CLASS="LITERAL"
->listen-address</TT
+>listen-address</VAR
 >
  option</A
 > in <SPAN
@@ -132,10 +132,10 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN754"
-></A
+NAME="AEN814"
 >5.2. I just added a new rule, but the steenkin ad is 
-still getting through. How?</H3
+still getting through. How?</A
+></H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
  held in the browser's cache for some time, so it will be displayed without
@@ -160,12 +160,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="BADSITE"
-></A
 >5.3. One of my favorite sites does not work with <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >.
-What can I do?</H3
+What can I do?</A
+></H3
 ><P
 > First verify that it is indeed a <SPAN
 CLASS="APPLICATION"
@@ -208,9 +208,9 @@ TARGET="_top"
 > Alternately, if you are comfortable with a text editor, you can accomplish 
  the same thing by editing the appropriate actions file. Probably the easiest 
  way to deal with such problems when editing by hand is to add your
- site to a <TT
+ site to a <VAR
 CLASS="LITERAL"
->{ fragile }</TT
+>{ fragile }</VAR
 > section in <TT
 CLASS="FILENAME"
 >user.action</TT
@@ -239,12 +239,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DUN"
-></A
 >5.4. After installing <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >, I have to log in
-every time I start IE. What gives?</H3
+every time I start IE. What gives?</A
+></H3
 ><P
 > This is a quirk that effects the installation of
  <SPAN
@@ -297,12 +297,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="FTP"
-></A
 >5.5. I cannot connect to any FTP sites. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
- seems to be blocking me.</H3
+ seems to be blocking me.</A
+></H3
 ><P
 >  <SPAN
 CLASS="APPLICATION"
@@ -312,13 +312,20 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
-  as an FTP proxy. The same is true for any protocol other than HTTP or HTTPS.
+  as an FTP proxy. The same is true for <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>any protocol other than HTTP
+  or HTTPS</I
+></SPAN
+>. 
  </P
 ><P
 >  Most browsers understand FTP as well as HTTP. If you connect to a site, with
-  a URL like <TT
+  a URL like <VAR
 CLASS="LITERAL"
->ftp://ftp.example.com</TT
+>ftp://ftp.example.com</VAR
 >, your browser is making
   an FTP connection, and not a HTTP connection. So while your browser may 
   speak FTP, <SPAN
@@ -327,6 +334,33 @@ CLASS="APPLICATION"
 > does not, and cannot proxy 
   such traffic.
  </P
+><P
+>  To complicate matters, some systems may have a generic <SPAN
+CLASS="QUOTE"
+>"proxy"</SPAN
+>
+  setting, which will silently enable <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>both</I
+></SPAN
+> HTTP and FTP
+  proxying! So it is possible to accidentally enable FTP proxying in these
+  cases. And of course, if this happens, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+  will indeed cause problems since it does not know FTP.
+ </P
+><P
+>  Will <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> ever proxy FTP traffic? Unlikely.
+  There just is not much reason, and the work to make this happen is more than
+  it may seem.
+ </P
 ></DIV
 ><DIV
 CLASS="SECT2"
@@ -334,24 +368,24 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXIE"
-></A
 >5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> as the HTTP proxy.</H3
+> as the HTTP proxy.</A
+></H3
 ><P
 >  Microsoft Internet Explorer (in versions like 5.1) respects system-wide
   network settings.  In order to change the HTTP proxy, open System
   Preferences, and click on the Network icon.  In the settings pane that
   comes up, click on the Proxies tab.  Ensure the "Web Proxy (HTTP)" checkbox 
-  is checked and enter <TT
+  is checked and enter <VAR
 CLASS="LITERAL"
->127.0.0.1</TT
+>127.0.0.1</VAR
 > in the entry field.  
-  Enter <TT
+  Enter <VAR
 CLASS="LITERAL"
->8118</TT
+>8118</VAR
 > in the Port field.  The next time you start
   IE, it should reflect these values.
  </P
@@ -362,10 +396,10 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="OSXUNINSTALL"
-></A
 >5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
- empty the trash.</H3
+ empty the trash.</A
+></H3
 ><P
 >  Just dragging the <SPAN
 CLASS="APPLICATION"
@@ -396,9 +430,34 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
+NAME="OSXIMAGES"
+>5.8. In Mac OSX Panther (10.3), images often fail to load and/or I
+ experience random delays in page loading. I'm using
+ <VAR
+CLASS="LITERAL"
+>localhost</VAR
+> as my browser's proxy setting.</A
+></H3
+><P
+>  We believe this is due to an IPv6-related bug in OSX, but don't fully
+  understand the issue yet. In any case, changing the proxy setting to 
+  <VAR
+CLASS="LITERAL"
+>127.0.0.1</VAR
+> instead of <VAR
+CLASS="LITERAL"
+>localhost</VAR
+>
+  works around the problem.
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
 NAME="BLANKPAGE"
-></A
->5.8. I get a completely blank page at one site. <SPAN
+>5.9. I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
 >"View Source"</SPAN
 >
@@ -409,7 +468,8 @@ CLASS="MARKUP"
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> the page loads fine.</H3
+> the page loads fine.</A
+></H3
 ><P
 >  Chances are that the site suffers from a bug in
   <A
@@ -429,9 +489,9 @@ CLASS="APPLICATION"
  </P
 ><P
 >  To find out if this is in fact the source of the problem, try adding
-  the site to a <TT
+  the site to a <VAR
 CLASS="LITERAL"
->-prevent-compression</TT
+>-prevent-compression</VAR
 > section in
   <TT
 CLASS="FILENAME"
@@ -466,8 +526,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ERROR503"
-></A
->5.9. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
+>5.10. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
+></H3
 ><P
 >  More than likely this is a problem with the network stack. ZoneAlarm has
   been reported to cause this symptom -- even if not running. The solution is
@@ -475,6 +535,238 @@ NAME="ERROR503"
   something better behaved in its place. Other firewall type products may
   cause similar type problems if not configured correctly.
  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="NOHOSTNAME"
+>5.11. My logs show many <SPAN
+CLASS="QUOTE"
+>"Unable to get my own hostname"</SPAN
+> lines.
+Why?</A
+></H3
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> tries to get the hostname of the system
+ its running on from the IP address of the system interface it is bound to
+ (from the <TT
+CLASS="FILENAME"
+>config</TT
+> file
+ <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>listen-address</I
+></SPAN
+> setting). If the system cannot supply
+ this information, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> logs this condition. </P
+><P
+> Typically, this would be considered a system configuration error. It is not a
+ fatal error to <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> however, but may result in 
+ a much slower response from <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> due to DNS
+ timeouts.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="INUSE"
+>5.12. When I try to launch <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, I get an 
+error message <SPAN
+CLASS="QUOTE"
+>"port 8118 is already in use"</SPAN
+> (or similar wording).
+Why?</A
+></H3
+><P
+> Port 8118 is <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> default TCP 
+ <SPAN
+CLASS="QUOTE"
+>"listening"</SPAN
+> port. Typically this message would mean that there
+ is already one instance of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> running, and
+ you are actually trying to start a second <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> 
+ on the same port, which will not work. How and why this might happen varies
+ from platform to platform, but you need to check your installation and
+ start-up procedures.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DEMORONIZER"
+>5.13. Pages with UTF-8 fonts are garbled.</A
+></H3
+><P
+> This is caused by the <SPAN
+CLASS="QUOTE"
+>"demoronizer"</SPAN
+> filter, which was introduced 
+ in version 3.0.2, and was inappropriately turned on by default. You should 
+ either upgrade <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, or at least upgrade to the most 
+ recent <TT
+CLASS="FILENAME"
+>default.action</TT
+> file available from 
+ <A
+HREF="http://sourceforge.net/project/showfiles.php?group_id=11118"
+TARGET="_top"
+>SourceForge</A
+>.
+ Or you can simply disable the demoronizer filter.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DEMORONIZER2"
+>5.14. Why are binary files (such as images) corrupted when <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+ is used?</A
+></H3
+><P
+> This may also be caused by the <SPAN
+CLASS="QUOTE"
+>"demoronizer"</SPAN
+> filter, 
+ in conjunction with a web server that is misreporting a file type. Binary 
+ files are exempted from <SPAN
+CLASS="APPLICATION"
+>Privoxy's</SPAN
+> filtering
+ (unless the web server by mistake says the file is a plain text file). Either
+ upgrade <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>, or go to the most recent
+ <TT
+CLASS="FILENAME"
+>default.action</TT
+> file available from <A
+HREF="http://sourceforge.net/project/showfiles.php?group_id=11118"
+TARGET="_top"
+>SourceForge</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="DEMORONIZER3"
+>5.15. What is the <SPAN
+CLASS="QUOTE"
+>"demoronizer"</SPAN
+> and why is it there?</A
+></H3
+><P
+> The original demoronizer was a Perl script that cleaned up HTML pages which 
+ were created with certain Microsoft products. MS has used proprietary extensions 
+ to standardized font encodings (ISO 8859-1), which has caused problems for pages
+ that are viewed with non-Microsoft products (and are expecting to see a
+ standard set of fonts). The demoronizer corrected these errors so the pages
+ displayed correctly. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> borrowed from this
+ script, introducing a filter based on the original demoronizer, which in turn could
+ correct these errors on the fly. </P
+><P
+> But this is only needed in some situations, and will cause serious problems in some 
+ other situations.</P
+><P
+> If you are using Microsoft products, you do not need it. If you need to view 
+ pages with UTF-8 characters (such as Cyrillic or Chinese), then it will 
+ cause corruption of the fonts, and thus <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>should not be on</I
+></SPAN
+>.</P
+><P
+> On the other hand, if you use non-Microsoft products, and you occasionally 
+ notice wierd characters on pages, you might want to try it.</P
+><P
+> This filter was introduced with version 3.0.2 of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>,
+ and was on by default in that version. It is off in all subsequent versions 
+ (unless turned on by the user).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="WINDOWOPEN"
+>5.16. Why do I keep seeing <SPAN
+CLASS="QUOTE"
+>"PrivoxyWindowOpen()"</SPAN
+> in raw source code?</A
+></H3
+><P
+> <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is attempting to disable malicious 
+ Javascript in this case, with the <VAR
+CLASS="LITERAL"
+>unsolicited-popups</VAR
+>
+ filter. <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> cannot tell very well 
+ <SPAN
+CLASS="QUOTE"
+>"good"</SPAN
+> code snippets from <SPAN
+CLASS="QUOTE"
+>"bad"</SPAN
+> code snippets.</P
+><P
+> If you see this in HTML source, and the page displays without problems, then 
+ this is good, and likely some pop-up window was disabled. If you see this 
+ where it is causing a problem, such as a downloaded program source code file, 
+ then you should set an exception for this site or page such that the
+ integrity of the page stays in tact by disabling all filtering.</P
 ></DIV
 ></DIV
 ><DIV

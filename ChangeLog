@@ -1,15 +1,31 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Since 3.0.2 (to become Version 3.0.3 soon) ***
+
+- Fixed yet another two memory leaks. Process growth seems stopped now.
+- Further tightened security against malicious toggle-off links.
+- Excluded text/plain MIME types from filtering. This fixes a
+  couple of client-crashing, download corruption and
+  Privoxy performance issues, whose root cause lies in
+  web servers labelling content of unknown type as text/plain.
+- Assorted fixes for POSIX compliance, signal handling, graceful
+  termination, compiler warnings, OSX support, Win32 systray,
+  error logging, hostname wildcards, correct detection of NetBSD.
+- Workarounds for client (iTunes etc) and server (PHP < 4.2.3) bugs
+  including the notorious "blank page" problem.
+- Various filter improvements; most notably the unsolicited-popups
+  filter became less destructive     
+- Major revamp of the actions file
+	
 *** Version 3.0.2 ***
 
 - Fixed two memory leaks, one serious
 - Fixed bug in pcrs which could cause crashes with user-defined filters
 - Fixed bug in domain name matching
 - Assorted small fixes (Win32 menu, CGI URL editor, ..) 
-
 - Added basic support for the OPTIONS and TRACE http methods
-- Added workaround for Bug in Max OSX that made Privoxy crash occasionally
+- Added workaround for Bug in Mac OSX that made Privoxy crash occasionally
 - Refined the default action file through >400 items of user feedback
 - Filter changes:
   - Assorted refinements, optimizations and fixes in the js-annoyances,

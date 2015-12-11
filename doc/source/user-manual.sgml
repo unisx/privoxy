@@ -11,7 +11,7 @@
 <!entity license SYSTEM "license.sgml">
 <!entity p-authors SYSTEM "p-authors.sgml">
 <!entity config SYSTEM "p-config.sgml">
-<!entity p-version "3.0.2">
+<!entity p-version "3.0.3">
 <!entity p-status "stable">
 <!entity % p-authors-formal "INCLUDE"> <!-- include additional text, etc  -->
 <!entity % p-not-stable "IGNORE">
@@ -32,7 +32,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
 
- $Id: user-manual.sgml,v 1.123.2.31 2003/03/26 02:03:43 oes Exp $
+ $Id: user-manual.sgml,v 1.123.2.39 2004/01/30 22:31:40 oes Exp $
 
  Copyright (C) 2001- 2003 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -53,12 +53,12 @@
  <subscript>
 <!-- Completely the wrong markup, but very little is allowed  -->
 <!-- in this part of an article. FIXME -->
- <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2003 by 
+ <link linkend="copyright">Copyright</link> &my-copy; 2001 - 2004 by 
  <ulink url="http://www.privoxy.org/">Privoxy Developers</ulink>
  </subscript>
 </pubdate>
 
-<pubdate>$Id: user-manual.sgml,v 1.123.2.31 2003/03/26 02:03:43 oes Exp $</pubdate>
+<pubdate>$Id: user-manual.sgml,v 1.123.2.39 2004/01/30 22:31:40 oes Exp $</pubdate>
 
 <!--
 
@@ -69,17 +69,6 @@ copyright/license declarations will be in their own sgml.
 
 Hal.
 
-<copyright>
-  <year>2001</year>
-  <year>2002</year>
-  <holder>Privoxy Developers</holder>
-</copyright>
-
-<legalnotice id="legalnotice"> 
- <para>
-  text goes here ........
- </para>
-</legalnotice>
 
 -->
 
@@ -222,10 +211,9 @@ automatically start Privoxy in the boot process.
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect3 id="installation-deb"><title>Debian</title>
 <para>
- DEBs can be installed with <literal>dpkg -i
- privoxy_&p-version;-1.deb</literal>, and will use
- <filename>/etc/privoxy</filename> for the location of configuration
- files.
+ DEBs can be installed with <literal>apt-get install privoxy</literal>,
+ and will use <filename>/etc/privoxy</filename> for the location of 
+ configuration files.
 </para>
 </sect3>
 
@@ -353,7 +341,7 @@ automatically start Privoxy in the boot process.
  possibly unstable development versions, you can check out the up-to-the-minute
  version directly from <ulink url="http://sourceforge.net/cvs/?group_id=11118">the
  CVS repository</ulink> or simply download <ulink
- url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.gz">the nightly CVS
+ url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.bz2">the nightly CVS
  tarball.</ulink>
 </para>
 
@@ -550,7 +538,7 @@ automatically start Privoxy in the boot process.
    linkend="quickstart-ad-blocking">next section</link> for a quick
    introduction to how <application>Privoxy</application> blocks ads and
    banners.]]>
-  </para>
+</para>
  </listitem> 
 
  <listitem>
@@ -565,6 +553,14 @@ automatically start Privoxy in the boot process.
     Appendix <quote><link linkend="actionsanat">Anatomy of an
     Action</link></quote> has hints how to debug actions that
     <quote>misbehave</quote>.
+  </para>
+ </listitem> 
+
+ <listitem>
+  <para>
+   For easy access to Privoxy's most important controls, drag the provided
+   <link linkend="bookmarklets">Bookmarklets</link> into your browser's
+   personal toolbar.
   </para>
  </listitem> 
 
@@ -1390,7 +1386,8 @@ must find a better place for this paragraph
     file</link>) can be used to re-write the raw page content, including
     viewable text as well as embedded HTML and JavaScript, and whatever else
     lurks on any given web page. The filtering jobs are only pre-defined here;
-    whether to apply them or not is up to the actions files.
+    whether to apply them or not is up to the actions files. Only one filter 
+    file may be defined.
    </para>
   </listitem> 
 
@@ -1616,7 +1613,7 @@ must find a better place for this paragraph
     <row>
       <entry>Demoronizer</entry>
       <entry>no</entry>
-      <entry>yes</entry>
+      <entry>no</entry>
       <entry>yes</entry>
     </row>
 
@@ -2597,9 +2594,12 @@ problem-host.example.com</screen>
   <term>Effect:</term>
   <listitem>
    <para>
-    Text documents, including HTML and JavaScript, to which this action
-    applies, are filtered on-the-fly through the specified regular expression
-    based substitutions.
+    All files of text-based type, most notably HTML and JavaScript, to which this
+    action applies, are filtered on-the-fly through the specified regular expression
+    based substitutions. (Note: as of version 3.0.3 plain text documents 
+    are exempted from filtering, because web servers often use the
+    <literal>text/plain</literal> MIME type for all files whose type they
+    don't know.)
    </para>
   </listitem>
  </varlistentry>
@@ -2652,9 +2652,12 @@ problem-host.example.com</screen>
     data, and all pending data, is passed through unfiltered. 
    </para>
    <para>
-    Inappropriate MIME types, such as zipped files, are not filtered at all.
-    Encrypted SSL data (from HTTPS servers) cannot be filtered either since
-    this would violate the integrity of the secure transaction.
+    Inadequate MIME types, such as zipped files, are not filtered at all.
+    (Again, only text-based types except plain text). Encrypted SSL data
+    (from HTTPS servers) cannot be filtered either, since this would violate
+    the integrity of the secure transaction. In some situations it might
+    be necessary to protect certain text, like source code, from filtering
+    by defining appropriate <literal>-filter</literal> sections.
    </para>
    <para>
     At this time, <application>Privoxy</application> cannot (yet!) uncompress compressed
@@ -4017,7 +4020,7 @@ that also explains why and how aliases are used:
  -<link linkend="FILTER-TINY-TEXTFORMS">filter{tiny-textforms}</link> \
  +<link linkend="FILTER-JUMPING-WINDOWS">filter{jumping-windows}</link> \
  -<link linkend="FILTER-FRAMESET-BORDERS">filter{frameset-borders}</link> \
- +<link linkend="FILTER-DEMORONIZER">filter{demoronizer}</link> \
+ -<link linkend="FILTER-DEMORONIZER">filter{demoronizer}</link> \
  -<link linkend="FILTER-SHOCKWAVE-FLASH">filter{shockwave-flash}</link> \
  -<link linkend="FILTER-QUICKTIME-KIOSKMODE">filter{quicktime-kioskmode}</link> \
  -<link linkend="FILTER-FUN">filter{fun}</link> \
@@ -4359,7 +4362,7 @@ www.ugu.com/sui/ugu/adv</screen>
 # These aliases define combinations of actions that are useful for
 # certain types of sites:
 #
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups
+fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referrer -kill-popups
 shop        = -crunch-all-cookies allow-popups
 
 # Allow ads for selected useful free sites:
@@ -4381,8 +4384,9 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}</screen>
 <para>
  <screen>
 { allow-all-cookies }
+sourceforge.net
 sunsolve.sun.com
-slashdot.org
+.slashdot.org
 .yahoo.com
 .msdn.microsoft.com
 .redhat.com</screen>
@@ -4399,20 +4403,21 @@ slashdot.org
 </para>
 
 <para>
- Some file types you may not want to filter.
- <application>Privoxy</application> makes no distinctions between regular web
- pages and downloads done via your web browser if it is an html or text type
- document.
+ Some file types you may not want to filter for various reasons:
 </para>
 
 <para>
  <screen>
-# A list of common file extensions that are likely to indicate raw text, and best
-# if unfiltered.
-/(.*/)?.*\.(pl|(s|p)?h|c(c|xx|pp)?|tcl|am|init?|cfg?|conf(ig)?|txt|rc|bat)$
+# Technical documentation is likely to contain strings that might
+# erroneously get altered by the JavaScript-oriented filters:
+#
+.tldp.org
+/(.*/)?selfhtml/
 
-# Documentation should not need filtering (at least on some sites).
-.tldp.org</screen>
+# And this stupid host sends streaming video with a wrong MIME type,
+# so that Privoxy thinks it is getting HTML and starts filtering:
+#
+stupid-server.example.com/</screen>
 </para>
 
 <para>
@@ -4430,30 +4435,27 @@ slashdot.org
  <screen>
 { +<link linkend="BLOCK">block</link> }
 www.example.com/nasty-ads/sponsor.gif
-another.popular.site.net/more/junk/here/
-
-#  Here we found one that is not in <application>Privoxy's</application> default blocked list:
-.adfactory.net</screen>
+another.popular.site.net/more/junk/here/</screen>
 </para>
 
 <para>
- To force URLs that tend to have ad images, but it is difficult for
- <application>Privoxy</application> to know this since the ultimate returned
- object is obscured for one reason or another, we can try to force these to be
- treated as images (and thus avoid <application>Privoxy's</application>
- <quote>BLOCKED</quote> banner page). Note that if what is returned by the
- server turns out NOT to be an image, then your browser typically will display
- a broken icon image. Use cautiously.
+ The URLs of dynamically generated banners, especially from large banner
+ farms, often don't use the well-known image file name extensions, which
+ makes it impossible for <application>Privoxy</application> to guess
+ the file type just by looking at the URL. 
+ You can use the <literal>+block-as-image</literal> alias defined above for
+ these cases.
+ Note that objects which match this rule but then turn out NOT to be an
+ image are typically rendered as a <quote>broken image</quote> icon by the
+ browser. Use cautiously.
 </para>
 
 <para>
  <screen>
 { +block-as-image }
-# A shockwave ad, very annoying.
-.trip.com/.*\.swf
 .doubleclick.net
 /Realmedia/ads/
-adremote.</screen>
+ar.atwola.com/</screen>
 </para>
 
 <para>
@@ -4566,11 +4568,11 @@ adremote.</screen>
 </para>
 
 <para>
- Filtering works on any text-based document type, including plain
- text, HTML, JavaScript, CSS etc. (all <literal>text/*</literal>
- MIME types). Substitutions are made at the source level, so if
- you want to <quote>roll your own</quote> filters, you should be
- familiar with HTML syntax.
+ Filtering works on any text-based document type, including 
+ HTML, JavaScript, CSS etc. (all <literal>text/*</literal>
+ MIME types, <emphasis>except</emphasis> <literal>text/plain</literal>).
+ Substitutions are made at the source level, so if you want to <quote>roll
+ your own</quote> filters, you should be familiar with HTML syntax.
 </para>
 
 <para>
@@ -5103,8 +5105,11 @@ pre-defined filters for your convenience:
     HTML documents to display with errors on standard-compliant platforms. 
    </para>
    <para>
-    This filter translates the MS-only characters into Latin-1 equivalents. It is
-    safe for general use, and recommended for non-MS platforms.
+    This filter translates the MS-only characters into Latin-1 equivalents. 
+    It is not necessary when using MS products, and will cause corruption of  
+    all documents that use 8-bit character sets other than Latin-1. It's mostly
+    worthwhile for Europeans on non-MS platforms, if wierd garbage characters
+    sometimes appear on some pages.
    </para>
   </listitem>
  </varlistentry>
@@ -6290,6 +6295,33 @@ In file: user.action <guibutton>[ View ]</guibutton> <guibutton>[ Edit ]</guibut
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  $Log: user-manual.sgml,v $
+ Revision 1.123.2.39  2004/01/30 22:31:40  oes
+ Added a hint re bookmarklets to Quickstart section
+
+ Revision 1.123.2.38  2004/01/30 16:47:51  oes
+ Some minor clarifications
+
+ Revision 1.123.2.37  2004/01/29 22:36:11  hal9
+ Updates for no longer filtering text/plain, and demoronizer default settings,
+ and copyright notice dates.
+
+ Revision 1.123.2.36  2003/12/10 02:26:26  hal9
+ Changed the demoronizer filter description.
+
+ Revision 1.123.2.35  2003/11/06 13:36:37  oes
+ Updated link to nightly CVS tarball
+
+ Revision 1.123.2.34  2003/06/26 23:50:16  hal9
+ Add a small bit on filtering and problems re: source code being corrupted.
+
+ Revision 1.123.2.33  2003/05/08 18:17:33  roro
+ Use apt-get instead of dpkg to install Debian package, which is more
+ solid, uses the correct and most recent Debian version automatically.
+
+ Revision 1.123.2.32  2003/04/11 03:13:57  hal9
+ Add small note about only one filterfile (as opposed to multiple actions
+ files).
+
  Revision 1.123.2.31  2003/03/26 02:03:43  oes
  Updated hard-coded copyright dates
 

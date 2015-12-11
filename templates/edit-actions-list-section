@@ -31,6 +31,10 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list-section,v $
+#    Revision 1.15.2.1  2003/12/17 16:35:17  oes
+#    Work around new & silly MSIE behaviour where the request resulting from
+#    changing window.location.href doesn't reveal the referrer anymore
+#
 #    Revision 1.15  2002/05/21 21:02:52  oes
 #    Added more help links
 #
@@ -104,7 +108,7 @@
 <tr class="actions"><td class="indentbuttons"><a href="eafu?f=@f@&amp;v=@v@&amp;s=@s@">Edit</a></td></tr>
 <tr class="actions"><td class="action">@actions@</td></tr>
 <tr class="url"><td class="header"><a href="@user-manual@@actions-help-prefix@AF-PATTERNS">URL patterns</a>:</td></tr>
-<tr class="url"><td class="indentbuttons"><a href="eaa?f=@f@&amp;v=@v@&amp;s=@s@" onclick="return a_p(@s@);">Add</a></td></tr>
+<tr class="url"><td class="indentbuttons"><a href="eaa?f=@f@&amp;v=@v@&amp;s=@s@" onclick="return a_p(this,@s@);">Add</a></td></tr>
 @urls@
 <tr class="adv"><td class="header">Advanced:</td></tr>
 <tr class="adv"><td class="indentbuttons">

@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/standard.action,v $
 # 
-#  $Id: standard.action,v 1.2.2.8 2003/03/19 13:47:52 oes Exp $
+#  $Id: standard.action,v 1.2.2.9 2003/04/01 09:49:50 oes Exp $
 #
 #  Purpose     :  Provide prefedined sets of actions, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -96,7 +96,7 @@ standard.Cautious
 -filter{tiny-textforms} \
 +filter{jumping-windows} \
 -filter{frameset-borders} \
-+filter{demoronizer} \
+-filter{demoronizer} \
 -filter{shockwave-flash} \
 -filter{quicktime-kioskmode} \
 -filter{fun} \

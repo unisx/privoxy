@@ -31,6 +31,10 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list,v $
+#    Revision 1.26.2.4  2003/12/17 16:35:17  oes
+#    Work around new & silly MSIE behaviour where the request resulting from
+#    changing window.location.href doesn't reveal the referrer anymore
+#
 #    Revision 1.26.2.3  2002/09/25 15:34:09  oes
 #    - Work around JS problem in NS 2.0 (no joke)
 #    - Make JS string edit popup remove the pattern
@@ -223,32 +227,38 @@ td.indentbuttons {
 // JavaScript-capable browsers will call this function, which does a
 // client-side prompt for speed.  It may kick off the delete directly.
 // It always returns false to cancel following the link.
-function rm_p(pattern,curtext)
+function rm_p(link,pattern,curtext)
 {
    if (window.confirm("Are you sure you want to delete this URL pattern?\nPattern is: "+unescape(curtext)))
-   { window.location.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern; }
-   return false;
-}
-
-function e_p(pattern,curtext)
-{
-   if ((newtext=window.prompt("Edit the pattern to your needs:", unescape(curtext))) != null)
    {
-      if (newtext != "")
-      { window.location.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+escape(newtext); }
-      else
-      { window.location.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern; }
+      link.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern;
+      return true;
    }
    return false;
 }
 
-function a_p(section)
+function e_p(link,pattern,curtext)
 {
-   if (((newtext=window.prompt("Enter the new pattern:", "")) != null ) && (newtext != ""))
-   { window.location.href="edit-actions-add-url?f=@f@&v=@v@&s="+section+"&u="+escape(newtext); }
+   if ((newtext=window.prompt("Edit the pattern to your needs:", unescape(curtext))) != null)
+   {
+      if (newtext != "")
+      { link.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+escape(newtext); }
+      else
+      { link.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern; }
+      return true;
+   }
    return false;
 }
 
+function a_p(link,section)
+{
+   if (((newtext=window.prompt("Enter the new pattern:", "")) != null ) && (newtext != ""))
+   {
+      link.href="edit-actions-add-url?f=@f@&v=@v@&s="+section+"&u="+escape(newtext);
+      return true;
+   }
+   return false;
+}
 //-->
 </script>
 </head>

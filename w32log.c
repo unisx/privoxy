@@ -1,4 +1,4 @@
-const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.4 2003/03/11 11:53:59 oes Exp $";
+const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.5 2003/04/04 12:48:51 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32log.c,v $
@@ -32,6 +32,12 @@ const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.4 2003/03/11 11:53:59 oes Exp 
  *
  * Revisions   :
  *    $Log: w32log.c,v $
+ *    Revision 1.25.2.5  2003/04/04 12:48:51  oes
+ *    Fixed bug #711865:
+ *     - Made tray menu correctly reflect initial window visibility state
+ *     - Hopefully fixed problem where log window contents wasn't visible
+ *       until vertical scroll bar was clicked. Thanks to Guy for the fix!
+ *
  *    Revision 1.25.2.4  2003/03/11 11:53:59  oes
  *    Cosmetic: Renamed cryptic variable
  *
@@ -768,10 +774,17 @@ void LogClipBuffer(void)
       SendMessage(g_hwndLogBox, EM_REPLACESEL, FALSE, (LPARAM) "");
       SendMessage(g_hwndLogBox, EM_SETOPTIONS, ECOOP_XOR, ECO_AUTOVSCROLL);
 
-      /* Restore old selection */
+      /* reposition (back to) the end of the log content */
+      range.cpMin = SendMessage (g_hwndLogBox, WM_GETTEXTLENGTH, 0, 0);
+      range.cpMax = -1;
+      SendMessage(g_hwndLogBox, EM_EXSETSEL, 0, (LPARAM) &range);
+ 
+      /* restore vertical ScrollBar stuff (messed up by AUTOVSCROLL) */
+      SendMessage (g_hwndLogBox, EM_SCROLL, SB_LINEDOWN, 0);
+ 
    }
 
-}
+}                                        
 
 
 /*********************************************************************
@@ -900,11 +913,13 @@ HWND CreateLogWindow(HINSTANCE hInstance, int nCmdShow)
           nCmdShow == SW_MINIMIZE ||
           nCmdShow == SW_SHOWMINNOACTIVE))
    {
+      g_bShowLogWindow = FALSE;
       nCmdShow = SW_HIDE;
    }
 
    ShowWindow(hwnd, nCmdShow);
    UpdateWindow(hwnd);
+
 
    GetClientRect(g_hwndLogFrame, &rcClient);
    SetWindowPos(g_hwndLogBox, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, SWP_NOZORDER);

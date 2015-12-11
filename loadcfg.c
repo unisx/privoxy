@@ -1,4 +1,4 @@
-const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.3 2003/03/11 11:53:59 oes Exp $";
+const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.5 2003/05/08 15:17:25 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/loadcfg.c,v $
@@ -35,6 +35,15 @@ const char loadcfg_rcs[] = "$Id: loadcfg.c,v 1.48.2.3 2003/03/11 11:53:59 oes Ex
  *
  * Revisions   :
  *    $Log: loadcfg.c,v $
+ *    Revision 1.48.2.5  2003/05/08 15:17:25  oes
+ *    Closed two memory leaks; hopefully the last remaining ones
+ *    (in the main execution paths, anyway).
+ *
+ *    Revision 1.48.2.4  2003/04/11 12:06:14  oes
+ *    Addressed bug #719435
+ *     - Extraneous filterfile directives now logged as errors
+ *     - This and unrecnonised directives now really obvious on status page
+ *
  *    Revision 1.48.2.3  2003/03/11 11:53:59  oes
  *    Cosmetic: Renamed cryptic variable
  *
@@ -516,8 +525,13 @@ void unload_configfile (void * data)
    freez(config->jarfile);
 #endif /* def FEATURE_COOKIE_JAR */
 
-   freez(config->re_filterfile);
+#ifdef FEATURE_TRUST
+   freez(config->trustfile);
+   list_remove_all(config->trust_info);
+#endif /* def FEATURE_TRUST */
 
+   freez(config->re_filterfile);
+   freez(config);
 }
 
 
@@ -840,6 +854,22 @@ struct configuration_spec * load_config(void)
             }
             continue;
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
+
+/* *************************************************************************
+ * filterfile file-name
+ * In confdir by default.
+ * *************************************************************************/
+         case hash_filterfile :
+            if(config->re_filterfile)
+            {
+               log_error(LOG_LEVEL_ERROR, "Ignoring extraneous directive 'filterfile %s' "
+                  "in line %lu in configuration file (%s).", arg, linenum, configfile);
+               string_append(&config->proxy_args, 
+                  " <b><font color=\"red\">WARNING: extraneous directive, ignored</font></b>");
+               continue;
+            }
+            config->re_filterfile = make_path(config->confdir, arg);
+            continue;
 
 /* *************************************************************************
  * forward url-pattern (.|http-proxy-host[:port])
@@ -1185,15 +1215,6 @@ struct configuration_spec * load_config(void)
             continue;
 
 /* *************************************************************************
- * re_filterfile file-name
- * In confdir by default.
- * *************************************************************************/
-         case hash_filterfile :
-            freez(config->re_filterfile);
-            config->re_filterfile = make_path(config->confdir, arg);
-            continue;
-
-/* *************************************************************************
  * single-threaded
  * *************************************************************************/
          case hash_single_threaded :
@@ -1373,11 +1394,10 @@ struct configuration_spec * load_config(void)
              * error.  To change back to an error, just change log level
              * to LOG_LEVEL_FATAL.
              */
-            log_error(LOG_LEVEL_ERROR, "Unrecognized directive '%s' (%luul) in line %lu in "
-                  "configuration file (%s).",  buf, hash_string(cmd), linenum, configfile);
-            string_append(&config->proxy_args, "<br>\nWARNING: unrecognized directive : ");
-            string_append(&config->proxy_args, buf);
-            string_append(&config->proxy_args, "<br><br>\n");
+            log_error(LOG_LEVEL_ERROR, "Ignoring unrecognized directive '%s' (%luul) in line %lu "
+                  "in configuration file (%s).",  buf, hash_string(cmd), linenum, configfile);
+            string_append(&config->proxy_args,
+               " <b><font color=\"red\">WARNING: unrecognized directive, ignored</font></b>");
             continue;
 
 /* *************************************************************************/
@@ -1558,7 +1578,7 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
     * Add config option name embedded in
     * link to it's section in the user-manual
     */
-   buf = strdup("<a href=\"");
+   buf = strdup("\n<br><a href=\"");
    string_append(&buf, config->usermanual);
    string_append(&buf, CONFIG_HELP_PREFIX);
    string_join  (&buf, string_toupper(command));
@@ -1595,8 +1615,6 @@ static void savearg(char *command, char *argument, struct configuration_spec * c
          string_join  (&buf, s);
       }
    }
-
-   string_append(&buf, "<br>\n");
 
    string_join(&config->proxy_args, buf);
 }

@@ -2,7 +2,7 @@
 # 
 #  File        :  $Source: /cvsroot/ijbswa/current/user.action,v $
 # 
-#  $Id: user.action,v 1.1.2.2 2002/10/30 01:59:38 hal9 Exp $
+#  $Id: user.action,v 1.1.2.3 2004/01/30 16:48:26 oes Exp $
 #
 #  Purpose     :  User-maintained actions file, see
 #                 http://www.privoxy.org/user-manual/actions-file.html
@@ -52,7 +52,7 @@ shop        = -crunch-all-cookies allow-popups
 # Your favourite blend of filters:
 #
 myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{popups}\
-              +filter{webbugs} +filter{nimda} +filter{banners-by-size} #+filter{fun}
+              +filter{webbugs} +filter{banners-by-size} +filter{fun}
 
 # Allow ads for selected useful free sites:
 #
@@ -70,6 +70,7 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 # direction, and the processing of cookies to make them only temporary.
 #
 { allow-all-cookies }
+#.sourceforge.net
 #sunsolve.sun.com
 #slashdot.org
 #.yahoo.com
@@ -77,24 +78,28 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #.redhat.com
 
 # Say the site where you do your homebanking needs to open popup
-# windows, but you have chosen to kill popups by default. This will
-# allow it for your-example-bank.com:
+# windows, but you have chosen to kill popups uncoditionally by default.
+# This will allow it for your-example-bank.com:
 #
-{ -filter{popups} -kill-popups }
-.your-example-bank.com
+{ -filter{all-popups} -kill-popups }
+.banking.example.com
 
-# Some hosts and some file types you may not want to filter. Privoxy
-# makes no distinctions between regular web pages and downloads done via
-# your web browser if it is an html or text type document.
+# Some hosts and some file types you may not want to filter for
+# various reasons:
 #
 { -filter }
-#localhost
-#apache_server.mylan
-#  A list of common file extensions that are likely to indicate raw
-#  text, and best if unfiltered.
-#/(.*/)?.*\.(pl|(s|p)?h|c(c|xx|pp)?|tcl||am|init?|cfg?|conf(ig)?|txt|rc|bat)$
-#  Documentation should not need filtering (at least on some sites).
+
+# Technical documentation is likely to contain strings that might
+# erroneously get altered by the JavaScript-oriented filters:
+#
 #.tldp.org
+#/(.*/)?selfhtml/
+
+# And this stupid host sends streaming video with a wrong MIME type,
+# so that Privoxy thinks it is getting HTML and starts filtering:
+#
+stupid-server.example.com/
+
 
 # Example of a simple "block" action. Say you've seen an ad on your
 # favourite page on example.com that you want to get rid of. You have
@@ -106,21 +111,20 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #
 { +block }
 www.example.com/nasty-ads/sponsor.gif
-#  Here we found one that is not in Privoxy's default blocked list:
-#.adbureau.net
 
-# To force URLs that tend to have ad images, but it is difficult for
-# Privoxy to know this since the ultimate returned object is obscured
-# for one reason or another, we can try to force these to be treated as
-# images (and thus avoid Privoxy's "BLOCKED" banner page). Note that if
-# what is returned by the server turns out NOT to be an image, then your
-# browser typically will display a broken icon image. Use cautiously.
+# The URLs of dynamically generated banners, especially from large banner
+# farms, often don't use the well-known image file name extensions, which
+# makes it impossible for Privoxy to guess the file type just by looking
+# at the URL. 
+# You can use the +block-as-image alias defined above for these cases.
+# Note that objects which match this rule but then turn out NOT to be an
+# image are typically rendered as a "broken image" icon by the browser.
+# Use cautiously.
 #
 { +block-as-image }
-#.trip.com/.*\.swf
 #.doubleclick.net
 #/Realmedia/ads/
-#adremote.
+#ar.atwola.com/
 
 # Now you noticed that the default configuration breaks Forbes
 # Magazine, but you were too lazy to find out which action is the
@@ -145,7 +149,7 @@ www.example.com/nasty-ads/sponsor.gif
 # additions to the default policies of default.action. Some actions are
 # safe to have their default policies set here though. So let's set a
 # default policy to have a 'blank' image as opposed to the checkerboard
-# pattern for ALL sites. '/' of course matches all URL paths and
+# pattern for ALL sites. '/' of course matches all URLs.
 # patterns:
 #
 { +set-image-blocker{blank} }

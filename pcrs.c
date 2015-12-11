@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.2 2002/10/08 16:22:28 oes Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.3 2003/12/04 12:32:45 oes Exp $";
 
 /*********************************************************************
  *
@@ -33,8 +33,13 @@ const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.2 2002/10/08 16:22:28 oes Exp $";
  *
  * Revisions   :
  *    $Log: pcrs.c,v $
+ *    Revision 1.19.2.3  2003/12/04 12:32:45  oes
+ *    Append a trailing nullbyte to result to facilitate string processing
+ *
  *    Revision 1.19.2.2  2002/10/08 16:22:28  oes
- *    Bugfix: Need to check validity of backreferences explicitly, because when max_matches are reached and matches is expanded, realloc() does not zero the memory. Fixes Bug # 606227
+ *    Bugfix: Need to check validity of backreferences explicitly,
+ *    because when max_matches are reached and matches is expanded,
+ *    realloc() does not zero the memory. Fixes Bug # 606227
  *
  *    Revision 1.19.2.1  2002/08/10 11:23:40  oes
  *    Include prce.h via project.h, where the appropriate
@@ -716,13 +721,17 @@ pcrs_job *pcrs_compile(const char *pattern, const char *substitute, const char *
  *                the joblist to the subject.
  *                The subject itself is left untouched, memory for the result
  *                is malloc()ed and it is the caller's responsibility to free
- *                the result when it's no longer needed.
+ *                the result when it's no longer needed. 
+ *
+ *                Note: For convenient string handling, a null byte is
+ *                      appended to the result. It does not count towards the
+ *                      result_length, though.
+ *
  *
  * Parameters  :
  *          1  :  joblist = the chained list of pcrs_jobs to be executed
  *          2  :  subject = the subject string
  *          3  :  subject_length = the subject's length 
- *                INCLUDING the terminating zero, if string!
  *          4  :  result = char** for returning  the result 
  *          5  :  result_length = size_t* for returning the result's length
  *
@@ -775,11 +784,14 @@ int pcrs_execute_list(pcrs_job *joblist, char *subject, size_t subject_length, c
  *                is malloc()ed and it is the caller's responsibility to free
  *                the result when it's no longer needed.
  *
+ *                Note: For convenient string handling, a null byte is
+ *                      appended to the result. It does not count towards the
+ *                      result_length, though.
+ *
  * Parameters  :
  *          1  :  job = the pcrs_job to be executed
  *          2  :  subject = the subject (== original) string
  *          3  :  subject_length = the subject's length 
- *                INCLUDING the terminating zero, if string!
  *          4  :  result = char** for returning  the result 
  *          5  :  result_length = size_t* for returning the result's length
  *
@@ -839,7 +851,7 @@ int pcrs_execute(pcrs_job *job, char *subject, size_t subject_length, char **res
          matches[i].submatch_length[k] = offsets[2 * k + 1] - offsets[2 * k]; 
 
          /* reserve mem for each submatch as often as it is ref'd */
-         newsize += matches[i].submatch_length[k] * job->substitute->backref_count[k]; 
+         newsize += matches[i].submatch_length[k] * job->substitute->backref_count[k];
       }
       /* plus replacement text size minus match text size */
       newsize += strlen(job->substitute->text) - matches[i].submatch_length[0]; 
@@ -890,12 +902,17 @@ int pcrs_execute(pcrs_job *job, char *subject, size_t subject_length, char **res
 
 
    /* 
-    * Get memory for the result
+    * Get memory for the result (must be freed by caller!)
+    * and append terminating null byte.
     */
-   if ((*result = (char *)malloc(newsize)) == NULL)   /* must be free()d by caller */
+   if ((*result = (char *)malloc(newsize + 1)) == NULL)
    {
       free(matches);
       return PCRS_ERR_NOMEM;
+   }
+   else
+   {
+      (*result)[newsize] = '\0';
    }
 
 
@@ -922,7 +939,7 @@ int pcrs_execute(pcrs_job *job, char *subject, size_t subject_length, char **res
          if (k != job->substitute->backrefs
              /* ..in legal range.. */
              && job->substitute->backref[k] < PCRS_MAX_SUBMATCHES + 2
-              /* ..and referencing a real submatch.. */
+             /* ..and referencing a real submatch.. */
              && job->substitute->backref[k] < matches[i].submatches
              /* ..that is nonempty.. */
              && matches[i].submatch_length[job->substitute->backref[k]] > 0)

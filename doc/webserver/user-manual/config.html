@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >The Main Configuration File</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.2 User Manual"
+TITLE="Privoxy 3.0.3 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Privoxy Configuration"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.2 User Manual</TH
+>Privoxy 3.0.3 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,8 +74,8 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CONFIG"
-></A
->7. The Main Configuration File</H1
+>7. The Main Configuration File</A
+></H1
 ><P
 > Again, the main configuration file is named <TT
 CLASS="FILENAME"
@@ -89,7 +89,7 @@ CLASS="FILENAME"
  values, all separated by whitespace (any number of spaces or tabs). For
  example:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -101,29 +101,29 @@ CLASS="EMPHASIS"
 ></SPAN
 ></P
 >
- </TT
+ </VAR
 > </P
 ><P
-> Assigns the value <TT
+> Assigns the value <VAR
 CLASS="LITERAL"
->/etc/privoxy</TT
+>/etc/privoxy</VAR
 > to the option
- <TT
+ <VAR
 CLASS="LITERAL"
->confdir</TT
+>confdir</VAR
 > and thus indicates that the configuration
  directory is named <SPAN
 CLASS="QUOTE"
 >"/etc/privoxy/"</SPAN
 >.</P
 ><P
-> All options in the config file except for <TT
+> All options in the config file except for <VAR
 CLASS="LITERAL"
->confdir</TT
+>confdir</VAR
 > and
- <TT
+ <VAR
 CLASS="LITERAL"
->logdir</TT
+>logdir</VAR
 > are optional. Watch out in the below description
  for what happens if you leave them unset.</P
 ><P
@@ -139,8 +139,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONF-LOG-LOC"
-></A
->7.1. Configuration and Log File Locations</H2
+>7.1. Configuration and Log File Locations</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -165,8 +165,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="CONFDIR"
-></A
->7.1.1. confdir</H4
+>7.1.1. confdir</A
+></H4
 ><P
 ></P
 ><DIV
@@ -217,9 +217,9 @@ CLASS="EMPHASIS"
 ><P
 >    No trailing <SPAN
 CLASS="QUOTE"
->"<TT
+>"<VAR
 CLASS="LITERAL"
->/</TT
+>/</VAR
 >"</SPAN
 >, please
    </P
@@ -249,8 +249,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="LOGDIR"
-></A
->7.1.2. logdir</H4
+>7.1.2. logdir</A
+></H4
 ><P
 ></P
 ><DIV
@@ -309,9 +309,9 @@ CLASS="EMPHASIS"
 ><P
 >    No trailing <SPAN
 CLASS="QUOTE"
->"<TT
+>"<VAR
 CLASS="LITERAL"
->/</TT
+>/</VAR
 >"</SPAN
 >, please
    </P
@@ -325,8 +325,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ACTIONSFILE"
-></A
->7.1.3. actionsfile</H4
+>7.1.3. actionsfile</A
+></H4
 ><A
 NAME="DEFAULT.ACTION"
 ></A
@@ -355,12 +355,12 @@ HREF="actions-file.html"
 >Type of value:</DT
 ><DD
 ><P
->File name, relative to <TT
+>File name, relative to <VAR
 CLASS="LITERAL"
->confdir</TT
->, without the <TT
+>confdir</VAR
+>, without the <VAR
 CLASS="LITERAL"
->.action</TT
+>.action</VAR
 > suffix</P
 ></DD
 ><DT
@@ -411,9 +411,9 @@ CLASS="LITERALLAYOUT"
 >Notes:</DT
 ><DD
 ><P
->    Multiple <TT
+>    Multiple <VAR
 CLASS="LITERAL"
->actionsfile</TT
+>actionsfile</VAR
 > lines are permitted, and are in fact recommended!
    </P
 ><P
@@ -449,8 +449,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FILTERFILE"
-></A
->7.1.4. filterfile</H4
+>7.1.4. filterfile</A
+></H4
 ><A
 NAME="DEFAULT.FILTER"
 ></A
@@ -473,9 +473,9 @@ HREF="filter-file.html"
 >Type of value:</DT
 ><DD
 ><P
->File name, relative to <TT
+>File name, relative to <VAR
 CLASS="LITERAL"
->confdir</TT
+>confdir</VAR
 ></P
 ></DD
 ><DT
@@ -495,17 +495,15 @@ CLASS="EMPHASIS"
 ><DD
 ><P
 >    No textual content filtering takes place, i.e. all
-    <TT
+    <VAR
 CLASS="LITERAL"
 >+<A
 HREF="actions-file.html#FILTER"
 >filter</A
->{<TT
+>{<VAR
 CLASS="REPLACEABLE"
-><I
->name</I
-></TT
->}</TT
+>name</VAR
+>}</VAR
 >
     actions in the actions files are turned neutral.
    </P
@@ -535,23 +533,19 @@ CLASS="QUOTE"
    </P
 ><P
 >    The
-    <TT
+    <VAR
 CLASS="LITERAL"
 >+<A
 HREF="actions-file.html#FILTER"
 >filter</A
->{<TT
+>{<VAR
 CLASS="REPLACEABLE"
-><I
->name</I
-></TT
->}</TT
+>name</VAR
+>}</VAR
 >
-    actions rely on the relevant filter (<TT
+    actions rely on the relevant filter (<VAR
 CLASS="REPLACEABLE"
-><I
->name</I
-></TT
+>name</VAR
 >)
     to be defined in the filter file!
    </P
@@ -561,12 +555,12 @@ CLASS="FILENAME"
 >default.filter</TT
 > that contains
     a bunch of handy filters for common problems is included in the distribution.
-    See the section on the <TT
+    See the section on the <VAR
 CLASS="LITERAL"
 ><A
 HREF="actions-file.html#FILTER"
 >filter</A
-></TT
+></VAR
 >
     action for a list.
    </P
@@ -580,8 +574,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="LOGFILE"
-></A
->7.1.5. logfile</H4
+>7.1.5. logfile</A
+></H4
 ><P
 ></P
 ><DIV
@@ -598,9 +592,9 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->File name, relative to <TT
+>File name, relative to <VAR
 CLASS="LITERAL"
->logdir</TT
+>logdir</VAR
 ></P
 ></DD
 ><DT
@@ -619,9 +613,9 @@ CLASS="EMPHASIS"
 >Effect if unset:</DT
 ><DD
 ><P
->    No log file is used, all log messages go to the console (<TT
+>    No log file is used, all log messages go to the console (<VAR
 CLASS="LITERAL"
->STDERR</TT
+>STDERR</VAR
 >).
    </P
 ></DD
@@ -630,9 +624,9 @@ CLASS="LITERAL"
 ><DD
 ><P
 >    The logfile is where all logging and error messages are written. The level
-    of detail and number of messages are set with the <TT
+    of detail and number of messages are set with the <VAR
 CLASS="LITERAL"
->debug</TT
+>debug</VAR
 >
     option (see below). The logfile can be useful for tracking down a problem with
     <SPAN
@@ -685,8 +679,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="JARFILE"
-></A
->7.1.6. jarfile</H4
+>7.1.6. jarfile</A
+></H4
 ><P
 ></P
 ><DIV
@@ -703,9 +697,9 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->File name, relative to <TT
+>File name, relative to <VAR
 CLASS="LITERAL"
->logdir</TT
+>logdir</VAR
 ></P
 ></DD
 ><DT
@@ -743,8 +737,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="TRUSTFILE"
-></A
->7.1.7. trustfile</H4
+>7.1.7. trustfile</A
+></H4
 ><P
 ></P
 ><DIV
@@ -761,9 +755,9 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->File name, relative to <TT
+>File name, relative to <VAR
 CLASS="LITERAL"
->confdir</TT
+>confdir</VAR
 ></P
 ></DD
 ><DT
@@ -813,14 +807,14 @@ CLASS="APPLICATION"
     in one of two ways:
    </P
 ><P
->    Prepending a <TT
+>    Prepending a <VAR
 CLASS="LITERAL"
->~</TT
+>~</VAR
 > character limits access to this site 
     only (and any sub-paths within this site), e.g. 
-    <TT
+    <VAR
 CLASS="LITERAL"
->~www.example.com</TT
+>~www.example.com</VAR
 >. 
    </P
 ><P
@@ -831,9 +825,9 @@ CLASS="EMPHASIS"
 >trusted referrers</I
 ></SPAN
 >, by
-    prepending the name with a <TT
+    prepending the name with a <VAR
 CLASS="LITERAL"
->+</TT
+>+</VAR
 > character. The effect is that
     access to untrusted sites will be granted -- but only if a link from this
     trusted referrer was used. The link target will then be added to the
@@ -842,15 +836,15 @@ CLASS="QUOTE"
 >"trustfile"</SPAN
 > so that future, direct accesses will be granted.
     Sites added via this mechanism do not become trusted referrers themselves
-    (i.e. they are added with a <TT
+    (i.e. they are added with a <VAR
 CLASS="LITERAL"
->~</TT
+>~</VAR
 > designation).
    </P
 ><P
->    If you use the <TT
+>    If you use the <VAR
 CLASS="LITERAL"
->+</TT
+>+</VAR
 > operator in the trust file, it may grow 
     considerably over time.
    </P
@@ -859,16 +853,16 @@ CLASS="LITERAL"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > be compiled with
-    the <TT
+    the <VAR
 CLASS="LITERAL"
->--disable-force</TT
->, <TT
+>--disable-force</VAR
+>, <VAR
 CLASS="LITERAL"
->--disable-toggle</TT
+>--disable-toggle</VAR
 > and
-    <TT
+    <VAR
 CLASS="LITERAL"
-> --disable-editor</TT
+> --disable-editor</VAR
 > options, if this feature is to be
     used.
    </P
@@ -886,8 +880,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOCAL-SET-UP"
-></A
->7.2. Local Set-up Documentation</H2
+>7.2. Local Set-up Documentation</A
+></H2
 ><P
 >    If you intend to operate <SPAN
 CLASS="APPLICATION"
@@ -902,8 +896,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="USER-MANUAL"
-></A
->7.2.1. user-manual</H4
+>7.2.1. user-manual</A
+></H4
 ><P
 ></P
 ><DIV
@@ -944,18 +938,14 @@ CLASS="EMPHASIS"
 >    <A
 HREF="http://www.privoxy.org/user-manual/"
 TARGET="_top"
->http://www.privoxy.org/<TT
+>http://www.privoxy.org/<VAR
 CLASS="REPLACEABLE"
-><I
->version</I
-></TT
+>version</VAR
 >/user-manual/</A
 >
-    will be used, where <TT
+    will be used, where <VAR
 CLASS="REPLACEABLE"
-><I
->version</I
-></TT
+>version</VAR
 > is the <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -986,7 +976,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  user-manual  file:///usr/share/doc/privoxy-3.0.2/user-manual/</PRE
+>  user-manual  file:///usr/share/doc/privoxy-3.0.3/user-manual/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1010,7 +1000,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  user-manual  file:/c:/some-dir/privoxy-3.0.2/user-manual/</PRE
+>  user-manual  file:/c:/some-dir/privoxy-3.0.3/user-manual/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1028,7 +1018,7 @@ WIDTH="90%"
 ><TD
 ><PRE
 CLASS="SCREEN"
->  user-manual  file://///some-server/some-path/privoxy-3.0.2/user-manual/</PRE
+>  user-manual  file://///some-server/some-path/privoxy-3.0.3/user-manual/</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1097,8 +1087,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="TRUST-INFO-URL"
-></A
->7.2.2. trust-info-url</H4
+>7.2.2. trust-info-url</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1165,8 +1155,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ADMIN-ADDRESS"
-></A
->7.2.3. admin-address</H4
+>7.2.3. admin-address</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1208,12 +1198,12 @@ CLASS="EMPHASIS"
 >Notes:</DT
 ><DD
 ><P
->    If both <TT
+>    If both <VAR
 CLASS="LITERAL"
->admin-address</TT
-> and <TT
+>admin-address</VAR
+> and <VAR
 CLASS="LITERAL"
->proxy-info-url</TT
+>proxy-info-url</VAR
 >
     are unset, the whole "Local Privoxy Support" box on all generated pages will
     not be shown.
@@ -1228,8 +1218,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="PROXY-INFO-URL"
-></A
->7.2.4. proxy-info-url</H4
+>7.2.4. proxy-info-url</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1275,12 +1265,12 @@ CLASS="EMPHASIS"
 >Notes:</DT
 ><DD
 ><P
->    If both <TT
+>    If both <VAR
 CLASS="LITERAL"
->admin-address</TT
-> and <TT
+>admin-address</VAR
+> and <VAR
 CLASS="LITERAL"
->proxy-info-url</TT
+>proxy-info-url</VAR
 >
     are unset, the whole "Local Privoxy Support" box on all generated pages will
     not be shown.
@@ -1299,17 +1289,17 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="DEBUGGING"
-></A
->7.3. Debugging</H2
+>7.3. Debugging</A
+></H2
 ><P
 >  These options are mainly useful when tracing a problem.
   Note that you might also want to invoke
   <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with the <TT
+> with the <VAR
 CLASS="LITERAL"
->--no-daemon</TT
+>--no-daemon</VAR
 >
   command line option when debugging.
  </P
@@ -1319,8 +1309,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="DEBUG"
-></A
->7.3.1. debug</H4
+>7.3.1. debug</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1398,9 +1388,9 @@ CLASS="PROGRAMLISTING"
    </P
 ><P
 >    To select multiple debug levels, you can either add them or use
-    multiple <TT
+    multiple <VAR
 CLASS="LITERAL"
->debug</TT
+>debug</VAR
 > lines.
    </P
 ><P
@@ -1453,8 +1443,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SINGLE-THREADED"
-></A
->7.3.2. single-threaded</H4
+>7.3.2. single-threaded</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1523,8 +1513,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="ACCESS-CONTROL"
-></A
->7.4. Access Control and Security</H2
+>7.4. Access Control and Security</A
+></H2
 ><P
 >  This section of the config file controls the security-relevant aspects
   of <SPAN
@@ -1538,8 +1528,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="LISTEN-ADDRESS"
-></A
->7.4.1. listen-address</H4
+>7.4.1. listen-address</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1560,16 +1550,12 @@ CLASS="APPLICATION"
 >Type of value:</DT
 ><DD
 ><P
->[<TT
+>[<VAR
 CLASS="REPLACEABLE"
-><I
->IP-Address</I
-></TT
->]:<TT
+>IP-Address</VAR
+>]:<VAR
 CLASS="REPLACEABLE"
-><I
->Port</I
-></TT
+>Port</VAR
 ></P
 ></DD
 ><DT
@@ -1618,19 +1604,19 @@ HREF="config.html#ACLS"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to untrusted users, you will
-    also want to turn off the <TT
+    also want to turn off the <VAR
 CLASS="LITERAL"
 ><A
 HREF="config.html#ENABLE-EDIT-ACTIONS"
 >enable-edit-actions</A
-></TT
+></VAR
 > and
-    <TT
+    <VAR
 CLASS="LITERAL"
 ><A
 HREF="config.html#ENABLE-REMOTE-TOGGLE"
 >enable-remote-toggle</A
-></TT
+></VAR
 >
     options!
    </P
@@ -1672,8 +1658,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="TOGGLE"
-></A
->7.4.2. toggle</H4
+>7.4.2. toggle</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1718,9 +1704,9 @@ CLASS="QUOTE"
 >"toggled off"</SPAN
 > mode, i.e. behave like a normal, content-neutral
     proxy where all ad blocking, filtering, etc are disabled. See
-    <TT
+    <VAR
 CLASS="LITERAL"
->enable-remote-toggle</TT
+>enable-remote-toggle</VAR
 > below. This is not really useful
     anymore, since toggling is much easier via <A
 HREF="http://config.privoxy.org/toggle"
@@ -1746,8 +1732,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ENABLE-REMOTE-TOGGLE"
-></A
->7.4.3. enable-remote-toggle</H4
+>7.4.3. enable-remote-toggle</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1814,9 +1800,9 @@ CLASS="APPLICATION"
     <SPAN
 CLASS="QUOTE"
 >"ACLs"</SPAN
-> and <TT
+> and <VAR
 CLASS="LITERAL"
->listen-address</TT
+>listen-address</VAR
 > above) can
     toggle it for all users. So this option is <SPAN
 CLASS="emphasis"
@@ -1844,8 +1830,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ENABLE-EDIT-ACTIONS"
-></A
->7.4.4. enable-edit-actions</H4
+>7.4.4. enable-edit-actions</A
+></H4
 ><P
 ></P
 ><DIV
@@ -1904,9 +1890,9 @@ CLASS="APPLICATION"
     <SPAN
 CLASS="QUOTE"
 >"ACLs"</SPAN
-> and <TT
+> and <VAR
 CLASS="LITERAL"
->listen-address</TT
+>listen-address</VAR
 > above) can
     modify its configuration for all users. So this option is <SPAN
 CLASS="emphasis"
@@ -1934,8 +1920,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ACLS"
-></A
->7.4.5. ACLs: permit-access and deny-access</H4
+>7.4.5. ACLs: permit-access and deny-access</A
+></H4
 ><A
 NAME="PERMIT-ACCESS"
 ></A
@@ -1958,53 +1944,37 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->    <TT
+>    <VAR
 CLASS="REPLACEABLE"
-><I
->src_addr</I
-></TT
->[/<TT
+>src_addr</VAR
+>[/<VAR
 CLASS="REPLACEABLE"
-><I
->src_masklen</I
-></TT
+>src_masklen</VAR
 >]
-    [<TT
+    [<VAR
 CLASS="REPLACEABLE"
-><I
->dst_addr</I
-></TT
->[/<TT
+>dst_addr</VAR
+>[/<VAR
 CLASS="REPLACEABLE"
-><I
->dst_masklen</I
-></TT
+>dst_masklen</VAR
 >]]
    </P
 ><P
->    Where <TT
+>    Where <VAR
 CLASS="REPLACEABLE"
-><I
->src_addr</I
-></TT
+>src_addr</VAR
 > and 
-   <TT
+   <VAR
 CLASS="REPLACEABLE"
-><I
->dst_addr</I
-></TT
+>dst_addr</VAR
 > are IP addresses in dotted decimal notation or valid
-    DNS names, and <TT
+    DNS names, and <VAR
 CLASS="REPLACEABLE"
-><I
->src_masklen</I
-></TT
+>src_masklen</VAR
 > and
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->dst_masklen</I
-></TT
+>dst_masklen</VAR
 > are subnet masks in CIDR notation, i.e. integer
     values from 2 to 30 representing the length (in bits) of the network address. The masks and the whole
     destination part are optional.
@@ -2026,9 +1996,9 @@ CLASS="EMPHASIS"
 >Effect if unset:</DT
 ><DD
 ><P
->    Don't restrict access further than implied by <TT
+>    Don't restrict access further than implied by <VAR
 CLASS="LITERAL"
->listen-address</TT
+>listen-address</VAR
 >
    </P
 ></DD
@@ -2073,32 +2043,30 @@ CLASS="EMPHASIS"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
-    talks only to IP addresses that match at least one <TT
+    talks only to IP addresses that match at least one <VAR
 CLASS="LITERAL"
->permit-access</TT
+>permit-access</VAR
 > line
-    and don't match any subsequent <TT
+    and don't match any subsequent <VAR
 CLASS="LITERAL"
->deny-access</TT
+>deny-access</VAR
 > line. In other words, the
-    last match wins, with the default being <TT
+    last match wins, with the default being <VAR
 CLASS="LITERAL"
->deny-access</TT
+>deny-access</VAR
 >.
    </P
 ><P
 >    If <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> is using a forwarder (see <TT
+> is using a forwarder (see <VAR
 CLASS="LITERAL"
->forward</TT
+>forward</VAR
 > below)
-    for a particular destination URL, the <TT
+    for a particular destination URL, the <VAR
 CLASS="REPLACEABLE"
-><I
->dst_addr</I
-></TT
+>dst_addr</VAR
 >
     that is examined is the address of the forwarder and <SPAN
 CLASS="emphasis"
@@ -2139,18 +2107,16 @@ CLASS="QUOTE"
 ><DD
 ><P
 >    Explicitly define the default behavior if no ACL and
-    <TT
+    <VAR
 CLASS="LITERAL"
->listen-address</TT
+>listen-address</VAR
 > are set: <SPAN
 CLASS="QUOTE"
 >"localhost"</SPAN
 >
-    is OK. The absence of a <TT
+    is OK. The absence of a <VAR
 CLASS="REPLACEABLE"
-><I
->dst_addr</I
-></TT
+>dst_addr</VAR
 > implies that
     <SPAN
 CLASS="emphasis"
@@ -2224,8 +2190,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="BUFFER-LIMIT"
-></A
->7.4.6. buffer-limit</H4
+>7.4.6. buffer-limit</A
+></H4
 ><P
 ></P
 ><DIV
@@ -2261,13 +2227,13 @@ CLASS="VARIABLELIST"
 >Notes:</DT
 ><DD
 ><P
->    For content filtering, i.e. the <TT
+>    For content filtering, i.e. the <VAR
 CLASS="LITERAL"
->+filter</TT
+>+filter</VAR
 > and
-    <TT
+    <VAR
 CLASS="LITERAL"
->+deanimate-gif</TT
+>+deanimate-gif</VAR
 > actions, it is necessary that 
     <SPAN
 CLASS="APPLICATION"
@@ -2278,15 +2244,15 @@ CLASS="APPLICATION"
     Hence this option.
    </P
 ><P
->    When a document buffer size reaches the <TT
+>    When a document buffer size reaches the <VAR
 CLASS="LITERAL"
->buffer-limit</TT
+>buffer-limit</VAR
 >, it is
     flushed to the client unfiltered and no further attempt to
     filter the rest of the document is made. Remember that there may be multiple threads
-    running, which might require up to <TT
+    running, which might require up to <VAR
 CLASS="LITERAL"
->buffer-limit</TT
+>buffer-limit</VAR
 > Kbytes
     <SPAN
 CLASS="emphasis"
@@ -2311,8 +2277,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="FORWARDING"
-></A
->7.5. Forwarding</H2
+>7.5. Forwarding</A
+></H2
 ><P
 > This feature allows routing of HTTP requests through a chain of
  multiple proxies.
@@ -2341,8 +2307,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="FORWARD"
-></A
->7.5.1. forward</H4
+>7.5.1. forward</A
+></H4
 ><P
 ></P
 ><DIV
@@ -2359,58 +2325,46 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->    <TT
+>    <VAR
 CLASS="REPLACEABLE"
-><I
->target_pattern</I
-></TT
+>target_pattern</VAR
 >
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
->[:<TT
+>http_parent</VAR
+>[:<VAR
 CLASS="REPLACEABLE"
-><I
->port</I
-></TT
+>port</VAR
 >]
    </P
 ><P
->    where <TT
+>    where <VAR
 CLASS="REPLACEABLE"
-><I
->target_pattern</I
-></TT
+>target_pattern</VAR
 > is a <A
 HREF="actions-file.html#AF-PATTERNS"
 >URL pattern</A
 > 
-    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <TT
+    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <VAR
 CLASS="LITERAL"
->/</TT
+>/</VAR
 > to
     denote <SPAN
 CLASS="QUOTE"
 >"all URLs"</SPAN
 >.
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
->[:<TT
+>http_parent</VAR
+>[:<VAR
 CLASS="REPLACEABLE"
-><I
->port</I
-></TT
+>port</VAR
 >]
     is the DNS name or IP address of the parent HTTP proxy through which the requests should be forwarded,
     optionally followed by its listening port (default: 8080).
-    Use a single dot (<TT
+    Use a single dot (<VAR
 CLASS="LITERAL"
->.</TT
+>.</VAR
 >) to denote <SPAN
 CLASS="QUOTE"
 >"no forwarding"</SPAN
@@ -2440,11 +2394,9 @@ CLASS="EMPHASIS"
 >Notes:</DT
 ><DD
 ><P
->    If <TT
+>    If <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
+>http_parent</VAR
 > is <SPAN
 CLASS="QUOTE"
 >"."</SPAN
@@ -2507,8 +2459,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="SOCKS"
-></A
->7.5.2. forward-socks4 and forward-socks4a</H4
+>7.5.2. forward-socks4 and forward-socks4a</A
+></H4
 ><A
 NAME="FORWARD-SOCKS4"
 ></A
@@ -2531,69 +2483,51 @@ CLASS="VARIABLELIST"
 >Type of value:</DT
 ><DD
 ><P
->    <TT
+>    <VAR
 CLASS="REPLACEABLE"
-><I
->target_pattern</I
-></TT
+>target_pattern</VAR
 >
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->socks_proxy</I
-></TT
->[:<TT
+>socks_proxy</VAR
+>[:<VAR
 CLASS="REPLACEABLE"
-><I
->port</I
-></TT
+>port</VAR
 >]
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
->[:<TT
+>http_parent</VAR
+>[:<VAR
 CLASS="REPLACEABLE"
-><I
->port</I
-></TT
+>port</VAR
 >]
    </P
 ><P
->    where <TT
+>    where <VAR
 CLASS="REPLACEABLE"
-><I
->target_pattern</I
-></TT
+>target_pattern</VAR
 > is a <A
 HREF="actions-file.html#AF-PATTERNS"
 >URL pattern</A
 > 
-    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <TT
+    that specifies to which requests (i.e. URLs) this forward rule shall apply. Use <VAR
 CLASS="LITERAL"
->/</TT
+>/</VAR
 > to
     denote <SPAN
 CLASS="QUOTE"
 >"all URLs"</SPAN
 >.
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
-> and <TT
+>http_parent</VAR
+> and <VAR
 CLASS="REPLACEABLE"
-><I
->socks_proxy</I
-></TT
+>socks_proxy</VAR
 >
-    are IP addresses in dotted decimal notation or valid DNS names (<TT
+    are IP addresses in dotted decimal notation or valid DNS names (<VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
+>http_parent</VAR
 >
     may be <SPAN
 CLASS="QUOTE"
@@ -2602,11 +2536,9 @@ CLASS="QUOTE"
 CLASS="QUOTE"
 >"no HTTP forwarding"</SPAN
 >), and the optional 
-    <TT
+    <VAR
 CLASS="REPLACEABLE"
-><I
->port</I
-></TT
+>port</VAR
 > parameters are TCP ports, i.e. integer values from 1 to 64535
    </P
 ></DD
@@ -2636,22 +2568,20 @@ CLASS="EMPHASIS"
 >    Multiple lines are OK, they are checked in sequence, and the last match wins.
    </P
 ><P
->    The difference between <TT
+>    The difference between <VAR
 CLASS="LITERAL"
->forward-socks4</TT
-> and <TT
+>forward-socks4</VAR
+> and <VAR
 CLASS="LITERAL"
->forward-socks4a</TT
+>forward-socks4a</VAR
 >
     is that in the SOCKS 4A protocol, the DNS resolution of the target hostname happens on the SOCKS
     server, while in SOCKS 4 it happens locally.
    </P
 ><P
->    If <TT
+>    If <VAR
 CLASS="REPLACEABLE"
-><I
->http_parent</I
-></TT
+>http_parent</VAR
 > is <SPAN
 CLASS="QUOTE"
 >"."</SPAN
@@ -2716,8 +2646,8 @@ CLASS="SECT3"
 CLASS="SECT3"
 ><A
 NAME="ADVANCED-FORWARDING-EXAMPLES"
-></A
->7.5.3. Advanced Forwarding Examples</H4
+>7.5.3. Advanced Forwarding Examples</A
+></H4
 ><P
 > If you have links to multiple ISPs that provide various special content 
  only to their subscribers, you can configure multiple <SPAN
@@ -2786,9 +2716,9 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >squid</SPAN
 > locally, then chain as 
- <TT
+ <VAR
 CLASS="LITERAL"
->browser -&#62; squid -&#62; privoxy</TT
+>browser -&#62; squid -&#62; privoxy</VAR
 > is the recommended way. </P
 ><P
 > Assuming that <SPAN
@@ -2831,18 +2761,18 @@ CLASS="SCREEN"
 CLASS="APPLICATION"
 >squid</SPAN
 >'s address and port.
- Squid normally uses port 3128. If unsure consult <TT
+ Squid normally uses port 3128. If unsure consult <VAR
 CLASS="LITERAL"
->http_port</TT
+>http_port</VAR
 > in <TT
 CLASS="FILENAME"
 >squid.conf</TT
 >.</P
 ><P
 > You could just as well decide to only forward requests for Windows executables through
- a virus-scanning parent proxy, say, on <TT
+ a virus-scanning parent proxy, say, on <VAR
 CLASS="LITERAL"
->antivir.example.com</TT
+>antivir.example.com</VAR
 >, port 8010:</P
 ><P
 > <TABLE
@@ -2867,8 +2797,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WINDOWS-GUI"
-></A
->7.6. Windows GUI Options</H2
+>7.6. Windows GUI Options</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -2892,7 +2822,7 @@ CLASS="QUOTE"
 >"Privoxy"</SPAN
 > is active. To turn off, set to 0.</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -2905,7 +2835,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-MESSAGES"
@@ -2921,7 +2851,7 @@ CLASS="APPLICATION"
 > will log messages to the console
  window:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -2934,7 +2864,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-BUFFER-SIZE"
@@ -2954,7 +2884,7 @@ CLASS="QUOTE"
 > Warning: Setting this to 0 will result in the buffer to grow infinitely and
  eat up all your memory!</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -2967,7 +2897,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-MAX-LINES"
@@ -2979,7 +2909,7 @@ CLASS="APPLICATION"
 > is the maximum number of lines held
  in the log buffer. See above.</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -2992,7 +2922,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-HIGHLIGHT-MESSAGES"
@@ -3008,7 +2938,7 @@ CLASS="APPLICATION"
 > will highlight portions of the log
  messages with a bold-faced font:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3021,7 +2951,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-FONT-NAME"
@@ -3029,7 +2959,7 @@ NAME="LOG-FONT-NAME"
 ><P
 > The font used in the console window:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3042,7 +2972,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="LOG-FONT-SIZE"
@@ -3050,7 +2980,7 @@ NAME="LOG-FONT-SIZE"
 ><P
 > Font size used in the console window:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3063,7 +2993,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="SHOW-ON-TASK-BAR"
@@ -3080,7 +3010,7 @@ CLASS="APPLICATION"
 > will appear as a button on the Task bar
  when minimized:</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3093,7 +3023,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="CLOSE-BUTTON-MINIMIZES"
@@ -3109,7 +3039,7 @@ CLASS="APPLICATION"
 > instead of closing
  the program (close with the exit option on the File menu).</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3122,7 +3052,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ><A
 NAME="HIDE-CONSOLE"
@@ -3142,7 +3072,7 @@ CLASS="APPLICATION"
 > will disconnect from and hide  the
  command console.</P
 ><P
-> <TT
+> <VAR
 CLASS="LITERAL"
 >  <P
 CLASS="LITERALLAYOUT"
@@ -3155,7 +3085,7 @@ CLASS="EMPHASIS"
 ><br>
 &nbsp;&nbsp;&nbsp;</P
 > 
- </TT
+ </VAR
 ></P
 ></DIV
 ></DIV

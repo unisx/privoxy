@@ -1,13 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Privoxy Configuration</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.2 User Manual"
+TITLE="Privoxy 3.0.3 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Starting Privoxy"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.2 User Manual</TH
+>Privoxy 3.0.3 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -74,11 +74,11 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="CONFIGURATION"
-></A
 >6. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> Configuration</H1
+> Configuration</A
+></H1
 ><P
 >  All <SPAN
 CLASS="APPLICATION"
@@ -96,12 +96,12 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN650"
-></A
+NAME="AEN585"
 >6.1. Controlling <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with Your Web Browser</H2
+> with Your Web Browser</A
+></H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -130,7 +130,7 @@ CLASS="SCREEN"
 > <H2
 CLASS="BRIDGEHEAD"
 ><A
-NAME="AEN659"
+NAME="AEN594"
 ></A
 >    Privoxy Menu</H2
 ><P
@@ -186,7 +186,7 @@ TARGET="_top"
 ><TR
 ><TD
 >          &#9642;  <A
-HREF="http://www.privoxy.org/3.0.2/user-manual/"
+HREF="http://www.privoxy.org/3.0.3/user-manual/"
 TARGET="_top"
 >Documentation</A
 >
@@ -251,8 +251,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="CONFOVERVIEW"
-></A
->6.2. Configuration Files Overview</H2
+>6.2. Configuration Files Overview</A
+></H2
 ><P
 > For Unix, *BSD and Linux, all configuration files are located in
  <TT
@@ -362,7 +362,8 @@ HREF="filter-file.html"
 >) can be used to re-write the raw page content, including
     viewable text as well as embedded HTML and JavaScript, and whatever else
     lurks on any given web page. The filtering jobs are only pre-defined here;
-    whether to apply them or not is up to the actions files.
+    whether to apply them or not is up to the actions files. Only one filter 
+    file may be defined.
    </P
 ></LI
 ></UL
@@ -370,23 +371,23 @@ HREF="filter-file.html"
 ><P
 > All files use the <SPAN
 CLASS="QUOTE"
->"<TT
+>"<VAR
 CLASS="LITERAL"
->#</TT
+>#</VAR
 >"</SPAN
 > character to denote a
  comment (the rest of the line will be ignored) and understand line continuation
- through placing a backslash ("<TT
+ through placing a backslash ("<VAR
 CLASS="LITERAL"
->\</TT
+>\</VAR
 >") as the very last character
- in a line. If the <TT
+ in a line. If the <VAR
 CLASS="LITERAL"
->#</TT
+>#</VAR
 > is preceded by a backslash, it looses
- its special function. Placing a <TT
+ its special function. Placing a <VAR
 CLASS="LITERAL"
->#</TT
+>#</VAR
 > in front of an otherwise
  valid configuration line to prevent it from being interpreted is called "commenting
  out" that line.</P

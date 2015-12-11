@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 1.8.2.13 2003/03/25 00:45:18 hal9 Exp $
+ $Id: p-authors.sgml,v 1.8.2.14 2003/12/03 13:02:51 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -30,7 +30,6 @@
 
 <literallayout>
  Hal Burgiss (docs)
- Jon Foster
  Andreas Oesterhelt
  David Schmidt (OS/2, Mac OSX ports)
 <![%p-authors-formal;[
@@ -48,7 +47,9 @@
  Johny Agotnes 
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
+ Brian Dessent
  Mattes Dolak 
+ Jon Foster
  Karsten Hopp (Red Hat)
  Alexander Lazic
  Daniel Leite

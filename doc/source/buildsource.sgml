@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: buildsource.sgml,v 1.9.2.2 2003/03/19 15:44:46 oes Exp $
+ $Id: buildsource.sgml,v 1.9.2.3 2003/11/06 13:36:37 oes Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -34,7 +34,7 @@
 <para>
  When building from a source tarball (either release version or
  <ulink
- url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.gz">nightly CVS
+ url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.bz2">nightly CVS
  tarball</ulink>), first unpack the source: 
 </para>
 

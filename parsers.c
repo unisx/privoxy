@@ -1,4 +1,4 @@
-const char parsers_rcs[] = "$Id: parsers.c,v 1.56.2.4 2003/03/07 03:41:05 david__schmidt Exp $";
+const char parsers_rcs[] = "$Id: parsers.c,v 1.56.2.8 2003/07/11 13:21:25 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/parsers.c,v $
@@ -40,6 +40,21 @@ const char parsers_rcs[] = "$Id: parsers.c,v 1.56.2.4 2003/03/07 03:41:05 david_
  *
  * Revisions   :
  *    $Log: parsers.c,v $
+ *    Revision 1.56.2.8  2003/07/11 13:21:25  oes
+ *    Excluded text/plain objects from filtering. This fixes a
+ *    couple of client-crashing, download corruption and
+ *    Privoxy performance issues, whose root cause lies in
+ *    web servers labelling content of unknown type as text/plain.
+ *
+ *    Revision 1.56.2.7  2003/05/06 12:07:26  oes
+ *    Fixed bug #729900: Suspicious HOST: headers are now killed and regenerated if necessary
+ *
+ *    Revision 1.56.2.6  2003/04/14 21:28:30  oes
+ *    Completing the previous change
+ *
+ *    Revision 1.56.2.5  2003/04/14 12:08:16  oes
+ *    Added temporary workaround for bug in PHP < 4.2.3
+ *
  *    Revision 1.56.2.4  2003/03/07 03:41:05  david__schmidt
  *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
  *
@@ -491,7 +506,7 @@ const add_header_func_ptr add_client_headers[] = {
    client_cookie_adder,
    client_x_forwarded_adder,
    client_xtra_adder,
-   client_accept_encoding_adder,
+   /* Temporarily disabled:    client_accept_encoding_adder, */
    connection_close_adder,
    NULL
 };
@@ -818,6 +833,9 @@ jb_err crumble(struct client_state *csp, char **header)
  * Description :  Set the content-type for filterable types (text/.*,
  *                javascript and image/gif) unless filtering has been
  *                forbidden (CT_TABOO) while parsing earlier headers.
+ *                NOTE: Since text/plain is commonly used by web servers
+ *                      for files whose correct type is unknown, we don't
+ *                      set CT_TEXT for it.
  *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
@@ -834,7 +852,7 @@ jb_err server_content_type(struct client_state *csp, char **header)
 {
    if (csp->content_type != CT_TABOO)
    {
-      if (strstr(*header, " text/")
+      if ((strstr(*header, " text/") && !strstr(*header, "plain"))
        || strstr(*header, "application/x-javascript"))
          csp->content_type = CT_TEXT;
       else if (strstr(*header, " image/gif"))
@@ -1026,14 +1044,20 @@ jb_err client_accept_encoding(struct client_state *csp, char **header)
       log_error(LOG_LEVEL_HEADER, "Suppressed offer to compress content");
 
       freez(*header);
-      if (!strcmpic(csp->http->ver, "HTTP/1.1"))
-      {
-         *header = strdup("Accept-Encoding: identity;q=1.0, *;q=0");
-         if (*header == NULL)
-         {
-            return JB_ERR_MEMORY;
-         }
-      }
+
+      /* Temporarily disable the correct behaviour to
+       * work around a PHP bug. 
+       *
+       * if (!strcmpic(csp->http->ver, "HTTP/1.1"))
+       * {
+       *    *header = strdup("Accept-Encoding: identity;q=1.0, *;q=0");
+       *    if (*header == NULL)
+       *    {
+       *       return JB_ERR_MEMORY;
+       *    }
+       * }
+       * 
+       */
    }
 
    return JB_ERR_OK;
@@ -1413,6 +1437,9 @@ jb_err client_max_forwards(struct client_state *csp, char **header)
  *                port information, parse and evaluate the Host
  *                header field.
  *
+ *                Also, kill ill-formed HOST: headers as sent by
+ *                Apple's iTunes software when used with a proxy.
+ *
  * Parameters  :
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *          2  :  header = On input, pointer to header to modify.
@@ -1427,6 +1454,18 @@ jb_err client_max_forwards(struct client_state *csp, char **header)
 jb_err client_host(struct client_state *csp, char **header)
 {
    char *p, *q;
+
+   /*
+    * If the header field name is all upper-case, chances are that it's
+    * an ill-formed one from iTunes. BTW, killing innocent headers here is
+    * not a problem -- they are regenerated later.
+    */
+   if ((*header)[1] == 'O')
+   {
+      log_error(LOG_LEVEL_HEADER, "Killed all-caps Host header line: %s", *header);
+      freez(*header);
+      return JB_ERR_OK;
+   }
 
    if (!csp->http->hostport || (*csp->http->hostport == '*') ||  
        *csp->http->hostport == ' ' || *csp->http->hostport == '\0')

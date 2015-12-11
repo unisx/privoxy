@@ -1,4 +1,4 @@
-# $Id: privoxy-suse.spec,v 1.20.2.9 2003/03/26 00:24:58 oes Exp $
+# $Id: privoxy-suse.spec,v 1.20.2.10 2004/01/30 17:09:29 oes Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -36,7 +36,7 @@ Summary:      Privoxy - privacy enhancing proxy
 Vendor:       Privoxy.Org
 Name:         privoxy-suse
 Distribution: defineme
-Version: 3.0.2
+Version: 3.0.3
 Release: 1
 # Needs makefile change: Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}-%{status}-src.tar.gz
 Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}.tar.gz
@@ -55,13 +55,13 @@ Conflicts: junkbuster-raw junkbuster-blank junkbuster-suse junkbuster privoxy
 #
 %description
 Privoxy is a web proxy with advanced filtering capabilities for
-protecting privacy, filtering web page content, managing cookies,
+protecting privacy, modifying web page content, managing cookies,
 controlling access, and removing ads, banners, pop-ups and other
 obnoxious Internet junk. Privoxy has a very flexible configuration and
 can be customized to suit individual needs and tastes. Privoxy has 
 application for both stand-alone systems and multi-user networks.
 
-Privoxy is based on the  Internet Junkbuster.
+Privoxy is based on the Internet Junkbuster.
 
 Authors:
 --------
@@ -198,15 +198,13 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 %doc doc/webserver/user-manual
 %doc doc/webserver/faq
 %doc doc/webserver/p_doc.css
-%doc doc/webserver/p_web.css
 %doc doc/webserver/privoxy-index.html
 %doc doc/webserver/images
 %doc doc/webserver/man-page
 
-#%doc privoxy.weekly privoxy.monthly AUTHORS
 %dir %{privoxyconf}
 %config %{privoxyconf}/*
-%attr(0744,privoxy,privoxy) %dir /var/log/privoxy
+%attr(0740,privoxy,privoxy) %dir /var/log/privoxy
 %config %{_sysconfdir}/logrotate.d/privoxy
 %attr(0755,root,root)/usr/sbin/privoxy
 %{_mandir}/man8/*
@@ -351,6 +349,9 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 - new package: version 2.0
 
 # $Log: privoxy-suse.spec,v $
+# Revision 1.20.2.10  2004/01/30 17:09:29  oes
+# Bumped version for 3.0.3
+#
 # Revision 1.20.2.9  2003/03/26 00:24:58  oes
 # Bump version for 3.0.2
 #

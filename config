@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.1
+#        Sample Configuration File for Privoxy v3.0.x
 #  
-#  Copyright (C) 2001, 2002 Privoxy Developers http://privoxy.org
+#  Copyright (C) 2001-2004 Privoxy Developers http://privoxy.org
 #  
-#  $Id: config,v 1.39.2.10 2003/03/05 16:34:15 oes Exp $
+#  $Id: config,v 1.39.2.13 2004/01/29 12:56:03 oes Exp $
 #  
 ####################################################################
 #                                                                  #
@@ -236,6 +236,8 @@ filterfile default.filter
 #      No log file is used, all log messages go to the console (STDERR).
 #  
 #  Notes:
+#  
+#      The windows version will additionally log to the console.
 #  
 #      The logfile is where all logging and error messages are
 #      written. The level of detail and number of messages are set with

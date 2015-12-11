@@ -1,4 +1,4 @@
-const char filters_rcs[] = "$Id: filters.c,v 1.58.2.4 2003/02/28 12:52:45 oes Exp $";
+const char filters_rcs[] = "$Id: filters.c,v 1.58.2.5 2003/11/11 13:10:31 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/filters.c,v $
@@ -38,6 +38,9 @@ const char filters_rcs[] = "$Id: filters.c,v 1.58.2.4 2003/02/28 12:52:45 oes Ex
  *
  * Revisions   :
  *    $Log: filters.c,v $
+ *    Revision 1.58.2.5  2003/11/11 13:10:31  oes
+ *    Fixed bug #839859: "See why" link URL now gets url-encoded.
+ *
  *    Revision 1.58.2.4  2003/02/28 12:52:45  oes
  *    Fixed a typo
  *
@@ -861,6 +864,7 @@ struct http_response *block_url(struct client_state *csp)
       if (!err) err = map(exports, "protocol", 1, csp->http->ssl ? "https://" : "http://", 1);
       if (!err) err = map(exports, "hostport", 1, html_encode(csp->http->hostport), 0);
       if (!err) err = map(exports, "path", 1, html_encode(csp->http->path), 0);
+      if (!err) err = map(exports, "path-ue", 1, url_encode(csp->http->path), 0);
 
       if (err)
       {

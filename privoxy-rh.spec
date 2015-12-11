@@ -1,4 +1,4 @@
-# $Id: privoxy-rh.spec,v 1.33.2.21 2003/03/26 00:25:00 oes Exp $
+# $Id: privoxy-rh.spec,v 1.33.2.22 2004/01/30 17:09:29 oes Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -37,7 +37,7 @@ Name: privoxy
 # ATTENTION
 # Version and release should be updated acordingly on configure.in and
 # configure. Otherwise, the package can be build with the wrong value
-Version: 3.0.2
+Version: 3.0.3
 Release: 1
 Summary: Privoxy - privacy enhancing proxy
 License: GPL
@@ -734,6 +734,9 @@ fi
 	additional "-r @" flag.
 
 # $Log: privoxy-rh.spec,v $
+# Revision 1.33.2.22  2004/01/30 17:09:29  oes
+# Bumped version for 3.0.3
+#
 # Revision 1.33.2.21  2003/03/26 00:25:00  oes
 # Bump version for 3.0.2
 #

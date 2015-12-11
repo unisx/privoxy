@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.6 2003/03/12 01:26:25 david__schmidt Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.12 2003/12/17 16:33:16 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.c,v $
@@ -38,6 +38,36 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.6 2003/03/12 01:26:25 david__schmidt
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.70.2.12  2003/12/17 16:33:16  oes
+ *     - Added new function cgi_redirect to handle creation of
+ *       HTTP redirect messages formerly repeated in the code.
+ *     - Send cgi_error_disabled instead of cgi_error_404 when
+ *       referrer check fails
+ *     - Dynamic content now gets Expires header field with date
+ *       in the past
+ *
+ *    Revision 1.70.2.11  2003/10/23 12:29:26  oes
+ *    Bugfix: Transparent PNG was not transparent. Thanks to
+ *    Dan Razzell of Starfish Systems for notice and new PNG.
+ *
+ *    Revision 1.70.2.10  2003/06/06 07:54:25  oes
+ *    Security fix: dspatch_known_cgi no longer considers an empty
+ *    referrer safe for critical CGIs, since malicious links could
+ *    reside on https:// locations which browsers don't advertize as
+ *    referrers. Closes bug #749916, thanks to Jeff Epler for the
+ *    hint. Goodbye One-Click[tm] toggling :-(
+ *
+ *    Revision 1.70.2.9  2003/05/08 15:11:31  oes
+ *    Nit
+ *
+ *    Revision 1.70.2.8  2003/04/29 13:33:51  oes
+ *    Killed a compiler warning on OSX
+ *
+ *    Revision 1.70.2.7  2003/04/03 13:50:58  oes
+ *    - Don't call cgi_error_disabled ifndef FEATURE_CGI_EDIT_ACTIONS
+ *      (fixes bug #710056)
+ *    - Show toggle info only if we have it
+ *
  *    Revision 1.70.2.6  2003/03/12 01:26:25  david__schmidt
  *    Move declaration of struct tm dummy outside of a control block so it is
  *    accessible later on during snprintf in get_http_time.
@@ -471,7 +501,11 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
 #endif
    { "show-status", 
          cgi_show_status,  
+#ifdef FEATURE_CGI_EDIT_ACTIONS
         "View & change the current configuration",
+#else
+        "View the current configuration",
+#endif
          TRUE }, 
    { "show-version", 
          cgi_show_version,  
@@ -501,6 +535,9 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
          NULL, FALSE },
    { "ear", /* Shortcut for edit-actions-remove-url-form */
          cgi_edit_actions_remove_url_form, 
+         NULL, FALSE },
+   { "eal", /* Shortcut for edit-actions-list */
+         cgi_edit_actions_list, 
          NULL, FALSE },
    { "eafu", /* Shortcut for edit-actions-for-url */
          cgi_edit_actions_for_url, 
@@ -573,7 +610,7 @@ static const struct cgi_dispatcher cgi_dispatchers[] = {
 
 
 /*
- * Bulit-in images for ad replacement
+ * Built-in images for ad replacement
  *
  * Hint: You can encode your own images like this:
  * cat your-image | perl -e 'while (read STDIN, $c, 1) { printf("\\%.3o", unpack("C", $c)); }'
@@ -598,13 +635,11 @@ const char image_pattern_data[] =
  */
 const char image_blank_data[] =
  "\211\120\116\107\015\012\032\012\000\000\000\015\111\110\104\122"
- "\000\000\000\004\000\000\000\004\010\006\000\000\000\251\361\236"
- "\176\000\000\000\007\164\111\115\105\007\322\003\013\020\073\070"
- "\013\025\036\203\000\000\000\011\160\110\131\163\000\000\013\022"
- "\000\000\013\022\001\322\335\176\374\000\000\000\004\147\101\115"
- "\101\000\000\261\217\013\374\141\005\000\000\000\033\111\104\101"
- "\124\170\332\143\070\161\342\304\207\377\377\377\347\302\150\006"
- "\144\016\210\146\040\250\002\000\042\305\065\221\270\027\131\110"
+ "\000\000\000\001\000\000\000\001\001\003\000\000\000\045\333\126"
+ "\312\000\000\000\003\120\114\124\105\377\377\377\247\304\033\310"
+ "\000\000\000\001\164\122\116\123\000\100\346\330\146\000\000\000"
+ "\001\142\113\107\104\000\210\005\035\110\000\000\000\012\111\104"
+ "\101\124\170\001\143\140\000\000\000\002\000\001\163\165\001\030"
  "\000\000\000\000\111\105\116\104\256\102\140\202";
 #else
 
@@ -689,7 +724,7 @@ struct http_response *dispatch_cgi(struct client_state *csp)
       else if (*path != '\0')
       {
          /*
-          * wierdness: URL is /configXXX, where XXX is some string
+          * weirdness: URL is /configXXX, where XXX is some string
           * Do *NOT* intercept.
           */
          return NULL;
@@ -824,12 +859,12 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
       if ((d->name == NULL) || (strcmp(path_copy, d->name) == 0))
       {
          /*
-          * If the called CGI is either harmless, or not referred
-          * from an untrusted source, start it.
+          * If the called CGI is either harmless, or referred
+          * from a trusted source, start it.
           */
          if (d->harmless
-             || (NULL == (referrer = grep_cgi_referrer(csp)))
-             || (0 == strncmp(referrer, "http://config.privoxy.org/", 26))
+             || ((NULL != (referrer = grep_cgi_referrer(csp)))
+                 && (0 == strncmp(referrer, "http://config.privoxy.org/", 26)))
              )
          {
             err = (d->handler)(csp, rsp, param_list);
@@ -1456,6 +1491,42 @@ jb_err cgi_error_bad_param(struct client_state *csp,
 
 /*********************************************************************
  *
+ * Function    :  cgi_redirect 
+ *
+ * Description :  CGI support function to generate a HTTP redirect
+ *                message
+ *
+ * Parameters  :
+ *          1  :  rsp = http_response data structure for output
+ *          2  :  target = string with the target URL
+ *
+ * CGI Parameters : None
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.  
+ *
+ *********************************************************************/
+jb_err cgi_redirect (struct http_response * rsp, const char *target)
+{
+   jb_err err;
+
+   assert(rsp);
+   assert(target);
+
+   err = enlist_unique_header(rsp->headers, "Location", target);
+
+   rsp->status = strdup("302 Local Redirect from Privoxy");
+   if (rsp->status == NULL)
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   return err;
+}
+
+
+/*********************************************************************
+ *
  * Function    :  add_help_link
  *
  * Description :  Produce a copy of the string given as item,
@@ -1522,7 +1593,7 @@ void get_http_time(int time_offset, char *buf)
 
    struct tm *t;
    time_t current_time;
-#ifdef HAVE_GMTIME_R
+#if defined(HAVE_GMTIME_R) && !defined(OSX_DARWIN)
    /*
     * Declare dummy up here (instead of inside get/set gmt block) so it
     * doesn't go out of scope before it's potentially used in snprintf later.
@@ -1659,7 +1730,7 @@ struct http_response *finish_http_response(struct http_response *rsp)
       get_http_time(0, buf);
       if (!err) err = enlist_unique_header(rsp->headers, "Date", buf);
       if (!err) err = enlist_unique_header(rsp->headers, "Last-Modified", buf);
-      if (!err) err = enlist_unique_header(rsp->headers, "Expires", buf);
+      if (!err) err = enlist_unique_header(rsp->headers, "Expires", "Sat, 17 Jun 2000 12:00:00 GMT");
    }
 
 
@@ -2062,6 +2133,8 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map(exports, "actions-help-prefix", 1, ACTIONS_HELP_PREFIX ,1);
 #ifdef FEATURE_TOGGLE
    if (!err) err = map_conditional(exports, "enabled-display", global_toggle_state);
+#else
+   if (!err) err = map_block_killer(exports, "can-toggle");
 #endif
 
    snprintf(buf, 20, "%d", csp->config->hport);

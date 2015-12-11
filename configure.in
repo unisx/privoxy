@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.68.2.15 2003/03/26 00:25:00 oes Exp $
+dnl $Id: configure.in,v 1.68.2.19 2004/01/30 09:26:03 oes Exp $
 dnl 
-dnl Written by and Copyright (C) 2001, 2002 the SourceForge
+dnl Written by and Copyright (C) 2001 - 2004 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
 dnl
 dnl Based on the Internet Junkbuster originally written
@@ -28,6 +28,19 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.68.2.19  2004/01/30 09:26:03  oes
+dnl Added docbook paths for debian sarge; set status for release
+dnl
+dnl Revision 1.68.2.18  2003/12/08 15:10:29  oes
+dnl Bugfix: --with-docbook now correctly accepts its path parameter. Thanks, Roland!
+dnl
+dnl Revision 1.68.2.17  2003/10/18 18:41:26  david__schmidt
+dnl Update to remain buildable on OS/2 - remove the failures
+dnl due to missing unixisms
+dnl
+dnl Revision 1.68.2.16  2003/03/26 16:05:14  oes
+dnl Marked as 0.0.0 UNRELEASED
+dnl
 dnl Revision 1.68.2.15  2003/03/26 00:25:00  oes
 dnl Bump version for 3.0.2
 dnl
@@ -418,7 +431,7 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.68.2.15 $)
+AC_REVISION($Revision: 1.68.2.19 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
@@ -445,7 +458,7 @@ case "$with_docbook" in
 yes) dodk=yes;;
 no) dodk=no;;
 *) 
-	dodk=no
+	dodk=yes
 	DKPREFIX=$withval
 	;;
 esac
@@ -464,7 +477,7 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=2
+VERSION_POINT=3
 CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
@@ -544,12 +557,18 @@ dnl =================================================================
 dnl Check for user and group validity
 dnl =================================================================
 
-$ID privoxy >/dev/null 2>/dev/null
-if test $? -ne 0 ; then
- AC_MSG_WARN(There is no user 'privoxy' on this system)
-fi
-AC_MSG_CHECKING([for user])
-AC_ARG_WITH(user,
+
+if test "$EMXOS2" = yes; then
+  echo "Skipping user and group validity stuff.";
+
+else
+
+  $ID privoxy >/dev/null 2>/dev/null
+  if test $? -ne 0 ; then
+   AC_MSG_WARN(There is no user 'privoxy' on this system)
+  fi
+  AC_MSG_CHECKING([for user])
+  AC_ARG_WITH(user,
         [  --with-user=privoxy          Set user under which privoxy will run],
         [
                 if test "x$withval" != "xyes"; then
@@ -576,11 +595,11 @@ AC_ARG_WITH(user,
             USER=$with_user
           fi
         ]
-)
-AC_SUBST(USER)
+  )
+  AC_SUBST(USER)
 
-AC_MSG_CHECKING([for group])
-AC_ARG_WITH(group,
+  AC_MSG_CHECKING([for group])
+  AC_ARG_WITH(group,
         [  --with-group=privoxy         Set group for privoxy],
         [ 
                 if test "x$withval" != "xyes"; then
@@ -613,8 +632,10 @@ AC_ARG_WITH(group,
             GROUP=$with_group;
           fi
         ]
-)
-AC_SUBST(GROUP)
+  )
+  AC_SUBST(GROUP)
+
+fi
 
 dnl =================================================================
 dnl additional gcc flags
@@ -736,7 +757,11 @@ dnl It is still not portable (directory slash)
 JADECAT=""
 if test $dodk = yes; then
   if test $DKPREFIX = none; then
-    for i in /usr/share/sgml/docbook/dsssl-stylesheets /usr/share/sgml/docbkdsl /usr/share/sgml/docbook-dsssl usr/local/share/sgml/docbook/dsssl/modular; do
+    for i in /usr/share/sgml/docbook/dsssl-stylesheets \
+             /usr/share/sgml/docbkdsl /usr/share/sgml/docbook-dsssl \
+             /usr/local/share/sgml/docbook/dsssl/modular \
+             /usr/share/sgml/docbook/stylesheet/dsssl/modular/ \
+             ; do
 dnl  echo -n does not fly with /bin/sh.
 dnl      echo -n "checking for $i/html/docbook.dsl..."
       AC_MSG_CHECKING([for $i])
@@ -753,7 +778,8 @@ dnl      echo -n "checking for $i/html/docbook.dsl..."
              /usr/share/sgml/CATALOG.docbk31 \
              /usr/share/sgml/CATALOG.docbk31 \
              /usr/local/share/sgml/docbook/3.0/docbook.cat \
-	        /usr/local/share/sgml/docbook/3.1/docbook.cat \
+             /usr/local/share/sgml/docbook/3.1/docbook.cat \
+             /usr/share/sgml/docbook/dtd/3.1/docbook.cat \
              ; do
 dnl     echo -n "checking for $i..."
       AC_MSG_CHECKING([for $i])

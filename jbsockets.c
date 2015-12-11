@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.3 2003/03/07 03:41:04 david__schmidt Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.6 2003/12/17 16:34:40 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/jbsockets.c,v $
@@ -35,6 +35,17 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.3 2003/03/07 03:41:04 da
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.35.2.6  2003/12/17 16:34:40  oes
+ *    Cosmetics
+ *
+ *    Revision 1.35.2.5  2003/04/29 11:32:54  oes
+ *    Don't rely on h_addr being non-NULL after gethostbyname.
+ *    Works around an oddness in Max OSX and closes bug #724796
+ *
+ *    Revision 1.35.2.4  2003/04/04 12:40:20  oes
+ *    Made sure the errno set by bind, not close[socket] is used in
+ *    bind_port. Probably fixes bugs #713777, #705562.
+ *
  *    Revision 1.35.2.3  2003/03/07 03:41:04  david__schmidt
  *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
  *
@@ -335,7 +346,7 @@ jb_socket connect_to(const char *host, int portnum, struct client_state *csp)
 #ifdef TCP_NODELAY
    {  /* turn off TCP coalescence */
       int mi = 1;
-      setsockopt (fd, IPPROTO_TCP, TCP_NODELAY, (char *) &mi, sizeof (int));
+      setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *) &mi, sizeof (int));
    }
 #endif /* def TCP_NODELAY */
 
@@ -595,11 +606,11 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
 #ifndef _WIN32
    /*
     * This is not needed for Win32 - in fact, it stops
-    * duplicate instances of Junkbuster from being caught.
+    * duplicate instances of Privoxy from being caught.
     *
     * On UNIX, we assume the user is sensible enough not
     * to start Junkbuster multiple times on the same IP.
-    * Without this, stopping and restarting Junkbuster
+    * Without this, stopping and restarting Privoxy
     * from a script fails.
     * Note: SO_REUSEADDR is meant to only take over
     * sockets which are *not* in listen state in Linux,
@@ -608,9 +619,8 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(one));
 #endif /* ndef _WIN32 */
 
-   if (bind (fd, (struct sockaddr *)&inaddr, sizeof(inaddr)) < 0)
+   if (bind(fd, (struct sockaddr *)&inaddr, sizeof(inaddr)) < 0)
    {
-      close_socket (fd);
 #ifdef _WIN32
       errno = WSAGetLastError();
       if (errno == WSAEADDRINUSE)
@@ -618,10 +628,12 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
       if (errno == EADDRINUSE)
 #endif
       {
+         close_socket(fd);
          return(-3);
       }
       else
       {
+         close_socket(fd);
          return(-1);
       }
    }
@@ -809,7 +821,13 @@ unsigned long resolve_hostname_to_ip(const char *host)
 #else
       hostp = gethostbyname(host);
 #endif /* def HAVE_GETHOSTBYNAME_R_(6|5|3)_ARGS */
-      if (hostp == NULL)
+      /*
+       * On Mac OSX, if a domain exists but doesn't have a type A
+       * record associated with it, the h_addr member of the struct
+       * hostent returned by gethostbyname is NULL, even if h_length
+       * is 4. Therefore the second test below.
+       */
+      if (hostp == NULL || hostp->h_addr == NULL)
       {
          errno = EINVAL;
          log_error(LOG_LEVEL_ERROR, "could not resolve hostname %s", host);

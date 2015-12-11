@@ -1,11 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML
 ><HEAD
 ><TITLE
 >Installation</TITLE
 ><META
 NAME="GENERATOR"
-CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
-"><LINK
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
 REL="HOME"
 TITLE="Privoxy Frequently Asked Questions"
 HREF="index.html"><LINK
@@ -74,19 +74,19 @@ CLASS="SECT1"
 CLASS="SECT1"
 ><A
 NAME="INSTALLATION"
-></A
->2. Installation</H1
+>2. Installation</A
+></H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
 NAME="WHICHBROWSERS"
-></A
 >2.1. Which browsers are supported by <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->?</H3
+>?</A
+></H3
 ><P
 > Any browser that can be configured to use a proxy, which 
  should be virtually all browsers. Direct browser support is not necessary
@@ -103,8 +103,8 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="WHICHOS"
-></A
->2.2. Which operating systems are supported?</H3
+>2.2. Which operating systems are supported?</A
+></H3
 ><P
 > At present, <SPAN
 CLASS="APPLICATION"
@@ -138,11 +138,11 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="EMAIL-CLIENT"
-></A
 >2.3. Can I use <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> with my email client?</H3
+> with my email client?</A
+></H3
 ><P
 > As long as there is some way to set a HTTP proxy for the client, then yes,
  any application can be used, whether it is strictly speaking a
@@ -174,7 +174,6 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NEWINSTALL"
-></A
 >2.4. Can I install  
  <SPAN
 CLASS="APPLICATION"
@@ -182,7 +181,8 @@ CLASS="APPLICATION"
 > over <SPAN
 CLASS="APPLICATION"
 >Junkbuster</SPAN
->?</H3
+>?</A
+></H3
 ><P
 >   We recommend you un-install <SPAN
 CLASS="APPLICATION"
@@ -221,13 +221,13 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN218"
-></A
+NAME="AEN226"
 >2.5. I just installed <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >. Is there anything 
-special I have to do now?</H3
+special I have to do now?</A
+></H3
 ><P
 > All browsers must be told to use <SPAN
 CLASS="APPLICATION"
@@ -244,20 +244,20 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="LOCALHOST"
-></A
 >2.6. What is the proxy address of <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
->?</H3
+>?</A
+></H3
 ><P
 >  If you set up the <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > to run on
   the computer you browse from (rather than your ISP's server or some
-  networked computer on a LAN), the proxy will be on <TT
+  networked computer on a LAN), the proxy will be on <VAR
 CLASS="LITERAL"
->127.0.0.1</TT
+>127.0.0.1</VAR
 > 
   (sometimes referred to as <SPAN
 CLASS="QUOTE"
@@ -325,8 +325,7 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > does not currently handle
-  protocols such as FTP, SMTP, IM, IRC, ICQ, or other Internet
-  protocols. 
+  any other protocols such as FTP, SMTP, IM, IRC, ICQ, etc. 
  </P
 ></DIV
 ><DIV
@@ -335,12 +334,12 @@ CLASS="SECT2"
 CLASS="SECT2"
 ><A
 NAME="NOTHING"
-></A
 >2.7. I just installed <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >, and nothing is happening.
-All the ads are there. What's wrong?</H3
+All the ads are there. What's wrong?</A
+></H3
 ><P
 > Did you configure your browser to use <SPAN
 CLASS="APPLICATION"
@@ -354,10 +353,11 @@ CLASS="APPLICATION"
 > is running, and your browser 
  is correctly configured by entering the special URL: 
  <A
-HREF="http://config.privoxy.org/"
+HREF="http://p.p/"
 TARGET="_top"
->http://config.privoxy.org/</A
->.
+>http://p.p/</A
+>. 
+ 
  This should take you to a page titled <SPAN
 CLASS="QUOTE"
 >"This is Privoxy.."</SPAN
@@ -384,6 +384,122 @@ CLASS="APPLICATION"
 HREF="../user-manual/config.html#LOGFILE"
 TARGET="_top"
 >log file</A
+>. For instructions
+ on starting <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> and browser configuration,
+ see the <A
+HREF="http://www.privoxy.org/user-manual/startup.html"
+TARGET="_top"
+>chapter
+ on starting <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+></A
+> in the
+ <A
+HREF="http://www.privoxy.org/user-manual/"
+TARGET="_top"
+>user manual</A
+>.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="NOTUSED"
+>2.8. I get a <SPAN
+CLASS="QUOTE"
+>"Privoxy is not being used"</SPAN
+> dummy page although
+<SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> is running and being used.</A
+></H3
+><P
+> First, make sure that Privoxy is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>really</I
+></SPAN
+> running and
+ being used by visiting <A
+HREF="http://p.p/"
+TARGET="_top"
+>http://p.p/</A
+>. You
+ should see the <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> main page. If not, see
+ the <A
+HREF="http://www.privoxy.org/user-manual/startup.html"
+TARGET="_top"
+>chapter
+ on starting <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+></A
+> in the
+ <A
+HREF="http://www.privoxy.org/user-manual/"
+TARGET="_top"
+>user manual</A
+>.</P
+><P
+> Now if <A
+HREF="http://p.p/"
+TARGET="_top"
+>http://p.p/</A
+> works for you, but
+ other parts of <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>'s web interface show
+ the dummy page, your browser has cached a redirection it encountered before
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> was being used. You need to clear your
+ browser's cache. Note that shift-reloading the dummy page won't help, since
+ that'll only refresh the dummy page, not the redirection that lead you there.</P
+><P
+> The procedure for clearing the cache varies from browser to browser. As an
+ example, <SPAN
+CLASS="APPLICATION"
+>Mozilla</SPAN
+> users would click 
+ <SPAN
+CLASS="GUIBUTTON"
+>Edit</SPAN
+> --&#62; <SPAN
+CLASS="GUIBUTTON"
+>Preferences</SPAN
+> --&#62;
+ <SPAN
+CLASS="GUIBUTTON"
+>Advanced</SPAN
+> --&#62; <SPAN
+CLASS="GUIBUTTON"
+>Cache</SPAN
+> and
+ then click both <SPAN
+CLASS="QUOTE"
+>"<SPAN
+CLASS="GUIBUTTON"
+>Clear Memory Cache</SPAN
+>"</SPAN
+>
+ and <SPAN
+CLASS="QUOTE"
+>"<SPAN
+CLASS="GUIBUTTON"
+>Clear Disk Cache</SPAN
+>"</SPAN
 >.</P
 ></DIV
 ></DIV

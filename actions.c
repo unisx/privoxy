@@ -1,4 +1,4 @@
-const char actions_rcs[] = "$Id: actions.c,v 1.32.2.3 2003/02/28 12:52:10 oes Exp $";
+const char actions_rcs[] = "$Id: actions.c,v 1.32.2.4 2003/12/03 10:33:11 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/actions.c,v $
@@ -33,6 +33,12 @@ const char actions_rcs[] = "$Id: actions.c,v 1.32.2.3 2003/02/28 12:52:10 oes Ex
  *
  * Revisions   :
  *    $Log: actions.c,v $
+ *    Revision 1.32.2.4  2003/12/03 10:33:11  oes
+ *    - Implemented Privoxy version requirement through
+ *      for-privoxy-version= statement in {{settings}}
+ *      block
+ *    - Fix for unchecked out-of-memory condition
+ *
  *    Revision 1.32.2.3  2003/02/28 12:52:10  oes
  *    Fixed memory leak reported by Dan Price in Bug #694713
  *
@@ -205,6 +211,7 @@ const char actions_rcs[] = "$Id: actions.c,v 1.32.2.3 2003/02/28 12:52:10 oes Ex
 #include "encode.h"
 #include "urlmatch.h"
 #include "cgi.h"
+#include "ssplit.h"
 
 const char actions_h_rcs[] = ACTIONS_H_VERSION;
 
@@ -1239,9 +1246,44 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
       {
          /*
           * Part of the {{settings}} block.
-          * Ignore for now, but we may want to read & check permissions
-          * when we go multi-user.
+          * For now only serves to check if the file's minimum Privoxy
+          * version requirement is met, but we may want to read & check
+          * permissions when we go multi-user.
           */
+         if (!strncmp(buf, "for-privoxy-version=", 20))
+         {
+            char *version_string, *fields[3];
+            int num_fields;
+
+            if ((version_string = strdup(buf + 20)) == NULL)
+            {
+               fclose(fp);
+               log_error(LOG_LEVEL_FATAL,
+                         "can't load actions file '%s': out of memory!",
+                         csp->config->actions_file[fileid]);
+               return 1; /* never get here */
+            }
+            
+            num_fields = ssplit(version_string, ".", fields, 3, TRUE, FALSE);
+
+            if (num_fields < 1 || atoi(fields[0]) == 0)
+            {
+               log_error(LOG_LEVEL_ERROR,
+                 "While loading actions file '%s': invalid line (%lu): %s",
+                  csp->config->actions_file[fileid], linenum, buf);
+            }
+            else if (                      atoi(fields[0]) > VERSION_MAJOR
+                     || (num_fields > 1 && atoi(fields[1]) > VERSION_MINOR)
+                     || (num_fields > 2 && atoi(fields[2]) > VERSION_POINT))
+            {
+               fclose(fp);
+               log_error(LOG_LEVEL_FATAL,
+                         "Actions file '%s', line %lu requires newer Privoxy version: %s",
+                         csp->config->actions_file[fileid], linenum, buf );
+               return 1; /* never get here */
+            }
+            free(version_string);
+         }
       }
       else if (mode == MODE_DESCRIPTION)
       {
@@ -1304,7 +1346,14 @@ static int load_one_actions_file(struct client_state *csp, int fileid)
             return 1; /* never get here */
          }
 
-         new_alias->name = strdup(buf);
+         if ((new_alias->name = strdup(buf)) == NULL)
+         {
+            fclose(fp);
+            log_error(LOG_LEVEL_FATAL,
+               "can't load actions file '%s': out of memory!",
+               csp->config->actions_file[fileid]);
+            return 1; /* never get here */
+         }
 
          strcpy(actions_buf, start);
 
