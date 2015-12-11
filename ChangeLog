@@ -1,6 +1,40 @@
 --------------------------------------------------------------------
 ChangeLog for Privoxy
 --------------------------------------------------------------------
+*** Version 3.0.2 ***
+
+- Fixed two memory leaks, one serious
+- Fixed bug in pcrs which could cause crashes with user-defined filters
+- Fixed bug in domain name matching
+- Assorted small fixes (Win32 menu, CGI URL editor, ..) 
+
+- Added basic support for the OPTIONS and TRACE http methods
+- Added workaround for Bug in Max OSX that made Privoxy crash occasionally
+- Refined the default action file through >400 items of user feedback
+- Filter changes:
+  - Assorted refinements, optimizations and fixes in the js-annoyances,
+    img-reorder, banners-by-size, banners-by-link, webbugs, refresh-tags,
+    html-annoyances, content-cookies and fun filters
+  - Replaced filter "popups" by choice between two modes:
+    - "unsolicited-popups" tries to catch only the unsolicited ones
+    - "all-popups" tries to kill them all (as before)
+  - New filter "tiny-textforms" Help those tiny or hard-wrap textareas. 
+  - New filter "jumping-windows" that prevents windows from resizing
+    and moving themselves
+  - New filter "demoronizer" which fixes MS's abuse of std charsets
+    (common cases anyway).
+  - Replaced "nimda" with more general "ie-exploits" filter in which
+    all filters for exploits shall be collected
+- Improved cookie logging
+- Rewrote make install target. Added uninstall and install-strip
+  targets.
+- Fixed a potential (application-level, NOT OS-level!) security
+  problem involving remote toggling and action file manipulation
+  by mailicious websites.
+- Added ability to chroot (thanks to Sviatoslav Sviridov)
+- Added more action aliases for prehistoric action names
+- Add Slackware support to Makefile.
+
 *** Version 3.0  ***
 
 - Fixed Windows startmenu items, log window and tray icon menus.

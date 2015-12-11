@@ -5,8 +5,9 @@
 #
 # chkconfig: 2345 84 09
 #
-# description: This shell script takes care of starting and stopping \
-#              privoxy.
+# description: Web proxy with advanced filtering capabilities \
+#              such as filtering web page content, managing \
+#              cookies and removing ads
 #
 
 #  ********************************************************************
@@ -43,6 +44,9 @@
 # 
 #  Revisions   :
 #     $Log: privoxy.init,v $
+#     Revision 1.8.2.3  2002/12/10 20:52:16  kick_
+#     better service description. This text will be shown when the user configures the services
+#
 #     Revision 1.8.2.2  2002/08/05 08:42:13  kick_
 #     same permissions, same runlevels as all the other initscripts
 #

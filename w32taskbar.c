@@ -1,4 +1,4 @@
-const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.7 2002/03/31 17:19:00 jongfoster Exp $";
+const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.7.2.2 2003/03/19 21:27:42 gliptak Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32taskbar.c,v $
@@ -32,6 +32,13 @@ const char w32taskbar_rcs[] = "$Id: w32taskbar.c,v 1.7 2002/03/31 17:19:00 jongf
  *
  * Revisions   :
  *    $Log: w32taskbar.c,v $
+ *    Revision 1.7.2.2  2003/03/19 21:27:42  gliptak
+ *    Corrected compilation error/typo
+ *
+ *    Revision 1.7.2.1  2002/11/20 14:39:32  oes
+ *    Applied patch by Mattes Dolak which adds re-creation of the win32 taskbar
+ *    icon on reception of the "TaskbarCreated" window message.
+ *
  *    Revision 1.7  2002/03/31 17:19:00  jongfoster
  *    Win32 only: Enabling STRICT to fix a VC++ compile warning.
  *
@@ -78,6 +85,7 @@ const char w32taskbar_h_rcs[] = W32TASKBAR_H_VERSION;
 
 static HMENU g_hmenuTray;
 static HWND g_hwndTrayX;
+static UINT g_traycreatedmsg;
 
 static LRESULT CALLBACK TrayProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -112,6 +120,9 @@ HWND CreateTrayWindow(HINSTANCE hInstance)
    wc.lpszClassName  = szWndName;
 
    RegisterClass(&wc);
+
+   /* TaskbarCreated is sent to a window when it should re-add its tray icons */
+   g_traycreatedmsg = RegisterWindowMessage("TaskbarCreated");	
 
    g_hwndTrayX = CreateWindow(szWndName, szWndName,
       WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -273,7 +284,11 @@ LRESULT CALLBACK TrayProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
       return 0;
 
       default:
-         /* DO NOTHING */
+
+         if (msg == g_traycreatedmsg)
+         {
+            TrayAddIcon(g_hwndTrayX, 1, g_hiconApp, "Privoxy");
+         }
          break;
    }
 

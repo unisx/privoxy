@@ -1,6 +1,6 @@
 #ifndef JCC_H_INCLUDED
 #define JCC_H_INCLUDED
-#define JCC_H_VERSION "$Id: jcc.h,v 1.12 2002/03/26 22:29:55 swa Exp $"
+#define JCC_H_VERSION "$Id: jcc.h,v 1.12.2.1 2003/03/07 03:41:05 david__schmidt Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/jcc.h,v $
@@ -35,6 +35,9 @@
  *
  * Revisions   :
  *    $Log: jcc.h,v $
+ *    Revision 1.12.2.1  2003/03/07 03:41:05  david__schmidt
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *
  *    Revision 1.12  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *
@@ -117,6 +120,13 @@ extern int no_daemon;
 #ifdef FEATURE_GRACEFUL_TERMINATION
 extern int g_terminate;
 #endif
+
+#ifdef OSX_DARWIN
+extern pthread_mutex_t gmtime_mutex;
+extern pthread_mutex_t localtime_mutex;
+extern pthread_mutex_t gethostbyaddr_mutex;
+extern pthread_mutex_t gethostbyname_mutex;
+#endif /* def OSX_DARWIN */
 
 /* Functions */
 

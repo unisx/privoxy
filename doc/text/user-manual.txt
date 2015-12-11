@@ -1,8 +1,8 @@
-Privoxy 3.0.0 User Manual
+Privoxy 3.0.2 User Manual
 
-Copyright © 2001, 2002 by Privoxy Developers
+Copyright © 2001 - 2003 by Privoxy Developers
 
-$Id: user-manual.txt,v 1.60.2.4 2002/08/25 23:41:20 hal9 Exp $
+$Id: user-manual.txt,v 1.60.2.6 2003/03/26 02:58:03 hal9 Exp $
 
 The User Manual gives users information on how to install, configure and use 
 Privoxy.
@@ -149,6 +149,7 @@ Table of Contents
 9. The Filter File
    
     9.1. Filter File Tutorial
+    9.2. The Pre-defined Filters
    
 10. Templates
 11. Contacting the Developers, Bug Reporting and Feature Requests
@@ -179,7 +180,7 @@ Table of Contents
 1. Introduction
 
 This documentation is included with the current stable version of Privoxy,
-v.3.0.0.
+v.3.0.2.
 
 -------------------------------------------------------------------------------
 
@@ -250,7 +251,7 @@ How to install the binary packages depends on your operating system:
 
 2.1.1. Red Hat, SuSE and Conectiva RPMs
 
-RPMs can be installed with rpm -Uvh privoxy-3.0.0-1.rpm, and will use /etc/
+RPMs can be installed with rpm -Uvh privoxy-3.0.2-1.rpm, and will use /etc/
 privoxy for the location of configuration files.
 
 Note that on Red Hat, Privoxy will not be automatically started on system boot.
@@ -258,7 +259,7 @@ You will need to enable that using chkconfig, ntsysv, or similar methods. Note
 that SuSE will automatically start Privoxy in the boot process.
 
 If you have problems with failed dependencies, try rebuilding the SRC RPM: rpm
---rebuild privoxy-3.0.0-1.src.rpm. This will use your locally installed
+--rebuild privoxy-3.0.2-1.src.rpm. This will use your locally installed
 libraries and RPM version.
 
 Also note that if you have a Junkbuster RPM installed on your system, you need
@@ -269,7 +270,7 @@ remove Junkbuster automatically, before installing Privoxy.
 
 2.1.2. Debian
 
-DEBs can be installed with dpkg -i privoxy_3.0.0-1.deb, and will use /etc/
+DEBs can be installed with dpkg -i privoxy_3.0.2-1.deb, and will use /etc/
 privoxy for the location of configuration files.
 
 -------------------------------------------------------------------------------
@@ -343,7 +344,7 @@ latest changes from the Portage tree. With emerge privoxy you install the
 latest version.
 
 Configuration files are in /etc/privoxy, the documentation is in /usr/share/doc
-/privoxy-3.0.0 and the Log directory is in /var/log/privoxy.
+/privoxy-3.0.2 and the Log directory is in /var/log/privoxy.
 
 -------------------------------------------------------------------------------
 
@@ -362,8 +363,8 @@ compiler like gcc are required.
 When building from a source tarball (either release version or nightly CVS
 tarball), first unpack the source:
 
- tar xzvf privoxy-3.0.0-src* [.tgz or .tar.gz]                                 
- cd privoxy-3.0.0                                                              
+ tar xzvf privoxy-3.0.2-src* [.tgz or .tar.gz]                                 
+ cd privoxy-3.0.2                                                              
 
 For retrieving the current CVS sources, you'll need CVS installed. Note that
 sources from CVS are development quality, and may not be stable, or well
@@ -376,7 +377,24 @@ tested. To download CVS source:
 This will create a directory named current/, which will contain the source
 tree.
 
-Then, in either case, to build from unpacked tarball or CVS source:
+You can also check out any Privoxy "branch", just exchange the current name
+with the wanted branch name (Example: v_3_0_branch for the 3.0 cvs tree).
+
+It is also strongly recommended to not run Privoxy as root, and instead it is
+suggested to create a "privoxy" user and group for this purpose. See your local
+documentation for the correct command line to do this.
+
+/etc/passwd might then look like:
+
+  privoxy:*:7777:7777:privoxy proxy:/no/home:/no/shell                         
+
+And then /etc/group, like:
+
+  privoxy:*:7777:                                                              
+
+Some binary packages may do this for you.
+
+Then, to build from either unpacked tarball or CVS source:
 
  autoheader                                                                    
  autoconf                                                                      
@@ -384,22 +402,64 @@ Then, in either case, to build from unpacked tarball or CVS source:
  make             # (the make from gnu, gmake for *BSD)                        
  su                                                                            
  make -n install  # (to see where all the files will go)                       
- make install     # (to really install)                                        
+ make -s install  # (to really install, -s to silence output)                  
 
-+-----------------------------------------------------------------------------+
-|                                   Warning                                   |
-|-----------------------------------------------------------------------------|
-|The "make install" target is temporary quite broken! It is recommended to use|
-|a binary package, or do a source build, and manually install the components. |
-|Sorry.                                                                       |
-+-----------------------------------------------------------------------------+
-
-If you have gnu make, you can have the first four steps automatically done for
+If you have GNU make, you can have the first four steps automatically done for
 you by just typing:
 
   make                                                                         
 
 in the freshly downloaded or unpacked source directory.
+
+WARNING: If installing as root, the install will fail unless another user is
+specified. configure accepts --with-user and --with-group options for setting
+user and group ownership of the configuration files (which need to be writable
+by the daemon). The specified user must already exist. Or if there is already a
+privoxy user on the system, and no user was specified during configure, make
+install then will use the privoxy user. When starting Privoxy, it should be run
+as this same user that owns the configuration and log files.
+
+Alternately, you can specify user and group on the make command line, but be
+sure both already exist:
+
+ make -s install  USER=privoxy GROUP=privoxy                                   
+
+If no group is specified, the install will assume a group exists with the same
+name as the specified user.
+
+The default installation path for make install is /usr/local. This may of
+course be customized with the various ./configure path options. If you are
+doing a root install to anywhere else besides /usr/local, be sure to set the
+appropriate paths with the correct configure options (./configure --help).
+
+If you do install to /usr/local, the install will use sysconfdir=$prefix/etc/
+privoxy by default. All other destinations, and the direct usage of
+--sysconfdir flag behave like normal, i.e. will not add the extra privoxy
+directory. This is for a safer install, as there may already exist another
+program that uses a file with the "config" name, and thus makes /usr/local/etc
+cleaner.
+
+If installing to /usr/local, the docs will go by default to $prefix/share/doc.
+But if this directory doesn't exist, it will then try $prefix/doc and install
+there before creating a new $prefix/share/doc just for Privoxy.
+
+Again, if the installs goes to /usr/local, the localstatedir (ie: var/) will
+default to /var instead of $prefix/var so the logs will go to /var/log/privoxy
+/, and the pid file will be created in /var/run/privoxy.pid.
+
+make install will attempt to set the correct values in config (main
+configuration file). You may want to check this to make sure all values are
+correct. If appropriate, an init script will be installed, but it is up to the
+user to determine how and where to start Privoxy. The init script should be
+checked for correct paths and values, if anything other than a default install
+is done.
+
+If install finds previous versions of any configuration files, these will not
+be overwritten, and the new ones will be installed with a "new" extension. You
+will then need to manually update the installed configuration files as needed.
+All template files will be overwritten. If you have customized, local
+templates, you should save these first. If a previous version of Privoxy is
+already running, you will have to restart it manually.
 
 For more detailed instructions on how to build Redhat and SuSE RPMs, Windows
 self-extracting installers, building on platforms with special requirements
@@ -482,13 +542,14 @@ A quick list of things to be aware of before upgrading:
   * Start Privoxy, if the installation program has not done this already (may
     vary according to platform). See the section Starting Privoxy.
    
-  * Set your browser to use Privoxy as HTTP and HTTPS proxy by setting the
-    proxy configuration for address of 127.0.0.1 and port 8118. (Junkbuster and
-    earlier versions of Privoxy used port 8000.) See the section Starting
+  * Set your browser to use Privoxy as HTTP and HTTPS (SSL) proxy by setting
+    the proxy configuration for address of 127.0.0.1 and port 8118. (Junkbuster
+    and earlier versions of Privoxy used port 8000.) See the section Starting
     Privoxy below for more details on this.
    
   * Flush your browser's disk and memory caches, to remove any cached ad
-    images.
+    images. If using Privoxy to manage cookies, you should remove any currently
+    stored cookies too.
    
   * A default installation should provide a reasonable starting point for most.
     There will undoubtedly be occasions where you will want to adjust the
@@ -807,6 +868,14 @@ Privoxy may be invoked with the following command-line options:
     included the GID of GROUP. Exit if the privileges are not sufficient to do
     so. Unix only.
    
+  * --chroot
+   
+    Before changing to the user ID given in the --user option, chroot to that
+    user's home directory, i.e. make the kernel pretend to the Privoxy process
+    that the directory tree starts there. If set up carefully, this can limit
+    the impact of possible vulnerabilities in Privoxy to the files contained in
+    that hierarchy. Unix only.
+   
   * configfile
    
     If no configfile is included on the command line, Privoxy will look for a
@@ -1089,8 +1158,6 @@ Effect if unset:
    
 Notes:
    
-    The windows version will additionally log to the console.
-   
     The logfile is where all logging and error messages are written. The level
     of detail and number of messages are set with the debug option (see below).
     The logfile can be useful for tracking down a problem with Privoxy (e.g.,
@@ -1150,7 +1217,7 @@ Default value:
    
 Effect if unset:
    
-    The whole trust mechanism is turned off.
+    The entire trust mechanism is turned off.
    
 Notes:
    
@@ -1158,14 +1225,26 @@ Notes:
     should be used with care. It is NOT recommended for the casual user.
    
     If you specify a trust file, Privoxy will only allow access to sites that
-    are named in the trustfile. You can also mark sites as trusted referrers
-    (with +), with the effect that access to untrusted sites will be granted,
-    if a link from a trusted referrer was used. The link target will then be
-    added to the "trustfile". Possible applications include limiting Internet
-    access for children.
+    are specified in the trustfile. Sites can be listed in one of two ways:
    
-    If you use + operator in the trust file, it may grow considerably over
+    Prepending a ~ character limits access to this site only (and any sub-paths
+    within this site), e.g. ~www.example.com.
+   
+    Or, you can designate sites as trusted referrers, by prepending the name
+    with a + character. The effect is that access to untrusted sites will be
+    granted -- but only if a link from this trusted referrer was used. The link
+    target will then be added to the "trustfile" so that future, direct
+    accesses will be granted. Sites added via this mechanism do not become
+    trusted referrers themselves (i.e. they are added with a ~ designation).
+   
+    If you use the + operator in the trust file, it may grow considerably over
     time.
+   
+    It is recommended that Privoxy be compiled with the --disable-force,
+    --disable-toggle and --disable-editor options, if this feature is to be
+    used.
+   
+    Possible applications include limiting Internet access for children.
    
 -------------------------------------------------------------------------------
 
@@ -1208,11 +1287,19 @@ Notes:
    
     Unix, in local filesystem:
    
-    user-manual  file:///usr/share/doc/privoxy-3.0.0/user-manual/      
+      user-manual  file:///usr/share/doc/privoxy-3.0.2/user-manual/    
+   
+    Windows, in local filesystem, must use forward slash notation:
+   
+      user-manual  file:/c:/some-dir/privoxy-3.0.2/user-manual/        
+   
+    Windows, UNC notation (with forward slashes):
+   
+      user-manual  file://///some-server/some-path/privoxy-3.0.2/user-manual/
    
     Any platform, on local webserver (called "local-webserver"):
    
-    user-manual  http://local-webserver/privoxy-user-manual/           
+      user-manual  http://local-webserver/privoxy-user-manual/         
    
     +-----------------------------------------------------------------+
     |                             Warning                             |
@@ -1907,8 +1994,8 @@ console.
 The actions files are used to define what actions Privoxy takes for which URLs,
 and thus determine how ad images, cookies and various other aspects of HTTP
 content and transactions are handled, and on which sites (or even parts
-thereof). There are three such files included with Privoxy (as of version
-2.9.15), with differing purposes:
+thereof). There are three such files included with Privoxy with differing
+purposes:
 
   * default.action - is the primary action file that sets the initial values
     for all actions. It is intended to provide a base level of functionality
@@ -1927,9 +2014,51 @@ thereof). There are three such files included with Privoxy (as of version
     influence on your browsing unless you select them explicitly in the editor.
     It is not recommend to edit this file.
    
+    The default profiles, and their associated actions, as pre-defined in
+    standard.action are:
+   
+    Table 1. Default Configurations
+   
+    +-------------------------------------------------------------------------+
+    |Feature           |Cautious         |Medium           |Adventuresome     |
+    |------------------+-----------------+-----------------+------------------|
+    |Ad-blocking by URL|yes              |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |Ad-filtering by   |yes              |yes              |yes               |
+    |size              |                 |                 |                  |
+    |------------------+-----------------+-----------------+------------------|
+    |GIF de-animation  |no               |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |Referer forging   |no               |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |Cookie handling   |none             |session-only     |kill              |
+    |------------------+-----------------+-----------------+------------------|
+    |Pop-up killing    |unsolicited      |unsolicited      |all               |
+    |------------------+-----------------+-----------------+------------------|
+    |Fast redirects    |no               |no               |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |HTML taming       |yes              |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |JavaScript taming |yes              |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |Web-bug killing   |yes              |yes              |yes               |
+    |------------------+-----------------+-----------------+------------------|
+    |Fun text          |no               |no               |yes               |
+    |replacements      |                 |                 |                  |
+    |------------------+-----------------+-----------------+------------------|
+    |Image tag         |no               |no               |yes               |
+    |reordering        |                 |                 |                  |
+    |------------------+-----------------+-----------------+------------------|
+    |Ad-filtering by   |no               |no               |yes               |
+    |link              |                 |                 |                  |
+    |------------------+-----------------+-----------------+------------------|
+    |Demoronizer       |no               |yes              |yes               |
+    +-------------------------------------------------------------------------+
+   
 The list of actions files to be used are defined in the main configuration
-file, and are processed in the order they are defined. The content of these can
-all be viewed and edited from http://config.privoxy.org/show-status.
+file, and are processed in the order they are defined (e.g. default.action is
+typically process before user.action). The content of these can all be viewed
+and edited from http://config.privoxy.org/show-status.
 
 An actions file typically has multiple sections. If you want to use "aliases"
 in an actions file, you have to place the (optional) alias section at the top
@@ -1956,10 +2085,10 @@ some sites unusable that rely on these techniques to work properly. Finding the
 right mix of actions is not always easy and certainly a matter of personal
 taste. In general, it can be said that the more "aggressive" your default
 settings (in the top section of the actions file) are, the more exceptions for
-"trusted" sites you will have to make later. If, for example, you want to kill
-popup windows per default, you'll have to make exceptions from that rule for
-sites that you regularly use and that require popups for actually useful
-content, like maybe your bank, favorite shop, or newspaper.
+"trusted" sites you will have to make later. If, for example, you want to
+crunch all cookies per default, you'll have to make exceptions from that rule
+for sites that you regularly use and that require cookies for actually useful
+puposes, like maybe your bank, favorite shop, or newspaper.
 
 We have tried to provide you with reasonable rules to start from in the
 distribution actions files. But there is no general rule of thumb on these
@@ -1975,7 +2104,9 @@ The easiest way to edit the actions files is with a browser by using our
 browser-based editor, which can be reached from http://config.privoxy.org/
 show-status. The editor allows both fine-grained control over every single
 feature on a per-URL basis, and easy choosing from wholesale sets of defaults
-like "Cautious", "Medium" or "Advanced".
+like "Cautious", "Medium" or "Adventuresome". Warning: the "Adventuresome"
+setting is not only more aggressive, but includes settings that are fun and
+subversive, and which some may find of dubious merit!
 
 If you prefer plain text editing to GUIs, you can of course also directly edit
 the the actions files. Look at default.action which is richly commented.
@@ -2009,8 +2140,16 @@ More detail on this is provided in the Appendix, Anatomy of an Action.
 
 8.4. Patterns
 
-Generally, a pattern has the form <domain>/<path>, where both the <domain> and
-<path> are optional. (This is why the pattern / matches all URLs).
+As mentioned, Privoxy uses "patterns" to determine what actions might apply to
+which sites and pages your browser attempts to access. These "patterns" use
+wild card type pattern matching to achieve a high degree of flexibility. This
+allows one expression to be expanded and potentially match against many similar
+patterns.
+
+Generally, a Privoxy pattern has the form <domain>/<path>, where both the
+<domain> and <path> are optional. (This is why the special / pattern matches
+all URLs). Note that the protocol portion of the URL pattern (e.g. http://)
+should not be included in the pattern. This is assumed already!
 
 www.example.com/
    
@@ -2285,7 +2424,7 @@ Notes:
    
     It makes no sense at all to use this action in conjunction with the 
     session-cookies-only action, since it would prevent the session cookies
-    from being set.
+    from being set. See also filter-content-cookies.
    
 Example usage:
    
@@ -2460,8 +2599,9 @@ Type:
 Parameter:
    
     The name of a filter, as defined in the filter file (typically
-    default.filter, set by the filterfile option in the config file). Filtering
-    can be completely disabled without the use of parameters.
+    default.filter, set by the filterfile option in the config file). When used
+    in its negative form, and without parameters, filtering is completely
+    disabled.
    
 Notes:
    
@@ -2469,19 +2609,23 @@ Notes:
     in the distribution filter file that you can use. See the examples below
     for a list.
    
-    This is potentially a very powerful feature! But "rolling your own" filters
-    requires a knowledge of regular expressions and HTML.
-   
     Filtering requires buffering the page content, which may appear to slow
     down page rendering since nothing is displayed until all content has passed
     the filters. (It does not really take longer, but seems that way since the
     page is not incrementally displayed.) This effect will be more noticeable
     on slower connections.
    
+    This is very powerful feature, but "rolling your own" filters requires a
+    knowledge of regular expressions and HTML.
+   
     The amount of data that can be filtered is limited to the buffer-limit
     option in the main config file. The default is 4096 KB (4 Megs). Once this
     limit is exceeded, the buffered data, and all pending data, is passed
-    through unfiltered. Inappropriate MIME types are not filtered.
+    through unfiltered.
+   
+    Inappropriate MIME types, such as zipped files, are not filtered at all.
+    Encrypted SSL data (from HTTPS servers) cannot be filtered either since
+    this would violate the integrity of the secure transaction.
    
     At this time, Privoxy cannot (yet!) uncompress compressed documents. If you
     want filtering to work on all documents, even those that would normally be
@@ -2496,37 +2640,52 @@ Notes:
     Feedback with suggestions for new or improved filters is particularly
     welcome!
    
-Example usage (with filters from the distribution default.filter file):
+    The below list has only the names and a one-line description of each
+    predefined filter. There are more verbose explanations of what these
+    filters do in the filter file chapter.
    
-    +filter{html-annoyances}     # Get rid of particularly annoying HTML abuse.
+Example usage (with filters from the distribution default.filter file). See the
+    Predefined Filters section for more explanation on each:
    
     +filter{js-annoyances}       # Get rid of particularly annoying JavaScript abuse
    
-    +filter{banners-by-size}     # Kill banners based on their size for this page (very efficient!)
+    +filter{js-events}           # Kill all JS event bindings (Radically destructive! Only for extra nasty sites)
    
-    +filter{banners-by-link}     # Kill banners based on the link they are contained in (experimental)
+    +filter{html-annoyances}     # Get rid of particularly annoying HTML abuse
    
-    +filter{img-reorder}         # Reorder attributes in <img> tags to make the banners-by-* filters more effective
-   
-    +filter{content-cookies}     # Kill cookies that come sneaking in the HTML or JS content
-   
-    +filter{popups}              # Kill all popups in JS and HTML      
-   
-    +filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking)
-   
-    +filter{fun}                 # Text replacements for subversive browsing fun!
-   
-    +filter{frameset-borders}    # Give frames a border and make them resizeable
+    +filter{content-cookies}     # Kill cookies that come in the HTML or JS content
    
     +filter{refresh-tags}        # Kill automatic refresh tags (for dial-on-demand setups)
    
-    +filter{nimda}               # Remove Nimda (virus) code.          
+    +filter{unsolicited-popups}  # Disable only unsolicited pop-up windows
+   
+    +filter{all-popups}          # Kill all popups in JavaScript and HTML
+   
+    +filter{img-reorder}         # Reorder attributes in <img> tags to make the banners-by-* filters more effective
+   
+    +filter{banners-by-size}     # Kill banners by size                
+   
+    +filter{banners-by-link}     # Kill banners by their links to known clicktrackers
+   
+    +filter{webbugs}             # Squish WebBugs (1x1 invisible GIFs used for user tracking)
+   
+    +filter{tiny-textforms}      # Extend those tiny textareas up to 40x80 and kill the hard wrap
+   
+    +filter{jumping-windows}     # Prevent windows from resizing and moving themselves
+   
+    +filter{frameset-borders}    # Give frames a border and make them resizable
+   
+    +filter{demoronizer}         # Fix MS's non-standard use of standard charsets
    
     +filter{shockwave-flash}     # Kill embedded Shockwave Flash objects
    
-    +filter{crude-parental}      # Kill all web pages that contain the words "sex" or "warez"
+    +filter{quicktime-kioskmode} # Make Quicktime movies saveable      
    
-    +filter{js-events}           # Kill all JS event bindings (Radically destructive! Only for extra nasty sites) 
+    +filter{fun}                 # Text replacements for subversive browsing fun!
+   
+    +filter{crude-parental}      # Crude parental filtering (demo only)
+   
+    +filter{ie-exploits}         # Disable some known Internet Explorer bug exploits
    
 -------------------------------------------------------------------------------
 
@@ -2758,7 +2917,7 @@ Example usage:
 
 Typical use:
    
-    Eliminate those annoying pop-up windows
+    Eliminate those annoying pop-up windows (deprecated)
    
 Effect:
    
@@ -2775,10 +2934,11 @@ Parameter:
    
 Notes:
    
-    This action is easily confused with the built-in, hardwired filter action,
-    but there are important differences: For kill-popups, the document need not
-    be buffered, so it can be incrementally rendered while downloading. But
-    kill-popups doesn't catch as many pop-ups as filter{popups} does.
+    This action is basically a built-in, hardwired special-purpose filter
+    action, but there are important differences: For kill-popups, the document
+    need not be buffered, so it can be incrementally rendered while
+    downloading. But kill-popups doesn't catch as many pop-ups as filter
+    {all-popups} does and is not as smart as filter{unsolicited-popups} is.
    
     Think of it as a fast and efficient replacement for a filter that you can
     use if you don't want any filtering at all. Note that it doesn't make sense
@@ -2786,12 +2946,14 @@ Notes:
     the whole document needs to be buffered anyway, which destroys the
     advantage of the kill-popups action over its filter equivalent.
    
-    Killing all pop-ups is a dangerous business. Many shops and banks rely on
-    pop-ups to display forms, shopping carts etc, and killing only the unwanted
-    pop-ups would require artificial intelligence in Privoxy. If the only kind
-    of pop-ups that you want to kill are exit consoles (those really nasty
-    windows that appear when you close an other one), you might want to use 
-    filter{js-annoyances} instead.
+    Killing all pop-ups unconditionally is problematic. Many shops and banks
+    rely on pop-ups to display forms, shopping carts etc, and the filter
+    {unsolicited-popups} does a fairly good job of catching only the unwanted
+    ones.
+   
+    If the only kind of pop-ups that you want to kill are exit consoles (those
+    really nasty windows that appear when you close an other one), you might
+    want to use filter{js-annoyances} instead.
    
 Example usage:
    
@@ -3004,6 +3166,13 @@ Notes:
     "expires" field. If you use an exotic browser, you might want to try it out
     to be sure.
    
+    This setting also has no effect on cookies that may have been stored
+    previously by the browser before starting Privoxy. These would have to be
+    removed manually.
+   
+    Privoxy also uses the content-cookies filter to block some types of
+    cookies. Content cookies are not effected by session-cookies-only.
+   
 Example usage:
    
     +session-cookies-only                                              
@@ -3113,31 +3282,31 @@ Privoxy.
 
 Now let's define some aliases...
 
- # Useful custom aliases we can use later.                                                   
- #                                                                                           
- # Note the (required!) section header line and that this section                            
- # must be at the top of the actions file!                                                   
- #                                                                                           
- {{alias}}                                                                                   
-                                                                                             
- # These aliases just save typing later:                                                     
- # (Note that some already use other aliases!)                                               
- #                                                                                           
- +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies                     
- -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies                     
- block-as-image      = +block +handle-as-image                                               
- mercy-for-cookies   = -crunch-all-cookies -session-cookies-only                             
-                                                                                             
- # These aliases define combinations of actions                                              
- # that are useful for certain types of sites:                                               
- #                                                                                           
- fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups 
- shop        = -crunch-all-cookies -filter{popups} -kill-popups                              
-                                                                                             
- # Short names for other aliases, for really lazy people ;-)                                 
- #                                                                                           
- c0 = +crunch-all-cookies                                                                    
- c1 = -crunch-all-cookies                                                                    
+ # Useful custom aliases we can use later.                                                    
+ #                                                                                            
+ # Note the (required!) section header line and that this section                             
+ # must be at the top of the actions file!                                                    
+ #                                                                                            
+ {{alias}}                                                                                    
+                                                                                              
+ # These aliases just save typing later:                                                      
+ # (Note that some already use other aliases!)                                                
+ #                                                                                            
+ +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies                      
+ -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies                      
+ block-as-image      = +block +handle-as-image                                                
+ mercy-for-cookies   = -crunch-all-cookies -session-cookies-only -filter{content-cookies}     
+                                                                                              
+ # These aliases define combinations of actions                                               
+ # that are useful for certain types of sites:                                                
+ #                                                                                            
+ fragile     = -block -filter -crunch-all-cookies -fast-redirects -hide-referrer -kill-popups 
+ shop        = -crunch-all-cookies -filter{all-popups} -kill-popups                           
+                                                                                              
+ # Short names for other aliases, for really lazy people ;-)                                  
+ #                                                                                            
+ c0 = +crunch-all-cookies                                                                     
+ c1 = -crunch-all-cookies                                                                     
 
 ...and put them to use. These sections would appear in the lower part of an
 actions file and define exceptions to the default actions (as specified further
@@ -3161,7 +3330,7 @@ up for the "/" pattern):
                                                                                
  # These shops require pop-ups:                                                
  #                                                                             
- {shop -kill-popups -filter{popups}}                                           
+ {shop -kill-popups -filter{all-popups}}                                       
   .dabs.com                                                                    
   .overclockers.co.uk                                                          
 
@@ -3199,24 +3368,24 @@ After that comes the (optional) alias section. We'll use the example section
 from the above chapter on aliases, that also explains why and how aliases are
 used:
 
-##########################################################################                  
-# Aliases                                                                                   
-##########################################################################                  
-{{alias}}                                                                                   
-                                                                                            
-# These aliases just save typing later:                                                     
-# (Note that some already use other aliases!)                                               
-#                                                                                           
-+crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies                     
--crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies                     
-block-as-image      = +block +handle-as-image                                               
-mercy-for-cookies   = -crunch-all-cookies -session-cookies-only                             
-                                                                                            
-# These aliases define combinations of actions                                              
-# that are useful for certain types of sites:                                               
-#                                                                                           
-fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups 
-shop        = mercy-for-cookies -filter{popups} -kill-popups                                
+##########################################################################                    
+# Aliases                                                                                     
+##########################################################################                    
+{{alias}}                                                                                     
+                                                                                              
+ # These aliases just save typing later:                                                      
+ # (Note that some already use other aliases!)                                                
+ #                                                                                            
+ +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies                      
+ -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies                      
+ block-as-image      = +block +handle-as-image                                                
+ mercy-for-cookies   = -crunch-all-cookies -session-cookies-only -filter{content-cookies}     
+                                                                                              
+ # These aliases define combinations of actions                                               
+ # that are useful for certain types of sites:                                                
+ #                                                                                            
+ fragile     = -block -filter -crunch-all-cookies -fast-redirects -hide-referrer -kill-popups 
+ shop        = -crunch-all-cookies -filter{all-popups} -kill-popups                           
 
 Now come the regular sections, i.e. sets of actions, accompanied by URL
 patterns to which they apply. Remember all actions are disabled when matching
@@ -3246,20 +3415,26 @@ made more readable by splitting it into multiple lines with line continuation.
  +deanimate-gifs \                                                             
  -downgrade-http-version \                                                     
  +fast-redirects \                                                             
- +filter{html-annoyances} \                                                    
  +filter{js-annoyances} \                                                      
+ -filter{js-events} \                                                          
+ +filter{html-annoyances} \                                                    
  -filter{content-cookies} \                                                    
- +filter{popups} \                                                             
- +filter{webbugs} \                                                            
- -filter{refresh-tags} \                                                       
- -filter{fun} \                                                                
- +filter{nimda} \                                                              
+ +filter{refresh-tags} \                                                       
+ +filter{unsolicited-popups} \                                                 
+ -filter{all-popups} \                                                         
+ +filter{img-reorder} \                                                        
  +filter{banners-by-size} \                                                    
  -filter{banners-by-link} \                                                    
- -filter{img-reorder} \                                                        
+ +filter{webbugs} \                                                            
+ -filter{tiny-textforms} \                                                     
+ +filter{jumping-windows} \                                                    
+ -filter{frameset-borders} \                                                   
+ +filter{demoronizer} \                                                        
  -filter{shockwave-flash} \                                                    
+ -filter{quicktime-kioskmode} \                                                
+ -filter{fun} \                                                                
  -filter{crude-parental} \                                                     
- -filter{js-events} \                                                          
+ +filter{ie-exploits} \                                                        
  -handle-as-image \                                                            
  +hide-forwarded-for-headers \                                                 
  +hide-from-header{block} \                                                    
@@ -3279,9 +3454,7 @@ The default behavior is now set. Note that some actions, like not hiding the
 user agent, are part of a "general policy" that applies universally and won't
 get any exceptions defined later. Other choices, like not blocking (which is
 understandably the default!) need exceptions, i.e. we need to specify
-explicitly what we want to block in later sections. We will also want to make
-exceptions from our general pop-up-killing, and use our defined aliases for
-that.
+explicitly what we want to block in later sections.
 
 The first of our specialized sections is concerned with "fragile" sites, i.e.
 sites that require minimum interference, because they are either very complex
@@ -3310,21 +3483,6 @@ pre-defined alias:
 .worldpay.com   # for quietpc.com                                              
 .jungle.com                                                                    
 .scan.co.uk                                                                    
-
-Then, there are sites which rely on pop-up windows (yuck!) to work. Since we
-made pop-up-killing our default above, we need to make exceptions now. Mozilla
-users, who can turn on smart handling of unwanted pop-ups in their browsers,
-can safely choose -filter{popups} (and -kill-popups) above and hence don't need
-this section. Anyway, disabling an already disabled action doesn't hurt, so
-we'll define our exceptions regardless of what was chosen in the defaults
-section:
-
-# These sites require pop-ups too :(                                           
-#                                                                              
-{ -kill-popups -filter{popups} }                                               
-.dabs.com                                                                      
-.overclockers.co.uk                                                            
-.deutsche-bank-24.de                                                           
 
 The fast-redirects action, which we enabled per default above, breaks some
 sites. So disable it for popular sites where we know it misbehaves:
@@ -3481,51 +3639,95 @@ user.action:
 As aliases are local to the actions file that they are defined in, you can't
 use the ones from default.action, unless you repeat them here:
 
+# Aliases are local to the file they are defined in.                                        
 # (Re-)define aliases for this file:                                                        
 #                                                                                           
 {{alias}}                                                                                   
+#                                                                                           
+# These aliases just save typing later, and the alias names should                          
+# be self explanatory.                                                                      
+#                                                                                           
++crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies                     
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies                     
-mercy-for-cookies   = -crunch-all-cookies -session-cookies-only                             
+ allow-all-cookies  = -crunch-all-cookies -session-cookies-only                             
+ allow-popups       = -filter{all-popups} -kill-popups                                      
++block-as-image     = +block +handle-as-image                                               
+-block-as-image     = -block                                                                
+                                                                                            
+# These aliases define combinations of actions that are useful for                          
+# certain types of sites:                                                                   
+#                                                                                           
 fragile     = -block -crunch-all-cookies -filter -fast-redirects -hide-referer -kill-popups 
-shop        = mercy-for-cookies -filter{popups} -kill-popups                                
-allow-ads   = -block -filter{banners-by-size} # (see below)                                 
+shop        = -crunch-all-cookies allow-popups                                              
+                                                                                            
+# Allow ads for selected useful free sites:                                                 
+#                                                                                           
+allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}                      
 
 Say you have accounts on some sites that you visit regularly, and you don't
 want to have to log in manually each time. So you'd like to allow persistent
-cookies for these sites. The mercy-for-cookies alias defined above does exactly
-that, i.e. it disables crunching of cookies in any direction, and processing of
-cookies to make them temporary.
+cookies for these sites. The allow-all-cookies alias defined above does exactly
+that, i.e. it disables crunching of cookies in any direction, and the
+processing of cookies to make them only temporary.
 
-{ mercy-for-cookies }                                                          
+{ allow-all-cookies }                                                          
 sunsolve.sun.com                                                               
 slashdot.org                                                                   
 .yahoo.com                                                                     
 .msdn.microsoft.com                                                            
 .redhat.com                                                                    
 
-Your bank needs popups and is allergic to some filter, but you don't know
-which, so you disable them all:
+Your bank is allergic to some filter, but you don't know which, so you disable
+them all:
 
-{ -filter -kill-popups }                                                       
+{ -filter }                                                                    
 .your-home-banking-site.com                                                    
 
-While browsing the web with Privoxy you noticed some ads that sneaked through,
-but you were too lazy to report them through our fine and easy feedback system,
-so you have added them here:
+Some file types you may not want to filter. Privoxy makes no distinctions
+between regular web pages and downloads done via your web browser if it is an
+html or text type document.
+
+# A list of common file extensions that are likely to indicate raw text, and best 
+# if unfiltered.                                                                  
+/(.*/)?.*\.(pl|(s|p)?h|c(c|xx|pp)?|tcl|am|init?|cfg?|conf(ig)?|txt|rc|bat)$       
+                                                                                  
+# Documentation should not need filtering (at least on some sites).               
+.tldp.org                                                                         
+
+Example of a simple block action. Say you've seen an ad on your favourite page
+on example.com that you want to get rid of. You have right-clicked the image,
+selected "copy image location" and pasted the URL below while removing the
+leading http://, into a { +block } section. Note that { +handle-as-image } need
+not be specified, since all URLs ending in .gif will be tagged as images by the
+general rules as set in default.action anyway:
 
 { +block }                                                                     
-www.a-popular-site.com/some/unobvious/path                                     
+www.example.com/nasty-ads/sponsor.gif                                          
 another.popular.site.net/more/junk/here/                                       
+                                                                               
+#  Here we found one that is not in Privoxy's default blocked list:            
+.adfactory.net                                                                 
 
-Note that, assuming the banners in the above example have regular image
-extensions (most do), +handle-as-image need not be specified, since all URLs
-ending in these extensions will already have been tagged as images in the
-relevant section of default.action by now.
+To force URLs that tend to have ad images, but it is difficult for Privoxy to
+know this since the ultimate returned object is obscured for one reason or
+another, we can try to force these to be treated as images (and thus avoid
+Privoxy's "BLOCKED" banner page). Note that if what is returned by the server
+turns out NOT to be an image, then your browser typically will display a broken
+icon image. Use cautiously.
 
-Then you noticed that the default configuration breaks Forbes Magazine, but you
+{ +block-as-image }                                                            
+# A shockwave ad, very annoying.                                               
+.trip.com/.*\.swf                                                              
+.doubleclick.net                                                               
+/Realmedia/ads/                                                                
+adremote.                                                                      
+
+Now you noticed that the default configuration breaks Forbes Magazine, but you
 were too lazy to find out which action is the culprit, and you were again too
 lazy to give feedback, so you just used the fragile alias on the site, and --
-whoa! -- it worked:
+whoa! -- it worked. The fragile aliases disables those actions that are most
+likely to break a site. Also, good for testing purposes to see if it is Privoxy
+that is causing the problem or not.
 
 { fragile }                                                                    
 .forbes.com                                                                    
@@ -3543,7 +3745,7 @@ filters in default.action for things that really shouldn't be filtered, like
 code on CVS->Web interfaces. Since user.action has the last word, these
 exceptions won't be valid for the "fun" filtering specified here.
 
-Finally, you might think about how your favourite free websites are funded, and
+You might also worry about how your favourite free websites are funded, and
 find that they rely on displaying banner advertisements to survive. So you
 might want to specifically allow banners for those sites that you feel provide
 value to you:
@@ -3553,7 +3755,17 @@ value to you:
 .slashdot.org                                                                  
 .osdn.net                                                                      
 
-Note that allow-ads has been aliased to -block -filter{banners-by-size} above.
+Note that allow-ads has been aliased to -block, -filter{banners-by-size}, and -
+filter{banners-by-link} above.
+
+user.action is generally the best place to define exceptions and additions to
+the default policies of default.action. Some actions are safe to have their
+default policies set here though. So let's set a default policy to have a
+"blank" image as opposed to the checkerboard pattern for ALL sites. "/" of
+course matches all URL paths and patterns:
+
+{ +set-image-blocker{blank} }                                                  
+/ # ALL sites                                                                  
 
 -------------------------------------------------------------------------------
 
@@ -3754,6 +3966,191 @@ You get the idea?
 
 -------------------------------------------------------------------------------
 
+9.2. The Pre-defined Filters
+
+The distribution default.filter file contains a selection of pre-defined
+filters for your convenience:
+
+js-annoyances
+   
+    The purpose of this filter is to get rid of particularly annoying
+    JavaScript abuse. To that end, it
+   
+      + replaces JavaScript references to the browser's referrer information
+        with the string "Not Your Business!". This compliments the 
+        hide-referrer action on the content level.
+       
+      + removes the bindings to the DOM's unload event which we feel has no
+        right to exist and is responsible for most "exit consoles", i.e. nasty
+        windows that pop up when you close another one.
+       
+      + removes code that causes new windows to be opened with undesired
+        properties, such as being full-screen, non-resizable, without location,
+        status or menu bar etc.
+       
+js-events
+   
+    This is a very radical measure. It removes virtually all JavaScript event
+    bindings, which means that scripts can not react to user actions such as
+    mouse movements or clicks, window resizing etc, anymore.
+   
+    We strongly discourage using this filter as a default since it breaks many
+    legitimate scripts. It is meant for use only on extra-nasty sites (should
+    you really need to go there).
+   
+html-annoyances
+   
+    This filter will undo many common instances of HTML based abuse.
+   
+    The BLINK and MARQUEE tags are neutralized (yeah baby!), and browser
+    windows will be created as resizable (as of course they should be!), and
+    will have location, scroll and menu bars -- even if specified otherwise.
+   
+content-cookies
+   
+    Most cookies are set in the HTTP dialogue, where they can be intercepted by
+    the crunch-incoming-cookies and crunch-outgoing-cookies actions. But web
+    sites increasingly make use of HTML meta tags and JavaScript to sneak
+    cookies to the browser on the content level.
+   
+    This filter disables HTML and JavaScript code that reads or sets cookies.
+    Use it wherever you would also use the cookie crunch actions.
+   
+refresh tags
+   
+    Disable any refresh tags if the interval is greater than nine seconds (so
+    that redirections done via refresh tags are not destroyed). This is useful
+    for dial-on-demand setups, or for those who find this HTML feature
+    annoying.
+   
+unsolicited-popups
+   
+    This filter attempts to prevent only "unsolicited" pop-up windows from
+    opening, yet still allow pop-up windows that the user has explicitly chosen
+    to open. It was added in version 3.0.1, as an improvement over earlier such
+    filters.
+   
+    Technical note: The filter works by redefining the window.open JavaScript
+    function to a dummy function during the loading and rendering phase of each
+    HTML page access, and restoring the function afterwards.
+   
+all-popups
+   
+    Attempt to prevent all pop-up windows from opening. Note this should be
+    used with more discretion than the above, since it is more likely to break
+    some sites that require pop-ups for normal usage. Use with caution.
+   
+img-reorder
+   
+    This is a helper filter that has no value if used alone. It makes the
+    banners-by-size and banners-by-link (see below) filters more effective and
+    should be enabled together with them.
+   
+banners-by-size
+   
+    This filter removes image tags purely based on what size they are.
+    Fortunately for us, many ads and banner images tend to conform to certain
+    standardized sizes, which makes this filter quite effective for ad
+    stripping purposes.
+   
+    Occasionally this filter will cause false positives on images that are not
+    ads, but just happen to be of one of the standard banner sizes.
+   
+banners-by-link
+   
+    This is an experimental filter that attempts to kill any banners if their
+    URLs seem to point to known or suspected click trackers. It is currently
+    not of much value and is not recommended for use by default.
+   
+webbugs
+   
+    Webbugs are small, invisible images (technically 1X1 GIF images), that are
+    used to track users across websites, and collect information on them. As an
+    HTML page is loaded by the browser, an embedded image tag causes the
+    browser to contact a third-party site, disclosing the tracking information
+    through the requested URL and/or cookies for that third-party domain,
+    without the use ever becoming aware of the interaction with the third-party
+    site. HTML-ized spam also uses a similar technique to verify email
+    addresses.
+   
+    This filter removes the HTML code that loads such "webbugs".
+   
+tiny-textforms
+   
+    A rather special-purpose filter that can be used to enlarge textareas
+    (those multi-line text boxes in web forms) and turn off hard word wrap in
+    them. It was written for the sourceforge.net tracker system where such
+    boxes are a nuisance, but it can be handy on other sites, too.
+   
+    It is not recommended to use this filter as a default.
+   
+jumping-windows
+   
+    Many consider windows that move, or resize themselves to be abusive. This
+    filter neutralizes the related JavaScript code. Note that some sites might
+    not display or behave as intended when using this filter.
+   
+frameset-borders
+   
+    Some web designers seem to assume that everyone in the world will view
+    their web sites using the same browser brand and version, screen resolution
+    etc, because only that assumption could explain why they'd use static frame
+    sizes, yet prevent their frames from being resized by the user, should they
+    be too small to show their whole content.
+   
+    This filter removes the related HTML code. It should only be applied to
+    sites which need it.
+   
+demoronizer
+   
+    Many Microsoft products that generate HTML use non-standard extensions
+    (read: violations) of the ISO 8859-1 aka Latin-1 character set. This causes
+    those HTML documents to display with errors on standard-compliant
+    platforms.
+   
+    This filter translates the MS-only characters into Latin-1 equivalents. It
+    is safe for general use, and recommended for non-MS platforms.
+   
+shockwave-flash
+   
+    A filter for shockwave haters. As the name suggests, this filter strips
+    code out of web pages that is used to embed shockwave flash objects.
+   
+quicktime-kioskmode
+   
+    Change HTML code that embeds Quicktime objects so that kioskmode, which
+    prevents saving, is disabled.
+   
+fun
+   
+    Text replacements for subversive browsing fun. Make fun of your favorite
+    Monopolist or play buzzword bingo.
+   
+crude-parental
+   
+    A demonstration-only filter that shows how Privoxy can be used to delete
+    web content on a keyword basis.
+   
+ie-exploits
+   
+    A collection of text replacements to disable malicious HTML and JavaScript
+    code that exploits known security holes in Internet Explorer.
+   
+    Presently, it only protects against Nimda and a cross-site scripting bug,
+    and would need active maintenance to provide more substantial protection.
+   
+site-specifics
+   
+    Some web sites have very specific problems, the cure for which doesn't
+    apply anywhere else, or could even cause damage on other sites.
+   
+    This is a collection of such site-specific cures which should only be
+    applied to the sites they were intended for, which is what the supplied
+    default.action file does. Users shouldn't need to change anything regarding
+    this filter.
+   
+-------------------------------------------------------------------------------
+
 10. Templates
 
 All Privoxy built-in pages, i.e. error pages such as the "404 - No Such Domain"
@@ -3876,7 +4273,7 @@ group_id=11118.
 
 12. Privoxy Copyright, License and History
 
-Copyright © 2001, 2002 by Privoxy Developers <developers@privoxy.org>
+Copyright © 2001 - 2003 by Privoxy Developers <developers@privoxy.org>
 
 Some source code is based on code Copyright © 1997 by Anonymous Coders and
 Junkbusters, Inc. and licensed under the GNU General Public License.
@@ -3930,37 +4327,43 @@ Then, some developers picked up the thread, and started turning the software
 inside out, upside down, and then reassembled it, adding many new features
 along the way.
 
-The result of this is Privoxy, whose first stable release, 3.0, was released
+The result of this is Privoxy, whose first stable version, 3.0, was released
 August, 2002.
 
 -------------------------------------------------------------------------------
 
 12.3. Authors
 
-Current Project Developers:
+Current Developement Team:
 
+ Hal Burgiss (docs)
  Jon Foster
  Andreas Oesterhelt
- Stefan Waldherr
+ David Schmidt (OS/2, Mac OSX ports)
  
- Thomas Steudten
- Rodney Stromlund
+ 
 
-Current Project Contributors:
+Current and Former Project Contributors:
 
+ Johny Agotnes 
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
- Hal Burgiss (docs)
+ Mattes Dolak 
  Karsten Hopp (Red Hat)
  Alexander Lazic
+ Daniel Leite
  Gábor Lipták
- Guy
+ Adam Lock (Win32)
+ Guy Laroche
  Haroon Rafique
  Roland Rosenfeld (Debian)
  Georg Sauthoff (Gentoo)
- David Schmidt (OS/2, Mac OSX ports)
+ Thomas Steudten
  Joerg Strohmayer (Amiga)
+ Rodney Stromlund
+ Sviatoslav Sviridov
  Sarantis Paskalis
+ Stefan Waldherr
 
 Based in part on code originally developed by:
 
@@ -3976,16 +4379,19 @@ suggestions. These include (in alphabetical order):
  Andrew J. Caines
  Clifford Caoile
  Michael T. Davis
+ Brian Dessent
  Peter E
  Aaron Hamid
  Magnus Holmgren
- Daniel Leite
+ Don Libes  
  Paul Lieverse
+ David Mediavilla 
+ Oliver Stoeneberg
  Roberto Ragusa
  Maynard Riley
  Bart Schelstraete
  Darren Wiebe
- jwz
+ Jamie Zawinski
 
 -------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.1 2002/06/06 19:06:44 jongfoster Exp $";
+const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.5 2003/02/28 13:09:29 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/urlmatch.c,v $
@@ -33,6 +33,21 @@ const char urlmatch_rcs[] = "$Id: urlmatch.c,v 1.10.2.1 2002/06/06 19:06:44 jong
  *
  * Revisions   :
  *    $Log: urlmatch.c,v $
+ *    Revision 1.10.2.5  2003/02/28 13:09:29  oes
+ *    Fixed a rare double free condition as per Bug #694713
+ *
+ *    Revision 1.10.2.4  2003/02/28 12:57:44  oes
+ *    Moved freeing of http request structure to its owner
+ *    as per Dan Price's observations in Bug #694713
+ *
+ *    Revision 1.10.2.3  2002/11/12 16:50:40  oes
+ *    Fixed memory leak in parse_http_request() reported by Oliver Stoeneberg. Fixes bug #637073
+ *
+ *    Revision 1.10.2.2  2002/09/25 14:53:15  oes
+ *    Added basic support for OPTIONS and TRACE HTTP methods:
+ *    parse_http_url now recognizes the "*" URI as well as
+ *    the OPTIONS and TRACE method keywords.
+ *
  *    Revision 1.10.2.1  2002/06/06 19:06:44  jongfoster
  *    Adding support for proprietary Microsoft WebDAV extensions
  *
@@ -158,8 +173,8 @@ void free_http_request(struct http_request *http)
  *
  * Returns     :  JB_ERR_OK on success
  *                JB_ERR_MEMORY on out of memory
- *                JB_ERR_CGI_PARAMS on malformed command/URL
- *                                  or >100 domains deep.
+ *                JB_ERR_PARSE on malformed command/URL
+ *                             or >100 domains deep.
  *
  *********************************************************************/
 jb_err parse_http_url(const char * url,
@@ -179,6 +194,17 @@ jb_err parse_http_url(const char * url,
    if (http->url == NULL)
    {
       return JB_ERR_MEMORY;
+   }
+
+
+   /*
+    * Check for * URI. If found, we're done.
+    */  
+   if (*http->url == '*')
+   {
+      http->path = strdup("*");
+      http->hostport = strdup("");
+      return JB_ERR_OK;
    }
 
 
@@ -238,13 +264,11 @@ jb_err parse_http_url(const char * url,
          http->hostport = strdup(url_noproto);
       }
 
-      free(buf);
+      freez(buf);
 
       if ( (http->path == NULL)
         || (http->hostport == NULL))
       {
-         free(buf);
-         free_http_request(http);
          return JB_ERR_MEMORY;
       }
    }
@@ -261,7 +285,6 @@ jb_err parse_http_url(const char * url,
       buf = strdup(http->hostport);
       if (buf == NULL)
       {
-         free_http_request(http);
          return JB_ERR_MEMORY;
       }
 
@@ -299,15 +322,14 @@ jb_err parse_http_url(const char * url,
 
       if (http->host == NULL)
       {
-         free_http_request(http);
          return JB_ERR_MEMORY;
       }
    }
 
-
    /*
     * Split domain name so we can compare it against wildcards
     */
+
    {
       char *vec[BUFFER_SIZE];
       size_t size;
@@ -316,7 +338,6 @@ jb_err parse_http_url(const char * url,
       http->dbuffer = strdup(http->host);
       if (NULL == http->dbuffer)
       {
-         free_http_request(http);
          return JB_ERR_MEMORY;
       }
 
@@ -335,7 +356,6 @@ jb_err parse_http_url(const char * url,
           * Error: More than SZ(vec) components in domain
           *    or: no components in domain
           */
-         free_http_request(http);
          return JB_ERR_PARSE;
       }
 
@@ -345,15 +365,14 @@ jb_err parse_http_url(const char * url,
       http->dvec = (char **)malloc(size);
       if (NULL == http->dvec)
       {
-         free_http_request(http);
          return JB_ERR_MEMORY;
       }
 
       memcpy(http->dvec, vec, size);
    }
 
-
    return JB_ERR_OK;
+
 }
 
 
@@ -412,6 +431,8 @@ jb_err parse_http_request(const char *req,
          || (0 == strcmpic(v[0], "post"))
          || (0 == strcmpic(v[0], "put"))
          || (0 == strcmpic(v[0], "delete"))
+         || (0 == strcmpic(v[0], "options"))
+         || (0 == strcmpic(v[0], "trace"))
  
          /* or a webDAV extension (RFC2518) */
          || (0 == strcmpic(v[0], "propfind"))
@@ -471,11 +492,12 @@ jb_err parse_http_request(const char *req,
      || (http->ver == NULL) )
    {
       free(buf);
-      free_http_request(http);
       return JB_ERR_MEMORY;
    }
 
+   free(buf);
    return JB_ERR_OK;
+
 }
 
 

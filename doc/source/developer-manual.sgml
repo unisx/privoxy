@@ -8,10 +8,10 @@
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "2.9.20">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.0">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
@@ -23,7 +23,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: developer-manual.sgml,v 1.46.2.8 2002/08/17 00:16:10 hal9 Exp $
+ $Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -50,7 +50,7 @@
     </pubdate>
 
 
-    <pubdate>$Id: developer-manual.sgml,v 1.46.2.8 2002/08/17 00:16:10 hal9 Exp $</pubdate>
+    <pubdate>$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $</pubdate>
 
 <!--
 
@@ -133,6 +133,7 @@ Hal.
 
   <!--   ~~~~~       New section      ~~~~~     -->
   <sect2 id="quickstart"><title>Quickstart to Privoxy Development</title>
+   <!-- 
     <para>
       You'll need an account on <ulink
       url="http://sourceforge.net/">Sourceforge</ulink> to support our
@@ -140,9 +141,24 @@ Hal.
       url="mailto:developers@privoxy.org">the list</ulink> and wait until a
       project manager has added you.
     </para>
+   --> 
+   <para>
+    The first step is to join the <ulink
+      url="mailto:developers@privoxy.org">developer's mailing list</ulink>.
+    You can submit your ideas, or even better patches. Patches are best 
+    submitted to the Sourceforge tracker set up for this purpose, but 
+    can be sent to the list for review too.
+   </para>
     <para>
-      For the time being (read, this section is under construction), please
-      refer to the extensive comments in the source code.
+     You will also need to have a cvs package installed, which will 
+     entail having ssh installed as well (which seems to be a requirement of
+     SourceForge), in order to access the cvs repository. Having the GNU build
+     tools is also going to be important (particularly, autoconf and gmake).
+    </para>
+    <para>
+      For the time being (read, this section is under construction), you can 
+      also refer to the extensive comments in the source code. In fact, 
+      reading the code is recommended in any case.
     </para>
    </sect2>
   </sect1>
@@ -150,9 +166,10 @@ Hal.
   <!--   ~~~~~       New section      ~~~~~     -->
   <sect1 id="cvs"><title>The CVS Repository</title>
     <para>
-      If you intend to help us with programming, documentation or packaging
-      you will need write access to our holy grail, the CVS repository.
-      Please read this chapter completely before accessing via CVS.
+      If you become part of the active development team, you will eventually
+      need write access to our holy grail, the CVS repository. One of the 
+      team members will need to set this up for you. Please read
+      this chapter completely before accessing via CVS.
     </para>
 
     <sect2 id="cvsaccess"><title>Access to CVS</title>
@@ -169,12 +186,54 @@ Hal.
       </para>
     </sect2>
 
-    <sect2 id="cvscommit"><title>CVS Commit Guideline</title>
+    <sect2 id="cvsbranches">
+    <title>Branches</title>
+     <para>
+       Within the CVS repository, there are modules and branches. As
+       mentioned, the sources are in the <literal>current</literal>
+       <quote>module</quote>. Other modules are present for platform specific
+       issues. There is a webview of the CVS hierarchy at <ulink
+       url="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/">http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/</ulink>,
+       which might help with visualizing how these pieces fit together.
+     </para>
+     <para>
+       Branches are used to fork a sub-development path from the main trunk.
+       Within the <literal>current</literal> module where the sources are, there
+       is always at least one <quote>branch</quote> from the main trunk
+       devoted to a stable release series. The main trunk is where active
+       development takes place for the next stable series (e.g. 3.2.x).
+       So just prior to each stable series (e.g. 3.0.x), a branch is created
+       just for stable series releases (e.g. 3.0.0 -> 3.0.1 -> 3.0.2, etc).
+       Once the initial stable release of any stable branch has taken place,
+       this branch is <emphasis>only used for bugfixes</emphasis>, which have
+       had prior testing before being committed to CVS. (See <link
+       linkend="versionnumbers">Version Numbers</link> below for details on
+       versioning.)
+     </para>
+     <para>
+       This will result in at least two active branches, which means there may
+       be occasions that require the same (or similar) item to be 
+       checked into to two different places (assuming its a bugfix and needs 
+       fixing in both the stable and unstable trees). This also means that in
+       order to have access to both trees, both will have to be checked out 
+       separately. Use the <literal>cvs -r</literal> flag to check out a 
+       branch, e.g: <literal>cvs co -r v_3_0_branch current</literal>.
+     </para>
+    </sect2>
+
+    <sect2 id="cvscommit"><title>CVS Commit Guidelines</title>
       <para>
         The source tree is the heart of every software project. Every effort must
         be made to ensure that it is readable, compilable and consistent at all
-        times. We therefore ask anyone with CVS access to strictly adhere to the
-        following guidelines:
+        times. There are differing guidelines for the stable branch and the
+        main development trunk, and we ask anyone with CVS access to strictly
+        adhere to the following guidelines:
+      </para>
+      
+      <para>
+       Basic Guidelines, for all branches:
+      </para>
+      <para>
         <itemizedlist>
           <listitem><para>
             Never (read: <emphasis>never, ever</emphasis>) be tempted to commit
@@ -199,23 +258,70 @@ Hal.
           </para></listitem>
           <listitem><para>
             Before changing things on CVS, make sure that your changes are in line
-            with the team's general consensus on what should be done (see below).
+            with the team's general consensus on what should be done.
           </para></listitem>
-          <listitem><para>
-            Don't commit into the stable branch, unless immediately before a new
-            release. (See <link linkend="versionnumbers">Version Numbers</link> below
-            for details.) Collect your changes on the <ulink
-            url="http://sourceforge.net/tracker/?atid=311118&amp;group_id=11118&amp;func=browse">patches
+          <listitem>
+           <para>
+            Note that near a major public release, we get more cautious.
+            There is always the possibility to submit a patch to the <ulink
+            url="http://sourceforge.net/tracker/?atid=311118&amp;group_id=11118&amp;func=browse">patch
             tracker</ulink> instead.
-          </para></listitem>
+          </para>
+         </listitem> 
         </itemizedlist>
       </para>
+      
+      <para>
+       Stable branches are handled with more care, especially after the 
+       initial *.*.0 release, and we are just in bugfix mode. In addition to 
+       the above, the below applies only to the stable branch (currently the 
+       <literal>v_3_0_branch</literal> branch):
+      </para>
+      
+      <para>
+       <itemizedlist>
+        <listitem>
+         <para>
+           Do not commit <emphasis>anything</emphasis> unless your proposed
+           changes have been well tested first, preferably by other members of the
+           project, or have prior approval of the project leaders or consensus
+           of the devel list.
+         </para>
+        </listitem> 
+       <listitem>
+        <para>
+         Where possible, bugfixes and changes should be tested in the main 
+         development trunk first. There may be occasions where this is not 
+         feasible, though.
+        </para>
+       </listitem> 
+       <listitem>
+        <para>
+          Alternately, proposed changes can be submitted as patches to the patch tracker on 
+          Sourceforge first: <ulink
+          url="http://sourceforge.net/tracker/?group_id=11118&#38;atid=311118">http://sourceforge.net/tracker/?group_id=11118&#38;atid=311118</ulink>.
+          Then ask for peer review. 
+        </para>
+       </listitem> 
+        <listitem>
+         <para>
+          Do not even think about anything except bugfixes. No new features!
+         </para>
+        </listitem> 
+     
+       </itemizedlist>
+      </para> 
     </sect2>
+
+<!--
+ This sounds vague, dated, and out of step with current development style.
+ Removing 09/03/02, HB.
 
     <sect2 id="cvswhenask"><title>Discussing Changes First</title>
       <para>
-        We don't have a too formal policy on this, just use common sense. Hints: If it is..
-        <orderedlist numeration="arabic">
+        We don't have a formal policy for the development branch, just use
+        common sense. Hints: If it is.. 
+       <orderedlist numeration="arabic">
           <listitem><para>
             ..a bug-fix / clean-up / cosmetic thing: shoot
           </para></listitem>
@@ -242,6 +348,7 @@ Hal.
         tracker</ulink> instead.
       </para>
     </sect2>
+   --> 
   </sect1>
 	
   <!--   ~~~~~       New section      ~~~~~     -->
@@ -1750,7 +1857,7 @@ static void unload_re_filterfile( void *f ) { ... }</programlisting>
 
     <para><emphasis>Example for file comments:</emphasis></para>
 <programlisting>
-const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 1.46.2.8 2002/08/17 00:16:10 hal9 Exp $";
+const char FILENAME_rcs[] = "$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $";
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -1810,7 +1917,7 @@ const char FILENAME_h_rcs[] = FILENAME_H_VERSION;
 <programlisting>
 #ifndef _FILENAME_H
 #define _FILENAME_H
-#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 1.46.2.8 2002/08/17 00:16:10 hal9 Exp $"
+#define FILENAME_H_VERSION "$Id: developer-manual.sgml,v 1.46.2.11 2002/12/11 13:12:15 hal9 Exp $"
 /*********************************************************************
  *
  * File        :  $S<!-- Break CVS Substitution -->ource$
@@ -1988,7 +2095,7 @@ at sourceforge. Three simple steps:
     <para>
       First you need to determine which version number the release will have. 
       <application>Privoxy</application> version numbers consist of three numbers,
-      separated by dots, like in X.Y.Z, where:
+      separated by dots, like in X.Y.Z (e.g. 3.0.0), where:
         <itemizedlist>
           <listitem>
             <para>
@@ -2027,8 +2134,42 @@ at sourceforge. Three simple steps:
               This ensures that builds from CVS snapshots are easily distinguished from released versions.
               The point version is reset to zero when the minor changes.
             </para>
+            <para>
+              Stable branches work a little differently, since there should be
+              little to no development happening in such branches. Remember,
+              only bugfixes, which presumably should have had some testing
+              before being committed. Stable branches will then have their 
+              version reported as <literal>0.0.0</literal>, during that period 
+              between releases when changes are being added. This is to denote 
+              that this code is <emphasis>not for release</emphasis>. Then 
+              as the release nears, the version is bumped according: e.g. 
+              <literal>3.0.1 -> 0.0.0 -> 3.0.2</literal>.
+            </para>
           </listitem>
         </itemizedlist>
+    </para>
+    <para>
+     In summary, the main CVS trunk is the development branch where new
+     features are being worked on for the next stable series. This should
+     almost always be where the most activity takes place. There is always at
+     least one stable branch from the trunk, e.g now it is
+     <literal>3.0</literal>, which is only used to release stable versions.
+     Once the initial *.0 release of the stable branch has been done, then as a
+     rule, only bugfixes that have had prior testing should be committed to
+     the stable branch. Once there are enough bugfixes to justify a new
+     release, the version of this branch is again incremented Example: 3.0.0
+     -> 3.0.1 -> 3.0.2, etc are all stable releases from within the stable
+     branch. 3.1.x is currently the main trunk, and where work on 3.2.x is
+     taking place. If any questions, please post to the devel list
+     <emphasis>before</emphasis> committing to a stable branch!
+    </para>
+    <para>
+     Developers should remember too that if they commit a bugfix to the stable 
+     branch, this will more than likely require a separate submission to the 
+     main trunk, since these are separate development trees within CVS. If you 
+     are working on both, then this would require at least two separate check
+     outs (i.e main trunk, <emphasis>and</emphasis> the stable release branch,
+     which is <literal>v_3_0_branch</literal> at the moment).
     </para>
 
     </sect2>
@@ -2888,6 +3029,17 @@ at sourceforge. Three simple steps:
   Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
   $Log: developer-manual.sgml,v $
+  Revision 1.46.2.11  2002/12/11 13:12:15  hal9
+  Rewrite cvs write access give-away section.
+
+  Revision 1.46.2.10  2002/09/26 21:53:45  hal9
+  Changes to reflect recent change in stable branch commit policy (hopefully
+  clearer now).
+
+  Revision 1.46.2.9  2002/09/26 01:21:40  hal9
+  Porting 3.1.1 changes: more on cvs and branches, more on versions and
+  releases.
+
   Revision 1.46.2.8  2002/08/17 00:16:10  hal9
   Add note on updating webserver for User-manual/CGI editor, which is version
   dependent (and different from main UM link).

@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Manpage of PRIVOXY</TITLE>
 <LINK REL="STYLESHEET" TYPE="text/css" HREF="../p_doc.css"></HEAD><BODY>
 <H1>PRIVOXY</H1>
-Section:  (1)<BR>Updated: 26 August 2002<BR><A HREF="#index">Index</A>
+Section:  (1)<BR>Updated: 25 March 2003<BR><A HREF="#index">Index</A>
 <HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -13,7 +13,7 @@ privoxy - Privacy Enhancing Proxy
 <H2>SYNOPSIS</H2>
 
 <P>
-<B>privoxy</B> [<B>--help</B> ] [<B>--version</B> ] [<B>--no-daemon</B> ] [<B>--pidfile </B><I>pidfile</I><B></B> ] [<B>--user </B><I>user[.group]</I><B></B> ] [<B></B><I>configfile</I><B></B> ]<B> (UNIX)</B>
+<B>privoxy</B> [<B>--help</B> ] [<B>--version</B> ] [<B>--no-daemon</B> ] [<B>--pidfile </B><I>pidfile</I><B></B> ] [<B>--user </B><I>user[.group]</I><B></B> ] [<B>--chroot</B> ] [<B></B><I>configfile</I><B></B> ]<B> (UNIX)</B>
 <P>
 <P>
 <B>privoxy.exe</B> [<B></B><I>configfile</I><B></B> ]<B> (Windows)</B>
@@ -45,6 +45,13 @@ After (optionally) writing the PID file, assume the user ID of
 <I>group</I> was not given, the default group of
 <I>user</I>. Exit if the privileges are not
 sufficient to do so.
+<DT><B>--chroot</B><DD>
+Before changing to the user ID given in the --user option, chroot to
+that user's home directory, i.e. make the kernel pretend to the
+<B>Privoxy</B> process that the directory tree starts
+there. If set up carefully, this can limit the impact of possible
+vulnerabilities in <B>Privoxy</B> to the files contained in
+that hierarchy. 
 </DL>
 <P>
 
@@ -319,24 +326,30 @@ the <B>Privoxy</B> developer manual.
 
 <P>
 <PRE>
+ Hal Burgiss (docs)
  Jon Foster
  Andreas Oesterhelt
- Stefan Waldherr
- Thomas Steudten
- Rodney Stromlund
+ David Schmidt (OS/2, Mac OSX ports)
+
+ Johny Agotnes 
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
- Hal Burgiss (docs)
+ Mattes Dolak 
  Karsten Hopp (Red Hat)
  Alexander Lazic
+ Daniel Leite
  G&#225;bor Lipt&#225;k
- Guy
+ Adam Lock (Win32)
+ Guy Laroche
  Haroon Rafique
  Roland Rosenfeld (Debian)
  Georg Sauthoff (Gentoo)
- David Schmidt (OS/2, Mac OSX ports)
+ Thomas Steudten
  Joerg Strohmayer (Amiga)
+ Rodney Stromlund
+ Sviatoslav Sviridov
  Sarantis Paskalis
+ Stefan Waldherr
 </PRE>
 
 <A NAME="lbAN">&nbsp;</A>
@@ -347,7 +360,7 @@ the <B>Privoxy</B> developer manual.
 
 <P>
 
-Copyright (C) 2001, 2002 by Privoxy Developers &lt;<A HREF="mailto:developers@privoxy.org">developers@privoxy.org</A>&gt;
+Copyright (C) 2001 - 2003 by Privoxy Developers &lt;<A HREF="mailto:developers@privoxy.org">developers@privoxy.org</A>&gt;
 <P>
 
 Some source code is based on code Copyright (C) 1997 by Anonymous Coders
@@ -404,6 +417,6 @@ USA
 This document was created by
 man2html,
 using the manual pages.<BR>
-Time: 16:17:37 GMT, August 26, 2002
+Time: 02:05:48 GMT, March 26, 2003
 </BODY>
 </HTML>

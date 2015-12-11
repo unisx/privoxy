@@ -73,18 +73,23 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="CVS">2. The CVS Repository</H1
+NAME="CVS"
+></A
+>2. The CVS Repository</H1
 ><P
->      If you intend to help us with programming, documentation or packaging
-      you will need write access to our holy grail, the CVS repository.
-      Please read this chapter completely before accessing via CVS.
+>      If you become part of the active development team, you will eventually
+      need write access to our holy grail, the CVS repository. One of the 
+      team members will need to set this up for you. Please read
+      this chapter completely before accessing via CVS.
     </P
 ><DIV
 CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="CVSACCESS">2.1. Access to CVS</H2
+NAME="CVSACCESS"
+></A
+>2.1. Access to CVS</H2
 ><P
 >        The project's CVS repository is hosted on
         <A
@@ -119,13 +124,90 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="CVSCOMMIT">2.2. CVS Commit Guideline</H2
+NAME="CVSBRANCHES"
+></A
+>2.2. Branches</H2
+><P
+>       Within the CVS repository, there are modules and branches. As
+       mentioned, the sources are in the <TT
+CLASS="LITERAL"
+>current</TT
+>
+       <SPAN
+CLASS="QUOTE"
+>"module"</SPAN
+>. Other modules are present for platform specific
+       issues. There is a webview of the CVS hierarchy at <A
+HREF="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/"
+TARGET="_top"
+>http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/ijbswa/</A
+>,
+       which might help with visualizing how these pieces fit together.
+     </P
+><P
+>       Branches are used to fork a sub-development path from the main trunk.
+       Within the <TT
+CLASS="LITERAL"
+>current</TT
+> module where the sources are, there
+       is always at least one <SPAN
+CLASS="QUOTE"
+>"branch"</SPAN
+> from the main trunk
+       devoted to a stable release series. The main trunk is where active
+       development takes place for the next stable series (e.g. 3.2.x).
+       So just prior to each stable series (e.g. 3.0.x), a branch is created
+       just for stable series releases (e.g. 3.0.0 -&#62; 3.0.1 -&#62; 3.0.2, etc).
+       Once the initial stable release of any stable branch has taken place,
+       this branch is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>only used for bugfixes</I
+></SPAN
+>, which have
+       had prior testing before being committed to CVS. (See <A
+HREF="newrelease.html#VERSIONNUMBERS"
+>Version Numbers</A
+> below for details on
+       versioning.)
+     </P
+><P
+>       This will result in at least two active branches, which means there may
+       be occasions that require the same (or similar) item to be 
+       checked into to two different places (assuming its a bugfix and needs 
+       fixing in both the stable and unstable trees). This also means that in
+       order to have access to both trees, both will have to be checked out 
+       separately. Use the <TT
+CLASS="LITERAL"
+>cvs -r</TT
+> flag to check out a 
+       branch, e.g: <TT
+CLASS="LITERAL"
+>cvs co -r v_3_0_branch current</TT
+>.
+     </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CVSCOMMIT"
+></A
+>2.3. CVS Commit Guidelines</H2
 ><P
 >        The source tree is the heart of every software project. Every effort must
         be made to ensure that it is readable, compilable and consistent at all
-        times. We therefore ask anyone with CVS access to strictly adhere to the
-        following guidelines:
-        <P
+        times. There are differing guidelines for the stable branch and the
+        main development trunk, and we ask anyone with CVS access to strictly
+        adhere to the following guidelines:
+      </P
+><P
+>       Basic Guidelines, for all branches:
+      </P
+><P
+>        <P
 ></P
 ><UL
 ><LI
@@ -178,20 +260,16 @@ CLASS="EMPHASIS"
 ><LI
 ><P
 >            Before changing things on CVS, make sure that your changes are in line
-            with the team's general consensus on what should be done (see below).
+            with the team's general consensus on what should be done.
           </P
 ></LI
 ><LI
 ><P
->            Don't commit into the stable branch, unless immediately before a new
-            release. (See <A
-HREF="newrelease.html#VERSIONNUMBERS"
->Version Numbers</A
-> below
-            for details.) Collect your changes on the <A
+>            Note that near a major public release, we get more cautious.
+            There is always the possibility to submit a patch to the <A
 HREF="http://sourceforge.net/tracker/?atid=311118&group_id=11118&func=browse"
 TARGET="_top"
->patches
+>patch
             tracker</A
 > instead.
           </P
@@ -199,65 +277,58 @@ TARGET="_top"
 ></UL
 >
       </P
-></DIV
-><DIV
-CLASS="SECT2"
-><H2
-CLASS="SECT2"
-><A
-NAME="CVSWHENASK">2.3. Discussing Changes First</H2
 ><P
->        We don't have a too formal policy on this, just use common sense. Hints: If it is..
-        <P
-></P
-><OL
-TYPE="1"
-><LI
-><P
->            ..a bug-fix / clean-up / cosmetic thing: shoot
-          </P
-></LI
-><LI
-><P
->            ..a new feature that can be turned off: shoot
-          </P
-></LI
-><LI
-><P
->            ..a clear improvement w/o side effects on other parts of the code: shoot
-          </P
-></LI
-><LI
-><P
->            ..a matter of taste: <A
-HREF="mailto:developers@privoxy.org"
-TARGET="_top"
->ask the list</A
->
-          </P
-></LI
-><LI
-><P
->            ..a major redesign of some part of the code: <A
-HREF="mailto:developers@privoxy.org"
-TARGET="_top"
->ask
-            the list</A
->
-          </P
-></LI
-></OL
->
+>       Stable branches are handled with more care, especially after the 
+       initial *.*.0 release, and we are just in bugfix mode. In addition to 
+       the above, the below applies only to the stable branch (currently the 
+       <TT
+CLASS="LITERAL"
+>v_3_0_branch</TT
+> branch):
       </P
 ><P
->        Note that near a major public release, we get a bit more cautious - if
-        unsure, it doesn't hurt to ask first. There is always the possibility
-        to submit a patch to the <A
-HREF="http://sourceforge.net/tracker/?atid=311118&group_id=11118&func=browse"
+>       <P
+></P
+><UL
+><LI
+><P
+>           Do not commit <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>anything</I
+></SPAN
+> unless your proposed
+           changes have been well tested first, preferably by other members of the
+           project, or have prior approval of the project leaders or consensus
+           of the devel list.
+         </P
+></LI
+><LI
+><P
+>         Where possible, bugfixes and changes should be tested in the main 
+         development trunk first. There may be occasions where this is not 
+         feasible, though.
+        </P
+></LI
+><LI
+><P
+>          Alternately, proposed changes can be submitted as patches to the patch tracker on 
+          Sourceforge first: <A
+HREF="http://sourceforge.net/tracker/?group_id=11118&atid=311118"
 TARGET="_top"
->patches
-        tracker</A
-> instead.
+>http://sourceforge.net/tracker/?group_id=11118&#38;atid=311118</A
+>.
+          Then ask for peer review. 
+        </P
+></LI
+><LI
+><P
+>          Do not even think about anything except bugfixes. No new features!
+         </P
+></LI
+></UL
+>
       </P
 ></DIV
 ></DIV

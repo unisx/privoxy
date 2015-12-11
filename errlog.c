@@ -1,4 +1,4 @@
-const char errlog_rcs[] = "$Id: errlog.c,v 1.40 2002/05/22 01:27:27 david__schmidt Exp $";
+const char errlog_rcs[] = "$Id: errlog.c,v 1.40.2.3 2003/03/07 03:41:04 david__schmidt Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/errlog.c,v $
@@ -33,6 +33,17 @@ const char errlog_rcs[] = "$Id: errlog.c,v 1.40 2002/05/22 01:27:27 david__schmi
  *
  * Revisions   :
  *    $Log: errlog.c,v $
+ *    Revision 1.40.2.3  2003/03/07 03:41:04  david__schmidt
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *
+ *    Revision 1.40.2.2  2002/09/28 00:30:57  david__schmidt
+ *    Update error logging to give sane values for thread IDs on Mach kernels.
+ *    It's still a hack, but at least it looks farily normal.  We print the
+ *    absolute value of the first 4 bytes of the pthread_t modded with 1000.
+ *
+ *    Revision 1.40.2.1  2002/09/25 12:47:42  oes
+ *    Make log_error safe against NULL string arguments
+ *
  *    Revision 1.40  2002/05/22 01:27:27  david__schmidt
  *
  *    Add os2_socket_strerr mirroring w32_socket_strerr.
@@ -420,6 +431,15 @@ void log_error(int loglevel, char *fmt, ...)
    /* FIXME get current thread id */
 #ifdef FEATURE_PTHREAD
    this_thread = (long)pthread_self();
+#ifdef __MACH__
+   /*
+    * Mac OSX (and perhaps other Mach instances) doesn't have a debuggable
+    * value at the first 4 bytes of pthread_self()'s return value, a pthread_t.
+    * pthread_t is supposed to be opaque... but it's fairly random, though, so
+    * we make it mostly presentable.
+    */
+   this_thread = abs(this_thread % 1000);
+#endif /* def __MACH__ */
 #elif defined(_WIN32)
    this_thread = GetCurrentThreadId();
 #elif defined(__OS2__)
@@ -447,6 +467,10 @@ void log_error(int loglevel, char *fmt, ...)
        time (&now);
 #ifdef HAVE_LOCALTIME_R
        tm_now = *localtime_r(&now, &tm_now);
+#elif OSX_DARWIN
+       pthread_mutex_lock(&localtime_mutex);
+       tm_now = *localtime (&now); 
+       pthread_mutex_unlock(&localtime_mutex);
 #else
        tm_now = *localtime (&now); 
 #endif
@@ -613,6 +637,10 @@ void log_error(int loglevel, char *fmt, ...)
             break;
          case 's':
             sval = va_arg( ap, char * );
+            if (sval == NULL)
+            {
+               sval = "[null]";
+            }
             oldoutc = outc;
             outc += strlen(sval);
             if (outc < BUFFER_SIZE-1) 
@@ -630,6 +658,10 @@ void log_error(int loglevel, char *fmt, ...)
              */
             ival = va_arg( ap, int );
             sval = va_arg( ap, char * );
+            if (sval == NULL)
+            {
+               sval = "[null]";
+            }
             if (ival < 0)
             {
                ival = 0;
@@ -702,11 +734,19 @@ void log_error(int loglevel, char *fmt, ...)
                time (&now); 
 #ifdef HAVE_GMTIME_R
                gmt = *gmtime_r(&now, &gmt);
+#elif OSX_DARWIN
+               pthread_mutex_lock(&gmtime_mutex);
+               gmt = *gmtime(&now);
+               pthread_mutex_unlock(&gmtime_mutex);
 #else
                gmt = *gmtime(&now);
 #endif
 #ifdef HAVE_LOCALTIME_R
                tm_now = localtime_r(&now, &dummy);
+#elif OSX_DARWIN
+               pthread_mutex_lock(&localtime_mutex);
+               tm_now = localtime (&now); 
+               pthread_mutex_unlock(&localtime_mutex);
 #else
                tm_now = localtime (&now); 
 #endif

@@ -7,7 +7,7 @@ NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.0 User Manual"
+TITLE="Privoxy 3.0.2 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Quickstart to Using Privoxy"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.0 User Manual</TH
+>Privoxy 3.0.2 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -73,7 +73,9 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="STARTUP">5. Starting <SPAN
+NAME="STARTUP"
+></A
+>5. Starting <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 ></H1
@@ -99,7 +101,9 @@ CLASS="APPLICATION"
 >  <DIV
 CLASS="FIGURE"
 ><A
-NAME="AEN439"><P
+NAME="AEN505"
+></A
+><P
 ><B
 >Figure 2. Proxy Configuration (Mozilla)</B
 ></P
@@ -212,7 +216,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-REDHAT">5.1. Red Hat and Conectiva</H2
+NAME="START-REDHAT"
+></A
+>5.1. Red Hat and Conectiva</H2
 ><P
 > We use a script. Note that Red Hat does not start Privoxy upon booting per
  default. It will use the file <TT
@@ -240,7 +246,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-DEBIAN">5.2. Debian</H2
+NAME="START-DEBIAN"
+></A
+>5.2. Debian</H2
 ><P
 > We use a script. Note that Debian starts Privoxy upon booting per
  default.  It will use the file
@@ -269,7 +277,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-SUSE">5.3. SuSE</H2
+NAME="START-SUSE"
+></A
+>5.3. SuSE</H2
 ><P
 >We use a script. It will use the file <TT
 CLASS="FILENAME"
@@ -297,7 +307,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-WINDOWS">5.4. Windows</H2
+NAME="START-WINDOWS"
+></A
+>5.4. Windows</H2
 ><P
 >Click on the Privoxy Icon to start Privoxy. If no configuration file is
  specified on the command line, <SPAN
@@ -315,7 +327,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-UNICES">5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</H2
+NAME="START-UNICES"
+></A
+>5.5. Solaris, NetBSD, FreeBSD, HP-UX and others</H2
 ><P
 >Example Unix startup command:</P
 ><P
@@ -338,7 +352,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-OS2">5.6. OS/2</H2
+NAME="START-OS2"
+></A
+>5.6. OS/2</H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -359,7 +375,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-MACOSX">5.7. Mac OSX</H2
+NAME="START-MACOSX"
+></A
+>5.7. Mac OSX</H2
 ><P
 > During installation, <SPAN
 CLASS="APPLICATION"
@@ -398,7 +416,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-AMIGAOS">5.8. AmigaOS</H2
+NAME="START-AMIGAOS"
+></A
+>5.8. AmigaOS</H2
 ><P
 > Start <SPAN
 CLASS="APPLICATION"
@@ -428,7 +448,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="START-GENTOO">5.9. Gentoo</H2
+NAME="START-GENTOO"
+></A
+>5.9. Gentoo</H2
 ><P
 > A script is again used. It will use the file <TT
 CLASS="FILENAME"
@@ -482,7 +504,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="CMDOPTIONS">5.10. Command Line Options</H2
+NAME="CMDOPTIONS"
+></A
+>5.10. Command Line Options</H2
 ><P
 > <SPAN
 CLASS="APPLICATION"
@@ -599,6 +623,31 @@ CLASS="EMPHASIS"
 ></SPAN
 >, and if included the GID of GROUP.  Exit if the
    privileges are not sufficient to do so. Unix only.
+  </P
+></LI
+><LI
+><P
+>   <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--chroot</I
+></SPAN
+>
+  
+  </P
+><P
+>   Before changing to the user ID given in the <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>--user</I
+></SPAN
+> option, 
+   chroot to that user's home directory, i.e. make the kernel pretend to the Privoxy
+   process that the directory tree starts there. If set up carefully, this can limit 
+   the impact of possible vulnerabilities in Privoxy to the files contained in that hierarchy.
+   Unix only.
   </P
 ></LI
 ><LI

@@ -1,6 +1,6 @@
 #ifndef PARSERS_H_INCLUDED
 #define PARSERS_H_INCLUDED
-#define PARSERS_H_VERSION "$Id: parsers.h,v 1.26 2002/05/08 15:59:53 oes Exp $"
+#define PARSERS_H_VERSION "$Id: parsers.h,v 1.26.2.1 2002/09/25 14:52:46 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/parsers.h,v $
@@ -43,6 +43,17 @@
  *
  * Revisions   :
  *    $Log: parsers.h,v $
+ *    Revision 1.26.2.1  2002/09/25 14:52:46  oes
+ *    Added basic support for OPTIONS and TRACE HTTP methods:
+ *     - New parser function client_max_forwards which decrements
+ *       the Max-Forwards HTTP header field of OPTIONS and TRACE
+ *       requests by one before forwarding
+ *     - New parser function client_host which extracts the host
+ *       and port information from the HTTP header field if the
+ *       request URI was not absolute
+ *     - Don't crumble and re-add the Host: header, but only generate
+ *       and append if missing
+ *
  *    Revision 1.26  2002/05/08 15:59:53  oes
  *    Changed add_to_iob signature (now returns jb_err)
  *
@@ -196,6 +207,9 @@ extern jb_err client_send_cookie     (struct client_state *csp, char **header);
 extern jb_err client_x_forwarded     (struct client_state *csp, char **header);
 extern jb_err client_accept_encoding (struct client_state *csp, char **header);
 extern jb_err client_te              (struct client_state *csp, char **header);
+extern jb_err client_max_forwards    (struct client_state *csp, char **header);
+extern jb_err client_host(struct client_state *csp, char **header);
+
 
 extern jb_err client_host_adder           (struct client_state *csp);
 extern jb_err client_cookie_adder         (struct client_state *csp);

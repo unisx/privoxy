@@ -31,6 +31,12 @@
 #
 # Revisions   :
 #    $Log: edit-actions-list,v $
+#    Revision 1.26.2.3  2002/09/25 15:34:09  oes
+#    - Work around JS problem in NS 2.0 (no joke)
+#    - Make JS string edit popup remove the pattern
+#      if edited to empty; make JS add popup do nothing
+#      if pattern empty.
+#
 #    Revision 1.26.2.2  2002/08/23 02:22:53  hal9
 #    Fix a perl brain fart with <li> in comments.
 #
@@ -226,14 +232,19 @@ function rm_p(pattern,curtext)
 
 function e_p(pattern,curtext)
 {
-   if(newtext=window.prompt("Edit the pattern to your needs:", unescape(curtext)))
-   { window.location.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+escape(newtext); }
+   if ((newtext=window.prompt("Edit the pattern to your needs:", unescape(curtext))) != null)
+   {
+      if (newtext != "")
+      { window.location.href="edit-actions-url?f=@f@&v=@v@&p="+pattern+"&u="+escape(newtext); }
+      else
+      { window.location.href="edit-actions-remove-url?f=@f@&v=@v@&p="+pattern; }
+   }
    return false;
 }
 
 function a_p(section)
 {
-   if(newtext=window.prompt("Enter the new pattern:", ""))
+   if (((newtext=window.prompt("Enter the new pattern:", "")) != null ) && (newtext != ""))
    { window.location.href="edit-actions-add-url?f=@f@&v=@v@&s="+section+"&u="+escape(newtext); }
    return false;
 }

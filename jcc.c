@@ -1,4 +1,4 @@
-const char jcc_rcs[] = "$Id: jcc.c,v 1.92 2002/05/08 16:00:46 oes Exp $";
+const char jcc_rcs[] = "$Id: jcc.c,v 1.92.2.7 2003/03/17 16:48:59 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/jcc.c,v $
@@ -33,6 +33,37 @@ const char jcc_rcs[] = "$Id: jcc.c,v 1.92 2002/05/08 16:00:46 oes Exp $";
  *
  * Revisions   :
  *    $Log: jcc.c,v $
+ *    Revision 1.92.2.7  2003/03/17 16:48:59  oes
+ *    Added chroot ability, thanks to patch by Sviatoslav Sviridov
+ *
+ *    Revision 1.92.2.6  2003/03/11 11:55:00  oes
+ *    Clean-up and extension of improvements for forked mode:
+ *     - Child's return code now consists of flags RC_FLAG_*
+ *     - Reporting toggle to parent now properly #ifdef'ed
+ *     - Children now report blocking to parent. This enables
+ *       statistics in forked mode
+ *
+ *    Revision 1.92.2.5  2003/03/10 23:45:32  oes
+ *    Fixed bug #700381: Non-Threaded version now capable of being toggled.
+ *    Children now report having been toggled through _exit(17), parents
+ *    watch for that code and toggle themselves if found.
+ *
+ *    Revision 1.92.2.4  2003/03/07 03:41:04  david__schmidt
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *
+ *    Revision 1.92.2.3  2003/02/28 12:53:06  oes
+ *    Fixed two mostly harmless mem leaks
+ *
+ *    Revision 1.92.2.2  2002/11/20 14:37:47  oes
+ *    Fix: Head of global clients list now initialized to NULL
+ *
+ *    Revision 1.92.2.1  2002/09/25 14:52:24  oes
+ *    Added basic support for OPTIONS and TRACE HTTP methods:
+ *     - New interceptor direct_response() added in chat().
+ *     - sed() moved to earlier in the process, so that the
+ *       Host: header is evaluated before actions and forwarding
+ *       are decided on.
+ *
  *    Revision 1.92  2002/05/08 16:00:46  oes
  *    Chat's buffer handling:
  *     - Fixed bug with unchecked out-of-mem conditions
@@ -657,6 +688,16 @@ static int32 server_thread(void *data);
 #define sleep(N)  DosSleep(((N) * 100))
 #endif
 
+#ifdef OSX_DARWIN
+/*
+ * Hit OSX over the head with a hammer.  Protect all *_r functions.
+ */
+pthread_mutex_t gmtime_mutex;
+pthread_mutex_t localtime_mutex;
+pthread_mutex_t gethostbyaddr_mutex;
+pthread_mutex_t gethostbyname_mutex;
+#endif /* def OSX_DARWIN */
+
 #if defined(unix) || defined(__EMX__)
 const char *basedir;
 const char *pidfile = NULL;
@@ -850,6 +891,7 @@ static void chat(struct client_state *csp)
 
       log_error(LOG_LEVEL_CLF, "%s - - [%T] \" \" 400 0", csp->ip_addr_str);
 
+      free_http_request(http);
       return;
    }
 
@@ -981,14 +1023,14 @@ static void chat(struct client_state *csp)
       {
          string_append(&http->cmd, http->path);
       }
-
       string_append(&http->cmd, " ");
       string_append(&http->cmd, http->ver);
 
       if (http->cmd == NULL)
       {
-         log_error(LOG_LEVEL_FATAL, "Out of memory rewiting SSL command");
+         log_error(LOG_LEVEL_FATAL, "Out of memory writing HTTP command");
       }
+      log_error(LOG_LEVEL_HEADER, "New HTTP Request-Line: %s", http->cmd);
    }
    enlist(csp->headers, http->cmd);
 
@@ -1042,14 +1084,18 @@ static void chat(struct client_state *csp)
       enlist(csp->headers, p);
       freez(p);
    }
+
    /*
     * We have a request. Now, check to see if we need to
     * intercept it, i.e. If ..
     */
 
    if (
-       /* a CGI call was detected and answered */
-       (NULL != (rsp = dispatch_cgi(csp)))
+       /* We may not forward the request by rfc2616 sect 14.31 */
+       (NULL != (rsp = direct_response(csp)))
+
+       /* or a CGI call was detected and answered */
+       || (NULL != (rsp = dispatch_cgi(csp)))
 
        /* or we are enabled and... */
        || (IS_ENABLED_AND (
@@ -1090,6 +1136,15 @@ static void chat(struct client_state *csp)
       free_http_response(rsp);
       return;
    }
+
+   hdr = sed(client_patterns, add_client_headers, csp);
+   if (hdr == NULL)
+   {
+      /* FIXME Should handle error properly */
+      log_error(LOG_LEVEL_FATAL, "Out of memory parsing client header");
+   }
+
+   list_remove_all(csp->headers);
 
    log_error(LOG_LEVEL_GPC, "%s%s", http->hostport, http->path);
 
@@ -1139,19 +1194,11 @@ static void chat(struct client_state *csp)
       }
 
       free_http_response(rsp);
+      freez(hdr);
       return;
    }
 
    log_error(LOG_LEVEL_CONNECT, "OK");
-
-   hdr = sed(client_patterns, add_client_headers, csp);
-   if (hdr == NULL)
-   {
-      /* FIXME Should handle error properly */
-      log_error(LOG_LEVEL_FATAL, "Out of memory parsing client header");
-   }
-
-   list_remove_all(csp->headers);
 
    if (fwd->forward_host || (http->ssl == 0))
    {
@@ -1354,13 +1401,13 @@ static void chat(struct client_state *csp)
                    || write_socket(csp->cfd, p != NULL ? p : csp->iob->cur, csp->content_length))
                   {
                      log_error(LOG_LEVEL_ERROR, "write modified content to client failed: %E");
+                     freez(hdr);
+                     freez(p);
                      return;
                   }
 
                   freez(hdr);
-                  if (NULL != p) {
-                     freez(p);
-                  }
+                  freez(p);
                }
 
                break; /* "game over, man" */
@@ -1725,6 +1772,7 @@ int main(int argc, const char *argv[])
    struct passwd *pw = NULL;
    struct group *grp = NULL;
    char *p;
+   int do_chroot = 0;
 #endif
 
    Argc = argc;
@@ -1787,6 +1835,11 @@ int main(int argc, const char *argv[])
 
          if (p != NULL) *--p = '\0';
       }
+
+      else if (strcmp(argv[argc_pos], "--chroot" ) == 0)
+      {
+         do_chroot = 1;
+      }
 #endif /* defined(unix) */
       else
 #endif /* defined(_WIN32) && !defined(_WIN_CONSOLE) */
@@ -1822,12 +1875,23 @@ int main(int argc, const char *argv[])
 
 
    files->next = NULL;
+   clients->next = NULL;
 
 #ifdef AMIGA
    InitAmiga();
 #elif defined(_WIN32)
    InitWin32();
 #endif
+
+#ifdef OSX_DARWIN
+   /*
+    * Prepare global mutex semaphores
+    */
+   pthread_mutex_init(&gmtime_mutex,0);
+   pthread_mutex_init(&localtime_mutex,0);
+   pthread_mutex_init(&gethostbyaddr_mutex,0);
+   pthread_mutex_init(&gethostbyname_mutex,0);
+#endif /* def OSX_DARWIN */
 
    /*
     * Unix signal handling
@@ -1953,10 +2017,40 @@ int main(int argc, const char *argv[])
       {
          log_error(LOG_LEVEL_FATAL, "Cannot setgid(): Insufficient permissions.");
       }
+      if (do_chroot)
+      {
+         if (!pw->pw_dir)
+         {
+            log_error(LOG_LEVEL_FATAL, "Home directory for %s undefined", pw->pw_name);
+         }
+         if (chroot(pw->pw_dir) < 0)
+         {
+            log_error(LOG_LEVEL_FATAL, "Cannot chroot to %s", pw->pw_dir);
+         }
+         if (chdir ("/"))
+         {
+            log_error(LOG_LEVEL_FATAL, "Cannot chdir /");
+         }
+      }
       if (setuid(pw->pw_uid))
       {
          log_error(LOG_LEVEL_FATAL, "Cannot setuid(): Insufficient permissions.");
       }
+      if (do_chroot)
+      {
+         if (setenv ("HOME", "/", 1) < 0)
+         {
+            log_error(LOG_LEVEL_FATAL, "Cannot setenv(): HOME");
+         }
+         if (setenv ("USER", pw->pw_name, 1) < 0)
+         {
+            log_error(LOG_LEVEL_FATAL, "Cannot setenv(): USER");
+         }
+      }
+   }
+   else if (do_chroot)
+   {
+      log_error(LOG_LEVEL_FATAL, "Cannot chroot without --user argument.");
    }
 }
 #endif /* defined unix */
@@ -2160,7 +2254,7 @@ static void listen_loop(void)
       }
 
 #ifdef FEATURE_TOGGLE
-      if (g_bToggleIJB)
+      if (global_toggle_state)
       {
          csp->flags |= CSP_FLAG_TOGGLED_ON;
       }
@@ -2245,6 +2339,7 @@ static void listen_loop(void)
 #if defined(AMIGA) && !defined(SELECTED_ONE_OPTION)
 #define SELECTED_ONE_OPTION
          csp->cfd = ReleaseSocket(csp->cfd, -1);
+         
          if((child_id = (int)CreateNewProcTags(
             NP_Entry, (ULONG)server_thread,
             NP_Output, Output(),
@@ -2269,9 +2364,32 @@ static void listen_loop(void)
           */
          if (child_id == 0)   /* child */
          {
-            serve(csp);
-            _exit(0);
+            int rc = 0;
+#ifdef FEATURE_TOGGLE
+            int inherited_toggle_state = global_toggle_state;
+#endif /* def FEATURE_TOGGLE */
 
+            serve(csp);
+
+            /* 
+             * If we've been toggled or we'be blocked the request, tell Mom
+             */
+
+#ifdef FEATURE_TOGGLE
+            if (inherited_toggle_state != global_toggle_state)
+            {
+               rc |= RC_FLAG_TOGGLED;
+            }
+#endif /* def FEATURE_TOGGLE */
+
+#ifdef FEATURE_STATISTICS  
+            if (csp->flags & CSP_FLAG_REJECTED)
+            {
+               rc |= RC_FLAG_BLOCKED;
+            }
+#endif /* ndef FEATURE_STATISTICS */
+
+            _exit(rc);
          }
          else if (child_id > 0) /* parent */
          {
@@ -2279,9 +2397,32 @@ static void listen_loop(void)
              * copy of the client socket and the CSP
              * are not used.
              */
+            int child_status;
+#if !defined(_WIN32) && !defined(__CYGWIN__)
 
-#if !defined(_WIN32) && defined(__CYGWIN__)
-            wait( NULL );
+            wait( &child_status );
+
+            /* 
+             * Evaluate child's return code: If the child has
+             *  - been toggled, toggle ourselves
+             *  - blocked its request, bump up the stats counter
+             */
+
+#ifdef FEATURE_TOGGLE
+            if (WIFEXITED(child_status) && (WEXITSTATUS(child_status) & RC_FLAG_TOGGLED))
+            {
+               global_toggle_state = !global_toggle_state;
+            }
+#endif /* def FEATURE_TOGGLE */
+
+#ifdef FEATURE_STATISTICS
+            urls_read++;
+            if (WIFEXITED(child_status) && (WEXITSTATUS(child_status) & RC_FLAG_BLOCKED))
+            {
+               urls_rejected++;
+            }
+#endif /* def FEATURE_STATISTICS */ 
+
 #endif /* !defined(_WIN32) && defined(__CYGWIN__) */
             close_socket(csp->cfd);
             csp->flags &= ~CSP_FLAG_ACTIVE;

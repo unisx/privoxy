@@ -1,8 +1,8 @@
-#        Sample Configuration File for Privoxy v3.0.0
+#        Sample Configuration File for Privoxy v3.0.1
 #  
 #  Copyright (C) 2001, 2002 Privoxy Developers http://privoxy.org
 #  
-#  $Id: config,v 1.39.2.6 2002/08/25 23:50:21 hal9 Exp $
+#  $Id: config,v 1.39.2.10 2003/03/05 16:34:15 oes Exp $
 #  
 ####################################################################
 #                                                                  #
@@ -237,8 +237,6 @@ filterfile default.filter
 #  
 #  Notes:
 #  
-#      The windows version will additionally log to the console.
-#  
 #      The logfile is where all logging and error messages are
 #      written. The level of detail and number of messages are set with
 #      the debug option (see below).  The logfile can be useful for
@@ -306,7 +304,7 @@ jarfile jarfile
 #  
 #  Effect if unset:
 #  
-#      The whole trust mechanism is turned off.
+#      The entire trust mechanism is turned off.
 #  
 #  Notes:
 #  
@@ -315,15 +313,29 @@ jarfile jarfile
 #      for the casual user.
 #  
 #      If you specify a trust file, Privoxy will only allow access to
-#      sites that are named in the trustfile. You can also mark sites
-#      as trusted referrers (with +), with the effect that access
-#      to untrusted sites will be granted, if a link from a trusted
-#      referrer was used. The link target will then be added to the
-#      "trustfile". Possible applications include limiting Internet
-#      access for children.
+#      sites that are specified in the trustfile. Sites can be listed
+#      in one of two ways:
 #  
-#      If you use + operator in the trust file, it may grow considerably
-#      over time.
+#      Prepending a ~ character limits access to this site only (and
+#      any sub-paths within this site), e.g. ~www.example.com.
+#  
+#      Or, you can designate sites as trusted referrers, by prepending
+#      the name with a + character. The effect is that access to
+#      untrusted sites will be granted -- but only if a link from this
+#      trusted referrer was used. The link target will then be added
+#      to the "trustfile" so that future, direct accesses will be
+#      granted. Sites added via this mechanism do not become trusted
+#      referrers themselves (i.e. they are added with a ~ designation).
+#  
+#      If you use the + operator in the trust file, it may grow
+#      considerably over time.
+#  
+#      It is recommended that Privoxy be compiled with the
+#      --disable-force, --disable-toggle and --disable-editor options,
+#      if this feature is to be used.
+#  
+#      Possible applications include limiting Internet access for
+#      children.
 #  
 #trustfile trust
 
@@ -370,11 +382,20 @@ jarfile jarfile
 #  
 #      Unix, in local filesystem:
 #  
-#      user-manual  file:///usr/share/doc/privoxy-2.9.18/user-manual/
+#       user-manual file:///usr/share/doc/privoxy-3.0.1/user-manual/index.html
+#  
+#      Windows, in local filesystem, must use forward slash notation,
+#      and %20 to denote spaces in path names:
+#  
+#       user-manual file:///c:/some%20dir/privoxy/user-manual/index.html
+#  
+#      Windows, UNC notation (forward slashes required again):
+#  
+#       user-manual file://///some-server/some-path/privoxy/user-manual/index.html
 #  
 #      Any platform, on local webserver (called "local-webserver"):
 #  
-#      user-manual  http://local-webserver/privoxy-user-manual/
+#       user-manual  http://local-webserver/privoxy-user-manual/
 #  
 #      WARNING!!!
 #  

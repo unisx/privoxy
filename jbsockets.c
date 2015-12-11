@@ -1,4 +1,4 @@
-const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.1 2002/05/26 23:41:27 joergs Exp $";
+const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.3 2003/03/07 03:41:04 david__schmidt Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/jbsockets.c,v $
@@ -35,6 +35,13 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.1 2002/05/26 23:41:27 jo
  *
  * Revisions   :
  *    $Log: jbsockets.c,v $
+ *    Revision 1.35.2.3  2003/03/07 03:41:04  david__schmidt
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *
+ *    Revision 1.35.2.2  2002/11/20 14:37:24  oes
+ *    Fixed Win32 error logging in bind_port.
+ *    Thanks to Oliver Stoeneberg for the hint.
+ *
  *    Revision 1.35.2.1  2002/05/26 23:41:27  joergs
  *    AmigaOS: Fixed wrong type of len in write_socket()
  *
@@ -229,6 +236,12 @@ const char jbsockets_rcs[] = "$Id: jbsockets.c,v 1.35.2.1 2002/05/26 23:41:27 jo
 #endif
 
 #endif
+
+#ifdef OSX_DARWIN
+#include <pthread.h>
+#include "jcc.h"
+/* jcc.h is for mutex semaphores only */
+#endif /* def OSX_DARWIN */
 
 #include "project.h"
 #include "jbsockets.h"
@@ -599,6 +612,7 @@ int bind_port(const char *hostnam, int portnum, jb_socket *pfd)
    {
       close_socket (fd);
 #ifdef _WIN32
+      errno = WSAGetLastError();
       if (errno == WSAEADDRINUSE)
 #else
       if (errno == EADDRINUSE)
@@ -709,6 +723,11 @@ int accept_connection(struct client_state * csp, jb_socket fd)
       {
          host = NULL;
       }
+#elif defined(OSX_DARWIN)
+      pthread_mutex_lock(&gethostbyaddr_mutex);
+      host = gethostbyaddr((const char *)&server.sin_addr, 
+                           sizeof(server.sin_addr), AF_INET);
+      pthread_mutex_unlock(&gethostbyaddr_mutex);
 #else
       host = gethostbyaddr((const char *)&server.sin_addr, 
                            sizeof(server.sin_addr), AF_INET);
@@ -783,6 +802,10 @@ unsigned long resolve_hostname_to_ip(const char *host)
       {
          hostp = NULL;
       }
+#elif OSX_DARWIN
+      pthread_mutex_lock(&gethostbyname_mutex);
+      hostp = gethostbyname(host);
+      pthread_mutex_unlock(&gethostbyname_mutex);
 #else
       hostp = gethostbyname(host);
 #endif /* def HAVE_GETHOSTBYNAME_R_(6|5|3)_ARGS */

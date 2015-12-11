@@ -1,6 +1,6 @@
 #ifndef LIST_H_INCLUDED
 #define LIST_H_INCLUDED
-#define LIST_H_VERSION "$Id: list.h,v 1.12 2002/03/26 22:29:55 swa Exp $"
+#define LIST_H_VERSION "$Id: list.h,v 1.12.2.1 2002/11/28 18:14:54 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/list.h,v $
@@ -36,6 +36,10 @@
  *
  * Revisions   :
  *    $Log: list.h,v $
+ *    Revision 1.12.2.1  2002/11/28 18:14:54  oes
+ *    Added unmap function that removes all items with a given
+ *    name from a map.
+ *
  *    Revision 1.12  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *
@@ -144,9 +148,11 @@ extern char * list_to_text(const struct list *the_list);
 extern struct map * new_map  (void);
 extern void         free_map (struct map * the_map);
 
-extern int          map      (struct map * the_map,
+extern jb_err       map      (struct map * the_map,
                               const char * name, int name_needs_copying,
                               const char * value, int value_needs_copying);
+extern jb_err       unmap    (struct map *the_map,
+                              const char *name);
 extern const char * lookup   (const struct map * the_map, const char * name);
 
 

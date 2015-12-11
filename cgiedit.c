@@ -1,4 +1,4 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.2 2002/08/05 20:02:59 oes Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.4 2003/03/11 11:53:59 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.c,v $
@@ -42,6 +42,12 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.2 2002/08/05 20:02:59 oes Ex
  *
  * Revisions   :
  *    $Log: cgiedit.c,v $
+ *    Revision 1.41.2.4  2003/03/11 11:53:59  oes
+ *    Cosmetic: Renamed cryptic variable
+ *
+ *    Revision 1.41.2.3  2002/11/12 15:01:41  oes
+ *    Fix: Don't free uninitialized struct editable_file
+ *
  *    Revision 1.41.2.2  2002/08/05 20:02:59  oes
  *    Bugfix: "Insert new section at top" did not work properly if first non-comment line in file was of type FILE_LINE_ACTION
  *
@@ -292,7 +298,7 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.2 2002/08/05 20:02:59 oes Ex
 #include "errlog.h"
 #include "loaders.h"
 #include "loadcfg.h"
-/* loadcfg.h is for g_bToggleIJB only */
+/* loadcfg.h is for global_toggle_state only */
 #include "urlmatch.h"
 
 const char cgiedit_h_rcs[] = CGIEDIT_H_VERSION;
@@ -2521,7 +2527,6 @@ jb_err cgi_edit_actions_list(struct client_state *csp,
 
    if (NULL == (exports = default_exports(csp, NULL)))
    {
-      edit_free_file(file);
       return JB_ERR_MEMORY;
    }
 
@@ -4379,17 +4384,17 @@ jb_err cgi_toggle(struct client_state *csp,
    if (mode == 'E')
    {
       /* Enable */
-      g_bToggleIJB = 1;
+      global_toggle_state = 1;
    }
    else if (mode == 'D')
    {
       /* Disable */
-      g_bToggleIJB = 0;
+      global_toggle_state = 0;
    }
    else if (mode == 'T')
    {
       /* Toggle */
-      g_bToggleIJB = !g_bToggleIJB;
+      global_toggle_state = !global_toggle_state;
    }
 
    if (NULL == (exports = default_exports(csp, "toggle")))

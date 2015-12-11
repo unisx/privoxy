@@ -5,7 +5,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: privoxy-man-page.sgml,v 1.13.2.4 2002/08/26 16:26:58 hal9 Exp $
+ $Id: privoxy-man-page.sgml,v 1.13.2.7 2003/03/26 02:06:21 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -42,7 +42,7 @@
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
 <!entity authors SYSTEM "p-authors.sgml">
-<!entity p-version "3.0.0">
+<!entity p-version "3.0.2">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -76,6 +76,7 @@
   <arg><option>--no-daemon</option></arg>
   <arg><option>--pidfile </option><replaceable class="parameter">pidfile</replaceable></arg>  
   <arg><option>--user </option><replaceable class="parameter">user[.group]</replaceable></arg> 
+  <arg><option>--chroot</option></arg>
   <arg><replaceable class="parameter">configfile</replaceable></arg>        
   <command>&nbsp;(UNIX)</command>
  </cmdsynopsis>
@@ -151,8 +152,21 @@
      </para>
     </listitem>
   </varlistentry>
+  <varlistentry>
+    <term>--chroot</term>
+     <listitem>
+      <para>
+       Before changing to the user ID given in the --user option, chroot to
+       that user's home directory, i.e. make the kernel pretend to the
+       <command>Privoxy</command> process that the directory tree starts
+       there. If set up carefully, this can limit the impact of possible
+       vulnerabilities in <command>Privoxy</command> to the files contained in
+       that hierarchy. 
+      </para>
+    </listitem>
+  </varlistentry>
  </variablelist>
- 
+
  <para>
   If the <filename>configfile</filename> is not specified on  the  command  line,
   <command>Privoxy</command>  will  look for a file named

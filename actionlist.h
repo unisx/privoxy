@@ -39,6 +39,9 @@
  *
  * Revisions   :
  *    $Log: actionlist.h,v $
+ *    Revision 1.17.2.2  2002/09/25 15:25:25  oes
+ *    Added more aliases for prehistoric action names
+ *
  *    Revision 1.17.2.1  2002/08/02 12:50:47  oes
  *    Consistency with docs: Change default name for action from hide-referer to hide-referrer
  *
@@ -152,6 +155,8 @@ DEFINE_ACTION_BOOL       ("prevent-keeping-cookies", ACTION_NO_COOKIE_KEEP)
 /* 
  * Pre-3.0 compatibility
  */
+DEFINE_ACTION_BOOL       ("no-cookie-read",          ACTION_NO_COOKIE_READ)
+DEFINE_ACTION_BOOL       ("no-cookie-set",           ACTION_NO_COOKIE_SET)
 DEFINE_ACTION_BOOL       ("prevent-reading-cookies", ACTION_NO_COOKIE_READ)
 DEFINE_ACTION_BOOL       ("prevent-setting-cookies", ACTION_NO_COOKIE_SET)
 DEFINE_ACTION_BOOL       ("downgrade",               ACTION_DOWNGRADE)
@@ -164,6 +169,8 @@ DEFINE_ACTION_BOOL       ("no-cookies-keep",         ACTION_NO_COOKIE_KEEP)
 DEFINE_ACTION_BOOL       ("no-cookies-read",         ACTION_NO_COOKIE_READ)
 DEFINE_ACTION_BOOL       ("no-cookies-set",          ACTION_NO_COOKIE_SET)
 DEFINE_ACTION_BOOL       ("no-popups",               ACTION_NO_POPUPS)
+DEFINE_ACTION_BOOL       ("vanilla-wafer",           ACTION_VANILLA_WAFER)
+DEFINE_ACTION_MULTI      ("wafer",                   ACTION_MULTI_WAFER)
 #endif /* if DEFINE_ACTION_ALIAS */
 
 #undef DEFINE_ACTION_MULTI

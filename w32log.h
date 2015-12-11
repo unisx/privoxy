@@ -1,6 +1,6 @@
 #ifndef W32LOG_H_INCLUDED
 #define W32LOG_H_INCLUDED
-#define W32LOG_H_VERSION "$Id: w32log.h,v 1.10.2.1 2002/08/21 17:58:05 oes Exp $"
+#define W32LOG_H_VERSION "$Id: w32log.h,v 1.10.2.2 2002/11/20 14:39:05 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32log.h,v $
@@ -34,6 +34,9 @@
  *
  * Revisions   :
  *    $Log: w32log.h,v $
+ *    Revision 1.10.2.2  2002/11/20 14:39:05  oes
+ *    Fixed compiler warning
+ *
  *    Revision 1.10.2.1  2002/08/21 17:58:05  oes
  *    Temp kludge to let user and default action file be edited through win32 GUI (FR 592080)
  *
@@ -144,6 +147,7 @@ extern const char * g_trustfile;
 
 /* FIXME: end kludge */
 
+extern HICON g_hiconApp;
 extern int LogPutString(const char *pszText);
 extern BOOL InitLogWindow(void);
 extern void TermLogWindow(void);

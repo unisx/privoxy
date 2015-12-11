@@ -1,4 +1,4 @@
-const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.1 2002/08/10 11:23:40 oes Exp $";
+const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.2 2002/10/08 16:22:28 oes Exp $";
 
 /*********************************************************************
  *
@@ -33,6 +33,9 @@ const char pcrs_rcs[] = "$Id: pcrs.c,v 1.19.2.1 2002/08/10 11:23:40 oes Exp $";
  *
  * Revisions   :
  *    $Log: pcrs.c,v $
+ *    Revision 1.19.2.2  2002/10/08 16:22:28  oes
+ *    Bugfix: Need to check validity of backreferences explicitly, because when max_matches are reached and matches is expanded, realloc() does not zero the memory. Fixes Bug # 606227
+ *
  *    Revision 1.19.2.1  2002/08/10 11:23:40  oes
  *    Include prce.h via project.h, where the appropriate
  *    source will have been selected
@@ -919,7 +922,9 @@ int pcrs_execute(pcrs_job *job, char *subject, size_t subject_length, char **res
          if (k != job->substitute->backrefs
              /* ..in legal range.. */
              && job->substitute->backref[k] < PCRS_MAX_SUBMATCHES + 2
-             /* ..and referencing a nonempty match.. */
+              /* ..and referencing a real submatch.. */
+             && job->substitute->backref[k] < matches[i].submatches
+             /* ..that is nonempty.. */
              && matches[i].submatch_length[job->substitute->backref[k]] > 0)
          {
             /* ..copy the submatch that is ref'd. */

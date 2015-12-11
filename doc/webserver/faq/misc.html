@@ -73,13 +73,17 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="MISC">4. Miscellaneous</H1
+NAME="MISC"
+></A
+>4. Miscellaneous</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN528">4.1. How much does <SPAN
+NAME="AEN500"
+></A
+>4.1. How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > slow my browsing down? This 
@@ -122,7 +126,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="LOADINGTIMES">4.2. I noticed considerable
+NAME="LOADINGTIMES"
+></A
+>4.2. I noticed considerable
 delays in page requests compared to the old Junkbuster. What's wrong?</H3
 ><P
 > If you use any <TT
@@ -157,7 +163,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="CONFIGURL">4.3. What are "http://config.privoxy.org/" and
+NAME="CONFIGURL"
+></A
+>4.3. What are "http://config.privoxy.org/" and
 "http://p.p/"?</H3
 ><P
 > <A
@@ -193,7 +201,7 @@ TARGET="_top"
 >
  takes you to a page saying <SPAN
 CLASS="QUOTE"
->"This is Privoxy.."</SPAN
+>"This is Privoxy ..."</SPAN
 >, everything is OK.
  If you get a page saying <SPAN
 CLASS="QUOTE"
@@ -232,14 +240,16 @@ CLASS="APPLICATION"
 >Privoxy</SPAN
 >, http://example.com/show-proxy-args and http://i.j.b/,
  are no longer supported. If you still use such an old version, you should really consider
- upgrading to 3.0.0.</P
+ upgrading to 3.0.2.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BLOCKLIST">4.4. Do you still maintain the blocklists?</H3
+NAME="BLOCKLIST"
+></A
+>4.4. Do you still maintain the blocklists?</H3
 ><P
 >  No. The patterns for blocking now reside (among other things) in the <A
 HREF="../user-manual/actions-file.html"
@@ -253,7 +263,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="NEWADS">4.5. How can I submit new ads?</H3
+NAME="NEWADS"
+></A
+>4.5. How can I submit new ads?</H3
 ><P
 >Yes, absolutely! Please see the <A
 HREF="contact.html"
@@ -270,7 +282,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="IP">4.6. How can I hide my IP address?</H3
+NAME="IP"
+></A
+>4.6. How can I hide my IP address?</H3
 ><P
 > If you run both the browser and the proxy locally, you cannot hide your IP
  address with <SPAN
@@ -299,7 +313,7 @@ TARGET="_top"
 HREF="http://anon.inf.tu-dresden.de/index_en.html"
 TARGET="_top"
 >http://anon.inf.tu-dresden.de/index_en.html</A
->.</P
+>).</P
 ><P
 > There is, however, even in the single-machine case the possibility to make the
  server believe that your machine is in fact a shared proxy serving a whole big
@@ -310,7 +324,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN588">4.7. Can <SPAN
+NAME="AEN560"
+></A
+>4.7. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > guarantee I am anonymous?</H3
@@ -357,7 +373,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN599">4.8. Might some things break because header information or
+NAME="AEN571"
+></A
+>4.8. Might some things break because header information or
 content is being altered?</H3
 ><P
 > Definitely. More and more sites use HTTP header content to decide what to
@@ -405,7 +423,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN610">4.9. Can <SPAN
+NAME="AEN582"
+></A
+>4.9. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > act as a <SPAN
@@ -445,7 +465,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN620">4.10. What about as a firewall? Can <SPAN
+NAME="AEN592"
+></A
+>4.10. What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > protect me?</H3
@@ -469,7 +491,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN626">4.11. I have large empty spaces / a checkerboard pattern now where
+NAME="AEN598"
+></A
+>4.11. I have large empty spaces / a checkerboard pattern now where
 ads used to be. Why?</H3
 ><P
 > It would be technically possible eliminate the banners in a way that frees
@@ -492,7 +516,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN631">4.12. How can <SPAN
+NAME="AEN603"
+></A
+>4.12. How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > filter Secure (HTTPS) URLs?</H3
@@ -530,13 +556,31 @@ CLASS="APPLICATION"
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >'s ad blocking.</P
+><P
+> <SPAN
+CLASS="QUOTE"
+>"Content cookies"</SPAN
+> (those that are embedded in the actual HTML or
+ JS page content, see <TT
+CLASS="LITERAL"
+><A
+HREF="../user-manual/actions-file.html#FILTER-CONTENT-COOKIES"
+TARGET="_top"
+>filter{content-cookies}</A
+></TT
+>), 
+ in an SSL transaction will be impossible to block under these conditions. 
+ Fortunately, this does not seem to be a very common scenario since most 
+ cookies come by traditional means.</P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN642">4.13. <SPAN
+NAME="AEN618"
+></A
+>4.13. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > runs as a <SPAN
@@ -595,7 +639,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="TURNOFF">4.14. How can I temporarily disable <SPAN
+NAME="TURNOFF"
+></A
+>4.14. How can I temporarily disable <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >?</H3
@@ -625,7 +671,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="REALLYOFF">4.15. When <SPAN
+NAME="REALLYOFF"
+></A
+>4.15. When <SPAN
 CLASS="QUOTE"
 >"disabled"</SPAN
 > is <SPAN
@@ -654,7 +702,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="CRUNCH">4.16. My logs show <SPAN
+NAME="CRUNCH"
+></A
+>4.16. My logs show <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > <SPAN
@@ -705,7 +755,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="DOWNLOADS">4.17. Can <SPAN
+NAME="DOWNLOADS"
+></A
+>4.17. Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > effect files that I download
@@ -764,7 +816,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="SEEALSO">4.18. Where can I find more information about <SPAN
+NAME="SEEALSO"
+></A
+>4.18. Where can I find more information about <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
@@ -1053,6 +1107,45 @@ CLASS="APPLICATION"
 ><P
 ></P
 ></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="MICROSUCK"
+></A
+>4.19. I've noticed that Privoxy changes <SPAN
+CLASS="QUOTE"
+>"Microsoft"</SPAN
+> to 
+<SPAN
+CLASS="QUOTE"
+>"MicroSuck"</SPAN
+>! Why are you manipulating my browsing?</H3
+><P
+> We're not. The text substitutions that you are seeing are disabled
+ in the default configuration as shipped. You have either manually
+ activated the <SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="LITERAL"
+>fun</TT
+>"</SPAN
+> filter which
+ is clearly labeled <SPAN
+CLASS="QUOTE"
+>"Text replacements for subversive browsing
+ fun!"</SPAN
+> or you have implicitly activated it by choosing the
+ <SPAN
+CLASS="QUOTE"
+>"Adventuresome"</SPAN
+> profile in the web-based editor (formerly known 
+ as the <SPAN
+CLASS="APPLICATION"
+>Advanced</SPAN
+> profile).</P
 ></DIV
 ></DIV
 ><DIV

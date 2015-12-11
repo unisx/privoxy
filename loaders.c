@@ -1,4 +1,4 @@
-const char loaders_rcs[] = "$Id: loaders.c,v 1.50.2.1 2002/07/26 15:19:24 oes Exp $";
+const char loaders_rcs[] = "$Id: loaders.c,v 1.50.2.3 2002/11/20 17:12:30 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/loaders.c,v $
@@ -35,6 +35,14 @@ const char loaders_rcs[] = "$Id: loaders.c,v 1.50.2.1 2002/07/26 15:19:24 oes Ex
  *
  * Revisions   :
  *    $Log: loaders.c,v $
+ *    Revision 1.50.2.3  2002/11/20 17:12:30  oes
+ *    Ooops, forgot one change.
+ *
+ *    Revision 1.50.2.2  2002/11/20 14:38:15  oes
+ *    Fixed delayed/incomplete freeing of client resources and
+ *    simplified loop structure in sweep.
+ *    Thanks to Oliver Stoeneberg for the hint.
+ *
  *    Revision 1.50.2.1  2002/07/26 15:19:24  oes
  *    - PCRS jobs now chained in order of appearance. Previous
  *      reverse chaining was counter-intuitive.
@@ -342,7 +350,7 @@ static struct file_list *current_re_filterfile  = NULL;
 void sweep(void)
 {
    struct file_list *fl, *nfl;
-   struct client_state *csp, *ncsp;
+   struct client_state *csp, *last_active;
    int i;
 
    /* clear all of the file's active flags */
@@ -351,78 +359,85 @@ void sweep(void)
       fl->active = 0;
    }
 
-   for (csp = clients; csp && (NULL != (ncsp = csp->next)) ; csp = csp->next)
+   last_active = clients;
+   csp = clients->next;
+
+   while (NULL != csp)
    {
-      if (ncsp->flags & CSP_FLAG_ACTIVE)
+      if (csp->flags & CSP_FLAG_ACTIVE)
       {
-         /* mark this client's files as active */
+         /* Mark this client's files as active */
 
          /*
           * Always have a configuration file.
           * (Also note the slightly non-standard extra
           * indirection here.)
           */
-         ncsp->config->config_file_list->active = 1;
+         csp->config->config_file_list->active = 1;
 
+         /* 
+          * Actions files
+          */
          for (i = 0; i < MAX_ACTION_FILES; i++)
          {
-            if (ncsp->actions_list[i])     /* actions files */
+            if (csp->actions_list[i])     
             {
-               ncsp->actions_list[i]->active = 1;
+               csp->actions_list[i]->active = 1;
             }
          }
 
-         if (ncsp->rlist)     /* pcrsjob files */
+         /*
+          * Filter file
+          */
+         if (csp->rlist)
          {
-            ncsp->rlist->active = 1;
+            csp->rlist->active = 1;
          }
 
+         /*
+          * Trust file
+          */
 #ifdef FEATURE_TRUST
-         if (ncsp->tlist)     /* trust files */
+         if (csp->tlist)
          {
-            ncsp->tlist->active = 1;
+            csp->tlist->active = 1;
          }
 #endif /* def FEATURE_TRUST */
+         
+         csp = csp->next;
 
       }
-      else
+      else 
       /*
-       * this client is not active, release its resources
-       * and the ones of all inactive clients that might
-       * follow it
+       * This client is not active. Free its resources.
        */
       {
-         while (!(ncsp->flags & CSP_FLAG_ACTIVE))
-         {
-            csp->next = ncsp->next;
+         last_active->next = csp->next;
 
-            freez(ncsp->ip_addr_str);
-            freez(ncsp->my_ip_addr_str);
-            freez(ncsp->my_hostname);
-            freez(ncsp->x_forwarded);
-            freez(ncsp->iob->buf);
+         freez(csp->ip_addr_str);
+         freez(csp->my_ip_addr_str);
+         freez(csp->my_hostname);
+         freez(csp->x_forwarded);
+         freez(csp->iob->buf);
 
-            free_http_request(ncsp->http);
+         free_http_request(csp->http);
 
-            destroy_list(ncsp->headers);
-            destroy_list(ncsp->cookie_list);
+         destroy_list(csp->headers);
+         destroy_list(csp->cookie_list);
 
-            free_current_action(ncsp->action);
+         free_current_action(csp->action);
 
 #ifdef FEATURE_STATISTICS
-            urls_read++;
-            if (ncsp->flags & CSP_FLAG_REJECTED)
-            {
-               urls_rejected++;
-            }
+         urls_read++;
+         if (csp->flags & CSP_FLAG_REJECTED)
+         {
+            urls_rejected++;
+         }
 #endif /* def FEATURE_STATISTICS */
 
-            freez(ncsp);
-
-            /* are there any more in sequence after it? */
-            if( (ncsp = csp->next) == NULL)
-               break;
-         }
+         freez(csp);
+         
+         csp = last_active->next;
       }
    }
 

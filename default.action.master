@@ -1,19 +1,15 @@
 ######################################################################
 # 
-#  File        :  $Source: /cvsroot/ijbswa/current/Attic/default.action.master,v $
+#  File        :  $Source: /cvsroot/ijbswa/current/default.action.master,v $
 # 
-#  $Id: default.action.master,v 1.1.2.9 2002/08/27 16:33:04 oes Exp $
+#  $Id: default.action.master,v 1.1.2.16 2003/03/19 13:47:52 oes Exp $
 #
 #  Purpose     :  Default actions file, see
-#                 http://www.privoxy.org/faq/questions.html#CONFIGFILES
+#                 http://www.privoxy.org/user-manual/actions-file.html
 #
 #  Copyright   :  Written by and Copyright
 #                 Privoxy team. http://www.privoxy.org/
 #
-#                 Based on the Internet Junkbuster originally written
-#                 by and Copyright (C) 1997 Anonymous Coders and
-#                 Junkbusters Corporation.  http://www.junkbusters.com
-# 
 # Note: Updated versions of this file will be made available from time
 #       to time. Check http://sourceforge.net/project/showfiles.php?group_id=11118
 #       for updates and/or subscribe to the announce mailing list
@@ -50,10 +46,13 @@
 # Syntax
 #############################################################################
 # 
+# A much better explanation can be found in the user manual which is
+# part of the distribution and can be found at http://www.privoxy.org/user-manual
+#
 # To determine which actions apply to a request, the URL of the request is
 # compared to all patterns in this file. Every time it matches, the list of
 # applicable actions for this URL is incrementally updated. You can trace
-# this process by visiting http://i.j.b/show-url-info
+# this process by visiting http://config.privoxy.org/show-url-info
 #
 # There are 4 types of lines in this file: comments (like this line),
 # actions, aliases and patterns, all of which are explained below.
@@ -229,21 +228,26 @@
 #   
 #    Filters predefined in the supplied default.action include:
 #
-#     html-annoyances:  Get rid of particularly annoying HTML abuse
-#     js-annoyances:    Get rid of particularly annoying JavaScript abuse
-#     content-cookies:  Kill cookies that come in the HTML or JS content
-#     popups:           Kill all popups in JS and HTML
-#     frameset-borders: Give frames a border
-#     webbugs:          Squish WebBugs (1x1 invisible GIFs used for user tracking)
-#     refresh-tags:     Kill automatic refresh tags (for dial-on-demand setups)
-#     fun:              Text replacements  for subversive browsing fun!
-#     nimda:            Remove Nimda (virus) code.
-#     img-reorder:      Reorder attributes in <img> tags to make the banners-by-* filters more effective
-#     banners-by-size:  Kill banners by size (very efficient!)
-#     banners-by-link:  Kill banners by their links to known clicktrackers 
-#     shockwave-flash:  Kill embedded Shockwave Flash objects
-#     crude-parental:   Kill all web pages that contain the words "sex" or "warez"
-#     js-events:        Kill all JS event bindings (Radically destructive! Use only on real suckers)
+#     js-annoyances:       Get rid of particularly annoying JavaScript abuse
+#     js-events:           Kill all JS event bindings (Radically destructive! Use only on real suckers)
+#     html-annoyances:     Get rid of particularly annoying HTML abuse
+#     content-cookies:     Kill cookies that come in the HTML or JS content
+#     refresh-tags:        Kill automatic refresh tags (for dial-on-demand setups)
+#     unsolicited-popups:  Disable only unsolicited pop-up windows
+#     all-popups:          Kill all popups in JavaScript and HTML
+#     img-reorder:         Reorder attributes in <img> tags to make the banners-by-* filters more effective
+#     banners-by-size:     Kill banners by size (very efficient!)
+#     banners-by-link:     Kill banners by their links to known clicktrackers 
+#     webbugs:             Squish WebBugs (1x1 invisible GIFs used for user tracking)
+#     tiny-textforms:      Extend those tiny textareas up to 40x80 and kill the hard wrap
+#     jumping-windows:     Prevent windows from resizing and moving themselves
+#     frameset-borders:    Give frames a border
+#     demoronizer:         Fix MS's non-standard use of standard charsets
+#     shockwave-flash:     Kill embedded Shockwave Flash objects
+#     quicktime-kioskmode: Make Quicktime movies saveable
+#     fun:                 Text replacements  for subversive browsing fun!
+#     crude-parental:      Kill all web pages that contain the words "sex" or "warez"
+#     ie-exploits:         Disable some known Internet Explorer bug exploits
 #
 # +hide-forwarded-for-headers
 #    Block any existing X-Forwarded-for header, and do not add a new one.
@@ -334,7 +338,7 @@
 # +crunch-incoming-cookies
 #    Prevent the website from setting cookies
 #
-# +kill-popups
+# +kill-popups (deprecated)
 #    Filter the website through a built-in filter to disable
 #    window.open() etc.  The two alternative spellings are
 #    equivalent.
@@ -387,7 +391,7 @@ for-privoxy-version=3.0
 +crunch-all-cookies = +crunch-incoming-cookies +crunch-outgoing-cookies
 -crunch-all-cookies = -crunch-incoming-cookies -crunch-outgoing-cookies
  allow-all-cookies  = -crunch-all-cookies -session-cookies-only
- allow-popups       = -filter{popups} -kill-popups
+ allow-popups       = -filter{all-popups} -kill-popups
 +block-as-image     = +block +handle-as-image
 -block-as-image     = -block
 
@@ -399,7 +403,7 @@ shop        = -crunch-all-cookies allow-popups
 
 # Your favourite blend of filters:
 #
-myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{popups}\
+myfilters   = +filter{html-annoyances} +filter{js-annoyances} +filter{all-popups}\
               +filter{webbugs} +filter{nimda} +filter{banners-by-size} #+filter{fun}
 
 # Allow ads for selected useful free sites:
@@ -420,19 +424,26 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 -downgrade-http-version \
 -fast-redirects \
 +filter{js-annoyances} \
+-filter{js-events} \
 +filter{html-annoyances} \
-+filter{webbugs} \
-+filter{popups} \
--filter{frameset-borders} \
--filter{refresh-tags} \
--filter{img-reorder} \
+-filter{content-cookies} \
++filter{refresh-tags} \
++filter{unsolicited-popups} \
+-filter{all-popups} \
++filter{img-reorder} \
 +filter{banners-by-size} \
 -filter{banners-by-link} \
--filter{fun} \
-+filter{nimda} \
++filter{webbugs} \
+-filter{tiny-textforms} \
++filter{jumping-windows} \
+-filter{frameset-borders} \
++filter{demoronizer} \
 -filter{shockwave-flash} \
--filter{js-events} \
+-filter{quicktime-kioskmode} \
+-filter{fun} \
 -filter{crude-parental} \
++filter{ie-exploits} \
+-filter{site-specifics} \
 -handle-as-image \
 +hide-forwarded-for-headers \
 +hide-from-header{block} \
@@ -451,7 +462,7 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 #############################################################################
 # Needed for automatic feedback evaluation; Please don't change or delete!
 #############################################################################
-{+add-header{X-Actions-File-Version: 1.5} -filter -kill-popups}
+{+add-header{X-Actions-File-Version: 1.6} -filter -kill-popups}
 .privoxy.org
 .oesterhelt.org/actions
 
@@ -461,6 +472,12 @@ allow-ads   = -block -filter{banners-by-size} -filter{banners-by-link}
 {+handle-as-image}
 #############################################################################
 /.*\.(gif|jpe?g|png|bmp|ico)($|\?)
+
+#############################################################################
+# These don't:
+#############################################################################
+{-handle-as-image}
+/.*\.js
 
 #############################################################################
 # Generic block patterns (the most effective!):
@@ -477,9 +494,9 @@ count*.
 
 # By path:
 #
-/(.*/)?(ads(erver?|tream)?|.*?ads/|ad/|adv(iew|ert(s|enties|is(ing|e?ments)?)?)?|(ad|all|nn)?[-_]?banner(s|ads?|farm)?)
+/(.*/)?(ads(erver?|tream)?|.*?ads/|ad(images|cycle|rotate|mentor)?/|adv(iew|ert(s|enties|is(ing|e?ments)?)?)?|(ad|all|nn|db|promo(tion)?)?[-_]?banner(s|ads?|farm)?)
 /(.*/)?(publicite|werbung|rekla(ma|me|am)|annonse|maino(kset|nta|s)?/)
-/.*(count|track)(er|run)?\.(pl|cgi|exe|dll|asp|php[34]?)
+/.*(count|track|compteur|adframe)(er|run)?\.(pl|cgi|exe|dll|asp|php[34]?|cpt)
 /.*promo.gif
 
 #############################################################################
@@ -514,8 +531,6 @@ www.beseen.com/images/website3.gif
 #MASTER# BLOCK-REFERRER: http://www.planetspiele.de/
 .planetspiele.de/gfx/partner
 #MASTER# BLOCK-REFERRER: http://www.hot.ee/toptools/
-#MASTER# REMARKS: Yes, block *all* their graphics.
-www.hot.ee/.*\.(gif|jpe?g)
 top.ultraseek.net/top_sit.*\.gif
 #MASTER# BLOCK-REFERRER: http://kickme.to/FOSI
 fosi.ural.net/.*\.jpg
@@ -555,6 +570,38 @@ www.salon.com/Creatives
 images.salon.com/plus/gear/src/
 #MASTER# BLOCK-REFERRER: http://www.sourceforge.net/
 images.sourceforge.net/images/DB2powered.gif
+#MASTER# BLOCK-REFERRER: http://www.planetgamecube.com/media.cfm?action=shot&id=250&seq=2
+/.*paypal-smad\.gif
+www.planetgamecube.com/images/PGC_Q_Edit.gif
+#MASTER# BLOCK-REFERRER: http://www.samachar.com/
+.samachar.com/banimages/
+#MASTER# BLOCK-REFERRER: http://www.weatherbug.com/aws/index.asp
+.weatherbug.com/popups/
+#MASTER# BLOCK-REFERRER: http://portale.web.de/Film/
+.web.de/.*/EIGENWERBUNG/
+#MASTER# BLOCK-REFERRER: http://www.aintitcool.com/
+www.aintitcool.com/.*\.swf
+#MASTER# BLOCK-REFERRER: http://www.hispasexo.net/fotos/index.php?currDir=./Negras&pageType=image&image=bla001.jpg
+www.hispasexo.net/.*/sxb
+#MASTER# BLOCK-REFERRER: http://www.nytimes.com/2002/09/05/technology/05CODE.html
+graphics.nytimes.com/nytstore/images/ctx
+#MASTER# BLOCK-REFERRER: http://www.macfixit.com/
+spinbox.techtracker.com
+#MASTER# BLOCK-REFERRER: http://www.sharereactor.com/
+#MASTER# BLOCK-REFERRER: http://www.popupad.net/
+www.popupad.net/ats/
+#MASTER# BLOCK-REFERRER: http://www.gamespot.com/
+www.gamespot.com/promos/
+#MASTER# BLOCK-REFERRER: http://www.famousbabes.com/gabrielleR/grpics1.htm
+#MASTER# BLOCK-REFERRER: http://www.hit-now.com/
+hit-now.com
+#MASTER# BLOCK-REFERRER: http://www.pgpi.org/
+st.valueclick.com
+#MASTER# BLOCK-REFERRER: http://astalavista.box.sk/
+www.crazypopups.com
+#MASTER# DONT-VERIFY: Opera's list of banners to load (XML)
+/scripts/cms/xcms.asp
+
 
 #############################################################################
 # Generic block-as-image patterns:
@@ -562,10 +609,20 @@ images.sourceforge.net/images/DB2powered.gif
 {+block-as-image}
 #MASTER# BLOCK-REFERRER: http://experts-exchange.com/os2gen/
 /.*adimage\.(php|cgi)
+#MASTER# BLOCK-REFERRER: http://flashhentai.com/Tgp/28-09-2002/index4.html
+#MASTER# BLOCK-REFERRER: http://www.thughosting.com/www/ixix/a912/912s2.html
+#MASTER# BLOCK-REFERRER: http://www.fantasiegirl.com/cumshots/3/spunkpatrolgirl302.htm
+#MASTER# BLOCK-REFERRER: http://www.asianuncut.com/asian2/sep5628.html
+#MASTER# BLOCK-REFERRER: http://www.tatgirls.com/gals/redhot-2/kitty-carl/lb10.html
+#MASTER# BLOCK-REFERRER: http://www.cream-porn.com/1/hard/29/02.html
+/.*recips?/
 
 #############################################################################
 # Site-specific block-as-image patterns:
 #############################################################################
+#----------------------------------------------------------------------------
+# Banner farms:
+#----------------------------------------------------------------------------
 #MASTER# BLOCK-REFERRER: http://www.cnn.com/
 #MASTER# BLOCK-REFERRER: http://www.aol.com/
 ar.atwola.com 
@@ -576,12 +633,15 @@ ar.atwola.com
 #MASTER# BLOCK-REFERRER: http://www.theinquirer.net/
 netcomm.spinbox.net
 #MASTER# BLOCK-REFERRER: http://www.joecartoon.com/
-servedby.advertising.com
-#MASTER# BLOCK-REFERRER: http://hwww.yahoo.com/
+.*servedby.advertising.com
+#MASTER# BLOCK-REFERRER: http://www.yahoo.com/
 .a.yimg.com/(?:(?!/i/).)*$
 .a[0-9].yimg.com/(?:(?!/i/).)*$
 .yimg.com/.*/a/
 .yimg.com/.*/flash/promotions
+.yimg.com/a/.*/flash/
+#MASTER# BLOCK-REFERRER: http://freeshells.linuxhelpnetwork.net/
+.yimg.com/.*/justdeals
 #MASTER# BLOCK-REFERRER: http://www.kostenlos.de/
 werbung.guj.de
 #MASTER# DONT-VERIFY
@@ -589,14 +649,8 @@ bs*.gsanet.com
 bs*.einets.com
 #MASTER# DONT-VERIFY (Opera browser built-in ads)
 .qkimg.net
-/scripts/cms/xcms.asp
 #MASTER# BLOCK-REFERRER: http://www.sevac.com/
 .sexcounter.
-#MASTER# BLOCK-REFERRER: http://www.asahi.com/
-www.asahi.com/(.*/)?ad/
-#MASTER# BLOCK-REFERRER: http://www.travelocity.com/Vacations/0,,TRAVELOCITY||Y,00.html?HPTRACK=mpc_vac
-#MASTER# BLOCK-REFERRER: http://dest.travelocity.com/DestGuides/geo_frontdoor/0,,TRAVELOCITY,00.html?HPTRACK=icon_dest
-.travelocity./Sponsor_gifs/
 #MASTER# DONT-VERIFY
 #MASTER# REMARKS: Bannerfarms used by grokster and others:
 james.adbutler.de
@@ -607,8 +661,6 @@ gkas.de/affilinet
 cashformel.com/web-sponsor
 www.cash4banner.com/web-sponsor
 213.221.106.162
-#MASTER# BLOCK-REFERRER: http://www.ebay.com
-pics.ebay.com/aw/pics/homepage/big8
 #MASTER# BLOCK-REFERRER: http://www.falk-online.de/index.jsp
 #MASTER# REMARKS: ad*.adsolution.de
 62.26.220.2
@@ -618,31 +670,95 @@ pics.ebay.com/aw/pics/homepage/big8
 #MASTER# REMARKS: both exist and are banner farms
 www.bannermania.nom.pl
 magic.koti.com.pl/cgi-magic/banner_img.cgi
-#MASTER# BLOCK-REFERRER: http://www.linuxdot.org/cgi-bin/columns.cgi?id=26
-naturalismedicina.com/cgibin/linswap
 #MASTER# BLOCK-REFERRER: http://www.dhtmlplanet.com/
 statse.webtrendslive.com
 #MASTER# BLOCK-REFERRER: http://www.versiontracker.com/
 #MASTER# REMARKS: 1) Used on many sites 2) URLs don't _end_ in .gif, hence +imageblock
-spinbox.versiontracker.com/.*\.gif
+spinbox.versiontracker.com/.*\.(gif|jpg)
 #MASTER# BLOCK-REFERRER: http://educ8search.tripod.com/hacksoft.html
 #MASTER# REMARKS: Counter
 .netscape.com/c\.cgi\?
-#MASTER# BLOCK-REFERRER: http://privacy.net/analyze/
-a.consumer.net
 #MASTER# BLOCK-REFERRER: http://mycroft.mozdev.org/
 #MASTER# REMARKS: Counter
 m[0-9].nedstatbasic.net
 #MASTER# BLOCK-REFERRER: http://salon.com/
+#MASTER# BLOCK-REFERRER: http://maps.yahoo.com/
 #MASTER# REMARKS: Banner farms; just exclude their corp. info
 [a-v,x-z]*.atdmt.com/
+#MASTER# BLOCK-REFERRER: http://f1.racing-live.com/en/
+.akamai.net/.*f1-live\.com/.*pub
+#MASTER# BLOCK-REFERRER: http://www.melodysoft.com/cgi-bin/foro.cgi
+tracker.tradedoubler.com
+#MASTER# BLOCK-REFERRER: http://dlh.net/german.html
+imp*.tradedoubler.com
+#MASTER# BLOCK-REFERRER: http://www.physlink.com/Education/AskExperts/ae353.cfm
+/.*affiliate.*120x90
+#MASTER# BLOCK-REFERRER:  http://www.amayita.com/imagenes/index.php?currDir=./Hall_of_Fame&pageType=image&image=img_0265.jpg
+www.spanishbanner.com/cgi/bserve.cgi
+#MASTER# BLOCK-REFERRER: http://www.macgamer.com/
+.qksrv.net
+
+#----------------------------------------------------------------------------
+# On-site ads and other single sources:
+#----------------------------------------------------------------------------
+#MASTER# BLOCK-REFERRER: http://www.fotw.net/flags/
+www.fotw.net/images/linea2.gif
+#MASTER# BLOCK-REFERRER: http://www.asahi.com/
+www.asahi.com/(.*/)?ad/
+#MASTER# BLOCK-REFERRER: http://www.travelocity.com/Vacations/0,,TRAVELOCITY||Y,00.html?HPTRACK=mpc_vac
+#MASTER# BLOCK-REFERRER: http://dest.travelocity.com/DestGuides/geo_frontdoor/0,,TRAVELOCITY,00.html?HPTRACK=icon_dest
+.travelocity./Sponsor_gifs/
+#MASTER# BLOCK-REFERRER: http://www.ebay.com
+pics.ebay.com/aw/pics/homepage/big8
+#MASTER# BLOCK-REFERRER: http://www.linuxdot.org/cgi-bin/columns.cgi?id=26
+naturalismedicina.com/cgibin/linswap
+#MASTER# BLOCK-REFERRER: http://privacy.net/analyze/
+a.consumer.net
 #MASTER# BLOCK-REFERRER: http://www.deviantart.com/
 images.deviantart.com/affiliates/
 images.deviantart.com/shared/(winzip|trillian)\.gif
+#MASTER# BLOCK-REFERRER: http://www.happypuppy.com/
+www.happypuppy.com/newstuff/netsys\.swf
+www.happypuppy.com/images/[^/]+\.gif
+www.happypuppy.com/images/sav_creative/savage_01.jpg
+www.happypuppy.com/images/site/cnb_but_nav.gif
 #MASTER# DONT-VERIFY
 #MASTER# REMARKS: Referenced from HTML-Emails
 .weather.com/creatives/
 .weather.com/web/services/email/
+#MASTER# BLOCK-REFERRER: http://www.mapblast.com/
+:81/feeds/
+x.mycity.com
+#MASTER# BLOCK-REFERRER: http://gamespot.com/gamespot/filters/0,10850,6013548,00.html
+/.*/topslots/topslot_
+#MASTER# BLOCK-REFERRER: http://maccentral.macworld.com/
+maccentral.macworld.com/images/subsad
+#MASTER# BLOCK-REFERRER: http://bigcharts.marketwatch.com/
+a.mktw.net
+#MASTER# BLOCK-REFERRER: http://www.happypuppy.com/win/
+www.happypuppy.com/images/sav_creative
+#MASTER# BLOCK-REFERRER: http://www.wral.com/
+images.ibsys.com/.*/sponsors/
+#MASTER# BLOCK-REFERRER: http://www.usatoday.com/money/economy/fed/2002-09-23-bubble-debate_x.htm
+www.usatoday.com/sponsors/
+#MASTER# BLOCK-REFERRER: http://www.jpost.com/
+ads.jpost.com
+#MASTER# BLOCK-REFERRER: http://www.jpost.com/servlet/Satellite?pagename=JPost/A/JPArticle/ShowFull&cid=1038889003183
+/.*/images/\d+/promos/
+#MASTER# BLOCK-REFERRER: http://astalavista.box.sk/
+www.subteran.ro/adult/adult20.jpg
+#MASTER# BLOCK-REFERRER: http://www.kuro5hin.org/
+#www.kuro5hin.org/images/[^/]+\.gif
+#MASTER# BLOCK-REFERRER: http://www.uolsinectis.com.ar/
+ad.uol.com.br
+#MASTER# BLOCK-REFERRER: http://www.spammimic.com/credits.shtml
+www.anonymizer.com/images/affiliate/
+#MASTER# BLOCK-REFERRER: http://cracks.thebugs.ws/pages/H/7.shtml
+img.thebugs.ws
+#MASTER# BLOCK-REFERRER: http://www.kinghost.com/fetish/xworx/Azian/nextdoor/06/realm.html
+www.kinghost.com/ban/
+#MASTER# BLOCK-REFERRER: http://www.infoempleo.com/
+www.infoempleo.com/(pop-up|images(/Nueva/banner_|/motor))
 
 #############################################################################
 # Generic unblockers to narrow the side effects of the generic blockers:
@@ -653,22 +769,28 @@ images.deviantart.com/shared/(winzip|trillian)\.gif
 # By host:
 #
 adsl.
-ad[ud]*.
+ad[udm]*.
 advice.
+advan*.
+.*road*.
+.olympiad*.
+.*load*.
+.*head*.
 .edu
 .ac.uk
 .uni-*.de
-.*load*.
 
 # By path:
 #
-/.*ad(sl|v(i[cs]|an|ertencia|entu)) # advice/advisories/advan*/advertencia (spanish)
-/.*((up|down)lo|p?thre|he|d|gr|l|ro)ads
+/.*ad(sl|v(i[cs]|an|ertencia|ent|search)) # advice/advisories/advan*/advertencia (spanish)
+/.*((up|down)lo|p?thre|he|d|gr|l|ro|bre|spre)ads
 /.*account
 
 #############################################################################
 # Site-specific unblockers:
 #############################################################################
+#MASTER# UNBLOCK-REFERRER: http://www.faqs.org/
+www.faqs.org/banner\.html
 #MASTER# UNBLOCK-REFERRER: http://bannerblind.mozdev.org/
 bannerblind.mozdev.org
 #MASTER# UNBLOCK-REFERRER: http://advogato.org/
@@ -706,6 +828,40 @@ www.gnome.org
 .nycsubway.org/img/banner
 #MASTER# UNBLOCK-REFERRER: http://www.hellug.gr
 ads.hellug.gr
+#MASTER# UNBLOCK-REFERRER: http://www.ebgames.com/ebx/ads/promos/bargainbin/pc/
+www.ebgames.com/ebx/ads/promos/
+#MASTER# UNBLOCK-REFERRER: http://www.forgotten-ny.com/ADS/manhattanads/moremahnattan.html
+www.forgotten-ny.com/ADS/
+#MASTER# UNBLOCK-REFERRER: http://bricolage.thepirtgroup.com/docs/Bric/AdvTemplates.html
+/.*/AdvTemplates.html
+#MASTER# UNBLOCK-REFERRER: http://counter.li.org
+counter.li.org
+#MASTER# UNBLOCK-REFERRER: http://adrian.adrian.org/
+adrian.adrian.org
+#MASTER# UNBLOCK-REFERRER: http://www.tompaine.com/op_ads/
+www.tompaine.com/op_ads/
+#MASTER# UNBLOCK-REFERRER: http://adela.karlin.mff.cuni.cz/
+adela.karlin.mff.cuni.cz
+#MASTER# UNBLOCK-REFERRER: http://www.swcp.com/rtoads/printmag/issue3/neg_data.html
+www.swcp.com/rtoads/
+#MASTER# UNBLOCK-REFERRER: http://www.privoxy.org/actions/index.php
+#MASTER# REMARKS: Don't block our own feedback process, even if the
+#MASTER# REMARKS: parameters contain block patterns
+www.privoxy.org
+#MASTER# UNBLOCK-REFERRER: http://sourceforge.net/help/tracker.php
+sourceforge.net/.*tracker
+#MASTER# UNBLOCK-REFERRER: http://www.brawnylads.com/
+www.brawnylads.com
+#MASTER# UNBLOCK-REFERRER: http://www.artbrokerage.com/ads/ads2.htm
+www.artbrokerage.com/ads/
+#MASTER# UNBLOCK-REFERRER: http://www.tivoli.com/support/storage_mgr/
+www.tivoli.com/support/storage_mgr/adsercli.htm
+#MASTER# UNBLOCK-REFERRER: http://www.acm.org/siggroup/
+www.acm.org
+#MASTER# UNBLOCK-REFERRER: http://www.motel6.com/
+www.motel6.com/maps/detailmap_tracker.asp
+#MASTER# UNBLOCK-REFERRER: http://adzapper.sourceforge.net/
+adzapper.
 
 #############################################################################
 # Site-specific special rules:
@@ -731,11 +887,20 @@ ads.hellug.gr
 .overclockers.co.uk
 .deutsche-bank-24.de
 .db24.de
+.deutsche-bank.de
 .ebay.
 .mobile.de
+www.fondationlejeu.com
+www.techtv.com
 
 #----------------------------------------------------------------------------
-# These sites require pop-ups
+# Subscription sites (with credible privacy policy) - allow permanent cookies
+#----------------------------------------------------------------------------
+#MASTER# PROBLEM-URL: http://www.nytimes.com/auth/login
+www.nytimes.com
+
+#----------------------------------------------------------------------------
+# These sites require pop-ups, so don't use the unconditional filters.
 #----------------------------------------------------------------------------
 {allow-popups}
 #MASTER# PROBLEM-URL: http://www.aprilbarrows.com/discography.html
@@ -756,8 +921,6 @@ www.reuters.com/news_article.jhtml
 www.xmms.org
 #MASTER# PROBLEM-URL: http://www.bild.de/
 .bild.t-online.de
-#MASTER# PROBLEM-URL: http://klubwakacyjny.interia.pl/pytanie.html
-klubwakacyjny.interia.pl/pytanie.html
 #MASTER# PROBLEM-URL: http://www.m-w.com/cgi-bin/dictionary?book=Dictionary&va=cupel
 www.m-w.com
 #MASTER# PROBLEM-URL: http://www.pcbox.es/boxshop/catalogo/entrada.asp?centro=53
@@ -768,8 +931,23 @@ www.hola.com/club/
 www.infoempleo.com
 #MASTER# PROBLEM-URL: http://www.netflix.com/
 www.netflix.com
+#MASTER# PROBLEM-URL: http://amnistiapornigeria.org/
+amnistiapornigeria.org
+#MASTER# PROBLEM-URL: http://ponteensupiel.org/index2.html
+ponteensupiel.org
+#MASTER# PROBLEM-URL: http://www.ifilm.com/ifilm/aicn
+www.ifilm.com/ifilm
+#MASTER# PROBLEM-URL: http://www.pogo.com/
+.pogo.com
+#MASTER# PROBLEM-URL: http://my.aol.com/
+my.aol.com
+#MASTER# PROBLEM-URL: http://www.cnn.com/
+#MASTER# REMARKS: Re-enable "Story Tools" i.e. printing, emailing etc.
+i.cnn.net/cnn/.*/clickability/button
+#MASTER# PROBLEM-URL: http://www.rosettaproject.org:8080/live/search/contribute/swadesh/view?ethnocode=SPN
+www.rosettaproject.org
 
-##----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Sometimes (i.e. often!) fast-redirects catches things by mistake
 #----------------------------------------------------------------------------
 {-fast-redirects}
@@ -798,6 +976,14 @@ login.passport.com/logout\.(asp|srf)\?
 #MASTER# PROBLEM-URL: http://www.fileplanet.com
 download.com.com/redir\?
 www.fileplanet.com/redir\.asp\?
+#MASTER# PROBLEM-URL: http://web.archive.org/web/19970715180251/http://www.gmd.de/
+web.archive.org
+#MASTER# PROBLEM-URL: http://cyber.law.harvard.edu/filtering/china/test/
+.edu
+#MASTER# PROBLEM-URL: http://web.archive.org
+.archive.org
+#MASTER# PROBLEM-URL: http://www.guenstiger.de/gt/link.asp?url=http://www.edv-supermarkt.de&source=produkt=238284&USID=00086443917155&hnr=2199&pnr=238284&ppr=158,00
+www.guenstiger.de
 
 #----------------------------------------------------------------------------
 # No filtering for sourcecode
@@ -807,6 +993,10 @@ www.fileplanet.com/redir\.asp\?
 cvs.
 #MASTER# PROBLEM-URL: http://liveupdate.symantec.com/ennlu.x86
 liveupdate.symantec.com
+#MASTER# PROBLEM-URL: http://www.bookmarklets.com/
+www.bookmarklets.com
+#MASTER# PROBLEM-URL: http://www.squarefree.com/bookmarklets/
+www.squarefree.com/bookmarklets/
 
 #----------------------------------------------------------------------------
 # These sites suffer from a bug in PHP < 4.2.3 (ob_gzhandler broken;
@@ -840,6 +1030,24 @@ www.planetspiele.de/wbboard/
 www.digitalspy.co.uk
 #MASTER# PROBLEM-URL: http://www.dealnews.com/
 .dealnews.com   
+#MASTER# PROBLEM-URL: http://www.audio-illumination.org/forums/
+www.audio-illumination.org/forums/
+#MASTER# PROBLEM-URL: http://www.catchword.com/
+www.catchword.com
+#MASTER# PROBLEM-URL: http://www.mysql.com/
+www.mysql.com
+#MASTER# PROBLEM-URL: http://www.ubernet.org
+www.ubernet.org
+#MASTER# PROBLEM-URL: http://www.ooodocs.org/
+www.ooodocs.org
+#MASTER# PROBLEM-URL: http://ooextras.sourceforge.net/
+ooextras.sourceforge.net
+#MASTER# PROBLEM-URL: http://www.ntcompatible.com/
+www.ntcompatible.com
+#MASTER# PROBLEM-URL: http://www.jabbercentral.org/
+www.jabbercentral.org
+#MASTER# PROBLEM-URL: http://www.kde-look.org/    
+www.kde-look.org
 
 #----------------------------------------------------------------------------
 # The first frame of the gif animation is more useful here:
@@ -857,6 +1065,25 @@ www.digitalspy.co.uk
 .max.de
 #MASTER# PROBLEM-URL: http://www.unmuseum.org/pirate.htm
 www.unmuseum.org
+#MASTER# PROBLEM-URL: http://www.connected-media.com/riven/hints.htm
+www.connected-media.com/.*/hints\.htm
+#MASTER# PROBLEM-URL: http://www.pricegrabber.com/search_getprod.php?masterid=580330&zip_code=92840&found=1&ut=40a6c41f2c9d1244
+www.pricegrabber.com/search_getprod.php
+#MASTER# PROBLEM-URL: http://www.ebgames.com/ebx/categories/products/product.asp?pf_id=158422
+www.ebgames.com/ebx/.*/product.asp\?
+#MASTER# PROBLEM-URL: http://www.cnn.com/WORLD/
+#MASTER# REMARKS: URL-based filtering is enough here. 120x90 content images
+.cnn.com
+#MASTER# PROBLEM-URL: http://gamespot.com/gamespot/filters/0,10850,6013054,00.html
+#MASTER# REMARKS: 120x90 content images
+.gamespot.com/gamespot
+.cnet.com
+#MASTER# PROBLEM-URL: http://www.connected-media.com/riven/hint.htm
+www.connected-media.com/riven/
+#MASTER# PROBLEM-URL: http://www.wral.com/
+www.wral.com
+#MASTER# PROBLEM-URL: http://www.canada.com/calgary/
+www.canada.com
 
 #----------------------------------------------------------------------------
 # These don't work without the referrer information:
@@ -890,9 +1117,19 @@ www.ameritrade.com
 # probably a break a lot along the way)
 #----------------------------------------------------------------------------
 {+filter{js-radical}}
-#MASTER# PROBLEM-URL: http://www..planetspiele.de/
+#MASTER# PROBLEM-URL: http://www.planetspiele.de/
 .planetspiele.de
 216.12.219.40
+
+#----------------------------------------------------------------------------
+# The "site-specifics" filter has special cures for problems found here:
+#----------------------------------------------------------------------------
+{+filter{site-specifics}}
+#MASTER# PROBLEM-URL: http://www.spiegel.de/static/js/flash-plugin.js
+www.spiegel.de/static/js/flash-plugin\.js
+#MASTER# PROBLEM-URL: http://www.quelle-bausparkasse.de/
+www.quelle-bausparkasse.de/$
+
 
 #----------------------------------------------------------------------------
 # Misc special rules:
@@ -902,7 +1139,7 @@ www.ameritrade.com
 #MASTER# REMARKS: Needs content-cookies for cookie test on index page; needs webbugs for storing profile(!)
 www.friendscout24.de
 
-{-deanimate-gifs -filter{popups} -kill-popups}
+{-deanimate-gifs -filter{all-popups} -kill-popups}
 #MASTER# PROBLEM-URL: http://www.valueclick.com/html/
 #MASTER# REMARKS: Know your enemy ;-)
 www.valueclick.com
@@ -918,6 +1155,9 @@ realguide.real.com/games
 #MASTER# PROBLEM-URL: http://www.linuxtoday.com/
 #MASTER# REMARKS: /adi has HTML snipplets for use in IFRAMEs
 .doubleclick.net/adi
+#MASTER# PROBLEM-URL: http://maps.yahoo.com/
+#MASTER# REMARKS: /AVE/iview has HTML snipplets for use in IFRAMEs
+view.atdmt.com/(.*/)?iview/
 
 {+block}
 #MASTER# BLOCK-REFERRER: http://www.geocities.com/the_sockman1/index.html
@@ -933,3 +1173,23 @@ www.geocities.com/js_source
 #MASTER# PROBLEM-URL: http://www.dn.se/
 #MASTER# REMARKS: Can't catch by size or location
 www.dn.se
+
+{-filter{js-annoyances}}
+#MASTER# PROBLEM-URL: http://www.munichre.com/
+#MASTER# REMARKS: Endless reload loop if referrer info supressed
+www.munichre.com
+
+{-filter{unsolicited-popups}}
+#MASTER# DONT-VERIFY
+#MASTER# REMARKS: Breaks Movable Type's admin interface (http://www.movabletype.org/)
+/.*mt.cgi$
+#MASTER# PROBLEM-URL: http://www.discovery.de/
+.discovery.de
+
+{+block}
+#MASTER# PROBLEM-URL: http://www.anti-leech.com/theft_example.html
+#MASTER# REMARKS: Lame attempt at banning ad-blockers. Used by other websites as well.
+/antitheft\.php
+
+{+filter{tiny-textforms}}
+.sourceforge.net/tracker

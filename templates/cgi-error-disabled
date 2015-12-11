@@ -101,13 +101,13 @@
 
     <tr>
       <td class="warning">
-        <h2>Privoxy Configuration page diasabled</h2>
-          <p>The Privoxy administrator has decided to disable this 
-             feature.  If you want to use it, you must ask them to
-             enable it.</p>
-          <p>If you are the Privoxy administrator, you can enable
-             this feature by changing the appropriate line in your
-             configuration file.</p>
+        <h2>Privoxy Configuration access denied</h2>
+          <p>The feature you are trying to access has either been disabled
+             by the Privoxy administrator, or you came here by following an
+             unsafe external link.</p>
+
+          <p>All enabled features are accessible from the
+             <a href="@default-cgi@">main menu</a>.</p>
       </td>
     </tr>
 

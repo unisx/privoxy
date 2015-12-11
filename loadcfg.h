@@ -1,6 +1,6 @@
 #ifndef LOADCFG_H_INCLUDED
 #define LOADCFG_H_INCLUDED
-#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.11 2002/03/26 22:29:55 swa Exp $"
+#define LOADCFG_H_VERSION "$Id: loadcfg.h,v 1.11.2.1 2003/03/11 11:53:59 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/loadcfg.h,v $
@@ -37,6 +37,9 @@
  *
  * Revisions   :
  *    $Log: loadcfg.h,v $
+ *    Revision 1.11.2.1  2003/03/11 11:53:59  oes
+ *    Cosmetic: Renamed cryptic variable
+ *
  *    Revision 1.11  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *
@@ -152,8 +155,8 @@ struct configuration_spec;
 /* Global variables */
 
 #ifdef FEATURE_TOGGLE
-/* indicates if ijb is enabled */
-extern int g_bToggleIJB;
+/* Privoxy's toggle state */
+extern int global_toggle_state;
 #endif /* def FEATURE_TOGGLE */
 
 extern const char *configfile;

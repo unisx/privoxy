@@ -73,13 +73,17 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="TROUBLE">5. Troubleshooting</H1
+NAME="TROUBLE"
+></A
+>5. Troubleshooting</H1
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN755">5.1. I just upgraded and am getting <SPAN
+NAME="AEN741"
+></A
+>5.1. I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
 >
@@ -128,7 +132,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="AEN768">5.2. I just added a new rule, but the steenkin ad is 
+NAME="AEN754"
+></A
+>5.2. I just added a new rule, but the steenkin ad is 
 still getting through. How?</H3
 ><P
 > If the ad had been displayed before you added its URL, it will probably be
@@ -153,7 +159,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BADSITE">5.3. One of my favorite sites does not work with <SPAN
+NAME="BADSITE"
+></A
+>5.3. One of my favorite sites does not work with <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >.
@@ -230,7 +238,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="DUN">5.4. After installing <SPAN
+NAME="DUN"
+></A
+>5.4. After installing <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >, I have to log in
@@ -286,7 +296,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="FTP">5.5. I cannot connect to any FTP sites. <SPAN
+NAME="FTP"
+></A
+>5.5. I cannot connect to any FTP sites. <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 >
@@ -302,13 +314,28 @@ CLASS="APPLICATION"
 >
   as an FTP proxy. The same is true for any protocol other than HTTP or HTTPS.
  </P
+><P
+>  Most browsers understand FTP as well as HTTP. If you connect to a site, with
+  a URL like <TT
+CLASS="LITERAL"
+>ftp://ftp.example.com</TT
+>, your browser is making
+  an FTP connection, and not a HTTP connection. So while your browser may 
+  speak FTP, <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> does not, and cannot proxy 
+  such traffic.
+ </P
 ></DIV
 ><DIV
 CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="OSXIE">5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
+NAME="OSXIE"
+></A
+>5.6. In Mac OSX, I can't configure Microsoft Internet Explorer to use 
  <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -334,7 +361,9 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="OSXUNINSTALL">5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
+NAME="OSXUNINSTALL"
+></A
+>5.7. In Mac OSX, I dragged the Privoxy folder to the trash in order to 
  uninstall it.  Now the finder tells me I don't have sufficient privileges to
  empty the trash.</H3
 ><P
@@ -367,42 +396,44 @@ CLASS="SECT2"
 ><H3
 CLASS="SECT2"
 ><A
-NAME="BLANKPAGE">5.8. I get a completely blank page at one site. <SPAN
+NAME="BLANKPAGE"
+></A
+>5.8. I get a completely blank page at one site. <SPAN
 CLASS="QUOTE"
 >"View Source"</SPAN
 >
  shows only: <SPAN
 CLASS="MARKUP"
 >&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
->.</H3
-><P
->  This is often the result of a webserver using
-  <SPAN
-CLASS="APPLICATION"
->PHP</SPAN
-> that mishandles the request
-  <SPAN
+>. Without
+ <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
-> sends to not compress the content 
-  (a <SPAN
+> the page loads fine.</H3
+><P
+>  Chances are that the site suffers from a bug in
+  <A
+HREF="http://www.php.net/"
+TARGET="_top"
+><SPAN
 CLASS="APPLICATION"
 >PHP</SPAN
-> bug).
+></A
+>,
+  which results in empty pages being sent if the client explicitly requests
+  an uncompressed page, like <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> does.
+  This bug has been fixed in PHP 4.2.3.
  </P
 ><P
->  In a default configuration, <SPAN
-CLASS="APPLICATION"
->Privoxy</SPAN
-> requests all
-  data be sent <SPAN
-CLASS="QUOTE"
->"uncompressed"</SPAN
->. This is required for the page 
-  filtering and other magic to work. In some rare cases, the browser and 
-  webserver miscommunicate and the result is a totally blank page. The 
-  suggested work around is to selectively turn off this feature for sites 
-  that exhibit such behavior. Example section for <TT
+>  To find out if this is in fact the source of the problem, try adding
+  the site to a <TT
+CLASS="LITERAL"
+>-prevent-compression</TT
+> section in
+  <TT
 CLASS="FILENAME"
 >user.action</TT
 >:
@@ -422,6 +453,28 @@ CLASS="SCREEN"
 ></TD
 ></TR
 ></TABLE
+><P
+>  If that works, you may also want to report the problem to the
+  site's webmasters, telling them to use zlib.output_compression
+  instead of ob_gzhandler in their PHP applications (workaround)
+  or upgrade to PHP 4.2.3 or later (fix).
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H3
+CLASS="SECT2"
+><A
+NAME="ERROR503"
+></A
+>5.9. Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</H3
+><P
+>  More than likely this is a problem with the network stack. ZoneAlarm has
+  been reported to cause this symptom -- even if not running. The solution is
+  to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
+  something better behaved in its place. Other firewall type products may
+  cause similar type problems if not configured correctly.
+ </P
 ></DIV
 ></DIV
 ><DIV

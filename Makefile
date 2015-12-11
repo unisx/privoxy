@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5.2.1 2002/08/05 17:46:13 oes Exp $
+# $Id: Makefile,v 1.5.2.2 2002/10/25 02:44:23 hal9 Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -26,6 +26,10 @@
 # Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 # $Log: Makefile,v $
+# Revision 1.5.2.2  2002/10/25 02:44:23  hal9
+# Port of make install, etc from main trunk. Needs testing! Add Slackware
+# support, and other related changes. Update related docs.
+#
 # Revision 1.5.2.1  2002/08/05 17:46:13  oes
 # Change make to gmake to fix auto-build on Solaris
 #
@@ -48,13 +52,28 @@
 
 #############################################################################
 
+GNU_MAKE_CMD = gmake
+MAKE_CMD     = make
+
 error:
 	@if [ -f GNUmakefile ]; then \
 	    echo "***"; \
 	    echo "*** You are not using the GNU version of Make - maybe it's called gmake"; \
-	    echo "*** or it's in a different directory?"; \
+	    echo "*** or it's in a different PATH? Please read INSTALL." ; \
 	    echo "***"; \
 	    exit 1; \
+	 elif test -n "$(HOST_ARCH)"  && test -z "$(MAKE_VERSION)" ; then \
+	    echo "***"; \
+	    echo "*** You are not using GNU Make on Solaris, please make sure you do" ; \
+	    echo "*** and re-run 'make' "; \
+	    echo "***"; \
+	    exit 1 ; \
+	 elif test -n "$(MACHINE_ARCH)"  && test -z "$(MAKE_VERSION)" ; then \
+	    echo "***"; \
+	    echo "*** You are not using GNU Make on FreeBSD, please make sure you do" ; \
+	    echo "*** and re-run 'make' "; \
+	    echo "***"; \
+	    exit 1 ; \
 	 else \
 	    echo "***"; \
 	    echo "*** To build this program, you must run"; \
@@ -62,8 +81,17 @@ error:
 	    echo "***"; \
 	    echo -n "*** Shall I do this for you now? (y/n) "; \
 	    read answer; \
-	    if [ $$answer = "y" ]; then \
-	       autoheader && autoconf && ./configure && gmake; \
+	    if [ "$$answer" = "y" ]; then \
+		autoheader && autoconf && ./configure || exit 1; \
+	  	if $(GNU_MAKE_CMD) -v |grep GNU >/dev/null 2>/dev/null; then \
+		   $(GNU_MAKE_CMD) ;\
+		elif $(MAKE_CMD) -v |grep GNU >/dev/null 2>/dev/null; then \
+		   $(MAKE_CMD) ;\
+		else \
+		   echo "Neither 'make' nor 'gmake' are GNU compatible!" ; \
+		   echo "Please read INSTALL." ; \
+		   exit 1 ; \
+		fi ;\
 	    fi; \
 	 fi
 

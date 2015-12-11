@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl 
-dnl $Id: configure.in,v 1.68.2.5 2002/08/25 23:37:00 hal9 Exp $
+dnl $Id: configure.in,v 1.68.2.15 2003/03/26 00:25:00 oes Exp $
 dnl 
 dnl Written by and Copyright (C) 2001, 2002 the SourceForge
 dnl Privoxy team. http://www.privoxy.org/
@@ -28,6 +28,37 @@ dnl or write to the Free Software Foundation, Inc., 59
 dnl Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 dnl 
 dnl $Log: configure.in,v $
+dnl Revision 1.68.2.15  2003/03/26 00:25:00  oes
+dnl Bump version for 3.0.2
+dnl
+dnl Revision 1.68.2.14  2003/03/25 13:27:12  hal9
+dnl Manually apply Docbook/FreeBSD patch #708081 from a.go at tiscali.nl.
+dnl
+dnl Revision 1.68.2.13  2003/03/18 19:38:57  oes
+dnl Set version info for 3.0.1 release
+dnl
+dnl Revision 1.68.2.12  2003/03/07 03:41:04  david__schmidt
+dnl Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+dnl
+dnl Revision 1.68.2.11  2003/03/06 15:22:37  oes
+dnl Fixed minor shell syntax bug
+dnl
+dnl Revision 1.68.2.10  2003/01/08 16:39:41  oes
+dnl Changing default to exclude FEATURE_IMAGE_DETECT_MSIE because of problem reports with recent IEs
+dnl
+dnl Revision 1.68.2.9  2002/12/13 23:47:45  hal9
+dnl Add openbsd $specialflags per gunner at styx2002.no-ip.org
+dnl
+dnl Revision 1.68.2.8  2002/11/27 12:55:26  oes
+dnl Fixed broken handling of pre-set CFLAGS
+dnl
+dnl Revision 1.68.2.7  2002/10/25 02:44:22  hal9
+dnl Port of make install, etc from main trunk. Needs testing! Add Slackware
+dnl support, and other related changes. Update related docs.
+dnl
+dnl Revision 1.68.2.6  2002/09/25 15:35:15  oes
+dnl Marking as non-release
+dnl
 dnl Revision 1.68.2.5  2002/08/25 23:37:00  hal9
 dnl Getting ready for 3.0 release.
 dnl
@@ -387,14 +418,14 @@ dnl =================================================================
 dnl AutoConf Initialization
 dnl =================================================================
 
-AC_REVISION($Revision: 1.68.2.5 $)
+AC_REVISION($Revision: 1.68.2.15 $)
 AC_INIT(jcc.c)
 
 if test ! -f config.h.in; then
    echo "You need to run autoheader first. "
    echo -n "Shall I do this for you now? (y/n) "
    read answer
-   if test $answer != "y"; then
+   if test "$answer" != "y"; then
       exit 1
    else
       autoheader
@@ -433,11 +464,12 @@ dnl =================================================================
 
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_POINT=0
+VERSION_POINT=2
 CODE_STATUS="stable"
 
 dnl CODE_STATUS can be "alpha", "beta", or "stable", and will be
-dnl used for CGI output
+dnl used for CGI output. Set version to 0.0.0 and status to "UNRELEASED"
+dnl whenever CVS in a stable branch differs from the last release.
 
 dnl =================================================================
 dnl Substitute the version numbers
@@ -458,13 +490,24 @@ AC_DEFINE_UNQUOTED(CODE_STATUS,"${CODE_STATUS}")
 dnl =================================================================
 dnl Checks for programs needed to build.
 dnl =================================================================
+
+dnl Keep AC_PROG_CC from setting its own defaults:
+if test "X$CFLAGS" = "X"; then
+   CFLAGS=" "
+fi
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PROG_AWK
 
 AC_CHECK_PROG(GDB,gdb,yes,no)
+AC_PATH_PROG(BGROUPS,groups,no,/bin:/usr/bin:/usr/local/bin)
+AC_PATH_PROG(ID,id,no,/bin:/usr/bin:/usr/local/bin)
+AC_SUBST(ID)
+AC_SUBST(BGROUPS)
 
 dnl =================================================================
 dnl debug, gcc and gdb support 
@@ -474,60 +517,105 @@ AC_ARG_WITH(debug,
         [  --with-debug            Enable debug mode],
         [
                 if test "x$withval" != "xno" ; then
-		    if test $ac_cv_prog_cc_g = yes; then
-		      if test "$GCC" = yes; then
-			if test "$GDB"; then
-			  CFLAGS="-ggdb"
-			else
-			  CFLAGS="-g"
-			fi
-			CFLAGS="$CFLAGS -Wshadow  -Wconversion"
-		      else
-			CFLAGS="-g"
-		      fi
-		   fi
+                    if test $ac_cv_prog_cc_g = yes; then
+                      if test "$GCC" = yes; then
+                        if test "$GDB"; then
+                          CFLAGS="$CFLAGS -ggdb"
+                        else
+                          CFLAGS="$CFLAGS -g"
+                        fi
+                        CFLAGS="$CFLAGS -Wshadow  -Wconversion"
+                      else
+                        CFLAGS="$CFLAGS -g"
+                      fi
+                   fi
                 fi
         ],
-	[
-	    if test "X$CFLAGS" = "X"; then # if CFLAGS are unset
-	      if test "$GCC" = yes; then
-		CFLAGS="-O2"
-	      else
-		CFLAGS=
-	      fi
-	    fi
-	]
+        [
+            if test "X$CFLAGS" = "X "; then # if CFLAGS were unset (see above)
+              if test "$GCC" = yes; then
+                CFLAGS="-O2"
+              fi
+            fi
+        ]
 )
 
+dnl =================================================================
+dnl Check for user and group validity
+dnl =================================================================
+
+$ID privoxy >/dev/null 2>/dev/null
+if test $? -ne 0 ; then
+ AC_MSG_WARN(There is no user 'privoxy' on this system)
+fi
+AC_MSG_CHECKING([for user])
 AC_ARG_WITH(user,
-        [  --with-user=privoxy            Set user under which privoxy run],
+        [  --with-user=privoxy          Set user under which privoxy will run],
         [
                 if test "x$withval" != "xyes"; then
-                    USER=$with_user;
+                  if test $ID = no ; then
+                    AC_MSG_ERROR(There is no 'id' program on this system)
+                  else
+                    AC_MSG_RESULT($with_user)
+                    $ID $with_user 2>/dev/null >/dev/null
+                    if test $? -eq 0 ; then
+                      USER=$with_user;
+                    else
+                      AC_MSG_ERROR(There is no user '$with_user' on this system)
+                    fi
+                  fi
                   else
                    AC_MSG_ERROR(We need a user if you give me this parameter)
                 fi
         ],
         [
-          USER=privoxy;
+          if test $ID = no ; then
+            AC_MSG_ERROR(There is no 'id' programm on this system)
+          else
+            AC_MSG_RESULT(none specified)
+            USER=$with_user
+          fi
         ]
 )
 AC_SUBST(USER)
 
+AC_MSG_CHECKING([for group])
 AC_ARG_WITH(group,
         [  --with-group=privoxy         Set group for privoxy],
-        [
+        [ 
                 if test "x$withval" != "xyes"; then
-                    GROUP=$with_group;
+                  if test $BGROUPS = no ; then
+                    AC_MSG_ERROR(There is no 'groups' program on this system)
                   else
+                    AC_MSG_RESULT($with_group)
+                    $BGROUPS $USER >/dev/null
+                    if test $? -eq 0 ; then
+                    # FIXME: this fails if valid group, but not first group
+                    # listed.
+                      if test "$with_group" != "`$BGROUPS $USER | sed 's/.*: //' 2>/dev/null |$AWK '{print $1}'`" ; then
+                        AC_MSG_ERROR(The given value '$withval' does not match group entry)
+                      else
+                        GROUP=$with_group;
+                      fi
+                    else
+                      AC_MSG_ERROR(There is no group entry for user '$USER')
+                    fi
+                  fi
+                else
                    AC_MSG_ERROR(We need a group if you give me this parameter)
                 fi
         ],
         [
-          GROUP=privoxy;
+          if test $BGROUPS = no ; then
+            AC_MSG_ERROR(There is no 'groups' programm on this system)
+          else
+            AC_MSG_RESULT(none specified)
+            GROUP=$with_group;
+          fi
         ]
 )
 AC_SUBST(GROUP)
+
 dnl =================================================================
 dnl additional gcc flags
 dnl =================================================================
@@ -606,7 +694,7 @@ dnl Checking which text html browser we have avaliable
 if test $dodk != no; then
 	AC_CHECK_PROGS(WDUMP,w3m lynx links,false)
 	if test "$WDUMP" = false; then
-		AC_MSG_ERROR(You need some kind of text browser to continue \(w3m, lynx and links are supported\))
+		AC_MSG_WARN(You need some kind of text browser to build documentation \(w3m, lynx and links are supported\))
 	fi
 	if test $DB2HTML = false; then
 		dnl We need to clean the variable, otherwise AC_CHECK_PROGS
@@ -648,8 +736,10 @@ dnl It is still not portable (directory slash)
 JADECAT=""
 if test $dodk = yes; then
   if test $DKPREFIX = none; then
-    for i in /usr/share/sgml/docbook/dsssl-stylesheets /usr/share/sgml/docbkdsl /usr/share/sgml/docbook-dsssl; do
-      echo -n "checking for $i/html/docbook.dsl..."
+    for i in /usr/share/sgml/docbook/dsssl-stylesheets /usr/share/sgml/docbkdsl /usr/share/sgml/docbook-dsssl usr/local/share/sgml/docbook/dsssl/modular; do
+dnl  echo -n does not fly with /bin/sh.
+dnl      echo -n "checking for $i/html/docbook.dsl..."
+      AC_MSG_CHECKING([for $i])
       if test -f $i/html/docbook.dsl; then
         echo "yes"
         DKPREFIX=$i
@@ -659,8 +749,14 @@ if test $dodk = yes; then
       fi
     done
 # where are the catalogs?
-    for i in /usr/share/sgml/CATALOG.docbk30 /usr/share/sgml/CATALOG.docbk31; do
-      echo -n "checking for $i..."
+    for i in /usr/share/sgml/CATALOG.docbk30 \
+             /usr/share/sgml/CATALOG.docbk31 \
+             /usr/share/sgml/CATALOG.docbk31 \
+             /usr/local/share/sgml/docbook/3.0/docbook.cat \
+	        /usr/local/share/sgml/docbook/3.1/docbook.cat \
+             ; do
+dnl     echo -n "checking for $i..."
+      AC_MSG_CHECKING([for $i])
       if test -f $i; then
         echo "yes"
         JADECAT="$JADECAT -c $i"
@@ -912,8 +1008,17 @@ dnl Mac OSX specific
 dnl =================================================================
     
 case "$host" in
-*-apple-darwin*) SPECIAL_CFLAGS="-Dunix"
+*-apple-darwin*) SPECIAL_CFLAGS="-Dunix -DOSX_DARWIN"
 ;;  
+esac
+
+dnl =================================================================
+dnl OpenBSD specific
+dnl =================================================================
+
+case "$host" in
+*-openbsd*) SPECIAL_CFLAGS="$SPECIAL_CFLAGS -Dunix"
+;;
 esac
 
 dnl =================================================================
@@ -1037,12 +1142,11 @@ AC_ARG_ENABLE(stats,
 fi],AC_DEFINE(FEATURE_STATISTICS))
 
 AC_ARG_ENABLE(ie-images,
-[  --disable-ie-images      Don't auto-detect whether a request from MS Internet
-                           Explorer is for an image or HTML.],
+[  --enable-ie-images       Enable a quick but not always reliable auto-detect whether requests from
+                           MS Internet Explorer are for an image or not.],
 [if test $enableval = yes; then
   AC_DEFINE(FEATURE_IMAGE_DETECT_MSIE)
-fi],
-AC_DEFINE(FEATURE_IMAGE_DETECT_MSIE))
+fi],)
 
 AC_ARG_ENABLE(image-blocking,
 [  --disable-image-blocking Don't try to figure out whether a request is 

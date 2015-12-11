@@ -8,10 +8,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.0">
-<!entity p-status "stable">
-<!entity % p-not-stable "IGNORE">
-<!entity % p-stable "INCLUDE">
+<!entity p-version "0.0.0">
+<!entity p-status "UNRELEASED">
+<!entity % p-not-stable "INCLUDE">
+<!entity % p-stable "IGNORE">
 <!entity % p-text "IGNORE">        <!-- define we are not a text only doc -->
 <!entity % p-doc "INCLUDE">        <!-- and we are a formal doc           -->
 <!entity % p-supp-userman "INCLUDE"> <!-- Include all from supported.sgml -->
@@ -24,7 +24,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: faq.sgml,v 1.61.2.19 2002/08/25 23:31:56 hal9 Exp $
+ $Id: faq.sgml,v 1.61.2.28 2003/03/18 19:37:21 oes Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -50,9 +50,12 @@
 
  ========================================================================
  NOTE: Please read developer-manual/documentation.html before touching 
- anything in this, or other Privoxy documentation. You have been warned!
- Failure to abide by this rule will result in the revocation of your license 
  to live a peaceful existence!
+
+ Please we keep the info in this file as version independent as possible 
+ so we only have to maintain one FAQ. Where significant changes are 
+ made to Privoxy configuration, please note the change in such a way that 
+ it makes sense to both users of older and newer versions.
  ========================================================================
 
 
@@ -72,7 +75,7 @@
  </subscript>
 </pubdate>
 
-<pubdate>$Id: faq.sgml,v 1.61.2.19 2002/08/25 23:31:56 hal9 Exp $</pubdate>
+<pubdate>$Id: faq.sgml,v 1.61.2.28 2003/03/18 19:37:21 oes Exp $</pubdate>
 
 <!--
 
@@ -393,6 +396,25 @@ Include supported.sgml here:
 &supported;
 </sect2>
 
+<sect2 renderas="sect3" id="email-client">
+<title>Can I use <application>Privoxy</application> with my email client?</title>
+<para>
+ As long as there is some way to set a HTTP proxy for the client, then yes,
+ any application can be used, whether it is strictly speaking a
+ <quote>browser</quote> or not. Though this may not be the best approach for
+ dealing with some of the common abuses of HTML in email. See <link
+ linkend="outlook">How can I configure <application>Privoxy</application>
+ with <application>Outlook Express</application>?</link> below for more on
+ this. 
+</para>
+<para>
+ Be aware that HTML email presents a number of unique security and privacy
+ related issues, that can require advanced skills to overcome. The developers
+ recommend using email clients that can be configured to convert HTML to plain
+ text for these reasons.
+</para>
+</sect2>
+
 <sect2 renderas="sect3" id="newinstall"><title>Can I install  
  <application>Privoxy</application> over <application>Junkbuster</application>?</title>
  <para>
@@ -421,7 +443,7 @@ special I have to do now?</title>
  as a proxy by specifying the correct proxy address and port number 
  in the appropriate configuration area for the browser. See below.
  You should also flush your browser's memory and disk cache to get rid of any
- cached junk items.
+ cached junk items, and remove any stored cookies.
 
 </para>
 
@@ -542,7 +564,7 @@ All the ads are there. What's wrong?</title>
  There are many possible actions that might apply to any given site. As an example,
  if you are blocking cookies as one of your default actions, but need to accept
  cookies from a given site, you would need to define an exception for this
- site in one of your actions files, preferably in <filename>user.action</filename>
+ site in one of your actions files, preferably in <filename>user.action</filename>.
 </para>
 
 </sect2>
@@ -578,7 +600,6 @@ way to do this?</title>
 </sect2>
 
 
-<!--   ~~~~~       New section      ~~~~~     -->
 <sect2 renderas="sect3">
 <title>There are several different <quote>actions</quote> files. What are
 the differences?</title>
@@ -624,143 +645,31 @@ the differences?</title>
 </sect2>
 
 <sect2 renderas="sect3" id="configfiles"> <title>What's the difference between the
-<quote>Cautious</quote>, <quote>Medium</quote> and <quote>Advanced</quote> defaults?</title>
+<quote>Cautious</quote>, <quote>Medium</quote> and <quote>Adventuresome</quote> defaults?</title>
  <para>
-  Configuring <application>Privoxy</application> is not entirely trivial. To help you get
-  started, we provide you with three different default action <quote>packages</quote> in
-  the web based actions file editor at <ulink
+  Configuring <application>Privoxy</application> is not entirely trivial. To
+  help you get started, we provide you with three different default action
+  <quote>profiles</quote> in the web based actions file editor at <ulink
   url="http://config.privoxy.org/show-status">http://config.privoxy.org/show-status</ulink>.
-  The following table shows you, which of the most important features are enabled in each
-  configuration:
+  See the <ulink url="../user-manual/actions-file.html"><citetitle>User
+  Manual</citetitle></ulink> for a list of actions, and how the default 
+  profiles are set.
  </para>
- <para>
-<table frame=all><title>Default Configurations</title>
-<tgroup cols=4 align=left colsep=1 rowsep=1>
-<colspec colname=c1>
-<colspec colname=c2>
-<colspec colname=c3>
-<colspec colname=c4>
-<thead>
-<row>
-  <entry>Feature</entry>
-  <entry>Cautious</entry>
-  <entry>Intermadiate</entry>
-  <entry>Advanced</entry>
-</row>
-</thead>
-<!--  <tfoot> -->
-<!--  <row> -->
-<!--    <entry>f1</entry> -->
-<!--    <entry>f2</entry> -->
-<!--    <entry>f3</entry> -->
-<!--    <entry>f4</entry> -->
-<!--  </row> -->
-<!--  </tfoot> -->
-<tbody>
 
-<row>
-  <entry>Ad-blocking by URL</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Ad-filtering by size</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>GIF de-animation</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Referer forging</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Cookie handling</entry>
-  <entry>none</entry>
-  <entry>session-only</entry>
-  <entry>kill</entry>
-</row>
-
-<row>
-  <entry>Pop-up killing</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Fast redirects</entry>
-  <entry>no</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>HTML taming</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>JavaScript taming</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Web-bug killing</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Fun text replacements</entry>
-  <entry>no</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Image tag reordering</entry>
-  <entry>no</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-</row>
-
-<row>
-  <entry>Ad-filtering by link</entry>
-  <entry>no</entry>
-  <entry>no</entry>
-  <entry>yes</entry>
-</row>
-
-
-</tbody>
-</tgroup>
-</table>
-</para>
 <para>
  Where the defaults are likely to break some sites, exceptions for
  known popular <quote>problem</quote> sites are included, but in
- general, the more aggressive your default settings are, the more
- exceptions you will have to make later. See the <ulink
- url="../user-manual/index.html">user manual</ulink> for a more
- deatiled discussion.
+ general, the more aggressive your default settings are, the more exceptions
+ you will have to make later. See the <ulink
+ url="../user-manual/index.html"><citetitle>User Manual</citetitle></ulink>
+ for a more deatiled discussion.
+</para>
+
+<para>
+ It should be noted that the <quote>Adventuresome</quote> profile (formerly known 
+ as the <quote>Advanced</quote> profile) is not only more
+ aggressive, but also includes fun and, extreme usage of most of
+ <application>Privoxy's</application> features. Use at your own risk!
 </para>
 
 </sect2>
@@ -851,6 +760,29 @@ with a browser? Does that not raise security issues?</title>
 <para>
  Save the file, and restart <application>Privoxy</application>. Configure 
  all browsers on the network then to use this address and port number.
+</para>
+
+<para>
+ Alternately, you can have <application>Privoxy</application> listen on 
+ all available interfaces:
+</para>
+
+<para>
+ <screen>
+  listen-address    :8118</screen>
+</para>
+
+<para>
+ And then use <application>Privoxy's</application> 
+ <ulink
+ url="../user-manual/config.html#PERMIT-ACCESS">permit-access</ulink> 
+ feature to limit connections. A firewall in this situation is recommended 
+ as well.
+</para>
+
+<para>
+ The above steps should be the same for any TCP network, regardless of
+ operating system.
 </para>
 
 <para>
@@ -1010,16 +942,13 @@ instead of the checkerboard image. Why and how do I get rid of this?</title>
 on Win2K/NT?</title>
 <para>
  Yes, it can run as a system service using <command>srvany.exe</command>.
- The only catch is that this will effectively disable the
- <application>Privoxy</application> icon (and its menu!) in the taskbar. You can have 
- one or the other, but not both at this time :( 
+ See the discussion at <ulink
+ url="http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118">http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118</ulink>,
+ for details, and a sample configuration.
 </para>
 <para>
- There is a pending feature request for this functionality. See the discussion
- at <ulink
- url="http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118">http://sourceforge.net/tracker/?func=detail&#38;atid=361118&#38;aid=485617&#38;group_id=11118</ulink>, 
- for details, and a sample configuration.
-
+ Version 3.0.1 fixes the problem where the icon and menu where not available
+ in the taskbar for this usage.
 </para>
 </sect2>
 
@@ -1068,6 +997,63 @@ and thus avoid individual browser configuration?</title>
  (<ulink url="http://www.transproxy.nlc.net.au/">http://www.transproxy.nlc.net.au/</ulink>).
 </para>
 
+</sect2>
+
+<sect2 renderas="sect3" id="outlook">
+<title>How can I configure <application>Privoxy</application> for use with <application>Outlook
+ Express</application>?</title>
+<para>
+ <application>Outlook Express</application> uses <application>Internet Explorer</application> 
+ components to both render HTML, and fetch any HTTP requests that may be embedded in an HTML email.
+ So however you have <application>Privoxy</application> configured to work
+ with IE, this configuration should automatically be shared.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="outlook-more">
+<title>How can I have separate rules just for HTML mail?</title>
+<para>
+ The short answer is, you can't. <application>Privoxy</application> has no way
+ of knowing which particular application makes a request, so there is no way to
+ distinguish between web pages and HTML mail.
+ <application>Privoxy</application> just blindly proxies all requests. In the
+ case of <application>Outlook Express</application> (see above), OE uses 
+ IE anyway, and there is no way for <application>Privoxy</application> to ever 
+ be able to distinguish between them (nor could any other proxy type application for
+ that matter).
+</para>
+<para>
+ For a good discussion of some of the issues involved (including privacy and 
+ security issues), see 
+ <ulink url="http://sourceforge.net/tracker/?func=detail&#38;atid=211118&#38;aid=629518&#38;group_id=11118">http://sourceforge.net/tracker/?func=detail&#38;atid=211118&#38;aid=629518&#38;group_id=11118</ulink>.
+</para>
+</sect2>
+
+<sect2 renderas="sect3" id="allow-cookies">
+<title>How can I allow permanent cookies for my trusted sites?</title>
+
+<para>
+  There are several actions that relate to cookies. The default behavior is to 
+  allow only <quote>session cookies</quote>, which means the cookies only last
+  for the current browser session. This eliminates most kinds of abuse related 
+  to cookies. But there may be cases where we want cookies to last.
+</para>
+<para>
+  To disable all cookie actions, so that cookies are allowed unrestricted,
+  both in and out, for <literal>example.com</literal>: 
+</para>
+<para>
+ <screen>
+ { -crunch-incoming-cookies -crunch-outgoing-cookies -session-cookies-only -filter{content-cookies} }
+  .example.com</screen>
+</para>
+<para>
+ Place the above in <filename>user.action</filename>. Note some of these may
+ be off by default anyway, so this might be redundant, but there is no harm
+ being explicit in what you want to happen. <filename>user.action</filename>
+ includes an alias for this situation, called
+ <literal>allow-cookies</literal>.
+</para>
 </sect2>
 
 </sect1>
@@ -1141,7 +1127,7 @@ delays in page requests compared to the old Junkbuster. What's wrong?</title>
 <para>
  This also makes for a good test for your browser configuration: If entering the
  URL <ulink url="http://config.privoxy.org/">http://config.privoxy.org/</ulink>
- takes you to a page saying <quote>This is Privoxy..</quote>, everything is OK.
+ takes you to a page saying <quote>This is Privoxy ...</quote>, everything is OK.
  If you get a page saying <quote>Privoxy is not working</quote> instead, then
  your browser didn't use <application>Privoxy</application> for the request,
  hence it could not be intercepted, and you have accessed the <emphasis>real</emphasis>
@@ -1213,7 +1199,7 @@ how to do that. Please note that you (technically) need the latest
  url="http://www.multiproxy.org/anon_list.htm">multiproxy.org</ulink> and many
  more through Google. A particularly interesting project is the JAP service
  offered by the Technical University of Dresden (<ulink
- url="http://anon.inf.tu-dresden.de/index_en.html">http://anon.inf.tu-dresden.de/index_en.html</ulink>.
+ url="http://anon.inf.tu-dresden.de/index_en.html">http://anon.inf.tu-dresden.de/index_en.html</ulink>).
 </para>
 <para>
  There is, however, even in the single-machine case the possibility to make the
@@ -1387,6 +1373,14 @@ ads used to be. Why?</title>
  for efficiency reasons, which exposes them to the full power of 
  <application>Privoxy</application>'s ad blocking.
 </para>
+<para>
+ <quote>Content cookies</quote> (those that are embedded in the actual HTML or
+ JS page content, see <literal><ulink
+ url="../user-manual/actions-file.html#FILTER-CONTENT-COOKIES">filter{content-cookies}</ulink></literal>), 
+ in an SSL transaction will be impossible to block under these conditions. 
+ Fortunately, this does not seem to be a very common scenario since most 
+ cookies come by traditional means.
+</para>
 
 </sect2>
 
@@ -1499,6 +1493,21 @@ and related issues?</title>
  others references.
 </para>
 -->
+</sect2>
+
+<sect2 renderas="sect3" id="microsuck">
+<title>I've noticed that Privoxy changes <quote>Microsoft</quote> to 
+<quote>MicroSuck</quote>! Why are you manipulating my browsing?</title>
+
+<para>
+ We're not. The text substitutions that you are seeing are disabled
+ in the default configuration as shipped. You have either manually
+ activated the <quote><literal>fun</literal></quote> filter which
+ is clearly labeled <quote>Text replacements for subversive browsing
+ fun!</quote> or you have implicitly activated it by choosing the
+ <quote>Adventuresome</quote> profile in the web-based editor (formerly known 
+ as the <application>Advanced</application> profile).
+</para>
 </sect2>
 
 </sect1>
@@ -1661,6 +1670,13 @@ every time I start IE. What gives?</title>
   so do not configure your browser to use <application>Privoxy</application>
   as an FTP proxy. The same is true for any protocol other than HTTP or HTTPS.
  </para>
+  <para>
+  Most browsers understand FTP as well as HTTP. If you connect to a site, with
+  a URL like <literal>ftp://ftp.example.com</literal>, your browser is making
+  an FTP connection, and not a HTTP connection. So while your browser may 
+  speak FTP, <application>Privoxy</application> does not, and cannot proxy 
+  such traffic.
+ </para>
 </sect2>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -1701,28 +1717,44 @@ every time I start IE. What gives?</title>
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect2 renderas="sect3" id="blankpage">
 <title>I get a completely blank page at one site. <quote>View Source</quote>
- shows only: <markup><![CDATA[<html><body></body></html>]]></markup>.</title>
+ shows only: <markup><![CDATA[<html><body></body></html>]]></markup>. Without
+ <application>Privoxy</application> the page loads fine.</title>
  <para>
-  This is often the result of a webserver using
-  <application>PHP</application> that mishandles the request
-  <application>Privoxy</application> sends to not compress the content 
-  (a <application>PHP</application> bug).
+  Chances are that the site suffers from a bug in
+  <ulink url="http://www.php.net/"><application>PHP</application></ulink>,
+  which results in empty pages being sent if the client explicitly requests
+  an uncompressed page, like <application>Privoxy</application> does.
+  This bug has been fixed in PHP 4.2.3.
  </para>
  <para>
-  In a default configuration, <application>Privoxy</application> requests all
-  data be sent <quote>uncompressed</quote>. This is required for the page 
-  filtering and other magic to work. In some rare cases, the browser and 
-  webserver miscommunicate and the result is a totally blank page. The 
-  suggested work around is to selectively turn off this feature for sites 
-  that exhibit such behavior. Example section for <filename>user.action</filename>:
+  To find out if this is in fact the source of the problem, try adding
+  the site to a <literal>-prevent-compression</literal> section in
+  <filename>user.action</filename>:
  </para>
  <screen>
    # Make exceptions for ill-behaved sites:                                     
    #                                                                    
    {-prevent-compression}                                               
     .example.com</screen>
+ <para>
+  If that works, you may also want to report the problem to the
+  site's webmasters, telling them to use zlib.output_compression
+  instead of ob_gzhandler in their PHP applications (workaround)
+  or upgrade to PHP 4.2.3 or later (fix).
+ </para>
 </sect2>
 
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect2 renderas="sect3" id="error503">
+<title>Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</title>
+ <para>
+  More than likely this is a problem with the network stack. ZoneAlarm has
+  been reported to cause this symptom -- even if not running. The solution is
+  to either fight the ZA configuration, or uninstall ZoneAlarm, and then find
+  something better behaved in its place. Other firewall type products may
+  cause similar type problems if not configured correctly.
+ </para>
+</sect2>
 
 </sect1>
 <!--
@@ -1816,6 +1848,35 @@ FIXME: Commented out until we have something to put here. HB 03/18/02.
  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 $Log: faq.sgml,v $
+Revision 1.61.2.28  2003/03/18 19:37:21  oes
+s/Advanced|Radical/Adventuresome/g to avoid complaints re fun filter
+
+Revision 1.61.2.27  2002/12/01 06:31:58  hal9
+Add faq on win32 error 503 due to ZoneAlarm.
+
+Revision 1.61.2.26  2002/11/17 06:41:06  hal9
+Move default profiles table from FAQ to U-M, and other minor related changes.
+Add faq on cookies.
+
+Revision 1.61.2.25  2002/10/29 03:21:50  hal9
+Add 3 Q/A's relating to HTML in email. Other minor touchups.
+
+Revision 1.61.2.24  2002/10/15 12:50:22  oes
+s/Advanced/Radical/ (stupid me)
+
+Revision 1.61.2.23  2002/10/15 12:38:56  oes
+Added Microsuck faq; more detail for PHP problem
+
+Revision 1.61.2.22  2002/10/12 01:13:13  hal9
+Updates for demoronizer, more commentary on Radical profile, and update on
+the srvany.exe/icon fix.
+
+Revision 1.61.2.21  2002/10/10 04:09:35  hal9
+s/Advanced/Radical/ and added very brief note.
+
+Revision 1.61.2.20  2002/09/26 01:22:45  hal9
+Small additions for LAN setup, content-cookies/SSL, and FTP non-support.
+
 Revision 1.61.2.19  2002/08/25 23:31:56  hal9
 Fix one grammatical error. Add brief FAQ relating to tranparent proxies (ie
 port 80 setting). Add FAQ on effects of Privoxy on downloaded files

@@ -1,4 +1,4 @@
-const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.1 2002/08/21 17:59:05 oes Exp $";
+const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.4 2003/03/11 11:53:59 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/w32log.c,v $
@@ -32,6 +32,15 @@ const char w32log_rcs[] = "$Id: w32log.c,v 1.25.2.1 2002/08/21 17:59:05 oes Exp 
  *
  * Revisions   :
  *    $Log: w32log.c,v $
+ *    Revision 1.25.2.4  2003/03/11 11:53:59  oes
+ *    Cosmetic: Renamed cryptic variable
+ *
+ *    Revision 1.25.2.3  2002/11/20 14:39:05  oes
+ *    Fixed compiler warning
+ *
+ *    Revision 1.25.2.2  2002/09/25 15:23:10  oes
+ *    Uncheck the "Show Privoxy Window" taskbar menu item when window gets minimized. Fixes bug #606804
+ *
  *    Revision 1.25.2.1  2002/08/21 17:59:05  oes
  *     - "Show Privoxy Window" now a toggle
  *     - Temp kludge to let user and default action file be edited through win32 GUI (FR 592080)
@@ -317,6 +326,7 @@ static struct _Pattern
  * Public variables
  */
 HWND g_hwndLogFrame;
+HICON g_hiconApp;
 
 /*
  * Private variables
@@ -327,7 +337,6 @@ static HWND g_hwndLogBox;
 static WNDPROC g_fnLogBox;
 static HICON g_hiconAnim[ANIM_FRAMES];
 static HICON g_hiconIdle;
-static HICON g_hiconApp;
 static int g_nAnimFrame;
 static BOOL g_bClipPending = FALSE;
 static int g_nRichEditVersion = 0;
@@ -1102,8 +1111,8 @@ void OnLogCommand(int nCommand)
 #ifdef FEATURE_TOGGLE
       /* by haroon - change toggle to its opposite value */
       case ID_TOGGLE_ENABLED:
-         g_bToggleIJB = !g_bToggleIJB;
-         if (g_bToggleIJB)
+         global_toggle_state = !global_toggle_state;
+         if (global_toggle_state)
          {
             log_error(LOG_LEVEL_INFO, "Now toggled ON.");
          }
@@ -1194,7 +1203,7 @@ void OnLogInitMenu(HMENU hmenu)
    CheckMenuItem(hmenu, ID_VIEW_ACTIVITYANIMATION, MF_BYCOMMAND | (g_bShowActivityAnimation ? MF_CHECKED : MF_UNCHECKED));
 #ifdef FEATURE_TOGGLE
    /* by haroon - menu item for Enable toggle on/off */
-   CheckMenuItem(hmenu, ID_TOGGLE_ENABLED, MF_BYCOMMAND | (g_bToggleIJB ? MF_CHECKED : MF_UNCHECKED));
+   CheckMenuItem(hmenu, ID_TOGGLE_ENABLED, MF_BYCOMMAND | (global_toggle_state ? MF_CHECKED : MF_UNCHECKED));
 #endif /* def FEATURE_TOGGLE */
    CheckMenuItem(hmenu, ID_TOGGLE_SHOWWINDOW, MF_BYCOMMAND | (g_bShowLogWindow ? MF_CHECKED : MF_UNCHECKED));
 
@@ -1311,6 +1320,7 @@ LRESULT CALLBACK LogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
          return 0;
 
       case WM_SHOWWINDOW:
+         g_bShowLogWindow = wParam;
       case WM_SIZE:
          /* Resize the logging window to fit the new frame */
          if (g_hwndLogBox)

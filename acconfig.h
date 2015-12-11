@@ -2,7 +2,7 @@
 #define CONFIG_H_INCLUDED
 /*********************************************************************
  *
- * File        :  $Source: /cvsroot/ijbswa/current/Attic/acconfig.h,v $
+ * File        :  $Source: /cvsroot/ijbswa/current/acconfig.h,v $
  *
  * Purpose     :  This file should be the first thing included in every
  *                .c file.  (Before even system headers).  It contains 
@@ -37,6 +37,9 @@
  *
  * Revisions   :
  *    $Log: acconfig.h,v $
+ *    Revision 1.27.2.2  2003/03/21 14:39:12  oes
+ *    Presumably fixed Bug #707467 by defining unix ifdef __unix__
+ *
  *    Revision 1.27.2.1  2002/08/10 11:22:31  oes
  *    - Add two AC_DEFINEs that indicate if the pcre*.h headers
  *      are located in a pcre/ subdir to the include path.
@@ -432,6 +435,13 @@
 
 #endif /* defined(FEATURE_PTHREAD) && defined(__BEOS__) */
 
+/*
+ * On OpenBSD and maybe also FreeBSD, gcc doesn't define the cpp
+ * symbol unix; it defines __unix__
+ */
+#if defined(__unix__) && !defined(unix)
+#define unix 1
+#endif
 
 /*
  * It's too easy to accidentally use a Cygwin or MinGW32 version of config.h

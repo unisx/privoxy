@@ -4,7 +4,7 @@
 <!entity p-intro SYSTEM "privoxy.sgml">
 <!entity contacting SYSTEM "contacting.sgml">
 <!entity buildsource SYSTEM "buildsource.sgml">
-<!entity p-version "3.0.0">
+<!entity p-version "3.0.2">
 <!entity p-status "stable">
 <!entity % p-not-stable "IGNORE">
 <!entity % p-stable "INCLUDE">
@@ -17,7 +17,7 @@
 
  Purpose     :  README for Privoxy
                 
- $Id: readme.sgml,v 1.16.2.4 2002/08/25 17:12:20 hal9 Exp $
+ $Id: readme.sgml,v 1.16.2.7 2003/03/26 00:45:20 oes Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -128,6 +128,12 @@
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="importantchanges" ><title>IMPORTANT CHANGES</title>
 <para>
+ NEWS! March 2003, Privoxy 3.0.2 is released. This is the first maintenance
+ release of Privoxy. There are no significant new features in this release.
+ Some bugs are fixed, and some existing features have been enhanced. See 
+ ChangeLog for details. Upgrading from 3.0.0 is recommended.
+</para>
+<para>
  REALLY BIG NEWS! August 2002: The long-awaited, oft-delayed  stable version
  of Privoxy 3.0 is finally released! This is way behind schedule, but better
  late than never. The developers all hope the wait was worth it.
@@ -150,9 +156,11 @@
 
 <!--   ~~~~~       New section      ~~~~~     -->
 <sect1 id="install" ><title>INSTALL</title>
-<!-- include buildsource.sgml boilerplate: -->
- &buildsource;
-<!-- end boilderplate -->
+<para> 
+ See the <filename>INSTALL</filename> file in this directory, for installing
+ from source, and the <citetitle>User Manual</citetitle>, for other
+ installation types. 
+</para>
 </sect1>
 
 <!--   ~~~~~       New section      ~~~~~     -->
@@ -160,7 +168,7 @@
 <para>
  privoxy [&mdash;&mdash;help] [&mdash;&mdash;version]
  [&mdash;&mdash;no-daemon] [&mdash;&mdash;pidfile PIDFILE] [&mdash;&mdash;user
- USER[.GROUP]] [config_file]
+ USER[.GROUP]] [&mdash;&mdash;chroot] [config_file]
 </para>
 <para>
  See the man page or User Manual for an explanation of each option, and 
@@ -250,7 +258,7 @@
 <!-- </LiteralLayout> -->
 <!-- </para> -->
 <!-- <para> -->
-<!--  $Id: readme.sgml,v 1.16.2.4 2002/08/25 17:12:20 hal9 Exp $ -->
+<!--  $Id: readme.sgml,v 1.16.2.7 2003/03/26 00:45:20 oes Exp $ -->
 <!-- </para> -->
 
 </article>

@@ -1,6 +1,6 @@
 #ifndef CGIEDIT_H_INCLUDED
 #define CGIEDIT_H_INCLUDED
-#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.7 2002/03/26 22:29:54 swa Exp $"
+#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.7.2.1 2002/11/28 18:15:17 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.h,v $
@@ -37,6 +37,9 @@
  *
  * Revisions   :
  *    $Log: cgiedit.h,v $
+ *    Revision 1.7.2.1  2002/11/28 18:15:17  oes
+ *    Added cgi_error_disabled
+ *
  *    Revision 1.7  2002/03/26 22:29:54  swa
  *    we have a new homepage!
  *
@@ -134,9 +137,11 @@ extern jb_err cgi_edit_actions_section_add   (struct client_state *csp,
 extern jb_err cgi_edit_actions_section_swap  (struct client_state *csp,
                                               struct http_response *rsp,
                                               const struct map *parameters);
-extern jb_err cgi_toggle(struct client_state *csp,
-                         struct http_response *rsp,
-                         const struct map *parameters);
+extern jb_err cgi_toggle        (struct client_state *csp,
+                                 struct http_response *rsp,
+                                 const struct map *parameters);
+extern jb_err cgi_error_disabled(struct client_state *csp,
+                                 struct http_response *rsp);
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
 
 

@@ -26,7 +26,9 @@ CLASS="TITLEPAGE"
 ><H1
 CLASS="TITLE"
 ><A
-NAME="AEN2">Privoxy Frequently Asked Questions</H1
+NAME="AEN2"
+></A
+>Privoxy Frequently Asked Questions</H1
 ><P
 CLASS="PUBDATE"
 > <SUB
@@ -43,12 +45,14 @@ TARGET="_top"
 ><BR></P
 ><P
 CLASS="PUBDATE"
->$Id: index.html,v 1.15.2.7 2002/08/25 23:41:33 hal9 Exp $<BR></P
+>$Id: index.html,v 1.15.2.9 2003/03/26 02:58:05 hal9 Exp $<BR></P
 ><DIV
 ><DIV
 CLASS="ABSTRACT"
 ><A
-NAME="AEN9"><P
+NAME="AEN9"
+></A
+><P
 ></P
 ><P
 > This FAQ gives quick answers to frequently asked  questions about
@@ -96,7 +100,7 @@ CLASS="APPLICATION"
 > (tm).</P
 ><P
 >  Please note that this document is constantly evolving. This copy represents
-  the state at the release of version 3.0.0.
+  the state at the release of version 3.0.2.
   You can find the latest version of the document at <A
 HREF="http://www.privoxy.org/faq/"
 TARGET="_top"
@@ -252,6 +256,14 @@ HREF="installation.html#WHICHOS"
 ></DT
 ><DT
 >2.3. <A
+HREF="installation.html#EMAIL-CLIENT"
+>Can I use <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> with my email client?</A
+></DT
+><DT
+>2.4. <A
 HREF="installation.html#NEWINSTALL"
 >Can I install  
  <SPAN
@@ -263,8 +275,8 @@ CLASS="APPLICATION"
 >?</A
 ></DT
 ><DT
->2.4. <A
-HREF="installation.html#AEN209"
+>2.5. <A
+HREF="installation.html#AEN218"
 >I just installed <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -272,7 +284,7 @@ CLASS="APPLICATION"
 special I have to do now?</A
 ></DT
 ><DT
->2.5. <A
+>2.6. <A
 HREF="installation.html#LOCALHOST"
 >What is the proxy address of <SPAN
 CLASS="APPLICATION"
@@ -280,7 +292,7 @@ CLASS="APPLICATION"
 >?</A
 ></DT
 ><DT
->2.6. <A
+>2.7. <A
 HREF="installation.html#NOTHING"
 >I just installed <SPAN
 CLASS="APPLICATION"
@@ -309,7 +321,7 @@ HREF="configuration.html#NEWCONFIG"
 ></DT
 ><DT
 >3.3. <A
-HREF="configuration.html#AEN266"
+HREF="configuration.html#AEN275"
 >What is an <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -329,13 +341,13 @@ CLASS="QUOTE"
 ></DT
 ><DT
 >3.5. <A
-HREF="configuration.html#AEN285"
+HREF="configuration.html#AEN294"
 >How are actions files configured? What is the easiest
 way to do this?</A
 ></DT
 ><DT
 >3.6. <A
-HREF="configuration.html#AEN293"
+HREF="configuration.html#AEN302"
 >There are several different <SPAN
 CLASS="QUOTE"
 >"actions"</SPAN
@@ -359,7 +371,7 @@ CLASS="QUOTE"
 >"Medium"</SPAN
 > and <SPAN
 CLASS="QUOTE"
->"Advanced"</SPAN
+>"Adventuresome"</SPAN
 > defaults?</A
 ></DT
 ><DT
@@ -370,7 +382,7 @@ with a browser? Does that not raise security issues?</A
 ></DT
 ><DT
 >3.10. <A
-HREF="configuration.html#AEN431"
+HREF="configuration.html#AEN367"
 >What is the <TT
 CLASS="FILENAME"
 >default.filter</TT
@@ -381,7 +393,7 @@ CLASS="QUOTE"
 ></DT
 ><DT
 >3.11. <A
-HREF="configuration.html#AEN447"
+HREF="configuration.html#AEN383"
 >How can I set up <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -390,17 +402,17 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >3.12. <A
-HREF="configuration.html#AEN465"
+HREF="configuration.html#AEN409"
 >Instead of ads, now I get a checkerboard pattern. I don't want to see anything.</A
 ></DT
 ><DT
 >3.13. <A
-HREF="configuration.html#AEN482"
+HREF="configuration.html#AEN426"
 >Why would anybody want to see a checkerboard pattern?</A
 ></DT
 ><DT
 >3.14. <A
-HREF="configuration.html#AEN487"
+HREF="configuration.html#AEN431"
 >I see some images being replaced by a text
 instead of the checkerboard image. Why and how do I get rid of this?</A
 ></DT
@@ -445,6 +457,28 @@ CLASS="QUOTE"
 >"transparent"</SPAN
 > proxy?</A
 ></DT
+><DT
+>3.19. <A
+HREF="configuration.html#OUTLOOK"
+>How can I configure <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> for use with <SPAN
+CLASS="APPLICATION"
+>Outlook
+ Express</SPAN
+>?</A
+></DT
+><DT
+>3.20. <A
+HREF="configuration.html#OUTLOOK-MORE"
+>How can I have separate rules just for HTML mail?</A
+></DT
+><DT
+>3.21. <A
+HREF="configuration.html#ALLOW-COOKIES"
+>How can I allow permanent cookies for my trusted sites?</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -456,7 +490,7 @@ HREF="misc.html"
 ><DL
 ><DT
 >4.1. <A
-HREF="misc.html#AEN528"
+HREF="misc.html#AEN500"
 >How much does <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -492,7 +526,7 @@ HREF="misc.html#IP"
 ></DT
 ><DT
 >4.7. <A
-HREF="misc.html#AEN588"
+HREF="misc.html#AEN560"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -500,13 +534,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.8. <A
-HREF="misc.html#AEN599"
+HREF="misc.html#AEN571"
 >Might some things break because header information or
 content is being altered?</A
 ></DT
 ><DT
 >4.9. <A
-HREF="misc.html#AEN610"
+HREF="misc.html#AEN582"
 >Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -518,7 +552,7 @@ speed up web browsing?</A
 ></DT
 ><DT
 >4.10. <A
-HREF="misc.html#AEN620"
+HREF="misc.html#AEN592"
 >What about as a firewall? Can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -526,13 +560,13 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.11. <A
-HREF="misc.html#AEN626"
+HREF="misc.html#AEN598"
 >I have large empty spaces / a checkerboard pattern now where
 ads used to be. Why?</A
 ></DT
 ><DT
 >4.12. <A
-HREF="misc.html#AEN631"
+HREF="misc.html#AEN603"
 >How can <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -540,7 +574,7 @@ CLASS="APPLICATION"
 ></DT
 ><DT
 >4.13. <A
-HREF="misc.html#AEN642"
+HREF="misc.html#AEN618"
 ><SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
@@ -603,6 +637,18 @@ CLASS="APPLICATION"
 >
 and related issues?</A
 ></DT
+><DT
+>4.19. <A
+HREF="misc.html#MICROSUCK"
+>I've noticed that Privoxy changes <SPAN
+CLASS="QUOTE"
+>"Microsoft"</SPAN
+> to 
+<SPAN
+CLASS="QUOTE"
+>"MicroSuck"</SPAN
+>! Why are you manipulating my browsing?</A
+></DT
 ></DL
 ></DD
 ><DT
@@ -614,7 +660,7 @@ HREF="trouble.html"
 ><DL
 ><DT
 >5.1. <A
-HREF="trouble.html#AEN755"
+HREF="trouble.html#AEN741"
 >I just upgraded and am getting <SPAN
 CLASS="QUOTE"
 >"connection refused"</SPAN
@@ -623,7 +669,7 @@ with every web page?</A
 ></DT
 ><DT
 >5.2. <A
-HREF="trouble.html#AEN768"
+HREF="trouble.html#AEN754"
 >I just added a new rule, but the steenkin ad is 
 still getting through. How?</A
 ></DT
@@ -680,7 +726,16 @@ CLASS="QUOTE"
  shows only: <SPAN
 CLASS="MARKUP"
 >&#60;html&#62;&#60;body&#62;&#60;/body&#62;&#60;/html&#62;</SPAN
->.</A
+>. Without
+ <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+> the page loads fine.</A
+></DT
+><DT
+>5.9. <A
+HREF="trouble.html#ERROR503"
+>Why am I getting a 503 Error (WSAECONNREFUSED) on every page?</A
 ></DT
 ></DL
 ></DD
@@ -727,12 +782,12 @@ HREF="copyright.html"
 ><DL
 ><DT
 >7.1. <A
-HREF="copyright.html#AEN891"
+HREF="copyright.html#AEN884"
 >License</A
 ></DT
 ><DT
 >7.2. <A
-HREF="copyright.html#AEN907"
+HREF="copyright.html#AEN900"
 >History</A
 ></DT
 ></DL

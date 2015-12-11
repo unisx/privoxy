@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.1 2002/08/05 11:17:46 oes Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.6 2003/03/12 01:26:25 david__schmidt Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.c,v $
@@ -38,6 +38,33 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.1 2002/08/05 11:17:46 oes Exp $";
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.70.2.6  2003/03/12 01:26:25  david__schmidt
+ *    Move declaration of struct tm dummy outside of a control block so it is
+ *    accessible later on during snprintf in get_http_time.
+ *
+ *    Revision 1.70.2.5  2003/03/11 11:53:58  oes
+ *    Cosmetic: Renamed cryptic variable
+ *
+ *    Revision 1.70.2.4  2003/03/07 03:41:03  david__schmidt
+ *    Wrapping all *_r functions (the non-_r versions of them) with mutex semaphores for OSX.  Hopefully this will take care of all of those pesky crash reports.
+ *
+ *    Revision 1.70.2.3  2002/11/28 18:14:32  oes
+ *    Disable access to critical CGIs via untrusted referrers.
+ *    This prevents users from being tricked by malicious websites
+ *    into making unintentional configuration changes:
+ *
+ *     - Added flag to each cgi_dispatcher that allows or denies
+ *       external linking
+ *     - Introduced proviorical function that greps for the
+ *       referrer header before regular header parsing happens
+ *     - Added safety check to dispatch_known_cgi. CGI is called
+ *       if (cgi harmless || no referrer || we are referrer).
+ *       Else a) toggle calls are modified not to change status and
+ *       b) all other calls are denied.
+ *
+ *    Revision 1.70.2.2  2002/11/12 16:20:37  oes
+ *    Added missing #ifdef FEATURE_TOGGLE around g_bToggleIJB; fixes bug #636651
+ *
  *    Revision 1.70.2.1  2002/08/05 11:17:46  oes
  *    Fixed Bug #587820, i.e. added workaround for IE bug that includes fragment identifier in (cgi) query
  *
@@ -417,8 +444,12 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.1 2002/08/05 11:17:46 oes Exp $";
 #include "cgiedit.h"
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
 #include "loadcfg.h"
-/* loadcfg.h is for g_bToggleIJB only */
-
+/* loadcfg.h is for global_toggle_state only */
+#ifdef FEATURE_PTHREAD
+#include <pthread.h>
+#include "jcc.h"
+/* jcc.h is for mutex semaphore globals only */
+#endif /* def FEATURE_PTHREAD */
 const char cgi_h_rcs[] = CGI_H_VERSION;
 
 /*
@@ -429,109 +460,115 @@ const char cgi_h_rcs[] = CGI_H_VERSION;
 static const struct cgi_dispatcher cgi_dispatchers[] = {
    { "",
          cgi_default,
-         "Privoxy main page" },
+         "Privoxy main page",
+         TRUE },
 #ifdef FEATURE_GRACEFUL_TERMINATION
    { "die", 
          cgi_die,  
          "<b>Shut down</b> - <em class=\"warning\">Do not deploy this build in a production environment, "
-         "this is a one click Denial Of Service attack!!!</em>" }, 
+        "this is a one click Denial Of Service attack!!!</em>",
+         FALSE }, 
 #endif
    { "show-status", 
          cgi_show_status,  
-         "View & change the current configuration" }, 
+        "View & change the current configuration",
+         TRUE }, 
    { "show-version", 
          cgi_show_version,  
-         "View the source code version numbers" }, 
+         "View the source code version numbers",
+          TRUE }, 
    { "show-request", 
          cgi_show_request,  
-         "View the request headers." }, 
+         "View the request headers.",
+         TRUE }, 
    { "show-url-info",
          cgi_show_url_info, 
-         "Look up which actions apply to a URL and why"  },
+         "Look up which actions apply to a URL and why",
+         TRUE },
 #ifdef FEATURE_CGI_EDIT_ACTIONS
    { "toggle",
          cgi_toggle, 
-         "Toggle Privoxy on or off" },
-
+         "Toggle Privoxy on or off",
+         FALSE },
    { "edit-actions", /* Edit the actions list */
          cgi_edit_actions, 
-         NULL },
+         NULL, FALSE },
    { "eaa", /* Shortcut for edit-actions-add-url-form */
          cgi_edit_actions_add_url_form, 
-         NULL },
+         NULL, FALSE },
    { "eau", /* Shortcut for edit-actions-url-form */
          cgi_edit_actions_url_form, 
-         NULL },
+         NULL, FALSE },
    { "ear", /* Shortcut for edit-actions-remove-url-form */
          cgi_edit_actions_remove_url_form, 
-         NULL },
+         NULL, FALSE },
    { "eafu", /* Shortcut for edit-actions-for-url */
          cgi_edit_actions_for_url, 
-         NULL },
+         NULL, FALSE },
    { "eas", /* Shortcut for edit-actions-submit */
          cgi_edit_actions_submit, 
-         NULL },
+         NULL, FALSE },
    { "easa", /* Shortcut for edit-actions-section-add */
          cgi_edit_actions_section_add, 
-         NULL },
+         NULL, FALSE  },
    { "easr", /* Shortcut for edit-actions-section-remove */
          cgi_edit_actions_section_remove, 
-         NULL },
+         NULL, FALSE  },
    { "eass", /* Shortcut for edit-actions-section-swap */
          cgi_edit_actions_section_swap, 
-         NULL },
+         NULL, FALSE  },
    { "edit-actions-for-url",
          cgi_edit_actions_for_url, 
-         NULL /* Edit the actions for (a) specified URL(s) */ },
+         NULL, FALSE  /* Edit the actions for (a) specified URL(s) */ },
    { "edit-actions-list",
          cgi_edit_actions_list, 
-         NULL /* Edit the actions list */ },
+         NULL, TRUE /* Edit the actions list */ },
    { "edit-actions-submit",
          cgi_edit_actions_submit, 
-         NULL /* Change the actions for (a) specified URL(s) */ },
+         NULL, FALSE /* Change the actions for (a) specified URL(s) */ },
    { "edit-actions-url",
          cgi_edit_actions_url, 
-         NULL /* Change a URL pattern in the actionsfile */ },
+         NULL, FALSE /* Change a URL pattern in the actionsfile */ },
    { "edit-actions-url-form",
          cgi_edit_actions_url_form, 
-         NULL /* Form to change a URL pattern in the actionsfile */ },
+         NULL, FALSE /* Form to change a URL pattern in the actionsfile */ },
    { "edit-actions-add-url",
          cgi_edit_actions_add_url, 
-         NULL /* Add a URL pattern to the actionsfile */ },
+         NULL, FALSE /* Add a URL pattern to the actionsfile */ },
    { "edit-actions-add-url-form",
          cgi_edit_actions_add_url_form, 
-         NULL /* Form to add a URL pattern to the actionsfile */ },
+         NULL, FALSE /* Form to add a URL pattern to the actionsfile */ },
    { "edit-actions-remove-url",
          cgi_edit_actions_remove_url, 
-         NULL /* Remove a URL pattern from the actionsfile */ },
+         NULL, FALSE /* Remove a URL pattern from the actionsfile */ },
    { "edit-actions-remove-url-form",
          cgi_edit_actions_remove_url_form, 
-         NULL /* Form to remove a URL pattern from the actionsfile */ },
+         NULL, FALSE /* Form to remove a URL pattern from the actionsfile */ },
    { "edit-actions-section-add",
          cgi_edit_actions_section_add, 
-         NULL /* Remove a section from the actionsfile */ },
+         NULL, FALSE /* Remove a section from the actionsfile */ },
    { "edit-actions-section-remove",
          cgi_edit_actions_section_remove, 
-         NULL /* Remove a section from the actionsfile */ },
+         NULL, FALSE /* Remove a section from the actionsfile */ },
    { "edit-actions-section-swap",
          cgi_edit_actions_section_swap, 
-         NULL /* Swap two sections in the actionsfile */ },
+         NULL, FALSE /* Swap two sections in the actionsfile */ },
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
    { "robots.txt", 
          cgi_robots_txt,  
-         NULL /* Sends a robots.txt file to tell robots to go away. */ }, 
+         NULL, TRUE /* Sends a robots.txt file to tell robots to go away. */ }, 
    { "send-banner",
          cgi_send_banner, 
-         NULL /* Send a built-in image */ },
+         NULL, TRUE /* Send a built-in image */ },
    { "send-stylesheet",
          cgi_send_stylesheet, 
-         NULL /* Send templates/cgi-style.css */ },
+         NULL, TRUE /* Send templates/cgi-style.css */ },
    { "t",
          cgi_transparent_image, 
-         NULL /* Send a transparent image (short name) */ },
+         NULL, TRUE /* Send a transparent image (short name) */ },
    { NULL, /* NULL Indicates end of list and default page */
          cgi_error_404,
-         NULL /* Unknown CGI page */ }
+         NULL, TRUE /* Unknown CGI page */ }
 };
 
 
@@ -673,6 +710,42 @@ struct http_response *dispatch_cgi(struct client_state *csp)
 
 
 /*********************************************************************
+ *
+ * Function    :  grep_cgi_referrer
+ *
+ * Description :  Ugly provisorical fix that greps the value of the
+ *                referer HTTP header field out of a linked list of
+ *                strings like found at csp->headers. Will disappear
+ *                in Privoxy 3.1.
+ *
+ *                FIXME: csp->headers ought to be csp->http->headers
+ *                FIXME: Parsing all client header lines should
+ *                       happen right after the request is received!
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *
+ * Returns     :  pointer to value (no copy!), or NULL if none found.
+ *
+ *********************************************************************/
+char *grep_cgi_referrer(struct client_state *csp)
+{
+   struct list_entry *p;
+
+   for (p = csp->headers->first; p != NULL; p = p->next)
+   {
+      if (p->str == NULL) continue;
+      if (strncmpic(p->str, "Referer: ", 9) == 0)
+      {
+         return ((p->str) + 9);
+      }
+   }
+   return NULL;
+
+}
+
+
+/*********************************************************************
  * 
  * Function    :  dispatch_known_cgi
  *
@@ -700,6 +773,7 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
    struct http_response *rsp;
    char *query_args_start;
    char *path_copy;
+   char *referrer;
    jb_err err;
 
    if (NULL == (path_copy = strdup(path)))
@@ -723,7 +797,6 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
       return cgi_error_memory();
    }
 
-
    /*
     * At this point:
     * path_copy        = CGI call name
@@ -742,15 +815,45 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
    log_error(LOG_LEVEL_CLF, "%s - - [%T] \"%s\" 200 3", 
                             csp->ip_addr_str, csp->http->cmd); 
 
-   /* Find and start the right CGI function*/
+   /* 
+    * Find and start the right CGI function
+    */
    d = cgi_dispatchers;
    for (;;)
    {
       if ((d->name == NULL) || (strcmp(path_copy, d->name) == 0))
       {
-         err = (d->handler)(csp, rsp, param_list);
+         /*
+          * If the called CGI is either harmless, or not referred
+          * from an untrusted source, start it.
+          */
+         if (d->harmless
+             || (NULL == (referrer = grep_cgi_referrer(csp)))
+             || (0 == strncmp(referrer, "http://config.privoxy.org/", 26))
+             )
+         {
+            err = (d->handler)(csp, rsp, param_list);
+         }
+         else
+         {
+            /*
+             * Else, modify toggle calls so that they only display
+             * the status, and deny all other calls.
+             */
+            if (0 == strcmp(path_copy, "toggle"))
+            {
+               unmap(param_list, "set");
+               err = (d->handler)(csp, rsp, param_list);
+            }
+            else
+            {
+               err = cgi_error_disabled(csp, rsp);
+            }
+         }
+
          free(path_copy);
          free_map(param_list);
+
          if (err == JB_ERR_CGI_PARAMS)
          {
             err = cgi_error_bad_param(csp, rsp);
@@ -776,8 +879,8 @@ static struct http_response *dispatch_known_cgi(struct client_state * csp,
       d++;
    }
 }
-
-
+   
+        
 /*********************************************************************
  *
  * Function    :  parse_cgi_parameters
@@ -1419,6 +1522,15 @@ void get_http_time(int time_offset, char *buf)
 
    struct tm *t;
    time_t current_time;
+#ifdef HAVE_GMTIME_R
+   /*
+    * Declare dummy up here (instead of inside get/set gmt block) so it
+    * doesn't go out of scope before it's potentially used in snprintf later.
+    * Wrapping declaration inside HAVE_GMTIME_R keeps the compiler quiet when
+    * !defined HAVE_GMTIME_R.
+    */
+   struct tm dummy; 
+#endif
 
    assert(buf);
 
@@ -1428,8 +1540,11 @@ void get_http_time(int time_offset, char *buf)
 
    /* get and save the gmt */
    {
-#ifdef HAVE_GMTIME_R
-      struct tm dummy;
+#ifdef OSX_DARWIN
+      pthread_mutex_lock(&gmtime_mutex);
+      t = gmtime(&current_time);
+      pthread_mutex_unlock(&gmtime_mutex);
+#elif HAVE_GMTIME_R
       t = gmtime_r(&current_time, &dummy);
 #else
       t = gmtime(&current_time);
@@ -1945,7 +2060,9 @@ struct map *default_exports(const struct client_state *csp, const char *caller)
    if (!err) err = map(exports, "code-status",   1, CODE_STATUS, 1);
    if (!err) err = map(exports, "user-manual",   1, csp->config->usermanual ,1);
    if (!err) err = map(exports, "actions-help-prefix", 1, ACTIONS_HELP_PREFIX ,1);
-   if (!err) err = map_conditional(exports, "enabled-display", g_bToggleIJB);
+#ifdef FEATURE_TOGGLE
+   if (!err) err = map_conditional(exports, "enabled-display", global_toggle_state);
+#endif
 
    snprintf(buf, 20, "%d", csp->config->hport);
    if (!err) err = map(exports, "my-port", 1, buf, 1);

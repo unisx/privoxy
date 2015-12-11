@@ -1,4 +1,4 @@
-const char list_rcs[] = "$Id: list.c,v 1.15 2002/03/26 22:29:55 swa Exp $";
+const char list_rcs[] = "$Id: list.c,v 1.15.2.1 2002/11/28 18:14:54 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/list.c,v $
@@ -34,6 +34,10 @@ const char list_rcs[] = "$Id: list.c,v 1.15 2002/03/26 22:29:55 swa Exp $";
  *
  * Revisions   :
  *    $Log: list.c,v $
+ *    Revision 1.15.2.1  2002/11/28 18:14:54  oes
+ *    Added unmap function that removes all items with a given
+ *    name from a map.
+ *
  *    Revision 1.15  2002/03/26 22:29:55  swa
  *    we have a new homepage!
  *
@@ -1021,6 +1025,71 @@ jb_err map(struct map *the_map,
       the_map->last = new_entry;
    }
 
+   return JB_ERR_OK;
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  unmap
+ *
+ * Description :  Remove all map_entry structs with a given name from
+ *                a given map.
+ *
+ * Parameters  :
+ *          1  :  the_map = map to look in
+ *          2  :  name = name to unmap
+ *
+ * Returns     :  JB_ERR_OK
+ *
+ *********************************************************************/
+jb_err unmap(struct map *the_map, const char *name)
+{
+   struct map_entry *cur_entry, *last_entry;
+
+   assert(the_map);
+   assert(name);
+   
+   last_entry = the_map->first;
+
+   for (cur_entry = the_map->first; cur_entry != NULL; cur_entry = cur_entry->next)
+   {
+      if (!strcmp(name, cur_entry->name))
+      {
+         /*
+          * Update the incoming pointer
+          */
+         if (cur_entry == the_map->first)
+         {
+            the_map->first = cur_entry->next;
+         }
+         else
+         {
+            last_entry->next = cur_entry->next;
+         }
+
+         /*
+          * Update the map's last pointer 
+          */
+         if (cur_entry == the_map->last)
+         {
+            the_map->last = last_entry;
+         }
+         
+         /*
+          * Free the map_entry
+          */
+         freez(cur_entry->name);
+         freez(cur_entry->value);
+         freez(cur_entry);
+
+         cur_entry = last_entry;
+      }
+      else
+      {
+         last_entry = cur_entry;
+      }
+   }
    return JB_ERR_OK;
 }
 

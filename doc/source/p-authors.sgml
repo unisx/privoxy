@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: p-authors.sgml,v 1.8.2.4 2002/08/25 17:20:34 hal9 Exp $
+ $Id: p-authors.sgml,v 1.8.2.13 2003/03/25 00:45:18 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -24,40 +24,46 @@
 -->
 <![%p-authors-formal;[
 <para>
- Current Project Developers:
+ Current Developement Team:
 </para>
 ]]>
 
 <literallayout>
+ Hal Burgiss (docs)
  Jon Foster
  Andreas Oesterhelt
- Stefan Waldherr
+ David Schmidt (OS/2, Mac OSX ports)
 <![%p-authors-formal;[
  ]]>
- Thomas Steudten
- Rodney Stromlund
+
 <![%p-authors-formal;[
 </literallayout>
 
 <para>
- Current Project Contributors:
+ Current and Former Project Contributors:
 </para>
 
 <literallayout>
 ]]>
+ Johny Agotnes 
  Rodrigo Barbosa (RPM specfiles)
  Moritz Barsnick
- Hal Burgiss (docs)
+ Mattes Dolak 
  Karsten Hopp (Red Hat)
  Alexander Lazic
+ Daniel Leite
  Gábor Lipták
- Guy
+ Adam Lock (Win32)
+ Guy Laroche
  Haroon Rafique
  Roland Rosenfeld (Debian)
  Georg Sauthoff (Gentoo)
- David Schmidt (OS/2, Mac OSX ports)
+ Thomas Steudten
  Joerg Strohmayer (Amiga)
+ Rodney Stromlund
+ Sviatoslav Sviridov
  Sarantis Paskalis
+ Stefan Waldherr
 </literallayout>
 
 <![%p-authors-formal;[
@@ -82,15 +88,18 @@
  Andrew J. Caines
  Clifford Caoile
  Michael T. Davis
+ Brian Dessent
  Peter E
  Aaron Hamid
  Magnus Holmgren
- Daniel Leite
+ Don Libes  
  Paul Lieverse
+ David Mediavilla 
+ Oliver Stoeneberg
  Roberto Ragusa
  Maynard Riley
  Bart Schelstraete
  Darren Wiebe
- jwz
+ Jamie Zawinski
 </literallayout>
 ]]>

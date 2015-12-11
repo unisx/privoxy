@@ -7,7 +7,7 @@ NAME="GENERATOR"
 CONTENT="Modular DocBook HTML Stylesheet Version 1.76b+
 "><LINK
 REL="HOME"
-TITLE="Privoxy 3.0.0 User Manual"
+TITLE="Privoxy 3.0.2 User Manual"
 HREF="index.html"><LINK
 REL="PREVIOUS"
 TITLE="Actions Files"
@@ -37,7 +37,7 @@ CELLSPACING="0"
 ><TH
 COLSPAN="3"
 ALIGN="center"
->Privoxy 3.0.0 User Manual</TH
+>Privoxy 3.0.2 User Manual</TH
 ></TR
 ><TR
 ><TD
@@ -73,7 +73,9 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="FILTER-FILE">9. The Filter File</H1
+NAME="FILTER-FILE"
+></A
+>9. The Filter File</H1
 ><P
 > All text substitutions that can be invoked through the
  <TT
@@ -273,7 +275,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AEN3013">9.1. Filter File Tutorial</H2
+NAME="AEN3275"
+></A
+>9.1. Filter File Tutorial</H2
 ><P
 > Now, let's complete our <SPAN
 CLASS="QUOTE"
@@ -792,6 +796,483 @@ CLASS="LITERAL"
  e.g. the liberal use of (non-interpreted!) whitespace for nicer formatting. </P
 ><P
 > You get the idea?</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="PREDEFINED-FILTERS"
+></A
+>9.2. The Pre-defined Filters</H2
+><P
+>The distribution <TT
+CLASS="FILENAME"
+>default.filter</TT
+> file contains a selection of
+pre-defined filters for your convenience:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>js-annoyances</I
+></SPAN
+></DT
+><DD
+><P
+>    The purpose of this filter is to get rid of particularly annoying JavaScript abuse.
+    To that end, it
+   <P
+></P
+><UL
+><LI
+><P
+>      replaces JavaScript references to the browser's referrer information
+      with the string "Not Your Business!". This compliments the <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#HIDE-REFERRER"
+>hide-referrer</A
+></TT
+> action on the content level.
+     </P
+></LI
+><LI
+><P
+>      removes the bindings to the DOM's
+      <A
+HREF="http://www.w3.org/TR/2000/REC-DOM-Level-2-Events-20001113/events.html#Events-eventgroupings-htmlevents"
+TARGET="_top"
+>unload
+      event</A
+> which we feel has no right to exist and is responsible for most <SPAN
+CLASS="QUOTE"
+>"exit consoles"</SPAN
+>, i.e.
+      nasty windows that pop up when you close another one.
+     </P
+></LI
+><LI
+><P
+>      removes code that causes new windows to be opened with undesired properties, such as being
+      full-screen, non-resizable, without location, status or menu bar etc.
+     </P
+></LI
+></UL
+>
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>js-events</I
+></SPAN
+></DT
+><DD
+><P
+>    This is a very radical measure. It removes virtually all JavaScript event bindings, which
+    means that scripts can not react to user actions such as mouse movements or clicks, window
+    resizing etc, anymore. 
+   </P
+><P
+>    We <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>strongly discourage</I
+></SPAN
+> using this filter as a default since it breaks
+    many legitimate scripts. It is meant for use only on extra-nasty sites (should you really
+    need to go there).
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>html-annoyances</I
+></SPAN
+></DT
+><DD
+><P
+>    This filter will undo many common instances of HTML based abuse.
+   </P
+><P
+>    The <TT
+CLASS="LITERAL"
+>BLINK</TT
+> and <TT
+CLASS="LITERAL"
+>MARQUEE</TT
+> tags 
+    are neutralized (yeah baby!), and browser windows will be created as
+    resizable (as of course they should be!), and will have location,
+    scroll and menu bars -- even if specified otherwise.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>content-cookies</I
+></SPAN
+></DT
+><DD
+><P
+>    Most cookies are set in the HTTP dialogue, where they can be intercepted
+    by the
+    <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-INCOMING-COOKIES"
+>crunch-incoming-cookies</A
+></TT
+>
+    and <TT
+CLASS="LITERAL"
+><A
+HREF="actions-file.html#CRUNCH-OUTGOING-COOKIES"
+>crunch-outgoing-cookies</A
+></TT
+>
+    actions. But web sites increasingly make use of HTML meta tags and JavaScript
+    to sneak cookies to the browser on the content level.
+   </P
+><P
+>    This filter disables HTML and JavaScript code that reads or sets cookies. Use
+    it wherever you would also use the cookie crunch actions.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>refresh tags</I
+></SPAN
+></DT
+><DD
+><P
+>    Disable any refresh tags if the interval is greater than nine seconds (so 
+    that redirections done via refresh tags are not destroyed). This is useful 
+    for dial-on-demand setups, or for those who find this HTML feature
+    annoying.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>unsolicited-popups</I
+></SPAN
+></DT
+><DD
+><P
+>    This filter attempts to prevent only <SPAN
+CLASS="QUOTE"
+>"unsolicited"</SPAN
+> pop-up 
+    windows from opening, yet still allow pop-up windows that the user 
+    has explicitly chosen to open. It was added in version 3.0.1, 
+    as an improvement over earlier such filters.
+   </P
+><P
+>    Technical note: The filter works by redefining the window.open JavaScript
+    function to a dummy function during the loading and rendering phase of each
+    HTML page access, and restoring the function afterwards.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all-popups</I
+></SPAN
+></DT
+><DD
+><P
+>    Attempt to prevent <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>all</I
+></SPAN
+> pop-up windows from opening.
+    Note this should be used with more discretion than the above, since it is
+    more likely to break some sites that require pop-ups for normal usage. Use 
+    with caution.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>img-reorder</I
+></SPAN
+></DT
+><DD
+><P
+>    This is a helper filter that has no value if used alone. It makes the
+    <TT
+CLASS="LITERAL"
+>banners-by-size</TT
+> and <TT
+CLASS="LITERAL"
+>banners-by-link</TT
+>
+    (see below) filters more effective and should be enabled together with them.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>banners-by-size</I
+></SPAN
+></DT
+><DD
+><P
+>    This filter removes image tags purely based on what size they are. Fortunately 
+    for us, many ads and banner images tend to conform to certain standardized
+    sizes, which makes this filter quite effective for ad stripping purposes.
+   </P
+><P
+>    Occasionally this filter will cause false positives on images that are not ads,
+    but just happen to be of one of the standard banner sizes.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>banners-by-link</I
+></SPAN
+></DT
+><DD
+><P
+>    This is an experimental filter that attempts to kill any banners if 
+    their URLs seem to point to known or suspected click trackers. It is currently
+    not of much value and is not recommended for use by default.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>webbugs</I
+></SPAN
+></DT
+><DD
+><P
+>    Webbugs are small, invisible images (technically 1X1 GIF images), that 
+    are used to track users across websites, and collect information on them.
+    As an HTML page is loaded by the browser, an embedded image tag causes the
+    browser to contact a third-party site, disclosing the tracking information
+    through the requested URL and/or cookies for that third-party domain, without
+    the use ever becoming aware of the interaction with the third-party site.
+    HTML-ized spam also uses a similar technique to verify email addresses.
+   </P
+><P
+>    This filter removes the HTML code that loads such <SPAN
+CLASS="QUOTE"
+>"webbugs"</SPAN
+>.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>tiny-textforms</I
+></SPAN
+></DT
+><DD
+><P
+>    A rather special-purpose filter that can be used to enlarge textareas (those
+    multi-line text boxes in web forms) and turn off hard word wrap in them. 
+    It was written for the sourceforge.net tracker system where such boxes are
+    a nuisance, but it can be handy on other sites, too.
+   </P
+><P
+>    It is not recommended to use this filter as a default.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>jumping-windows</I
+></SPAN
+></DT
+><DD
+><P
+>    Many consider windows that move, or resize themselves to be abusive. This filter
+    neutralizes the related JavaScript code. Note that some sites might not display
+    or behave as intended when using this filter.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>frameset-borders</I
+></SPAN
+></DT
+><DD
+><P
+>    Some web designers seem to assume that everyone in the world will view their
+    web sites using the same browser brand and version, screen resolution etc,
+    because only that assumption could explain why they'd use static frame sizes,
+    yet prevent their frames from being resized by the user, should they be too
+    small to show their whole content.
+   </P
+><P
+>    This filter removes the related HTML code. It should only be applied to sites
+    which need it.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>demoronizer</I
+></SPAN
+></DT
+><DD
+><P
+>    Many Microsoft products that generate HTML use non-standard extensions (read:
+    violations) of the ISO 8859-1 aka Latin-1 character set. This causes those
+    HTML documents to display with errors on standard-compliant platforms. 
+   </P
+><P
+>    This filter translates the MS-only characters into Latin-1 equivalents. It is
+    safe for general use, and recommended for non-MS platforms.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>shockwave-flash</I
+></SPAN
+></DT
+><DD
+><P
+>    A filter for shockwave haters. As the name suggests, this filter strips code
+    out of web pages that is used to embed shockwave flash objects. 
+   </P
+><P
+>   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>quicktime-kioskmode</I
+></SPAN
+></DT
+><DD
+><P
+>    Change HTML code that embeds Quicktime objects so that kioskmode, which
+    prevents saving, is disabled.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>fun</I
+></SPAN
+></DT
+><DD
+><P
+>    Text replacements for subversive browsing fun. Make fun of your favorite
+    Monopolist or play buzzword bingo.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>crude-parental</I
+></SPAN
+></DT
+><DD
+><P
+>    A demonstration-only filter that shows how <SPAN
+CLASS="APPLICATION"
+>Privoxy</SPAN
+>
+    can be used to delete web content on a keyword basis.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>ie-exploits</I
+></SPAN
+></DT
+><DD
+><P
+>    A collection of text replacements to disable malicious HTML and JavaScript
+    code that exploits known security holes in Internet Explorer.
+   </P
+><P
+>    Presently, it only protects against Nimda and a cross-site scripting bug, and
+    would need active maintenance to provide more substantial protection.
+   </P
+></DD
+><DT
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>site-specifics</I
+></SPAN
+></DT
+><DD
+><P
+>    Some web sites have very specific problems, the cure for which doesn't apply
+    anywhere else, or could even cause damage on other sites.
+   </P
+><P
+>    This is a collection of such site-specific cures which should only be applied
+    to the sites they were intended for, which is what the supplied
+    <TT
+CLASS="FILENAME"
+>default.action</TT
+> file does. Users shouldn't need to change
+    anything regarding this filter.
+   </P
+></DD
+></DL
+></DIV
 ></DIV
 ></DIV
 ><DIV

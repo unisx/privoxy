@@ -3,7 +3,7 @@
 
  Purpose     :  Entity included in other project documents.
                 
- $Id: buildsource.sgml,v 1.9.2.1 2002/08/25 17:10:55 hal9 Exp $
+ $Id: buildsource.sgml,v 1.9.2.2 2003/03/19 15:44:46 oes Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -79,14 +79,6 @@
  make install     # (to really install)
 </screen>
 </para>
-
-<warning>
- <para> 
-  The <quote>make install</quote> target is temporary quite broken! It is
-  recommended to use a binary package, or do a source build, and manually 
-  install the components. Sorry.
- </para>
-</warning>
 
 <para>
   If you have gnu make, you can have the first four steps 

@@ -1,4 +1,4 @@
-# $Id: privoxy-suse.spec,v 1.20.2.7 2002/08/25 23:36:03 hal9 Exp $
+# $Id: privoxy-suse.spec,v 1.20.2.9 2003/03/26 00:24:58 oes Exp $
 #
 # Written by and Copyright (C) 2001 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -36,7 +36,7 @@ Summary:      Privoxy - privacy enhancing proxy
 Vendor:       Privoxy.Org
 Name:         privoxy-suse
 Distribution: defineme
-Version: 3.0.0
+Version: 3.0.2
 Release: 1
 # Needs makefile change: Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}-%{status}-src.tar.gz
 Source: http://prdownloads.sourceforge.net/ijbswa/privoxy-%{version}.tar.gz
@@ -217,6 +217,12 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 # -----------------------------------------------------------------------------
 #
 %changelog
+* Wed Mar 26 2003 Andreas Oesterhelt <andreas@oesterhelt.org>
+- Bump version for 3.0.2.
+
+* Wed Mar 19 2003 Hal Burgiss <hal@foobox.net>
+- Bump version for 3.0.1.
+
 * Tue Aug 25 2002 Hal Burgiss <hal@foobox.net>
 - Bump version for 3.0.0 :) 
 
@@ -345,6 +351,12 @@ id privoxy > /dev/null 2>&1 && /usr/sbin/userdel privoxy || /bin/true
 - new package: version 2.0
 
 # $Log: privoxy-suse.spec,v $
+# Revision 1.20.2.9  2003/03/26 00:24:58  oes
+# Bump version for 3.0.2
+#
+# Revision 1.20.2.8  2003/03/20 03:27:11  hal9
+# Bump version for 3.0.1 pending release.
+#
 # Revision 1.20.2.7  2002/08/25 23:36:03  hal9
 # Bump version for 3.0.0.
 #

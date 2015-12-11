@@ -73,7 +73,9 @@ CLASS="SECT1"
 ><H1
 CLASS="SECT1"
 ><A
-NAME="NEWRELEASE">6. Releasing a New Version</H1
+NAME="NEWRELEASE"
+></A
+>6. Releasing a New Version</H1
 ><P
 >        When we release versions of <SPAN
 CLASS="APPLICATION"
@@ -108,14 +110,16 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="VERSIONNUMBERS">6.1. Version numbers</H2
+NAME="VERSIONNUMBERS"
+></A
+>6.1. Version numbers</H2
 ><P
 >      First you need to determine which version number the release will have. 
       <SPAN
 CLASS="APPLICATION"
 >Privoxy</SPAN
 > version numbers consist of three numbers,
-      separated by dots, like in X.Y.Z, where:
+      separated by dots, like in X.Y.Z (e.g. 3.0.0), where:
         <P
 ></P
 ><UL
@@ -165,9 +169,73 @@ CLASS="APPLICATION"
               This ensures that builds from CVS snapshots are easily distinguished from released versions.
               The point version is reset to zero when the minor changes.
             </P
+><P
+>              Stable branches work a little differently, since there should be
+              little to no development happening in such branches. Remember,
+              only bugfixes, which presumably should have had some testing
+              before being committed. Stable branches will then have their 
+              version reported as <TT
+CLASS="LITERAL"
+>0.0.0</TT
+>, during that period 
+              between releases when changes are being added. This is to denote 
+              that this code is <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>not for release</I
+></SPAN
+>. Then 
+              as the release nears, the version is bumped according: e.g. 
+              <TT
+CLASS="LITERAL"
+>3.0.1 -&#62; 0.0.0 -&#62; 3.0.2</TT
+>.
+            </P
 ></LI
 ></UL
 >
+    </P
+><P
+>     In summary, the main CVS trunk is the development branch where new
+     features are being worked on for the next stable series. This should
+     almost always be where the most activity takes place. There is always at
+     least one stable branch from the trunk, e.g now it is
+     <TT
+CLASS="LITERAL"
+>3.0</TT
+>, which is only used to release stable versions.
+     Once the initial *.0 release of the stable branch has been done, then as a
+     rule, only bugfixes that have had prior testing should be committed to
+     the stable branch. Once there are enough bugfixes to justify a new
+     release, the version of this branch is again incremented Example: 3.0.0
+     -&#62; 3.0.1 -&#62; 3.0.2, etc are all stable releases from within the stable
+     branch. 3.1.x is currently the main trunk, and where work on 3.2.x is
+     taking place. If any questions, please post to the devel list
+     <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>before</I
+></SPAN
+> committing to a stable branch!
+    </P
+><P
+>     Developers should remember too that if they commit a bugfix to the stable 
+     branch, this will more than likely require a separate submission to the 
+     main trunk, since these are separate development trees within CVS. If you 
+     are working on both, then this would require at least two separate check
+     outs (i.e main trunk, <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>and</I
+></SPAN
+> the stable release branch,
+     which is <TT
+CLASS="LITERAL"
+>v_3_0_branch</TT
+> at the moment).
     </P
 ></DIV
 ><DIV
@@ -175,7 +243,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="BEFORERELEASE">6.2. Before the Release: Freeze</H2
+NAME="BEFORERELEASE"
+></A
+>6.2. Before the Release: Freeze</H2
 ><P
 >       The following <SPAN
 CLASS="emphasis"
@@ -358,7 +428,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="THERELEASE">6.3. Building and Releasing the Packages</H2
+NAME="THERELEASE"
+></A
+>6.3. Building and Releasing the Packages</H2
 ><P
 >      Now the individual packages can be built and released. Note that for
       GPL reasons the first package to be released is always the source tarball.
@@ -421,7 +493,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="PACK-GUIDELINES">6.3.1. Note on Privoxy Packaging</H3
+NAME="PACK-GUIDELINES"
+></A
+>6.3.1. Note on Privoxy Packaging</H3
 ><P
 >      Please keep these general guidelines in mind when putting together 
       your package. These apply to <SPAN
@@ -667,7 +741,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-TARBALL">6.3.2. Source Tarball</H3
+NAME="NEWRELEASE-TARBALL"
+></A
+>6.3.2. Source Tarball</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -745,7 +821,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-RPM">6.3.3. SuSE, Conectiva or Red Hat RPM</H3
+NAME="NEWRELEASE-RPM"
+></A
+>6.3.3. SuSE, Conectiva or Red Hat RPM</H3
 ><P
 >        In following text, replace <TT
 CLASS="REPLACEABLE"
@@ -891,7 +969,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-OS2">6.3.4. OS/2</H3
+NAME="NEWRELEASE-OS2"
+></A
+>6.3.4. OS/2</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1026,7 +1106,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-SOLARIS">6.3.5. Solaris</H3
+NAME="NEWRELEASE-SOLARIS"
+></A
+>6.3.5. Solaris</H3
 ><P
 >	Login to Sourceforge's compilefarm via ssh:
 	</P
@@ -1107,7 +1189,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-WINDOWS">6.3.6. Windows</H3
+NAME="NEWRELEASE-WINDOWS"
+></A
+>6.3.6. Windows</H3
 ><P
 >        You should ensure you have the latest version of Cygwin (from
         <A
@@ -1185,7 +1269,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-DEBIAN">6.3.7. Debian</H3
+NAME="NEWRELEASE-DEBIAN"
+></A
+>6.3.7. Debian</H3
 ><P
 >        First, <SPAN
 CLASS="emphasis"
@@ -1211,7 +1297,7 @@ WIDTH="100%"
 ><TD
 ><PRE
 CLASS="PROGRAMLISTING"
->  debchange -v 3.0.0-stable-1 "New upstream version"</PRE
+>  debchange -v 3.0.2-stable-1 "New upstream version"</PRE
 ></TD
 ></TR
 ></TABLE
@@ -1239,7 +1325,7 @@ CLASS="PROGRAMLISTING"
 >        This will create
         <TT
 CLASS="FILENAME"
->../privoxy_3.0.0-stable-1_i386.deb</TT
+>../privoxy_3.0.2-stable-1_i386.deb</TT
 >
         which can be uploaded.  To upload the package to Sourceforge, simply
 	issue
@@ -1265,7 +1351,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-MACOSX">6.3.8. Mac OSX</H3
+NAME="NEWRELEASE-MACOSX"
+></A
+>6.3.8. Mac OSX</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1371,7 +1459,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-FREEBSD">6.3.9. FreeBSD</H3
+NAME="NEWRELEASE-FREEBSD"
+></A
+>6.3.9. FreeBSD</H3
 ><P
 >	Login to Sourceforge's compile-farm via ssh:
 	</P
@@ -1452,7 +1542,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-HPUX">6.3.10. HP-UX 11</H3
+NAME="NEWRELEASE-HPUX"
+></A
+>6.3.10. HP-UX 11</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1489,7 +1581,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-AMIGA">6.3.11. Amiga OS</H3
+NAME="NEWRELEASE-AMIGA"
+></A
+>6.3.11. Amiga OS</H3
 ><P
 >	First, <SPAN
 CLASS="emphasis"
@@ -1526,7 +1620,9 @@ CLASS="SECT3"
 ><H3
 CLASS="SECT3"
 ><A
-NAME="NEWRELEASE-AIX">6.3.12. AIX</H3
+NAME="NEWRELEASE-AIX"
+></A
+>6.3.12. AIX</H3
 ><P
 >	Login to Sourceforge's compilefarm via ssh:
 	</P
@@ -1608,7 +1704,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="RELEASING">6.4. Uploading and Releasing Your Package</H2
+NAME="RELEASING"
+></A
+>6.4. Uploading and Releasing Your Package</H2
 ><P
 >      After the package is ready, it is time to upload it 
       to SourceForge, and go through the release steps. The upload
@@ -1671,7 +1769,7 @@ CLASS="LITERAL"
 CLASS="emphasis"
 ><I
 CLASS="EMPHASIS"
->3.0.0
+>3.0.2
      (beta)</I
 ></SPAN
 >.
@@ -1717,7 +1815,9 @@ CLASS="SECT2"
 ><H2
 CLASS="SECT2"
 ><A
-NAME="AFTERRELEASE">6.5. After the Release</H2
+NAME="AFTERRELEASE"
+></A
+>6.5. After the Release</H2
 ><P
 >      When all (or: most of the) packages have been uploaded and made available,
       send an email to the <A

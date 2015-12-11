@@ -5,10 +5,10 @@
 <!entity contacting SYSTEM "../contacting.sgml">
 <!entity history SYSTEM "../history.sgml">
 <!entity newfeatures SYSTEM "../newfeatures.sgml">
-<!entity p-version "2.9.15">
-<!entity p-status "beta">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.0">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity % p-supp-userman "IGNORE">
 <!entity % p-text "INCLUDE">       <!-- define we are a text only doc    -->
 <!entity % p-doc "IGNORE">         <!-- and never a text doc             -->
@@ -19,7 +19,7 @@
 
  Purpose     :  Announcement text
                 
- $Id: announce.sgml,v 1.1.2.1 2002/05/27 22:03:51 hal9 Exp $
+ $Id: announce.sgml,v 1.1.2.2 2002/08/30 02:52:11 hal9 Exp $
 
  Copyright (C) 2001, 2002 Privoxy Developers <developers@privoxy.org>
  See LICENSE.
@@ -58,9 +58,15 @@
 
 <para>
  Announcing <application>Privoxy</application> 
- v.&p-version;<![%p-not-stable;[-&p-status;]]>, and release candidate for 
- v3.0 stable.
+ v.&p-version;<![%p-not-stable;[-&p-status;, and release candidate for 
+ v3.0 stable]]>.
 </para>
+<para>
+ <![%p-stable;[
+ This is the first stable release of Privoxy.
+ ]]>
+</para>
+
 
 <!-- Include privoxy.sgml boilerplate: -->
  &p-intro;
@@ -91,7 +97,7 @@
 
 <para> 
  <literallayout>Download location: 
-   <ulink url="http://sourceforge.net/projects/ijbswa/">http://sourceforge.net/projects/ijbswa/</ulink>
+   <ulink url="http://sourceforge.net/project/showfiles.php?group_id=11118">http://sourceforge.net/project/showfiles.php?group_id=11118</ulink>
  </literallayout>
 </para>
 
@@ -102,6 +108,6 @@
 </para>
 
 
-<epigraph><attribution>Privoxy Developers</attribution><para></para></epigraph>
+<epigraph><attribution>Privoxy Developers <email>developers@privoxy.org</email></attribution><para></para></epigraph>
 
 </article>
