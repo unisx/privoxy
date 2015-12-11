@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.104.2.25 2004/01/31 01:15:33 oes Exp $
+# $Id: GNUmakefile.in,v 1.104.2.27 2004/02/07 16:11:10 oes Exp $
 #
 # Written by and Copyright (C) 2001 - 2004 the SourceForge
 # Privoxy team. http://www.privoxy.org/
@@ -818,7 +818,9 @@ dok-shtml: dok-release
 # (http://www.easysw.com/htmldoc/). Note: 1.8.20 has a TOC bug.
 # PDF docs are uploaded to webserver as zip archive.
 dok-pdf: dok-shtml
-	@$(ECHO) -n "starting htmldoc version: "; htmldoc --version
+	@$(ECHO) -n "starting htmldoc version: ";
+	if htmldoc --version ; then : ; \
+	   else $(ECHO) "WARNING: could not get htmldoc version" ; fi
 	cd utils/ldp_print && $(RM) *html *bak *jpg *tmp *pdf *zip
 	cp -f doc/source/temp/*html doc/webserver/images/*jpg utils/ldp_print
 	cd utils/ldp_print ;\
@@ -1019,6 +1021,7 @@ tidy:
 clobber: tidy
 	$(RM) GNUmakefile configure config.h.in config.h config.cache config.status config.log logfile \
               privoxy.log core *.tar.gz *.tar privoxy-cl.spec doc/source/ldp.dsl
+	$(RM) -r autom4te.cache
 
 #
 # FIXME: What is all this? 
@@ -1341,6 +1344,13 @@ coffee:
 ## end:
 
 # $Log: GNUmakefile.in,v $
+# Revision 1.104.2.27  2004/02/07 16:11:10  oes
+# Make clobber remove the autom4te.cache dir.
+# Closes BR #889300
+#
+# Revision 1.104.2.26  2004/01/31 16:32:25  oes
+# Adding a check for an htmldoc variant from the debian diff
+#
 # Revision 1.104.2.25  2004/01/31 01:15:33  oes
 # Fixed a typo; updated copyright notice
 #

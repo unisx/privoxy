@@ -1,4 +1,4 @@
-const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.6 2003/12/18 08:13:48 oes Exp $";
+const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.7 2004/02/17 13:30:23 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.c,v $
@@ -42,6 +42,12 @@ const char cgiedit_rcs[] = "$Id: cgiedit.c,v 1.41.2.6 2003/12/18 08:13:48 oes Ex
  *
  * Revisions   :
  *    $Log: cgiedit.c,v $
+ *    Revision 1.41.2.7  2004/02/17 13:30:23  oes
+ *    Moved cgi_error_disabled() from cgiedit.c to
+ *    cgi.c to re-enable build with --disable-editor.
+ *    Fixes Bug #892744. Thanks to Matthew Fischer
+ *    for spotting.
+ *
  *    Revision 1.41.2.6  2003/12/18 08:13:48  oes
  *    One line lost in last commit
  *
@@ -469,8 +475,6 @@ jb_err cgi_error_file(struct client_state *csp,
 jb_err cgi_error_file_read_only(struct client_state *csp,
                                 struct http_response *rsp,
                                 const char *filename);
-jb_err cgi_error_disabled(struct client_state *csp,
-                          struct http_response *rsp);
 
 /* Internal arbitrary config file support functions */
 static jb_err edit_read_file_lines(FILE *fp, struct file_line ** pfile, int *newline);
@@ -2403,40 +2407,6 @@ jb_err cgi_error_file_read_only(struct client_state *csp,
    }
 
    return template_fill_for_cgi(csp, "cgi-error-file-read-only", exports, rsp);
-}
-
-
-/*********************************************************************
- *
- * Function    :  cgi_error_disabled
- *
- * Description :  CGI function that is called if the actions editor
- *                is called although it's disabled in config
- *
- * Parameters  :
- *          1  :  csp = Current client state (buffers, headers, etc...)
- *          2  :  rsp = http_response data structure for output
- *
- * CGI Parameters : none
- *
- * Returns     :  JB_ERR_OK on success
- *                JB_ERR_MEMORY on out-of-memory error.
- *
- *********************************************************************/
-jb_err cgi_error_disabled(struct client_state *csp,
-                          struct http_response *rsp)
-{
-   struct map *exports;
-
-   assert(csp);
-   assert(rsp);
-
-   if (NULL == (exports = default_exports(csp, NULL)))
-   {
-      return JB_ERR_MEMORY;
-   }
-
-   return template_fill_for_cgi(csp, "cgi-error-disabled", exports, rsp);
 }
 
 

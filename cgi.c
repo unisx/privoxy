@@ -1,4 +1,4 @@
-const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.12 2003/12/17 16:33:16 oes Exp $";
+const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.13 2004/02/17 13:30:23 oes Exp $";
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.c,v $
@@ -38,6 +38,12 @@ const char cgi_rcs[] = "$Id: cgi.c,v 1.70.2.12 2003/12/17 16:33:16 oes Exp $";
  *
  * Revisions   :
  *    $Log: cgi.c,v $
+ *    Revision 1.70.2.13  2004/02/17 13:30:23  oes
+ *    Moved cgi_error_disabled() from cgiedit.c to
+ *    cgi.c to re-enable build with --disable-editor.
+ *    Fixes Bug #892744. Thanks to Matthew Fischer
+ *    for spotting.
+ *
  *    Revision 1.70.2.12  2003/12/17 16:33:16  oes
  *     - Added new function cgi_redirect to handle creation of
  *       HTTP redirect messages formerly repeated in the code.
@@ -1239,6 +1245,42 @@ struct http_response *error_response(struct client_state *csp,
    }
 
    return finish_http_response(rsp);
+}
+
+
+/*********************************************************************
+ *
+ * Function    :  cgi_error_disabled
+ *
+ * Description :  CGI function that is called to generate an error
+ *                response if the actions editor or toggle CGI are
+ *                accessed despite having being disabled at compile-
+ *                or run-time.
+ *
+ * Parameters  :
+ *          1  :  csp = Current client state (buffers, headers, etc...)
+ *          2  :  rsp = http_response data structure for output
+ *
+ * CGI Parameters : none
+ *
+ * Returns     :  JB_ERR_OK on success
+ *                JB_ERR_MEMORY on out-of-memory error.
+ *
+ *********************************************************************/
+jb_err cgi_error_disabled(struct client_state *csp,
+                          struct http_response *rsp)
+{
+   struct map *exports;
+
+   assert(csp);
+   assert(rsp);
+
+   if (NULL == (exports = default_exports(csp, NULL)))
+   {
+      return JB_ERR_MEMORY;
+   }
+
+   return template_fill_for_cgi(csp, "cgi-error-disabled", exports, rsp);
 }
 
 

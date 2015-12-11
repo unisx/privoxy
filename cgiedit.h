@@ -1,6 +1,6 @@
 #ifndef CGIEDIT_H_INCLUDED
 #define CGIEDIT_H_INCLUDED
-#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.7.2.1 2002/11/28 18:15:17 oes Exp $"
+#define CGIEDIT_H_VERSION "$Id: cgiedit.h,v 1.7.2.2 2004/02/17 13:30:23 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgiedit.h,v $
@@ -37,6 +37,12 @@
  *
  * Revisions   :
  *    $Log: cgiedit.h,v $
+ *    Revision 1.7.2.2  2004/02/17 13:30:23  oes
+ *    Moved cgi_error_disabled() from cgiedit.c to
+ *    cgi.c to re-enable build with --disable-editor.
+ *    Fixes Bug #892744. Thanks to Matthew Fischer
+ *    for spotting.
+ *
  *    Revision 1.7.2.1  2002/11/28 18:15:17  oes
  *    Added cgi_error_disabled
  *
@@ -140,8 +146,6 @@ extern jb_err cgi_edit_actions_section_swap  (struct client_state *csp,
 extern jb_err cgi_toggle        (struct client_state *csp,
                                  struct http_response *rsp,
                                  const struct map *parameters);
-extern jb_err cgi_error_disabled(struct client_state *csp,
-                                 struct http_response *rsp);
 #endif /* def FEATURE_CGI_EDIT_ACTIONS */
 
 

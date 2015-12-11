@@ -1,6 +1,6 @@
 #ifndef CGI_H_INCLUDED
 #define CGI_H_INCLUDED
-#define CGI_H_VERSION "$Id: cgi.h,v 1.29.2.1 2003/12/17 16:33:28 oes Exp $"
+#define CGI_H_VERSION "$Id: cgi.h,v 1.29.2.2 2004/02/17 13:30:23 oes Exp $"
 /*********************************************************************
  *
  * File        :  $Source: /cvsroot/ijbswa/current/Attic/cgi.h,v $
@@ -38,6 +38,12 @@
  *
  * Revisions   :
  *    $Log: cgi.h,v $
+ *    Revision 1.29.2.2  2004/02/17 13:30:23  oes
+ *    Moved cgi_error_disabled() from cgiedit.c to
+ *    cgi.c to re-enable build with --disable-editor.
+ *    Fixes Bug #892744. Thanks to Matthew Fischer
+ *    for spotting.
+ *
  *    Revision 1.29.2.1  2003/12/17 16:33:28  oes
  *    Added prototype of new function cgi_redirect
  *
@@ -215,7 +221,9 @@ extern jb_err cgi_error_no_template(struct client_state *csp,
                                     const char *template_name);
 extern jb_err cgi_error_bad_param(struct client_state *csp,
                                   struct http_response *rsp);
-jb_err cgi_error_unknown(struct client_state *csp,
+extern jb_err cgi_error_disabled(struct client_state *csp,
+                                 struct http_response *rsp);
+extern jb_err cgi_error_unknown(struct client_state *csp,
                          struct http_response *rsp,
                          jb_err error_to_report);
 
