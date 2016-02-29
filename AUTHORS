@@ -41,6 +41,7 @@ Thanks to the many people who have tested Privoxy, reported bugs, provided
 patches, made suggestions, donated or contributed in some other way. These
 include (in alphabetical order):
 
+ Rustam Abdullaev
  Anatoly Arzhnikov
  Ken Arromdee
  Natxo Asenjo
@@ -53,6 +54,7 @@ include (in alphabetical order):
  Andrew J. Caines
  Clifford Caoile
  Edward Carrel
+ Pak Chan
  Wan-Teh Chang
  Sam Chen
  Ramkumar Chinchani
@@ -90,7 +92,9 @@ include (in alphabetical order):
  Julien Joubert
  Ralf Jungblut
  Petr Kadlec
+ Robert Klemme
  Steven Kolins
+ Korda
  Stefan Kurtz
  Zeno Kugy
  David Laight
@@ -104,6 +108,7 @@ include (in alphabetical order):
  Raphael Marichez
  Francois Marier
  Angelina Matson
+ Jonathan McKenzie
  David Mediavilla
  Raphael Moll
  Mathew Murphy
@@ -119,6 +124,7 @@ include (in alphabetical order):
  Maynard Riley
  Andreas Rutkauskas
  Bart Schelstraete
+ Gregory Seidman
  Chung-chieh Shan
  Benjamin C. Wiley Sittler
  Simon South
@@ -129,6 +135,8 @@ include (in alphabetical order):
  Peter Thoenen
  Martin Thomas
  Reuben Thomas
+ Guybrush Threepwood
+ Joel Verhagen
  Bobby G. Vinyard
  Jochen Voss
  David Wagner
@@ -137,6 +145,8 @@ include (in alphabetical order):
  Jörg Weinmann
  Darren Wiebe
  Anduin Withers
+ Yang Xia
+ Jarry Xu
  Oliver Yeoh
  Jamie Zawinski
 

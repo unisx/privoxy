@@ -1,6 +1,6 @@
 # Note:  Makefile is built automatically from Makefile.in
 #
-# $Id: GNUmakefile.in,v 1.230 2015/01/24 16:40:07 fabiankeil Exp $
+# $Id: GNUmakefile.in,v 1.231 2015/12/27 12:50:57 fabiankeil Exp $
 #
 # Written by and Copyright (C) 2001-2014 members of the
 # Privoxy team. http://www.privoxy.org/
@@ -586,15 +586,6 @@ generate-config-file:
 	cd doc/source && $(DB)-notoc -iconfig-file -V nochunks config.sgml > ../../config.html
 	$(W3M_DUMP) -cols 67 config.html > config
 	$(PERL) -i.bak utils/prepare-configfile.pl config
-
-# config file, alternate version using lynx (perl stuff unfinished). Lynx
-# does not do so good a job.
-config-file-alt:
-	cd doc/source && $(ECHO) -e ".h2 JUSTIFY\\nJUSTIFY:FALSE" > __tmp.lynx_cfg &&\
-	$(DB)-notoc -iconfig-file -V nochunks config.sgml > __tmp.html &&\
-	lynx -cfg=__tmp.lynx_cfg -width=78 -dump __tmp.html > ../../config.new && $(RM) -r __tmp.*
-	$(PERL) -pi -e 's/^(   )//;\
-	                s/:$\/:\n/' config.new
 
 #############################################################################
 #

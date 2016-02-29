@@ -5,10 +5,10 @@
 <!entity history SYSTEM "history.sgml">
 <!entity copyright SYSTEM "copyright.sgml">
 <!entity license SYSTEM "license.sgml">
-<!entity p-version "3.0.22">
-<!entity p-status "UNRELEASED">
-<!entity % p-not-stable "INCLUDE">
-<!entity % p-stable "IGNORE">
+<!entity p-version "3.0.24">
+<!entity p-status "stable">
+<!entity % p-not-stable "IGNORE">
+<!entity % p-stable "INCLUDE">
 <!entity  my-copy "&copy;">        <!-- kludge for docbook2man            -->
 <!entity % p-homepage "IGNORE">    <!-- toggle for webserver index.html   -->
 <!entity % p-index "IGNORE">       <!-- toggle for local doc index        -->
@@ -20,7 +20,7 @@
                 This file belongs into
                 ijbswa.sourceforge.net:/home/groups/i/ij/ijbswa/htdocs/
                 
- $Id: index.sgml,v 2.28 2014/05/26 10:48:39 fabiankeil Exp $
+ $Id: index.sgml,v 2.35 2016/01/21 15:56:27 fabiankeil Exp $
 
  Copyright (C) 2001-2009 Privoxy Developers <ijbswa-developers@lists.sourceforge.net>
  See LICENSE.
@@ -77,32 +77,21 @@
 
 <sect1 renderas="sect2" id="download" label=""><title>Download</title>
 <para>
- <itemizedlist>
-  <listitem>
-   <para>
-    <ulink url="https://sourceforge.net/projects/ijbswa/files/">Download recent releases</ulink>
-   </para>
-  </listitem>
- <!-- 
- deprecated
-  <listitem>
-   <para>
-    <ulink url="http://cvs.sourceforge.net/cvstarballs/ijbswa-cvsroot.tar.bz2">Download the latest CVS snapshot (source tarball)</ulink>
-   </para>
-  </listitem>
- --> 
-  <listitem>
-   <para>
-    <ulink url="user-manual/quickstart.html">Quickstart after installation</ulink>
-   </para>
-  </listitem>
- </itemizedlist>
+ Privoxy downloads are available at
+ <ulink url="https://sourceforge.net/projects/ijbswa/files/">SourceForge</ulink>.
+ If you are not comfortable with downloading binaries from SourceForge, please
+ use <ulink url="http://www.silvester.org.uk/privoxy/">the mirror</ulink>.
 </para>
 </sect1>
 
 <sect1 renderas="sect2" id="docs" label=""><title>Documentation</title>
 <para>
  <itemizedlist>
+  <listitem>
+   <para>
+    <ulink url="user-manual/quickstart.html">Quickstart after installation</ulink>
+   </para>
+  </listitem>
   <listitem>
    <para>
     <ulink url="user-manual/index.html">User manual</ulink>
@@ -166,33 +155,6 @@
 </para>
 </sect1>
 
-<![%p-homepage;[
-<!--   ~~~~~       New section      ~~~~~     -->
-<sect1 label="">
-<!-- dummy section, for spacing -->
-<title></title>
-<para>
-<!-- show the SF logo per AUP -->
-<informaltable frame=none label="" pgwide="1">
- <tgroup cols=1 align="center" colsep=1 rowsep=1>
-  <colspec colname=c1 align="center">
-  <tbody>
-   <row>
-    <entry align="center">Privoxy is developed on:</entry>
-   </row>
-   <row>
-    <entry align="center">
-     <ulink url="http://sourceforge.net/">
-      <inlinegraphic  fileref="http://sourceforge.net/sflogo.php?group_id=11118&#38;type=1&#38;dummy=.gif"></inlinegraphic>
-     </ulink>
-    </entry>
-   </row>
-  </tbody>
- </tgroup>
-</informaltable>
-</para>
-]]>
-
 <!--
 <informalfigure pgwide="1">
  <ulink url="http://sourceforge.net/">
@@ -201,6 +163,18 @@
 </informalfigure>
 -->
 
+<![%p-homepage;[
+<!--   ~~~~~       New section      ~~~~~     -->
+<sect1 label="">
+<!-- dummy section, for spacing -->
+<title></title>
+<para>
+<!-- Mention SF per AUP -->
+Privoxy is developed on <ulink url="http://sourceforge.net/">SourceForge</ulink>.
+
+This page is also available as <ulink url="http://jvauzb4sb3bwlsnc.onion/">onion service</ulink>.
+</para>
+]]>
 
 <![%p-index;[
 <sect1 label=""><title></title>
@@ -212,7 +186,7 @@
 <!-- GNUMakefile is inserting this now -->
 <para>
  <subscript>
-  Copyright __copy 2001-2013 by Privoxy Developers
+  Copyright __copy 2001-2016 by Privoxy Developers
  </subscript>
 </para>
 
